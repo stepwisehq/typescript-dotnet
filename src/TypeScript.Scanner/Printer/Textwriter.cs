@@ -10,6 +10,7 @@ internal sealed class TextWriter
     private StringBuilder builder = new();
     private string lastWritten = "";
     private bool lineStart;
+    internal bool hasTrailingCommentState;
     private int indent, indentSize;
     internal static TextWriter NewTextWriter(string newLine, int indentSize)
     {
@@ -29,6 +30,7 @@ internal sealed class TextWriter
         lastWritten = "";
         lineStart = true;
         indent = 0;
+        hasTrailingCommentState = false;
     }
 
     internal string String() => builder.ToString();
@@ -48,7 +50,21 @@ internal sealed class TextWriter
         }
     }
 
-    internal void Write(string text) => writeText(text);
+    internal void Write(string text)
+    {
+        if (text != "")
+            hasTrailingCommentState = false;
+        writeText(text);
+    }
+
+    // textwriter.go:150. Comment state is retained even though multiline output is excluded.
+    internal void WriteComment(string text)
+    {
+        if (text != "")
+            hasTrailingCommentState = true;
+        writeText(text);
+    }
+
     internal void WriteKeyword(string text) => Write(text);
     internal void WriteStringLiteral(string text) => Write(text);
     // textwriter.go: token-category methods all forward to Write in this writer.

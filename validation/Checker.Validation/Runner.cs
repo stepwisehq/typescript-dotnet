@@ -12,13 +12,15 @@ public sealed partial class Graph
     private readonly Encoder syntax;
     private readonly Result result;
     private readonly bool objectObservations;
+    private readonly bool dataObservations;
     private readonly List<CheckType> rawTypes = [];
-    public Graph(Checker checker, Encoder syntax, Result result, bool objectObservations = false)
+    public Graph(Checker checker, Encoder syntax, Result result, bool objectObservations = false, bool dataObservations = false)
     {
         this.checker = checker;
         this.syntax = syntax;
         this.result = result;
         this.objectObservations = objectObservations;
+        this.dataObservations = dataObservations;
     }
 
     private readonly Dictionary<CheckType, int> types = new(ReferenceEqualityComparer.Instance);
@@ -136,10 +138,12 @@ public sealed partial class Graph
                 value.RegularType = Type(literal.RegularType());
                 break;
             case "UnionType":
+            case "IntersectionType" when dataObservations:
                 foreach (var member in type.Types())
                     value.Types.Add(Type(member)!.Value);
                 break;
-            case "ObjectType" when objectObservations:
+            case "ObjectType" when objectObservations || dataObservations:
+            case "InterfaceType" or "TypeReference" or "TypeParameter" or "IndexType" when dataObservations:
                 break;
             default:
                 throw new InvalidOperationException("Unsupported type payload in accepted semantic corpus: " + value.DataType);
@@ -176,7 +180,7 @@ public static class Runner
             Parser = TypeScript.Scanner.ParserValidation.Runner.Encode(file, parserRequest, encoder)
         };
         var checker = Checker.Create(file);
-        var graph = new Graph(checker, encoder, result, request.ObjectObservations);
+        var graph = new Graph(checker, encoder, result, request.ObjectObservations, request.DataObservations);
         var fileDiagnostics = checker.GetDiagnostics();
         var ids = request.QueryNodeIds ?? encoder.RawNodes.Select((node, id) => (node, id)).Where(pair => Ast.IsIdentifier(pair.node) || Ast.IsLiteralExpression(pair.node) || pair.node.Kind is Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword).Select(pair => pair.id).ToList();
         var queried = new Dictionary<int, CheckType>();
@@ -207,6 +211,8 @@ public static class Runner
         result.GlobalDiagnostics = Diagnostics(checker.GetGlobalDiagnostics());
         if (request.ObjectObservations)
             result.ObjectGraph = graph.Objects(request.WidenNodeIds, queried);
+        if (request.DataObservations)
+            result.DataGraph = graph.Data(request, queried);
         return result;
     }
 }

@@ -16,6 +16,8 @@ public sealed class Request
     public List<List<int>> RelationPairs { get; set; } = [];
     public bool AdmissionOnly { get; set; }
     public bool ObjectObservations { get; set; }
+    public bool DataObservations { get; set; }
+    public List<int> DeclaredNodeIds { get; set; } = [];
     public List<int> WidenNodeIds { get; set; } = [];
 
     public TypeScript.Scanner.ParserValidation.Request ParserInput() => new()
@@ -106,6 +108,9 @@ public sealed record RelationValue(int SourceNodeId, int TargetNodeId, bool Assi
 public sealed record FixedOptions(string Target = "ESNext", bool NoLib = true, bool NoResolve = true, bool SkipModuleResolution = true, bool StrictNullChecks = true, bool StrictBindCallApply = false, bool NoImplicitAny = false);
 public sealed class Result
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DataGraphValue? DataGraph { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ObjectGraphValue? ObjectGraph { get; set; }
     public Response Parser { get; set; } = new();

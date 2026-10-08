@@ -1,0 +1,1359 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 78,
+  "observations": "rich data graph",
+  "requestsSha256": "ac11f03cda4220eefa8b3ec74de0281d5377e6ff088c83e9486bb543842d0958",
+  "expectedSha256": "e1652018739905c427ccd73af6d26ab1c25237c72976eaa0885bc86cfa76f4c0",
+  "groups": [
+    {
+      "contract": "D1",
+      "name": "alias-chain",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "type-value-legal-sharing",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "value-as-type",
+      "checkerCodes": [
+        2749
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "unknown-type",
+      "checkerCodes": [
+        2304
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "alias-typo",
+      "checkerCodes": [
+        2552
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "interface-typo",
+      "checkerCodes": [
+        2552
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "qualified-first-missing",
+      "checkerCodes": [
+        2503
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "qualified-second-missing",
+      "checkerCodes": [
+        2702
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "qualified-value-namespace",
+      "checkerCodes": [
+        2503
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "qualified-globalThis-missing-member",
+      "checkerCodes": [
+        2694
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "duplicate-alias",
+      "checkerCodes": [],
+      "binderCodes": [
+        2300,
+        2300
+      ],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "alias-interface-collision",
+      "checkerCodes": [],
+      "binderCodes": [
+        2300,
+        2300
+      ],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "nested-rendering-shadow",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "escaped-unicode-alias",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "interface-forward-base",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "multiple-compatible-bases",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "multiple-incompatible-bases",
+      "checkerCodes": [
+        2320
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "own-override-base-conflict",
+      "checkerCodes": [
+        2430
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "own-override-compatible",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "inherited-optional-required",
+      "checkerCodes": [
+        2320
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "own-optional-required",
+      "checkerCodes": [
+        2430
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "merged-fields",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "merged-fields-reversed",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "merged-readonly-conflict",
+      "checkerCodes": [
+        2687,
+        2687
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "merged-optional-conflict",
+      "checkerCodes": [
+        2687,
+        2687,
+        2717
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "merged-heritage",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "alias-intersection-base",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "alias-base-derived-hidden-this",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "any-base-extra-property-read",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "alias-union-base-invalid",
+      "checkerCodes": [
+        2312
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "alias-primitive-base-invalid",
+      "checkerCodes": [
+        2312
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "missing-base",
+      "checkerCodes": [
+        2304
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "direct-recursive-interface",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "mutual-recursive-alias",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "recursive-interface-compatible",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "recursive-interface-mismatch",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "recursive-alias-compatible",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "recursive-nested-mismatch",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "self-heritage-cycle",
+      "checkerCodes": [
+        2310
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "mutual-heritage-cycle",
+      "checkerCodes": [
+        2310,
+        2310
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "cycle-through-alias-base",
+      "checkerCodes": [
+        2310
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "nullable-read",
+      "checkerCodes": [
+        18048
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-common-read",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-noncommon-read",
+      "checkerCodes": [
+        2339
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-optional-common",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-discriminant-context",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "named-union-best-overlap-failure",
+      "checkerCodes": [
+        2322,
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-fresh-excess",
+      "checkerCodes": [
+        2353
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-indirect-width",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-alias-cache-separation",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "primitive-union",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-compatible",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-optional-required",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-discriminant-never",
+      "checkerCodes": [
+        2322,
+        2322,
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-missing-member",
+      "checkerCodes": [
+        2339
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "never-intersection-missing-member",
+      "checkerCodes": [
+        2454,
+        2339
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-nested-mismatch",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-distributed-union",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-alias-cache-separation",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "primitive-intersection-never",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "named-contextual-shorthand",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "named-fresh-vs-indirect",
+      "checkerCodes": [
+        2353
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "named-readonly-mutability",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "named-weak-target",
+      "checkerCodes": [
+        2559
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "named-object-keyword",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "nested-optional-dot",
+      "checkerCodes": [
+        18048
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "local-globalThis-shadow-object",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D7",
+      "name": "source-builtin-wrong-shape",
+      "checkerCodes": [
+        2316
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D7",
+      "name": "source-builtin-function-empty",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "three-arm-deferred-property",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "three-arm-intersection-property",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "ten-arm-discriminant-cache",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-valued-discriminant-related",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-valued-discriminant-payload-mismatch",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "discriminant-cartesian-covered",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "discriminant-cartesian-missing-combination",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "scalar-union-reductions",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "scalar-intersection-reductions",
+      "checkerCodes": [
+        2322,
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    }
+  ],
+  "globals": "Exact per-case original Program globals; source builtin declarations may change them; no filtering or fixed count"
+}

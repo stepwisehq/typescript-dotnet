@@ -1,0 +1,52 @@
+[
+  {
+    "corpus": "checker-corpus",
+    "name": "object",
+    "reason": "Historical anonymous-object phase admission"
+  },
+  {
+    "corpus": "checker-corpus",
+    "name": "object-type",
+    "reason": "Historical anonymous-object phase admission"
+  },
+  {
+    "corpus": "checker-corpus",
+    "name": "alias",
+    "reason": "D1 named non-generic aliases"
+  },
+  {
+    "corpus": "checker-corpus",
+    "name": "union-type",
+    "reason": "D4 source unions"
+  },
+  {
+    "corpus": "checker-corpus",
+    "name": "reference-type",
+    "reason": "D1 unknown names produce diagnostics"
+  },
+  {
+    "corpus": "object-checker-corpus",
+    "name": "named-alias",
+    "reason": "D1 alias declarations/references"
+  },
+  {
+    "corpus": "object-checker-corpus",
+    "name": "interface",
+    "reason": "D2 data-only interfaces"
+  },
+  {
+    "corpus": "object-checker-corpus",
+    "name": "nested-reference",
+    "reason": "D1 named references and actual unknown diagnostics"
+  },
+  {
+    "corpus": "object-checker-corpus",
+    "name": "source-union",
+    "reason": "D4 union annotations"
+  },
+  {
+    "corpus": "object-checker-corpus",
+    "name": "property-union",
+    "reason": "D4 union property annotations"
+  }
+]

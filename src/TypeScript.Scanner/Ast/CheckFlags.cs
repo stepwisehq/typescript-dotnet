@@ -3,7 +3,6 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Partial counterpart of tsc/internal/ast/checkflags.go; generated enum slice.
 using TypeScript.Scanner;
-
 namespace TypeScript.Scanner;
 [Flags]
 public enum CheckFlags : uint

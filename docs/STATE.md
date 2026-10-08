@@ -1,100 +1,64 @@
 # Current project state
 
-**Bounded anonymous-object checker milestone accepted; no active implementation work.**
-The full Native AOT/regression gate passed on 2026-10-08. Stop here unless the user
-provides a new bounded mandate; the resume instruction alone does not authorize
-named types, libraries, calls or project checking.
+**Accepted: data-type campaign D1–D7; no active implementation work.**
+Actual Linux x64 Native AOT and all earlier regressions passed on 2026-10-08.
+Read the [assessment](./DATA-TYPES-ASSESSMENT.md), [fixed contract](./DATA-TYPES-CONTRACT.md),
+[capability inventory](./DATA-TYPES-STATUS.md), [verification](./DATA-TYPES-VERIFICATION.md)
+and [durable proof](../validation/results/data-types-verified.json).
+The [exact mandate](./DATA-TYPES-PROMPT.md) is fulfilled by the campaign delivery commit.
+If interrupted before that commit, inspect Git and finish only documentation/commit
+and reporting. After delivery, wait for a new mandate; do not start the recommended
+next campaign automatically. Preserve saved work; never regenerate hand ports.
 
-## Saved checkpoints
+## Accepted scope and limits
 
-- Scanner: `0a50e67`; [historical assessment](./ASSESSMENT.md).
-- Parser/performance: `de25b66`; [historical state](./PARSER-STATE.md).
-- Binder: `e94cc6f`; [historical assessment](./BINDER-ASSESSMENT.md).
-- Scalar checker: committed as `7e692dd` before this phase;
-  [assessment](./CHECKER-ASSESSMENT.md), [historical state](./SCALAR-CHECKER-STATE.md).
-- Object checker: accepted, saved **uncommitted**; nothing pushed.
-  [Assessment](./OBJECT-CHECKER-ASSESSMENT.md), [verification](./OBJECT-CHECKER-VERIFICATION.md),
-  [durable evidence](../validation/results/object-checker-verified.json).
+Standalone single-file TS data shapes: scalar/object aliases, forward/scoped names,
+data-only interfaces with multiple inheritance/merging, recursive shapes, unions,
+intersections, construction/shorthand/dot reads and structural relationships.
+Internal implicit-this/reference/mapper, relation-key, alias and diagnostic support
+required by these paths is included. No source generics, functions/signatures/indexes,
+arrays/classes, libraries, branching/writes, modules/projects, emit or services.
+Exact noLib globals stay visible (normally eight; source builtin declarations can
+change upstream results). No typical full application or full checker parity claim.
+Historical observation limits remain explicit in the assessment.
 
-Upstream stays `fed0bf24149fb1ed36039212648bafdafc1ea10e`. Read the exact
-[mandate](./OBJECT-CHECKER-PROMPT.md), completed [plan](./OBJECT-CHECKER-PLAN.md),
-[source map](../source-map.json), [function inventory](./checker-functions.json)
-and [departures](./OBJECT-CHECKER-DEPARTURES.md). All 85 library C# files map once;
-112 mapping entries include 78 verified origin hashes. The 597-method inventory
-tracks selected partial branches, not complete checker parity.
+## Evidence and reproducibility
 
-Final delivery proof was repeated successfully after removing one accidental extra
-EOF newline in generated AST source. The original 70.14-second passed gate is
-preserved in the evidence metadata; no semantic or verification-asset change occurred.
+Run `./tools/verify-data-types.sh` from the delivery commit. Final frozen gate:
+82.979 seconds, exit 0, no source/assets drift. Native exact comparisons: 92 campaign,
+43 anonymous-object and 45 scalar cases; 78 admission controls, 20 Go utility
+observations and 10 authored API checks pass. All 2,146 xUnit tests pass (262 checker,
+122 binder, 475 parser, 1,287 scanner). Earlier native regressions pass: 118 binder,
+471 parser, 1,276 scanner and 178 scanner helper outputs. All three independent
+reviews have no remaining selected-boundary blocker.
 
-## Latest verified evidence
+- Source SHA256: `ac9763058844d0ce1daa50fd8c6ba22748c083713592ebd7d2aabf81cfe7b928`.
+- Assets SHA256: `80052551e9d70e28315750ee041d4774e4ab48c31994cbbed8b2eb2aaacf47ce`.
+- Native SHA256: `cef51515a21d5f087fb1bc356a33dcf25747833fb5e4b3f109b650c1a26135e1`.
+- Native size: 6,377,064 bytes, Linux x64 ELF without a .NET runtime dependency.
 
-One Native AOT checker executable matches Go on 43 object cases (398 queries,
-705 relationships, 27 file diagnostics, 344 global diagnostics) and all 45 scalar
-cases. Native controls: 58 current admission controls, 20 actual Go utility
-observations, 10 authored API checks and 258 actual relation-key observations.
-Checker/binder/parser/scanner xUnit: 149/122/475/1,287, all 2,033 passed.
-Native regressions: binder 118, parser 471, scanner 1,276 plus 178 helpers.
+No source/tool/corpus changes followed this proof. Documentation-only finalization
+requires no repeated behavioral gate. Changed executable source/assets would require
+new evidence. Pinned upstream: `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 
-The exact-final-tree gate took 45.201 seconds and exited zero. All source/tool/corpus
-writers acknowledged freeze before it began; source and assets remained unchanged.
-Historical scalar corpus and all four earlier acceptance JSONs are byte-identical.
+## History and working arrangement
 
-- Source SHA256: `1ce0c30edf2f470ee4a7c527f336980e5a80d8afc17108774c8764d99d6c15b9`.
-- Asset SHA256: `d27278a4a82192fc3b13fc54f2f90c7914c068b3628828e31723527f3ac2e30d`.
-- Native SHA256: `f66e0c539ef8b237fbcfa4974e183eaf36e3e0bf1d9b7b1661a71ec36062eab8`.
-- Native executable: Linux x64 ELF, 5,682,440 bytes, libc/libm, no installed .NET runtime.
+Anonymous-object milestone committed cleanly as `1f7c953` at 2026-10-08 20:13:35 UTC,
+without unrelated changes or push. Historical [state](./OBJECT-CHECKER-STATE.md),
+[assessment](./OBJECT-CHECKER-ASSESSMENT.md), [evidence](../validation/results/object-checker-verified.json).
+Earlier scalar `7e692dd`, binder `e94cc6f`, parser `de25b66`, scanner `0a50e67`.
+The current campaign delivery commit is the commit containing this accepted state;
+inspect Git history rather than embedding a self-referential hash.
 
-Reproduce with `./tools/verify-object-checker.sh`. See verification for prerequisites
-and guarded recording commands. The historical scalar-only gate asserts two old
-object-syntax rejections; use scalar commit `7e692dd` for that historical gate.
-Current selection explicitly retires those two negatives, preserving their bytes
-and all 45 semantic baselines. No repeated gate is needed absent source/assets changes,
-a new environment or a concrete unresolved concern.
+Three existing GPT-6.1 Sol agents handled core, support and verification with disjoint
+ownership and cross-review. Coordinator owned scope, decisions, assessment and commit.
+Main-model metadata cannot independently confirm Astra; established limitation retained.
+Owner records: [core](./progress/data-types-core.md), [support](./progress/data-types-support.md),
+[verification](./progress/data-types-verification.md). No active owner tasks remain.
+Nineteen numbered integration builds, about 85 minutes 15 seconds from baseline
+commit to proof, then documentation/commit. No further user intervention/package
+installation, new agents or process framework. Token/cost measurements unavailable.
 
-## Boundary and remaining gaps
-
-Fixed single-file TS script, noLib/noResolve, strict null checking. Existing scalar
-behavior plus anonymous object/type literals, nested optional/readonly data properties,
-static names, shorthand, dot reads, contextual typing, freshness/widening and real
-recursive structural relations. Unsupported input/branches throw explicitly.
-Every case retains eight missing-global 2318 environment errors separately.
-
-No named types/interfaces, standalone `object` annotation keyword, generics,
-calls/signatures/indexes, arrays, explicit writes, branching flow, source unions/
-intersections/keyof, libraries/modules/projects, general emit or services. Internal
-finite key reductions and actual pseudochecker/context/emit-flag support are confined
-to selected diagnostic and semantic dependencies. Malformed syntax is rejected by
-semantic admission; parser recovery retains independent coverage.
-
-Relevant identity evidence now includes 15 allocated-empty tables, 35 non-null
-binder/structured-member aliases, 132 distinct table pairs, 122 property-target
-links and 190 transient/declaration-symbol differences. There are 53 Widened cache
-edges and 46 stable repeated widening probes. Regular-object cache, cross-object
-shared member tables, object-target and write/name/containing-type edges remain
-unhit; other private caches are only partially observed. Shared FlowList identities,
-full position mapping and historical unobserved diagnostic codes remain explicit limits.
-No unresolved observed discrepancy or independent-review blocker remains.
-
-## Working arrangement and recovery
-
-Three reused GPT-6.1 Sol agents implemented and cross-reviewed this phase. The main
-session coordinated scope and acceptance; the established limitation on independently
-confirming its own model through metadata remains. No extra agents or database were
-needed. Approximately 65 minutes elapsed from scalar commit through the first passed
-gate and 74 minutes through the final proof after documentation and EOF cleanup.
-These are concurrent elapsed times, not labor; token/cost totals were unavailable. No additional user
-intervention/packages or performance investigation occurred.
-
-Read the completed [algorithm](./progress/object-checker.md),
-[support](./progress/object-checker-support.md),
-[verification](./progress/object-checker-verification.md),
-[main review](./progress/review-object-checker.md) and
-[support review](./progress/review-object-checker-support.md) checkpoints before changes.
-All executable/tool/corpus work is finished and frozen. Do not regenerate hand ports
-from stale temporary scripts or discard uncommitted work.
-
-The next recommendation is named non-generic object types, starting with aliases
-and an explicit recursion boundary before deciding on interfaces. That is a
-recommendation, not authorization. Follow [START-HERE](../START-HERE.md) and
-[RESUMING](./RESUMING.md); do not restart completed work.
+Recommended next substantial campaign: functions and callable object shapes, after
+selecting its inference/library and statement/flow boundary. This recommendation is
+not authorization. Optimization and deeper performance investigation remain deferred.

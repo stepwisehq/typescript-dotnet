@@ -87,6 +87,45 @@ internal static class SemanticAdmission
             Reject(file, node, "modifiers");
         switch (node.Kind)
         {
+            case Kind.EmptyStatement:
+                return;
+            case Kind.TypeAliasDeclaration:
+                var alias = node.AsTypeAliasDeclaration();
+                if (alias.TypeParameters is not null)
+                    Reject(file, node, "typeParameters");
+                Annotation(file, alias.Type);
+                return;
+            case Kind.InterfaceDeclaration:
+                var shape = node.AsInterfaceDeclaration();
+                if (shape.TypeParameters is not null)
+                    Reject(file, node, "typeParameters");
+                foreach (Node clause in shape.HeritageClauses?.Nodes ?? [])
+                {
+                    if (clause.AsHeritageClause().Token != Kind.ExtendsKeyword)
+                        Reject(file, clause, "heritageKind");
+                    foreach (Node basis in clause.AsHeritageClause().Types?.Nodes ?? [])
+                    {
+                        if (basis.Kind == Kind.TypeReference)
+                        {
+                            var heritage = basis.AsTypeReferenceNode();
+                            if (heritage.TypeArguments is not null)
+                                Reject(file, basis, "typeArguments");
+                            EntityName(file, heritage.TypeName);
+                        }
+                        else if (basis.Kind == Kind.ExpressionWithTypeArguments)
+                        {
+                            var heritage = basis.AsExpressionWithTypeArguments();
+                            if (heritage.TypeArguments is not null)
+                                Reject(file, basis, "typeArguments");
+                            EntityName(file, heritage.Expression);
+                        }
+                        else
+                            Reject(file, basis, "typeName");
+                    }
+                }
+
+                DataMembers(file, shape.Members?.Nodes);
+                return;
             case Kind.Block:
                 foreach (Node child in node.AsBlock().Statements?.Nodes ?? [])
                     Statement(file, child);
@@ -130,30 +169,27 @@ internal static class SemanticAdmission
             case Kind.UndefinedKeyword:
             case Kind.BigIntKeyword:
             case Kind.SymbolKeyword:
+            case Kind.ObjectKeyword:
+                return;
+            case Kind.TypeReference:
+                var reference = node.AsTypeReferenceNode();
+                if (reference.TypeArguments is not null)
+                    Reject(file, node, "typeArguments");
+                EntityName(file, reference.TypeName);
+                return;
+            case Kind.UnionType:
+                foreach (Node member in node.AsUnionTypeNode().Types?.Nodes ?? [])
+                    Annotation(file, member);
+                return;
+            case Kind.IntersectionType:
+                foreach (Node member in node.AsIntersectionTypeNode().Types?.Nodes ?? [])
+                    Annotation(file, member);
                 return;
             case Kind.ParenthesizedType:
                 Annotation(file, node.AsParenthesizedTypeNode().Type);
                 return;
             case Kind.TypeLiteral:
-                foreach (Node member in node.AsTypeLiteralNode().Members?.Nodes ?? [])
-                {
-                    Documentation(file, member);
-                    if (member.Kind != Kind.PropertySignature)
-                        Reject(file, member, "typeMember");
-                    StaticPropertyName(file, member.Name());
-                    foreach (Node modifier in member.ModifierNodes() ?? [])
-                        if (modifier.Kind != Kind.ReadonlyKeyword)
-                            Reject(file, modifier, "propertyModifier");
-                    var property = member.AsPropertySignatureDeclaration();
-                    if (property.PostfixToken is { Kind: not Kind.QuestionToken })
-                        Reject(file, property.PostfixToken, "propertyPostfix");
-                    if (property.Initializer is not null)
-                        Reject(file, property.Initializer, "propertyInitializer");
-                    if (property.Type is null)
-                        Reject(file, member, "missingPropertyType");
-                    Annotation(file, property.Type);
-                }
-
+                DataMembers(file, node.AsTypeLiteralNode().Members?.Nodes);
                 return;
             case Kind.LiteralType:
                 var literal = node.AsLiteralTypeNode().Literal;
@@ -164,6 +200,49 @@ internal static class SemanticAdmission
             default:
                 Reject(file, node, "type");
                 return;
+        }
+    }
+
+    private static void EntityName(SourceFile file, Node node)
+    {
+        if (node.Kind == Kind.Identifier)
+            return;
+        if (node.Kind == Kind.QualifiedName)
+        {
+            EntityName(file, node.AsQualifiedName().Left);
+            EntityName(file, node.AsQualifiedName().Right);
+            return;
+        }
+
+        if (node.Kind == Kind.PropertyAccessExpression && node.AsPropertyAccessExpression().QuestionDotToken is null)
+        {
+            EntityName(file, node.Expression());
+            EntityName(file, node.Name()!);
+            return;
+        }
+
+        Reject(file, node, "typeName");
+    }
+
+    private static void DataMembers(SourceFile file, List<Node>? members)
+    {
+        foreach (Node member in members ?? [])
+        {
+            Documentation(file, member);
+            if (member.Kind != Kind.PropertySignature)
+                Reject(file, member, "typeMember");
+            StaticPropertyName(file, member.Name());
+            foreach (Node modifier in member.ModifierNodes() ?? [])
+                if (modifier.Kind != Kind.ReadonlyKeyword)
+                    Reject(file, modifier, "propertyModifier");
+            var property = member.AsPropertySignatureDeclaration();
+            if (property.PostfixToken is { Kind: not Kind.QuestionToken })
+                Reject(file, property.PostfixToken, "propertyPostfix");
+            if (property.Initializer is not null)
+                Reject(file, property.Initializer, "propertyInitializer");
+            if (property.Type is null)
+                Reject(file, member, "missingPropertyType");
+            Annotation(file, property.Type);
         }
     }
 

@@ -26,6 +26,15 @@ public sealed partial class Checker
         return getWidenedType(t);
     }
 
+    public Type GetDeclaredTypeOfSymbol(Symbol symbol)
+    {
+        if (symbol == null)
+            throw new ArgumentNullException(nameof(symbol));
+        foreach (var declaration in symbol.Declarations ?? [])
+            SemanticAdmission.ValidateOwnedNode(sourceFile, declaration);
+        return getDeclaredTypeOfSymbol(symbol);
+    }
+
     public List<Symbol> GetPropertiesOfType(Type t)
     {
         validateOwnedType(t);

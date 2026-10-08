@@ -11,7 +11,8 @@ public class BoundaryTests
         foreach (string path in new[]
         {
             "corpus/admission-controls.json",
-            "object-corpus/admission-controls.json"
+            "object-corpus/admission-controls.json",
+            "data-corpus/admission-controls.json"
         }
 
         )
@@ -19,9 +20,11 @@ public class BoundaryTests
             using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, path)));
             foreach (var input in json.RootElement.EnumerateArray())
             {
-                // Exactly two historical negatives became supported. Their original
-                // bytes/evidence remain unchanged; object positives replace them.
-                if (path.StartsWith("corpus/", StringComparison.Ordinal) && (input.GetProperty("name").GetString()is "object" or "object-type"))
+                // Original fixture/evidence bytes remain unchanged. Current
+                // admission deliberately retires documented contract changes.
+                if (path.StartsWith("corpus/", StringComparison.Ordinal) && (input.GetProperty("name").GetString()is "object" or "object-type" or "alias" or "union-type" or "reference-type"))
+                    continue;
+                if (path.StartsWith("object-corpus/", StringComparison.Ordinal) && (input.GetProperty("name").GetString()is "named-alias" or "interface" or "nested-reference" or "source-union" or "property-union"))
                     continue;
                 yield return[input.GetProperty("name").GetString()!, input.GetRawText(), input.GetProperty("expectedFeature").GetString()];
             }

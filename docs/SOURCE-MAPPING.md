@@ -21,13 +21,16 @@ Each entry records:
 - `destination`: C# or harness path, or null for an excluded upstream file.
 - `status`: `ported`, `partial`, `excluded`, or `new`.
 - `scope`: included behavior and explicit omissions or adaptations.
-- `implementationState`: `draft` while an active phase is awaiting its gates.
+- Phase-specific manifest state, currently `dataTypesManifestState` on expanded
+  campaign entries: `accepted-bounded` for accepted selected behavior. Overall
+  campaign disposition is recorded in `activePhase.manifestState`.
 - `upstreamSha256`: checksum of the exact original source file where recorded.
 
 The top-level `acceptedScannerCheckpoint`, `acceptedParserCheckpoint` and
 `acceptedBinderCheckpoint` and `acceptedCheckerCheckpoint` preserve historical
-acceptance while `activePhase` and `acceptedObjectCheckerCheckpoint` track the
-bounded object checkpoint independently.
+acceptance together with `acceptedObjectCheckerCheckpoint`. The latest
+`acceptedDataTypesCheckpoint` records the completed bounded data-type campaign;
+`activePhase` now records completion with no active implementation work.
 A prior phase result does not verify later changes to shared source. Per-subsystem recovery checkpoints live in
 [progress/](./progress/).
 
@@ -46,7 +49,8 @@ It must not be presented as the full transform-facts API.
 The checker retains upstream file boundaries, with partial functions and selected
 branches made explicit in the [function inventory](./checker-functions.json) and
 [scalar departure notes](./checker-departures.md) and
-[object departure notes](./OBJECT-CHECKER-DEPARTURES.md). Admission and executable observation
+[object departure notes](./OBJECT-CHECKER-DEPARTURES.md) and
+[data-type departure notes](./DATA-TYPES-DEPARTURES.md). Admission and executable observation
 code are authored support. A guarded partial checker file is not a complete port
 merely because the selected semantic contract passes.
 

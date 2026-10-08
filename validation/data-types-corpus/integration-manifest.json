@@ -1,0 +1,247 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 14,
+  "observations": "public base graph: integration only, not acceptance",
+  "requestsSha256": "36219471ff9712d863473f69fccb72852ff1d099416b8b9be134d20c517eab77",
+  "expectedSha256": "ded30b457e5b0149ac7bce6e204809439407ba8ac4bd77e16dcf7eb1cc278269",
+  "groups": [
+    {
+      "contract": "D1",
+      "name": "alias-scalar-mismatch",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "alias-forward-object",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "alias-value-confusion",
+      "checkerCodes": [
+        2693
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D1",
+      "name": "alias-scoped-shadow",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "interface-basic",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "interface-merge-conflict",
+      "checkerCodes": [
+        2717
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D2",
+      "name": "interface-alias-base",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "recursive-property-alias",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D3",
+      "name": "naked-alias-cycle",
+      "checkerCodes": [
+        2456,
+        2456
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D4",
+      "name": "union-common-property",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D5",
+      "name": "intersection-conflict",
+      "checkerCodes": [
+        2322
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D6",
+      "name": "any-alias-heritage",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D7",
+      "name": "source-global-object",
+      "checkerCodes": [],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    },
+    {
+      "contract": "D7",
+      "name": "source-global-array-shape",
+      "checkerCodes": [
+        2317
+      ],
+      "binderCodes": [],
+      "globalCodes": [
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318,
+        2318
+      ]
+    }
+  ],
+  "globals": "Exact per-case original Program globals; source builtin declarations may change them; no filtering or fixed count"
+}

@@ -3,6 +3,7 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Partial counterpart of tsc/internal/checker/types.go; generated enum slice.
 using TypeScript.Scanner;
+using CacheHashKey = TypeScript.Checking.Checker.CacheHashKey;
 
 namespace TypeScript.Checking;
 [Flags]
@@ -151,9 +152,9 @@ public enum NodeCheckFlags : uint
     InitializerIsUndefinedComputed = (1u << 25),
 }
 
-// BEGIN MANUAL SCALAR TYPE MODEL
-// Partial counterpart: unsupported general signatures, mappers, object/type-parameter
-// models and corresponding casts are excluded. Selected fields retain Go identity.
+// BEGIN MANUAL TYPE MODEL
+// Selected data-type models retain Go wrapper/payload identity. Source generics,
+// signatures and index behavior remain excluded; implicit-this state is retained.
 #nullable disable
 public sealed class TypeAlias
 {
@@ -181,10 +182,37 @@ public sealed class Type
     public IntrinsicType AsIntrinsicType() => (IntrinsicType)data;
     public LiteralType AsLiteralType() => (LiteralType)data;
     public UnionType AsUnionType() => (UnionType)data;
+    public IntersectionType AsIntersectionType() => (IntersectionType)data;
+    public TypeParameter AsTypeParameter() => (TypeParameter)data;
+    public IndexType AsIndexType() => (IndexType)data;
     public ConstrainedType AsConstrainedType() => data.AsConstrainedType();
     public StructuredType AsStructuredType() => data.AsStructuredType();
     public UnionOrIntersectionType AsUnionOrIntersectionType() => data.AsUnionOrIntersectionType();
     public ObjectType AsObjectType() => data.AsObjectType();
+    public TypeReference AsTypeReference() => data.AsTypeReference();
+    public InterfaceType AsInterfaceType() => data.AsInterfaceType();
+    // types.go:752/766. Actual target/mapper fields, including nullable origins.
+    public Type Target()
+    {
+        if ((flags & TypeFlags.Object) != 0)
+            return AsObjectType().target;
+        if ((flags & TypeFlags.TypeParameter) != 0)
+            return AsTypeParameter().target;
+        if ((flags & TypeFlags.Index) != 0)
+            return AsIndexType().target;
+        throw Checker.unsupported("Type.Target: index/string-mapping payload");
+    }
+
+    internal TypeMapper Mapper()
+    {
+        if ((flags & TypeFlags.Object) != 0)
+            return AsObjectType().mapper;
+        if ((flags & TypeFlags.TypeParameter) != 0)
+            return AsTypeParameter().mapper;
+        throw Checker.unsupported("Type.Mapper: conditional payload");
+    }
+
+    public InterfaceType TargetInterfaceType() => Target().AsInterfaceType();
     // Upstream checker/types.go:740.
     public List<Type> Distributed()
     {
@@ -195,7 +223,7 @@ public sealed class Type
         return[this ];
     }
 
-    // Upstream checker/types.go:780; only the selected union payload is constructed.
+    // Upstream checker/types.go:780; selected union and intersection payloads.
     public List<Type> Types()
     {
         if ((flags & TypeFlags.UnionOrIntersection) != 0)
@@ -209,7 +237,12 @@ public sealed class Type
         IntrinsicType => "IntrinsicType",
         LiteralType => "LiteralType",
         UnionType => "UnionType",
+        IntersectionType => "IntersectionType",
+        InterfaceType => "InterfaceType",
+        TypeReference => "TypeReference",
         ObjectType => "ObjectType",
+        TypeParameter => "TypeParameter",
+        IndexType => "IndexType",
         _ => throw new NotSupportedException("Unselected type payload")};
     public bool IsUnion() => (flags & TypeFlags.Union) != 0;
     public bool IsString() => (flags & TypeFlags.String) != 0;
@@ -232,6 +265,8 @@ public abstract class TypeData
     public virtual StructuredType AsStructuredType() => null;
     public virtual UnionOrIntersectionType AsUnionOrIntersectionType() => null;
     public virtual ObjectType AsObjectType() => null;
+    public virtual TypeReference AsTypeReference() => null;
+    public virtual InterfaceType AsInterfaceType() => null;
 }
 
 public class TypeBase : TypeData
@@ -276,11 +311,60 @@ public class StructuredType : ConstrainedType
     public List<Symbol> Properties() => properties;
 }
 
-public sealed class ObjectType : StructuredType
+public class ObjectType : StructuredType
 {
     internal Type target;
-    // Generic mapper/instantiation state excluded; only upstream initialization markers.
+    internal TypeMapper mapper;
+    // The checker key preserves the original complete key preimage.
+    internal Dictionary<CacheHashKey, Type> instantiations;
     public override ObjectType AsObjectType() => this;
+}
+
+// types.go:1005/1015. Nongeneric interfaces also embed the reference payload;
+// alias-based heritage can create a real implicit-this parameter/reference.
+public class TypeReference : ObjectType
+{
+    internal Node node;
+    internal List<Type> resolvedTypeArguments;
+    public override TypeReference AsTypeReference() => this;
+}
+
+public sealed class InterfaceType : TypeReference
+{
+    internal List<Type> allTypeParameters;
+    internal int outerTypeParameterCount;
+    internal Type thisType;
+    internal bool baseTypesResolved, declaredMembersResolved;
+    internal Type resolvedBaseConstructorType;
+    internal List<Type> resolvedBaseTypes;
+    internal SymbolTable declaredMembers;
+    internal List<Signature> declaredCallSignatures, declaredConstructSignatures;
+    internal List<IndexInfo> declaredIndexInfos;
+    public override InterfaceType AsInterfaceType() => this;
+    public List<Type> OuterTypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(0, outerTypeParameterCount);
+    public List<Type> LocalTypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(outerTypeParameterCount, allTypeParameters.Count - outerTypeParameterCount - 1);
+    public List<Type> TypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(0, allTypeParameters.Count - 1);
+    public Type ThisType() => thisType;
+}
+
+// types.go:1187. Source parameters are excluded; synthetic interface this-types
+// retain the same constraint/target/mapper and resolution cache fields.
+public sealed class TypeParameter : ConstrainedType
+{
+    internal Type constraint, target;
+    internal TypeMapper mapper;
+    internal bool isThisType, isDistributed;
+    internal Type resolvedDefaultType, distributedType;
+    public bool IsThisType() => isThisType;
+}
+
+// types.go:1213. Internal finite-key origins retain the real constrained payload;
+// source keyof operators remain excluded by semantic admission.
+public sealed class IndexType : ConstrainedType
+{
+    internal Type target;
+    internal IndexFlags indexFlags;
+    public Type Target() => target;
 }
 
 public class UnionOrIntersectionType : StructuredType
@@ -299,7 +383,35 @@ public sealed class UnionType : UnionOrIntersectionType
     internal Dictionary<Type, Type> constituentMap;
 }
 
-// Selected fields only: mapper/contextual/signature caches remain excluded.
+// types.go:1179. Real intersection reductions and apparent-type cache.
+public sealed class IntersectionType : UnionOrIntersectionType
+{
+    internal Type resolvedApparentType, uniqueLiteralFilledInstantiation;
+}
+
+// types.go:245/254. Alias and interface declaration resolution caches.
+internal sealed class TypeAliasLinks
+{
+    internal Type declaredType;
+    internal List<Type> typeParameters;
+    internal Dictionary<CacheHashKey, Type> instantiations;
+    internal bool isConstructorDeclaredProperty;
+}
+
+internal sealed class DeclaredTypeLinks
+{
+    internal Type declaredType;
+    internal bool interfaceChecked, indexSignaturesChecked, typeParametersChecked, enumChecked;
+}
+
+// types.go:200. Deferred synthetic properties preserve their constituent graph.
+internal sealed class DeferredSymbolLinks
+{
+    internal Type parent;
+    internal List<Type> constituents, writeConstituents;
+}
+
+// Referenced-symbol meanings remain distinct from type-alias resolution links.
 internal sealed class SymbolReferenceLinks
 {
     internal SymbolFlags referenceKinds;
@@ -310,7 +422,25 @@ internal sealed class ValueSymbolLinks
     internal bool functionOrConstructorChecked;
     internal Type resolvedType, writeType;
     internal Symbol target;
+    internal TypeMapper mapper;
     internal Type nameType, containingType;
+}
+
+// types.go:194. Additional links retain mapped/spread property provenance.
+internal sealed class MappedSymbolLinks
+{
+    internal Type keyType;
+    internal Symbol syntheticOrigin;
+}
+
+// types.go:218. The internal globalThis module uses the real export cache;
+// written module/type-only export declarations remain outside admission.
+internal sealed class ModuleSymbolLinks
+{
+    internal SymbolTable resolvedExports;
+    internal Dictionary<string, Node> typeOnlyExportStarMap;
+    // Source export checking is excluded, preserving the upstream zero value.
+    internal bool exportsChecked = false;
 }
 
 // types.go:290/296. Tables remain nullable independently and retain identity.
@@ -342,7 +472,7 @@ public sealed class Signature
     internal Signature target;
 }
 
-// types.go:1404. Real index payload/storage; no instance is created by this slice.
+// types.go:1404. Real index payload/storage, including synthetic any-base indexes.
 public sealed class IndexInfo
 {
     internal Type keyType, valueType;
@@ -448,4 +578,33 @@ internal enum SignatureKind
 {
     Call,
     Construct
+}
+
+// types.go:307/311. Variance links for nongeneric reference targets; hidden
+// this arguments are compared covariantly without a declared parameter entry.
+internal sealed class VarianceLinks
+{
+    internal List<VarianceFlags> variances;
+}
+
+[Flags]
+internal enum VarianceFlags : uint
+{
+    Invariant = 0,
+    Covariant = 1 << 0,
+    Contravariant = 1 << 1,
+    Bivariant = Covariant | Contravariant,
+    Independent = 1 << 2,
+    VarianceMask = Invariant | Covariant | Contravariant | Independent,
+    Unmeasurable = 1 << 3,
+    Unreliable = 1 << 4,
+    AllowsStructuralFallback = Unmeasurable | Unreliable,
+}
+
+// types.go:330. Scope/meaning-sensitive accessibility cache, including cached nil.
+internal readonly record struct accessibleChainCacheKey(bool useOnlyExternalAliasing, Node location, SymbolFlags meaning);
+internal sealed class ContainingSymbolLinks
+{
+    internal Dictionary<accessibleChainCacheKey, List<Symbol>> accessibleChainCache;
+// Cross-file/alternative-module container caches are excluded with modules.
 }

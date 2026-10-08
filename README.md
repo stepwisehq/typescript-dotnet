@@ -1,18 +1,23 @@
 # TypeScript port feasibility study
 
 A C# port of the Go TypeScript scanner, syntax parser/AST, source-file binder and
-bounded scalar/object checker slices, pinned to maintained
-[microsoft/TypeScript source](./UPSTREAM.md). All five bounded checkpoints passed
+bounded scalar/object/data-type checking, pinned to maintained
+[microsoft/TypeScript source](./UPSTREAM.md). All six bounded checkpoints passed
 actual Native AOT verification. See the [current state](./docs/STATE.md),
-[object checker assessment](./docs/OBJECT-CHECKER-ASSESSMENT.md) and
-[verification](./docs/OBJECT-CHECKER-VERIFICATION.md) for scope and evidence.
+[data-type assessment](./docs/DATA-TYPES-ASSESSMENT.md),
+[completion contract](./docs/DATA-TYPES-CONTRACT.md) and
+[verification](./docs/DATA-TYPES-VERIFICATION.md) for scope and evidence.
 
-The semantic slice checks single-file scalar declarations, anonymous objects,
-inline object types, dot reads and structural relationships under fixed no-library
-options. It preserves the eight upstream missing-library errors
-separately from file semantic diagnostics and rejects unsupported inputs explicitly.
-Named types/interfaces, generics, calls, project checking, modules and code
-generation are excluded. This is a bounded object milestone, not full checker parity.
+The semantic capability checks standalone scalar/object data shapes: named aliases,
+data-only interfaces with inheritance and merging, recursive properties, unions and
+intersections, object construction, dot reads and structural relationships under
+fixed single-file no-library options. Missing-library errors stay separately visible
+(normally eight; source builtin declarations can change the exact result).
+Unsupported inputs fail explicitly.
+
+**Functions/methods/signatures, arrays/tuples, classes, source generics, branching,
+explicit writes, standard libraries, modules and project checking remain excluded.**
+This supports data-shape checking, not typical complete applications or full checker parity.
 
 The [library](./src/TypeScript.Scanner) targets .NET 10. Separate executable harnesses
 for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation),
@@ -29,11 +34,11 @@ curl, and the native build prerequisites. On Ubuntu:
 ```sh
 sudo apt-get update
 sudo apt-get install -y clang zlib1g-dev
-./tools/verify-object-checker.sh
+./tools/verify-data-types.sh
 ```
 
 The script fetches the exact upstream revision, bootstraps checksum-pinned Go
-1.27.1 locally, builds the Go oracle, checks fresh scalar/object expectations, runs
+1.27.1 locally, builds the Go oracle, checks fresh scalar/object/data-type expectations, runs
 xUnit, publishes Native AOT, and compares the actual native executable with Go.
 It also runs the binder, parser and scanner regression gates, including their
 native executables and upstream scanner tests.
@@ -46,16 +51,19 @@ For the faster managed test loop, using the checked-in oracle corpus:
 dotnet test tests/Scanner.Tests/Scanner.Tests.csproj -c Release
 ```
 
-The current object checker gate includes scalar, binder, parser and scanner regressions:
+The current data-type gate includes scalar/object, binder, parser and scanner regressions:
 
 ```sh
-./tools/verify-object-checker.sh
+./tools/verify-data-types.sh
 ```
 
-The historical scalar-only gate (`./tools/verify-checker.sh`) asserts the earlier
-admission boundary; reproduce it at scalar commit `7e692dd`. Two old object-syntax
-rejections deliberately became supported in this phase. Historical fixture bytes
-and evidence remain preserved.
+Historical boundary gates should be reproduced at their own commits:
+`./tools/verify-checker.sh` at scalar commit `7e692dd`, and
+`./tools/verify-object-checker.sh` at object commit `1f7c953`. Eight historical
+admission rejections became supported in this campaign, in addition to two retired
+in the anonymous-object phase, as recorded
+in the [boundary manifest](./validation/data-types-corpus/retired-admission-controls.json).
+Historical fixture bytes and evidence remain preserved.
 
 For a managed checker development loop:
 
@@ -118,7 +126,7 @@ using TypeScript.Scanner;
 using TypeScript.Checking;
 
 var file = Parser.ParseSourceFile(new("/main.ts", "/main.ts"),
-    "const source = { count: \"text\" }; let target: { count: number } = source;",
+    "type I = { child: { x: number } } & { child: { y: string } }; let i: I = { child: { x: 1, y: 2 } };",
     ScriptKind.TS);
 var checker = Checker.Create(file); // Includes source-file binding.
 var fileDiagnostics = checker.GetDiagnostics(); // Includes error 2322.
@@ -142,8 +150,8 @@ validation, token flags, diagnostic callbacks, and comment directives. The compl
 parser phase adds syntax trees, syntax diagnostics and required AST support;
 its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Source-file
 binding now adds declaration/symbol relationships, scope tables, binder diagnostics
-and control-flow graphs. The checker adds selected scalar and anonymous-object
-semantic checks; its [exact boundary](./docs/OBJECT-CHECKER-VERIFICATION.md) remains narrow. Broad
+and control-flow graphs. The checker adds scalar and named/recursive/composite object
+checks; its [exact boundary](./docs/DATA-TYPES-CONTRACT.md) remains explicit. Broad
 checking, cross-file semantic resolution, module resolution and code generation
 remain excluded.
 See [source-map.json](./source-map.json) and the

@@ -175,14 +175,82 @@ public sealed partial class Checker
 
     private bool checkGrammarProperty(Node node)
     {
-        if (node.Parent.Kind != Kind.TypeLiteral || node.Kind != Kind.PropertySignature)
-            throw unsupported("checkGrammarProperty: non-type-literal property");
+        if (node.Parent.Kind is not (Kind.TypeLiteral or Kind.InterfaceDeclaration) || node.Kind != Kind.PropertySignature)
+            throw unsupported("checkGrammarProperty: source class property");
         if (node.Name().Kind == Kind.ComputedPropertyName)
             throw unsupported("checkGrammarProperty: computed name");
         if (node.Initializer() != null)
-            return grammarErrorOnNode(node.Initializer(), Diagnostics.A_type_literal_property_cannot_have_an_initializer);
+            return grammarErrorOnNode(node.Initializer(), node.Parent.Kind == Kind.InterfaceDeclaration ? Diagnostics.An_interface_property_cannot_have_an_initializer : Diagnostics.A_type_literal_property_cannot_have_an_initializer);
         if ((node.Flags & NodeFlags.Ambient) != 0)
             throw unsupported("checkGrammarProperty: ambient initializer");
         return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    // grammarchecks.go:935. Source parameter/signature restrictions are admission-owned.
+    private bool checkGrammarInterfaceDeclaration(InterfaceDeclaration node)
+    {
+        bool seenExtends = false;
+        foreach (var clauseNode in node.HeritageClauses?.Nodes ?? [])
+        {
+            var clause = clauseNode.AsHeritageClause();
+            if (clause.Token == Kind.ExtendsKeyword)
+            {
+                if (seenExtends)
+                    return grammarErrorOnFirstToken(clauseNode, Diagnostics.X_extends_clause_already_seen);
+                seenExtends = true;
+            }
+            else if (clause.Token == Kind.ImplementsKeyword)
+                return grammarErrorOnFirstToken(clauseNode, Diagnostics.Interface_declaration_cannot_have_implements_clause);
+            else
+                throw new InvalidOperationException("Unexpected heritage token");
+            checkGrammarHeritageClause(clause);
+        }
+
+        return false;
+    }
+
+    private bool checkGrammarHeritageClause(HeritageClause node)
+    {
+        var types = node.Types;
+        if (checkGrammarForDisallowedTrailingComma(types, Diagnostics.Trailing_comma_not_allowed))
+            return true;
+        if (types != null && (types.Nodes?.Count ?? 0) == 0)
+            return grammarErrorAtPos(node.AsNode(), types.Pos(), 0, Diagnostics.X_0_list_cannot_be_empty, TypeScript.Scanner.Scanner.TokenToString(node.Token));
+        foreach (var element in types?.Nodes ?? [])
+            if (checkGrammarExpressionWithTypeArguments(element))
+                return true;
+        return false;
+    }
+
+    private bool checkGrammarExpressionWithTypeArguments(Node node)
+    {
+        if (node.Kind == Kind.ExpressionWithTypeArguments && node.Expression().Kind == Kind.ImportKeyword && node.TypeArgumentList() != null)
+            return grammarErrorOnNode(node, Diagnostics.This_use_of_import_is_invalid_import_calls_can_be_written_but_they_must_have_parentheses_and_cannot_have_type_arguments);
+        return checkGrammarTypeArguments(node, node.TypeArgumentList());
+    }
+
+    private bool checkGrammarTypeArguments(Node node, NodeList arguments)
+    {
+        if (checkGrammarForDisallowedTrailingComma(arguments, Diagnostics.Trailing_comma_not_allowed))
+            return true;
+        if (arguments != null && (arguments.Nodes?.Count ?? 0) == 0)
+            return grammarErrorOnNode(node, Diagnostics.Type_argument_list_cannot_be_empty);
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool grammarErrorOnFirstToken(Node node, Message message, params object[] args)
+    {
+        var file = Ast.GetSourceFileOfNode(node);
+        if ((file.Diagnostics()?.Count ?? 0) != 0)
+            return false;
+        var span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(file, node.Pos());
+        addDiagnostic(Ast.NewDiagnostic(file, span, message, args));
+        return true;
     }
 }

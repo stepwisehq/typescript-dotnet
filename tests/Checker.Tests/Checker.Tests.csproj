@@ -7,5 +7,6 @@
     <ProjectReference Include="../../validation/Checker.Validation/Checker.Validation.csproj" />
     <None Include="../../validation/checker-corpus/*.json*" Link="corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/object-checker-corpus/*.json*" Link="object-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../validation/data-types-corpus/*.json*" Link="data-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

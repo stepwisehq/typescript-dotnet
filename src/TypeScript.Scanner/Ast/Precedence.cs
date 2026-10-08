@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/ast/precedence.go; parser-required syntax dependency slice.
+// Port of tsc/internal/ast/precedence.go; parser-required syntax and diagnostic type-precedence dependency slice.
 #nullable disable
 namespace TypeScript.Scanner;
 public static partial class Ast
@@ -121,4 +121,86 @@ public enum OperatorPrecedence : int
     DisallowComma = Yield,
     Coalesce = LogicalOR,
     Invalid = -1,
+}
+
+// precedence.go:403/648. Exact numeric type precedence, without grammar production comments.
+public enum TypePrecedence
+{
+    Conditional = 0,
+    JSDoc = 1,
+    Function = 2,
+    Union = 3,
+    Intersection = 4,
+    TypeOperator = 5,
+    Postfix = 6,
+    NonArray = 7,
+    Lowest = Conditional,
+    Highest = NonArray,
+}
+
+public static partial class Ast
+{
+    // precedence.go:655. Syntax classification is independent of semantic admission.
+    public static TypePrecedence GetTypeNodePrecedence(Node n)
+    {
+        switch (n.Kind)
+        {
+            case Kind.ConditionalType:
+                return TypePrecedence.Conditional;
+            case Kind.JSDocOptionalType:
+            case Kind.JSDocVariadicType:
+                return TypePrecedence.JSDoc;
+            case Kind.FunctionType:
+            case Kind.ConstructorType:
+                return TypePrecedence.Function;
+            case Kind.UnionType:
+                return TypePrecedence.Union;
+            case Kind.IntersectionType:
+                return TypePrecedence.Intersection;
+            case Kind.TypeOperator:
+                return TypePrecedence.TypeOperator;
+            case Kind.InferType:
+                if (n.AsInferTypeNode().TypeParameter.AsTypeParameterDeclaration().Constraint != null)
+                    return TypePrecedence.Function;
+                return TypePrecedence.TypeOperator;
+            case Kind.IndexedAccessType:
+            case Kind.ArrayType:
+            case Kind.OptionalType:
+                return TypePrecedence.Postfix;
+            case Kind.TypeQuery:
+                return TypePrecedence.TypeOperator;
+            case Kind.AnyKeyword:
+            case Kind.UnknownKeyword:
+            case Kind.StringKeyword:
+            case Kind.NumberKeyword:
+            case Kind.BigIntKeyword:
+            case Kind.SymbolKeyword:
+            case Kind.BooleanKeyword:
+            case Kind.UndefinedKeyword:
+            case Kind.NeverKeyword:
+            case Kind.ObjectKeyword:
+            case Kind.IntrinsicKeyword:
+            case Kind.VoidKeyword:
+            case Kind.JSDocAllType:
+            case Kind.JSDocNullableType:
+            case Kind.JSDocNonNullableType:
+            case Kind.LiteralType:
+            case Kind.TypePredicate:
+            case Kind.TypeReference:
+            case Kind.TypeLiteral:
+            case Kind.TupleType:
+            case Kind.RestType:
+            case Kind.ParenthesizedType:
+            case Kind.ThisType:
+            case Kind.MappedType:
+            case Kind.NamedTupleMember:
+            case Kind.TemplateLiteralType:
+            case Kind.ImportType:
+            case Kind.PropertyAccessExpression:
+            case Kind.ExpressionWithTypeArguments:
+                return TypePrecedence.NonArray;
+            default:
+                throw new InvalidOperationException($"unhandled TypeNode: {n.Kind}");
+        }
+    }
 }

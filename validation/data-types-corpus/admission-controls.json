@@ -1,0 +1,170 @@
+[
+  {
+    "name": "generic-alias",
+    "text": "type Box<T>={value:T};",
+    "admissionOnly": true,
+    "expectedFeature": "typeParameters"
+  },
+  {
+    "name": "generic-interface",
+    "text": "interface Box<T>{value:T}",
+    "admissionOnly": true,
+    "expectedFeature": "typeParameters"
+  },
+  {
+    "name": "source-type-arguments",
+    "text": "type Box={value:number};let x:Box<number>;",
+    "admissionOnly": true,
+    "expectedFeature": "typeArguments"
+  },
+  {
+    "name": "generic-heritage",
+    "text": "interface Base{x:number}interface Child extends Base<number>{}",
+    "admissionOnly": true,
+    "expectedFeature": "typeArguments"
+  },
+  {
+    "name": "source-this",
+    "text": "interface I{next:this}",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-array",
+    "text": "type A=number[];",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-tuple",
+    "text": "type A=[number,string];",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-mapped",
+    "text": "type A={[K in \"x\"]:number};",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-conditional",
+    "text": "type A=number extends string?number:string;",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-keyof",
+    "text": "type A=keyof {x:number};",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-indexed-access",
+    "text": "type A={x:number}[\"x\"];",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "alias-type-query",
+    "text": "const x=1;type A=typeof x;",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "interface-method",
+    "text": "interface I{method():number}",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "interface-call",
+    "text": "interface I{():number}",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "interface-construct",
+    "text": "interface I{new():number}",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "interface-index",
+    "text": "interface I{[key:string]:number}",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "interface-untyped-member",
+    "text": "interface I{x}",
+    "admissionOnly": true,
+    "expectedFeature": "missingPropertyType"
+  },
+  {
+    "name": "interface-jsdoc",
+    "text": "interface I{\n/** @deprecated */\nx:number}",
+    "admissionOnly": true,
+    "expectedFeature": "jsDocTag"
+  },
+  {
+    "name": "namespace-source",
+    "text": "namespace N{interface I{x:number}}",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "named-class",
+    "text": "class C{x=1}",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "named-expression-write",
+    "text": "type A={x:number};let a:A={x:1};a.x=2;",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "named-control-flow",
+    "text": "interface I{x:number}if(true){let x:I={x:1};}",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "builtin-globalThis-read",
+    "text": "const x=globalThis;",
+    "admissionOnly": true,
+    "expectedFeature": "checkIdentifier: object value"
+  },
+  {
+    "name": "local-named-globalThis",
+    "text": "{interface I{x:number}const globalThis:I={x:1};const x=globalThis.x;}",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "invalid-in-contract-name",
+    "text": "let x:Missing;",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "invalid-in-contract-cycle",
+    "text": "type A=B;type B=A;",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "invalid-in-contract-base",
+    "text": "type A=number;interface I extends A{x:number}",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "empty-separators",
+    "text": "interface I{x:number};type A=I;;let x:A={x:1};",
+    "admissionOnly": true,
+    "expectedFeature": null
+  }
+]

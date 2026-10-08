@@ -28,6 +28,8 @@ type SemanticRequest struct {
 	QueryNodeIDs       []int    `json:"queryNodeIds"`
 	RelationPairs      [][2]int `json:"relationPairs"`
 	ObjectObservations bool     `json:"objectObservations"`
+	DataObservations   bool     `json:"dataObservations"`
+	DeclaredNodeIDs    []int    `json:"declaredNodeIds"`
 	WidenNodeIDs       []int    `json:"widenNodeIds"`
 }
 type SemanticDiagnostic struct {
@@ -119,6 +121,7 @@ type SemanticResult struct {
 	Globals            *int                 `json:"globals"`
 	Options            map[string]any       `json:"options"`
 	ObjectGraph        *ObjectGraph         `json:"objectGraph,omitempty"`
+	DataGraph          *DataGraph           `json:"dataGraph,omitempty"`
 }
 type semanticGraph struct {
 	c       *checker.Checker
@@ -301,6 +304,9 @@ func runChecker(r SemanticRequest) SemanticResult {
 	result.GlobalDiagnostics = semanticDiagnostics(c.GetGlobalDiagnostics())
 	if r.ObjectObservations {
 		result.ObjectGraph = g.objectGraph(r.WidenNodeIDs, queried)
+	}
+	if r.DataObservations {
+		result.DataGraph = g.dataGraph(r, queried)
 	}
 	return result
 }

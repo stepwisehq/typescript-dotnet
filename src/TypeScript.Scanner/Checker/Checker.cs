@@ -22,12 +22,16 @@ public sealed partial class Checker
 
     private readonly Dictionary<string, Type> stringLiteralTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<JsNum.Number, Type> numberLiteralTypes = new();
-    private readonly Dictionary<string, Type> unionTypes = new(StringComparer.Ordinal);
-    private readonly Dictionary<(uint, uint), Type> unionOfUnionTypes = new();
+    private readonly Dictionary<CacheHashKey, Type> unionTypes = new();
+    private readonly Dictionary<(uint, uint, UnionReduction, CacheHashKey), Type> unionOfUnionTypes = new();
     // checker.go:118/147. Only this cache kind is selected; other users remain excluded.
     private enum CachedTypeKind
     {
         LiteralUnionBaseType = 0,
+        IndexType = 1,
+        StringIndexType = 2,
+        EquivalentBaseType = 3,
+        ApparentType = 4,
         Widened = 13,
         RegularObjectLiteral = 14,
         PromisedTypeOfPromise = 15
@@ -96,9 +100,16 @@ public sealed partial class Checker
         c.implicitNeverType = c.newIntrinsicType(TypeFlags.Never, "never");
         c.unreachableNeverType = c.newIntrinsicType(TypeFlags.Never, "never");
         c.nonPrimitiveType = c.newIntrinsicType(TypeFlags.NonPrimitive, "object");
+        c.uniqueLiteralType = c.newIntrinsicType(TypeFlags.Never, "never");
+        c.uniqueLiteralMapper = newFunctionTypeMapper(c.getUniqueLiteralTypeForTypeParameter);
         c.emptyObjectType = c.newAnonymousType(null, null);
         c.emptyGenericType = c.newAnonymousType(null, null);
+        c.unknownEmptyObjectType = c.newAnonymousType(null, null);
+        c.unknownUnionType = c.createUnknownUnionType();
+        c.noConstraintType = c.newAnonymousType(null, null);
+        c.circularConstraintType = c.newAnonymousType(null, null);
         c.emptyTypeLiteralType = c.newAnonymousType(c.newSymbol(SymbolFlags.TypeLiteral, Ast.InternalSymbolNameType), null);
+        c.anyBaseTypeIndexInfo = c.newIndexInfo(c.stringType, c.anyType, false, null, null);
         c.initializeChecker();
         return c;
     }
@@ -121,15 +132,15 @@ public sealed partial class Checker
         valueSymbolLinks.Get(undefinedSymbol).resolvedType = undefinedType;
         valueSymbolLinks.Get(argumentsSymbol).resolvedType = getGlobalType("IArguments", 0, true);
         valueSymbolLinks.Get(unknownSymbol).resolvedType = errorType;
-        valueSymbolLinks.Get(globalThisSymbol).resolvedType = newAnonymousType(globalThisSymbol, globals);
-        getGlobalType("Array", 1, true);
+        valueSymbolLinks.Get(globalThisSymbol).resolvedType = newObjectType(ObjectFlags.Anonymous, globalThisSymbol);
+        globalArrayType = getGlobalType("Array", 1, true);
         globalObjectType = getGlobalType("Object", 0, true);
         globalFunctionType = getGlobalType("Function", 0, true);
         globalStringType = getGlobalType("String", 0, true);
         globalNumberType = getGlobalType("Number", 0, true);
         globalBooleanType = getGlobalType("Boolean", 0, true);
         getGlobalType("RegExp", 0, true);
-        getGlobalType("ReadonlyArray", 1, false);
+        globalReadonlyArrayType = getGlobalType("ReadonlyArray", 1, false);
     }
 
     // getGlobalType (1210), missing built-ins in the fixed noLib environment.
@@ -137,10 +148,23 @@ public sealed partial class Checker
     {
         var symbol = getGlobalSymbol(name, SymbolFlags.Type, reportErrors ? Diagnostics.Cannot_find_global_type_0 : null);
         if (symbol != null)
-            throw unsupported("getGlobalType: declared library types");
+        {
+            if ((symbol.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
+            {
+                var t = getDeclaredTypeOfSymbol(symbol);
+                if ((t.AsInterfaceType().TypeParameters()?.Count ?? 0) == arity)
+                    return t;
+                if (reportErrors)
+                    error(getGlobalTypeDeclaration(symbol), Diagnostics.Global_type_0_must_have_1_type_parameter_s, Ast.SymbolName(symbol), arity);
+            }
+            else if (reportErrors)
+                error(getGlobalTypeDeclaration(symbol), Diagnostics.Global_type_0_must_be_a_class_or_interface_type, Ast.SymbolName(symbol));
+        }
+
         return arity != 0 ? emptyGenericType : emptyObjectType;
     }
 
+    private static Node getGlobalTypeDeclaration(Symbol symbol) => symbol.Declarations?.Find(d => d.Kind is Kind.ClassDeclaration or Kind.InterfaceDeclaration or Kind.EnumDeclaration or Kind.TypeAliasDeclaration);
     private Symbol getGlobalSymbol(string name, SymbolFlags meaning, Message diagnostic) => nameResolver.Resolve(null, name, meaning, diagnostic, false, false);
     // addUndefinedToGlobalsOrErrorOnRedeclaration (1496).
     private void addUndefinedToGlobalsOrErrorOnRedeclaration()
@@ -204,8 +228,11 @@ public sealed partial class Checker
     {
         if (node == null)
             return;
+        var saveCurrentNode = currentNode;
         currentNode = node;
+        instantiationCount = 0;
         checkSourceElementWorker(node);
+        currentNode = saveCurrentNode;
     }
 
     // checkSourceElementWorker (2301), retained scalar syntax dispatch.
@@ -225,12 +252,30 @@ public sealed partial class Checker
             case Kind.VariableDeclaration:
                 checkVariableDeclaration(node);
                 break;
+            case Kind.TypeAliasDeclaration:
+                checkTypeAliasDeclaration(node);
+                break;
+            case Kind.InterfaceDeclaration:
+                checkInterfaceDeclaration(node);
+                break;
+            case Kind.TypeReference:
+            case Kind.ExpressionWithTypeArguments:
+                checkTypeReferenceNode(node);
+                break;
+            case Kind.UnionType:
+            case Kind.IntersectionType:
+                checkUnionOrIntersectionType(node);
+                break;
+            case Kind.EmptyStatement:
+                checkGrammarStatementInAmbientContext(node);
+                break;
             case Kind.TypeLiteral:
                 checkTypeLiteral(node);
                 break;
             case Kind.PropertySignature:
                 checkPropertySignature(node);
                 break;
+            case Kind.ObjectKeyword:
             case Kind.AnyKeyword:
             case Kind.UnknownKeyword:
             case Kind.StringKeyword:
@@ -361,13 +406,8 @@ public sealed partial class Checker
         return getMergedSymbol(symbol);
     }
 
-    private Symbol getMergedSymbol(Symbol symbol)
-    {
-        if (symbol != null && symbol.Declarations?.Any(d => d.Kind is not (Kind.VariableDeclaration or Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment or Kind.PropertySignature or Kind.TypeLiteral or Kind.ObjectLiteralExpression)) == true && (symbol.Flags & SymbolFlags.Transient) == 0)
-            throw unsupported("getMergedSymbol: non-variable symbols");
-        return symbol;
-    }
-
+    private readonly Dictionary<Symbol, Symbol> mergedSymbols = new();
+    internal Symbol getMergedSymbol(Symbol symbol) => symbol != null && mergedSymbols.TryGetValue(symbol, out var merged) ? merged : symbol;
     internal Symbol getSymbol(SymbolTable symbols, string name, SymbolFlags meaning)
     {
         if ((meaning & SymbolFlags.All) != 0)
@@ -575,29 +615,24 @@ public sealed partial class Checker
     // getUnionTypeEx/getUnionTypeWorker (26166): scalar unions; aliases/subtypes reject.
     private Type getUnionTypeEx(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
     {
-        if (alias != null || origin != null || reduction == UnionReduction.Subtype)
-            throw unsupported("getUnionTypeEx: alias/origin/subtype reduction");
         if (types.Count == 0)
             return neverType;
         if (types.Count == 1)
             return types[0];
-        if (types.Count == 2 && ((types[0].flags | types[1].flags) & TypeFlags.Union) != 0)
+        if (types.Count == 2 && origin == null && ((types[0].flags | types[1].flags) & TypeFlags.Union) != 0)
         {
             uint id1 = types[0].id, id2 = types[1].id;
             if (id1 > id2)
                 (id1, id2) = (id2, id1);
-            // No reductions other than Literal used by this admitted slice.
-            if (reduction == UnionReduction.None)
-                return getUnionTypeWorker(types, reduction);
-            if (!unionOfUnionTypes.TryGetValue((id1, id2), out var t))
-                unionOfUnionTypes[(id1, id2)] = t = getUnionTypeWorker(types, reduction);
+            if (!unionOfUnionTypes.TryGetValue((id1, id2, reduction, getAliasKey(alias)), out var t))
+                unionOfUnionTypes[(id1, id2, reduction, getAliasKey(alias))] = t = getUnionTypeWorker(types, reduction, alias, origin);
             return t;
         }
 
-        return getUnionTypeWorker(types, reduction);
+        return getUnionTypeWorker(types, reduction, alias, origin);
     }
 
-    private Type getUnionTypeWorker(List<Type> types, UnionReduction reduction)
+    private Type getUnionTypeWorker(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
     {
         var(typeSet, includes) = addTypesToUnion(types);
         if (reduction != UnionReduction.None)
@@ -619,9 +654,16 @@ public sealed partial class Checker
             if ((includes & TypeFlags.Undefined) != 0 && typeSet.Count >= 2 && typeSet[0] == undefinedType && typeSet[1] == missingType)
                 typeSet.RemoveAt(1);
             if ((includes & (TypeFlags.Enum | TypeFlags.Literal | TypeFlags.UniqueESSymbol | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 || (includes & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0)
-                typeSet = removeRedundantLiteralTypes(typeSet, includes, false);
+                typeSet = removeRedundantLiteralTypes(typeSet, includes, reduction == UnionReduction.Subtype);
             if ((includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.IncludesConstrainedTypeVariable)) != 0)
                 throw unsupported("getUnionTypeWorker: template/constrained types");
+            if (reduction == UnionReduction.Subtype)
+            {
+                typeSet = removeSubtypes(typeSet, (includes & TypeFlags.Object) != 0);
+                if (typeSet == null)
+                    return errorType;
+            }
+
             if (typeSet.Count == 0)
             {
                 if ((includes & TypeFlags.Null) != 0)
@@ -632,12 +674,33 @@ public sealed partial class Checker
             }
         }
 
-        if ((includes & TypeFlags.Union) != 0)
-            throw unsupported("getUnionTypeWorker: named union origins");
+        if (origin == null && (includes & TypeFlags.Union) != 0)
+        {
+            var named = addNamedUnions(null, types);
+            List<Type> reduced = null;
+            foreach (var t in typeSet)
+                if (!(named?.Any(u => u.Types().Contains(t)) ?? false))
+                    reduced = GoRuntime.Append(reduced, t);
+            if (alias == null && named?.Count == 1 && (reduced?.Count ?? 0) == 0)
+                return named[0];
+            if ((named?.Sum(u => u.Types().Count) ?? 0) + (reduced?.Count ?? 0) == typeSet.Count)
+            {
+                foreach (var t in named ?? [])
+                {
+                    reduced ??= [];
+                    if (!reduced.Contains(t))
+                        reduced.Add(t);
+                }
+
+                reduced?.Sort(CompareTypes);
+                origin = newUnionType(ObjectFlags.None, reduced);
+            }
+        }
+
         var objectFlags = (includes & TypeFlags.NotPrimitiveUnion) != 0 ? ObjectFlags.None : ObjectFlags.PrimitiveUnion;
         if ((includes & TypeFlags.Intersection) != 0)
             objectFlags |= ObjectFlags.ContainsIntersections;
-        return getUnionTypeFromSortedList(typeSet, objectFlags);
+        return getUnionTypeFromSortedList(typeSet, objectFlags, alias, origin);
     }
 
     private (List<Type>, TypeFlags) addTypesToUnion(List<Type> sourceTypes)
@@ -649,7 +712,7 @@ public sealed partial class Checker
             var flags = t.flags;
             if ((flags & TypeFlags.Never) != 0)
                 return;
-            if ((flags & (TypeFlags.Instantiable | TypeFlags.Intersection | TypeFlags.EnumLike | TypeFlags.UniqueESSymbol)) != 0)
+            if ((flags & (TypeFlags.EnumLike | TypeFlags.UniqueESSymbol)) != 0)
                 throw unsupported("addTypesToUnion: nonscalar constituent");
             includes |= flags & TypeFlags.IncludesMask;
             if (t == wildcardType)
@@ -705,17 +768,19 @@ public sealed partial class Checker
         return types;
     }
 
-    private Type getUnionTypeFromSortedList(List<Type> types, ObjectFlags precomputedObjectFlags)
+    private Type getUnionTypeFromSortedList(List<Type> types, ObjectFlags precomputedObjectFlags, TypeAlias alias = null, Type origin = null)
     {
         if (types.Count == 0)
             return neverType;
         if (types.Count == 1)
             return types[0];
         // Exact constituent identity tuple replaces opaque xxh3 cache key encoding.
-        var key = string.Join(",", types.Select(t => t.id));
+        var key = getUnionKey(types, origin, alias);
         if (!unionTypes.TryGetValue(key, out var t))
         {
             t = newUnionType(precomputedObjectFlags | getPropagatingFlagsOfTypes(types, TypeFlags.Nullable), types);
+            t.AsUnionType().origin = origin;
+            t.alias = alias;
             if (types.Count == 2 && (types[0].flags & TypeFlags.BooleanLiteral) != 0 && (types[1].flags & TypeFlags.BooleanLiteral) != 0)
                 t.flags |= TypeFlags.Boolean;
             unionTypes[key] = t;
@@ -733,7 +798,8 @@ public sealed partial class Checker
     }
 
     private Type convertAutoToAny(Type t) => t == autoType ? anyType : t;
-    internal bool isErrorType(Type t) => t == errorType || t == unresolvedType;
+    // checker.go:27172. Unresolved-name alias instances behave as error types.
+    internal bool isErrorType(Type t) => t == errorType || (t.flags & TypeFlags.Any) != 0 && t.alias != null;
     private bool containsUndefinedType(Type t)
     {
         if ((t.flags & TypeFlags.Union) != 0)
@@ -744,12 +810,40 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    internal readonly nodeLinkStore<NodeLinks> nodeLinks = new();
+    internal readonly LinkStore<Node, NodeLinks> nodeLinks = new();
     internal readonly nodeLinkStore<SymbolNodeLinks> symbolNodeLinks = new();
-    internal readonly nodeLinkStore<TypeNodeLinks> typeNodeLinks = new();
+    internal readonly symbolArenaLinkStore<MappedSymbolLinks> mappedSymbolLinks = new();
+    internal readonly LinkStore<Node, TypeNodeLinks> typeNodeLinks = new();
     internal readonly symbolArenaLinkStore<ValueSymbolLinks> valueSymbolLinks = new();
     internal readonly symbolArenaLinkStore<SymbolReferenceLinks> symbolReferenceLinks = new();
-    private readonly List<(Symbol target, bool result)> typeResolutions = new();
+    private enum TypeSystemPropertyName
+    {
+        Type,
+        ResolvedBaseConstructorType,
+        DeclaredType,
+        ResolvedReturnType,
+        ResolvedBaseConstraint,
+        ResolvedTypeArguments,
+        ResolvedBaseTypes,
+        WriteType,
+        InitializerIsUndefined,
+        AliasTarget
+    }
+
+    private sealed class TypeResolution
+    {
+        internal object target;
+        internal TypeSystemPropertyName propertyName;
+        internal bool result;
+    }
+
+    private readonly List<TypeResolution> typeResolutions = new();
+    private int resolutionStart;
+    internal readonly symbolArenaLinkStore<TypeAliasLinks> typeAliasLinks = new();
+    internal readonly symbolArenaLinkStore<DeclaredTypeLinks> declaredTypeLinks = new();
+    internal readonly symbolArenaLinkStore<DeferredSymbolLinks> deferredSymbolLinks = new();
+    private readonly Dictionary<string, Symbol> unresolvedSymbols = new(StringComparer.Ordinal);
+    private readonly Dictionary<CacheHashKey, Type> errorTypes = new();
     private void initializeScalarOptions()
     {
         compilerOptions.Target = ScriptTarget.ESNext;
@@ -862,21 +956,9 @@ public sealed partial class Checker
     // onFailedToResolveSymbol (1608): real primitive-name, lib and spelling paths.
     private void onFailedToResolveSymbol(Node location, string name, SymbolFlags meaning, Message message)
     {
-        if (location != null)
-        {
-            if (!Ast.IsIdentifier(location) || location.Parent.Kind is not (Kind.VariableDeclaration or Kind.ParenthesizedExpression or Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment))
-                throw unsupported("onFailedToResolveSymbol: noninitializer name context");
-            if ((meaning & SymbolFlags.Value) != 0 && isPrimitiveTypeName(name))
-            {
-                error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_value_here, name);
-                return;
-            }
-
-            var typeSymbol = nameResolver.Resolve(location, name, SymbolFlags.Type & ~SymbolFlags.Value, null, false, false);
-            if (typeSymbol != null)
-                throw unsupported("onFailedToResolveSymbol: type-as-value");
-        }
-
+        if (location != null && (checkAndReportErrorForUsingTypeAsNamespace(location, name, meaning) || checkAndReportErrorForUsingNamespaceAsTypeOrValue(location, name, meaning) || checkAndReportErrorForUsingTypeAsValue(location, name, meaning) || checkAndReportErrorForUsingValueAsType(location, name, meaning)))
+            return;
+        // Missing-prefix/class-extends/export/JSDoc branches are outside admitted source syntax.
         string declarationName = name;
         if (location != null && Ast.IsIdentifier(location) && location.Text() == name)
             declarationName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(location);
@@ -992,25 +1074,48 @@ public sealed partial class Checker
         return false;
     }
 
-    private Symbol getExportSymbolOfValueSymbolIfExported(Symbol symbol)
+    internal Symbol getExportSymbolOfValueSymbolIfExported(Symbol symbol)
     {
-        if ((symbol.Flags & SymbolFlags.ExportValue) != 0)
-            return symbol.ExportSymbol;
-        return symbol;
+        if (symbol != null && (symbol.Flags & SymbolFlags.ExportValue) != 0 && symbol.ExportSymbol != null)
+            symbol = symbol.ExportSymbol;
+        return getMergedSymbol(symbol);
     }
 
     // getTypeOfSymbol (16879): primitive variable/property cache arm.
     internal Type getTypeOfSymbol(Symbol symbol)
     {
-        if ((symbol.CheckFlags & (CheckFlags.DeferredType | CheckFlags.Instantiated | CheckFlags.Mapped | CheckFlags.ReverseMapped)) != 0)
+        if ((symbol.CheckFlags & CheckFlags.DeferredType) != 0)
+            return getTypeOfSymbolWithDeferredType(symbol);
+        if ((symbol.CheckFlags & CheckFlags.Instantiated) != 0)
+            return getTypeOfInstantiatedSymbol(symbol);
+        if ((symbol.CheckFlags & (CheckFlags.Mapped | CheckFlags.ReverseMapped)) != 0)
             throw unsupported("getTypeOfSymbol: transformed symbol");
+        if ((symbol.Flags & SymbolFlags.Accessor) != 0)
+            throw unsupported("getTypeOfSymbol: accessor");
         if ((symbol.Flags & (SymbolFlags.Variable | SymbolFlags.Property)) != 0)
             return getTypeOfVariableOrParameterOrProperty(symbol);
-        if (valueSymbolLinks.Get(symbol).resolvedType is { } cached)
-            return cached;
-        if ((symbol.Flags & (SymbolFlags.Accessor | SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.Enum | SymbolFlags.ValueModule | SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
-            throw unsupported("getTypeOfSymbol: accessor/function/class/enum/module/alias");
+        if ((symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0)
+            return getTypeOfFuncClassEnumModule(symbol);
+        if ((symbol.Flags & (SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
+            throw unsupported("getTypeOfSymbol: enum member/import alias");
         return errorType;
+    }
+
+    // checker.go:17291. The synthesized globalThis module is the selected value-module path.
+    private Type getTypeOfFuncClassEnumModule(Symbol symbol)
+    {
+        var links = valueSymbolLinks.Get(symbol);
+        if (links.resolvedType == null)
+            links.resolvedType = getTypeOfFuncClassEnumModuleWorker(symbol);
+        return links.resolvedType;
+    }
+
+    private Type getTypeOfFuncClassEnumModuleWorker(Symbol symbol)
+    {
+        if (symbol != globalThisSymbol)
+            throw unsupported("getTypeOfFuncClassEnumModuleWorker: source function/class/enum/module");
+        var t = newObjectType(ObjectFlags.Anonymous, symbol);
+        return strictNullChecks && (symbol.Flags & SymbolFlags.Optional) != 0 ? getOptionalType(t, true) : t;
     }
 
     private Type getTypeOfVariableOrParameterOrProperty(Symbol symbol)
@@ -1035,7 +1140,7 @@ public sealed partial class Checker
         var declaration = symbol.ValueDeclaration;
         if (declaration == null || declaration.Kind is not (Kind.VariableDeclaration or Kind.PropertySignature or Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment))
             throw unsupported("getTypeOfVariableOrParameterOrPropertyWorker: declaration kind");
-        if (!pushTypeResolution(symbol))
+        if (!pushTypeResolution(symbol, TypeSystemPropertyName.Type))
             return reportCircularityError(symbol);
         var result = declaration.Kind switch
         {
@@ -1047,21 +1152,18 @@ public sealed partial class Checker
         return result;
     }
 
-    private bool pushTypeResolution(Symbol target)
+    // checker.go:19165. Symbols and semantic types share the original tagged stack.
+    private bool pushTypeResolution(object target, TypeSystemPropertyName propertyName)
     {
-        for (int i = typeResolutions.Count - 1; i >= 0; i--)
+        int cycleStart = findResolutionCycleStartIndex(target, propertyName);
+        if (cycleStart >= 0)
         {
-            if (valueSymbolLinks.Get(typeResolutions[i].target).resolvedType != null)
-                break;
-            if (typeResolutions[i].target == target)
-            {
-                for (int j = i; j < typeResolutions.Count; j++)
-                    typeResolutions[j] = (typeResolutions[j].target, false);
-                return false;
-            }
+            for (int i = cycleStart; i < typeResolutions.Count; i++)
+                typeResolutions[i].result = false;
+            return false;
         }
 
-        typeResolutions.Add((target, true));
+        typeResolutions.Add(new() { target = target, propertyName = propertyName, result = true });
         return true;
     }
 
@@ -1071,6 +1173,34 @@ public sealed partial class Checker
         bool result = typeResolutions[last].result;
         typeResolutions.RemoveAt(last);
         return result;
+    }
+
+    private int findResolutionCycleStartIndex(object target, TypeSystemPropertyName propertyName)
+    {
+        for (int i = typeResolutions.Count - 1; i >= resolutionStart; i--)
+        {
+            var r = typeResolutions[i];
+            if (typeResolutionHasProperty(r))
+                return -1;
+            if (r.target == target && r.propertyName == propertyName)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private bool typeResolutionHasProperty(TypeResolution r)
+    {
+        return r.propertyName switch
+        {
+            TypeSystemPropertyName.Type => valueSymbolLinks.Get((Symbol)r.target).resolvedType != null,
+            TypeSystemPropertyName.DeclaredType => typeAliasLinks.Get((Symbol)r.target).declaredType != null,
+            TypeSystemPropertyName.ResolvedTypeArguments => ((Type)r.target).AsTypeReference().resolvedTypeArguments != null,
+            TypeSystemPropertyName.ResolvedBaseTypes => ((Type)r.target).AsInterfaceType().baseTypesResolved,
+            TypeSystemPropertyName.ResolvedBaseConstructorType => ((Type)r.target).AsInterfaceType().resolvedBaseConstructorType != null,
+            TypeSystemPropertyName.ResolvedBaseConstraint => ((Type)r.target).AsConstrainedType().resolvedBaseConstraint != null,
+            TypeSystemPropertyName.WriteType => valueSymbolLinks.Get((Symbol)r.target).writeType != null,
+            _ => throw unsupported("typeResolutionHasProperty: callable/assignment/module resolution")};
     }
 
     private Type reportCircularityError(Symbol symbol)
@@ -1167,6 +1297,7 @@ public sealed partial class Checker
             throw unsupported("checkExpressionEx: inference/signature/tuple check mode");
         var saved = currentNode;
         currentNode = node;
+        instantiationCount = 0;
         var t = checkExpressionWorker(node, checkMode);
         currentNode = saved;
         return t;
@@ -1210,6 +1341,15 @@ public sealed partial class Checker
     {
         switch (node.Kind)
         {
+            case Kind.ObjectKeyword:
+                return nonPrimitiveType;
+            case Kind.TypeReference:
+            case Kind.ExpressionWithTypeArguments:
+                return getTypeFromTypeReference(node);
+            case Kind.UnionType:
+                return getTypeFromUnionTypeNode(node);
+            case Kind.IntersectionType:
+                return getTypeFromIntersectionTypeNode(node);
             case Kind.AnyKeyword:
                 return anyType;
             case Kind.UnknownKeyword:
@@ -1238,6 +1378,9 @@ public sealed partial class Checker
                 return getTypeFromTypeLiteralOrFunctionOrConstructorTypeNode(node);
             case Kind.LiteralType:
                 return getTypeFromLiteralTypeNode(node);
+            case Kind.Identifier:
+            case Kind.QualifiedName:
+                return errorType; // Original worker final arm for owned name/query locations.
             default:
                 throw unsupported("getTypeFromTypeNodeWorker: " + node.Kind);
         }
@@ -1269,6 +1412,14 @@ public sealed partial class Checker
             return getTypeFromTypeNode(node);
         if (Ast.IsExpressionNode(node))
             return getRegularTypeOfExpression(node);
+        if (Ast.IsTypeDeclaration(node))
+            return getDeclaredTypeOfSymbol(getSymbolOfDeclaration(node));
+        if (Ast.IsTypeDeclarationName(node))
+        {
+            var typeSymbol = getSymbolAtLocation(node, false);
+            return typeSymbol != null ? getDeclaredTypeOfSymbol(typeSymbol) : errorType;
+        }
+
         if (Ast.IsVariableDeclaration(node) || node.Kind == Kind.PropertySignature)
         {
             var symbol = getSymbolOfDeclaration(node);
@@ -1322,19 +1473,31 @@ public sealed partial class Checker
     {
         if (Ast.IsDeclarationName(name))
             return getSymbolOfDeclaration(name.Parent);
-        while (name.Parent?.Kind == Kind.PropertyAccessExpression && name.Parent.Name() == name)
+        while (Ast.IsRightSideOfQualifiedNameOrPropertyAccess(name))
             name = name.Parent;
+        if (isInNameOfExpressionWithTypeArgumentsOrHeritageTypeReference(name))
+        {
+            var meaning = name.Parent.Kind is Kind.ExpressionWithTypeArguments or Kind.TypeReference ? Ast.IsPartOfTypeNode(name) ? SymbolFlags.Type : SymbolFlags.Value : SymbolFlags.Namespace;
+            meaning |= SymbolFlags.Alias;
+            if (Ast.IsEntityNameExpression(name))
+            {
+                var entityNameSymbol = resolveEntityName(name, meaning, true, false, null);
+                if (entityNameSymbol != null)
+                    return entityNameSymbol;
+            }
+        }
+
         if (name.Kind == Kind.PropertyAccessExpression)
         {
             var links = symbolNodeLinks.Get(name);
             if (links.resolvedSymbol != null)
                 return links.resolvedSymbol;
             checkPropertyAccessExpression(name);
+            if (links.resolvedSymbol == null && !Ast.IsPrivateIdentifier(name.Name()))
+                links.resolvedSymbol = getApplicableIndexSymbol(checkExpressionCached(name.Expression()), getLiteralTypeFromPropertyName(name.Name()));
             return links.resolvedSymbol;
         }
 
-        if (name.Kind != Kind.Identifier)
-            throw unsupported("getSymbolOfNameOrPropertyAccessExpression: qualified name");
         if (Ast.IsExpressionNode(name))
         {
             if (Ast.NodeIsMissing(name))
@@ -1342,28 +1505,137 @@ public sealed partial class Checker
             return resolveEntityName(name, SymbolFlags.Value, true, true, null);
         }
 
-        return null;
-    }
-
-    private Symbol resolveEntityName(Node name, SymbolFlags meaning, bool ignoreErrors, bool dontResolveAlias, Node location)
-    {
-        if (Ast.NodeIsMissing(name))
-            return null;
-        if (name.Kind != Kind.Identifier || meaning == SymbolFlags.Namespace)
-            throw unsupported("resolveEntityName: qualified/namespace name");
-        Message message = null;
-        if (!ignoreErrors)
-            message = getCannotFindNameDiagnosticForName(name);
-        var symbol = getMergedSymbol(nameResolver.Resolve(location ?? name, name.Text(), meaning, message, true, false));
-        if (symbol != null && symbol != unknownSymbol)
+        if (Ast.IsEntityName(name) && isTypeReferenceIdentifier(name))
         {
-            if ((symbol.Flags & SymbolFlags.Alias) != 0 && !dontResolveAlias)
-                throw unsupported("resolveEntityName: alias");
-            return symbol;
+            var meaning = name.Parent.Kind == Kind.TypeReference ? SymbolFlags.Type : SymbolFlags.Namespace;
+            var symbol = resolveEntityName(name, meaning, true, true, null);
+            if (symbol != null && symbol != unknownSymbol)
+                return symbol;
+            if (Ast.IsNameOfHeritageClauseTypeReference(name))
+                return null;
+            return getUnresolvedSymbolForEntityName(name);
         }
 
         return null;
     }
+
+    internal Symbol resolveEntityName(Node name, SymbolFlags meaning, bool ignoreErrors, bool dontResolveAlias, Node location)
+    {
+        if (Ast.NodeIsMissing(name))
+            return null;
+        Symbol symbol;
+        switch (name.Kind)
+        {
+            case Kind.Identifier:
+                Message message = null;
+                if (!ignoreErrors)
+                    message = meaning == SymbolFlags.Namespace || Ast.NodeIsSynthesized(name) ? Diagnostics.Cannot_find_namespace_0 : getCannotFindNameDiagnosticForName(Ast.GetFirstIdentifier(name));
+                var resolveLocation = location ?? name;
+                if (meaning == SymbolFlags.Namespace)
+                {
+                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), meaning, null, true, false));
+                    if (symbol == null)
+                    {
+                        var alias = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), SymbolFlags.Alias, null, true, false));
+                        if (alias != null && alias.Name == Ast.InternalSymbolNameExportEquals)
+                            symbol = alias.Parent;
+                    }
+
+                    if (symbol == null && message != null)
+                        nameResolver.Resolve(resolveLocation, name.Text(), meaning, message, true, false);
+                }
+                else
+                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), meaning, message, true, false));
+                break;
+            case Kind.QualifiedName:
+                var qualified = name.AsQualifiedName();
+                symbol = resolveQualifiedName(name, qualified.Left, qualified.Right, meaning, ignoreErrors, location);
+                break;
+            case Kind.PropertyAccessExpression:
+                var access = name.AsPropertyAccessExpression();
+                symbol = resolveQualifiedName(name, access.Expression, access.Name(), meaning, ignoreErrors, location);
+                break;
+            default:
+                throw new InvalidOperationException("Unknown entity name kind");
+        }
+
+        if (symbol != null && symbol != unknownSymbol)
+        {
+            if ((symbol.Flags & SymbolFlags.Alias) != 0)
+                throw unsupported("resolveEntityName: source module alias");
+        }
+
+        return symbol;
+    }
+
+    private Symbol resolveQualifiedName(Node name, Node left, Node right, SymbolFlags meaning, bool ignoreErrors, Node location)
+    {
+        var ns = resolveEntityName(left, SymbolFlags.Namespace, ignoreErrors, false, location);
+        if (ns == null || Ast.NodeIsMissing(right))
+            return null;
+        if (ns == unknownSymbol)
+            return ns;
+        if (ns.ValueDeclaration != null && Ast.IsInJSFile(ns.ValueDeclaration))
+            throw unsupported("resolveQualifiedName: CommonJS module");
+        var symbol = getMergedSymbol(getSymbol(getExportsOfSymbol(ns), right.Text(), meaning));
+        if (symbol == null && (ns.Flags & SymbolFlags.Alias) != 0)
+            throw unsupported("resolveQualifiedName: module alias");
+        if (symbol == null && !ignoreErrors)
+        {
+            var namespaceName = getFullyQualifiedName(ns, null);
+            var declarationName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(right);
+            var suggestion = getSuggestedSymbolForNonexistentModule(right, ns);
+            if (suggestion != null)
+            {
+                error(right, Diagnostics.X_0_has_no_exported_member_named_1_Did_you_mean_2, namespaceName, declarationName, symbolToString(suggestion));
+                return null;
+            }
+
+            var containingQualifiedName = Ast.IsQualifiedName(name) ? getContainingQualifiedNameNode(name) : null;
+            bool canSuggestTypeof = globalObjectType != null && (meaning & SymbolFlags.Type) != 0 && containingQualifiedName != null && !Ast.IsTypeOfExpression(containingQualifiedName.Parent) && tryGetQualifiedNameAsValue(containingQualifiedName) != null;
+            if (canSuggestTypeof)
+            {
+                error(containingQualifiedName, Diagnostics.X_0_refers_to_a_value_but_is_being_used_as_a_type_here_Did_you_mean_typeof_0, entityNameToString(containingQualifiedName));
+                return null;
+            }
+
+            if ((meaning & SymbolFlags.Namespace) != 0 && Ast.IsQualifiedName(name.Parent))
+            {
+                var exportedTypeSymbol = getMergedSymbol(getSymbol(getExportsOfSymbol(ns), right.Text(), SymbolFlags.Type));
+                if (exportedTypeSymbol != null)
+                {
+                    var qualified = name.Parent.AsQualifiedName();
+                    error(qualified.Right, Diagnostics.Cannot_access_0_1_because_0_is_a_type_but_not_a_namespace_Did_you_mean_to_retrieve_the_type_of_the_property_1_in_0_with_0_1, symbolToString(exportedTypeSymbol), qualified.Right.Text());
+                    return null;
+                }
+            }
+
+            error(right, Diagnostics.Namespace_0_has_no_exported_member_1, namespaceName, declarationName);
+        }
+
+        return symbol;
+    }
+
+    private Symbol tryGetQualifiedNameAsValue(Node node)
+    {
+        var id = Ast.GetFirstIdentifier(node);
+        var symbol = nameResolver.Resolve(id, id.Text(), SymbolFlags.Value, null, true, false);
+        if (symbol == null)
+            return null;
+        var n = id;
+        while (Ast.IsQualifiedName(n.Parent))
+        {
+            symbol = getPropertyOfType(getTypeOfSymbol(symbol), n.Parent.AsQualifiedName().Right.Text());
+            if (symbol == null)
+                return null;
+            n = n.Parent;
+        }
+
+        return symbol;
+    }
+
+    private Symbol getSuggestedSymbolForNonexistentModule(Node name, Symbol targetModule) => getSpellingSuggestionForName(name.Text(), getExportsOfModule(targetModule).Values, SymbolFlags.ModuleMember);
+    private string getFullyQualifiedName(Symbol symbol, Node containingLocation) => symbol.Parent != null ? getFullyQualifiedName(symbol.Parent, containingLocation) + "." + symbolToString(symbol) : symbolToStringWithoutSymbolChain(symbol, containingLocation);
 }
 
 public sealed partial class Checker
@@ -1423,11 +1695,50 @@ public sealed partial class Checker
         return t;
     }
 
-    private Type getNarrowableTypeForReference(Type t, Node reference)
+    private Type getNarrowableTypeForReference(Type t, Node reference, CheckMode checkMode = CheckMode.Normal)
     {
-        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.flags & TypeFlags.Union) != 0 && t.Types().Any(s => (s.flags & TypeFlags.Instantiable) != 0))
-            throw unsupported("getNarrowableTypeForReference: constrained generic");
-        return t;
+        if ((t.flags & TypeFlags.Substitution) != 0)
+            throw unsupported("getNarrowableTypeForReference: source NoInfer substitution");
+        bool substituteConstraints = (checkMode & CheckMode.Inferential) == 0 && (t.Distributed()?.Any(isGenericTypeWithUnionConstraint) ?? false) && (isConstraintPosition(t, reference) || hasContextualTypeWithNoGenericTypes(reference, checkMode));
+        return substituteConstraints ? mapType(t, getBaseConstraintOrType) : t;
+    }
+
+    private bool isConstraintPosition(Type t, Node node)
+    {
+        var parent = node.Parent;
+        if (Ast.IsElementAccessExpression(parent))
+            throw unsupported("isConstraintPosition: source element access");
+        return Ast.IsPropertyAccessExpression(parent) || Ast.IsQualifiedName(parent) || (Ast.IsCallExpression(parent) || Ast.IsNewExpression(parent)) && parent.Expression() == node;
+    }
+
+    private bool isGenericTypeWithUnionConstraint(Type t)
+    {
+        if ((t.flags & TypeFlags.Intersection) != 0)
+            return t.AsIntersectionType().types.Any(isGenericTypeWithUnionConstraint);
+        return (t.flags & TypeFlags.Instantiable) != 0 && (getBaseConstraintOrType(t).flags & (TypeFlags.Nullable | TypeFlags.Union)) != 0;
+    }
+
+    private bool isGenericTypeWithoutNullableConstraint(Type t)
+    {
+        if ((t.flags & TypeFlags.Intersection) != 0)
+            return t.AsIntersectionType().types.Any(isGenericTypeWithoutNullableConstraint);
+        return (t.flags & TypeFlags.Instantiable) != 0 && !maybeTypeOfKind(getBaseConstraintOrType(t), TypeFlags.Nullable);
+    }
+
+    private bool hasContextualTypeWithNoGenericTypes(Node node, CheckMode checkMode)
+    {
+        if ((checkMode & CheckMode.RestBindingElement) != 0)
+            throw unsupported("hasContextualTypeWithNoGenericTypes: source rest binding");
+        if (Ast.IsIdentifier(node) || Ast.IsPropertyAccessExpression(node) || Ast.IsElementAccessExpression(node))
+        {
+            if (Ast.IsJsxOpeningElement(node.Parent) || Ast.IsJsxSelfClosingElement(node.Parent))
+                throw unsupported("hasContextualTypeWithNoGenericTypes: source JSX");
+            var contextualType = getContextualType(node);
+            if (contextualType != null)
+                return !isGenericType(contextualType);
+        }
+
+        return false;
     }
 
     private Node getControlFlowContainer(Node node) => Ast.FindAncestor(node.Parent, n => Ast.IsFunctionLike(n) || Ast.IsModuleBlock(n) || Ast.IsSourceFile(n) || Ast.IsPropertyDeclaration(n));
@@ -1530,6 +1841,36 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
+    // checker.go:32639.
+    private Symbol getApplicableIndexSymbol(Type t, Type keyType)
+    {
+        var info = getApplicableIndexInfo(t, keyType);
+        if (info == null || info == anyBaseTypeIndexInfo)
+            return null;
+        if (info.indexSymbol == null)
+        {
+            List<Node> declarations = null;
+            if (info.declaration != null)
+                declarations = [info.declaration];
+            else
+                foreach (var candidate in getIndexInfosOfType(t) ?? [])
+                    if (candidate.declaration != null && isApplicableIndexType(keyType, candidate.keyType))
+                        declarations = GoRuntime.Append(declarations, candidate.declaration);
+            if ((declarations?.Count ?? 0) != 0)
+            {
+                var symbol = newSymbol(SymbolFlags.Property, Ast.InternalSymbolNameIndex);
+                symbol.CheckFlags |= CheckFlags.IndexSymbol;
+                symbol.Declarations = declarations;
+                symbol.ValueDeclaration = declarations[0];
+                symbol.Parent = t.symbol;
+                valueSymbolLinks.Get(symbol).resolvedType = info.valueType;
+                info.indexSymbol = symbol;
+            }
+        }
+
+        return info.indexSymbol;
+    }
+
     // checker.go:32668. A queried dot-name denotes its containing access.
     internal Type getRegularTypeOfExpression(Node node)
     {
@@ -1543,9 +1884,16 @@ public sealed partial class Checker
 {
     private Type newObjectType(ObjectFlags objectFlags, Symbol symbol)
     {
-        if ((objectFlags & ObjectFlags.ObjectTypeKindMask) != ObjectFlags.Anonymous)
-            throw unsupported("newObjectType: general object payload");
-        var t = newType(TypeFlags.Object, objectFlags, new ObjectType());
+        TypeData data;
+        if ((objectFlags & ObjectFlags.ClassOrInterface) != 0)
+            data = new InterfaceType();
+        else if ((objectFlags & ObjectFlags.Reference) != 0)
+            data = new TypeReference();
+        else if ((objectFlags & ObjectFlags.Anonymous) != 0)
+            data = new ObjectType();
+        else
+            throw unsupported("newObjectType: tuple/mapped/reverse/evolving/callable payload");
+        var t = newType(TypeFlags.Object, objectFlags, data);
         t.symbol = symbol;
         return t;
     }
@@ -1556,9 +1904,9 @@ public sealed partial class Checker
         var data = t.AsStructuredType();
         data.members = members;
         data.properties = getNamedMembers(members, t.symbol);
-        if ((callSignatures?.Count ?? 0) != 0 || (constructSignatures?.Count ?? 0) != 0 || (indexInfos?.Count ?? 0) != 0)
-            throw unsupported("setStructuredTypeMembers: signatures/index signatures");
-        data.signatures = callSignatures;
+        if ((callSignatures?.Count ?? 0) != 0 || (constructSignatures?.Count ?? 0) != 0)
+            throw unsupported("setStructuredTypeMembers: source signatures");
+        data.signatures = null;
         data.callSignatureCount = callSignatures?.Count ?? 0;
         data.indexInfos = indexInfos;
     }
@@ -1567,14 +1915,34 @@ public sealed partial class Checker
     {
         if ((members?.Count ?? 0) == 0)
             return null;
-        if (container != null && (container.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
-            throw unsupported("getNamedMembers: class/interface inherited order");
         var result = new List<Symbol>(members.Count);
+        int containedCount = 0;
+        if (container != null && (container.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
+        {
+            foreach (var(id, symbol)in members)
+                if (isNamedMember(symbol, id) && isDeclarationContainedBy(symbol, container))
+                    result.Add(symbol);
+            containedCount = result.Count;
+        }
+
         foreach (var(id, symbol)in members)
-            if (isNamedMember(symbol, id))
+            if (isNamedMember(symbol, id) && (container == null || (container.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) == 0 || !isDeclarationContainedBy(symbol, container)))
                 result.Add(symbol);
-        sortSymbols(result);
-        return result;
+        var contained = result.GetRange(0, containedCount);
+        var inherited = result.GetRange(containedCount, result.Count - containedCount);
+        sortSymbols(contained);
+        sortSymbols(inherited);
+        contained.AddRange(inherited);
+        return contained;
+    }
+
+    private static bool isDeclarationContainedBy(Symbol symbol, Symbol container)
+    {
+        if (symbol.ValueDeclaration != null)
+            foreach (var d in container.Declarations ?? [])
+                if (symbol.ValueDeclaration.Pos() >= d.Pos() && symbol.ValueDeclaration.End() <= d.End())
+                    return true;
+        return false;
     }
 
     private bool isNamedMember(Symbol symbol, string id) => !isReservedMemberName(id) && symbolIsValue(symbol);
@@ -1617,9 +1985,21 @@ public sealed partial class Checker
             var filtered = types.Where(predicate).ToList();
             if (filtered.Count == types.Count)
                 return t;
-            if (t.AsUnionType().origin != null)
-                throw unsupported("filterType: named union origin");
-            return getUnionTypeFromSortedList(filtered, t.objectFlags & ObjectFlags.PrimitiveUnion);
+            var origin = t.AsUnionType().origin;
+            Type newOrigin = null;
+            if (origin != null && (origin.flags & TypeFlags.Union) != 0)
+            {
+                var originTypes = origin.Types();
+                var originFiltered = originTypes.Where(u => (u.flags & TypeFlags.Union) != 0 || predicate(u)).ToList();
+                if (originTypes.Count - originFiltered.Count == types.Count - filtered.Count)
+                {
+                    if (originFiltered.Count == 1)
+                        return originFiltered[0];
+                    newOrigin = newUnionType(ObjectFlags.None, originFiltered);
+                }
+            }
+
+            return getUnionTypeFromSortedList(filtered, t.objectFlags & (ObjectFlags.PrimitiveUnion | ObjectFlags.ContainsIntersections), null, newOrigin);
         }
 
         return predicate(t) ? t : neverType;
@@ -1635,20 +2015,52 @@ public sealed partial class Checker
             Type n;
             if (isFreshLiteralType(t))
                 n = t.AsLiteralType().regularType;
+            else if (isGenericTupleType(t))
+                throw unsupported("getNormalizedType: source generic tuple");
+            else if ((t.objectFlags & ObjectFlags.Reference) != 0)
+                n = t.AsTypeReference().node != null ? createTypeReference(t.Target(), getTypeArguments(t)) : getSingleBaseForNonAugmentingSubtype(t) ?? t;
             else if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-            {
-                if ((t.flags & TypeFlags.Intersection) != 0)
-                    throw unsupported("getNormalizedType: intersection");
-                n = t; // getReducedType/normalizedUnion: scalar union has no intersections to reduce.
-            }
-            else if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & ObjectFlags.Reference) != 0)
-                throw unsupported("getNormalizedType: instantiable/reference");
+                n = getNormalizedUnionOrIntersectionType(t, writing);
+            else if ((t.flags & TypeFlags.Substitution) != 0)
+                throw unsupported("getNormalizedType: source substitution");
+            else if ((t.flags & TypeFlags.Simplifiable) != 0)
+                n = getSimplifiedType(t, writing);
             else
                 return t;
             if (n == t)
                 return n;
             t = n;
         }
+    }
+
+    private Type getNormalizedUnionOrIntersectionType(Type t, bool writing)
+    {
+        var reduced = getReducedType(t);
+        if (reduced != t)
+            return reduced;
+        if ((t.flags & TypeFlags.Intersection) != 0 && shouldNormalizeIntersection(t))
+        {
+            var types = t.Types();
+            var normalized = instantiateList(types, null, (u, _) => getNormalizedType(u, writing));
+            if (!ReferenceEquals(normalized, types))
+                return getIntersectionType(normalized);
+        }
+
+        return t;
+    }
+
+    private bool shouldNormalizeIntersection(Type t)
+    {
+        bool hasInstantiable = false, hasNullableOrEmpty = false;
+        foreach (var constituent in t.Types())
+        {
+            hasInstantiable |= (constituent.flags & TypeFlags.Instantiable) != 0;
+            hasNullableOrEmpty |= (constituent.flags & TypeFlags.Nullable) != 0 || IsEmptyAnonymousObjectType(constituent);
+            if (hasInstantiable && hasNullableOrEmpty)
+                return true;
+        }
+
+        return false;
     }
 }
 
@@ -1703,7 +2115,7 @@ public sealed partial class Checker
             bool isStatic = resolutionKind == MembersOrExportsResolutionKind.ResolvedExports;
             var earlySymbols = isStatic ? symbol.Exports : symbol.Members;
             if (isStatic && (symbol.Flags & SymbolFlags.Module) != 0)
-                throw unsupported("getResolvedMembersOrExportsOfSymbol: module exports");
+                earlySymbols = getExportsOfModuleWorker(symbol).exports;
             links[resolutionKind] = earlySymbols;
             SymbolTable lateSymbols = null;
             foreach (var declaration in symbol.Declarations ?? [])
@@ -1737,14 +2149,21 @@ public sealed partial class Checker
         {
             if ((t.flags & TypeFlags.Object) != 0)
             {
-                if ((t.objectFlags & ObjectFlags.ObjectTypeKindMask) != ObjectFlags.Anonymous)
-                    throw unsupported("resolveStructuredTypeMembers: nonanonymous object");
-                resolveAnonymousTypeMembers(t);
+                if ((t.objectFlags & ObjectFlags.Reference) != 0)
+                    resolveTypeReferenceMembers(t);
+                else if ((t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
+                    resolveClassOrInterfaceMembers(t);
+                else if ((t.objectFlags & ObjectFlags.Anonymous) != 0)
+                    resolveAnonymousTypeMembers(t);
+                else
+                    throw unsupported("resolveStructuredTypeMembers: mapped/reverse-mapped object");
             }
             else if ((t.flags & TypeFlags.Union) != 0)
                 resolveUnionTypeMembers(t);
+            else if ((t.flags & TypeFlags.Intersection) != 0)
+                resolveIntersectionTypeMembers(t);
             else
-                throw unsupported("resolveStructuredTypeMembers: intersection members");
+                throw new InvalidOperationException("Unhandled case in resolveStructuredTypeMembers");
         }
 
         return t.AsStructuredType();
@@ -1752,20 +2171,111 @@ public sealed partial class Checker
 
     private void resolveAnonymousTypeMembers(Type t)
     {
-        if (t.AsObjectType().target != null)
-            throw unsupported("resolveAnonymousTypeMembers: instantiated target");
-        var symbol = getMergedSymbol(t.symbol);
-        if (symbol != null && (symbol.Flags & SymbolFlags.TypeLiteral) != 0)
+        var d = t.AsObjectType();
+        if (d.target != null)
         {
             setStructuredTypeMembers(t, null);
-            var members = getMembersOfSymbol(symbol);
-            if (members?[Ast.InternalSymbolNameCall] != null || members?[Ast.InternalSymbolNameNew] != null || members?[Ast.InternalSymbolNameIndex] != null)
-                throw unsupported("resolveAnonymousTypeMembers: signatures/index members");
-            setStructuredTypeMembers(t, members);
+            var members = createInstantiatedSymbolTable(getPropertiesOfObjectType(d.target), d.mapper);
+            var calls = instantiateSignatures(getSignaturesOfType(d.target, SignatureKind.Call), d.mapper);
+            var constructs = instantiateSignatures(getSignaturesOfType(d.target, SignatureKind.Construct), d.mapper);
+            var infos = instantiateIndexInfos(getIndexInfosOfType(d.target), d.mapper);
+            setStructuredTypeMembers(t, members, calls, constructs, infos);
             return;
         }
 
-        throw unsupported("resolveAnonymousTypeMembers: class/function/module members");
+        var symbol = getMergedSymbol(t.symbol);
+        if ((symbol.Flags & SymbolFlags.TypeLiteral) != 0)
+        {
+            setStructuredTypeMembers(t, null);
+            var members = getMembersOfSymbol(symbol);
+            var calls = getSignaturesOfSymbol(members?[Ast.InternalSymbolNameCall]);
+            var constructs = getSignaturesOfSymbol(members?[Ast.InternalSymbolNameNew]);
+            setStructuredTypeMembers(t, members, calls, constructs, getIndexInfosOfSymbol(symbol));
+            return;
+        }
+
+        var exports = getExportsOfSymbol(symbol);
+        if (symbol == globalThisSymbol)
+        {
+            var varsOnly = new SymbolTable();
+            foreach (var property in exports.Values)
+                if ((property.Flags & SymbolFlags.BlockScoped) == 0 && !((property.Flags & SymbolFlags.ValueModule) != 0 && (property.Declarations?.Count ?? 0) != 0 && property.Declarations.All(Ast.IsAmbientModule)))
+                    varsOnly[property.Name] = property;
+            exports = varsOnly;
+        }
+
+        setStructuredTypeMembers(t, exports);
+        if ((symbol.Flags & (SymbolFlags.Class | SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Enum)) != 0)
+            throw unsupported("resolveAnonymousTypeMembers: callable/class/enum payload");
+        if (exports?[Ast.InternalSymbolNameIndex] != null)
+            throw unsupported("resolveAnonymousTypeMembers: source index symbol");
+        d.indexInfos = null;
+    }
+
+    private SymbolTable createInstantiatedSymbolTable(List<Symbol> symbols, TypeMapper mapper)
+    {
+        if ((symbols?.Count ?? 0) == 0)
+            return null;
+        var table = new SymbolTable(symbols.Count);
+        foreach (var symbol in symbols)
+            table[symbol.Name] = instantiateSymbol(symbol, mapper);
+        return table;
+    }
+
+    private SymbolTable getExportsOfSymbol(Symbol symbol)
+    {
+        if ((symbol.Flags & SymbolFlags.LateBindingContainer) != 0)
+            return getResolvedMembersOrExportsOfSymbol(symbol, MembersOrExportsResolutionKind.ResolvedExports);
+        if ((symbol.Flags & SymbolFlags.Module) != 0)
+            return getExportsOfModule(symbol);
+        return symbol.Exports;
+    }
+
+    private readonly symbolArenaLinkStore<ModuleSymbolLinks> moduleSymbolLinks = new();
+    private SymbolTable getExportsOfModule(Symbol moduleSymbol)
+    {
+        var links = moduleSymbolLinks.Get(moduleSymbol);
+        if (links.resolvedExports == null)
+        {
+            var(exports, typeOnlyExportStarMap) = getExportsOfModuleWorker(moduleSymbol);
+            links.resolvedExports = exports;
+            links.typeOnlyExportStarMap = typeOnlyExportStarMap;
+        }
+
+        return links.resolvedExports;
+    }
+
+    private (SymbolTable exports, Dictionary<string, Node> typeOnlyExportStarMap) getExportsOfModuleWorker(Symbol moduleSymbol)
+    {
+        // Source modules/re-exports are rejected by admission; the genuine
+        // internal globalThis module still resolves and clones its exports.
+        if (moduleSymbol != globalThisSymbol)
+            throw unsupported("getExportsOfModuleWorker: source module");
+        List<Symbol> visitedSymbols = null;
+        var nonTypeOnlyNames = new HashSet<string>(StringComparer.Ordinal);
+        SymbolTable visit(Symbol symbol, Node exportStar, bool isTypeOnly)
+        {
+            if (!isTypeOnly && symbol != null)
+                foreach (var name in (IEnumerable<string>)symbol.Exports?.Keys ?? [])
+                    nonTypeOnlyNames.Add(name);
+            if (symbol == null || symbol.Exports == null || (visitedSymbols?.Contains(symbol) ?? false))
+                return null;
+            visitedSymbols = GoRuntime.Append(visitedSymbols, symbol);
+            var symbols = new SymbolTable();
+            foreach (var entry in symbol.Exports)
+                symbols[entry.Key] = entry.Value;
+            if (symbol.Exports[Ast.InternalSymbolNameExportStar] != null)
+                throw unsupported("getExportsOfModuleWorker: source export star");
+            return symbols;
+        }
+
+        if (moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals] != null)
+            throw unsupported("getExportsOfModuleWorker: source export equals");
+        var exports = visit(getMergedSymbol(moduleSymbol), null, false) ?? new SymbolTable();
+        Dictionary<string, Node> typeOnlyExportStarMap = null;
+        foreach (var name in nonTypeOnlyNames)
+            typeOnlyExportStarMap?.Remove(name);
+        return (exports, typeOnlyExportStarMap);
     }
 
     private Type getTypeFromTypeLiteralOrFunctionOrConstructorTypeNode(Node node)
@@ -1775,28 +2285,90 @@ public sealed partial class Checker
         var links = typeNodeLinks.Get(node);
         if (links.resolvedType == null)
         {
+            var alias = getAliasForTypeNode(node);
             var symbol = node.Symbol();
-            if (symbol == null || (getMembersOfSymbol(symbol)?.Count ?? 0) == 0)
+            if (symbol == null || (getMembersOfSymbol(symbol)?.Count ?? 0) == 0 && alias == null)
                 links.resolvedType = emptyTypeLiteralType;
             else
-                links.resolvedType = newObjectType(ObjectFlags.Anonymous, symbol);
+            {
+                var t = newObjectType(ObjectFlags.Anonymous, symbol);
+                t.alias = alias;
+                links.resolvedType = t;
+            }
         }
 
         return links.resolvedType;
     }
 
     private Type getReducedApparentType(Type t) => getReducedType(getApparentType(getReducedType(t)));
-    private Type getReducedType(Type t)
+    internal Type getReducedType(Type t)
     {
-        if ((t.flags & TypeFlags.Intersection) != 0 || (t.objectFlags & ObjectFlags.ContainsIntersections) != 0)
-            throw unsupported("getReducedType: intersection reduction");
+        if ((t.flags & TypeFlags.Union) != 0 && (t.objectFlags & ObjectFlags.ContainsIntersections) != 0)
+            return t.AsUnionType().resolvedReducedType ??= getReducedUnionType(t);
+        if ((t.flags & TypeFlags.Intersection) != 0)
+        {
+            if ((t.objectFlags & ObjectFlags.IsNeverIntersectionComputed) == 0)
+            {
+                t.objectFlags |= ObjectFlags.IsNeverIntersectionComputed;
+                if (!isMappingOfSameObjectType(t.Types()) && somePropertyReducesToNever(t))
+                    t.objectFlags |= ObjectFlags.IsNeverIntersection;
+            }
+
+            if ((t.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
+                return neverType;
+        }
+
         return t;
+    }
+
+    private bool isMappingOfSameObjectType(List<Type> types)
+    {
+        if ((types?.Count ?? 0) != 0 && (types[0].objectFlags & ObjectFlags.Mapped) != 0)
+            throw unsupported("isMappingOfSameObjectType: source mapped types");
+        return false;
+    }
+
+    private bool somePropertyReducesToNever(Type t)
+    {
+        var counts = new System.Collections.Generic.OrderedDictionary<string, int>(StringComparer.Ordinal);
+        foreach (var constituent in t.Types())
+            foreach (var prop in getPropertiesOfType(constituent) ?? [])
+                counts[prop.Name] = counts.GetValueOrDefault(prop.Name) + 1;
+        foreach (var(name, count)in counts)
+            if (count > 1)
+            {
+                var prop = getPropertyOfUnionOrIntersectionType(t, name, true);
+                if (prop != null && (isDiscriminantWithNeverType(prop) || isConflictingPrivateProperty(prop)))
+                    return true;
+            }
+
+        return false;
+    }
+
+    private static bool isConflictingPrivateProperty(Symbol prop) => prop.ValueDeclaration == null && (prop.CheckFlags & CheckFlags.ContainsPrivate) != 0;
+    private Type getReducedUnionType(Type t)
+    {
+        var types = t.Types();
+        var reduced = instantiateList(types, null, (u, _) => getReducedType(u));
+        if (ReferenceEquals(reduced, types))
+            return t;
+        var result = getUnionType(reduced);
+        if ((result.flags & TypeFlags.Union) != 0)
+            result.AsUnionType().resolvedReducedType = result;
+        return result;
     }
 
     private Type getApparentType(Type t)
     {
-        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & (ObjectFlags.Mapped | ObjectFlags.Reference)) != 0 || (t.flags & TypeFlags.Intersection) != 0)
-            throw unsupported("getApparentType: instantiable/mapped/reference/intersection type");
+        var original = t;
+        if ((t.flags & TypeFlags.Instantiable) != 0)
+            t = getBaseConstraintOfType(t) ?? unknownType;
+        if ((t.objectFlags & ObjectFlags.Mapped) != 0)
+            throw unsupported("getApparentType: source mapped type");
+        if ((t.objectFlags & ObjectFlags.Reference) != 0 && t != original)
+            return getTypeWithThisArgument(t, original, false);
+        if ((t.flags & TypeFlags.Intersection) != 0)
+            return getApparentTypeOfIntersectionType(t, original);
         if ((t.flags & TypeFlags.StringLike) != 0)
             return globalStringType;
         if ((t.flags & TypeFlags.NumberLike) != 0)
@@ -1810,10 +2382,20 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.NonPrimitive) != 0)
             return emptyObjectType;
         if ((t.flags & TypeFlags.Index) != 0)
-            throw unsupported("getApparentType: index type");
+            return stringNumberSymbolType ??= getUnionType([stringType, numberType, esSymbolType]);
         if ((t.flags & TypeFlags.Unknown) != 0 && !strictNullChecks)
             return emptyObjectType;
         return t;
+    }
+
+    private Type getApparentTypeOfIntersectionType(Type t, Type thisArgument)
+    {
+        if (t == thisArgument)
+            return t.AsIntersectionType().resolvedApparentType ??= getTypeWithThisArgument(t, thisArgument, true);
+        var key = new CachedTypeKey(CachedTypeKind.ApparentType, thisArgument.id);
+        if (!cachedTypes.TryGetValue(key, out var result))
+            cachedTypes[key] = result = getTypeWithThisArgument(t, thisArgument, true);
+        return result;
     }
 
     private Type globalBigIntType, globalESSymbolType;
@@ -1857,7 +2439,17 @@ public sealed partial class Checker
             return getPropertyOfObjectType(globalObjectType, name);
         }
 
-        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
+        if ((t.flags & TypeFlags.Intersection) != 0)
+        {
+            var prop = getPropertyOfUnionOrIntersectionType(t, name, true);
+            if (prop != null)
+                return prop;
+            if (!skipObjectFunctionPropertyAugment)
+                return getPropertyOfUnionOrIntersectionType(t, name, false);
+            return null;
+        }
+
+        if ((t.flags & TypeFlags.Union) != 0)
             return getPropertyOfUnionOrIntersectionType(t, name, skipObjectFunctionPropertyAugment);
         return null;
     }
@@ -2017,31 +2609,96 @@ public sealed partial class Checker
 
     private Type getTypeOfPropertyOfContextualTypeEx(Type t, string name, Type nameType) => mapTypeEx(t, constituent =>
     {
-        if ((constituent.flags & TypeFlags.Intersection) != 0 || (constituent.objectFlags & ObjectFlags.Mapped) != 0)
-            throw unsupported("getTypeOfPropertyOfContextualTypeEx: intersection/mapped property");
+        if ((constituent.flags & TypeFlags.Intersection) != 0)
+        {
+            List<Type> types = null, indexCandidates = null;
+            bool ignoreIndexInfos = false;
+            foreach (var memberType in constituent.Types())
+            {
+                if ((memberType.flags & TypeFlags.Object) == 0)
+                    continue;
+                if (isGenericMappedType(memberType))
+                    throw unsupported("getTypeOfPropertyOfContextualTypeEx: source mapped substitution");
+                var propertyType = getTypeOfConcretePropertyOfContextualType(memberType, name);
+                if (propertyType == null)
+                {
+                    if (!ignoreIndexInfos)
+                        indexCandidates = GoRuntime.Append(indexCandidates, memberType);
+                    continue;
+                }
+
+                ignoreIndexInfos = true;
+                indexCandidates = null;
+                types = appendContextualPropertyTypeConstituent(types, propertyType);
+            }
+
+            foreach (var candidate in indexCandidates ?? [])
+                types = appendContextualPropertyTypeConstituent(types, getTypeFromIndexInfosOfContextualType(candidate, name, nameType));
+            if ((types?.Count ?? 0) == 0)
+                return null;
+            if (types.Count == 1)
+                return types[0];
+            return getIntersectionType(types);
+        }
+
         if ((constituent.flags & TypeFlags.Object) == 0)
             return null;
-        var result = getTypeOfConcretePropertyOfContextualType(constituent, name);
-        if (result != null)
-            return result;
-        var infos = resolveStructuredTypeMembers(constituent).indexInfos;
-        if ((infos?.Count ?? 0) != 0)
-            throw unsupported("getTypeOfPropertyOfContextualTypeEx: index infos");
-        return null;
+        if (isGenericMappedType(constituent))
+            throw unsupported("getTypeOfPropertyOfContextualTypeEx: source mapped substitution");
+        return getTypeOfConcretePropertyOfContextualType(constituent, name) ?? getTypeFromIndexInfosOfContextualType(constituent, name, nameType);
     }, true);
     private Type getTypeOfConcretePropertyOfContextualType(Type t, string name)
     {
         var property = getPropertyOfType(t, name);
-        if (property == null)
+        if (property == null || isCircularMappedProperty(property))
             return null;
         return removeMissingType(getTypeOfSymbol(property), (property.Flags & SymbolFlags.Optional) != 0);
     }
 
+    private bool isCircularMappedProperty(Symbol symbol)
+    {
+        if ((symbol.CheckFlags & CheckFlags.Mapped) != 0)
+            return valueSymbolLinks.Get(symbol).resolvedType == null && findResolutionCycleStartIndex(symbol, TypeSystemPropertyName.Type) >= 0;
+        return false;
+    }
+
+    private Type getTypeFromIndexInfosOfContextualType(Type t, string name, Type nameType)
+    {
+        if ((t.objectFlags & ObjectFlags.Tuple) != 0)
+            throw unsupported("getTypeFromIndexInfosOfContextualType: source tuple");
+        nameType ??= getStringLiteralType(name);
+        return findApplicableIndexInfo(getIndexInfosOfStructuredType(t), nameType)?.valueType;
+    }
+
+    private List<Type> appendContextualPropertyTypeConstituent(List<Type> types, Type t) => t == null ? types : GoRuntime.Append(types, (t.flags & TypeFlags.Any) != 0 ? unknownType : t);
     private Type instantiateContextualType(Type t, Node node)
     {
         if (t != null && maybeTypeOfKind(t, TypeFlags.Instantiable))
-            throw unsupported("instantiateContextualType: inference mapper");
+        {
+            var inferenceContext = getInferenceContext(node);
+            if (inferenceContext != null)
+                throw unsupported("instantiateContextualType: callable/generic inference context");
+        }
+
         return t;
+    }
+
+    // checker.go:84/277/821/31514. Callable and source-generic inference contexts
+    // are never allocated in the admitted data-type syntax. The actual empty
+    // stack lookup remains selected for synthetic interface this-types.
+    private sealed class InferenceContext
+    {
+        internal TypeMapper nonFixingMapper = null, returnMapper = null;
+    }
+
+    private sealed record InferenceContextInfo(Node node, InferenceContext context);
+    private List<InferenceContextInfo> inferenceContextInfos = null;
+    private InferenceContext getInferenceContext(Node node)
+    {
+        for (int i = (inferenceContextInfos?.Count ?? 0) - 1; i >= 0; i--)
+            if (isNodeDescendantOf(node, inferenceContextInfos[i].node))
+                return inferenceContextInfos[i].context;
+        return null;
     }
 
     private Type getApparentTypeOfContextualType(Node node)
@@ -2074,10 +2731,14 @@ public sealed partial class Checker
     {
         if (contextualType != null)
         {
-            if ((contextualType.flags & TypeFlags.Union) != 0)
+            if ((contextualType.flags & TypeFlags.UnionOrIntersection) != 0)
                 return contextualType.Types().Any(t => isLiteralOfContextualType(candidateType, t));
-            if ((contextualType.flags & (TypeFlags.Intersection | TypeFlags.InstantiableNonPrimitive)) != 0)
-                throw unsupported("isLiteralOfContextualType: intersection/constrained context");
+            if ((contextualType.flags & TypeFlags.InstantiableNonPrimitive) != 0)
+            {
+                var constraint = getBaseConstraintOfType(contextualType) ?? unknownType;
+                return maybeTypeOfKind(constraint, TypeFlags.String) && maybeTypeOfKind(candidateType, TypeFlags.StringLiteral) || maybeTypeOfKind(constraint, TypeFlags.Number) && maybeTypeOfKind(candidateType, TypeFlags.NumberLiteral) || maybeTypeOfKind(constraint, TypeFlags.BigInt) && maybeTypeOfKind(candidateType, TypeFlags.BigIntLiteral) || maybeTypeOfKind(constraint, TypeFlags.ESSymbol) && maybeTypeOfKind(candidateType, TypeFlags.UniqueESSymbol) || isLiteralOfContextualType(candidateType, constraint);
+            }
+
             return (contextualType.flags & (TypeFlags.StringLiteral | TypeFlags.Index | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 && maybeTypeOfKind(candidateType, TypeFlags.StringLiteral) || (contextualType.flags & TypeFlags.NumberLiteral) != 0 && maybeTypeOfKind(candidateType, TypeFlags.NumberLiteral) || (contextualType.flags & TypeFlags.BigIntLiteral) != 0 && maybeTypeOfKind(candidateType, TypeFlags.BigIntLiteral) || (contextualType.flags & TypeFlags.BooleanLiteral) != 0 && maybeTypeOfKind(candidateType, TypeFlags.BooleanLiteral) || (contextualType.flags & TypeFlags.UniqueESSymbol) != 0 && maybeTypeOfKind(candidateType, TypeFlags.UniqueESSymbol);
         }
 
@@ -2262,16 +2923,200 @@ public sealed partial class Checker
 {
     // checker.go:17764/18016. The value record retains the entire selected
     // XXH3 input preimage; opaque hash representation is a managed adaptation.
-    private readonly record struct CacheHashKey(uint sourceId, uint targetId, IntersectionState intersectionState);
+    internal readonly record struct CacheHashKey(string preimage);
+    // checker.go:17767. Managed complete preimage replaces the opaque XXH3 hash;
+    // write widths, little endian order, delimiters and presence tags are exact.
+    private sealed class keyBuilder
+    {
+        private readonly List<byte> bytes = new();
+        internal void writeByte(byte value) => bytes.Add(value);
+        internal void writeUint32(uint value)
+        {
+            Span<byte> encoded = stackalloc byte[4];
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(encoded, value);
+            foreach (var b in encoded)
+                bytes.Add(b);
+        }
+
+        internal void writeUint64(ulong value)
+        {
+            Span<byte> encoded = stackalloc byte[8];
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(encoded, value);
+            foreach (var b in encoded)
+                bytes.Add(b);
+        }
+
+        internal void writeInt(int value) => writeUint64(unchecked((ulong)value));
+        internal void writeSymbol(Symbol symbol) => writeUint64(Ast.GetSymbolId(symbol));
+        internal void writeType(Type t) => writeUint32(t.id);
+        internal void writeTypes(List<Type> types)
+        {
+            writeInt(types?.Count ?? 0);
+            foreach (var t in types ?? [])
+                writeType(t);
+        }
+
+        internal void writeAlias(TypeAlias alias)
+        {
+            if (alias != null)
+            {
+                writeByte(1);
+                writeSymbol(alias.symbol);
+                writeTypes(alias.typeArguments);
+            }
+            else
+                writeByte(0);
+        }
+
+        internal void writeNodeId(ulong id) => writeUint64(id);
+        internal void writeNode(Node node)
+        {
+            if (node != null)
+                writeNodeId(Ast.GetNodeId(node));
+        }
+
+        internal void writeString(string text)
+        {
+            foreach (var value in text)
+                bytes.Add((byte)value);
+        }
+
+        internal CacheHashKey hash() => new(Convert.ToBase64String(bytes.ToArray()));
+        internal bool writeGenericTypeReferences(Type source, Type target, bool ignoreConstraints)
+        {
+            bool constrained = false;
+            List<Type> typeParameters = new(8);
+            void writeTypeReference(Type reference, int depth)
+            {
+                writeType(reference.Target());
+                foreach (var t in reference.AsTypeReference().resolvedTypeArguments ?? [])
+                {
+                    if ((t.flags & TypeFlags.TypeParameter) != 0)
+                    {
+                        if (ignoreConstraints || t.checker.getConstraintOfTypeParameter(t) == null)
+                        {
+                            int index = typeParameters.IndexOf(t);
+                            if (index < 0)
+                            {
+                                index = typeParameters.Count;
+                                typeParameters.Add(t);
+                            }
+
+                            writeByte((byte)'=');
+                            writeInt(index);
+                            continue;
+                        }
+
+                        constrained = true;
+                    }
+                    else if (depth < 4 && isTypeReferenceWithGenericArguments(t))
+                    {
+                        writeByte((byte)'<');
+                        writeTypeReference(t, depth + 1);
+                        writeByte((byte)'>');
+                        continue;
+                    }
+
+                    writeByte((byte)'-');
+                    writeType(t);
+                }
+            }
+
+            writeTypeReference(source, 0);
+            writeByte((byte)',');
+            writeTypeReference(target, 0);
+            return constrained;
+        }
+    }
+
+    private static CacheHashKey getTypeListKey(List<Type> types)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(types);
+        return b.hash();
+    }
+
+    private static CacheHashKey getAliasKey(TypeAlias alias)
+    {
+        var b = new keyBuilder();
+        b.writeAlias(alias);
+        return b.hash();
+    }
+
+    private static CacheHashKey getUnionKey(List<Type> types, Type origin, TypeAlias alias)
+    {
+        var b = new keyBuilder();
+        if (origin == null)
+            b.writeTypes(types);
+        else if ((origin.flags & TypeFlags.Union) != 0)
+        {
+            b.writeByte((byte)'|');
+            b.writeTypes(origin.Types());
+        }
+        else if ((origin.flags & TypeFlags.Intersection) != 0)
+        {
+            b.writeByte((byte)'&');
+            b.writeTypes(origin.Types());
+        }
+        else if ((origin.flags & TypeFlags.Index) != 0)
+        {
+            b.writeByte((byte)'#');
+            b.writeType(origin);
+            b.writeByte((byte)'|');
+            b.writeTypes(types);
+        }
+        else
+            throw new InvalidOperationException("Unhandled case in getUnionKey");
+        b.writeAlias(alias);
+        return b.hash();
+    }
+
+    private static CacheHashKey getIntersectionKey(List<Type> types, IntersectionFlags flags, TypeAlias alias)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(types);
+        if ((flags & IntersectionFlags.NoConstraintReduction) == 0)
+            b.writeAlias(alias);
+        else
+            b.writeByte((byte)'*');
+        return b.hash();
+    }
+
+    private static CacheHashKey getTypeInstantiationKey(List<Type> types, TypeAlias alias, bool singleSignature)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(types);
+        b.writeAlias(alias);
+        if (singleSignature)
+            b.writeByte((byte)'!');
+        return b.hash();
+    }
+
+    private static CacheHashKey getTypeAliasInstantiationKey(List<Type> types, TypeAlias alias) => getTypeInstantiationKey(types, alias, false);
     private static (CacheHashKey key, bool constrained) getRelationKey(Type source, Type target, IntersectionState intersectionState, bool isIdentity, bool ignoreConstraints)
     {
         if (isIdentity && source.id > target.id)
             (source, target) = (target, source);
-        if ((source.objectFlags & ObjectFlags.Reference) != 0 || (target.objectFlags & ObjectFlags.Reference) != 0)
-            throw unsupported("getRelationKey: generic/reference type arguments");
-        return (new(source.id, target.id, intersectionState), false);
+        var b = new keyBuilder();
+        bool constrained = false;
+        if (isTypeReferenceWithGenericArguments(source) && isTypeReferenceWithGenericArguments(target))
+        {
+            b.writeByte((byte)'g');
+            constrained = b.writeGenericTypeReferences(source, target, ignoreConstraints);
+        }
+        else
+        {
+            b.writeByte((byte)'s');
+            b.writeType(source);
+            b.writeType(target);
+        }
+
+        b.writeUint32((uint)intersectionState);
+        return (b.hash(), constrained);
     }
 
+    private static bool isNonDeferredTypeReference(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node == null;
+    private static bool isTypeReferenceWithGenericArguments(Type t) => isNonDeferredTypeReference(t) && (t.checker.getTypeArguments(t)?.Any(arg => (arg.flags & TypeFlags.TypeParameter) != 0 || isTypeReferenceWithGenericArguments(arg)) ?? false);
     // checker.go:538. Widening contexts and their caches retain child identity.
     private sealed class WideningContext
     {
@@ -2317,8 +3162,10 @@ public sealed partial class Checker
                 var widenedTypes = t.Types().Select(s => (s.flags & TypeFlags.Nullable) != 0 ? s : getWidenedTypeWithContext(s, unionContext)).ToList();
                 result = getUnionTypeEx(widenedTypes, widenedTypes.Any(isEmptyObjectType) ? UnionReduction.Subtype : UnionReduction.Literal, null, null);
             }
-            else if ((t.flags & TypeFlags.Intersection) != 0 || (t.objectFlags & (ObjectFlags.Reference | ObjectFlags.Tuple)) != 0)
-                throw unsupported("getWidenedTypeWithContext: intersection/array/tuple");
+            else if ((t.flags & TypeFlags.Intersection) != 0)
+                result = getIntersectionType(instantiateList(t.Types(), null, (u, _) => getWidenedType(u)));
+            else if (isArrayOrTupleType(t))
+                result = createTypeReference(t.Target(), instantiateList(getTypeArguments(t), null, (u, _) => getWidenedType(u)));
             if (result != null && context == null)
                 cachedTypes[key] = result;
             return result ?? t;
@@ -2419,7 +3266,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Union) != 0)
             return t.Types().Any(isEmptyObjectType);
         if ((t.flags & TypeFlags.Intersection) != 0)
-            throw unsupported("isEmptyObjectType: intersection");
+            return t.Types().All(isEmptyObjectType);
         return false;
     }
 }
@@ -2429,7 +3276,7 @@ public sealed partial class Checker
     private RelationComparisonResult reliabilityFlags;
     private Relater freeRelater;
     private string getSuggestionForNonexistentProperty(string name, Type containingType) => getSpellingSuggestionForName(name, getPropertiesOfType(containingType) ?? [], SymbolFlags.Value)?.Name ?? "";
-    private Symbol getParentOfSymbol(Symbol symbol) => symbol.Parent != null ? getMergedSymbol(getLateBoundSymbol(symbol.Parent)) : null;
+    internal Symbol getParentOfSymbol(Symbol symbol) => symbol.Parent != null ? getMergedSymbol(getLateBoundSymbol(symbol.Parent)) : null;
     private Symbol getLateBoundSymbol(Symbol symbol)
     {
         foreach (var declaration in symbol.Declarations ?? [])
@@ -2465,9 +3312,67 @@ public sealed partial class Checker
 
     private void checkIndexConstraints(Type t, Symbol symbol, bool isStaticIndex)
     {
-        if ((resolveStructuredTypeMembers(t).indexInfos?.Count ?? 0) == 0)
+        var infos = getIndexInfosOfType(t);
+        if ((infos?.Count ?? 0) == 0)
             return;
-        throw unsupported("checkIndexConstraints: nonempty index signatures");
+        foreach (var prop in getPropertiesOfObjectType(t) ?? [])
+            if (!(isStaticIndex && (prop.Flags & SymbolFlags.Prototype) != 0))
+                checkIndexConstraintForProperty(t, prop, getLiteralTypeFromProperty(prop, TypeFlags.StringOrNumberLiteralOrUnique, true), getNonMissingTypeOfSymbol(prop));
+        if (symbol.ValueDeclaration != null && Ast.IsClassLike(symbol.ValueDeclaration))
+            throw unsupported("checkIndexConstraints: source class dynamic member");
+        if (infos.Count > 1)
+            foreach (var info in infos)
+                checkIndexConstraintForIndexSignature(t, info);
+    }
+
+    private List<IndexInfo> getApplicableIndexInfos(Type t, Type keyType) => getIndexInfosOfType(t)?.Where(info => isApplicableIndexType(keyType, info.keyType)).ToList();
+    private void checkIndexConstraintForProperty(Type t, Symbol prop, Type propNameType, Type propType)
+    {
+        var declaration = prop.ValueDeclaration;
+        var name = declaration?.Name();
+        if (name != null && Ast.IsPrivateIdentifier(name))
+            return;
+        var infos = getApplicableIndexInfos(t, propNameType);
+        if ((infos?.Count ?? 0) == 0)
+            return;
+        var interfaceDeclaration = (t.objectFlags & ObjectFlags.Interface) != 0 ? Ast.GetDeclarationOfKind(t.symbol, Kind.InterfaceDeclaration) : null;
+        var propDeclaration = declaration != null && Ast.IsBinaryExpression(declaration) || name != null && Ast.IsComputedPropertyName(name) ? declaration : null;
+        var localProp = getParentOfSymbol(prop) == t.symbol ? declaration : null;
+        foreach (var info in infos)
+        {
+            var localIndex = info.declaration != null && getParentOfSymbol(getSymbolOfDeclaration(info.declaration)) == t.symbol ? info.declaration : null;
+            var errorNode = localProp ?? localIndex;
+            if (errorNode == null && interfaceDeclaration != null && !(getBaseTypes(t)?.Any(b => getPropertyOfObjectType(b, prop.Name) != null && getIndexTypeOfType(b, info.keyType) != null) ?? false))
+                errorNode = interfaceDeclaration;
+            if (errorNode != null && !isTypeAssignableTo(propType, info.valueType))
+            {
+                var diagnostic = NewDiagnosticForNode(errorNode, Diagnostics.Property_0_of_type_1_is_not_assignable_to_2_index_type_3, symbolToString(prop), typeToStringByteString(propType), typeToStringByteString(info.keyType), typeToStringByteString(info.valueType));
+                if (propDeclaration != null && errorNode != propDeclaration)
+                    diagnostic.AddRelatedInfo(NewDiagnosticForNode(propDeclaration, Diagnostics.X_0_is_declared_here, symbolToString(prop)));
+                addDiagnostic(diagnostic);
+            }
+        }
+    }
+
+    private void checkIndexConstraintForIndexSignature(Type t, IndexInfo checkInfo)
+    {
+        var declaration = checkInfo.declaration;
+        var infos = getApplicableIndexInfos(t, checkInfo.keyType);
+        if ((infos?.Count ?? 0) == 0)
+            return;
+        var interfaceDeclaration = (t.objectFlags & ObjectFlags.Interface) != 0 ? Ast.GetDeclarationOfKind(t.symbol, Kind.InterfaceDeclaration) : null;
+        var localCheck = declaration != null && getParentOfSymbol(getSymbolOfDeclaration(declaration)) == t.symbol ? declaration : null;
+        foreach (var info in infos)
+        {
+            if (info == checkInfo)
+                continue;
+            var localIndex = info.declaration != null && getParentOfSymbol(getSymbolOfDeclaration(info.declaration)) == t.symbol ? info.declaration : null;
+            var errorNode = localCheck ?? localIndex;
+            if (errorNode == null && interfaceDeclaration != null && !(getBaseTypes(t)?.Any(b => getIndexInfoOfType(b, checkInfo.keyType) != null && getIndexTypeOfType(b, info.keyType) != null) ?? false))
+                errorNode = interfaceDeclaration;
+            if (errorNode != null && !isTypeAssignableTo(checkInfo.valueType, info.valueType))
+                error(errorNode, Diagnostics.X_0_index_type_1_is_not_assignable_to_2_index_type_3, typeToStringByteString(checkInfo.keyType), typeToStringByteString(checkInfo.valueType), typeToStringByteString(info.keyType), typeToStringByteString(info.valueType));
+        }
     }
 
     private void checkTypeForDuplicateIndexSignatures(Node node)
@@ -2619,7 +3524,7 @@ public sealed partial class Checker
     private TypeFacts getTypeFactsWorker(Type t, TypeFacts callerOnlyNeeds)
     {
         if ((t.flags & (TypeFlags.Intersection | TypeFlags.Instantiable)) != 0)
-            throw unsupported("getTypeFactsWorker: constrained/intersection facts");
+            t = getBaseConstraintOfType(t) ?? unknownType;
         var flags = t.flags;
         if ((flags & (TypeFlags.String | TypeFlags.StringMapping)) != 0)
             return strictNullChecks ? TypeFacts.StringStrictFacts : TypeFacts.StringFacts;
@@ -2681,6 +3586,8 @@ public sealed partial class Checker
             return facts;
         }
 
+        if ((flags & TypeFlags.Intersection) != 0)
+            return getIntersectionTypeFacts(t, callerOnlyNeeds);
         return TypeFacts.UnknownFacts;
     }
 
@@ -2697,29 +3604,69 @@ public sealed partial class Checker
     private Type GetNonNullableType(Type t) => strictNullChecks ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
     private Type getAdjustedTypeWithFacts(Type t, TypeFacts facts)
     {
-        if (strictNullChecks && (t.flags & TypeFlags.Unknown) != 0)
-            throw unsupported("getAdjustedTypeWithFacts: unknown-union/intersection adjustment");
-        var reduced = getTypeWithFacts(t, facts);
+        var reduced = recombineUnknownType(getTypeWithFacts(strictNullChecks && (t.flags & TypeFlags.Unknown) != 0 ? unknownUnionType : t, facts));
         if (strictNullChecks)
         {
             switch (facts)
             {
+                case TypeFacts.NEUndefined:
+                    return removeNullableByIntersection(reduced, TypeFacts.EQUndefined, TypeFacts.EQNull, TypeFacts.IsNull, nullType);
+                case TypeFacts.NENull:
+                    return removeNullableByIntersection(reduced, TypeFacts.EQNull, TypeFacts.EQUndefined, TypeFacts.IsUndefined, undefinedType);
                 case TypeFacts.NEUndefinedOrNull:
                 case TypeFacts.Truthy:
                     return mapType(reduced, s => hasTypeFacts(s, TypeFacts.EQUndefinedOrNull) ? getGlobalNonNullableTypeInstantiation(s) : s);
-                case TypeFacts.NEUndefined:
-                case TypeFacts.NENull:
-                    throw unsupported("getAdjustedTypeWithFacts: single-nullable intersection");
             }
         }
 
         return reduced;
     }
 
+    private Type removeNullableByIntersection(Type t, TypeFacts targetFacts, TypeFacts otherFacts, TypeFacts includesFacts, Type otherType)
+    {
+        var facts = getTypeFacts(t, TypeFacts.EQUndefined | TypeFacts.EQNull | TypeFacts.IsUndefined | TypeFacts.IsNull);
+        if ((facts & targetFacts) == 0)
+            return t;
+        var emptyAndOther = getUnionType([emptyObjectType, otherType]);
+        return mapType(t, u => hasTypeFacts(u, targetFacts) ? getIntersectionType([u, (facts & includesFacts) == 0 && hasTypeFacts(u, otherFacts) ? emptyAndOther : emptyObjectType]) : u);
+    }
+
+    private Type recombineUnknownType(Type t) => t == unknownUnionType ? unknownType : t;
     private Type getGlobalNonNullableTypeInstantiation(Type t)
     {
-        // Fixed noLib options: getGlobalNonNullableTypeAlias() returns nil.
+        var alias = getGlobalNonNullableTypeAliasOrNil();
+        if (alias != null)
+            throw unsupported("getGlobalNonNullableTypeInstantiation: source generic library alias");
         return getIntersectionType([t, emptyObjectType]);
+    }
+
+    private Symbol globalNonNullableTypeAlias;
+    private bool globalNonNullableTypeAliasResolved;
+    private Symbol getGlobalNonNullableTypeAliasOrNil()
+    {
+        if (!globalNonNullableTypeAliasResolved)
+        {
+            globalNonNullableTypeAlias = getGlobalTypeAliasSymbol("NonNullable", 1, false);
+            globalNonNullableTypeAliasResolved = true;
+        }
+
+        return globalNonNullableTypeAlias;
+    }
+
+    private Symbol getGlobalTypeAliasSymbol(string name, int arity, bool reportErrors)
+    {
+        var symbol = getGlobalSymbol(name, SymbolFlags.TypeAlias, reportErrors ? Diagnostics.Cannot_find_global_type_0 : null);
+        if (symbol == null)
+            return null;
+        getDeclaredTypeOfSymbol(symbol);
+        if ((typeAliasLinks.Get(symbol).typeParameters?.Count ?? 0) != arity)
+        {
+            if (reportErrors)
+                error(symbol.Declarations.Find(Ast.IsTypeAliasDeclaration), Diagnostics.Global_type_0_must_have_1_type_parameter_s, Ast.SymbolName(symbol), arity);
+            return null;
+        }
+
+        return symbol;
     }
 
     private Type checkNonNullExpression(Node node) => checkNonNullType(checkExpression(node), node);
@@ -2844,8 +3791,15 @@ public sealed partial class Checker
         Type propertyType;
         if (property == null)
         {
-            if ((getIndexInfosOfType(apparentType)?.Count ?? 0) != 0)
-                throw unsupported("checkPropertyAccessExpressionOrQualifiedName: index signature");
+            var info = getApplicableIndexInfoForName(apparentType, right.Text());
+            if (info != null)
+            {
+                if (info.declaration != null && IsDeprecatedDeclaration(info.declaration))
+                    throw unsupported("checkPropertyAccessExpressionOrQualifiedName: deprecated source index");
+                propertyType = info.valueType;
+                return getFlowTypeOfAccessExpression(node, null, propertyType, right);
+            }
+
             if (leftType.symbol == globalThisSymbol)
                 throw unsupported("checkPropertyAccessExpressionOrQualifiedName: builtin globalThis");
             if (right.Text() != "")
@@ -3002,8 +3956,7 @@ public sealed partial class Checker
             }
             else
             {
-                if ((containingType.flags & TypeFlags.Intersection) != 0)
-                    throw unsupported("reportNonexistentProperty: never intersection");
+                diagnostic = elaborateNeverIntersection(diagnostic, propertyNode, containingType);
                 if (containerSeemsToBeEmptyDomElement(containingType))
                     throw unsupported("reportNonexistentProperty: DOM library suggestion");
                 diagnostic = NewDiagnosticChainForNode(diagnostic, propertyNode, Diagnostics.Property_0_does_not_exist_on_type_1, missingProperty, container);
@@ -3058,13 +4011,7 @@ public sealed partial class Checker
         return (t.flags & TypeFlags.Union) != 0 ? t.Types().All(commonDom) && isEmptyObjectType(t) : commonDom(t) && isEmptyObjectType(t);
     }
 
-    private IndexInfo getApplicableIndexInfoForName(Type t, string name)
-    {
-        if ((getIndexInfosOfType(t)?.Count ?? 0) != 0)
-            throw unsupported("getApplicableIndexInfoForName: index signatures");
-        return null;
-    }
-
+    private IndexInfo getApplicableIndexInfoForName(Type t, string name) => getApplicableIndexInfo(t, isLateBoundName(name) ? esSymbolType : getStringLiteralType(name));
     private Type globalPromiseType;
     private Type getGlobalPromiseType() => globalPromiseType ??= getGlobalType("Promise", 1, false);
     private Type GetPromisedTypeOfPromise(Type t) => getPromisedTypeOfPromiseEx(t, null, null);
@@ -3127,22 +4074,58 @@ public sealed partial class Checker
 
     private void resolveUnionTypeMembers(Type t)
     {
-        // checker.go:21456. The selected constituents have no signatures/indexes;
-        // reject an actual nonempty slot before the excluded combination algorithms.
-        foreach (var constituent in t.Types())
-        {
-            if (typeHasCallOrConstructSignatures(constituent) || (getIndexInfosOfType(constituent)?.Count ?? 0) != 0)
-                throw unsupported("resolveUnionTypeMembers: call/construct/index combination");
-        }
-
-        setStructuredTypeMembers(t, null, null, null, null);
+        var calls = getUnionSignatures(t.Types().Select(u => getSignaturesOfType(u, SignatureKind.Call)).ToList());
+        if ((calls?.Count ?? 0) == 0)
+            calls = getArrayMemberCallSignatures(t);
+        var constructs = getUnionSignatures(t.Types().Select(u => getSignaturesOfType(u, SignatureKind.Construct)).ToList());
+        setStructuredTypeMembers(t, null, calls, constructs, getUnionIndexInfos(t.Types()));
     }
 
+    private List<Signature> getUnionSignatures(List<List<Signature>> lists)
+    {
+        foreach (var list in lists)
+        {
+            if ((list?.Count ?? 0) == 0)
+                return null;
+            throw unsupported("getUnionSignatures: nonempty callable signature");
+        }
+
+        return null;
+    }
+
+    private List<Signature> getArrayMemberCallSignatures(Type t)
+    {
+        foreach (var u in t.Types())
+            if ((u.objectFlags & ObjectFlags.Instantiated) == 0 || u.symbol == null || u.symbol.Parent == null || !isArrayOrTupleSymbol(u.symbol.Parent))
+                return null;
+        throw unsupported("getArrayMemberCallSignatures: source array member");
+    }
+
+    private bool isArrayOrTupleSymbol(Symbol symbol)
+    {
+        if (symbol == null || globalArrayType.symbol == null || globalReadonlyArrayType.symbol == null)
+            return false;
+        return getSymbolIfSameReference(symbol, globalArrayType.symbol) != null || getSymbolIfSameReference(symbol, globalReadonlyArrayType.symbol) != null;
+    }
+
+    private List<IndexInfo> getUnionIndexInfos(List<Type> types)
+    {
+        var sourceInfos = getIndexInfosOfType(types[0]);
+        List<IndexInfo> result = null;
+        foreach (var info in sourceInfos ?? [])
+            if (types.All(t => getIndexInfoOfType(t, info.keyType) != null))
+            {
+                var valueType = getUnionType(types.Select(t => getIndexTypeOfType(t, info.keyType)).ToList());
+                result = GoRuntime.Append(result, newIndexInfo(info.keyType, valueType, types.Any(t => getIndexInfoOfType(t, info.keyType).isReadonly), null, null));
+            }
+
+        return result;
+    }
+
+    private Type getIndexTypeOfType(Type t, Type keyType) => getIndexInfoOfType(t, keyType)?.valueType;
     private bool typeHasCallOrConstructSignatures(Type t) => (t.flags & TypeFlags.StructuredType) != 0 && (resolveStructuredTypeMembers(t).signatures?.Count ?? 0) != 0;
     private List<Symbol> getPropertiesOfUnionOrIntersectionType(Type t)
     {
-        if ((t.flags & TypeFlags.Intersection) != 0)
-            throw unsupported("getPropertiesOfUnionOrIntersectionType: intersection");
         var d = t.AsUnionOrIntersectionType();
         if (d.resolvedProperties == null)
         {
@@ -3153,7 +4136,7 @@ public sealed partial class Checker
                 foreach (var prop in getPropertiesOfType(current) ?? [])
                     if (checkedNames.Add(prop.Name))
                     {
-                        var combined = getPropertyOfUnionOrIntersectionType(t, prop.Name, false);
+                        var combined = getPropertyOfUnionOrIntersectionType(t, prop.Name, (t.flags & TypeFlags.Intersection) != 0);
                         if (combined != null)
                             props.Add(combined);
                     }
@@ -3197,13 +4180,14 @@ public sealed partial class Checker
 
     private Symbol createUnionOrIntersectionProperty(Type containingType, string name, bool skipObjectFunctionPropertyAugment)
     {
-        if ((containingType.flags & TypeFlags.Intersection) != 0)
-            throw unsupported("createUnionOrIntersectionProperty: intersection");
+        bool isUnion = (containingType.flags & TypeFlags.Union) != 0;
+        bool mergedInstantiations = false;
         SymbolFlags propFlags = 0, optionalFlag = 0;
         Symbol singleProp = null;
         var propSet = new List<Symbol>();
         List<Type> indexTypes = null;
-        CheckFlags checkFlags = 0;
+        CheckFlags checkFlags = isUnion ? 0 : CheckFlags.Readonly;
+        optionalFlag = isUnion ? 0 : SymbolFlags.Optional;
         var syntheticFlag = CheckFlags.SyntheticMethod;
         foreach (var current in containingType.Types())
         {
@@ -3218,7 +4202,13 @@ public sealed partial class Checker
                 if ((modifiers & ModifierFlags.NonPublicAccessibilityModifier) != 0 || (writeModifiers & ModifierFlags.NonPublicAccessibilityModifier) != 0)
                     throw unsupported("createUnionOrIntersectionProperty: nonpublic property");
                 if ((prop.Flags & SymbolFlags.ClassMember) != 0)
-                    optionalFlag |= prop.Flags & SymbolFlags.Optional;
+                {
+                    if (isUnion)
+                        optionalFlag |= prop.Flags & SymbolFlags.Optional;
+                    else
+                        optionalFlag &= prop.Flags;
+                }
+
                 if (singleProp == null)
                 {
                     singleProp = prop;
@@ -3227,28 +4217,41 @@ public sealed partial class Checker
                 else if (prop != singleProp)
                 {
                     if (getTargetSymbol(prop) == getTargetSymbol(singleProp) && compareProperties(singleProp, prop, (a, b) => a == b ? Ternary.True : Ternary.False) == Ternary.True)
-                        throw unsupported("createUnionOrIntersectionProperty: equivalent generic instantiations");
-                    if (propSet.Count == 0)
-                        propSet.Add(singleProp);
-                    if (!propSet.Contains(prop))
-                        propSet.Add(prop);
+                        mergedInstantiations = singleProp.Parent != null && (getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(singleProp.Parent)?.Count ?? 0) != 0;
+                    else
+                    {
+                        if (propSet.Count == 0)
+                            propSet.Add(singleProp);
+                        if (!propSet.Contains(prop))
+                            propSet.Add(prop);
+                    }
+
                     if ((propFlags & SymbolFlags.Accessor) != 0 && (prop.Flags & SymbolFlags.Accessor) != (propFlags & SymbolFlags.Accessor))
                         propFlags = propFlags & ~SymbolFlags.Accessor | SymbolFlags.Property;
                 }
 
-                if (isReadonlySymbol(prop))
+                if (isUnion && isReadonlySymbol(prop))
                     checkFlags |= CheckFlags.Readonly;
+                else if (!isUnion && !isReadonlySymbol(prop))
+                    checkFlags &= ~CheckFlags.Readonly;
                 checkFlags |= CheckFlags.ContainsPublic | CheckFlags.ContainsWritePublic;
                 if ((modifiers & ModifierFlags.Static) != 0)
                     checkFlags |= CheckFlags.ContainsStatic;
                 if ((prop.Flags & SymbolFlags.Prototype) == 0)
                     syntheticFlag = CheckFlags.SyntheticProperty;
             }
-            else
+            else if (isUnion)
             {
-                if (!isLateBoundName(name) && getApplicableIndexInfoForName(t, name) != null)
-                    throw unsupported("createUnionOrIntersectionProperty: index/tuple property");
-                if ((t.objectFlags & ObjectFlags.ObjectLiteral) != 0 && (t.objectFlags & ObjectFlags.ContainsSpread) == 0)
+                var indexInfo = !isLateBoundName(name) ? getApplicableIndexInfoForName(t, name) : null;
+                if (indexInfo != null)
+                {
+                    propFlags = propFlags & ~SymbolFlags.Accessor | SymbolFlags.Property;
+                    checkFlags |= CheckFlags.WritePartial | (indexInfo.isReadonly ? CheckFlags.Readonly : 0);
+                    if ((t.objectFlags & ObjectFlags.Tuple) != 0)
+                        throw unsupported("createUnionOrIntersectionProperty: source tuple");
+                    (indexTypes ??= []).Add(indexInfo.valueType);
+                }
+                else if ((t.objectFlags & ObjectFlags.ObjectLiteral) != 0 && (t.objectFlags & ObjectFlags.ContainsSpread) == 0)
                 {
                     checkFlags |= CheckFlags.WritePartial;
                     (indexTypes ??= []).Add(undefinedType);
@@ -3261,12 +4264,34 @@ public sealed partial class Checker
         if (singleProp == null)
             return null;
         if (propSet.Count == 0 && (checkFlags & CheckFlags.ReadPartial) == 0 && (indexTypes?.Count ?? 0) == 0)
-            return singleProp;
+        {
+            if (!mergedInstantiations)
+                return singleProp;
+            Type singleType = null;
+            TypeMapper singleMapper = null;
+            if ((singleProp.Flags & SymbolFlags.Transient) != 0)
+            {
+                var singleLinks = valueSymbolLinks.Get(singleProp);
+                singleType = singleLinks.resolvedType;
+                singleMapper = singleLinks.mapper;
+            }
+
+            var clone = createSymbolWithType(singleProp, singleType);
+            if (singleProp.ValueDeclaration != null)
+                clone.Parent = singleProp.ValueDeclaration.Symbol().Parent;
+            var cloneLinks = valueSymbolLinks.Get(clone);
+            cloneLinks.containingType = containingType;
+            cloneLinks.mapper = singleMapper;
+            cloneLinks.writeType = getWriteTypeOfSymbol(singleProp);
+            return clone;
+        }
+
         if (propSet.Count == 0)
             propSet.Add(singleProp);
         List<Node> declarations = null;
         Type firstType = null, nameType = null;
         var propTypes = new List<Type>();
+        List<Type> writeTypes = null;
         Node firstValueDeclaration = null;
         bool hasNonUniformValueDeclaration = false;
         foreach (var prop in propSet)
@@ -3285,13 +4310,18 @@ public sealed partial class Checker
                 nameType = valueSymbolLinks.Get(prop).nameType;
             }
 
-            if ((prop.Flags & SymbolFlags.Accessor) != 0)
-                throw unsupported("createUnionOrIntersectionProperty: accessor write type");
+            var writeType = getWriteTypeOfSymbol(prop);
+            if (writeTypes != null || writeType != t)
+            {
+                writeTypes ??= new List<Type>(propTypes);
+                writeTypes.Add(writeType);
+            }
+
             if (t != firstType)
                 checkFlags |= CheckFlags.HasNonUniformType;
             if (isLiteralType(t))
                 checkFlags |= CheckFlags.HasLiteralType;
-            if ((t.flags & TypeFlags.Never) != 0)
+            if ((t.flags & TypeFlags.Never) != 0 && t != uniqueLiteralType)
                 checkFlags |= CheckFlags.HasNeverType;
             propTypes.Add(t);
         }
@@ -3310,8 +4340,18 @@ public sealed partial class Checker
         links.containingType = containingType;
         links.nameType = nameType;
         if (propTypes.Count > 2)
-            throw unsupported("createUnionOrIntersectionProperty: deferred multiobject constituents");
-        links.resolvedType = getUnionType(propTypes);
+        {
+            result.CheckFlags |= CheckFlags.DeferredType;
+            var deferred = deferredSymbolLinks.Get(result);
+            deferred.parent = containingType;
+            deferred.constituents = propTypes;
+            deferred.writeConstituents = writeTypes;
+            return result;
+        }
+
+        links.resolvedType = isUnion ? getUnionType(propTypes) : getIntersectionType(propTypes);
+        if (writeTypes != null)
+            links.writeType = isUnion ? getUnionType(writeTypes) : getIntersectionType(writeTypes);
         return result;
     }
 
@@ -3322,7 +4362,7 @@ public sealed partial class Checker
             return propertyType;
         var indexInfo = getApplicableIndexInfoForName(t, name);
         if (indexInfo != null)
-            throw unsupported("getTypeOfPropertyOrIndexSignatureOfType: index signature");
+            return addOptionalityEx(indexInfo.valueType, true, true);
         return null;
     }
 
@@ -3418,7 +4458,7 @@ public sealed partial class Checker
         if (discriminated == null)
         {
             var properties = (node.Properties() ?? []).Where(p => p.Symbol() != null && (p.Kind == Kind.PropertyAssignment ? isPossiblyDiscriminantValue(p.Initializer()) && isDiscriminantProperty(contextualType, p.Symbol().Name) : p.Kind == Kind.ShorthandPropertyAssignment && isDiscriminantProperty(contextualType, p.Symbol().Name))).ToList();
-            var members = (getPropertiesOfType(contextualType) ?? []).Where(s => (s.Flags & SymbolFlags.Optional) != 0 && node.Symbol().Members[s.Name] == null && isDiscriminantProperty(contextualType, s.Name)).ToList();
+            var members = (getPropertiesOfType(contextualType) ?? []).Where(s => (s.Flags & SymbolFlags.Optional) != 0 && node.Symbol().Members?[s.Name] == null && isDiscriminantProperty(contextualType, s.Name)).ToList();
             discriminated = discriminateTypeByDiscriminableItems(contextualType, new ObjectLiteralDiscriminator(this, properties, members));
         }
 
@@ -3476,15 +4516,14 @@ public sealed partial class Checker
 
     // The selected complete cache preimage is ordered type IDs + flags. Aliases
     // and retained intersection payloads are excluded explicitly below.
-    private readonly Dictionary<string, Type> intersectionTypes = new(StringComparer.Ordinal);
+    private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
     private Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
     private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
-        if (alias != null)
-            throw unsupported("getIntersectionTypeEx: alias");
         var orderedTypes = new List<Type>(types.Count);
         var includes = addTypesToIntersection(orderedTypes, 0, types);
         var typeSet = orderedTypes;
+        ObjectFlags objectFlags = ObjectFlags.None;
         if ((includes & TypeFlags.Never) != 0)
             return typeSet.Contains(silentNeverType) ? silentNeverType : neverType;
         if (strictNullChecks && (includes & TypeFlags.Nullable) != 0 && (includes & (TypeFlags.Object | TypeFlags.NonPrimitive | TypeFlags.IncludesEmptyObject)) != 0 || (includes & TypeFlags.NonPrimitive) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NonPrimitive)) != 0 || (includes & TypeFlags.StringLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.StringLike)) != 0 || (includes & TypeFlags.NumberLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NumberLike)) != 0 || (includes & TypeFlags.BigIntLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.BigIntLike)) != 0 || (includes & TypeFlags.ESSymbolLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.ESSymbolLike)) != 0 || (includes & TypeFlags.VoidLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.VoidLike)) != 0)
@@ -3504,9 +4543,27 @@ public sealed partial class Checker
             return unknownType;
         if (typeSet.Count == 1)
             return typeSet[0];
-        if ((includes & TypeFlags.Instantiable) != 0)
-            throw unsupported("getIntersectionTypeEx: type variable constraint reduction");
-        var key = ((uint)flags).ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + string.Join(",", typeSet.Select(t => t.id));
+        if (typeSet.Count == 2 && (flags & IntersectionFlags.NoConstraintReduction) == 0)
+        {
+            int typeVarIndex = (typeSet[0].flags & TypeFlags.TypeVariable) != 0 ? 0 : 1;
+            var typeVariable = typeSet[typeVarIndex];
+            var primitiveType = typeSet[1 - typeVarIndex];
+            if ((typeVariable.flags & TypeFlags.TypeVariable) != 0 && ((primitiveType.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 && !isGenericStringLikeType(primitiveType) || (includes & TypeFlags.IncludesEmptyObject) != 0))
+            {
+                var constraint = getBaseConstraintOfType(typeVariable);
+                if (constraint != null && (constraint.Distributed()?.All(isPrimitiveOrObjectOrEmptyType) ?? true))
+                {
+                    if (isTypeStrictSubtypeOf(constraint, primitiveType))
+                        return typeVariable;
+                    if (!((constraint.flags & TypeFlags.Union) != 0 && constraint.Types().Any(n => isTypeStrictSubtypeOf(n, primitiveType))))
+                        if (!isTypeStrictSubtypeOf(primitiveType, constraint))
+                            return neverType;
+                    objectFlags = ObjectFlags.IsConstrainedTypeVariable;
+                }
+            }
+        }
+
+        var key = getIntersectionKey(typeSet, flags, alias);
         if (intersectionTypes.TryGetValue(key, out var result))
             return result;
         if ((includes & TypeFlags.Union) != 0)
@@ -3514,32 +4571,40 @@ public sealed partial class Checker
             var(reducedSet, reduced) = intersectUnionsOfPrimitiveTypes(typeSet);
             typeSet = reducedSet;
             if (reduced)
-                result = getIntersectionTypeEx(typeSet, flags, null);
+                result = getIntersectionTypeEx(typeSet, flags, alias);
             else if (typeSet.All(isUnionWithUndefined))
             {
                 var containedUndefined = typeSet.Any(containsMissingType) ? missingType : undefinedType;
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Undefined) == 0);
-                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), containedUndefined], UnionReduction.Literal, null, null);
+                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), containedUndefined], UnionReduction.Literal, alias, null);
             }
             else if (typeSet.All(isUnionWithNull))
             {
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Null) == 0);
-                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, null, null);
+                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, alias, null);
             }
             else if (typeSet.Count >= 3 && types.Count > 2)
             {
                 int middle = typeSet.Count / 2;
-                result = getIntersectionTypeEx([getIntersectionTypeEx(typeSet.GetRange(0, middle), flags, null), getIntersectionTypeEx(typeSet.GetRange(middle, typeSet.Count - middle), flags, null)], flags, null);
+                result = getIntersectionTypeEx([getIntersectionTypeEx(typeSet.GetRange(0, middle), flags, null), getIntersectionTypeEx(typeSet.GetRange(middle, typeSet.Count - middle), flags, null)], flags, alias);
             }
             else
             {
                 if (!checkCrossProductUnion(typeSet))
                     return errorType;
-                result = getUnionTypeEx(getCrossProductIntersections(typeSet, flags), UnionReduction.Literal, null, null);
+                var constituents = getCrossProductIntersections(typeSet, flags);
+                Type origin = null;
+                if (constituents.Any(t => (t.flags & TypeFlags.Intersection) != 0) && getConstituentCountOfTypes(constituents) > getConstituentCountOfTypes(typeSet))
+                    origin = newIntersectionType(ObjectFlags.None, typeSet);
+                result = getUnionTypeEx(constituents, UnionReduction.Literal, alias, origin);
             }
         }
         else
-            throw unsupported("getIntersectionTypeEx: retained structural intersection payload");
+        {
+            result = newIntersectionType(objectFlags | getPropagatingFlagsOfTypes(types, TypeFlags.Nullable), typeSet);
+            result.alias = alias;
+        }
+
         intersectionTypes[key] = result;
         return result;
     }
@@ -3555,7 +4620,7 @@ public sealed partial class Checker
     {
         var flags = t.flags;
         if ((flags & TypeFlags.Intersection) != 0)
-            throw unsupported("addTypeToIntersection: retained intersection");
+            return addTypesToIntersection(typeSet, includes, t.Types());
         if (IsEmptyAnonymousObjectType(t))
         {
             if ((includes & TypeFlags.IncludesEmptyObject) == 0)
@@ -3731,6 +4796,8 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
+    private Type uniqueLiteralType;
+    private TypeMapper uniqueLiteralMapper;
     private Type stringNumberSymbolType;
     private readonly record struct PropertiesTypesKey(uint typeId, TypeFlags include, bool includeOrigin);
     private readonly Dictionary<PropertiesTypesKey, Type> propertiesTypes = new();
@@ -3738,12 +4805,16 @@ public sealed partial class Checker
     private Type getIndexTypeEx(Type t, IndexFlags indexFlags)
     {
         t = getReducedType(t);
-        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & (ObjectFlags.Reference | ObjectFlags.Mapped)) != 0)
-            throw unsupported("getIndexTypeEx: generic/no-infer/mapped index");
+        if ((t.flags & TypeFlags.Substitution) != 0)
+            throw unsupported("getIndexTypeEx: source NoInfer substitution");
+        if (shouldDeferIndexType(t, indexFlags))
+            return getIndexTypeForGenericType(t, indexFlags);
+        if ((t.objectFlags & ObjectFlags.Mapped) != 0)
+            throw unsupported("getIndexTypeEx: source mapped index");
         if ((t.flags & TypeFlags.Union) != 0)
             return getIntersectionType(t.Types().Select(part => getIndexTypeEx(part, indexFlags)).ToList());
         if ((t.flags & TypeFlags.Intersection) != 0)
-            throw unsupported("getIndexTypeEx: intersection payload");
+            return getUnionType(t.Types().Select(part => getIndexTypeEx(part, indexFlags)).ToList());
         if (t == wildcardType)
             return wildcardType;
         if ((t.flags & TypeFlags.Unknown) != 0)
@@ -3754,25 +4825,61 @@ public sealed partial class Checker
         return getLiteralTypeFromProperties(t, include, indexFlags == IndexFlags.None);
     }
 
+    private bool shouldDeferIndexType(Type t, IndexFlags indexFlags) => (t.flags & TypeFlags.InstantiableNonPrimitive) != 0 || isGenericTupleType(t) || isGenericMappedType(t) || (t.flags & TypeFlags.Union) != 0 && (indexFlags & IndexFlags.NoReducibleCheck) == 0 && isGenericReducibleType(t) || (t.flags & TypeFlags.Intersection) != 0 && maybeTypeOfKind(t, TypeFlags.Instantiable) && t.Types().Any(IsEmptyAnonymousObjectType);
+    private Type getIndexTypeForGenericType(Type t, IndexFlags indexFlags)
+    {
+        var key = new CachedTypeKey((indexFlags & IndexFlags.StringsOnly) != 0 ? CachedTypeKind.StringIndexType : CachedTypeKind.IndexType, t.id);
+        if (cachedTypes.TryGetValue(key, out var result))
+            return result;
+        cachedTypes[key] = result = newIndexType(t, indexFlags & IndexFlags.StringsOnly);
+        return result;
+    }
+
     private Type getLiteralTypeFromProperties(Type t, TypeFlags include, bool includeOrigin)
     {
         var key = new PropertiesTypesKey(t.id, include, includeOrigin);
         if (propertiesTypes.TryGetValue(key, out var cached))
             return cached;
+        Type origin = null;
         if (includeOrigin && (t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0 || t.alias != null)
-            throw unsupported("getLiteralTypeFromProperties: named index origin");
+            origin = newIndexType(t, IndexFlags.None);
         var props = getPropertiesOfType(t);
         var indexInfos = getIndexInfosOfType(t);
         var types = new List<Type>((props?.Count ?? 0) + (indexInfos?.Count ?? 0));
         foreach (var prop in props ?? [])
             types.Add(getLiteralTypeFromProperty(prop, include, false));
-        if ((indexInfos?.Count ?? 0) != 0)
-            throw unsupported("getLiteralTypeFromProperties: index signatures");
-        var result = getUnionTypeEx(types, UnionReduction.Literal, null, null);
+        foreach (var info in indexInfos ?? [])
+            if (isKeyTypeIncluded(info.keyType, include))
+                types.Add(info.keyType == stringType && (include & TypeFlags.Number) != 0 ? stringOrNumberType ??= getUnionType([stringType, numberType]) : info.keyType);
+        var result = getUnionTypeEx(types, UnionReduction.Literal, null, origin);
         propertiesTypes[key] = result;
         return result;
     }
 
+    private bool shouldDeferIndexedAccessType(Type objectType, Type indexType, Node accessNode)
+    {
+        if (isGenericIndexType(indexType))
+            return true;
+        if (accessNode != null && !Ast.IsIndexedAccessTypeNode(accessNode))
+        {
+            if (isGenericTupleType(objectType))
+                throw unsupported("shouldDeferIndexedAccessType: source generic tuple");
+            return false;
+        }
+
+        return isGenericObjectType(objectType) || isGenericReducibleType(objectType);
+    }
+
+    private bool isGenericIndexType(Type t) => (getGenericObjectFlags(t) & ObjectFlags.IsGenericIndexType) != 0;
+    private bool isGenericReducibleType(Type t) => (t.flags & TypeFlags.Union) != 0 && (t.objectFlags & ObjectFlags.ContainsIntersections) != 0 && t.Types().Any(isGenericReducibleType) || (t.flags & TypeFlags.Intersection) != 0 && isReducibleIntersection(t);
+    private bool isReducibleIntersection(Type t)
+    {
+        var d = t.AsIntersectionType();
+        d.uniqueLiteralFilledInstantiation ??= instantiateType(t, uniqueLiteralMapper);
+        return getReducedType(d.uniqueLiteralFilledInstantiation) != d.uniqueLiteralFilledInstantiation;
+    }
+
+    private Type getUniqueLiteralTypeForTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 ? uniqueLiteralType : t;
     private Type getIndexedAccessTypeOrUndefined(Type objectType, Type indexType, AccessFlags accessFlags, Node accessNode, TypeAlias alias)
     {
         if (alias != null)
@@ -3780,9 +4887,7 @@ public sealed partial class Checker
         if (objectType == wildcardType || indexType == wildcardType)
             return wildcardType;
         objectType = getReducedType(objectType);
-        if ((getIndexInfosOfType(objectType)?.Count ?? 0) != 0)
-            throw unsupported("getIndexedAccessTypeOrUndefined: index signatures");
-        if ((objectType.flags & TypeFlags.Instantiable) != 0 || (indexType.flags & TypeFlags.Instantiable) != 0 || (objectType.objectFlags & (ObjectFlags.Reference | ObjectFlags.Mapped)) != 0)
+        if (shouldDeferIndexedAccessType(objectType, indexType, accessNode))
             throw unsupported("getIndexedAccessTypeOrUndefined: deferred generic/tuple index");
         var apparentObjectType = getReducedApparentType(objectType);
         if ((indexType.flags & TypeFlags.Union) != 0 && (indexType.flags & TypeFlags.Boolean) == 0)
@@ -3830,12 +4935,24 @@ public sealed partial class Checker
             }
         }
 
-        if ((getIndexInfosOfType(objectType)?.Count ?? 0) != 0)
-            throw unsupported("getPropertyTypeForIndexType: index signature fallback");
         if ((indexType.flags & TypeFlags.Nullable) == 0 && isTypeAssignableToKind(indexType, TypeFlags.StringLike | TypeFlags.NumberLike | TypeFlags.ESSymbolLike))
         {
             if ((objectType.flags & (TypeFlags.Any | TypeFlags.Never)) != 0)
                 return objectType;
+            var info = getApplicableIndexInfo(objectType, indexType) ?? getIndexInfoOfType(objectType, stringType);
+            if (info != null)
+            {
+                if ((accessFlags & AccessFlags.NoIndexSignatures) != 0 && info.keyType != numberType)
+                    return null;
+                if (accessNode != null && info.keyType == stringType && !isTypeAssignableToKind(indexType, TypeFlags.String | TypeFlags.Number))
+                    throw unsupported("getPropertyTypeForIndexType: source nonstatic index diagnostic");
+                if ((accessFlags & AccessFlags.Writing) != 0 && info.isReadonly)
+                    throw unsupported("getPropertyTypeForIndexType: source index write");
+                return (accessFlags & AccessFlags.IncludeUndefined) != 0 ? getUnionType([info.valueType, missingType]) : info.valueType;
+            }
+
+            if ((indexType.flags & TypeFlags.Never) != 0)
+                return neverType;
             if (accessNode != null)
                 throw unsupported("getPropertyTypeForIndexType: source missing indexed property diagnostic");
         }
@@ -3865,7 +4982,7 @@ public sealed partial class Checker
         if ((symbol.CheckFlags & CheckFlags.SyntheticProperty) != 0)
         {
             if ((symbol.CheckFlags & CheckFlags.DeferredType) != 0)
-                throw unsupported("getWriteTypeOfSymbol: deferred property");
+                return getWriteTypeOfSymbolWithDeferredType(symbol);
             var links = valueSymbolLinks.Get(symbol);
             return links.writeType ?? links.resolvedType;
         }
@@ -3976,10 +5093,12 @@ public sealed partial class Checker
     {
         if (depth >= 5 || t == null)
             return false;
+        if ((t.flags & TypeFlags.TypeParameter) != 0)
+            return t.symbol != null && (t.symbol.Declarations?.Any(d => Ast.HasSyntacticModifier(d, ModifierFlags.Const)) ?? false);
         if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
             return t.Types().Any(s => isConstTypeVariable(s, depth));
-        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & (ObjectFlags.Reference | ObjectFlags.Mapped)) != 0)
-            throw unsupported("isConstTypeVariable: generic parameter/mapped/reference");
+        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional | TypeFlags.Substitution)) != 0 || (t.objectFlags & ObjectFlags.Mapped) != 0 || isGenericTupleType(t))
+            throw unsupported("isConstTypeVariable: source generic type operator");
         return false;
     }
 }
@@ -3988,4 +5107,1694 @@ public sealed partial class Checker
 {
     private bool allTypesAssignableToKind(Type source, TypeFlags kind) => allTypesAssignableToKindEx(source, kind, false);
     private bool allTypesAssignableToKindEx(Type source, TypeFlags kind, bool strict) => (source.flags & TypeFlags.Union) != 0 ? source.Types().All(t => allTypesAssignableToKindEx(t, kind, strict)) : isTypeAssignableToKindEx(source, kind, strict);
+}
+
+public sealed partial class Checker
+{
+    // checker.go:24194/24200. Enum/class/source generic declarations remain outside admission.
+    internal Type getDeclaredTypeOfSymbol(Symbol symbol) => tryGetDeclaredTypeOfSymbol(symbol) ?? errorType;
+    private Type tryGetDeclaredTypeOfSymbol(Symbol symbol)
+    {
+        if ((symbol.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
+            return getDeclaredTypeOfClassOrInterface(symbol);
+        if ((symbol.Flags & SymbolFlags.TypeAlias) != 0)
+            return getDeclaredTypeOfTypeAlias(symbol);
+        if ((symbol.Flags & (SymbolFlags.TypeParameter | SymbolFlags.Enum | SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
+            throw unsupported("tryGetDeclaredTypeOfSymbol: enum/source parameter/module alias");
+        return null;
+    }
+
+    private Type getDeclaredTypeOfTypeAlias(Symbol symbol)
+    {
+        var links = typeAliasLinks.Get(symbol);
+        if (links.declaredType == null)
+        {
+            if (!pushTypeResolution(symbol, TypeSystemPropertyName.DeclaredType))
+                return errorType;
+            var declaration = symbol.Declarations.Find(Ast.IsTypeAliasDeclaration);
+            var t = getTypeFromTypeNode(declaration.Type());
+            if (popTypeResolution())
+            {
+                var parameters = getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol);
+                if ((parameters?.Count ?? 0) != 0)
+                    throw unsupported("getDeclaredTypeOfTypeAlias: source generic alias");
+                if (t == intrinsicMarkerType && symbol.Name == "BuiltinIteratorReturn")
+                    throw unsupported("getDeclaredTypeOfTypeAlias: library intrinsic");
+            }
+            else
+            {
+                error(declaration.Name() ?? declaration, Diagnostics.Type_alias_0_circularly_references_itself, symbolToString(symbol));
+                t = errorType;
+            }
+
+            links.declaredType ??= t;
+        }
+
+        return links.declaredType;
+    }
+
+    private List<Type> getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(Symbol symbol) => appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(null, symbol);
+    private List<Type> appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(List<Type> types, Symbol symbol)
+    {
+        foreach (var node in symbol.Declarations ?? [])
+            if (node.Kind is Kind.InterfaceDeclaration or Kind.ClassDeclaration or Kind.ClassExpression or Kind.TypeAliasDeclaration)
+                types = appendTypeParameters(types, node.TypeParameters());
+        return types;
+    }
+
+    private List<Type> appendTypeParameters(List<Type> types, List<Node> declarations)
+    {
+        foreach (var declaration in declarations ?? [])
+        {
+            var type = getDeclaredTypeOfTypeParameter(getSymbolOfDeclaration(declaration));
+            if (!(types?.Contains(type) ?? false))
+                types = GoRuntime.Append(types, type);
+        }
+
+        return types;
+    }
+
+    private Type getDeclaredTypeOfTypeParameter(Symbol symbol)
+    {
+        var links = declaredTypeLinks.Get(symbol);
+        return links.declaredType ??= newTypeParameter(symbol);
+    }
+
+    private TypeAlias getAliasForTypeNode(Node node)
+    {
+        var symbol = getAliasSymbolForTypeNode(node);
+        return symbol != null ? new()
+        {
+            symbol = symbol,
+            typeArguments = getTypeArgumentsForAliasSymbol(symbol)
+        }
+
+        : null;
+    }
+
+    private Symbol getAliasSymbolForTypeNode(Node node)
+    {
+        var host = node.Parent;
+        while (host?.Kind == Kind.ParenthesizedType || host?.Kind == Kind.TypeOperator && host.AsTypeOperatorNode().Operator == Kind.ReadonlyKeyword)
+            host = host.Parent;
+        return host?.Kind == Kind.TypeAliasDeclaration ? getSymbolOfDeclaration(host) : null;
+    }
+
+    private List<Type> getTypeArgumentsForAliasSymbol(Symbol symbol) => symbol != null ? getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol) : null;
+    private Type getTypeFromTypeReference(Node node)
+    {
+        var links = typeNodeLinks.Get(node);
+        if (links.resolvedType == null)
+        {
+            if ((node.Flags & NodeFlags.JSDoc) != 0)
+                throw unsupported("getTypeFromTypeReference: JSDoc");
+            links.resolvedType = getDistributedTypeParameter(node, getTypeReferenceType(node, getSymbolFromTypeReference(node)));
+        }
+
+        return links.resolvedType;
+    }
+
+    private Type getDistributedTypeParameter(Node node, Type t)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) != 0 && !t.AsTypeParameter().isDistributed)
+            throw unsupported("getDistributedTypeParameter: source conditional parameter");
+        return t;
+    }
+
+    private Symbol getSymbolFromTypeReference(Node node)
+    {
+        var links = symbolNodeLinks.Get(node);
+        links.resolvedSymbol ??= resolveTypeReferenceName(node, SymbolFlags.Type, false);
+        return links.resolvedSymbol;
+    }
+
+    private Symbol resolveTypeReferenceName(Node reference, SymbolFlags meaning, bool ignoreErrors)
+    {
+        var name = getTypeReferenceName(reference);
+        if (name == null)
+            return unknownSymbol;
+        var symbol = resolveEntityName(name, meaning, ignoreErrors, false, null);
+        if (symbol != null && symbol != unknownSymbol)
+            return symbol;
+        return ignoreErrors ? unknownSymbol : getUnresolvedSymbolForEntityName(name);
+    }
+
+    private static Node getTypeReferenceName(Node node) => node.Kind == Kind.TypeReference ? node.AsTypeReferenceNode().TypeName : node.Kind == Kind.ExpressionWithTypeArguments ? node.Expression() : null;
+    private Symbol getUnresolvedSymbolForEntityName(Node name)
+    {
+        var identifier = name.Kind == Kind.QualifiedName ? name.AsQualifiedName().Right : name.Kind == Kind.PropertyAccessExpression ? name.Name() : name;
+        string text = identifier.Text();
+        if (text != "")
+        {
+            Symbol parent = name.Kind == Kind.QualifiedName ? getUnresolvedSymbolForEntityName(name.AsQualifiedName().Left) : name.Kind == Kind.PropertyAccessExpression ? getUnresolvedSymbolForEntityName(name.Expression()) : null;
+            string path = parent != null ? getSymbolPath(parent) + "." + text : text;
+            if (!unresolvedSymbols.TryGetValue(path, out var result))
+            {
+                result = newSymbolEx(SymbolFlags.TypeAlias, text, CheckFlags.Unresolved);
+                unresolvedSymbols[path] = result;
+                result.Parent = parent;
+                typeAliasLinks.Get(result).declaredType = unresolvedType;
+            }
+
+            return result;
+        }
+
+        return unknownSymbol;
+    }
+
+    private static string getSymbolPath(Symbol symbol) => symbol.Parent != null ? getSymbolPath(symbol.Parent) + "." + symbol.Name : symbol.Name;
+    private Type getTypeReferenceType(Node node, Symbol symbol)
+    {
+        if (symbol == unknownSymbol)
+            return errorType;
+        if ((symbol.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
+            return getTypeFromClassOrInterfaceReference(node, symbol);
+        if ((symbol.Flags & SymbolFlags.TypeAlias) != 0)
+            return getTypeFromTypeAliasReference(node, symbol);
+        var t = tryGetDeclaredTypeOfSymbol(symbol);
+        return t != null && checkNoTypeArguments(node, symbol) ? getRegularTypeOfLiteralType(t) : errorType;
+    }
+
+    private Type getTypeFromTypeAliasReference(Node node, Symbol symbol)
+    {
+        var arguments = node.TypeArguments();
+        if ((symbol.CheckFlags & CheckFlags.Unresolved) != 0)
+        {
+            var alias = new TypeAlias
+            {
+                symbol = symbol,
+                typeArguments = arguments?.Select(getTypeFromTypeNode).ToList()
+            };
+            var key = getAliasKey(alias);
+            if (!errorTypes.TryGetValue(key, out var t))
+            {
+                t = newIntrinsicType(TypeFlags.Any, "error");
+                t.alias = alias;
+                errorTypes[key] = t;
+            }
+
+            return t;
+        }
+
+        var declared = getDeclaredTypeOfSymbol(symbol);
+        if ((typeAliasLinks.Get(symbol).typeParameters?.Count ?? 0) != 0)
+            throw unsupported("getTypeFromTypeAliasReference: source generic alias");
+        return checkNoTypeArguments(node, symbol) ? declared : errorType;
+    }
+
+    private bool checkNoTypeArguments(Node node, Symbol symbol)
+    {
+        if ((node.TypeArguments()?.Count ?? 0) != 0)
+        {
+            error(node, Diagnostics.Type_0_is_not_generic, symbol != null ? symbolToString(symbol) : TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.AsTypeReferenceNode().TypeName));
+            return false;
+        }
+
+        return true;
+    }
+
+    private void checkTypeAliasDeclaration(Node node)
+    {
+        checkGrammarModifiers(node);
+        checkTypeNameIsReserved(node.Name(), Diagnostics.Type_alias_name_cannot_be_0);
+        if (!containerAllowsBlockScopedVariable(node.Parent))
+            grammarErrorOnNode(node, Diagnostics.X_0_declarations_can_only_be_declared_inside_a_block, "type");
+        checkExportsOnMergedDeclarations(node);
+        if ((node.TypeParameters()?.Count ?? 0) != 0)
+            throw unsupported("checkTypeAliasDeclaration: source generic");
+        if (node.Type()?.Kind == Kind.IntrinsicKeyword)
+            throw unsupported("checkTypeAliasDeclaration: library intrinsic");
+        checkSourceElement(node.Type());
+    }
+
+    private void checkTypeNameIsReserved(Node name, Message message)
+    {
+        if (name.Text()is "any" or "unknown" or "never" or "number" or "bigint" or "boolean" or "string" or "symbol" or "void" or "object" or "undefined")
+            error(name, message, name.Text());
+    }
+
+    private void checkTypeReferenceNode(Node node)
+    {
+        checkGrammarTypeArguments(node, node.TypeArgumentList());
+        if (node.TypeArguments() != null)
+            throw unsupported("checkTypeReferenceNode: written generic arguments");
+        checkSourceElements(node.TypeArguments());
+        checkTypeReferenceOrImport(node);
+    }
+
+    private void checkTypeReferenceOrImport(Node node)
+    {
+        var t = getTypeFromTypeNode(node);
+        if (!isErrorType(t))
+        {
+            if ((node.TypeArguments()?.Count ?? 0) != 0)
+                throw unsupported("checkTypeReferenceOrImport: written generic constraints");
+            var symbol = getResolvedSymbolOrNil(node);
+            if (symbol != null && (symbol.Declarations?.Any(IsDeprecatedDeclaration) ?? false))
+                throw unsupported("checkTypeReferenceOrImport: tagged JSDoc declaration");
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:17706. Nongeneric interfaces may still have a synthetic this parameter.
+    internal Type getDeclaredTypeOfClassOrInterface(Symbol symbol)
+    {
+        var links = declaredTypeLinks.Get(symbol);
+        if (links.declaredType == null)
+        {
+            if ((symbol.Flags & SymbolFlags.Class) != 0)
+                throw unsupported("getDeclaredTypeOfClassOrInterface: source class");
+            var kind = ObjectFlags.Interface;
+            var t = newObjectType(kind, symbol);
+            links.declaredType = t;
+            var outerParameters = getOuterTypeParametersOfClassOrInterface(symbol);
+            var parameters = appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(outerParameters, symbol);
+            if (parameters != null || !isThislessInterface(symbol))
+            {
+                t.objectFlags |= ObjectFlags.Reference;
+                var d = t.AsInterfaceType();
+                d.thisType = newTypeParameter(symbol);
+                d.thisType.AsTypeParameter().isThisType = true;
+                d.thisType.AsTypeParameter().constraint = t;
+                d.allTypeParameters = GoRuntime.Append(parameters, d.thisType);
+                d.outerTypeParameterCount = outerParameters?.Count ?? 0;
+                d.resolvedTypeArguments = d.TypeParameters();
+                d.instantiations = new();
+                d.instantiations[getTypeListKey(d.resolvedTypeArguments)] = t;
+                d.target = t;
+            }
+        }
+
+        return links.declaredType;
+    }
+
+    private bool isThislessInterface(Symbol symbol)
+    {
+        foreach (var declaration in symbol.Declarations ?? [])
+            if (Ast.IsInterfaceDeclaration(declaration))
+            {
+                if ((declaration.Flags & NodeFlags.ContainsThis) != 0)
+                    return false;
+                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration) ?? [])
+                {
+                    var name = Ast.GetHeritageClauseElementName(node);
+                    if (Ast.IsEntityName(name) || Ast.IsEntityNameExpression(name))
+                    {
+                        var baseSymbol = resolveEntityName(name, SymbolFlags.Type, true, false, null);
+                        if (baseSymbol == null || (baseSymbol.Flags & SymbolFlags.Interface) == 0 || getDeclaredTypeOfClassOrInterface(baseSymbol).AsInterfaceType().thisType != null)
+                            return false;
+                    }
+                }
+            }
+
+        return true;
+    }
+
+    private List<Type> getOuterTypeParametersOfClassOrInterface(Symbol symbol)
+    {
+        var declaration = symbol.Declarations.Find(Ast.IsInterfaceDeclaration);
+        Debug.Assert(declaration != null);
+        // Contract outer containers are SourceFile/Block only, so the source
+        // getOuterTypeParameters walk has no function/class type-parameter sites.
+        for (var parent = declaration.Parent; parent != null; parent = parent.Parent)
+            if (parent.Kind is not (Kind.SourceFile or Kind.Block))
+                throw unsupported("getOuterTypeParametersOfClassOrInterface: generic outer declaration");
+        return null;
+    }
+
+    private Type newTypeParameter(Symbol symbol)
+    {
+        var t = newType(TypeFlags.TypeParameter, ObjectFlags.None, new TypeParameter());
+        t.symbol = symbol;
+        return t;
+    }
+
+    private Type getTypeFromClassOrInterfaceReference(Node node, Symbol symbol)
+    {
+        var t = getDeclaredTypeOfClassOrInterface(getMergedSymbol(symbol));
+        if ((t.AsInterfaceType().LocalTypeParameters()?.Count ?? 0) != 0)
+            throw unsupported("getTypeFromClassOrInterfaceReference: source generic");
+        return checkNoTypeArguments(node, symbol) ? t : errorType;
+    }
+
+    private Type createTypeReference(Type target, List<Type> arguments) => createTypeReferenceEx(target, arguments, ObjectFlags.None);
+    private Type createTypeReferenceEx(Type target, List<Type> arguments, ObjectFlags objectFlags)
+    {
+        var key = getTypeListKey(arguments);
+        var data = target.AsInterfaceType();
+        if (data.instantiations.TryGetValue(key, out var cached))
+            return cached;
+        var t = newObjectType(ObjectFlags.Reference | objectFlags | getPropagatingFlagsOfTypes(arguments, TypeFlags.None), target.symbol);
+        var d = t.AsTypeReference();
+        d.target = target;
+        d.resolvedTypeArguments = arguments;
+        data.instantiations[key] = t;
+        return t;
+    }
+
+    internal List<Type> getTypeArguments(Type t)
+    {
+        var d = t.AsTypeReference();
+        if (d.resolvedTypeArguments == null)
+        {
+            var n = d.target.AsInterfaceType();
+            if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedTypeArguments))
+                return Enumerable.Repeat(errorType, n.TypeParameters()?.Count ?? 0).ToList();
+            List<Type> arguments = null;
+            if (d.node != null)
+                throw unsupported("getTypeArguments: deferred explicit source generic/tuple/array");
+            if (popTypeResolution())
+                d.resolvedTypeArguments ??= instantiateTypes(arguments, d.mapper);
+            else
+            {
+                d.resolvedTypeArguments ??= Enumerable.Repeat(errorType, n.TypeParameters()?.Count ?? 0).ToList();
+                error(d.node ?? currentNode, Diagnostics.Type_arguments_for_0_circularly_reference_themselves, symbolToString(d.target.symbol));
+            }
+        }
+
+        return d.resolvedTypeArguments;
+    }
+
+    private static Type getTargetType(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 ? t.Target() : t;
+    internal Type getTypeWithThisArgument(Type t, Type thisArgument, bool needApparentType)
+    {
+        if ((t.objectFlags & ObjectFlags.Reference) != 0)
+        {
+            var target = t.Target();
+            var arguments = getTypeArguments(t);
+            if ((target.AsInterfaceType().TypeParameters()?.Count ?? 0) == (arguments?.Count ?? 0))
+                return createTypeReference(target, GoRuntime.Append(arguments, thisArgument ?? target.AsInterfaceType().thisType));
+            return t;
+        }
+
+        if ((t.flags & TypeFlags.Intersection) != 0)
+        {
+            var types = t.Types();
+            var mapped = types.Select(x => getTypeWithThisArgument(x, thisArgument, needApparentType)).ToList();
+            if (mapped.SequenceEqual(types))
+                return t;
+            return getIntersectionType(mapped);
+        }
+
+        return needApparentType ? getApparentType(t) : t;
+    }
+
+    internal List<Type> getBaseTypes(Type t)
+    {
+        if ((t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Tuple)) == 0)
+            return null;
+        var d = t.AsInterfaceType();
+        if (!d.baseTypesResolved)
+        {
+            if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedBaseTypes))
+                return d.resolvedBaseTypes;
+            if ((t.objectFlags & ObjectFlags.Tuple) != 0 || (t.symbol.Flags & SymbolFlags.Class) != 0)
+                throw unsupported("getBaseTypes: tuple/class");
+            if ((t.symbol.Flags & SymbolFlags.Interface) != 0)
+                resolveBaseTypesOfInterface(t);
+            else
+                throw new InvalidOperationException("Unhandled case in getBaseTypes");
+            if (!popTypeResolution() && t.symbol.Declarations != null)
+                foreach (var declaration in t.symbol.Declarations)
+                    if (Ast.IsInterfaceDeclaration(declaration))
+                        reportCircularBaseType(declaration, t);
+            t.objectFlags &= ~ObjectFlags.MembersResolved;
+            d.baseTypesResolved = true;
+        }
+
+        return d.resolvedBaseTypes;
+    }
+
+    private void resolveBaseTypesOfInterface(Type t)
+    {
+        var d = t.AsInterfaceType();
+        foreach (var declaration in t.symbol.Declarations ?? [])
+            if (Ast.IsInterfaceDeclaration(declaration))
+                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration) ?? [])
+                {
+                    var @base = getReducedType(getTypeFromTypeNode(node));
+                    if (!isErrorType(@base))
+                    {
+                        if (isValidBaseType(@base))
+                        {
+                            if (t != @base && !hasBaseType(@base, t))
+                                d.resolvedBaseTypes = GoRuntime.Append(d.resolvedBaseTypes, @base);
+                            else
+                                reportCircularBaseType(declaration, t);
+                        }
+                        else
+                            error(node, Diagnostics.An_interface_can_only_extend_an_object_type_or_intersection_of_object_types_with_statically_known_members);
+                    }
+                }
+    }
+
+    private bool hasBaseType(Type t, Type checkBase)
+    {
+        if ((t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0)
+        {
+            var target = getTargetType(t);
+            return target == checkBase || (getBaseTypes(target)?.Any(x => hasBaseType(x, checkBase)) ?? false);
+        }
+
+        return (t.flags & TypeFlags.Intersection) != 0 && t.Types().Any(x => hasBaseType(x, checkBase));
+    }
+
+    private void reportCircularBaseType(Node node, Type t) => error(node, Diagnostics.Type_0_recursively_references_itself_as_a_base_type, typeToStringWriteArrayAsGenericType(t));
+    private bool isValidBaseType(Type t)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) != 0)
+        {
+            var constraint = getBaseConstraintOfType(t);
+            if (constraint != null)
+                return isValidBaseType(constraint);
+        }
+
+        return (t.flags & (TypeFlags.Object | TypeFlags.NonPrimitive | TypeFlags.Any)) != 0 && (t.objectFlags & ObjectFlags.Mapped) == 0 || (t.flags & TypeFlags.Intersection) != 0 && t.Types().All(isValidBaseType);
+    }
+
+    private InterfaceType resolveDeclaredMembers(Type t)
+    {
+        var d = t.AsInterfaceType();
+        if (!d.declaredMembersResolved)
+        {
+            var members = getMembersOfSymbol(t.symbol);
+            d.declaredMembersResolved = true;
+            d.declaredMembers = members;
+            d.declaredCallSignatures = getSignaturesOfSymbol(d.declaredMembers?[Ast.InternalSymbolNameCall]);
+            d.declaredConstructSignatures = getSignaturesOfSymbol(d.declaredMembers?[Ast.InternalSymbolNameNew]);
+            d.declaredIndexInfos = getIndexInfosOfSymbol(t.symbol);
+        }
+
+        return d;
+    }
+
+    private List<Signature> getSignaturesOfSymbol(Symbol symbol)
+    {
+        if (symbol != null)
+            throw unsupported("getSignaturesOfSymbol: callable signature");
+        return null;
+    }
+
+    private List<IndexInfo> getIndexInfosOfSymbol(Symbol symbol)
+    {
+        if (getMembersOfSymbol(symbol)?[Ast.InternalSymbolNameIndex] != null)
+            throw unsupported("getIndexInfosOfSymbol: source index signature");
+        return null;
+    }
+
+    private void resolveClassOrInterfaceMembers(Type t) => resolveObjectTypeMembers(t, t, null, null);
+    private void resolveTypeReferenceMembers(Type t)
+    {
+        var source = t.Target();
+        var parameters = source.AsInterfaceType().allTypeParameters;
+        var arguments = getTypeArguments(t);
+        var padded = arguments;
+        if ((arguments?.Count ?? 0) == (parameters?.Count ?? 0) - 1)
+            padded = GoRuntime.Append(arguments, t);
+        resolveObjectTypeMembers(t, source, parameters, padded);
+    }
+
+    private void resolveObjectTypeMembers(Type t, Type source, List<Type> parameters, List<Type> arguments)
+    {
+        TypeMapper mapper = null;
+        SymbolTable members;
+        List<Signature> call, construct;
+        List<IndexInfo> indexes;
+        bool instantiated = false;
+        var d = resolveDeclaredMembers(source);
+        if ((parameters ?? []).SequenceEqual(arguments ?? []))
+        {
+            members = d.declaredMembers;
+            call = d.declaredCallSignatures;
+            construct = d.declaredConstructSignatures;
+            indexes = d.declaredIndexInfos;
+        }
+        else
+        {
+            instantiated = true;
+            mapper = newTypeMapper(parameters, arguments);
+            members = instantiateSymbolTable(d.declaredMembers, mapper);
+            call = instantiateSignatures(d.declaredCallSignatures, mapper);
+            construct = instantiateSignatures(d.declaredConstructSignatures, mapper);
+            indexes = instantiateIndexInfos(d.declaredIndexInfos, mapper);
+        }
+
+        var bases = getBaseTypes(source);
+        if ((bases?.Count ?? 0) > 0)
+        {
+            if (!instantiated)
+                members = members != null ? cloneSymbolTable(members) : null;
+            var thisArgument = arguments is { Count: > 0 } ? arguments[^1] : null;
+            foreach (var @base in bases)
+            {
+                var inherited = thisArgument != null ? getTypeWithThisArgument(instantiateType(@base, mapper), thisArgument, false) : @base;
+                members = addInheritedMembers(members, getPropertiesOfType(inherited));
+                call = GoRuntime.Append(call, getSignaturesOfType(inherited, SignatureKind.Call) ?? []);
+                construct = GoRuntime.Append(construct, getSignaturesOfType(inherited, SignatureKind.Construct) ?? []);
+                foreach (var info in inherited != anyType ? getIndexInfosOfType(inherited) ?? [] : new List<IndexInfo>
+                {
+                    anyBaseTypeIndexInfo
+                }
+
+                )
+                    if (!(indexes?.Any(x => x.keyType == info.keyType) ?? false))
+                        indexes = GoRuntime.Append(indexes, info);
+            }
+        }
+
+        setStructuredTypeMembers(t, members, call, construct, indexes);
+    }
+
+    private SymbolTable addInheritedMembers(SymbolTable symbols, List<Symbol> bases)
+    {
+        foreach (var @base in bases ?? [])
+            if (!isStaticPrivateIdentifierProperty(@base) && (symbols?[@base.Name] == null || (symbols[@base.Name].Flags & SymbolFlags.Value) == 0))
+            {
+                symbols ??= new();
+                symbols[@base.Name] = @base;
+            }
+
+        return symbols;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkInterfaceDeclaration(Node node)
+    {
+        if (!checkGrammarModifiers(node))
+            checkGrammarInterfaceDeclaration(node.AsInterfaceDeclaration());
+        if (!containerAllowsBlockScopedVariable(node.Parent))
+            grammarErrorOnNode(node, Diagnostics.X_0_declarations_can_only_be_declared_inside_a_block, "interface");
+        if ((node.TypeParameters()?.Count ?? 0) != 0)
+            throw unsupported("checkInterfaceDeclaration: source parameters");
+        checkTypeNameIsReserved(node.Name(), Diagnostics.Interface_name_cannot_be_0);
+        checkExportsOnMergedDeclarations(node);
+        var symbol = getSymbolOfDeclaration(node);
+        checkTypeParameterListsIdentical(symbol);
+        var links = declaredTypeLinks.Get(symbol);
+        if (!links.interfaceChecked)
+        {
+            links.interfaceChecked = true;
+            var first = Ast.GetDeclarationOfKind(symbol, Kind.InterfaceDeclaration);
+            var t = getDeclaredTypeOfSymbol(symbol);
+            var typeWithThis = getTypeWithThisArgument(t, null, false);
+            if (checkInheritedPropertiesAreIdentical(t, first.Name()))
+            {
+                foreach (var @base in getBaseTypes(t) ?? [])
+                    checkTypeAssignableTo(typeWithThis, getTypeWithThisArgument(@base, t.AsInterfaceType().thisType, false), first.Name(), Diagnostics.Interface_0_incorrectly_extends_interface_1);
+                checkIndexConstraints(t, symbol, false);
+            }
+        }
+
+        checkObjectTypeForDuplicateDeclarations(node, false);
+        foreach (var element in Ast.GetExtendsHeritageClauseElements(node) ?? [])
+        {
+            if (element.Kind == Kind.ExpressionWithTypeArguments)
+            {
+                var expression = element.Expression();
+                if (!Ast.IsEntityNameExpression(expression) || Ast.IsOptionalChain(expression))
+                    error(expression, Diagnostics.An_interface_can_only_extend_an_identifier_Slashqualified_name_with_optional_type_arguments);
+            }
+
+            checkTypeReferenceNode(element);
+        }
+
+        checkSourceElements(node.Members());
+        checkClassOrInterfaceForDuplicateIndexSignatures(node);
+    }
+
+    private void checkTypeParameterListsIdentical(Symbol symbol)
+    {
+        if ((symbol.Declarations?.Count ?? 0) == 1)
+            return;
+        var links = declaredTypeLinks.Get(symbol);
+        if (!links.typeParametersChecked)
+        {
+            links.typeParametersChecked = true;
+            var declarations = symbol.Declarations.Where(Ast.IsInterfaceDeclaration).ToList();
+            if (declarations.Count <= 1)
+                return;
+            var t = getDeclaredTypeOfSymbol(symbol);
+            if (!areTypeParametersIdentical(declarations, t.AsInterfaceType().LocalTypeParameters()))
+                foreach (var declaration in declarations)
+                    error(declaration.Name(), Diagnostics.All_declarations_of_0_must_have_identical_type_parameters, symbolToString(symbol));
+        }
+    }
+
+    private bool areTypeParametersIdentical(List<Node> declarations, List<Type> parameters)
+    {
+        int maximum = parameters?.Count ?? 0;
+        if (maximum != 0)
+            throw unsupported("areTypeParametersIdentical: source parameters");
+        foreach (var declaration in declarations)
+        {
+            int length = declaration.TypeParameters()?.Count ?? 0;
+            if (length < maximum || length > maximum)
+                return false;
+        }
+
+        return true;
+    }
+
+    private sealed record InheritanceInfo(Symbol prop, Type containingType);
+    private bool checkInheritedPropertiesAreIdentical(Type t, Node node)
+    {
+        var bases = getBaseTypes(t);
+        if ((bases?.Count ?? 0) < 2)
+            return true;
+        var seen = new Dictionary<string, InheritanceInfo>(StringComparer.Ordinal);
+        foreach (var(name, property)in resolveDeclaredMembers(t).declaredMembers ?? new SymbolTable())
+            if (isNamedMember(property, name))
+                seen[property.Name] = new(property, t);
+        bool identical = true;
+        foreach (var @base in bases)
+            foreach (var property in getPropertiesOfType(getTypeWithThisArgument(@base, t.AsInterfaceType().thisType, false)) ?? [])
+            {
+                if (!seen.TryGetValue(property.Name, out var existing))
+                    seen[property.Name] = new(property, @base);
+                else if (existing.containingType != t && !isPropertyIdenticalTo(existing.prop, property))
+                {
+                    identical = false;
+                    var name1 = typeToStringByteString(existing.containingType);
+                    var name2 = typeToStringByteString(@base);
+                    var info = NewDiagnosticForNode(node, Diagnostics.Named_property_0_of_types_1_and_2_are_not_identical, symbolToString(property), name1, name2);
+                    addDiagnostic(Ast.NewDiagnosticChain(info, Diagnostics.Interface_0_cannot_simultaneously_extend_types_1_and_2, typeToStringByteString(t), name1, name2));
+                }
+            }
+
+        return identical;
+    }
+
+    private bool isPropertyIdenticalTo(Symbol source, Symbol target) => compareProperties(source, target, compareTypesIdentical) != Ternary.False;
+    private void checkClassOrInterfaceForDuplicateIndexSignatures(Node node)
+    {
+        var symbol = getSymbolOfDeclaration(node);
+        if (symbol == null)
+            return;
+        var links = declaredTypeLinks.Get(symbol);
+        if (!links.indexSignaturesChecked)
+        {
+            links.indexSignaturesChecked = true;
+            // Explicit signature syntax is rejected before checking. Internal
+            // any-base entries have no declaration to duplicate here.
+            foreach (var declaration in symbol.Declarations ?? [])
+                foreach (var member in declaration.Members() ?? [])
+                    if (member.Kind == Kind.IndexSignature)
+                        throw unsupported("checkClassOrInterfaceForDuplicateIndexSignatures: source index signature");
+        }
+    }
+
+    private void checkUnionOrIntersectionType(Node node)
+    {
+        node.ForEachChild(child =>
+        {
+            checkSourceElement(child);
+            return false;
+        });
+        getTypeFromTypeNode(node);
+    }
+
+    private Type getTypeFromUnionTypeNode(Node node)
+    {
+        var links = typeNodeLinks.Get(node);
+        return links.resolvedType ??= getUnionTypeEx(node.AsUnionTypeNode().Types.Nodes.Select(getTypeFromTypeNode).ToList(), UnionReduction.Literal, getAliasForTypeNode(node), null);
+    }
+
+    private Type getTypeFromIntersectionTypeNode(Node node)
+    {
+        var links = typeNodeLinks.Get(node);
+        if (links.resolvedType == null)
+        {
+            var types = node.AsIntersectionTypeNode().Types.Nodes.Select(getTypeFromTypeNode).ToList();
+            bool noSupertypeReduction = types.Count == 2 && types.IndexOf(emptyTypeLiteralType) >= 0 && (types[1 - types.IndexOf(emptyTypeLiteralType)].flags & (TypeFlags.String | TypeFlags.Number | TypeFlags.BigInt)) != 0;
+            links.resolvedType = getIntersectionTypeEx(types, noSupertypeReduction ? IntersectionFlags.NoSupertypeReduction : IntersectionFlags.None, getAliasForTypeNode(node));
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type noConstraintType, circularConstraintType;
+    private int instantiationCount;
+    public int TotalInstantiationCount { get; private set; }
+
+    private readonly List<Type> instantiationStack = new();
+    private readonly List<TypeMapper> activeMappers = new();
+    private readonly List<Dictionary<CacheHashKey, Type>> activeTypeMappersCaches = new();
+    internal Type instantiateType(Type t, TypeMapper mapper) => instantiateTypeWithAlias(t, mapper, null);
+    private Type instantiateTypeWithAlias(Type t, TypeMapper mapper, TypeAlias alias)
+    {
+        if (t == null || mapper == null || !(couldContainTypeVariables(t) || t.alias != null && (t.alias.typeArguments?.Any(couldContainTypeVariables) ?? false)))
+            return t;
+        if (instantiationStack.Count == 100 || instantiationCount >= 5_000_000)
+        {
+            var names = getCircularTypeNames();
+            if (names.Count == 1)
+                error(currentNode, Diagnostics.Instantiations_of_type_0_appear_infinitely_circular, names[0]);
+            else if (names.Count > 1)
+                error(currentNode, Diagnostics.Instantiations_of_the_following_types_appear_infinitely_circular_Colon_0, string.Join(", ", names.Select(n => "'" + n + "'")));
+            else
+                error(currentNode, Diagnostics.Type_instantiation_is_excessively_deep_and_possibly_infinite);
+            return errorType;
+        }
+
+        int index = activeMappers.FindLastIndex(m => m == mapper);
+        if (index == -1)
+            pushActiveMapper(mapper);
+        var b = new keyBuilder();
+        b.writeType(t);
+        b.writeAlias(alias);
+        var key = b.hash();
+        var cache = activeTypeMappersCaches[index != -1 ? index : activeTypeMappersCaches.Count - 1];
+        if (cache.TryGetValue(key, out var cached))
+            return cached;
+        TotalInstantiationCount++;
+        instantiationCount++;
+        instantiationStack.Add(t);
+        var result = instantiateTypeWorker(t, mapper, alias);
+        if (index == -1)
+            popActiveMapper();
+        else
+            cache[key] = result;
+        instantiationStack.RemoveAt(instantiationStack.Count - 1);
+        return result;
+    }
+
+    private List<string> getCircularTypeNames()
+    {
+        var counts = new Dictionary<Type, int>();
+        List<string> names = new();
+        foreach (var t in instantiationStack)
+        {
+            counts.TryGetValue(t, out var count);
+            counts[t] = ++count;
+            if (count == 3)
+            {
+                var symbol = t.alias?.symbol ?? t.symbol;
+                if (symbol != null && symbol.Name.Length != 0 && symbol.Name[0] != '\xFE')
+                {
+                    var name = symbolToString(symbol);
+                    if (!names.Contains(name))
+                        names.Add(name);
+                }
+            }
+        }
+
+        return names;
+    }
+
+    private void pushActiveMapper(TypeMapper mapper)
+    {
+        activeMappers.Add(mapper);
+        activeTypeMappersCaches.Add(new());
+    }
+
+    private void popActiveMapper()
+    {
+        activeMappers.RemoveAt(activeMappers.Count - 1);
+        activeTypeMappersCaches[^1].Clear();
+        activeTypeMappersCaches.RemoveAt(activeTypeMappersCaches.Count - 1);
+    }
+
+    private bool couldContainTypeVariables(Type t) => couldContainTypeVariablesWorker(t);
+    private bool couldContainTypeVariablesWorker(Type t)
+    {
+        if ((t.flags & TypeFlags.StructuredOrInstantiable) == 0)
+            return false;
+        var flags = t.objectFlags;
+        if ((flags & ObjectFlags.CouldContainTypeVariablesComputed) != 0)
+            return (flags & ObjectFlags.CouldContainTypeVariables) != 0;
+        bool result = (t.flags & TypeFlags.Instantiable) != 0 || (t.flags & TypeFlags.Object) != 0 && !isNonGenericTopLevelType(t) && ((flags & ObjectFlags.Reference) != 0 && (t.AsTypeReference().node != null || (getTypeArguments(t)?.Any(couldContainTypeVariables) ?? false)) || (flags & ObjectFlags.Anonymous) != 0 && t.symbol != null && (t.symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.TypeLiteral | SymbolFlags.ObjectLiteral)) != 0 && t.symbol.Declarations != null || (flags & (ObjectFlags.Mapped | ObjectFlags.ReverseMapped | ObjectFlags.ObjectRestType | ObjectFlags.InstantiationExpressionType)) != 0) || (t.flags & TypeFlags.UnionOrIntersection) != 0 && (t.flags & TypeFlags.EnumLiteral) == 0 && !isNonGenericTopLevelType(t) && t.Types().Any(couldContainTypeVariables);
+        t.objectFlags |= ObjectFlags.CouldContainTypeVariablesComputed | (result ? ObjectFlags.CouldContainTypeVariables : 0);
+        return result;
+    }
+
+    private bool isNonGenericTopLevelType(Type t)
+    {
+        if (t.alias != null && (t.alias.typeArguments?.Count ?? 0) == 0)
+        {
+            var declaration = Ast.GetDeclarationOfKind(t.alias.symbol, Kind.TypeAliasDeclaration);
+            return declaration?.Parent.Kind == Kind.SourceFile;
+        }
+
+        return false;
+    }
+
+    private Type instantiateTypeWorker(Type t, TypeMapper mapper, TypeAlias alias)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) != 0)
+            return getMappedType(t, mapper);
+        if ((t.flags & TypeFlags.Object) != 0)
+        {
+            if ((t.objectFlags & (ObjectFlags.Reference | ObjectFlags.Anonymous | ObjectFlags.Mapped)) != 0)
+            {
+                if ((t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node == null)
+                {
+                    var arguments = t.AsTypeReference().resolvedTypeArguments;
+                    var mapped = instantiateTypes(arguments, mapper);
+                    return mapped == arguments ? t : createTypeReference(t.Target(), mapped);
+                }
+
+                if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
+                    throw unsupported("instantiateTypeWorker: reverse mapped");
+                return getObjectTypeInstantiation(t, mapper, alias);
+            }
+
+            return t;
+        }
+
+        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
+        {
+            var source = t;
+            if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin is { } origin && (origin.flags & TypeFlags.UnionOrIntersection) != 0)
+                source = origin;
+            var types = source.Types();
+            var mapped = instantiateTypes(types, mapper);
+            if (mapped == types && alias?.symbol == t.alias?.symbol)
+                return t;
+            alias ??= instantiateTypeAlias(t.alias, mapper);
+            return (source.flags & TypeFlags.Intersection) != 0 ? getIntersectionTypeEx(mapped, IntersectionFlags.None, alias) : getUnionTypeEx(mapped, UnionReduction.Literal, alias, null);
+        }
+
+        if ((t.flags & TypeFlags.Instantiable) != 0)
+            throw unsupported("instantiateTypeWorker: source indexed/template/conditional/substitution");
+        return t;
+    }
+
+    private Type getObjectTypeInstantiation(Type t, TypeMapper mapper, TypeAlias alias)
+    {
+        Node declaration = t.AsObjectType().target?.symbol?.Declarations?[0] ?? t.symbol?.Declarations?[0];
+        if (declaration == null)
+            throw unsupported("getObjectTypeInstantiation: synthetic mapped/callable object");
+        var links = typeNodeLinks.Get(declaration);
+        var target = (t.objectFlags & ObjectFlags.Instantiated) != 0 ? t.Target() : t;
+        if (links.outerTypeParameters == null)
+        {
+            // Source outer type parameters are excluded. Actual internal this-types
+            // are collected from containing interfaces, then filtered as in source.
+            List<Type> parameters = null;
+            for (var n = declaration.Parent; n != null; n = n.Parent)
+                if (n.Kind == Kind.InterfaceDeclaration)
+                {
+                    var thisType = getDeclaredTypeOfSymbol(getSymbolOfDeclaration(n)).AsInterfaceType().thisType;
+                    if (thisType != null)
+                        parameters = GoRuntime.Append(parameters, thisType);
+                }
+
+            if ((target.alias?.typeArguments?.Count ?? 0) == 0 && ((t.objectFlags & ObjectFlags.Reference) != 0 || (target.symbol.Flags & (SymbolFlags.Method | SymbolFlags.TypeLiteral)) != 0))
+                parameters = parameters?.Where(tp => isTypeParameterPossiblyReferenced(tp, declaration)).ToList();
+            links.outerTypeParameters = parameters ?? [];
+        }
+
+        if (links.outerTypeParameters.Count == 0)
+            return t;
+        throw unsupported("getObjectTypeInstantiation: referenced source parameter outside admitted data shapes");
+    }
+
+    private bool isTypeParameterPossiblyReferenced(Type parameter, Node node)
+    {
+        if (node.Kind == Kind.ThisType)
+            return parameter.AsTypeParameter().isThisType;
+        if (node.Kind == Kind.TypeReference && !parameter.AsTypeParameter().isThisType && (node.TypeArguments()?.Count ?? 0) == 0 && getSymbolFromTypeReference(node) == parameter.symbol)
+            return true;
+        if (node.Kind is Kind.TypeQuery or Kind.MethodDeclaration or Kind.MethodSignature)
+            throw unsupported("isTypeParameterPossiblyReferenced: callable/typequery");
+        return node.ForEachChild(n => isTypeParameterPossiblyReferenced(parameter, n));
+    }
+
+    private TypeAlias instantiateTypeAlias(TypeAlias alias, TypeMapper mapper)
+    {
+        if (alias == null)
+            return null;
+        var arguments = instantiateTypes(alias.typeArguments, mapper);
+        return arguments == alias.typeArguments ? alias : new()
+        {
+            symbol = alias.symbol,
+            typeArguments = arguments
+        };
+    }
+
+    private List<T> instantiateList<T>(List<T> values, TypeMapper mapper, Func<T, TypeMapper, T> instantiate)
+        where T : class
+    {
+        for (int i = 0; i < (values?.Count ?? 0); i++)
+        {
+            var mapped = instantiate(values[i], mapper);
+            if (mapped != values[i])
+            {
+                var result = new List<T>(values);
+                result[i] = mapped;
+                for (int j = i + 1; j < values.Count; j++)
+                    result[j] = instantiate(values[j], mapper);
+                return result;
+            }
+        }
+
+        return values;
+    }
+
+    private List<Type> instantiateTypes(List<Type> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateType);
+    private List<Signature> instantiateSignatures(List<Signature> values, TypeMapper mapper) => instantiateList(values, mapper, (signature, m) => throw unsupported("instantiateSignatures: callable payload"));
+    private List<IndexInfo> instantiateIndexInfos(List<IndexInfo> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateIndexInfo);
+    private SymbolTable instantiateSymbolTable(SymbolTable symbols, TypeMapper mapper)
+    {
+        if ((symbols?.Count ?? 0) == 0)
+            return null;
+        var result = new SymbolTable(symbols.Count);
+        foreach (var(name, symbol)in symbols)
+            if (isNamedMember(symbol, name))
+                result[name] = instantiateSymbol(symbol, mapper);
+        return result;
+    }
+
+    private Symbol instantiateSymbol(Symbol symbol, TypeMapper mapper)
+    {
+        if (symbol == null)
+            return null;
+        var links = valueSymbolLinks.Get(symbol);
+        if (mapper != null && mapper.MapsThisOnly() && isThisless(symbol))
+            return symbol;
+        if (links.resolvedType != null && !couldContainTypeVariables(links.resolvedType))
+        {
+            if ((symbol.Flags & SymbolFlags.SetAccessor) == 0 || links.writeType != null && !couldContainTypeVariables(links.writeType))
+                return symbol;
+        }
+
+        if ((symbol.CheckFlags & CheckFlags.Instantiated) != 0)
+        {
+            symbol = links.target;
+            mapper = combineTypeMappers(links.mapper, mapper);
+        }
+
+        var result = newSymbol(symbol.Flags, symbol.Name);
+        result.CheckFlags = CheckFlags.Instantiated | (symbol.CheckFlags & (CheckFlags.Readonly | CheckFlags.Late | CheckFlags.OptionalParameter | CheckFlags.RestParameter));
+        result.Declarations = symbol.Declarations;
+        result.Parent = symbol.Parent;
+        result.ValueDeclaration = symbol.ValueDeclaration;
+        var resultLinks = valueSymbolLinks.Get(result);
+        resultLinks.target = symbol;
+        resultLinks.mapper = mapper;
+        resultLinks.nameType = links.nameType;
+        return result;
+    }
+
+    private static bool isThisless(Symbol symbol)
+    {
+        if (symbol.Declarations?.Count == 1 && symbol.Declarations[0] is { } declaration && declaration.Kind == Kind.PropertySignature)
+            return declaration.Type() != null && (declaration.Flags & NodeFlags.ContainsThis) == 0;
+        return false;
+    }
+
+    private Type getTypeOfInstantiatedSymbol(Symbol symbol)
+    {
+        var links = valueSymbolLinks.Get(symbol);
+        return links.resolvedType ??= instantiateType(getTypeOfSymbol(links.target), links.mapper);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintOfType(Type t)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) != 0)
+            return getConstraintOfTypeParameter(t);
+        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional)) != 0)
+            throw unsupported("getConstraintOfType: indexed/conditional");
+        return getBaseConstraintOfType(t);
+    }
+
+    private Type getConstraintOfTypeParameter(Type t) => hasNonCircularBaseConstraint(t) ? getConstraintFromTypeParameter(t) : null;
+    private bool hasNonCircularBaseConstraint(Type t) => getResolvedBaseConstraint(t, null) != circularConstraintType;
+    private Type getConstraintFromTypeParameter(Type t)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) == 0)
+            return null;
+        var d = t.AsTypeParameter();
+        if (d.constraint == null)
+        {
+            if (d.target != null)
+                d.constraint = instantiateType(getConstraintOfTypeParameter(d.target), d.mapper) ?? noConstraintType;
+            else
+                throw unsupported("getConstraintFromTypeParameter: source parameter/inference constraint");
+        }
+
+        return d.constraint == noConstraintType ? null : d.constraint;
+    }
+
+    private Type getBaseConstraintOfType(Type t)
+    {
+        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.UnionOrIntersection | TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.Index)) != 0)
+        {
+            var constraint = getResolvedBaseConstraint(t, null);
+            return constraint != noConstraintType && constraint != circularConstraintType ? constraint : null;
+        }
+
+        return null;
+    }
+
+    private Type getResolvedBaseConstraint(Type t, List<RecursionId> stack)
+    {
+        var d = t.AsConstrainedType();
+        if (d == null)
+            return t;
+        if (d.resolvedBaseConstraint != null)
+            return d.resolvedBaseConstraint;
+        if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedBaseConstraint))
+            return circularConstraintType;
+        Type constraint = null;
+        var identity = getRecursionIdentity(t);
+        if ((stack?.Count ?? 0) < 10 || (stack?.Count ?? 0) < 50 && !(stack?.Contains(identity) ?? false))
+            constraint = computeBaseConstraint(getSimplifiedType(t, false), GoRuntime.Append(stack, identity));
+        if (!popTypeResolution())
+        {
+            if ((t.flags & TypeFlags.TypeParameter) != 0 && !t.AsTypeParameter().isThisType)
+                throw unsupported("getResolvedBaseConstraint: source circular constraint");
+            constraint = circularConstraintType;
+        }
+
+        constraint ??= noConstraintType;
+        return d.resolvedBaseConstraint ??= constraint;
+    }
+
+    private Type computeBaseConstraint(Type t, List<RecursionId> stack)
+    {
+        if ((t.flags & TypeFlags.TypeParameter) != 0)
+        {
+            var constraint = getConstraintFromTypeParameter(t);
+            return t.AsTypeParameter().isThisType ? constraint : getNextBaseConstraint(constraint, stack);
+        }
+
+        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
+        {
+            var types = t.Types();
+            List<Type> constraints = new(types.Count);
+            bool different = false;
+            foreach (var source in types)
+            {
+                var constraint = getNextBaseConstraint(source, stack);
+                if (constraint != null)
+                {
+                    if (constraint != source)
+                        different = true;
+                    constraints.Add(constraint);
+                }
+                else
+                    different = true;
+            }
+
+            if (!different)
+                return t;
+            if ((t.flags & TypeFlags.Union) != 0 && constraints.Count == types.Count)
+                return getUnionType(constraints);
+            if ((t.flags & TypeFlags.Intersection) != 0 && constraints.Count > 0)
+                return getIntersectionType(constraints);
+            return null;
+        }
+
+        if ((t.flags & TypeFlags.Index) != 0)
+        {
+            if (isGenericMappedType(t.AsIndexType().target))
+                throw unsupported("computeBaseConstraint: source remapped index");
+            return stringNumberSymbolType ??= getUnionType([stringType, numberType, esSymbolType]);
+        }
+
+        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & ObjectFlags.Tuple) != 0)
+            throw unsupported("computeBaseConstraint: source generic/index/tuple");
+        return t;
+    }
+
+    private Type getNextBaseConstraint(Type t, List<RecursionId> stack)
+    {
+        if (t == null)
+            return null;
+        var constraint = getResolvedBaseConstraint(t, stack);
+        return constraint == noConstraintType || constraint == circularConstraintType ? null : constraint;
+    }
+
+    private Type getSimplifiedType(Type t, bool writing)
+    {
+        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional)) != 0)
+            throw unsupported("getSimplifiedType: source indexed/conditional");
+        return t;
+    }
+
+    private static SymbolTable cloneSymbolTable(SymbolTable source)
+    {
+        if (source == null)
+            return null;
+        var result = new SymbolTable(source.Count);
+        foreach (var(name, symbol)in source)
+            result[name] = symbol;
+        return result;
+    }
+
+    private List<Type> addNamedUnions(List<Type> named, List<Type> types)
+    {
+        foreach (var t in types ?? [])
+            if ((t.flags & TypeFlags.Union) != 0)
+            {
+                var origin = t.AsUnionType().origin;
+                if (t.alias != null || origin != null && (origin.flags & TypeFlags.Union) == 0)
+                {
+                    if (!(named?.Contains(t) ?? false))
+                        named = GoRuntime.Append(named, t);
+                }
+                else if (origin != null && (origin.flags & TypeFlags.Union) != 0)
+                    named = addNamedUnions(named, origin.Types());
+            }
+
+        return named;
+    }
+
+    private Type getTypeOfSymbolWithDeferredType(Symbol symbol)
+    {
+        var links = valueSymbolLinks.Get(symbol);
+        if (links.resolvedType == null)
+        {
+            var deferred = deferredSymbolLinks.Get(symbol);
+            links.resolvedType = (deferred.parent.flags & TypeFlags.Union) != 0 ? getUnionType(deferred.constituents) : getIntersectionType(deferred.constituents);
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal readonly HashSet<Type> markerTypes = new();
+    private int compareSymbols(Symbol left, Symbol right) => compareSymbolsWorker(left, right);
+    private Type globalArrayType, globalReadonlyArrayType;
+    private Type globalIterableType, globalIterableIteratorType, globalAsyncIterableType, globalAsyncIterableIteratorType;
+    internal Type getGlobalIterableType() => globalIterableType ??= getGlobalType("Iterable", 3, false);
+    internal Type getGlobalIterableIteratorType() => globalIterableIteratorType ??= getGlobalType("IterableIterator", 3, false);
+    internal Type getGlobalAsyncIterableType() => globalAsyncIterableType ??= getGlobalType("AsyncIterable", 3, false);
+    internal Type getGlobalAsyncIterableIteratorType() => globalAsyncIterableIteratorType ??= getGlobalType("AsyncIterableIterator", 3, false);
+    internal bool isReferenceToType(Type t, Type target) => t != null && (t.objectFlags & ObjectFlags.Reference) != 0 && t.Target() == target;
+    private bool isArrayType(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 && (t.Target() == globalArrayType || t.Target() == globalReadonlyArrayType);
+    private bool isArrayOrTupleType(Type t) => isArrayType(t) || (t.objectFlags & ObjectFlags.Tuple) != 0;
+    private bool isNonGenericObjectType(Type t) => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t);
+    private bool isGenericObjectType(Type t) => (getGenericObjectFlags(t) & ObjectFlags.IsGenericObjectType) != 0;
+    private bool isGenericMappedType(Type t)
+    {
+        if ((t.objectFlags & ObjectFlags.Mapped) != 0)
+            throw unsupported("isGenericMappedType: source mapped type");
+        return false;
+    }
+
+    private bool isGenericTupleType(Type t)
+    {
+        if ((t.objectFlags & ObjectFlags.Tuple) != 0)
+            throw unsupported("isGenericTupleType: source tuple");
+        return false;
+    }
+
+    private ObjectFlags getGenericObjectFlags(Type t)
+    {
+        ObjectFlags combined = 0;
+        if ((t.flags & (TypeFlags.UnionOrIntersection | TypeFlags.Substitution)) != 0)
+        {
+            if ((t.objectFlags & ObjectFlags.IsGenericTypeComputed) == 0)
+            {
+                if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
+                    foreach (var type in t.Types())
+                        combined |= getGenericObjectFlags(type);
+                else
+                    throw unsupported("getGenericObjectFlags: source substitution");
+                t.objectFlags |= ObjectFlags.IsGenericTypeComputed | combined;
+            }
+
+            return t.objectFlags & ObjectFlags.IsGenericType;
+        }
+
+        if ((t.flags & TypeFlags.InstantiableNonPrimitive) != 0 || isGenericMappedType(t) || isGenericTupleType(t))
+            combined |= ObjectFlags.IsGenericObjectType;
+        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.Index)) != 0)
+            combined |= ObjectFlags.IsGenericIndexType;
+        if ((t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
+            throw unsupported("getGenericObjectFlags: source generic string type");
+        return combined;
+    }
+
+    private IndexInfo anyBaseTypeIndexInfo;
+    private IndexInfo newIndexInfo(Type keyType, Type valueType, bool isReadonly, Node declaration, List<Node> components) => new()
+    {
+        keyType = keyType,
+        valueType = valueType,
+        isReadonly = isReadonly,
+        declaration = declaration,
+        components = components
+    };
+    private IndexInfo instantiateIndexInfo(IndexInfo info, TypeMapper mapper)
+    {
+        var value = instantiateType(info.valueType, mapper);
+        return value == info.valueType ? info : newIndexInfo(info.keyType, value, info.isReadonly, info.declaration, info.components);
+    }
+
+    private static IndexInfo findIndexInfo(List<IndexInfo> infos, Type keyType) => infos?.Find(info => info.keyType == keyType);
+    private IndexInfo getIndexInfoOfType(Type t, Type keyType) => findIndexInfo(getIndexInfosOfType(t), keyType);
+    private IndexInfo getApplicableIndexInfo(Type t, Type keyType) => findApplicableIndexInfo(getIndexInfosOfType(t), keyType);
+    private IndexInfo findApplicableIndexInfo(List<IndexInfo> infos, Type keyType)
+    {
+        IndexInfo stringInfo = null;
+        List<IndexInfo> applicable = new(8);
+        foreach (var info in infos ?? [])
+            if (info.keyType == stringType)
+                stringInfo = info;
+            else if (isApplicableIndexType(keyType, info.keyType))
+                applicable.Add(info);
+        if (applicable.Count == 0)
+            return stringInfo != null && isApplicableIndexType(keyType, stringType) ? stringInfo : null;
+        if (applicable.Count == 1)
+            return applicable[0];
+        return newIndexInfo(unknownType, getIntersectionType(applicable.Select(info => info.valueType).ToList()), applicable.All(info => info.isReadonly), null, null);
+    }
+
+    private bool isApplicableIndexType(Type source, Type target) => isTypeAssignableTo(source, target) || target == stringType && isTypeAssignableTo(source, numberType) || target == numberType && (source.flags & TypeFlags.StringLiteral) != 0 && isNumericLiteralName(getStringLiteralValue(source));
+    private Type getSingleBaseForNonAugmentingSubtype(Type t)
+    {
+        if ((t.objectFlags & ObjectFlags.Reference) == 0 || (t.Target().objectFlags & ObjectFlags.ClassOrInterface) == 0)
+            return null;
+        var key = new CachedTypeKey(CachedTypeKind.EquivalentBaseType, t.id);
+        if ((t.objectFlags & ObjectFlags.IdenticalBaseTypeCalculated) != 0)
+            return cachedTypes.TryGetValue(key, out var cached) ? cached : null;
+        t.objectFlags |= ObjectFlags.IdenticalBaseTypeCalculated;
+        var target = t.Target();
+        if ((target.objectFlags & ObjectFlags.Class) != 0)
+            throw unsupported("getSingleBaseForNonAugmentingSubtype: source class");
+        var bases = getBaseTypes(target);
+        if ((bases?.Count ?? 0) != 1 || (getMembersOfSymbol(t.symbol)?.Count ?? 0) != 0)
+            return null;
+        var parameters = target.AsInterfaceType().TypeParameters();
+        var instantiated = (parameters?.Count ?? 0) == 0 ? bases[0] : instantiateType(bases[0], newTypeMapper(parameters, getTypeArguments(t).GetRange(0, parameters.Count)));
+        if ((getTypeArguments(t)?.Count ?? 0) > (parameters?.Count ?? 0))
+            instantiated = getTypeWithThisArgument(instantiated, getTypeArguments(t)[^1], false);
+        cachedTypes[key] = instantiated;
+        return instantiated;
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:25728, 26986. Full selected data-type allocation/count paths.
+    private Type newIntersectionType(ObjectFlags flags, List<Type> types) => newType(TypeFlags.Intersection, flags, new IntersectionType { types = types });
+    private static int getConstituentCount(Type t)
+    {
+        if ((t.flags & TypeFlags.UnionOrIntersection) == 0 || t.alias != null)
+            return 1;
+        if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin != null)
+            return getConstituentCount(t.AsUnionType().origin);
+        return getConstituentCountOfTypes(t.Types());
+    }
+
+    private static int getConstituentCountOfTypes(List<Type> types)
+    {
+        int n = 0;
+        foreach (var t in types ?? [])
+            n += getConstituentCount(t);
+        return n;
+    }
+
+    // checker.go:28330. Source index syntax is excluded; synthetic base infos have no declaration.
+    internal static string getNameFromIndexInfo(IndexInfo info)
+    {
+        if (info.declaration != null)
+            return TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(info.declaration.Parameters()[0].Name());
+        return "x";
+    }
+
+    private readonly Dictionary<CacheHashKey, List<Type>> subtypeReductionCache = new();
+    private Type unknownEmptyObjectType;
+    // checker.go:26468. Class derivation and source type variables are excluded;
+    // selected implicit-this constraints still use the original union constraint arm.
+    private List<Type> removeSubtypes(List<Type> types, bool hasObjectTypes)
+    {
+        if (types.Count < 2)
+            return types;
+        var key = getTypeListKey(types);
+        if (subtypeReductionCache.TryGetValue(key, out var cached))
+            return cached;
+        bool hasEmptyObject = hasObjectTypes && types.Any(t => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t) && isEmptyResolvedType(resolveStructuredTypeMembers(t)));
+        int length = types.Count, i = length, count = 0;
+        while (i > 0)
+        {
+            i--;
+            var source = types[i];
+            if (hasEmptyObject || (source.flags & TypeFlags.StructuredOrInstantiable) != 0)
+            {
+                if ((source.flags & TypeFlags.TypeParameter) != 0 && (getBaseConstraintOrType(source).flags & TypeFlags.Union) != 0)
+                {
+                    if (isTypeRelatedTo(source, getUnionType(types.Select(t => t == source ? neverType : t).ToList()), strictSubtypeRelation))
+                        types.RemoveAt(i);
+                    continue;
+                }
+
+                Symbol keyProperty = null;
+                Type keyPropertyType = null;
+                if ((source.flags & (TypeFlags.Object | TypeFlags.Intersection | TypeFlags.InstantiableNonPrimitive)) != 0)
+                    keyProperty = (getPropertiesOfType(source) ?? []).Find(p => isUnitType(getTypeOfSymbol(p)));
+                if (keyProperty != null)
+                    keyPropertyType = getRegularTypeOfLiteralType(getTypeOfSymbol(keyProperty));
+                foreach (var target in types)
+                {
+                    if (source == target)
+                        continue;
+                    if (count == 100000)
+                    {
+                        int estimatedCount = count / (length - i) * length;
+                        if (estimatedCount > 1000000)
+                        {
+                            error(currentNode, Diagnostics.Expression_produces_a_union_type_that_is_too_complex_to_represent);
+                            return null;
+                        }
+                    }
+
+                    count++;
+                    if (keyProperty != null && (target.flags & (TypeFlags.Object | TypeFlags.Intersection | TypeFlags.InstantiableNonPrimitive)) != 0)
+                    {
+                        var t = getTypeOfPropertyOfType(target, keyProperty.Name);
+                        if (t != null && isUnitType(t) && getRegularTypeOfLiteralType(t) != keyPropertyType)
+                            continue;
+                    }
+
+                    if ((source == emptyObjectType || source == unknownEmptyObjectType) && target.symbol != null && IsEmptyAnonymousObjectType(target))
+                        continue;
+                    if (isTypeRelatedTo(source, target, strictSubtypeRelation))
+                    {
+                        if ((getTargetType(source).objectFlags & ObjectFlags.Class) != 0 && (getTargetType(target).objectFlags & ObjectFlags.Class) != 0)
+                            throw unsupported("removeSubtypes: class derivation");
+                        types.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        subtypeReductionCache[key] = types;
+        return types;
+    }
+
+    // checker.go:21706. Constructor/mixin behavior is guarded before selected data-only combination.
+    private void resolveIntersectionTypeMembers(Type t)
+    {
+        List<Signature> callSignatures = null, constructSignatures = null;
+        List<IndexInfo> indexInfos = null;
+        var(mixinFlags, mixinCount) = findMixins(t.Types());
+        for (int i = 0; i < t.Types().Count; i++)
+        {
+            var constituent = t.Types()[i];
+            if (!mixinFlags[i])
+            {
+                var signatures = getSignaturesOfType(constituent, SignatureKind.Construct);
+                if ((signatures?.Count ?? 0) != 0 && mixinCount > 0)
+                    throw unsupported("resolveIntersectionTypeMembers: constructor mixins");
+                constructSignatures = appendSignatures(constructSignatures, signatures);
+            }
+
+            callSignatures = appendSignatures(callSignatures, getSignaturesOfType(constituent, SignatureKind.Call));
+            foreach (var info in getIndexInfosOfType(constituent) ?? [])
+                indexInfos = appendIndexInfo(indexInfos, info, false);
+        }
+
+        setStructuredTypeMembers(t, null, callSignatures, constructSignatures, indexInfos);
+    }
+
+    private (List<bool>, int) findMixins(List<Type> types)
+    {
+        var flags = types.Select(isMixinConstructorType).ToList();
+        int constructorTypeCount = 0, mixinCount = 0, firstMixinIndex = -1;
+        for (int i = 0; i < types.Count; i++)
+        {
+            if ((getSignaturesOfType(types[i], SignatureKind.Construct)?.Count ?? 0) > 0)
+                constructorTypeCount++;
+            if (flags[i])
+            {
+                if (firstMixinIndex < 0)
+                    firstMixinIndex = i;
+                mixinCount++;
+            }
+        }
+
+        if (constructorTypeCount > 0 && constructorTypeCount == mixinCount)
+        {
+            flags[firstMixinIndex] = false;
+            mixinCount--;
+        }
+
+        return (flags, mixinCount);
+    }
+
+    private bool isMixinConstructorType(Type t)
+    {
+        var signatures = getSignaturesOfType(t, SignatureKind.Construct);
+        if ((signatures?.Count ?? 0) != 1)
+            return false;
+        throw unsupported("isMixinConstructorType: source constructor signature");
+    }
+
+    private List<Signature> appendSignatures(List<Signature> signatures, List<Signature> newSignatures)
+    {
+        foreach (var sig in newSignatures ?? [])
+        {
+            if ((signatures?.Count ?? 0) != 0)
+                throw unsupported("appendSignatures: signature identity comparison");
+            signatures = GoRuntime.Append(signatures, sig);
+        }
+
+        return signatures;
+    }
+
+    private List<IndexInfo> appendIndexInfo(List<IndexInfo> infos, IndexInfo newInfo, bool union)
+    {
+        for (int i = 0; i < (infos?.Count ?? 0); i++)
+        {
+            var info = infos[i];
+            if (info.keyType == newInfo.keyType)
+            {
+                var value = union ? getUnionType([info.valueType, newInfo.valueType]) : getIntersectionType([info.valueType, newInfo.valueType]);
+                infos[i] = newIndexInfo(info.keyType, value, union ? info.isReadonly || newInfo.isReadonly : info.isReadonly && newInfo.isReadonly, null, null);
+                return infos;
+            }
+        }
+
+        return GoRuntime.Append(infos, newInfo);
+    }
+
+    private Diagnostic elaborateNeverIntersection(Diagnostic chain, Node node, Type t)
+    {
+        if ((t.flags & TypeFlags.Intersection) != 0 && (t.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
+        {
+            var neverProp = getPropertiesOfUnionOrIntersectionType(t)?.Find(isDiscriminantWithNeverType);
+            if (neverProp != null)
+                return NewDiagnosticChainForNode(chain, node, Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents, typeToStringNoTypeReduction(t), symbolToString(neverProp));
+            var privateProp = getPropertiesOfUnionOrIntersectionType(t)?.Find(isConflictingPrivateProperty);
+            if (privateProp != null)
+                return NewDiagnosticChainForNode(chain, node, Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_exists_in_multiple_constituents_and_is_private_in_some, typeToStringNoTypeReduction(t), symbolToString(privateProp));
+        }
+
+        return chain;
+    }
+
+    private bool isDiscriminantWithNeverType(Symbol prop) => (prop.Flags & SymbolFlags.Optional) == 0 && (prop.CheckFlags & (CheckFlags.NonUniformAndLiteral | CheckFlags.HasNeverType)) == CheckFlags.NonUniformAndLiteral && (getTypeOfSymbol(prop).flags & TypeFlags.Never) != 0;
+}
+
+public sealed partial class Checker
+{
+    private static string getStringLiteralValue(Type t) => (string)t.AsLiteralType().value;
+    internal Type getBaseConstraintOrType(Type t) => getBaseConstraintOfType(t) ?? t;
+    private Symbol resolveSymbol(Symbol symbol) => resolveSymbolEx(symbol, false);
+    private Symbol resolveSymbolEx(Symbol symbol, bool dontResolveAlias)
+    {
+        if (!dontResolveAlias && Ast.IsNonLocalAlias(symbol, SymbolFlags.Value | SymbolFlags.Type | SymbolFlags.Namespace))
+            throw unsupported("resolveSymbolEx: source import/export alias");
+        return symbol;
+    }
+
+    private Symbol getResolvedTarget(Symbol symbol) => getMergedSymbol(resolveSymbol(getMergedSymbol(symbol)));
+    internal Symbol getSymbolIfSameReference(Symbol first, Symbol second) => getResolvedTarget(first) == getResolvedTarget(second) ? first : null;
+}
+
+public sealed partial class Checker
+{
+    // checker.go:1651,1682,1706,1766. Actual selected meaning-space diagnostics.
+    private bool checkAndReportErrorForUsingTypeAsNamespace(Node location, string name, SymbolFlags meaning)
+    {
+        if (meaning == SymbolFlags.Namespace)
+        {
+            var symbol = resolveSymbol(nameResolver.Resolve(location, name, SymbolFlags.Type & ~SymbolFlags.Namespace, null, false, false));
+            if (symbol != null)
+            {
+                var parent = location.Parent;
+                if (Ast.IsQualifiedName(parent))
+                {
+                    var propertyName = parent.AsQualifiedName().Right.Text();
+                    if (getPropertyOfType(getDeclaredTypeOfSymbol(symbol), propertyName) != null)
+                    {
+                        error(parent, Diagnostics.Cannot_access_0_1_because_0_is_a_type_but_not_a_namespace_Did_you_mean_to_retrieve_the_type_of_the_property_1_in_0_with_0_1, name, propertyName);
+                        return true;
+                    }
+                }
+
+                error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_namespace_here, name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool checkAndReportErrorForUsingNamespaceAsTypeOrValue(Node location, string name, SymbolFlags meaning)
+    {
+        if ((meaning & (SymbolFlags.Value & ~SymbolFlags.Type)) != 0)
+        {
+            var symbol = resolveSymbol(nameResolver.Resolve(location, name, SymbolFlags.NamespaceModule, null, false, false));
+            if (symbol != null)
+            {
+                error(location, Diagnostics.Cannot_use_namespace_0_as_a_value, name);
+                return true;
+            }
+        }
+        else if ((meaning & (SymbolFlags.Type & ~SymbolFlags.Value)) != 0)
+        {
+            var symbol = resolveSymbol(nameResolver.Resolve(location, name, SymbolFlags.Module, null, false, false));
+            if (symbol != null)
+            {
+                error(location, Diagnostics.Cannot_use_namespace_0_as_a_type, name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool checkAndReportErrorForUsingTypeAsValue(Node location, string name, SymbolFlags meaning)
+    {
+        if ((meaning & SymbolFlags.Value) != 0)
+        {
+            if (isPrimitiveTypeName(name))
+            {
+                var grandparent = location.Parent.Parent;
+                if (grandparent?.Parent != null && Ast.IsHeritageClause(grandparent))
+                {
+                    if (grandparent.Parent.Kind == Kind.InterfaceDeclaration && grandparent.AsHeritageClause().Token == Kind.ExtendsKeyword)
+                        error(location, Diagnostics.An_interface_cannot_extend_a_primitive_type_like_0_It_can_only_extend_other_named_object_types, name);
+                    else
+                        throw unsupported("checkAndReportErrorForUsingTypeAsValue: class heritage");
+                }
+                else
+                    error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_value_here, name);
+                return true;
+            }
+
+            var symbol = resolveSymbol(nameResolver.Resolve(location, name, SymbolFlags.Type & ~SymbolFlags.Value, null, false, false));
+            if (symbol != null && (symbol.Flags & SymbolFlags.Value) == 0)
+            {
+                if (isES2015OrLaterConstructorName(name))
+                    error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_value_here_Do_you_need_to_change_your_target_library_Try_changing_the_lib_compiler_option_to_es2015_or_later, name);
+                else if (maybeMappedType(location, symbol))
+                    error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_value_here_Did_you_mean_to_use_1_in_0, name, name == "K" ? "P" : "K");
+                else
+                    error(location, Diagnostics.X_0_only_refers_to_a_type_but_is_being_used_as_a_value_here, name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool isES2015OrLaterConstructorName(string name) => name is "Promise" or "Symbol" or "Map" or "WeakMap" or "Set" or "WeakSet";
+    private bool maybeMappedType(Node node, Symbol symbol)
+    {
+        do
+        {
+            node = node.Parent;
+        }
+        while (Ast.IsComputedPropertyName(node) || Ast.IsPropertySignatureDeclaration(node));
+        if (Ast.IsTypeLiteralNode(node) && node.Members()?.Count == 1)
+        {
+            var t = getDeclaredTypeOfSymbol(symbol);
+            return (t.flags & TypeFlags.Union) != 0 && allTypesAssignableToKindEx(t, TypeFlags.StringOrNumberLiteral, true);
+        }
+
+        return false;
+    }
+
+    private bool checkAndReportErrorForUsingValueAsType(Node location, string name, SymbolFlags meaning)
+    {
+        if ((meaning & (SymbolFlags.Type & ~SymbolFlags.Namespace)) != 0)
+        {
+            var symbol = resolveSymbol(nameResolver.Resolve(location, name, ~SymbolFlags.Type & SymbolFlags.Value, null, false, false));
+            if (symbol != null && (symbol.Flags & SymbolFlags.Namespace) == 0)
+            {
+                error(location, Diagnostics.X_0_refers_to_a_value_but_is_being_used_as_a_type_here_Did_you_mean_typeof_0, name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isGenericType(Type t) => getGenericObjectFlags(t) != 0;
+    private Type getWriteTypeOfSymbolWithDeferredType(Symbol symbol)
+    {
+        var links = valueSymbolLinks.Get(symbol);
+        if (links.writeType == null)
+        {
+            var deferred = deferredSymbolLinks.Get(symbol);
+            links.writeType = (deferred.writeConstituents?.Count ?? 0) != 0 ? (deferred.parent.flags & TypeFlags.Union) != 0 ? getUnionType(deferred.writeConstituents) : getIntersectionType(deferred.writeConstituents) : getTypeOfSymbolWithDeferredType(symbol);
+        }
+
+        return links.writeType;
+    }
+}
+
+public sealed partial class Checker
+{
+    public bool IsDeprecatedDeclaration(Node declaration) => Ast.IsDeprecatedDeclarationWithCachedFlags(declaration, getCombinedNodeFlagsCached(declaration));
+}
+
+public sealed partial class Checker
+{
+    private Type unknownUnionType;
+    private Type createUnknownUnionType() => getUnionType([undefinedType, nullType, unknownEmptyObjectType]);
+    private TypeFacts getIntersectionTypeFacts(Type t, TypeFacts callerOnlyNeeds)
+    {
+        bool ignoreObjects = maybeTypeOfKind(t, TypeFlags.Primitive);
+        TypeFacts ored = TypeFacts.None, anded = TypeFacts.All;
+        foreach (var u in t.Types())
+            if (!(ignoreObjects && (u.flags & TypeFlags.Object) != 0))
+            {
+                var facts = getTypeFactsWorker(u, callerOnlyNeeds);
+                ored |= facts;
+                anded &= facts;
+            }
+
+        return ored & TypeFacts.OrFactsMask | anded & TypeFacts.AndFactsMask;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type stringOrNumberType;
+    private Type newIndexType(Type target, IndexFlags flags) => newType(TypeFlags.Index, ObjectFlags.None, new IndexType { target = target, indexFlags = flags });
+    private bool isKeyTypeIncluded(Type keyType, TypeFlags include) => (keyType.flags & include) != 0 || (keyType.flags & TypeFlags.Intersection) != 0 && keyType.Types().Any(t => isKeyTypeIncluded(t, include));
+}
+
+public sealed partial class Checker
+{
+    // checker.go:initializeClosures and27057; source template/string-mapping types are excluded.
+    private bool isPrimitiveOrObjectOrEmptyType(Type t) => (t.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 || IsEmptyAnonymousObjectType(t);
+    private bool isGenericStringLikeType(Type t)
+    {
+        if ((t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
+            throw unsupported("isGenericStringLikeType: source template/string mapping");
+        return false;
+    }
 }

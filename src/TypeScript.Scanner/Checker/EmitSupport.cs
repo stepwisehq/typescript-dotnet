@@ -9,6 +9,84 @@ using TypeScript.PseudoChecking;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    private readonly EmitResolverLinks emitResolverLinks = new();
+    // emitsupport.go:12. Preserve declaration visibility's cached tristate.
+    private bool isDeclarationVisible(Node node)
+    {
+        if (!Ast.IsParseTreeNode(node) || node == null)
+            return false;
+        var links = emitResolverLinks.Get(node);
+        if (links.isVisible == Tristate.Unknown)
+            links.isVisible = determineIfDeclarationIsVisible(node) ? Tristate.True : Tristate.False;
+        return links.isVisible == Tristate.True;
+    }
+
+    private bool determineIfDeclarationIsVisible(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.VariableDeclaration:
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+                if (Ast.IsVariableDeclaration(node) && Ast.IsBindingPattern(node.Name()) && (node.Name().Elements()?.Count ?? 0) == 0)
+                    return false;
+                var parent = Ast.GetDeclarationContainer(node);
+                if ((Ast.GetCombinedModifierFlags(node) & ModifierFlags.Export) == 0 && !(parent.Kind != Kind.SourceFile && (parent.Flags & NodeFlags.Ambient) != 0))
+                    return Ast.IsGlobalSourceFile(parent);
+                return isDeclarationVisible(parent);
+            case Kind.PropertySignature:
+                if ((Ast.GetCombinedModifierFlags(node) & (ModifierFlags.Private | ModifierFlags.Protected)) != 0)
+                    return false;
+                return isDeclarationVisible(node.Parent);
+            case Kind.TypeLiteral:
+            case Kind.TypeReference:
+            case Kind.UnionType:
+            case Kind.IntersectionType:
+            case Kind.ParenthesizedType:
+                return isDeclarationVisible(node.Parent);
+            case Kind.TypeParameter:
+            case Kind.SourceFile:
+                return true;
+            case Kind.Block:
+            case Kind.VariableStatement:
+            case Kind.VariableDeclarationList:
+                return false; // Original switch default, not a manufactured visibility.
+            default:
+                throw unsupported("determineIfDeclarationIsVisible: unselected declaration syntax");
+        }
+    }
+
+    private TypeScript.DiagnosticPrinting.SymbolAccessibilityResult hasVisibleDeclarations(Symbol symbol, bool shouldComputeAliasToMakeVisible)
+    {
+        if (shouldComputeAliasToMakeVisible)
+            throw unsupported("hasVisibleDeclarations: declaration emit alias marking");
+        foreach (var declaration in symbol.Declarations ?? [])
+        {
+            if (Ast.IsIdentifier(declaration))
+                continue;
+            if (!isDeclarationVisible(declaration))
+                return null;
+        }
+
+        // Original slices.Collect(maps.Values(nil)) is an allocated empty slice.
+        return new()
+        {
+            Accessibility = TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible,
+            AliasesToMakeVisible = new()
+        };
+    }
+
+    // emitsupport.go:136. Value/type/namespace meaning of a reused entity name.
+    internal static SymbolFlags getMeaningOfEntityNameReference(Node entityName)
+    {
+        var parent = entityName.Parent;
+        if (parent.Kind == Kind.TypeQuery || parent.Kind == Kind.ExpressionWithTypeArguments && !Ast.IsPartOfTypeNode(parent) || parent.Kind == Kind.ComputedPropertyName || parent.Kind == Kind.TypePredicate && parent.AsTypePredicateNode().ParameterName == entityName || parent.Kind == Kind.BinaryExpression)
+            return SymbolFlags.Value | SymbolFlags.ExportValue;
+        if (entityName.Kind is Kind.QualifiedName or Kind.PropertyAccessExpression || parent.Kind == Kind.ImportEqualsDeclaration || parent.Kind == Kind.QualifiedName && parent.AsQualifiedName().Left == entityName || parent.Kind is Kind.PropertyAccessExpression or Kind.ElementAccessExpression && parent.Expression() == entityName)
+            return SymbolFlags.Namespace;
+        return SymbolFlags.Type;
+    }
+
     // emitsupport.go:285. The anonymous property-signature branch can add undefined
     // only for a reverse-mapped symbol; mapped types and parameters are unsupported.
     internal bool requiresAddingImplicitUndefined(Node declaration, Symbol symbol, Node enclosingDeclaration)

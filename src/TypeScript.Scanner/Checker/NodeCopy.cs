@@ -43,29 +43,77 @@ internal sealed partial class NodeBuilderImpl
         return typeToTypeNode(ch.getTypeFromTypeNode(node));
     }
 
-    // No admitted static anonymous node has an entity-name/type-parameter/JSDoc
-    // branch capable of setting hadError or queuing tracker reports. Retain the
-    // actual boundary restoration and length update around the selected visitor.
+    // nodecopy.go:100/184/192. Restore the actual recovery tracker and
+    // symbol-recording boundary now reached by named type references.
     private sealed class recoveryBoundary
     {
-        internal bool hadError = false;
+        internal NodeBuilderContext ctx;
+        internal bool hadError;
+        internal List<Action> deferredReports;
+        internal SymbolTrackerImpl oldTracker;
+        internal List<TrackedSymbolArgs> oldTrackedSymbols, trackedSymbols;
         internal bool oldEncounteredError;
         internal int oldApproximateLength;
-        internal SymbolTrackerImpl oldTracker;
+        internal originalRecoveryScopeState startRecoveryScope() => new(ctx.trackedSymbols?.Count ?? 0, deferredReports?.Count ?? 0, hadError);
+        internal void endRecoveryScope(originalRecoveryScopeState state)
+        {
+            hadError = state.hadError;
+            if (ctx.trackedSymbols != null)
+                ctx.trackedSymbols.RemoveRange(state.trackedSymbolsTop, ctx.trackedSymbols.Count - state.trackedSymbolsTop);
+            if (deferredReports != null)
+                deferredReports.RemoveRange(state.unreportedErrorsTop, deferredReports.Count - state.unreportedErrorsTop);
+        }
+
+        internal void markError(Action callback)
+        {
+            hadError = true;
+            if (callback != null)
+                (deferredReports ??= new()).Add(callback);
+        }
     }
 
-    private recoveryBoundary createRecoveryBoundary() => new()
+    private readonly record struct originalRecoveryScopeState(int trackedSymbolsTop, int unreportedErrorsTop, bool hadError);
+    private sealed class wrappingTracker(SymbolTrackerImpl wrapped, recoveryBoundary bound) : TypeScript.NodeBuilding.SymbolTracker
     {
-        oldTracker = ctx.tracker,
-        oldEncounteredError = encounteredError,
-        oldApproximateLength = approximateLength
-    };
+        public bool TrackSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
+        {
+            (bound.trackedSymbols ??= new()).Add(new(symbol, enclosingDeclaration, meaning));
+            return false;
+        }
+
+        public void ReportCyclicStructureError() => bound.markError(wrapped.ReportCyclicStructureError);
+        public void ReportInaccessibleThisError() => bound.markError(wrapped.ReportInaccessibleThisError);
+        public void ReportInferenceFallback(Node node) => wrapped.ReportInferenceFallback(node);
+    }
+
+    private recoveryBoundary createRecoveryBoundary()
+    {
+        var bound = new recoveryBoundary
+        {
+            ctx = ctx,
+            oldTracker = ctx.tracker,
+            oldTrackedSymbols = ctx.trackedSymbols,
+            oldEncounteredError = encounteredError,
+            oldApproximateLength = approximateLength
+        };
+        ctx.tracker = SymbolTrackerImpl.NewSymbolTrackerImpl(ctx, new wrappingTracker(ctx.tracker, bound));
+        ctx.trackedSymbols = null;
+        return bound;
+    }
+
     private bool finalizeBoundary(recoveryBoundary bound)
     {
         ctx.tracker = bound.oldTracker;
+        ctx.trackedSymbols = bound.oldTrackedSymbols;
         encounteredError = bound.oldEncounteredError;
         approximateLength = bound.oldApproximateLength;
-        return !bound.hadError;
+        foreach (var callback in bound.deferredReports ?? [])
+            callback();
+        if (bound.hadError)
+            return false;
+        foreach (var argument in bound.trackedSymbols ?? [])
+            ctx.tracker.TrackSymbol(argument.symbol, argument.enclosingDeclaration, argument.meaning);
+        return true;
     }
 
     private Node tryReuseExistingNodeHelper(Node existing)
@@ -83,6 +131,80 @@ internal sealed partial class NodeBuilderImpl
     {
         NodeVisitor visitor = null;
         bool nonLocalNode = true;
+        // nodecopy.go:292/314. Retain resolution in both original and target
+        // scopes; a spelling match is insufficient when names are shadowed.
+        Node attachSymbolToLeftmostIdentifier(Node leftmost, Node node, Symbol symbol)
+        {
+            NodeVisitor attaching = null;
+            Node Attach(Node current)
+            {
+                if (current == leftmost)
+                {
+                    if (symbol != null && (symbol.Flags & SymbolFlags.TypeParameter) != 0)
+                        throw Checker.unsupported("attachSymbolToLeftmostIdentifier: source type parameter");
+                    var name = setTextRange(newIdentifier(current.Text(), symbol), current);
+                    e.AddEmitFlags(name, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                    return name;
+                }
+
+                return setTextRange(attaching.VisitEachChild(current), current);
+            }
+
+            attaching = new NodeVisitor(Attach, f, new());
+            return Attach(node);
+        }
+
+        (bool introducesError, Node newName, Symbol symbol) trackExistingEntityName(Node node)
+        {
+            var leftmost = Ast.GetFirstIdentifier(node);
+            var meaning = Checker.getMeaningOfEntityNameReference(node);
+            var symbol = ch.resolveEntityName(leftmost, meaning, true, true, null);
+            if (ctx.enclosingDeclaration != null && !(symbol != null && (symbol.Flags & SymbolFlags.TypeParameter) != 0))
+            {
+                symbol = ch.getExportSymbolOfValueSymbolIfExported(symbol);
+                var atLocation = ch.resolveEntityName(leftmost, meaning, true, true, ctx.enclosingDeclaration);
+                if (atLocation == ch.unknownSymbol || atLocation == null && symbol != null || atLocation != null && symbol != null && ch.getSymbolIfSameReference(ch.getExportSymbolOfValueSymbolIfExported(atLocation), symbol) == null)
+                {
+                    if (atLocation != ch.unknownSymbol)
+                        ctx.tracker.ReportInferenceFallback(node);
+                    return (true, setTextRange(f.DeepCloneNode(node), node), symbol);
+                }
+
+                symbol = atLocation;
+            }
+
+            if (symbol != null)
+            {
+                bool introducesError = (symbol.Flags & SymbolFlags.TypeParameter) == 0 && !Ast.IsDeclarationName(node) && ch.IsSymbolAccessible(symbol, ctx.enclosingDeclaration, meaning, false).Accessibility != TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible;
+                if (introducesError)
+                    ctx.tracker.ReportInferenceFallback(node);
+                else
+                    ctx.tracker.TrackSymbol(symbol, ctx.enclosingDeclaration, meaning);
+                return (introducesError, attachSymbolToLeftmostIdentifier(leftmost, node, symbol), null);
+            }
+
+            return (false, setTextRange(f.DeepCloneNode(node), node), null);
+        }
+
+        Node tryVisitTypeReference(Node node)
+        {
+            if (Ast.IsConstTypeReference(node))
+                return null;
+            var symbol = tryGetResolvedSymbolFromTypeNode(node);
+            if (symbol == null)
+                return null;
+            if ((symbol.Flags & SymbolFlags.TypeParameter) != 0 && ctx.mapper != null && Checker.getMappedType(ch.getDeclaredTypeOfSymbol(symbol), ctx.mapper) != ch.getDeclaredTypeOfSymbol(symbol))
+                return null;
+            if (!canReuseExistingJSTypeNode(node, getTypeFromTypeNode(node, false)))
+                return null;
+            var(error, name, _) = trackExistingEntityName(node.AsTypeReferenceNode().TypeName);
+            var arguments = visitor.VisitNodes(node.AsTypeReferenceNode().TypeArguments);
+            if (!error)
+                return setTextRange(f.UpdateTypeReferenceNode(node.AsTypeReferenceNode(), name, arguments), node);
+            var serialized = serializeTypeName(node.AsTypeReferenceNode().TypeName, false, arguments);
+            return serialized != null ? setTextRange(serialized, node.AsTypeReferenceNode().TypeName) : null;
+        }
+
         Node worker(Node node)
         {
             if (Ast.IsKeywordTypeNode(node) || node.Kind is Kind.Identifier or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ReadonlyKeyword or Kind.QuestionToken or Kind.MinusToken or Kind.PlusToken)
@@ -117,7 +239,25 @@ internal sealed partial class NodeBuilderImpl
                 return clone;
             }
 
-            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression)
+            if (node.Kind == Kind.ThisType)
+                return node;
+            if (node.Kind == Kind.TypeReference)
+            {
+                if (node.AsTypeReferenceNode().TypeName.Kind == Kind.Identifier && node.AsTypeReferenceNode().TypeName.Text() == "")
+                {
+                    var replacement = f.NewKeywordTypeNode(Kind.AnyKeyword);
+                    e.SetOriginal(replacement, node);
+                    return replacement;
+                }
+
+                var reference = tryVisitTypeReference(node);
+                if (reference != null)
+                    return reference;
+                bound.markError(null);
+                return node;
+            }
+
+            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType)
                 return visitor.VisitEachChild(node);
             throw Checker.unsupported("getExistingNodeTreeVisitor: references/signatures/indexes/JS/dynamic syntax");
         }
@@ -126,10 +266,23 @@ internal sealed partial class NodeBuilderImpl
         {
             if (bound.hadError)
                 return node;
+            var recovery = bound.startRecoveryScope();
             var result = worker(node);
             if (result == node && !Ast.NodeIsSynthesized(node))
                 result = f.DeepCloneNode(node);
-            return setTextRange(result, node);
+            result = setTextRange(result, node);
+            if (bound.hadError)
+            {
+                if (Ast.IsTypeNode(node) && node.Kind != Kind.TypePredicate)
+                {
+                    bound.endRecoveryScope(recovery);
+                    return typeToTypeNode(getTypeFromTypeNode(node, false));
+                }
+
+                return setTextRange(node.Clone(f), node);
+            }
+
+            return result;
         }, f, new NodeVisitorHooks { VisitNodes = (nodes, v) =>
         {
             var res = v.VisitNodes(nodes);

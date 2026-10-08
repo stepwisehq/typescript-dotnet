@@ -3260,3 +3260,68 @@ public static partial class Ast
         };
     }
 }
+
+public static partial class Ast
+{
+    // utilities.go:1726/1742/1750/1759/3671; data-interface syntax closure.
+    public static Node GetHeritageClause(Node node, Kind kind)
+    {
+        foreach (var clause in getHeritageClauses(node)?.Nodes ?? [])
+            if (clause.AsHeritageClause().Token == kind) return clause;
+        return null;
+    }
+    private static NodeList getHeritageClauses(Node node) => node.Kind switch
+    {
+        Kind.ClassDeclaration => node.AsClassDeclaration().HeritageClauses,
+        Kind.ClassExpression => node.AsClassExpression().HeritageClauses,
+        Kind.InterfaceDeclaration => node.AsInterfaceDeclaration().HeritageClauses,
+        _ => null
+    };
+    public static List<Node> GetHeritageElements(Node node, Kind kind) => GetHeritageClause(node, kind)?.AsHeritageClause().Types.Nodes;
+    public static List<Node> GetExtendsHeritageClauseElements(Node node) => GetHeritageElements(node, Kind.ExtendsKeyword);
+    public static Node GetHeritageClauseElementName(Node node) => IsTypeReferenceNode(node) ? node.AsTypeReferenceNode().TypeName : node.AsExpressionWithTypeArguments().Expression;
+    public static bool IsTypeDeclarationName(Node name) => name.Kind == Kind.Identifier && IsTypeDeclaration(name.Parent) && GetNameOfDeclaration(name.Parent) == name;
+
+    // ast/utilities.go:2670.
+    public static Node GetDeclarationContainer(Node node) => FindAncestor(GetRootDeclaration(node), candidate =>
+        candidate.Kind is not (Kind.VariableDeclaration or Kind.VariableDeclarationList or Kind.ImportSpecifier or Kind.NamedImports or Kind.NamespaceImport or Kind.ImportClause)).Parent;
+
+    // ast/utilities.go:275/853/1734.
+    public static bool IsEntityName(Node node) => node.Kind is Kind.Identifier or Kind.QualifiedName;
+    public static Node WalkUpParenthesizedTypes(Node node)
+    {
+        while (node != null && node.Kind == Kind.ParenthesizedType)
+            node = node.Parent;
+        return node;
+    }
+    public static bool IsModuleWithStringLiteralName(Node node) => IsModuleDeclaration(node) && node.Name().Kind == Kind.StringLiteral;
+
+    // ast/utilities.go:2587.
+    public static Node GetFirstIdentifier(Node node) => node.Kind switch
+    {
+        Kind.Identifier => node,
+        Kind.QualifiedName => GetFirstIdentifier(node.AsQualifiedName().Left),
+        Kind.PropertyAccessExpression => GetFirstIdentifier(node.AsPropertyAccessExpression().Expression),
+        _ => throw new InvalidOperationException("Unhandled case in GetFirstIdentifier")
+    };
+}
+
+public static partial class Ast
+{
+    // ast/utilities.go:2688.
+    public static bool IsNonLocalAlias(Symbol symbol, SymbolFlags excludes)
+    {
+        if (symbol == null) return false;
+        return (symbol.Flags & (SymbolFlags.Alias | excludes)) == SymbolFlags.Alias || (symbol.Flags & SymbolFlags.Alias) != 0 && (symbol.Flags & SymbolFlags.Assignment) != 0;
+    }
+}
+
+public static partial class Ast
+{
+    // ast/utilities.go:1766.
+    public static bool IsNameOfHeritageClauseTypeReference(Node node)
+    {
+        while (IsQualifiedName(node.Parent)) node = node.Parent;
+        return IsTypeReferenceNode(node.Parent) && node.Parent.AsTypeReferenceNode().TypeName == node && IsHeritageClause(node.Parent.Parent);
+    }
+}

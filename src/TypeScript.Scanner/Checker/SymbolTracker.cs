@@ -9,31 +9,63 @@ using TypeScript.PseudoChecking;
 namespace TypeScript.Checking;
 // Only the default diagnostic tracker and its selected inference-fallback callback
 // are required. No public tracker/late-painted statement interface is introduced.
-internal sealed class SymbolTrackerImpl
+internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
 {
-    private readonly Action<Node> inner;
+    private readonly TypeScript.NodeBuilding.SymbolTracker inner;
     private readonly NodeBuilderImpl.NodeBuilderContext context;
-    private SymbolTrackerImpl(NodeBuilderImpl.NodeBuilderContext context, Action<Node> inner)
+    private SymbolTrackerImpl(NodeBuilderImpl.NodeBuilderContext context, TypeScript.NodeBuilding.SymbolTracker inner)
     {
         this.context = context;
         this.inner = inner;
     }
 
-    internal static SymbolTrackerImpl NewSymbolTrackerImpl(NodeBuilderImpl.NodeBuilderContext context, Action<Node> tracker) => new(context, tracker);
+    internal static SymbolTrackerImpl NewSymbolTrackerImpl(NodeBuilderImpl.NodeBuilderContext context, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        while (tracker is SymbolTrackerImpl previous)
+            tracker = previous.inner;
+        return new(context, tracker);
+    }
+
+    internal bool DisableTrackSymbol;
+    // symboltracker.go:28. Nil external trackers still record named references.
+    public bool TrackSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
+    {
+        if (!DisableTrackSymbol)
+        {
+            if (inner != null && inner.TrackSymbol(symbol, enclosingDeclaration, meaning))
+            {
+                onDiagnosticReported();
+                return true;
+            }
+
+            if ((symbol.Flags & SymbolFlags.TypeParameter) == 0)
+                (context.trackedSymbols ??= new()).Add(new(symbol, enclosingDeclaration, meaning));
+        }
+
+        return false;
+    }
+
     // symboltracker.go:66/106. Reporting records context state even when inner is nil.
-    internal void ReportCyclicStructureError()
+    public void ReportCyclicStructureError()
     {
         onDiagnosticReported();
         if (inner == null)
             return;
-        throw Checker.unsupported("ReportCyclicStructureError: external tracker");
+        inner.ReportCyclicStructureError();
+    }
+
+    // symboltracker.go:72. Diagnostic state is retained even with no external tracker.
+    public void ReportInaccessibleThisError()
+    {
+        onDiagnosticReported();
+        inner?.ReportInaccessibleThisError();
     }
 
     private void onDiagnosticReported() => context.reportedDiagnostic = true;
-    internal void ReportInferenceFallback(Node node)
+    public void ReportInferenceFallback(Node node)
     {
         if (inner == null)
             return;
-        inner(node);
+        inner.ReportInferenceFallback(node);
     }
 }

@@ -2,13 +2,13 @@
 """Record selected hand-port function locations and explicit branch rejection.
 
 This is an inspection inventory, not a C# generator or a proof of equivalence.
-The reviewed C# is authoritative; the branch contracts live in CHECKER-PLAN and OBJECT-CHECKER-PLAN.
+The reviewed C# is authoritative; the branch contracts live in DATA-TYPES-CONTRACT, CHECKER-PLAN and OBJECT-CHECKER-PLAN.
 """
 import json,pathlib,re
 root=pathlib.Path(__file__).resolve().parents[1]
 pin='fed0bf24149fb1ed36039212648bafdafc1ea10e'
 upstream=root/'upstream/TypeScript/tsc/internal'
-files=['Checker','Relater','Flow','Utilities','GrammarChecks','NodeBuilder','NodeBuilderImpl','Printer','Exports','PseudoTypeNodeBuilder','NodeCopy','NodeBuilderScopes','SymbolTracker','EmitSupport']
+files=['Checker','Relater','Flow','Utilities','GrammarChecks','NodeBuilder','NodeBuilderImpl','Printer','Exports','PseudoTypeNodeBuilder','NodeCopy','NodeBuilderScopes','SymbolTracker','EmitSupport','Mapper','SymbolAccessibility','EmitResolver']
 sources={}
 for package in ['checker','printer','pseudochecker']:
  for path in (upstream/package).glob('*.go'):
@@ -16,6 +16,16 @@ for package in ['checker','printer','pseudochecker']:
    sources.setdefault(m.group(1),[]).append({'path':str(path.relative_to(root)),'line':path.read_text().count('\n',0,m.start())+1})
 
 sources['getFeatureMap']=[{'path':'upstream/TypeScript/tsc/internal/checker/utilities.go','line':1336,'kind':'lazy initializer'}]
+
+# Upstream initialization stores closures in fields rather than declaring these
+# as named functions. Preserve those source locations in the inspection inventory.
+for name, line in {'isPrimitiveOrObjectOrEmptyType':1260,'containsMissingType':1263,'couldContainTypeVariables':1266}.items():
+ sources[name]=[{'path':'upstream/TypeScript/tsc/internal/checker/checker.go','line':line,'kind':'initialized function field'}]
+for name in ['getGlobalAsyncIterableIteratorType','getGlobalAsyncIterableType','getGlobalBigIntType','getGlobalESSymbolType','getGlobalIterableIteratorType','getGlobalIterableType','getGlobalPromiseType','getGlobalNonNullableTypeAliasOrNil']:
+ text=(upstream/'checker/checker.go').read_text()
+ match=re.search(r'^\s*c\.'+name+r' = ',text,re.M)
+ if not match:raise ValueError('Missing upstream resolver field '+name)
+ sources[name]=[{'path':'upstream/TypeScript/tsc/internal/checker/checker.go','line':text.count('\n',0,match.start())+1,'kind':'initialized lazy global resolver'}]
 
 def end_of_method(s,start):
  # Mask ordinary/verbatim strings, characters and comments before balancing braces.
@@ -31,24 +41,39 @@ def end_of_method(s,start):
  return i
 
 contracts={
- 'Checker':'Fixed no-library script initialization, scalar and finite anonymous object checking, genuine member/cache identity, contextual typing, deferred work, widening, property reads and internal finite-key reductions. Named/generic/call/index/write/library/module paths reject.',
- 'Relater':'Primitive and anonymous-object relationships with actual ternary/cache/maybe stacks, recursive properties, excess/missing/weak checks and diagnostic elaboration. Signatures/indexes/generics/private data routes reject when nonempty/reached.',
+ 'Checker':'Fixed no-library single-script initialization; scalar, named aliases/interfaces and recursive data-object checking; union/intersection reduction, genuine member/cache identity, contextual typing, deferred work, widening/property reads and internal finite-key/index/implicit-this support. Written generic/call/index/write/library/module paths reject.',
+ 'Relater':'Primitive, named/recursive data-object, union/intersection relationships with actual ternary/cache/maybe stacks, recursive properties, excess/missing/weak checks, inherited synthetic any-base indexes and diagnostic elaboration. Written signatures/generics/private data routes reject when nonempty/reached.',
  'Flow':'Straight-line variable/property reference flow and actual AST assignment-marking traversal. Conditional/loop/call/evolving-array flow remains excluded.',
- 'Utilities':'Selected deterministic type/symbol ordering, static property names, feature map and diagnostic helpers. Named/generic types and excluded source forms guard.',
- 'GrammarChecks':'Fixed ESNext script declaration, finite type/object property grammar. Function/class/ambient/destructuring/write/source union modes remain excluded.',
- 'NodeBuilder':'Selected diagnostic type/symbol wrappers with genuine enclosing-declaration context and caches. General emit/verbosity/alias/generic tracking excluded.',
- 'NodeBuilderImpl':'Primitive, optional-union and finite anonymous data-property type nodes, actual cycle guards and declaration reuse via PseudoChecker. Signature/index/alias/generic/remapped serialization rejects.',
- 'Printer':'Selected diagnostic wrapper boundaries and ordered default primitive/object/union text. UTF16 public conversion separated from byte-string algorithm; general emit unsupported.',
- 'PseudoTypeNodeBuilder':'Selected declaration reuse, primitive/static object equivalence, original type-node cloning and contextual fallback. General generic/function/type-reference reuse excludes.',
- 'NodeCopy':'Selected original/source clone and existing primitive/type/property syntax reuse for diagnostic nodes; general emit unsupported.',
+ 'Utilities':'Selected deterministic scalar/named/composite type and symbol ordering, static property names, feature map, scope/identity and diagnostic helpers. Excluded source forms guard.',
+ 'GrammarChecks':'Fixed ESNext script declarations, aliases/interfaces/merges/heritage and static data-property grammar. Function/class/ambient/destructuring/write modes remain excluded.',
+ 'NodeBuilder':'Selected diagnostic type/symbol wrappers with genuine enclosing-declaration context and caches. General emit/verbosity/external alias/source generic tracking excluded.',
+ 'NodeBuilderImpl':'Primitive, named/recursive data-object, union/intersection, implicit-this and synthetic index type nodes; actual cycle/truncation guards, symbol tracking and declaration reuse via PseudoChecker. Written signatures/generics/remapped/general emit serialization rejects.',
+ 'Printer':'Selected diagnostic wrapper boundaries, explicit caller flags and ordered primitive/named/object/union/intersection/index text with synthesized-comment policy. UTF16 public conversion separated from byte-string algorithm; general emit unsupported.',
+ 'PseudoTypeNodeBuilder':'Selected declaration reuse, primitive/static object equivalence, original nongeneric reference/composite type-node cloning and contextual fallback. General source generic/function reuse excludes.',
+ 'NodeCopy':'Selected original/source clone and existing primitive/nongeneric reference/composite/data-property syntax reuse for diagnostic nodes; general emit unsupported.',
  'NodeBuilderScopes':'Selected enclosing symbol-type scope and restore semantics for diagnostic reuse; general scopes excluded.',
  'SymbolTracker':'Selected diagnostic tracking callbacks and reported-diagnostic cache effects; general emit trackers excluded.',
- 'EmitSupport':'Selected implicit undefined annotation predicate required by diagnostic declaration serialization; general emit unsupported.'}
+ 'EmitSupport':'Selected implicit undefined annotation predicate required by diagnostic declaration serialization; general emit unsupported.',
+ 'Mapper':'Original selected simple/array/deferred/function/merged/composite mapper models and factories; source inference mapper construction remains excluded.',
+ 'SymbolAccessibility':'Single-file scope/meaning/qualification/visited-table/cache and declaration accessibility algorithms for named data types. External alias/module/class scopes reject.',
+ 'EmitResolver':'Selected declaration visibility/link state for diagnostic reuse and symbol serialization; external emit/resolution API excluded.'}
 hand={'CreateCore':'Scoped newChecker adaptation: fixed single-file/no-library Program inputs; omitted unused initialization state documented in departures.',
  'unsupported':'Authored explicit unsupported exception factory.',
  'initializeScalarOptions':'Authored fixed-option initialization separated from newChecker.',
- 'compareTypeLists':'Selected CompareTypes recursive ordered type-list comparison with named/generic exclusions.',
+ 'compareTypeLists':'Selected CompareTypes recursive ordered scalar/named/composite type-list comparison with excluded source-generic payload guards.',
  'typeToStringByteString':'Authored raw-byte wrapper; public TypeToString decodes once.',
+ 'compareSymbols':'Forwarding boundary to original compareSymbolsWorker; memoization omitted as documented.',
+ 'cloneSymbolTable':'Managed clone of the original maps.Clone symbol-table operation.',
+ 'guardFiniteObject':'Authored excluded-payload guard before selected original relation algorithms.',
+ 'guardAbsentSignaturesAndIndexes':'Authored nonempty-callable guard; synthetic inherited indexes are selected.',
+ 'validateOwnedType':'Authored public checker-type ownership guard.',
+ 'aliasToTypeReferenceNode':'Authored factoring of original alias symbol/type-argument node construction.',
+ 'mostOriginal':'Forwarding boundary to actual printer EmitContext.MostOriginal.',
+ 'getLinks':'Managed link-cell retrieval; each counterpart retains its documented source store.',
+ 'emitTypeNodeWorker':'Authored factoring under original emitTypeNode precedence boundary.',
+ 'symbolToStringWithoutSymbolChain':'Forwarding boundary to symbolToStringEx with original DoNotIncludeSymbolChain|AllowAnyNodeKind flags.',
+ 'typeToStringNoTypeReduction':'Forwarding boundary to typeToStringEx with original NoTypeReduction-only flags.',
+ 'typeToStringWriteArrayAsGenericType':'Forwarding boundary to typeToStringEx with original WriteArrayAsGenericType-only flags.',
  'IsTypeAssignableTo':'Authored public adapter over upstream isTypeAssignableTo with checker ownership guard.'}
 records=[]
 paths=[root/'src/TypeScript.Scanner/Checker'/f'{name}.cs' for name in files]+list((root/'src/TypeScript.Scanner/Printer').glob('*.cs'))+list((root/'src/TypeScript.Scanner/Pseudochecker').glob('*.cs'))
@@ -70,7 +95,7 @@ for path in paths:
    'retainedConditions':re.findall(r'\bif\s*\(([^\n]*)\)',body),
    'retainedCases':re.findall(r'case\s+([^:]+):',body),
    'explicitUnsupportedGuards':guards,
-   'omittedByContract':'Other semantic branches excluded by authored admission/fixed options and explicit runtime guards; see OBJECT-CHECKER-PLAN.md, CHECKER-PLAN.md and checker-departures.md. This per-file scope is an inspection aid, not evidence that every upstream branch is ported.'})
+   'omittedByContract':'Other semantic branches excluded by authored admission/fixed options and explicit runtime guards; see DATA-TYPES-CONTRACT.md, OBJECT-CHECKER-PLAN.md, CHECKER-PLAN.md and checker-departures.md. This per-file scope is an inspection aid, not evidence that every upstream branch is ported.'})
 result={'pin':pin,'status':'Selected partial function inventory; no full checker/emit claim','methodCount':len(records),'authoritative':'Reviewed C# hand ports; generator is not claimed for these algorithm files','functions':records}
 output=root/'docs/checker-functions.json';output.write_text(json.dumps(result,indent=2)+'\n')
 print(f'{len(records)} functions inventoried; unmapped: '+', '.join(sorted({r['name'] for r in records if r['upstream'] is None and r['name'] not in hand})))

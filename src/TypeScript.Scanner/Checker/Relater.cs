@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/relater.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Selected scalar and finite anonymous-object relations; excluded generic/signature/index paths fail explicitly.
+// Selected scalar, named data-object and union/intersection relations; excluded source-generic/signature/index paths fail explicitly.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -55,7 +55,69 @@ public sealed partial class Checker
         internal int size() => results?.Count ?? 0;
     }
 
+    private readonly symbolArenaLinkStore<VarianceLinks> varianceLinks = new();
+    private readonly List<(Symbol symbol, List<Type> typeParameters)> varianceStack = new();
+    // relater.go:1317/1334. Written type parameters, arrays and tuples are outside
+    // admission; the original zero-parameter cache/stack arm remains selected.
+    private List<VarianceFlags> getVariances(Type t)
+    {
+        if ((t.objectFlags & ObjectFlags.Tuple) != 0)
+            throw unsupported("getVariances: tuple");
+        return getVariancesWorker(t.symbol, t.AsInterfaceType().TypeParameters());
+    }
+
+    private List<VarianceFlags> getAliasVariances(Symbol symbol) => getVariancesWorker(symbol, typeAliasLinks.Get(symbol).typeParameters);
+    private List<VarianceFlags> getVariancesWorker(Symbol symbol, List<Type> typeParameters)
+    {
+        var links = varianceLinks.Get(symbol);
+        if (links.variances == null)
+        {
+            if (typeParameters is { Count: > 0 })
+                throw unsupported("getVariancesWorker: written generic parameters");
+            int stackIndex = getVarianceStackIndex(symbol);
+            if (stackIndex < 0)
+            {
+                int saveResolutionStart = resolutionStart;
+                if (varianceStack.Count == 0)
+                    resolutionStart = typeResolutions.Count;
+                varianceStack.Add((symbol, typeParameters));
+                var variances = new List<VarianceFlags>();
+                // The admitted target has zero declared type parameters, so the
+                // upstream variance-measurement loop has no iterations.
+                if (links.variances is not { Count: > 0 })
+                    links.variances = variances;
+                varianceStack.RemoveAt(varianceStack.Count - 1);
+                if (varianceStack.Count == 0)
+                    resolutionStart = saveResolutionStart;
+            }
+            else
+            {
+                int minIndex = stackIndex;
+                for (int i = stackIndex + 1; i < varianceStack.Count; i++)
+                    if (compareSymbols(varianceStack[i].symbol, varianceStack[minIndex].symbol) < 0)
+                        minIndex = i;
+                if (minIndex > stackIndex)
+                    throw unsupported("getVariancesWorker: generic recursive restart");
+                if (links.variances is not { Count: > 0 })
+                    links.variances = new();
+            }
+        }
+
+        return links.variances;
+    }
+
+    private int getVarianceStackIndex(Symbol symbol)
+    {
+        for (int i = 0; i < varianceStack.Count; i++)
+            if (varianceStack[i].symbol == symbol)
+                return i;
+        return -1;
+    }
+
     private readonly Relation assignableRelation = new(), identityRelation = new(), subtypeRelation = new(), strictSubtypeRelation = new(), comparableRelation = new();
+    private bool isMarkerType(Type t) => markerTypes.Contains(t);
+    private bool checkTypeAssignableTo(Type source, Type target, Node errorNode, Message headMessage) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, null);
+    private bool checkTypeAssignableToEx(Type source, Type target, Node errorNode, Message headMessage, List<Diagnostic> output) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, output);
     private bool isTypeAssignableTo(Type source, Type target) => isTypeRelatedTo(source, target, assignableRelation);
     private bool isTypeIdenticalTo(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation);
     internal Ternary compareTypesIdentical(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation) ? Ternary.True : Ternary.False;
@@ -230,36 +292,47 @@ public sealed partial class Checker
 
     private static void guardFiniteObject(Type t, string branch)
     {
-        if (t.alias != null || (t.flags & (TypeFlags.Instantiable | TypeFlags.Intersection | TypeFlags.EnumLike)) != 0 || (t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference | ObjectFlags.Tuple | ObjectFlags.Mapped | ObjectFlags.Instantiated | ObjectFlags.ReverseMapped | ObjectFlags.JsxAttributes)) != 0)
+        if ((t.flags & (TypeFlags.Index | TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.Substitution | TypeFlags.IndexedAccess | TypeFlags.Conditional | TypeFlags.EnumLike)) != 0 || (t.objectFlags & (ObjectFlags.Class | ObjectFlags.Tuple | ObjectFlags.Mapped | ObjectFlags.ReverseMapped | ObjectFlags.JsxAttributes)) != 0 || (t.flags & TypeFlags.TypeParameter) != 0 && !t.AsTypeParameter().isThisType)
             throw unsupported(branch);
     }
 
-    // The source signature/index relation loops have no iterations for admitted data-only objects.
-    // Nonempty storage is rejected before any selected relation can treat it as an absent signature/index.
+    // Source signatures remain excluded; actual synthetic internal index information
+    // is retained by the selected index relation algorithms below.
     private void guardAbsentSignaturesAndIndexes(Type t, string branch)
     {
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var data = resolveStructuredTypeMembers(t);
-            if ((data.signatures?.Count ?? 0) != 0 || (data.indexInfos?.Count ?? 0) != 0)
+            if ((data.signatures?.Count ?? 0) != 0)
                 throw unsupported(branch);
         }
-        else if ((t.flags & TypeFlags.Union) != 0)
+        else if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
             foreach (var part in t.Types())
                 guardAbsentSignaturesAndIndexes(part, branch);
     }
 
     private bool isWeakType(Type t)
     {
-        guardFiniteObject(t, "isWeakType: substitution/intersection");
+        guardFiniteObject(t, "isWeakType: unselected type payload");
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var resolved = resolveStructuredTypeMembers(t);
             guardAbsentSignaturesAndIndexes(t, "isWeakType: signatures/indexes");
-            return (resolved.properties?.Count ?? 0) > 0 && resolved.properties.All(p => (p.Flags & SymbolFlags.Optional) != 0);
+            return (resolved.indexInfos?.Count ?? 0) == 0 && (resolved.properties?.Count ?? 0) > 0 && resolved.properties.All(p => (p.Flags & SymbolFlags.Optional) != 0);
         }
 
+        if ((t.flags & TypeFlags.Intersection) != 0)
+            return t.Types().All(isWeakType);
         return false;
+    }
+
+    // relater.go:4655. Reverse-mapped/JS sources are excluded before this arm.
+    private bool isObjectTypeWithInferableIndex(Type t)
+    {
+        if ((t.flags & TypeFlags.Intersection) != 0)
+            return t.Types().All(isObjectTypeWithInferableIndex);
+        guardFiniteObject(t, "isObjectTypeWithInferableIndex: JS/reverse-mapped");
+        return t.symbol != null && (t.symbol.Flags & (SymbolFlags.ObjectLiteral | SymbolFlags.TypeLiteral | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0 && (t.symbol.Flags & SymbolFlags.Class) == 0 && !typeHasCallOrConstructSignatures(t) || (t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.ObjectRestType)) != 0;
     }
 
     private bool hasCommonProperties(Type source, Type target, bool isComparingJsxAttributes)
@@ -277,12 +350,11 @@ public sealed partial class Checker
             throw unsupported("isKnownProperty: JSX attributes");
         if ((targetType.flags & TypeFlags.Object) != 0)
         {
-            guardAbsentSignaturesAndIndexes(targetType, "isKnownProperty: signatures/indexes");
-            if (getPropertyOfObjectType(targetType, name) != null)
+            if (getPropertyOfObjectType(targetType, name) != null || getApplicableIndexInfoForName(targetType, name) != null || isLateBoundName(name) && getIndexInfoOfType(targetType, stringType) != null)
                 return true;
         }
 
-        if (isExcessPropertyCheckTarget(targetType) && (targetType.flags & TypeFlags.Union) != 0)
+        if (isExcessPropertyCheckTarget(targetType) && (targetType.flags & TypeFlags.UnionOrIntersection) != 0)
             foreach (var t in targetType.Types())
                 if (isKnownProperty(t, name, isComparingJsxAttributes))
                     return true;
@@ -292,7 +364,7 @@ public sealed partial class Checker
     private static bool isExcessPropertyCheckTarget(Type type)
     {
         guardFiniteObject(type, "isExcessPropertyCheckTarget: substitution/intersection");
-        return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Union) != 0 && type.Types().Any(isExcessPropertyCheckTarget);
+        return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Union) != 0 && type.Types().Any(isExcessPropertyCheckTarget) || (type.flags & TypeFlags.Intersection) != 0 && type.Types().All(isExcessPropertyCheckTarget);
     }
 
     private readonly record struct RecursionId(object value);
@@ -302,7 +374,7 @@ public sealed partial class Checker
         {
             var target = getRecursionIdentityTarget(t);
             if ((target.flags & TypeFlags.Intersection) != 0)
-                throw unsupported("isDeeplyNestedType: intersection");
+                return target.Types().Any(part => isDeeplyNestedType(part, stack, maxDepth));
             var identity = getRecursionIdentityFromTarget(target);
             int count = 0;
             uint lastTypeId = 0;
@@ -318,7 +390,12 @@ public sealed partial class Checker
         return false;
     }
 
-    private static bool hasMatchingRecursionIdentity(Type t, RecursionId identity) => getRecursionIdentityFromTarget(getRecursionIdentityTarget(t)) == identity;
+    private static bool hasMatchingRecursionIdentity(Type t, RecursionId identity)
+    {
+        var target = getRecursionIdentityTarget(t);
+        return (target.flags & TypeFlags.Intersection) != 0 ? target.Types().Any(part => hasMatchingRecursionIdentity(part, identity)) : getRecursionIdentityFromTarget(target) == identity;
+    }
+
     private static RecursionId getRecursionIdentity(Type t) => getRecursionIdentityFromTarget(getRecursionIdentityTarget(t));
     private static Type getRecursionIdentityTarget(Type t)
     {
@@ -331,8 +408,15 @@ public sealed partial class Checker
     {
         guardFiniteObject(t, "getRecursionIdentityFromTarget: reference/tuple/type parameter/conditional");
         if ((t.flags & TypeFlags.Object) != 0 && (t.objectFlags & (ObjectFlags.ObjectLiteral | ObjectFlags.ArrayLiteral)) == 0)
+        {
+            if ((t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null)
+                return new(t.AsTypeReference().node);
             if (t.symbol != null && !((t.objectFlags & ObjectFlags.Anonymous) != 0 && (t.symbol.Flags & SymbolFlags.Class) != 0) && (t.objectFlags & ObjectFlags.FromTypeNode) == 0)
                 return new(t.symbol);
+        }
+
+        if ((t.flags & TypeFlags.TypeParameter) != 0 && t.symbol != null)
+            return new(t.symbol);
         return new(t);
     }
 
@@ -433,9 +517,7 @@ public sealed partial class Checker
                 if ((prop.CheckFlags & CheckFlags.IsDiscriminantComputed) == 0)
                 {
                     prop.CheckFlags |= CheckFlags.IsDiscriminantComputed;
-                    var propertyType = getTypeOfSymbol(prop);
-                    guardFiniteObject(propertyType, "isDiscriminantProperty: generic type");
-                    if ((prop.CheckFlags & CheckFlags.NonUniformAndLiteral) == CheckFlags.NonUniformAndLiteral)
+                    if ((prop.CheckFlags & CheckFlags.NonUniformAndLiteral) == CheckFlags.NonUniformAndLiteral && !isGenericType(getTypeOfSymbol(prop)))
                         prop.CheckFlags |= CheckFlags.IsDiscriminant;
                 }
 
@@ -543,7 +625,9 @@ public sealed partial class Checker
         var prop = (t.flags & TypeFlags.UnionOrIntersection) != 0 ? getPropertyOfUnionOrIntersectionType(t, name, false) : getPropertyOfObjectType(t, name);
         if (prop != null)
             return getTypeOfSymbol(prop);
-        guardAbsentSignaturesAndIndexes(t, "getTypeOfPropertyInType: index signature");
+        var indexInfo = getApplicableIndexInfoForName(t, name);
+        if (indexInfo != null)
+            return indexInfo.valueType;
         return undefinedType;
     }
 
@@ -561,6 +645,42 @@ public sealed partial class Checker
         return target.Types().Contains(source);
     }
 
+    // relater.go:2315. Preserve combined constraints for admitted implicit-this
+    // variables and finite intersections; source generic operators are guarded.
+    private Type getEffectiveConstraintOfIntersection(List<Type> types, bool targetIsUnion)
+    {
+        List<Type> constraints = null;
+        bool hasDisjointDomainType = false;
+        foreach (var type in types)
+        {
+            if ((type.flags & TypeFlags.Instantiable) != 0)
+            {
+                var constraint = getConstraintOfType(type);
+                while (constraint != null && (constraint.flags & (TypeFlags.TypeParameter | TypeFlags.Index | TypeFlags.Conditional)) != 0)
+                    constraint = getConstraintOfType(constraint);
+                if (constraint != null)
+                {
+                    (constraints ??= new()).Add(constraint);
+                    if (targetIsUnion)
+                        constraints.Add(type);
+                }
+            }
+            else if ((type.flags & TypeFlags.DisjointDomains) != 0 || IsEmptyAnonymousObjectType(type))
+                hasDisjointDomainType = true;
+        }
+
+        if (constraints != null && (targetIsUnion || hasDisjointDomainType))
+        {
+            if (hasDisjointDomainType)
+                foreach (var type in types)
+                    if ((type.flags & TypeFlags.DisjointDomains) != 0 || IsEmptyAnonymousObjectType(type))
+                        constraints.Add(type);
+            return getNormalizedType(getIntersectionTypeEx(constraints, IntersectionFlags.NoConstraintReduction, null), false);
+        }
+
+        return null;
+    }
+
     private Type getBestMatchingType(Type source, Type target, Func<Type, Type, Ternary> isRelatedTo)
     {
         var t = findMatchingDiscriminantType(source, target, isRelatedTo);
@@ -572,26 +692,45 @@ public sealed partial class Checker
         t = findBestTypeForObjectLiteral(source, target);
         if (t != null)
             return t;
-        // Call/construct candidates are absent in the selected data-only model.
-        guardAbsentSignaturesAndIndexes(source, "getBestMatchingType: invokable source");
-        foreach (var part in target.Types())
-            guardAbsentSignaturesAndIndexes(part, "getBestMatchingType: invokable target");
+        t = findBestTypeForInvokable(source, target, SignatureKind.Call);
+        if (t != null)
+            return t;
+        t = findBestTypeForInvokable(source, target, SignatureKind.Construct);
+        if (t != null)
+            return t;
         return findMostOverlappyType(source, target);
     }
 
     private Type findMatchingTypeReferenceOrTypeAliasReference(Type source, Type target)
     {
-        guardFiniteObject(source, "findMatchingTypeReferenceOrTypeAliasReference: reference/alias");
-        foreach (var part in target.Types())
-            guardFiniteObject(part, "findMatchingTypeReferenceOrTypeAliasReference: reference/alias");
-        return null; // Both actual reference/alias match arms have been excluded by the guard.
+        var sourceObjectFlags = source.objectFlags;
+        if ((sourceObjectFlags & (ObjectFlags.Reference | ObjectFlags.Anonymous)) != 0 && (target.flags & TypeFlags.Union) != 0)
+            foreach (var part in target.Types())
+                if ((part.flags & TypeFlags.Object) != 0)
+                {
+                    var overlapFlags = sourceObjectFlags & part.objectFlags;
+                    if ((overlapFlags & ObjectFlags.Reference) != 0 && source.Target() == part.Target())
+                        return part;
+                    if ((overlapFlags & ObjectFlags.Anonymous) != 0 && source.alias != null && part.alias != null && source.alias.Symbol() == part.alias.Symbol())
+                        return part;
+                }
+
+        return null;
+    }
+
+    // relater.go:909. Preserve signature resolution even for absent data-only slots.
+    private Type findBestTypeForInvokable(Type source, Type target, SignatureKind kind)
+    {
+        if ((getSignaturesOfType(source, kind)?.Count ?? 0) != 0)
+            return target.Types().FirstOrDefault(t => (getSignaturesOfType(t, kind)?.Count ?? 0) != 0);
+        return null;
     }
 
     private Type findBestTypeForObjectLiteral(Type source, Type target)
     {
-        guardFiniteObject(source, "findBestTypeForObjectLiteral: arrays");
+        guardFiniteObject(source, "findBestTypeForObjectLiteral: unselected type payload");
         foreach (var part in target.Types())
-            guardFiniteObject(part, "findBestTypeForObjectLiteral: arrays");
+            guardFiniteObject(part, "findBestTypeForObjectLiteral: unselected type payload");
         return null; // No selected type is array-like.
     }
 
@@ -666,8 +805,16 @@ public sealed partial class Checker
 
     private bool shouldReportUnmatchedPropertyError(Type source, Type target)
     {
-        guardAbsentSignaturesAndIndexes(source, "shouldReportUnmatchedPropertyError: signatures");
-        // The source branch requires nonempty call/construct signatures, rejected above.
+        var calls = getSignaturesOfStructuredType(source, SignatureKind.Call);
+        var constructs = getSignaturesOfStructuredType(source, SignatureKind.Construct);
+        var properties = getPropertiesOfObjectType(source);
+        if (((calls?.Count ?? 0) != 0 || (constructs?.Count ?? 0) != 0) && (properties?.Count ?? 0) == 0)
+        {
+            if (((getSignaturesOfType(target, SignatureKind.Call)?.Count ?? 0) != 0 && (calls?.Count ?? 0) != 0) || ((getSignaturesOfType(target, SignatureKind.Construct)?.Count ?? 0) != 0 && (constructs?.Count ?? 0) != 0))
+                return true;
+            return false;
+        }
+
         return true;
     }
 
@@ -740,8 +887,8 @@ public sealed partial class Checker
                 return recursiveTypeRelatedTo(source, target, false, IntersectionState.None, recursionFlags);
             }
 
-            if ((source.flags & TypeFlags.TypeParameter) != 0)
-                throw unsupported("isRelatedToEx: type parameter constraint");
+            if ((source.flags & TypeFlags.TypeParameter) != 0 && c.getConstraintOfType(source) == target)
+                return Ternary.True;
             if ((source.flags & TypeFlags.DefinitelyNonNullable) != 0 && (target.flags & TypeFlags.Union) != 0)
             {
                 var types = target.Types();
@@ -778,7 +925,10 @@ public sealed partial class Checker
                     {
                         var sourceString = c.typeToStringByteString(originalSource.alias != null ? originalSource : source);
                         var targetString = c.typeToStringByteString(originalTarget.alias != null ? originalTarget : target);
-                        c.guardAbsentSignaturesAndIndexes(source, "isRelatedToEx: did-you-mean-call signatures");
+                        var calls = c.getSignaturesOfType(source, SignatureKind.Call);
+                        var constructs = c.getSignaturesOfType(source, SignatureKind.Construct);
+                        if ((calls?.Count ?? 0) != 0 || (constructs?.Count ?? 0) != 0)
+                            throw unsupported("isRelatedToEx: callable return-type suggestion");
                         reportError(Diagnostics.Type_0_has_no_properties_in_common_with_type_1, sourceString, targetString);
                     }
 
@@ -860,8 +1010,16 @@ public sealed partial class Checker
         {
             if ((source.flags & TypeFlags.Union) != 0)
             {
-                if (source.AsUnionType().origin != null || (target.flags & TypeFlags.Union) != 0 && target.AsUnionType().origin != null)
-                    throw unsupported("unionOrIntersectionRelatedTo: named/intersection union origins");
+                if ((target.flags & TypeFlags.Union) != 0)
+                {
+                    var sourceOrigin = source.AsUnionType().origin;
+                    if (sourceOrigin != null && (sourceOrigin.flags & TypeFlags.Intersection) != 0 && target.alias != null && sourceOrigin.Types().Contains(target))
+                        return Ternary.True;
+                    var targetOrigin = target.AsUnionType().origin;
+                    if (targetOrigin != null && (targetOrigin.flags & TypeFlags.Union) != 0 && source.alias != null && targetOrigin.Types().Contains(source))
+                        return Ternary.True;
+                }
+
                 if (relation == c.comparableRelation)
                     return someTypeRelatedToType(source, target, reportErrors && (source.flags & TypeFlags.Primitive) == 0, intersectionState);
                 return eachTypeRelatedToType(source, target, reportErrors && (source.flags & TypeFlags.Primitive) == 0, intersectionState);
@@ -869,7 +1027,27 @@ public sealed partial class Checker
 
             if ((target.flags & TypeFlags.Union) != 0)
                 return typeRelatedToSomeType(c.getRegularTypeOfObjectLiteral(source), target, reportErrors && (source.flags & TypeFlags.Primitive) == 0 && (target.flags & TypeFlags.Primitive) == 0, intersectionState);
-            throw unsupported("unionOrIntersectionRelatedTo: intersection");
+            if ((target.flags & TypeFlags.Intersection) != 0)
+                return typeRelatedToEachType(source, target, reportErrors, IntersectionState.Target);
+            // relater.go:2924. Hoist instantiable constituent constraints only for
+            // primitive comparability; source parameters are excluded, implicit-this is retained.
+            if (relation == c.comparableRelation && (target.flags & TypeFlags.Primitive) != 0)
+            {
+                var constraints = source.Types().Select(t => (t.flags & TypeFlags.Instantiable) != 0 ? c.getBaseConstraintOfType(t) ?? c.unknownType : t).ToList();
+                if (!constraints.SequenceEqual(source.Types()))
+                {
+                    source = c.getIntersectionType(constraints);
+                    if ((source.flags & TypeFlags.Never) != 0)
+                        return Ternary.False;
+                    if ((source.flags & TypeFlags.Intersection) == 0)
+                    {
+                        var result = isRelatedTo(source, target, RecursionFlags.Source, false);
+                        return result != Ternary.False ? result : isRelatedTo(target, source, RecursionFlags.Source, false);
+                    }
+                }
+            }
+
+            return someTypeRelatedToType(source, target, false, IntersectionState.Source);
         }
 
         private Ternary someTypeRelatedToType(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
@@ -968,6 +1146,21 @@ public sealed partial class Checker
             }
 
             return Ternary.False;
+        }
+
+        // relater.go:3063. Ordered "each" intersection relation.
+        private Ternary typeRelatedToEachType(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
+        {
+            var result = Ternary.True;
+            foreach (var type in target.Types())
+            {
+                var related = isRelatedToEx(source, type, RecursionFlags.Target, reportErrors, null, intersectionState);
+                if (related == Ternary.False)
+                    return Ternary.False;
+                result &= related;
+            }
+
+            return result;
         }
 
         private Ternary eachTypeRelatedToSomeType(Type source, Type target)
@@ -1090,13 +1283,36 @@ public sealed partial class Checker
         {
             var save = getErrorState();
             var result = structuredTypeRelatedToWorker(source, target, reportErrors, intersectionState);
-            if (((source.flags | target.flags) & (TypeFlags.Intersection | TypeFlags.TypeParameter)) != 0)
-                throw unsupported("structuredTypeRelatedTo: combined constraints/intersection extra checks");
+            if (relation != c.identityRelation)
+            {
+                if (result == Ternary.False && ((source.flags & TypeFlags.Intersection) != 0 || (source.flags & TypeFlags.TypeParameter) != 0 && (target.flags & TypeFlags.Union) != 0))
+                {
+                    var sourceTypes = (source.flags & TypeFlags.Intersection) != 0 ? source.Types() : new List<Type>
+                    {
+                        source
+                    };
+                    var constraint = c.getEffectiveConstraintOfIntersection(sourceTypes, (target.flags & TypeFlags.Union) != 0);
+                    if (constraint != null && ((constraint.flags & TypeFlags.Union) != 0 ? constraint.Types().All(part => part != source) : constraint != source))
+                        result = isRelatedToEx(constraint, target, RecursionFlags.Source, false, null, intersectionState);
+                }
+
+                if (result != Ternary.False && (intersectionState & IntersectionState.Target) == 0 && (target.flags & TypeFlags.Intersection) != 0 && !c.isGenericObjectType(target) && (source.flags & (TypeFlags.Object | TypeFlags.Intersection)) != 0)
+                {
+                    result &= propertiesRelatedTo(source, target, reportErrors, null, false, IntersectionState.None);
+                    if (result != Ternary.False && isObjectLiteralType(source) && (source.objectFlags & ObjectFlags.FreshLiteral) != 0)
+                        result &= indexSignaturesRelatedTo(source, target, false, reportErrors, IntersectionState.None);
+                }
+                else if (result != Ternary.False && c.isNonGenericObjectType(target) && !c.isArrayOrTupleType(target) && isSourceIntersectionNeedingExtraCheck(source, target))
+                    result &= propertiesRelatedTo(source, target, reportErrors, null, true, intersectionState);
+            }
+
             if (result != Ternary.False)
                 restoreErrorState(save);
             return result;
         }
 
+        // relater.go:3287.
+        private bool isSourceIntersectionNeedingExtraCheck(Type source, Type target) => (source.flags & TypeFlags.Intersection) != 0 && (c.getApparentType(source).flags & TypeFlags.StructuredType) != 0 && !source.Types().Any(t => t == target || (t.objectFlags & ObjectFlags.NonInferrableType) != 0);
         private Ternary structuredTypeRelatedToWorker(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
         {
             guardFiniteObject(source, "structuredTypeRelatedToWorker: generic/variance/mapped source");
@@ -1120,8 +1336,19 @@ public sealed partial class Checker
                 var related = unionOrIntersectionRelatedTo(source, target, reportErrors, intersectionState);
                 if (related != Ternary.False)
                     return related;
-                if (!((source.flags & TypeFlags.Object) != 0 && (target.flags & TypeFlags.Union) != 0))
+                if (!((source.flags & TypeFlags.Instantiable) != 0 || (source.flags & TypeFlags.Object) != 0 && (target.flags & TypeFlags.Union) != 0 || (source.flags & TypeFlags.Intersection) != 0 && (target.flags & (TypeFlags.Object | TypeFlags.Union | TypeFlags.Instantiable)) != 0))
                     return Ternary.False;
+            }
+
+            // relater.go:3709. Selected implicit-this variable constraint path.
+            if ((source.flags & TypeFlags.TypeVariable) != 0)
+            {
+                var constraint = c.getConstraintOfType(source) ?? c.unknownType;
+                var related = isRelatedToEx(constraint, target, RecursionFlags.Source, false, null, intersectionState);
+                if (related != Ternary.False)
+                    return related;
+                var constraintWithThis = c.getTypeWithThisArgument(constraint, source, false);
+                return isRelatedToEx(constraintWithThis, target, RecursionFlags.Source, reportErrors && constraint != c.unknownType && (target.flags & source.flags & TypeFlags.TypeParameter) == 0, null, intersectionState);
             }
 
             bool sourceIsPrimitive = (source.flags & TypeFlags.Primitive) != 0;
@@ -1129,7 +1356,20 @@ public sealed partial class Checker
                 source = c.getApparentType(source);
             if ((relation == c.subtypeRelation || relation == c.strictSubtypeRelation) && c.isEmptyObjectType(target) && (target.objectFlags & ObjectFlags.FreshLiteral) != 0 && !c.isEmptyObjectType(source))
                 return Ternary.False;
-            if ((source.flags & TypeFlags.Object) != 0 && (target.flags & TypeFlags.Object) != 0)
+            if ((source.objectFlags & target.objectFlags & ObjectFlags.Reference) != 0 && source.Target() == target.Target() && !c.isMarkerType(source) && !c.isMarkerType(target))
+            {
+                var variances = c.getVariances(source.Target());
+                if (variances is not { Count: > 0 })
+                    return Ternary.Unknown;
+                var related = typeArgumentsRelatedTo(c.getTypeArguments(source), c.getTypeArguments(target), variances, reportErrors, intersectionState);
+                if (related != Ternary.False)
+                    return related;
+                // A nongeneric target has no declared parameters/variance entries;
+                // broader written-generic fallback must never be reached.
+                throw unsupported("structuredTypeRelatedToWorker: generic variance fallback");
+            }
+
+            if ((source.flags & (TypeFlags.Object | TypeFlags.Intersection)) != 0 && (target.flags & TypeFlags.Object) != 0)
             {
                 bool reportStructuralErrors = reportErrors && errorChain == save.errorChain && !sourceIsPrimitive;
                 var result = propertiesRelatedTo(source, target, reportStructuralErrors, null, false, intersectionState);
@@ -1146,28 +1386,288 @@ public sealed partial class Checker
                     return result;
             }
 
-            if ((source.flags & TypeFlags.Object) != 0 && (target.flags & TypeFlags.Union) != 0)
+            if ((source.flags & (TypeFlags.Object | TypeFlags.Intersection)) != 0 && (target.flags & TypeFlags.Union) != 0)
             {
                 var objectOnly = c.extractTypesOfKind(target, TypeFlags.Object | TypeFlags.Intersection | TypeFlags.Substitution);
                 if ((objectOnly.flags & TypeFlags.Union) != 0)
-                    throw unsupported("structuredTypeRelatedToWorker: multi-object discriminated relation");
+                {
+                    var related = typeRelatedToDiscriminatedType(source, objectOnly);
+                    if (related != Ternary.False)
+                        return related;
+                }
             }
 
             return Ternary.False;
         }
 
+        // relater.go:3935. Exact variance ordering; unselected source-generic
+        // reliability computation is guarded before it can affect a relationship.
+        private Ternary typeArgumentsRelatedTo(List<Type> sources, List<Type> targets, List<VarianceFlags> variances, bool reportErrors, IntersectionState intersectionState)
+        {
+            if ((sources?.Count ?? 0) != (targets?.Count ?? 0) && relation == c.identityRelation)
+                return Ternary.False;
+            int length = Math.Min(sources?.Count ?? 0, targets?.Count ?? 0);
+            var result = Ternary.True;
+            for (int i = 0; i < length; i++)
+            {
+                var varianceFlags = variances != null && i < variances.Count ? variances[i] : VarianceFlags.Covariant;
+                var variance = varianceFlags & VarianceFlags.VarianceMask;
+                if (variance == VarianceFlags.Independent)
+                    continue;
+                var source = sources[i];
+                var target = targets[i];
+                Ternary related;
+                if ((varianceFlags & VarianceFlags.Unmeasurable) != 0)
+                    related = relation == c.identityRelation ? isRelatedTo(source, target, RecursionFlags.Both, false) : c.compareTypesIdentical(source, target);
+                else
+                {
+                    if (c.varianceStack.Count != 0 && (varianceFlags & VarianceFlags.Unreliable) != 0)
+                        throw unsupported("typeArgumentsRelatedTo: generic unreliable mapper");
+                    if (variance == VarianceFlags.Covariant)
+                        related = isRelatedToEx(source, target, RecursionFlags.Both, reportErrors, null, intersectionState);
+                    else if (variance == VarianceFlags.Contravariant)
+                        related = isRelatedToEx(target, source, RecursionFlags.Both, reportErrors, null, intersectionState);
+                    else if (variance == VarianceFlags.Bivariant)
+                    {
+                        related = isRelatedTo(target, source, RecursionFlags.Both, false);
+                        if (related == Ternary.False)
+                            related = isRelatedToEx(source, target, RecursionFlags.Both, reportErrors, null, intersectionState);
+                    }
+                    else
+                    {
+                        related = isRelatedToEx(source, target, RecursionFlags.Both, reportErrors, null, intersectionState);
+                        if (related != Ternary.False)
+                            related &= isRelatedToEx(target, source, RecursionFlags.Both, reportErrors, null, intersectionState);
+                    }
+                }
+
+                if (related == Ternary.False)
+                    return Ternary.False;
+                result &= related;
+            }
+
+            return result;
+        }
+
+        // relater.go:4021. Build the actual limited Cartesian discriminant matrix,
+        // then compare every matched constituent's remaining data properties.
+        private Ternary typeRelatedToDiscriminatedType(Type source, Type target)
+        {
+            var sourceProperties = c.getPropertiesOfType(source);
+            var filtered = c.findDiscriminantProperties(sourceProperties, target);
+            if (filtered is not { Count: > 0 })
+                return Ternary.False;
+            int numCombinations = 1;
+            foreach (var property in filtered)
+            {
+                var type = c.getNonMissingTypeOfSymbol(property);
+                numCombinations *= (type.flags & TypeFlags.Union) != 0 ? type.Types().Count : (type.flags & TypeFlags.Never) != 0 ? 0 : 1;
+                if (numCombinations > 25 || numCombinations == 0)
+                    return Ternary.False;
+            }
+
+            var sourceDiscriminantTypes = new List<List<Type>>();
+            HashSet<string> excludedProperties = new(StringComparer.Ordinal);
+            foreach (var property in filtered)
+            {
+                sourceDiscriminantTypes.Add(c.getNonMissingTypeOfSymbol(property).Distributed());
+                excludedProperties.Add(property.Name);
+            }
+
+            var combinations = new List<List<Type>>();
+            for (int i = 0; i < numCombinations; i++)
+            {
+                var combination = new Type[sourceDiscriminantTypes.Count];
+                int n = i;
+                for (int j = sourceDiscriminantTypes.Count - 1; j >= 0; j--)
+                {
+                    var types = sourceDiscriminantTypes[j];
+                    combination[j] = types[n % types.Count];
+                    n /= types.Count;
+                }
+
+                combinations.Add(combination.ToList());
+            }
+
+            List<Type> matchingTypes = null;
+            foreach (var combination in combinations)
+            {
+                bool hasMatch = false;
+                foreach (var type in target.Types())
+                {
+                    bool matched = true;
+                    for (int i = 0; i < filtered.Count; i++)
+                    {
+                        var sourceProperty = filtered[i];
+                        var targetProperty = c.getPropertyOfType(type, sourceProperty.Name);
+                        if (targetProperty == null)
+                        {
+                            matched = false;
+                            break;
+                        }
+
+                        if (sourceProperty == targetProperty)
+                            continue;
+                        int index = i;
+                        var related = propertyRelatedTo(source, target, sourceProperty, targetProperty, _ => combination[index], false, IntersectionState.None, c.strictNullChecks || relation == c.comparableRelation);
+                        if (related == Ternary.False)
+                        {
+                            matched = false;
+                            break;
+                        }
+                    }
+
+                    if (!matched)
+                        continue;
+                    matchingTypes = Core.AppendIfUnique(matchingTypes, type);
+                    hasMatch = true;
+                }
+
+                if (!hasMatch)
+                    return Ternary.False;
+            }
+
+            var result = Ternary.True;
+            foreach (var type in matchingTypes ?? [])
+            {
+                result &= propertiesRelatedTo(source, type, false, excludedProperties, false, IntersectionState.None);
+                if (result != Ternary.False)
+                {
+                    result &= signaturesRelatedTo(source, type, SignatureKind.Call, false, IntersectionState.None);
+                    if (result != Ternary.False)
+                    {
+                        result &= signaturesRelatedTo(source, type, SignatureKind.Construct, false, IntersectionState.None);
+                        if (result != Ternary.False)
+                            result &= indexSignaturesRelatedTo(source, type, false, false, IntersectionState.None);
+                    }
+                }
+
+                if (result == Ternary.False)
+                    return result;
+            }
+
+            return result;
+        }
+
         private Ternary signaturesRelatedTo(Type source, Type target, SignatureKind kind, bool reportErrors, IntersectionState intersectionState)
         {
-            c.guardAbsentSignaturesAndIndexes(source, "signaturesRelatedTo: nonempty signature/index");
-            c.guardAbsentSignaturesAndIndexes(target, "signaturesRelatedTo: nonempty signature/index");
-            // The selected kind's signature loop is empty in this admitted model.
+            if (relation == c.identityRelation)
+                return signaturesIdenticalTo(source, target, kind);
+            // Callable wildcard initialization is excluded along with source calls.
+            var sourceSignatures = c.getSignaturesOfType(source, kind);
+            var targetSignatures = c.getSignaturesOfType(target, kind);
+            if ((sourceSignatures?.Count ?? 0) != 0 || (targetSignatures?.Count ?? 0) != 0)
+                throw unsupported("signaturesRelatedTo: callable signature comparison");
+            // All branches of the original signature comparison have empty loops.
             return Ternary.True;
         }
 
+        // relater.go:4593. Actual length check and nil-slot resolution boundaries.
+        private Ternary signaturesIdenticalTo(Type source, Type target, SignatureKind kind)
+        {
+            var sourceSignatures = c.getSignaturesOfType(source, kind);
+            var targetSignatures = c.getSignaturesOfType(target, kind);
+            if ((sourceSignatures?.Count ?? 0) != (targetSignatures?.Count ?? 0))
+                return Ternary.False;
+            if ((sourceSignatures?.Count ?? 0) != 0)
+                throw unsupported("signaturesIdenticalTo: callable signature comparison");
+            return Ternary.True;
+        }
+
+        // relater.go:4610. Nonempty selected indexes arise from any-base
+        // inheritance even though source index-signature syntax is excluded.
         private Ternary indexSignaturesRelatedTo(Type source, Type target, bool sourceIsPrimitive, bool reportErrors, IntersectionState intersectionState)
         {
-            c.guardAbsentSignaturesAndIndexes(source, "indexSignaturesRelatedTo: nonempty signature/index");
-            c.guardAbsentSignaturesAndIndexes(target, "indexSignaturesRelatedTo: nonempty signature/index");
+            if (relation == c.identityRelation)
+                return indexSignaturesIdenticalTo(source, target);
+            var infos = c.getIndexInfosOfType(target);
+            bool hasStringIndex = infos?.Any(info => info.keyType == c.stringType) == true;
+            var result = Ternary.True;
+            foreach (var info in infos ?? [])
+            {
+                var related = relation != c.strictSubtypeRelation && !sourceIsPrimitive && hasStringIndex && (info.valueType.flags & TypeFlags.Any) != 0 ? Ternary.True : typeRelatedToIndexInfo(source, info, reportErrors, intersectionState);
+                if (related == Ternary.False)
+                    return Ternary.False;
+                result &= related;
+            }
+
+            return result;
+        }
+
+        private Ternary typeRelatedToIndexInfo(Type source, IndexInfo targetInfo, bool reportErrors, IntersectionState intersectionState)
+        {
+            var sourceInfo = c.getApplicableIndexInfo(source, targetInfo.keyType);
+            if (sourceInfo != null)
+                return indexInfoRelatedTo(sourceInfo, targetInfo, reportErrors, intersectionState);
+            if ((intersectionState & IntersectionState.Source) == 0 && (relation != c.strictSubtypeRelation || (source.objectFlags & ObjectFlags.FreshLiteral) != 0) && c.isObjectTypeWithInferableIndex(source))
+                return membersRelatedToIndexInfo(source, targetInfo, reportErrors, intersectionState);
+            if (reportErrors)
+                reportError(Diagnostics.Index_signature_for_type_0_is_missing_in_type_1, c.typeToStringByteString(targetInfo.keyType), c.typeToStringByteString(source));
+            return Ternary.False;
+        }
+
+        private Ternary membersRelatedToIndexInfo(Type source, IndexInfo targetInfo, bool reportErrors, IntersectionState intersectionState)
+        {
+            var result = Ternary.True;
+            var keyType = targetInfo.keyType;
+            var properties = (source.flags & TypeFlags.Intersection) != 0 ? c.getPropertiesOfUnionOrIntersectionType(source) : c.getPropertiesOfObjectType(source);
+            foreach (var property in properties ?? [])
+            {
+                if (!c.isApplicableIndexType(c.getLiteralTypeFromProperty(property, TypeFlags.StringOrNumberLiteralOrUnique, false), keyType))
+                    continue;
+                var propertyType = c.getNonMissingTypeOfSymbol(property);
+                var type = c.exactOptionalPropertyTypes || (propertyType.flags & TypeFlags.Undefined) != 0 || keyType == c.numberType || (property.Flags & SymbolFlags.Optional) == 0 ? propertyType : c.getTypeWithFacts(propertyType, TypeFacts.NEUndefined);
+                var related = isRelatedToEx(type, targetInfo.valueType, RecursionFlags.Both, reportErrors, null, intersectionState);
+                if (related == Ternary.False)
+                {
+                    if (reportErrors)
+                        reportError(Diagnostics.Property_0_is_incompatible_with_index_signature, c.symbolToString(property));
+                    return Ternary.False;
+                }
+
+                result &= related;
+            }
+
+            foreach (var info in c.getIndexInfosOfType(source) ?? [])
+            {
+                if (!c.isApplicableIndexType(info.keyType, keyType))
+                    continue;
+                var related = indexInfoRelatedTo(info, targetInfo, reportErrors, intersectionState);
+                if (related == Ternary.False)
+                    return Ternary.False;
+                result &= related;
+            }
+
+            return result;
+        }
+
+        private Ternary indexInfoRelatedTo(IndexInfo sourceInfo, IndexInfo targetInfo, bool reportErrors, IntersectionState intersectionState)
+        {
+            var related = isRelatedToEx(sourceInfo.valueType, targetInfo.valueType, RecursionFlags.Both, reportErrors, null, intersectionState);
+            if (related == Ternary.False && reportErrors)
+            {
+                if (sourceInfo.keyType == targetInfo.keyType)
+                    reportError(Diagnostics.X_0_index_signatures_are_incompatible, c.typeToStringByteString(sourceInfo.keyType));
+                else
+                    reportError(Diagnostics.X_0_and_1_index_signatures_are_incompatible, c.typeToStringByteString(sourceInfo.keyType), c.typeToStringByteString(targetInfo.keyType));
+            }
+
+            return related;
+        }
+
+        private Ternary indexSignaturesIdenticalTo(Type source, Type target)
+        {
+            var sourceInfos = c.getIndexInfosOfType(source);
+            var targetInfos = c.getIndexInfosOfType(target);
+            if ((sourceInfos?.Count ?? 0) != (targetInfos?.Count ?? 0))
+                return Ternary.False;
+            foreach (var targetInfo in targetInfos ?? [])
+            {
+                var sourceInfo = c.getIndexInfoOfType(source, targetInfo.keyType);
+                if (!(sourceInfo != null && isRelatedTo(sourceInfo.valueType, targetInfo.valueType, RecursionFlags.Both, false) != Ternary.False && sourceInfo.isReadonly == targetInfo.isReadonly))
+                    return Ternary.False;
+            }
+
             return Ternary.True;
         }
 
@@ -1310,12 +1810,13 @@ public sealed partial class Checker
 
         private void reportErrorResults(Type originalSource, Type originalTarget, Type source, Type target, Message headMessage)
         {
-            guardFiniteObject(originalSource, "reportErrorResults: named base subtype");
-            guardFiniteObject(originalTarget, "reportErrorResults: named base subtype");
-            // getSingleBaseForNonAugmentingSubtype requires ClassOrInterface (guarded above).
-            if (originalSource.alias != null)
+            guardFiniteObject(originalSource, "reportErrorResults: unsupported source");
+            guardFiniteObject(originalTarget, "reportErrorResults: unsupported target");
+            bool sourceHasBase = c.getSingleBaseForNonAugmentingSubtype(originalSource) != null;
+            bool targetHasBase = c.getSingleBaseForNonAugmentingSubtype(originalTarget) != null;
+            if (originalSource.alias != null || sourceHasBase)
                 source = originalSource;
-            if (originalTarget.alias != null)
+            if (originalTarget.alias != null || targetHasBase)
                 target = originalTarget;
             if ((source.flags & target.flags & TypeFlags.Object) != 0)
                 tryElaborateArrayLikeErrors(source, target, true);
@@ -1323,8 +1824,17 @@ public sealed partial class Checker
                 tryElaborateErrorsForPrimitivesAndObjects(source, target);
             else if (source.symbol != null && (source.flags & TypeFlags.Object) != 0 && c.globalObjectType == source)
                 reportError(Diagnostics.The_Object_type_is_assignable_to_very_few_other_types_Did_you_mean_to_use_the_any_type_instead);
-            if ((source.objectFlags & ObjectFlags.JsxAttributes) != 0 || (originalTarget.flags & TypeFlags.Intersection) != 0)
-                throw unsupported("reportErrorResults: JSX/intersection/type parameter");
+            if ((source.objectFlags & ObjectFlags.JsxAttributes) != 0)
+                throw unsupported("reportErrorResults: JSX");
+            if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
+            {
+                var property = c.getPropertiesOfUnionOrIntersectionType(originalTarget)?.FirstOrDefault(c.isDiscriminantWithNeverType);
+                if (property != null)
+                    reportError(Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents, c.typeToStringNoTypeReduction(originalTarget), c.symbolToString(property));
+            // Private data members are excluded, so the private-conflict
+            // fallback can have no matches in this admitted property model.
+            }
+
             reportRelationError(headMessage, source, target);
         }
 
@@ -1339,8 +1849,22 @@ public sealed partial class Checker
                 generalizedSourceType = c.getTypeNameForErrorDisplay(generalizedSource);
             }
 
-            if ((target.flags & (TypeFlags.IndexedAccess | TypeFlags.TypeParameter)) != 0)
-                throw unsupported("reportRelationError: indexed/type parameter");
+            if ((target.flags & TypeFlags.IndexedAccess) != 0)
+                throw unsupported("reportRelationError: indexed access");
+            if ((target.flags & TypeFlags.TypeParameter) != 0)
+            {
+                var constraint = c.getBaseConstraintOfType(target);
+                if (constraint != null && c.isTypeAssignableTo(generalizedSource, constraint))
+                    reportError(Diagnostics.X_0_is_assignable_to_the_constraint_of_type_1_but_1_could_be_instantiated_with_a_different_subtype_of_constraint_2, generalizedSourceType, targetType, c.typeToStringByteString(constraint));
+                else if (constraint != null && c.isTypeAssignableTo(source, constraint))
+                    reportError(Diagnostics.X_0_is_assignable_to_the_constraint_of_type_1_but_1_could_be_instantiated_with_a_different_subtype_of_constraint_2, sourceType, targetType, c.typeToStringByteString(constraint));
+                else
+                {
+                    errorChain = null;
+                    reportError(Diagnostics.X_0_could_be_instantiated_with_an_arbitrary_type_which_could_be_unrelated_to_1, targetType, generalizedSourceType);
+                }
+            }
+
             if (c.exactOptionalPropertyTypes)
                 throw unsupported("reportRelationError: exact optional property option");
             if (message == null)
@@ -1497,7 +2021,7 @@ public sealed partial class Checker
     }
 
     private bool symbolValueDeclarationIsContextSensitive(Symbol symbol) => symbol != null && symbol.ValueDeclaration != null && Ast.IsExpression(symbol.ValueDeclaration) && !isContextSensitive(symbol.ValueDeclaration);
-    private string getTypeNameForErrorDisplay(Type t) => typeToStringEx(t, null, true);
+    private string getTypeNameForErrorDisplay(Type t) => typeToStringEx(t, null, flags: TypeScript.NodeBuilding.Flags.UseFullyQualifiedType);
     private bool typeCouldHaveTopLevelSingletonTypes(Type t)
     {
         if ((t.flags & TypeFlags.Boolean) != 0)
@@ -1505,7 +2029,13 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
             return t.Types().Any(typeCouldHaveTopLevelSingletonTypes);
         if ((t.flags & TypeFlags.Instantiable) != 0)
-            throw unsupported("typeCouldHaveTopLevelSingletonTypes: constrained types");
+        {
+            if ((t.flags & TypeFlags.TypeParameter) == 0)
+                throw unsupported("typeCouldHaveTopLevelSingletonTypes: unselected constrained types");
+            var constraint = getConstraintOfTypeParameter(t);
+            return constraint != null && typeCouldHaveTopLevelSingletonTypes(constraint);
+        }
+
         return isUnitType(t) || (t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0;
     }
 
@@ -1618,9 +2148,19 @@ public sealed partial class Checker
             targetProp = getPropertyOfType(target, propertyName);
         }
 
+        bool issuedElaboration = false;
         if (targetProp == null)
-            guardAbsentSignaturesAndIndexes(target, "elaborateElement: index signature");
-        if ((targetProp?.Declarations?.Count ?? 0) != 0 || (target.symbol?.Declarations?.Count ?? 0) != 0)
+        {
+            var info = getApplicableIndexInfo(target, nameType);
+            // The selected noLib script is never a default library file.
+            if (info?.declaration != null)
+            {
+                issuedElaboration = true;
+                diagnostic.AddRelatedInfo(NewDiagnosticForNode(info.declaration, Diagnostics.The_expected_type_comes_from_this_index_signature));
+            }
+        }
+
+        if (!issuedElaboration && ((targetProp?.Declarations?.Count ?? 0) != 0 || (target.symbol?.Declarations?.Count ?? 0) != 0))
         {
             var targetNode = (targetProp?.Declarations?.Count ?? 0) != 0 ? targetProp.Declarations[0] : target.symbol.Declarations[0];
             if (propertyName == "" || (nameType.flags & TypeFlags.UniqueESSymbol) != 0)

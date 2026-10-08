@@ -8,10 +8,16 @@ namespace TypeScript.DiagnosticPrinting;
 internal sealed partial class Printer
 {
     private readonly EmitContext emitContext;
-    internal Printer(EmitContext context) => emitContext = context;
+    private readonly bool removeComments;
+    internal Printer(EmitContext context, bool removeComments = true)
+    {
+        emitContext = context;
+        this.removeComments = removeComments;
+    }
+
     private TextWriter writer;
     private SourceFile currentSourceFile;
-    // Write (5076): diagnostic scalar/object nodes and selected source reuse; no source maps/comments.
+    // Write (5076): diagnostic data nodes and selected source reuse; source comments/maps excluded.
     internal void Write(Node node, TextWriter output, SourceFile sourceFile = null)
     {
         var savedWriter = writer;
@@ -19,7 +25,10 @@ internal sealed partial class Printer
         currentSourceFile = sourceFile;
         writer = output;
         writer.Clear();
-        emitTypeNode(node);
+        if (node?.Kind == Kind.Identifier)
+            emitIdentifierReference(node.AsIdentifier());
+        else
+            emitTypeNode(node);
         writer = savedWriter;
         currentSourceFile = savedSourceFile;
     }
@@ -29,9 +38,16 @@ internal sealed partial class Printer
     {
         if (node == null)
             return;
+        // emitKeywordNodeEx -> enterTokenNode -> emitCommentsBeforeNode.
+        // Selected synthesized keyword nodes have no source-range/trailing comments.
+        if (shouldEmitComments(node))
+            emitLeadingSyntheticCommentsOfNode(node, emitContext.EmitFlags(node));
         writeTokenText(node.Kind);
     }
 
+    // printer.go:742. RemoveComments=false alone does not make comments emit:
+    // the original printer also requires a current source file.
+    private bool shouldEmitComments(Node node) => !removeComments && currentSourceFile != null && !Ast.IsSourceFile(node);
     private void writeTokenText(Kind token) => writer.WriteKeyword(TypeScript.Scanner.Scanner.TokenToString(token));
     private void emitLiteralType(Node node) => emitExpression(node.AsLiteralTypeNode().Literal);
     private void emitExpression(Node node)
@@ -83,10 +99,55 @@ internal sealed partial class Printer
     // printer.go:2298/5076. Selected synthesized type dispatch. The diagnostic
     // printer has RemoveComments/OmitTrailingSemicolon/NeverAsciiEscape options;
     // source-map, enter/exit emit bookkeeping and name generation remain excluded.
-    private void emitTypeNode(Node node)
+    private void emitTypeNode(Node node, TypePrecedence precedence = TypePrecedence.Lowest)
     {
         if (node == null)
             return;
+        // Conditional extends/infer scopes are excluded by diagnostic admission.
+        bool parens = Ast.GetTypeNodePrecedence(node) < precedence;
+        if (parens)
+            writePunctuation("(");
+        emitTypeNodeWorker(node);
+        if (parens)
+            writePunctuation(")");
+    }
+
+    // printer.go:5473/5483/5515/5522. Selected single-line synthesized block
+    // comments follow the original helper boundaries; source comments are excluded.
+    private void emitLeadingSyntheticCommentsOfNode(Node node, EmitFlags emitFlags)
+    {
+        if ((emitFlags & EmitFlags.NoLeadingComments) != 0)
+            return;
+        foreach (var comment in emitContext.GetSyntheticLeadingComments(node) ?? [])
+            emitLeadingSynthesizedComment(comment);
+    }
+
+    private void emitLeadingSynthesizedComment(SynthesizedComment comment)
+    {
+        if (comment.HasLeadingNewLine || comment.HasTrailingNewLine || comment.Kind == Kind.SingleLineCommentTrivia)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitLeadingSynthesizedComment: multiline diagnostic output");
+        writeSynthesizedComment(comment);
+        writer.WriteSpace(" ");
+    }
+
+    private static string formatSynthesizedComment(SynthesizedComment comment) => comment.Kind == Kind.MultiLineCommentTrivia ? "/*" + comment.Text + "*/" : "//" + comment.Text;
+    private void writeSynthesizedComment(SynthesizedComment comment)
+    {
+        var text = formatSynthesizedComment(comment);
+        writeCommentRangeWorker(text, comment.Kind, new(0, text.Length));
+    }
+
+    private void writeCommentRangeWorker(string text, Kind kind, TextRange loc)
+    {
+        if (kind != Kind.MultiLineCommentTrivia || text.AsSpan(loc.Pos(), loc.End() - loc.Pos()).ContainsAny('\r', '\n'))
+            throw TypeScript.Checking.Checker.unsupported("Printer.writeCommentRangeWorker: source/multiline comment");
+        // Original single-line block-comment arm trims the current line before writing.
+        writer.WriteComment(text[loc.Pos()..loc.End()].Trim());
+    }
+
+    // Authored factoring keeps return branches from bypassing closing punctuation.
+    private void emitTypeNodeWorker(Node node)
+    {
         if (Ast.IsKeywordTypeNode(node))
         {
             emitKeywordTypeNode(node);
@@ -112,15 +173,47 @@ internal sealed partial class Printer
             case Kind.UnionType:
                 emitUnionType(node.AsUnionTypeNode());
                 return;
+            case Kind.IntersectionType:
+                emitIntersectionType(node.AsIntersectionTypeNode());
+                return;
+            case Kind.ThisType:
+                writer.Write("this");
+                return;
             case Kind.TypeReference:
                 var reference = node.AsTypeReferenceNode();
-                if (reference.TypeName.Kind != Kind.Identifier || reference.TypeArguments != null)
+                if (reference.TypeArguments?.Nodes is { Count: > 0 })
                     throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeNode: named/generic reference");
-                emitIdentifierReference(reference.TypeName.AsIdentifier());
+                emitEntityName(reference.TypeName);
+                return;
+            case Kind.TypeQuery:
+                emitTypeQuery(node.AsTypeQueryNode());
+                return;
+            case Kind.TypeOperator:
+                emitTypeOperator(node.AsTypeOperatorNode());
                 return;
             default:
                 throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeNode: unselected synthesized type");
         }
+    }
+
+    // printer.go:1970. Internal globalThis formatting uses no type arguments.
+    private void emitTypeQuery(TypeQueryNode node)
+    {
+        writer.Write("typeof");
+        writeSpace();
+        emitEntityName(node.ExprName);
+        if (node.TypeArguments?.Nodes is { Count: > 0 })
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeQuery: source generic arguments");
+    }
+
+    // printer.go:2125. Selected internal finite-key origins only.
+    private void emitTypeOperator(TypeOperatorNode node)
+    {
+        if (node.Operator != Kind.KeyOfKeyword)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeOperator: unselected operator");
+        writer.Write("keyof");
+        writeSpace();
+        emitTypeNode(node.Type, TypePrecedence.TypeOperator);
     }
 
     // printer.go:1657. Only readonly static data-property modifiers are admitted.
@@ -182,26 +275,64 @@ internal sealed partial class Printer
 
     private void emitTypeElement(Node node)
     {
-        if (node.Kind != Kind.PropertySignature)
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeElement: signatures/indexes");
-        emitPropertySignature(node.AsPropertySignatureDeclaration());
+        if (node.Kind == Kind.PropertySignature)
+            emitPropertySignature(node.AsPropertySignatureDeclaration());
+        else if (node.Kind == Kind.IndexSignature)
+            emitIndexSignature(node.AsIndexSignatureDeclaration());
+        else
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeElement: signatures");
     }
 
     // printer.go:2053/2057. Selected constituents have scalar/primary precedence;
-    // references are synthesized ellipsis placeholders, not source type aliases.
-    private void emitUnionTypeConstituent(Node node) => emitTypeNode(node);
+    // named references and nested composite types retain actual type precedence.
+    private void emitEntityName(Node node)
+    {
+        if (node.Kind == Kind.Identifier)
+            emitIdentifierReference(node.AsIdentifier());
+        else if (node.Kind == Kind.QualifiedName)
+        {
+            emitEntityName(node.AsQualifiedName().Left);
+            writePunctuation(".");
+            emitIdentifierReference(node.AsQualifiedName().Right.AsIdentifier());
+        }
+        else
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitEntityName: entity name");
+    }
+
+    // printer.go:1782. Diagnostic synthetic index parameter has no modifiers,
+    // rest/default/optional state; preserve punctuation/type/semicolon order.
+    private void emitIndexSignature(IndexSignatureDeclaration node)
+    {
+        emitModifierList(node.Modifiers());
+        writePunctuation("[");
+        var parameters = node.Parameters?.Nodes;
+        if (parameters is not { Count: 1 })
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitIndexSignature: parameter shape");
+        var parameter = parameters[0].AsParameterDeclaration();
+        emitIdentifierReference(parameter.Name().AsIdentifier());
+        emitTypeAnnotation(parameter.Type);
+        writePunctuation("]");
+        emitTypeAnnotation(node.Type);
+        writeTrailingSemicolon();
+    }
+
+    private void emitIntersectionTypeConstituent(Node node) => emitTypeNode(node, TypePrecedence.TypeOperator);
+    private void emitIntersectionType(IntersectionTypeNode node) => emitList(emitIntersectionTypeConstituent, node.AsNode(), node.Types, ListFormat.IntersectionTypeConstituents);
+    private void emitUnionTypeConstituent(Node node) => emitTypeNode(node, TypePrecedence.TypeOperator);
     private void emitUnionType(UnionTypeNode node) => emitList(emitUnionTypeConstituent, node.AsNode(), node.Types, ListFormat.UnionTypeConstituents);
     [Flags]
     private enum ListFormat
     {
         SingleLine = 0,
         BarDelimited = 1 << 2,
+        AmpersandDelimited = 1 << 3,
         SpaceBetweenBraces = 1 << 8,
         SpaceBetweenSiblings = 1 << 9,
         SpaceAfterList = 1 << 21,
         NoSpaceIfEmpty = 1 << 19,
         SingleLineTypeLiteralMembers = SingleLine | SpaceBetweenBraces | SpaceBetweenSiblings,
         UnionTypeConstituents = BarDelimited | SpaceBetweenSiblings | SingleLine,
+        IntersectionTypeConstituents = AmpersandDelimited | SpaceBetweenSiblings | SingleLine,
     }
 
     // printer.go:4726/4734. Fixed single-line synthesized lists: no comments,
@@ -236,6 +367,11 @@ internal sealed partial class Printer
         {
             writeSpace();
             writePunctuation("|");
+        }
+        else if ((format & ListFormat.AmpersandDelimited) != 0)
+        {
+            writeSpace();
+            writePunctuation("&");
         }
     }
 

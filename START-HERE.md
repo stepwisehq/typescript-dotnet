@@ -102,7 +102,21 @@ Later user directions, in chronological order:
     emit and services remain excluded; report concrete dependency pressure before
     expanding the boundary.
     The [object checkpoint](./docs/OBJECT-CHECKER-ASSESSMENT.md) is now accepted;
-    new object work is saved uncommitted. No subsequent phase is authorized.
+    object work was subsequently committed as `1f7c953`. Direction 15 authorizes
+    the subsequent completion campaign.
+
+15. The user authorized committing the anonymous-object milestone and a **larger
+    data-type checking completion campaign**, managing internal milestones without
+    feature-by-feature approval. The baseline is `1f7c953`. Read the exact
+    [campaign mandate](./docs/DATA-TYPES-PROMPT.md), fixed
+    [completion contract](./docs/DATA-TYPES-CONTRACT.md) and live
+    [inventory](./docs/DATA-TYPES-STATUS.md). Continue until the contract is met and
+    committed or a material boundary/access decision is needed; do not stop merely
+    because an internal slice passes. Earlier stopping directions apply to their
+    historical phases, not this newly authorized campaign. The
+    [campaign assessment](./docs/DATA-TYPES-ASSESSMENT.md) now records accepted D1–D7
+    behavior with actual Native AOT and all earlier regressions. This mandate is
+    fulfilled by the campaign delivery commit; no next campaign is authorized.
 
 ## Recovery sequence
 
@@ -119,7 +133,7 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The current scope is bounded object checking and required support. A checkpoint can
+The latest completed scope is the data-type checking campaign and required support. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

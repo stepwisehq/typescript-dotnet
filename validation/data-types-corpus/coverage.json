@@ -1,0 +1,1158 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 92,
+  "astNodes": 2859,
+  "types": 1273,
+  "symbols": 1277,
+  "tables": 833,
+  "queries": 1601,
+  "relations": 1138,
+  "relationTrue": 823,
+  "diagnosticChannels": {
+    "bindDiagnostics": {
+      "count": 4,
+      "codes": {
+        "2300": 4
+      }
+    },
+    "checkerDiagnostics": {
+      "count": 61,
+      "codes": {
+        "18031": 1,
+        "18048": 2,
+        "2200": 1,
+        "2304": 2,
+        "2310": 4,
+        "2312": 2,
+        "2316": 1,
+        "2317": 1,
+        "2319": 2,
+        "2320": 2,
+        "2322": 34,
+        "2326": 6,
+        "2339": 3,
+        "2353": 2,
+        "2430": 2,
+        "2454": 1,
+        "2456": 2,
+        "2503": 2,
+        "2552": 2,
+        "2559": 1,
+        "2687": 4,
+        "2693": 1,
+        "2694": 1,
+        "2702": 1,
+        "2717": 2,
+        "2728": 4,
+        "2741": 2,
+        "2749": 1,
+        "6203": 2,
+        "6500": 5
+      }
+    },
+    "globalDiagnostics": {
+      "count": 732,
+      "codes": {
+        "2318": 732
+      }
+    }
+  },
+  "globalDiagnosticCounts": {
+    "7": 4,
+    "8": 88
+  },
+  "typePayloads": {
+    "IndexType": 4,
+    "InterfaceType": 65,
+    "IntersectionType": 16,
+    "IntrinsicType": 342,
+    "LiteralType": 298,
+    "ObjectType": 446,
+    "TypeParameter": 10,
+    "TypeReference": 12,
+    "UnionType": 80
+  },
+  "aliasIdentities": 65,
+  "retainedMapperIdentities": 0,
+  "internalIndexIdentities": 2,
+  "declaredTypeObservations": 152,
+  "stableRepeatedDeclaredTypes": 152,
+  "propertyEdges": 863,
+  "propertiesTypesCache": {
+    "mapNullObservations": 0,
+    "ownersWithEntries": 10,
+    "entries": 10,
+    "includeFlags": {
+      "12668512": 10
+    },
+    "includeOrigin": 10,
+    "valueEdges": 10
+  },
+  "linkPresence": {
+    "declaredTypeLinks": {
+      "observed": 1277,
+      "present": 65
+    },
+    "deferredSymbolLinks": {
+      "observed": 1277,
+      "present": 9
+    },
+    "mappedSymbolLinks": {
+      "observed": 1277,
+      "present": 0
+    },
+    "mergedSymbols": {
+      "observed": 1277,
+      "present": 0
+    },
+    "moduleSymbolLinks": {
+      "observed": 1277,
+      "present": 1
+    },
+    "nodeLinks": {
+      "observed": 2859,
+      "present": 3
+    },
+    "symbolReferenceLinks": {
+      "observed": 1277,
+      "present": 4
+    },
+    "typeAliasLinks": {
+      "observed": 1277,
+      "present": 94
+    },
+    "typeNodeLinks": {
+      "observed": 2859,
+      "present": 507
+    },
+    "valueSymbolLinks": {
+      "observed": 1277,
+      "present": 939
+    }
+  },
+  "resolvedNodeSymbols": 213,
+  "allocatedEmptyTables": 13,
+  "fieldObservations": {
+    "allTypeParameters": {
+      "observations": 65,
+      "kinds": {
+        "types": 65
+      },
+      "null": 55,
+      "nonNullRefs": 0,
+      "listEdges": 10,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "baseTypesResolved": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 65,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "callSignatureCount": {
+      "observations": 619,
+      "kinds": {
+        "number": 619
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "components": {
+      "observations": 2,
+      "kinds": {
+        "nodes": 2
+      },
+      "null": 2,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "constituentMap": {
+      "observations": 80,
+      "kinds": {
+        "type-map": 80
+      },
+      "null": 79,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 10,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "constituents": {
+      "observations": 9,
+      "kinds": {
+        "types": 9
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 37,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "constraint": {
+      "observations": 10,
+      "kinds": {
+        "type": 10
+      },
+      "null": 0,
+      "nonNullRefs": 10,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "containingType": {
+      "observations": 939,
+      "kinds": {
+        "type": 939
+      },
+      "null": 895,
+      "nonNullRefs": 44,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaration": {
+      "observations": 2,
+      "kinds": {
+        "node": 2
+      },
+      "null": 2,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declarationRequiresScopeChange": {
+      "observations": 3,
+      "kinds": {
+        "number": 3
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredCallSignatures": {
+      "observations": 65,
+      "kinds": {
+        "signatures": 65
+      },
+      "null": 65,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredConstructSignatures": {
+      "observations": 65,
+      "kinds": {
+        "signatures": 65
+      },
+      "null": 65,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredIndexInfos": {
+      "observations": 65,
+      "kinds": {
+        "indexes": 65
+      },
+      "null": 65,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredMembers": {
+      "observations": 65,
+      "kinds": {
+        "table": 65
+      },
+      "null": 8,
+      "nonNullRefs": 57,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredMembersResolved": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 65,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "declaredType": {
+      "observations": 159,
+      "kinds": {
+        "type": 159
+      },
+      "null": 0,
+      "nonNullRefs": 159,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "distributedType": {
+      "observations": 10,
+      "kinds": {
+        "type": 10
+      },
+      "null": 10,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "enumChecked": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "exportsChecked": {
+      "observations": 1,
+      "kinds": {
+        "bool": 1
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "flags": {
+      "observations": 3,
+      "kinds": {
+        "number": 3
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 3,
+      "nonemptyBytes": 0
+    },
+    "functionOrConstructorChecked": {
+      "observations": 939,
+      "kinds": {
+        "bool": 939
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "hasReportedStatementInAmbientContext": {
+      "observations": 3,
+      "kinds": {
+        "bool": 3
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "indexFlags": {
+      "observations": 4,
+      "kinds": {
+        "number": 4
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "indexInfos": {
+      "observations": 619,
+      "kinds": {
+        "indexes": 619
+      },
+      "null": 615,
+      "nonNullRefs": 0,
+      "listEdges": 4,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "indexSignaturesChecked": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 65,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "indexSymbol": {
+      "observations": 2,
+      "kinds": {
+        "symbol": 2
+      },
+      "null": 2,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "instantiations": {
+      "observations": 617,
+      "kinds": {
+        "instantiations": 617
+      },
+      "null": 607,
+      "nonNullRefs": 0,
+      "listEdges": 22,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "interfaceChecked": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 65,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "isConstructorDeclaredProperty": {
+      "observations": 94,
+      "kinds": {
+        "bool": 94
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "isDistributed": {
+      "observations": 10,
+      "kinds": {
+        "bool": 10
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "isReadonly": {
+      "observations": 2,
+      "kinds": {
+        "bool": 2
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "isThisType": {
+      "observations": 10,
+      "kinds": {
+        "bool": 10
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 10,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "keyPropertyName": {
+      "observations": 80,
+      "kinds": {
+        "bytes": 80
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 24
+    },
+    "keyType": {
+      "observations": 2,
+      "kinds": {
+        "type": 2
+      },
+      "null": 0,
+      "nonNullRefs": 2,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "mapper": {
+      "observations": 1472,
+      "kinds": {
+        "mapper": 1472
+      },
+      "null": 1472,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "members": {
+      "observations": 619,
+      "kinds": {
+        "table": 619
+      },
+      "null": 101,
+      "nonNullRefs": 518,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "nameType": {
+      "observations": 939,
+      "kinds": {
+        "type": 939
+      },
+      "null": 939,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "node": {
+      "observations": 77,
+      "kinds": {
+        "node": 77
+      },
+      "null": 77,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "objectTypeWithoutAbstractConstructSignatures": {
+      "observations": 619,
+      "kinds": {
+        "type": 619
+      },
+      "null": 619,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "origin": {
+      "observations": 80,
+      "kinds": {
+        "type": 80
+      },
+      "null": 75,
+      "nonNullRefs": 5,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "outerTypeParameterCount": {
+      "observations": 65,
+      "kinds": {
+        "number": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "outerTypeParameters": {
+      "observations": 507,
+      "kinds": {
+        "types": 507
+      },
+      "null": 505,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "parent": {
+      "observations": 9,
+      "kinds": {
+        "type": 9
+      },
+      "null": 0,
+      "nonNullRefs": 9,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "properties": {
+      "observations": 619,
+      "kinds": {
+        "symbols": 619
+      },
+      "null": 114,
+      "nonNullRefs": 0,
+      "listEdges": 812,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "propertyCache": {
+      "observations": 96,
+      "kinds": {
+        "table": 96
+      },
+      "null": 61,
+      "nonNullRefs": 35,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "propertyCacheWithoutFunctionPropertyAugment": {
+      "observations": 96,
+      "kinds": {
+        "table": 96
+      },
+      "null": 81,
+      "nonNullRefs": 15,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "referenceKinds": {
+      "observations": 4,
+      "kinds": {
+        "number": 4
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 4,
+      "nonemptyBytes": 0
+    },
+    "regularType": {
+      "observations": 80,
+      "kinds": {
+        "type": 80
+      },
+      "null": 61,
+      "nonNullRefs": 19,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedApparentType": {
+      "observations": 16,
+      "kinds": {
+        "type": 16
+      },
+      "null": 0,
+      "nonNullRefs": 16,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedBaseConstraint": {
+      "observations": 633,
+      "kinds": {
+        "type": 633
+      },
+      "null": 616,
+      "nonNullRefs": 17,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedBaseConstructorType": {
+      "observations": 65,
+      "kinds": {
+        "type": 65
+      },
+      "null": 65,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedBaseTypes": {
+      "observations": 65,
+      "kinds": {
+        "types": 65
+      },
+      "null": 50,
+      "nonNullRefs": 0,
+      "listEdges": 21,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedDefaultType": {
+      "observations": 10,
+      "kinds": {
+        "type": 10
+      },
+      "null": 10,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedExports": {
+      "observations": 1,
+      "kinds": {
+        "table": 1
+      },
+      "null": 0,
+      "nonNullRefs": 1,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedProperties": {
+      "observations": 96,
+      "kinds": {
+        "symbols": 96
+      },
+      "null": 7,
+      "nonNullRefs": 0,
+      "listEdges": 51,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedReducedType": {
+      "observations": 80,
+      "kinds": {
+        "type": 80
+      },
+      "null": 79,
+      "nonNullRefs": 1,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedType": {
+      "observations": 1446,
+      "kinds": {
+        "type": 1446
+      },
+      "null": 0,
+      "nonNullRefs": 1446,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "resolvedTypeArguments": {
+      "observations": 77,
+      "kinds": {
+        "types": 77
+      },
+      "null": 55,
+      "nonNullRefs": 0,
+      "listEdges": 12,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "signatures": {
+      "observations": 619,
+      "kinds": {
+        "signatures": 619
+      },
+      "null": 619,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "symbol": {
+      "observations": 65,
+      "kinds": {
+        "symbol": 65
+      },
+      "null": 0,
+      "nonNullRefs": 65,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "target": {
+      "observations": 1476,
+      "kinds": {
+        "symbol": 939,
+        "type": 537
+      },
+      "null": 1219,
+      "nonNullRefs": 257,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "thisType": {
+      "observations": 65,
+      "kinds": {
+        "type": 65
+      },
+      "null": 55,
+      "nonNullRefs": 10,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "typeArguments": {
+      "observations": 65,
+      "kinds": {
+        "types": 65
+      },
+      "null": 65,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "typeOnlyExportStarMap": {
+      "observations": 1,
+      "kinds": {
+        "node-map": 1
+      },
+      "null": 1,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "typeParameters": {
+      "observations": 94,
+      "kinds": {
+        "types": 94
+      },
+      "null": 94,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "typeParametersChecked": {
+      "observations": 65,
+      "kinds": {
+        "bool": 65
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 6,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "types": {
+      "observations": 96,
+      "kinds": {
+        "types": 96
+      },
+      "null": 0,
+      "nonNullRefs": 0,
+      "listEdges": 220,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "uniqueLiteralFilledInstantiation": {
+      "observations": 16,
+      "kinds": {
+        "type": 16
+      },
+      "null": 13,
+      "nonNullRefs": 3,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "valueType": {
+      "observations": 2,
+      "kinds": {
+        "type": 2
+      },
+      "null": 0,
+      "nonNullRefs": 2,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "writeConstituents": {
+      "observations": 9,
+      "kinds": {
+        "types": 9
+      },
+      "null": 9,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    },
+    "writeType": {
+      "observations": 939,
+      "kinds": {
+        "type": 939
+      },
+      "null": 939,
+      "nonNullRefs": 0,
+      "listEdges": 0,
+      "mapEdges": 0,
+      "true": 0,
+      "nonzeroNumbers": 0,
+      "nonemptyBytes": 0
+    }
+  },
+  "keyObservations": {
+    "alias.other": {
+      "observed": 92,
+      "true": 40
+    },
+    "alias.same": {
+      "observed": 92,
+      "true": 92
+    },
+    "composite.intern-membership": {
+      "observed": 96,
+      "true": 95
+    },
+    "instantiation.alias": {
+      "observed": 92,
+      "true": 40
+    },
+    "intersection.alias": {
+      "observed": 92,
+      "true": 40
+    },
+    "intersection.no-constraint-alias": {
+      "observed": 92,
+      "true": 92
+    },
+    "reference-key.constrained": {
+      "observed": 22,
+      "true": 11
+    },
+    "reference-key.generic-arguments": {
+      "observed": 22,
+      "true": 11
+    },
+    "reference-key.ignore-equivalent": {
+      "observed": 22,
+      "true": 11
+    },
+    "reference-key.same": {
+      "observed": 22,
+      "true": 22
+    },
+    "reference-key.state-distinct": {
+      "observed": 22,
+      "true": 22
+    },
+    "reference.instantiation-membership": {
+      "observed": 22,
+      "true": 22
+    },
+    "reference.instantiations-all-key-associated": {
+      "observed": 10,
+      "true": 10
+    },
+    "relation.constrained": {
+      "observed": 92,
+      "true": 0
+    },
+    "relation.identity-reverse": {
+      "observed": 92,
+      "true": 92
+    },
+    "relation.ignore": {
+      "observed": 92,
+      "true": 92
+    },
+    "relation.reverse": {
+      "observed": 92,
+      "true": 0
+    },
+    "relation.same": {
+      "observed": 92,
+      "true": 92
+    },
+    "type-list.reverse": {
+      "observed": 92,
+      "true": 0
+    },
+    "type-list.same": {
+      "observed": 92,
+      "true": 92
+    },
+    "union.alias": {
+      "observed": 92,
+      "true": 40
+    }
+  },
+  "limits": [
+    "No checker/project/library/cross-file/module/emit claim beyond D1-D7 single-file admitted source; unsupported syntax tested independently.",
+    "Source generics/this/index signatures/signatures excluded, while real hidden-this references/type parameters and any-base internal IndexInfo remain represented.",
+    "Physical untouched paged symbolNodeLinks slot presence excluded because global AST-ID page placement differs; actual resolvedSymbol content preserved and legacy20 fixed-ID store observations retained.",
+    "Go payload fields independently flattened with unknown-type failure; intrinsic/literal payloads remain authoritative in existing base graph, Type owner/id/data backreferences explicitly omitted.",
+    "Opaque hash bits intentionally excluded under managed complete-preimage adaptation; actual map presence/cardinality/value identities plus populated reference key-to-instance and composite intern membership/equality checks retained. Other unpopulated associations remain unverified.",
+    "Cache-only values seed by unique flags/text/raw-symbol/declaration/argument descriptor; collision fails instead of merging identities.",
+    "Selected node/type-node/value/type-alias/declared/deferred/mapped/reference/module/merged stores, actual propertiesTypes entries for queued rooted types (include/includeOrigin/value association), and Widened/RegularObjectLiteral caches observed; other checker stores/caches remain unverified.",
+    "Retained Mapper records may remain zero; hidden-this arguments/targets/results and actual generic-reference key paths are observed, source-excluded mapper variants unverified.",
+    "Lists and diagnostic ordering retained; unordered tables/maps sorted canonically, nil distinct from allocated empty."
+  ]
+}
