@@ -1,0 +1,60 @@
+{"name":"builtin-import-style-0","text":"import fs from \"fs\";"}
+{"name":"builtin-import-style-1","text":"import fs from \"node:fs\";"}
+{"name":"builtin-import-style-2","text":"import x from \"unknown-lib\";"}
+{"name":"builtin-import-style-3","text":"import a from \"fs\"; import b from \"node:fs\";"}
+{"name":"builtin-import-style-4","text":"import a from \"node:fs\"; import b from \"fs\";"}
+{"name":"builtin-import-style-5","text":"import a from \"node:test\"; import b from \"test\";"}
+{"name":"builtin-import-style-6","text":"export * from \"node:crypto\"; import(\"fs\");"}
+{"name":"top-level-await","text":"export {}; await f(); const x=await g(); for await(const y of xs){}","scriptKind":3,"resolveJSDoc":false}
+{"name":"await-recovery","text":"export {}; await\nusing r = open(); const f=(await)=>await;","scriptKind":3,"resolveJSDoc":false}
+{"name":"speculative-directive","text":"const f = <T /*before*/>(x:T /*after*/)=>x;\n// @ts-expect-error\nf<// @ts-ignore\nstring>(1);","scriptKind":3,"resolveJSDoc":false}
+{"name":"unicode-byte-boundaries","text":"const \ud801\udc00=\"\ud83e\udd80\";\r\nconst caf\u00e9 = /\u03a9/u;\u2028const s=`\u6c49${\ud801\udc00}`;","scriptKind":3,"resolveJSDoc":false}
+{"name":"jsdoc-constructed-tuple","text":"/** @param {[string, number]} arg */ function f(arg){}","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-constructed-function","text":"/** @param {function(this: Object, ...number): string} f */ function g(f){}","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-import-return","text":"/** @returns {import(\"node:fs\").Stats} */ function f(){}","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-await-0","textBytesBase64":"","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-5","textBytesBase64":"ZXhwb3I=","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-10","textBytesBase64":"ZXhwb3J0IHt9Ow==","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-15","textBytesBase64":"ZXhwb3J0IHt9OyBjb25z","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-20","textBytesBase64":"ZXhwb3J0IHt9OyBjb25zdCB4PWE=","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-25","textBytesBase64":"ZXhwb3J0IHt9OyBjb25zdCB4PWF3YWl0IA==","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-await-28","textBytesBase64":"ZXhwb3J0IHt9OyBjb25zdCB4PWF3YWl0IGYoKQ==","scriptKind":3,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-0","textBytesBase64":"","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-5","textBytesBase64":"Y29uc3Q=","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-10","textBytesBase64":"Y29uc3QgeD08QQ==","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-15","textBytesBase64":"Y29uc3QgeD08QSBhPXt4","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-20","textBytesBase64":"Y29uc3QgeD08QSBhPXt4fT7msYk=","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-25","textBytesBase64":"Y29uc3QgeD08QSBhPXt4fT7msYl7dmFsdQ==","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-30","textBytesBase64":"Y29uc3QgeD08QSBhPXt4fT7msYl7dmFsdWV9PC9B","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsx-31","textBytesBase64":"Y29uc3QgeD08QSBhPXt4fT7msYl7dmFsdWV9PC9BPg==","scriptKind":4,"resolveJSDoc":false}
+{"name":"boundary-truncation-jsdoc-0","textBytesBase64":"","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-5","textBytesBase64":"LyoqIEA=","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-10","textBytesBase64":"LyoqIEBwYXJhbQ==","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-15","textBytesBase64":"LyoqIEBwYXJhbSB7e3Zh","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-20","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiA=","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-25","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbg==","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-30","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbmd9fSBw","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-35","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbmd9fSBwICovIGY=","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-40","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbmd9fSBwICovIGZ1bmN0aQ==","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-45","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbmd9fSBwICovIGZ1bmN0aW9uIGYo","scriptKind":1,"resolveJSDoc":true}
+{"name":"boundary-truncation-jsdoc-48","textBytesBase64":"LyoqIEBwYXJhbSB7e3ZhbHVlOiBzdHJpbmd9fSBwICovIGZ1bmN0aW9uIGYocCl7","scriptKind":1,"resolveJSDoc":true}
+{"name":"json-mode-scalar-string","text":"\"\ud83e\udd80\"","scriptKind":6}
+{"name":"json-mode-scalar-number","text":"-123.5e2","scriptKind":6}
+{"name":"json-mode-scalar-null","text":"null","scriptKind":6}
+{"name":"json-mode-array","text":"[1,{\"\u03b1\":true},null]","scriptKind":6}
+{"name":"json-mode-object","text":"{\"escaped\":\"\\ud800\",\"nested\":{}}","scriptKind":6}
+{"name":"json-mode-truncated-object","text":"{\"x\":","scriptKind":6}
+{"name":"json-mode-truncated-array","text":"[1,","scriptKind":6}
+{"name":"json-mode-missing-property","text":"{\":1}","scriptKind":6}
+{"name":"json-mode-unquoted-property","text":"{x:1}","scriptKind":6}
+{"name":"json-mode-trailing-input","text":"{} []","scriptKind":6}
+{"name":"json-mode-trailing-comma","text":"{\"x\":1,}","scriptKind":6}
+{"name":"json-mode-empty","text":"","scriptKind":6}
+{"name":"json-mode-invalid-literal","text":"undefined","scriptKind":6}
+{"name":"jsx-mode-syntax-diagnostics","text":"interface I{} const x:number=<div/>;","scriptKind":2,"resolveJSDoc":false}
+{"name":"jsx-mode-mismatched-tag","text":"const x=<A><B></A>;","scriptKind":2,"resolveJSDoc":false}
+{"name":"jsx-mode-attribute-recovery","text":"const x=<A p= q={}/>;","scriptKind":2,"resolveJSDoc":false}
+{"name":"jsx-mode-comments","text":"const x=<>{/* comment */}<A/> text</>;","scriptKind":2,"resolveJSDoc":false}
+{"name":"jsx-mode-jsdoc","text":"/** @param {string} x */ function f(x){return <A>{x}</A>;}","scriptKind":2,"resolveJSDoc":true}
+{"name":"jsx-mode-module-False","text":"const x=<A/>;","scriptKind":2,"externalModuleJSX":false}
+{"name":"jsx-mode-module-True","text":"const x=<A/>;","scriptKind":2,"externalModuleJSX":true}

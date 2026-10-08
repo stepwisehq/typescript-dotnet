@@ -1,0 +1,68 @@
+{
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Grammar/fuzz/helper submanifest; coverage.json inventories the complete corpus",
+  "grammarCases": 88,
+  "requestSha256": "76d681c7d43b0894171b771683d19c63e9b4473affa21826cb408ea909304a40",
+  "modeCounts": {
+    "1": 6,
+    "2": 1,
+    "3": 53,
+    "4": 26,
+    "6": 2
+  },
+  "fuzzCases": 10,
+  "fuzzSources": [
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/02b74efe61495c2a",
+      "sha256": "67e30a2527a654bfb9f90d26ffa9972fbece112fbc38e2d97eeb62415cdbc1dd",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/0ec0d5de7f0264d9",
+      "sha256": "4e898362c5130b2b3baf15bd85ccda69838ddd214f960b618eb5bf939ac83793",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/3d59c16f3abc20e1",
+      "sha256": "b9348148a7d88ddb2e4e8ade7cc451de403b73693fe20def2427524f4fe5ce68",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/4c0324cd37d955ff",
+      "sha256": "ed6c0c99081b7616df99cca65cd7ea68b86c6d15d525d21161b67949720e0cc0",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/6944735deac09149",
+      "sha256": "431bc7812cb19886ee2b40c741db08b25ef3151d4ea8085b4ecdf2a9cbad0f5d",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/7d4c688e1df61349",
+      "sha256": "886e1e9499383614b74546e23754717f859ad4dc6ef67f90edef529e3fcbf9e6",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/9ce2d994c65c7bfe",
+      "sha256": "67e30a2527a654bfb9f90d26ffa9972fbece112fbc38e2d97eeb62415cdbc1dd",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/c5dc3279768e5a11",
+      "sha256": "9b775a67d2a94f516b39b25b02133a88dca640a0f6c5298bb5286108a969351b",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/f48591d3b8f41eca",
+      "sha256": "96456f29b1eef38588059ab812d8d52dfc7a392d3e5ee5192e57638a28dc2f8e",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/internal/parser/testdata/fuzz/FuzzParser/f6dbdaa8568c9488",
+      "sha256": "a68eb08de85806600f214763e6f2556281563334cb84922d6a38c6f8bdb0f614",
+      "license": "Apache-2.0"
+    }
+  ],
+  "helperCases": 4,
+  "helperReference": "tsc/internal/parser/parser_test.go named JSDoc source-survival tests"
+}

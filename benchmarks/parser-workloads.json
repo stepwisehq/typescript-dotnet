@@ -1,0 +1,320 @@
+{
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "acceptedSourceSha256": "d441e371cf28045777b3c8041d51e524ce96904ddecf6ff7e4f105edaf2edf8d",
+  "mode": "parse-source-file-plus-counters-and-diagnostics",
+  "timedResolveJSDoc": false,
+  "workloads": [
+    {
+      "name": "real-typescript",
+      "inputBytes": 102533,
+      "inputFiles": 4,
+      "modeCounts": {
+        "3": 4
+      },
+      "files": [
+        {
+          "corpusCase": "upstream-upstream/TypeScript/packages/typescript/src/ast/modifiers.ts::/modifiers.ts",
+          "path": "tools/.cache/parser-benchmark-data/real-typescript/000.bytes",
+          "fileName": "/modifiers.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 1542,
+          "sha256": "91f448aadefeaeafba35c7bfae6550f2ea0050669b0d9d961efb049911caed27"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/packages/typescript/src/ast/utils.ts::/utils.ts",
+          "path": "tools/.cache/parser-benchmark-data/real-typescript/001.bytes",
+          "fileName": "/utils.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 15218,
+          "sha256": "0ae1301faa2e2fb5aa480caf82a65bc83232202995e2a651d5ec4deec310a272"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/packages/typescript/src/ast/visitor.ts::/visitor.ts",
+          "path": "tools/.cache/parser-benchmark-data/real-typescript/002.bytes",
+          "fileName": "/visitor.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 4155,
+          "sha256": "494f0de99815caceac9b49d68a1ad5473bbd579970fbde4961fd3fb45828ef95"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/parser/ecmascript5/RealWorld/parserharness.ts::/parserharness.ts",
+          "path": "tools/.cache/parser-benchmark-data/real-typescript/003.bytes",
+          "fileName": "/parserharness.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 81618,
+          "sha256": "7123300ab39b19b387ad31fbabf89db063069c406068c5b48626625308da00d8"
+        }
+      ]
+    },
+    {
+      "name": "tsx-microfixtures",
+      "inputBytes": 687,
+      "inputFiles": 3,
+      "modeCounts": {
+        "4": 3
+      },
+      "files": [
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsx/tsxCorrectlyParseLessThanComparison1.tsx::/tsxCorrectlyParseLessThanComparison1.tsx",
+          "path": "tools/.cache/parser-benchmark-data/tsx-microfixtures/000.bytes",
+          "fileName": "/tsxCorrectlyParseLessThanComparison1.tsx",
+          "scriptKind": 4,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 418,
+          "sha256": "59e7668fa8d99f5613938287fad50671516153bbb7b59fae610965e0c8e01ebe"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsx/tsxParseTests1.tsx::/file.tsx",
+          "path": "tools/.cache/parser-benchmark-data/tsx-microfixtures/001.bytes",
+          "fileName": "/file.tsx",
+          "scriptKind": 4,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 150,
+          "sha256": "81b0ab1c2f55d24bb6ed17f09f725ae91f2cd2db2f4088fdc587a7f6f0bbd1bf"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsx/tsxParseTests2.tsx::/file.tsx",
+          "path": "tools/.cache/parser-benchmark-data/tsx-microfixtures/002.bytes",
+          "fileName": "/file.tsx",
+          "scriptKind": 4,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 119,
+          "sha256": "e43a023d004e96d276506f15f1da500f5d9cb8c85f8bda374aa0b705f50bafa1"
+        }
+      ]
+    },
+    {
+      "name": "eager-jsdoc-js-microfixtures",
+      "inputBytes": 1312,
+      "inputFiles": 7,
+      "modeCounts": {
+        "1": 7
+      },
+      "files": [
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseAwait.ts::/a.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/000.bytes",
+          "fileName": "/a.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 198,
+          "sha256": "abe82585369db418cefb7c52607afa1e70617e8833210cb9778f5b9cb4568cc0"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseBackquotedParamName.ts::/a.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/001.bytes",
+          "fileName": "/a.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 92,
+          "sha256": "8ee7f701022688858c05067cf72736763743b09db366e72a0c6d8d02bb25f983"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseDotDotDotInJSDocFunction.ts::/a.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/002.bytes",
+          "fileName": "/a.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 216,
+          "sha256": "9699c0a52cdb5babc16d8c23c69fea5a9fece48067862172209fb561ce194573"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseHigherOrderFunction.ts::/paren.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/003.bytes",
+          "fileName": "/paren.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 95,
+          "sha256": "3f247a2a8b32ad3910abdbf134609de2bf8116de2b58dbda052c95692c702676"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseMatchingBackticks.ts::/jsdocParseMatchingBackticks.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/004.bytes",
+          "fileName": "/jsdocParseMatchingBackticks.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 481,
+          "sha256": "0d78508e1dd0162ede0542627f0c211f89023f2506ff49f92c8901c43a6f56c3"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseParenthesizedJSDocParameter.ts::/paren.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/005.bytes",
+          "fileName": "/paren.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 68,
+          "sha256": "687d01a16ad174766cbdb8eb94708376d6498c378f0d22279b2e8e8c24eade8a"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseStarEquals.ts::/a.js",
+          "path": "tools/.cache/parser-benchmark-data/eager-jsdoc-js-microfixtures/006.bytes",
+          "fileName": "/a.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 162,
+          "sha256": "6d7a3c0a4963e36c65b3d36aaaca5af9b5a60399ba46523ef1667d2461f829d5"
+        }
+      ]
+    },
+    {
+      "name": "malformed-recovery",
+      "inputBytes": 4795,
+      "inputFiles": 13,
+      "modeCounts": {
+        "1": 3,
+        "3": 9,
+        "4": 1
+      },
+      "files": [
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/jsx/jsxUnclosedParserRecovery.ts::/jsxParserRecovery.tsx",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/000.bytes",
+          "fileName": "/jsxParserRecovery.tsx",
+          "scriptKind": 4,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 3547,
+          "sha256": "0a21f96458aad5838acdcc770d12c851c1abe563e8c4a9e1a2a612a743ee33c5"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IncompleteMemberVariables/parserErrorRecovery_IncompleteMemberVariable1.ts::/parserErrorRecovery_IncompleteMemberVariable1.ts",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/001.bytes",
+          "fileName": "/parserErrorRecovery_IncompleteMemberVariable1.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 521,
+          "sha256": "2a7ebb4f5c983082933c2818fd4e9c6213412a0064e3e3f884946fe83264a270"
+        },
+        {
+          "corpusCase": "upstream-upstream/TypeScript/tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IncompleteMemberVariables/parserErrorRecovery_IncompleteMemberVariable2.ts::/parserErrorRecovery_IncompleteMemberVariable2.ts",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/002.bytes",
+          "fileName": "/parserErrorRecovery_IncompleteMemberVariable2.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 522,
+          "sha256": "a6ae652e1146fe20265cb96f8b63294e6aa80e3f7a8fbda4ce994e6165534e0f"
+        },
+        {
+          "corpusCase": "upstream-fuzz-02b74efe61495c2a",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/003.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "corpusCase": "upstream-fuzz-0ec0d5de7f0264d9",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/004.bytes",
+          "fileName": "/index.js",
+          "scriptKind": 1,
+          "externalModuleJSX": true,
+          "externalModuleForce": false,
+          "bytes": 101,
+          "sha256": "71fdcf76259d797dfe70d006c883bee4824a4825bea052c5c34319711dc72ac4"
+        },
+        {
+          "corpusCase": "upstream-fuzz-3d59c16f3abc20e1",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/005.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 26,
+          "sha256": "131378dd6aaec0f2fc7df8fc3ec704d49a5ebf5d915358e3d84122e1166e5d6d"
+        },
+        {
+          "corpusCase": "upstream-fuzz-4c0324cd37d955ff",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/006.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 8,
+          "sha256": "6bd0fc1ed8ff66f8beccbaa8169c28c2994a888439bb7153deb51b134fa2fd78"
+        },
+        {
+          "corpusCase": "upstream-fuzz-6944735deac09149",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/007.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 3,
+          "sha256": "9329dce44621cdf9ee64ec640b1500e2897e93bbabc7d2ba544ffd12eea32935"
+        },
+        {
+          "corpusCase": "upstream-fuzz-7d4c688e1df61349",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/008.bytes",
+          "fileName": "/index.js",
+          "scriptKind": 1,
+          "externalModuleJSX": true,
+          "externalModuleForce": false,
+          "bytes": 21,
+          "sha256": "159d6f296f8038f66c43f56711db473d27aa84dfcfed89f1f8b360b8a0b05fd5"
+        },
+        {
+          "corpusCase": "upstream-fuzz-9ce2d994c65c7bfe",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/009.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "corpusCase": "upstream-fuzz-c5dc3279768e5a11",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/010.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 3,
+          "sha256": "8d64a30d9de151b649006a1d9871037ac5649ab6162ea5d7fd77c54fed07b155"
+        },
+        {
+          "corpusCase": "upstream-fuzz-f48591d3b8f41eca",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/011.bytes",
+          "fileName": "/index.js",
+          "scriptKind": 1,
+          "externalModuleJSX": false,
+          "externalModuleForce": true,
+          "bytes": 28,
+          "sha256": "499b6c35abdef6c0d8bbbc37727d6f04d05553624b0ef6b802c26de89a63ffd7"
+        },
+        {
+          "corpusCase": "upstream-fuzz-f6dbdaa8568c9488",
+          "path": "tools/.cache/parser-benchmark-data/malformed-recovery/012.bytes",
+          "fileName": "/index.ts",
+          "scriptKind": 3,
+          "externalModuleJSX": false,
+          "externalModuleForce": false,
+          "bytes": 15,
+          "sha256": "918a8794e6c9d516232ee652bf2ac36887feab3e2f76ec4aa758ec7c469fa51c"
+        }
+      ]
+    }
+  ]
+}

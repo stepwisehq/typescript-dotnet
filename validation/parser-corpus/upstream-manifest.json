@@ -1,0 +1,860 @@
+{
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selection": "First lexical and median-size source per parser conformance directory; JSX/JSDoc parsing tests; three real TypeScript AST utility sources",
+  "files": [
+    {
+      "path": "packages/typescript/src/ast/modifiers.ts",
+      "sha256": "b3ab17e5d757b064b09a9f5f8a75f2ff05663bc35b2a70fc43c472c817477951",
+      "bytes": 1583,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "packages/typescript/src/ast/utils.ts",
+      "sha256": "6185dda310fccb7d18ade74af2d217c8baf4ccda8b61fba8dff8393ac9ee0a02",
+      "bytes": 15584,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "packages/typescript/src/ast/visitor.ts",
+      "sha256": "b12d5790f964e73568ccba8be58d396ce7183cc4258a0fbfb00971a5e9200992",
+      "bytes": 4266,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseAwait.ts",
+      "sha256": "b1e96c0b91b8ef279714db7bb767e7d522eb79b046157c92cf90c95486f51879",
+      "bytes": 273,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseBackquotedParamName.ts",
+      "sha256": "b248c0d848c15fe014075bacc2abbd6b63deefea13da4441d610ab3a28f3f6f5",
+      "bytes": 290,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseDotDotDotInJSDocFunction.ts",
+      "sha256": "9d981f25248ea189d6334159048bfa25676da5db1f2486b8ebc798d60055d525",
+      "bytes": 325,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseErrorsInTypescript.ts",
+      "sha256": "ca721a1662bb746d6484cf080493225af0efdadb54c55993f11a0bff98dd79a8",
+      "bytes": 103,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseHigherOrderFunction.ts",
+      "sha256": "33b57e5d742e01e50fb650c6178a4026f7ae026d1196918b1b575d9ed11aa563",
+      "bytes": 207,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseMatchingBackticks.ts",
+      "sha256": "87102d72efcf0155763919343fcb8e307e470bdd82ccc06d38a18bde5705bd70",
+      "bytes": 616,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseParenthesizedJSDocParameter.ts",
+      "sha256": "cca9bf5c55fbea2887231495a7c953410a4b3a0f552baab9bf9969dceae174b7",
+      "bytes": 180,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsdoc/jsdocParseStarEquals.ts",
+      "sha256": "40a2236377ddfad174cf02373cdf530ee71c609808c058a1af84b0a551e6d5d3",
+      "bytes": 271,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsx/jsxUnclosedParserRecovery.ts",
+      "sha256": "7e195d87fd898212f832a8213e1b829ee3757a441144c678634aa771601d71f1",
+      "bytes": 3639,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsx/tsxCorrectlyParseLessThanComparison1.tsx",
+      "sha256": "c35b1c2abaaff2265528b33acbbb7c5a4cf0480c2dba4d3a74d99108d31a3bda",
+      "bytes": 453,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsx/tsxParseTests1.tsx",
+      "sha256": "161de4735cdca97a7a52ee0a55c7f53c90cd9de66153a288f3264c16e7c66f1e",
+      "bytes": 217,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/jsx/tsxParseTests2.tsx",
+      "sha256": "8f9eb968390cddce96a302aa43bb8b2c26709d13d321f59e9bd74fa8d6a960c3",
+      "bytes": 186,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript2018/asyncGenerators/parser.asyncGenerators.classMethods.es2018.ts",
+      "sha256": "91b47ed1ccafb908dbea00fd4a1723e231dc7345ae820b0fb6fc73751e619c5a",
+      "bytes": 2844,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript2018/asyncGenerators/parser.asyncGenerators.objectLiteralMethods.es2018.ts",
+      "sha256": "18ae310662579c064d16d6dbb6c0bce6cb44adf8e362a8795b4ae49eb7d4e00a",
+      "bytes": 2828,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript2018/forAwait/parser.forAwait.es2018.ts",
+      "sha256": "cc0d06f3e5d8d781aff45d2a10da3532feffb8561b55ea5e0dbaf19c6539192e",
+      "bytes": 1364,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript2021/numericSeparators/parser.numericSeparators.binary.ts",
+      "sha256": "60164b2b5a4faaa57b2ac70b1cf2280ff28f17b38f662465493dc6734fa64b99",
+      "bytes": 66,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript2021/numericSeparators/parser.numericSeparators.binaryNegative.ts",
+      "sha256": "38aa2569feb1c3d59a0b0e8f4ca12842a71d0cf2dc9d267ca3f45befd6fbd4af",
+      "bytes": 222,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript3/Accessors/parserES3Accessors1.ts",
+      "sha256": "434fb1e4c5a8d81b025355b42f5ee6d1f224da17bb8c7bf9e44022826ff5b9e0",
+      "bytes": 51,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Accessors/parserAccessors1.ts",
+      "sha256": "55615dce029ab773e34a180e79c23202c568f90a8d916d3be7792009dc86070f",
+      "bytes": 56,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Accessors/parserAccessors4.ts",
+      "sha256": "c09a3554e6c6cab591cc02c9e005f35bdd07c17e636890bb2524558d767d0b2a",
+      "bytes": 71,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ArrayLiteralExpressions/parserArrayLiteralExpression1.ts",
+      "sha256": "9c8bd69c1a8989b0cd2bee838c16c67b2782113535dfcc48a68ab2bfbfa34966",
+      "bytes": 30,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ArrayLiteralExpressions/parserArrayLiteralExpression8.ts",
+      "sha256": "adde726134f7e0638f45bdc3e9c9cb8fc5db9ad509a6dd86cea23409244ccf43",
+      "bytes": 33,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ArrowFunctionExpressions/parserArrowFunctionExpression1.ts",
+      "sha256": "a40622958e95eb6231c3a61459f2ca5316091ae83c5814a0166f40e4f411119b",
+      "bytes": 53,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ArrowFunctionExpressions/parserArrowFunctionExpression12.ts",
+      "sha256": "176a1fe70188079ae67d82d0d98517af35d0ecc2b05d3a3d5dce89bac5d3eff2",
+      "bytes": 205,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/AutomaticSemicolonInsertion/parserAutomaticSemicolonInsertion1.ts",
+      "sha256": "15201841eff6cd2d0f7488baa0a65b2d3cfac38fd4be99eae7ca16d30a52c319",
+      "bytes": 161,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/CatchClauses/parserCatchClauseWithTypeAnnotation1.ts",
+      "sha256": "fd3a3c471f91f557c6d226502bbdbdbdea6e6be94db70aaa692236ac215223fb",
+      "bytes": 52,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ClassDeclarations/parserClass1.ts",
+      "sha256": "75edce3d623d6e5e6fdcc9ee4e5aa0cbe22e29431bf2d4f698191275ec04bb06",
+      "bytes": 388,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ClassDeclarations/parserClassDeclaration21.ts",
+      "sha256": "fb5ff819de3bb5867cb9c0b716f3371decce3f7aadbbcc414ddbc3a7af18d6e3",
+      "bytes": 74,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ComputedPropertyNames/parserES5ComputedPropertyName1.ts",
+      "sha256": "f5fe7a282c06c99ccc53d59f3fb48b3ed63f7748f14b9e1f63c970a20dc82fb3",
+      "bytes": 62,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ComputedPropertyNames/parserES5ComputedPropertyName4.ts",
+      "sha256": "4390c8eca687260973999ad6b1dbe868960fda731277a0f20ec201d18f4b04be",
+      "bytes": 50,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ConstructorDeclarations/parserConstructorDeclaration1.ts",
+      "sha256": "09bb94fd4953d55bc16156d5eeec50dd1e9f06c264ce1cb5a37644b7eb334dc1",
+      "bytes": 59,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ConstructorDeclarations/parserConstructorDeclaration10.ts",
+      "sha256": "b9dcc8355c05705dbb2a3c953f153b95dad98a034c0d398bd87e06e2ffd99ce3",
+      "bytes": 61,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/EnumDeclarations/parserEnum1.ts",
+      "sha256": "253cbd5994645fc8b1d0ae920bb025528f80efdb09e93a9986141c70cfc353ab",
+      "bytes": 197,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/EnumDeclarations/parserEnum3.ts",
+      "sha256": "44eca0f15c5f39250061c8b030e90297b93996b0bacaa0b8c7e5491e8bb848dc",
+      "bytes": 63,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/AccessibilityAfterStatic/parserAccessibilityAfterStatic1.ts",
+      "sha256": "c3dab4eb47e88eca505687248023ae9b3274650afc033638c7081f5130d4f63a",
+      "bytes": 68,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/AccessibilityAfterStatic/parserAccessibilityAfterStatic10.ts",
+      "sha256": "3d68a5e816cda3d6f95de76f66d081d93ef37fe9c06df4a1961792a84a866241",
+      "bytes": 67,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ArgumentLists/parserErrorRecovery_ArgumentList1.ts",
+      "sha256": "547a512d3243f98264325f34972c52a4cf5d168a64e384cb766298d23f0e5a9a",
+      "bytes": 62,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ArrayLiteralExpressions/parserErrorRecoveryArrayLiteralExpression1.ts",
+      "sha256": "19e004b55df8b53ce7d7df0134a32be646e443866e91b1005af0a36178b8c036",
+      "bytes": 50,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ArrayLiteralExpressions/parserErrorRecoveryArrayLiteralExpression3.ts",
+      "sha256": "8407a543d62102f860213dc525216b4c2863addbc3978307ba58c2bbb13af6a4",
+      "bytes": 128,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ArrowFunctions/ArrowFunction1.ts",
+      "sha256": "25a5277c47308a6c516d091691d154fd6567e2e4f0bdf6cafa7d8dddf804d3cb",
+      "bytes": 47,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ArrowFunctions/parserX_ArrowFunction1.ts",
+      "sha256": "25a5277c47308a6c516d091691d154fd6567e2e4f0bdf6cafa7d8dddf804d3cb",
+      "bytes": 47,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/Blocks/parserErrorRecovery_Block1.ts",
+      "sha256": "8d8139ced9204381fc543e2369cafaa4d6fc68045ea617cc9c5a28b09f6ca756",
+      "bytes": 60,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ClassElements/parserErrorRecovery_ClassElement1.ts",
+      "sha256": "2ad239eaa4252fdad5e167bb51c17fa3b20cfa20f1dd5effd6556fcba22ecabd",
+      "bytes": 160,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ClassElements/parserErrorRecovery_ClassElement3.ts",
+      "sha256": "6e52774017c0229983a9229038f0bfc4364c47da657eb7dff30e4e88ddaa98c4",
+      "bytes": 86,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/Expressions/parserErrorRecovery_Expression1.ts",
+      "sha256": "f937db26c70787c2f61663acd8ee7733a4878867051920fd482fff0b4e8346c1",
+      "bytes": 34,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ExtendsOrImplementsClauses/parserErrorRecovery_ExtendsOrImplementsClause1.ts",
+      "sha256": "3782f7b4e3ac9a89835c34f41f4e1703602a1ce85cad3ee588511005c71b45c6",
+      "bytes": 40,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ExtendsOrImplementsClauses/parserErrorRecovery_ExtendsOrImplementsClause3.ts",
+      "sha256": "2ac247950ff96fcf2fe6b0b64820fad13532e376313f0da67f89a1909643d4da",
+      "bytes": 53,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IfStatements/parserErrorRecoveryIfStatement1.ts",
+      "sha256": "f6bf106047ce5624135ace558acd88b765fb62308c0b0fc14b2cbd83ae2cc051",
+      "bytes": 89,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IfStatements/parserErrorRecoveryIfStatement4.ts",
+      "sha256": "1de12e13dde47c338522ddf486f2d6a89373479ebd99b515b6b52469beaa4ef5",
+      "bytes": 93,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IncompleteMemberVariables/parserErrorRecovery_IncompleteMemberVariable1.ts",
+      "sha256": "d017b985c349a9e39f7591b6229e6ecbca30772bedfad095b928851f2ad51090",
+      "bytes": 568,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/IncompleteMemberVariables/parserErrorRecovery_IncompleteMemberVariable2.ts",
+      "sha256": "b8dccfa6fb978367b7fa9b3280b605cf8957201e271eaeeced14571d3390faba",
+      "bytes": 588,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/LeftShifts/parserErrorRecovery_LeftShift1.ts",
+      "sha256": "45b4314bcc23e6ca732f98b9173d8d58edd5926130f807b81b6a08dc75afc55b",
+      "bytes": 49,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ModuleElements/parserErrorRecovery_ModuleElement1.ts",
+      "sha256": "f428febd528e6735784822f6ede0ff7db24ba1e9cfa58efc6457225aabb9bf42",
+      "bytes": 50,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ModuleElements/parserErrorRecovery_ModuleElement2.ts",
+      "sha256": "aa4a39e628ffe1ac6ce9f1ba4a3bb570a7c6cc1f968765f6219cd265cdeff993",
+      "bytes": 70,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ObjectLiterals/parserErrorRecovery_ObjectLiteral1.ts",
+      "sha256": "8bdb17f7a42e3d8b6a93fe8c0514cb90978f1df332b88ea8e3d6d5b63e5d8ffa",
+      "bytes": 40,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ObjectLiterals/parserErrorRecovery_ObjectLiteral3.ts",
+      "sha256": "aec4be2c734a60b44348513c89d913740413935a7359fa034c2f4b8c10754a22",
+      "bytes": 42,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/ParameterLists/parserErrorRecovery_ParameterList1.ts",
+      "sha256": "5fbe2dcdb7df694c8565dcea2e1c88bc754ccc15cb849506ddb009285c858e19",
+      "bytes": 56,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/SourceUnits/parserErrorRecovery_SourceUnit1.ts",
+      "sha256": "8febb99e3927d7057a548af1c20bb0549b4ff2acc62fdd7536925ae7cd2bc2ce",
+      "bytes": 49,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/SwitchStatements/parserErrorRecovery_SwitchStatement1.ts",
+      "sha256": "0f5e5a9290cbc5fba2e49e82da57622a2ea968cdf4497677955b850152e3cfde",
+      "bytes": 101,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/TypeArgumentLists/TypeArgumentList1.ts",
+      "sha256": "c474d4d3d7df6d6d86e25a09197137a7caa95560098ef54b8849dc8a47a72305",
+      "bytes": 41,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/TypeArgumentLists/parserX_TypeArgumentList1.ts",
+      "sha256": "c474d4d3d7df6d6d86e25a09197137a7caa95560098ef54b8849dc8a47a72305",
+      "bytes": 41,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/VariableLists/parserErrorRecovery_VariableList1.ts",
+      "sha256": "da6b8748d8589bb818e5f8653e9be4eaae390f33715b3384c6812a6b764f3fda",
+      "bytes": 35,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/VariableLists/parserVariableStatement1.ts",
+      "sha256": "ad554fb030e34827f7408742076112350b7beec9e3ccc7b9a2d0f4158ab14dd1",
+      "bytes": 41,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/parserCommaInTypeMemberList1.ts",
+      "sha256": "dbd76f3188e318e363c387a2cfccbf67e3d2fec5623802871fe86280ce3cd30c",
+      "bytes": 59,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ErrorRecovery/parserModifierOnPropertySignature1.ts",
+      "sha256": "14294de98152811230e20a1dcf03f8512e6863c5692008f8c9cc2fbb6912d2c1",
+      "bytes": 75,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ExportAssignments/parserExportAssignment1.ts",
+      "sha256": "7656c4ca427c785a9f2494741df5ea964549bdceff058913a33e41d7ae9555f6",
+      "bytes": 52,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ExportAssignments/parserExportAssignment5.ts",
+      "sha256": "fb5afdf87e6dc4bc96002f46bcc0d858c1bea05ef01f73f076d6a2e63c43ca36",
+      "bytes": 53,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Expressions/parseIncompleteBinaryExpression1.ts",
+      "sha256": "590b7539d369986cf8d354b4498584b9589d374daf51f5b1effee95978e6d94c",
+      "bytes": 35,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Expressions/parserUnaryExpression7.ts",
+      "sha256": "847ac22bbe0901213d372e41a0e90e80d18fe0808741e0456c8fb116fa3563d9",
+      "bytes": 32,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/FunctionDeclarations/parserFunctionDeclaration1.d.ts",
+      "sha256": "62c6707fc91250a559691083d1dab4d4221e0e8e6340e84a83db6760a79cb70c",
+      "bytes": 40,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/FunctionDeclarations/parserFunctionDeclaration5.ts",
+      "sha256": "31da209b137ace3a1ff3b0711b5a9f3fc45d4ea6ad28ae4d4f38448c574a8e10",
+      "bytes": 74,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Fuzz/parser0_004152.ts",
+      "sha256": "8f9f71bcc3ba592ab04e15598c91c1bc23381211a54cb5c3474b701cd4992152",
+      "bytes": 202,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Generics/parserAmbiguity1.ts",
+      "sha256": "2f3901896060201866010282acd43ea756b13b5d9951e786232530b869cf54fd",
+      "bytes": 33,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Generics/parserAmbiguity3.ts",
+      "sha256": "19ac16ee1721deddd956e3c4f0c81086da7aaf9206a5baa964f5b80f1be8a3dd",
+      "bytes": 38,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/IndexMemberDeclarations/parserIndexMemberDeclaration1.ts",
+      "sha256": "14747a7cf3f1b9e54732c514206e17bbfb59d259f661e33cbedbbbdc60ab824a",
+      "bytes": 56,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/IndexMemberDeclarations/parserIndexMemberDeclaration5.ts",
+      "sha256": "0e729c8774f7d923d98fc25cae21c7c2e6befb52899032bc0faaf7c95151aa94",
+      "bytes": 73,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/IndexSignatures/parserIndexSignature1.ts",
+      "sha256": "efabc75f03dca4db727954d2f17f50f91004ba5a1a3e2faf9df65d14bc0337a6",
+      "bytes": 65,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/IndexSignatures/parserIndexSignature2.ts",
+      "sha256": "5f587298d3f63752d68e3186c3f0e9a1d7e34630591dc85b5d2015015afbd023",
+      "bytes": 69,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/InterfaceDeclarations/parserInterfaceDeclaration1.ts",
+      "sha256": "cdcb7b83cda4eaa8ed3d1f9ed921c1d3b2f8e055ad006e5202409ba5bd147c20",
+      "bytes": 56,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/InterfaceDeclarations/parserInterfaceDeclaration5.ts",
+      "sha256": "4a9f8ba6dff28e54d79ad71866742fb105f8047e7fb4e5b0937027016f27246c",
+      "bytes": 44,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MemberAccessorDeclarations/parserMemberAccessor1.ts",
+      "sha256": "a3c5b1ffb6533687e96eb4a1bc56942e16c2078c444f266b534c37ce2db62290",
+      "bytes": 72,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MemberAccessorDeclarations/parserMemberAccessorDeclaration15.ts",
+      "sha256": "4960593d278726da35cbbb172bcb0dd2d6fbd0a535ada261248ba422ff72b635",
+      "bytes": 71,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MemberFunctionDeclarations/parserMemberFunctionDeclaration1.ts",
+      "sha256": "8516c3f9077c151324c45b3921f48992a400dff3721b6bbfbd0d39904d4f4e71",
+      "bytes": 61,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MemberFunctionDeclarations/parserMemberFunctionDeclaration3.ts",
+      "sha256": "2a13ce3cfeb09ed50847821d77a928b47e688de348b8b291125b552e4d594751",
+      "bytes": 61,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MemberVariableDeclarations/parserMemberVariableDeclaration1.ts",
+      "sha256": "3315f1a4409b26bbf92bd4d811258be2642220564c1907119a72dd62a5f42911",
+      "bytes": 73,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MethodSignatures/parserMethodSignature1.ts",
+      "sha256": "324e862871e48bbfc77d121e579b32caced8d5d4f441178be559745850f790ce",
+      "bytes": 63,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MethodSignatures/parserMethodSignature3.ts",
+      "sha256": "69acf6ffc035d42f3e79818993fc12f734ef2f83151d12a4e5a826b0a8e66c40",
+      "bytes": 66,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/MissingTokens/parserMissingToken1.ts",
+      "sha256": "9d02b6b2a3bbd2ed55eeb2defe8bd047e5a6008433ad04561131c202f322f1f5",
+      "bytes": 30,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ModuleDeclarations/parserModule1.ts",
+      "sha256": "611a884ef02b68ea8d2a210d550c465dde4b1d03a1e067c32cce794cb21df7e2",
+      "bytes": 816,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ModuleDeclarations/parserModuleDeclaration2.ts",
+      "sha256": "968de03ca34724f2b8cfed383d333dba2f9cd6d3f8394bcd7342d47ff250f35e",
+      "bytes": 45,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ObjectLiterals/parserObjectLiterals1.ts",
+      "sha256": "d04dfe68a88c8f5708402fa06f66f16c2772ad7e2681c7011502ac157f61029f",
+      "bytes": 42,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ObjectTypes/parserObjectType1.ts",
+      "sha256": "5e9d270956fedc3b5ddc4f1dcd569efc5944f808396d3c0497f41ebc958b655b",
+      "bytes": 29,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ObjectTypes/parserObjectType4.ts",
+      "sha256": "7e8557d112b8715c01c81b4271a4abfa887b6332de2276b82bf2cfb75b5d19cf",
+      "bytes": 61,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ParameterLists/parserParameterList1.ts",
+      "sha256": "b8a59ce0e1a446226973826b97b4136e39833f55714b52e47e39bd47c176a495",
+      "bytes": 70,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/ParameterLists/parserParameterList10.ts",
+      "sha256": "e6c2b29c99918bacf2a793500a45dbcdc04e826a1871b824b7eb277ecb7d8c58",
+      "bytes": 75,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/PropertyAssignments/parserFunctionPropertyAssignment1.ts",
+      "sha256": "57f3ac356d45962714e39acfeb36258e7b1aa580d0c39ce51a889d7e9f69c085",
+      "bytes": 41,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/PropertyAssignments/parserFunctionPropertyAssignment4.ts",
+      "sha256": "4caffb3a7ab9f94264fbc8db1c2a8f41148f149939e69d1dd6822d6604194cab",
+      "bytes": 42,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/PropertySignatures/parserPropertySignature1.ts",
+      "sha256": "2eaded7d7f049663a1785d130653cdea9eacf71884ae09d2afc3faaa607ede46",
+      "bytes": 61,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/PropertySignatures/parserPropertySignature10.ts",
+      "sha256": "2aa699b3733dba76412187fb6354fd5a640675994831c8ef29c987c3924041fd",
+      "bytes": 62,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Protected/Protected1.ts",
+      "sha256": "07084009ac56cf14dfaa1eac7869c8b354bf57efccad177970a1e8e8edd1d558",
+      "bytes": 42,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Protected/Protected6.ts",
+      "sha256": "09fd9cf696eb1ba5e28598d0a0c550b95d45dec5dacb4b93e7fb44410c5f8a44",
+      "bytes": 60,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/RealWorld/parserharness.ts",
+      "sha256": "af4c8bdc14385edb4ab5a73c69df4b756b9beb3e776a4ad704f66889ef6abadd",
+      "bytes": 83752,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser509534.ts",
+      "sha256": "0ac41dbb79fef00767061ab6bd4bca7b087efdbc5ea2f9735d54940e0c9a2e2d",
+      "bytes": 343,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser618973.ts",
+      "sha256": "b9c9815b5a6dfa7281748bfdae63763c114bccf0bd2c78021e20cbee5e79d033",
+      "bytes": 71,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/RegularExpressions/parseRegularExpressionMixedWithComments.ts",
+      "sha256": "1704eae3958bf77c708cbeffd2a17a3857799fb7808102a5935ccc573f111623",
+      "bytes": 203,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/RegularExpressions/parserRegularExpression1.ts",
+      "sha256": "b1f6cb40c6046d703157ec0bf9304edb16868a235f00e6865e458867d03ced64",
+      "bytes": 57,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/SkippedTokens/parserSkippedTokens1.ts",
+      "sha256": "5d11e061d77a9e8a79899c19f77edd53404d45b8940d08d3bba4b89b5f16c069",
+      "bytes": 20,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/SkippedTokens/parserSkippedTokens20.ts",
+      "sha256": "50e1af7757a083ff2c90538ee7a7d6aedea7c4b8fcd6e713fb32e68f6236e2f2",
+      "bytes": 31,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/BreakStatements/parser_breakInIterationOrSwitchStatement1.ts",
+      "sha256": "46f6acc734ade584db98561d5d0486172424f2b4449dcd65cf7948d6f43bb5a2",
+      "bytes": 47,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/BreakStatements/parser_breakInIterationOrSwitchStatement4.ts",
+      "sha256": "4bca83ef4a73f3d2428ac95cadd3b27474b3d1f0eaa9a9776381a847af20844a",
+      "bytes": 59,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueInIterationStatement1.ts",
+      "sha256": "91d36b2be82721939bbbbdc0bde3292b528636b0a5b95dc58fc811900b74ea6b",
+      "bytes": 50,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueNotInIterationStatement3.ts",
+      "sha256": "e3a6eca5e818e1f22b22b99dc5527a0c3dadc9841b524c7baf96d267ace81459",
+      "bytes": 62,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/LabeledStatements/parser_duplicateLabel1.ts",
+      "sha256": "67476688495b7d49b4a5a14fa84ba842a8bbf2bfd27deb47dc8fc6f58e27df01",
+      "bytes": 55,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/LabeledStatements/parser_duplicateLabel3.ts",
+      "sha256": "c806d8165c9e869b28a8b7e0c5768176f5befc53f1acb81830ab2980c0624df0",
+      "bytes": 140,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/ReturnStatements/parserReturnStatement1.ts",
+      "sha256": "c1f73afd5a224ec2aabb35444dc48f3e4f8f2519b802c52b3f7878c07ea1f948",
+      "bytes": 26,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/ReturnStatements/parserReturnStatement3.ts",
+      "sha256": "05c983da95d7d5a1ad1833f03504bfabbd602cc40a29d9f8c7140459c3e06de4",
+      "bytes": 49,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/parserBlockStatement1.d.ts",
+      "sha256": "20565ccea342667a011770d3a575327f6d6ece4a37b6526b77a1daa3ced9bff2",
+      "bytes": 21,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Statements/parserForInStatement3.ts",
+      "sha256": "09f2e4fa1fbe1ef6b0c0de59374f04288ee84bb38b0de246e48cbbee004986db",
+      "bytes": 44,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/StrictMode/octalLiteralInStrictModeES3.ts",
+      "sha256": "3537d896ff26c3992aaaa9acd436c6dbfaab07be4adba1f91afcdab968039e6a",
+      "bytes": 41,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/StrictMode/parserStrictMode4.ts",
+      "sha256": "b430955a587a67e7d79cbae5f4dd3ff7363bdae1946ff472446e7bf19ea893de",
+      "bytes": 49,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/SuperExpressions/parserSuperExpression1.ts",
+      "sha256": "9718f105d8b13a1bc1c1dd115a46e446a4a9f72c8bf6dfc5e3d407dd0332a27b",
+      "bytes": 190,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Symbols/parserES5SymbolIndexer1.ts",
+      "sha256": "e62ccbfab310fde582f1ff236336881b7f80d0d2391c995135ada3b5b1a205fc",
+      "bytes": 66,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Symbols/parserES5SymbolProperty1.ts",
+      "sha256": "fe9c5062bc874ff48ab595c5ffd7f931fda9f3336776c1eb593e830e93c17b5f",
+      "bytes": 72,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/TupleTypes/TupleType1.ts",
+      "sha256": "b87b139ab7a713eb382aeb300ef6c09cae8337b6a5182b685061ff327ebc7f38",
+      "bytes": 34,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/TupleTypes/TupleType5.ts",
+      "sha256": "dc4cea1a0bfd26a36805badc1f6878ec0386c617f00e7eb3ab460d61847a5d0a",
+      "bytes": 35,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Types/parserTypeQuery1.ts",
+      "sha256": "e8d680b9da1a299add34dd2fe061439f62175f2295af1c2ab316dbe05fc29312",
+      "bytes": 34,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/Types/parserTypeQuery5.ts",
+      "sha256": "58edc9350a8fe083932e4e90f23fe74e22b3803eed26845fecc299e5b235bb1f",
+      "bytes": 36,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/VariableDeclarations/parserVariableDeclaration1.ts",
+      "sha256": "3768337f791d058bf2df35db35319612d43a56aa18dbaa9d9e8f0a707b820ad2",
+      "bytes": 93,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/VariableDeclarations/parserVariableDeclaration11.ts",
+      "sha256": "086992c7b6cb494b5d963d16d19d1aa02f1dcf0ee6ad4ee873098446966af731",
+      "bytes": 27,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/parser10.1.1-8gs.ts",
+      "sha256": "e4baed4d8736db285b09bbcbad158d65cb8987ccdbc916f09198b9b1ebec4065",
+      "bytes": 722,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript5/parserOverloadOnConstants1.ts",
+      "sha256": "62b73cff14a679386e02a50d01d35538b7c749a9cadd32a0e7c4c6c9691ddb89",
+      "bytes": 257,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/ComputedPropertyNames/parserComputedPropertyName1.ts",
+      "sha256": "6cf74d05761c254e8998e7190c7d15cd2f91eebd022b402de0828448e8595478",
+      "bytes": 32,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/ComputedPropertyNames/parserComputedPropertyName36.ts",
+      "sha256": "3330d46d8494c7ae5217675e99b7e0ae7f7138401d826ee2cfb5df9987452d2d",
+      "bytes": 52,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement1.d.ts",
+      "sha256": "0c5736234a02dc35c6823adea4f6d472235cddef8f34323e141419858be86a2d",
+      "bytes": 37,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/Iterators/parserForOfStatement16.ts",
+      "sha256": "05d6d268c9b5f122c345230d2c8847e66d8bdf8cda610fdedf3e4c39894c33c7",
+      "bytes": 42,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/ShorthandPropertyAssignment/parserShorthandPropertyAssignment1.ts",
+      "sha256": "1d3549c1d2b498b6b8c554b7f9ac1de5b29cd811dc9258b50df1e29acbd7bb9f",
+      "bytes": 132,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/ShorthandPropertyAssignment/parserShorthandPropertyAssignment2.ts",
+      "sha256": "18d36d4d974056613ed27adbcd765a71c6665af38b4b977abc588193955dcc34",
+      "bytes": 37,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/Symbols/parserSymbolIndexer1.ts",
+      "sha256": "cba965ae39d4cabcf73661a5ed94590d356524ea264527a87d7a24c57af452f0",
+      "bytes": 58,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "tsc/testdata/tests/cases/conformance/parser/ecmascript6/Symbols/parserSymbolProperty8.ts",
+      "sha256": "6e2c55ab35507542260d63fc6b769afe036c9676b2ff11604658e6e3a410980c",
+      "bytes": 63,
+      "license": "Apache-2.0"
+    }
+  ],
+  "units": 207,
+  "requestsSha256": "00fe0d4295296f4da2a089048daa5c525ac7de0637aa947b874b0c725ac3286e"
+}

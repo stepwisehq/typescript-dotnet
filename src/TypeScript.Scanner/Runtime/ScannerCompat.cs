@@ -5,8 +5,7 @@ using System.Globalization;
 using System.Numerics;
 
 namespace TypeScript.Scanner;
-
-internal static class GoStrings
+internal static partial class GoStrings
 {
     public static int Index(string value, string text) => value.IndexOf(text, StringComparison.Ordinal);
     public static int IndexByte(ReadOnlySpan<char> value, int ch) => value.IndexOf((char)ch);
@@ -22,7 +21,7 @@ internal static class GoStrings
     public static string TrimLeft(string value, string cutset) => value.TrimStart(cutset.ToCharArray());
 }
 
-internal static class Strconv
+internal static partial class Strconv
 {
     public static (long Value, bool Error) ParseInt(string value, int radix, int bitSize)
     {
@@ -78,7 +77,7 @@ internal static class Fmt
     }
 }
 
-internal static class Debug
+internal static partial class Debug
 {
     public static void Assert(bool condition)
     {
@@ -99,7 +98,7 @@ internal static class ScannerString
         var value = new System.Text.StringBuilder();
         for (int i = 0; i < bytes.Length;)
         {
-            var (rune, size) = Utf8.DecodeRuneInString(bytes.AsSpan(i));
+            var(rune, size) = Utf8.DecodeRuneInString(bytes.AsSpan(i));
             value.Append(char.ConvertFromUtf32(rune));
             i += size;
         }
@@ -113,7 +112,7 @@ internal static class ScannerString
         var value = new System.Text.StringBuilder();
         for (int i = 0; i < bytes.Length;)
         {
-            var (rune, size) = StringUtil.DecodeJSStringRune(bytes.AsSpan(i));
+            var(rune, size) = StringUtil.DecodeJSStringRune(bytes.AsSpan(i));
             if (rune <= 0xFFFF)
                 value.Append((char)rune);
             else

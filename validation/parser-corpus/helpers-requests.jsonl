@@ -1,0 +1,4 @@
+{"name":"JSDocTypeSourceSurvivesReparse","text":"/**\n * @typedef {(\n *   \"a\" |\n *   \"b\"\n * )[]} T\n */\nconst value = 0;","scriptKind":1,"resolveJSDoc":true,"textProbeIds":[3,14]}
+{"name":"JSDocTypeSourcePropagatesToConstructedReparse","text":"/**\n * @param {{\n *   value: string\n * }} options\n */\nfunction foo(options) {}","scriptKind":1,"resolveJSDoc":true,"textProbeIds":[4]}
+{"name":"JSDocTokenPositionIncludesComment-False","text":"/**doc*/ const x=1;","scriptKind":3,"textProbeIds":[1],"textProbeIncludeJSDoc":false}
+{"name":"JSDocTokenPositionIncludesComment-True","text":"/**doc*/ const x=1;","scriptKind":3,"textProbeIds":[1],"textProbeIncludeJSDoc":true}

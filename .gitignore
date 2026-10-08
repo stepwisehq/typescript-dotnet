@@ -4,3 +4,5 @@
 /tools/.cache/
 /artifacts/
 *.user
+__pycache__/
+*.pyc

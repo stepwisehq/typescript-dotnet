@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 
 namespace TypeScript.Scanner;
-
 public partial class Scanner
 {
     private string text = "";
@@ -269,6 +268,7 @@ public partial class Scanner
     public void SetOnError(ErrorCallback? errorCallback)
     {
         this.onError = errorCallback;
+        onErrorUsesByteStrings = false;
     }
 
     public void SetLanguageVariant(LanguageVariant languageVariant)
@@ -300,7 +300,10 @@ public partial class Scanner
     {
         if (this.onError != null)
         {
-            this.onError(diagnostic, pos, length, args.Select(arg => arg is string value ? (object)ScannerString.ToUtf8String(value) : arg).ToArray());
+            if (onErrorUsesByteStrings)
+                this.onError(diagnostic, pos, length, args);
+            else
+                this.onError(diagnostic, pos, length, args.Select(arg => arg is string value ? (object)ScannerString.ToUtf8String(value) : arg).ToArray());
         }
     }
 
@@ -379,17 +382,289 @@ public partial class Scanner
                 case '\v':
                 case '\f':
                 case ' ':
+                {
+                    this.pos++;
+                    if (this.skipTrivia)
                     {
-                        this.pos++;
-                        if (this.skipTrivia)
+                        continue;
+                    }
+
+                    while (true)
+                    {
+                        var(whiteSpaceCh, size) = this.charAndSize();
+                        if (!StringUtil.IsWhiteSpaceSingleLine(whiteSpaceCh))
                         {
-                            continue;
+                            break;
                         }
 
+                        this.pos += size;
+                    }
+
+                    this.token = Kind.WhitespaceTrivia;
+                    break;
+                }
+
+                case '\n':
+                case '\r':
+                {
+                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
+                    if (this.skipTrivia)
+                    {
+                        this.pos++;
+                        this.scanASCIIWhile((b) =>
+                        {
+                            return b == ' ' || b >= '\t' && b <= '\r';
+                        });
+                        continue;
+                    }
+
+                    if (ch == '\r' && this.charAt(1) == '\n')
+                    {
+                        this.pos += 2;
+                    }
+                    else
+                    {
+                        this.pos++;
+                    }
+
+                    this.token = Kind.NewLineTrivia;
+                    break;
+                }
+
+                case '!':
+                {
+                    if (this.charAt(1) == '=')
+                    {
+                        if (this.charAt(2) == '=')
+                        {
+                            this.pos += 3;
+                            this.token = Kind.ExclamationEqualsEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos += 2;
+                            this.token = Kind.ExclamationEqualsToken;
+                        }
+                    }
+                    else
+                    {
+                        this.pos++;
+                        this.token = Kind.ExclamationToken;
+                    }
+
+                    break;
+                }
+
+                case '"':
+                case '\'':
+                {
+                    this.tokenValue = this.scanString(false);
+                    this.token = Kind.StringLiteral;
+                    break;
+                }
+
+                case '`':
+                {
+                    this.token = this.scanTemplateAndSetTokenValue(false);
+                    break;
+                }
+
+                case '%':
+                {
+                    if (this.charAt(1) == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.PercentEqualsToken;
+                    }
+                    else
+                    {
+                        this.pos++;
+                        this.token = Kind.PercentToken;
+                    }
+
+                    break;
+                }
+
+                case '&':
+                {
+                    var next = this.charAt(1);
+                    if (next == '&')
+                    {
+                        if (this.charAt(2) == '=')
+                        {
+                            this.pos += 3;
+                            this.token = Kind.AmpersandAmpersandEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos += 2;
+                            this.token = Kind.AmpersandAmpersandToken;
+                        }
+                    }
+                    else
+                    {
+                        if (next == '=')
+                        {
+                            this.pos += 2;
+                            this.token = Kind.AmpersandEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos++;
+                            this.token = Kind.AmpersandToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case '(':
+                {
+                    this.pos++;
+                    this.token = Kind.OpenParenToken;
+                    break;
+                }
+
+                case ')':
+                {
+                    this.pos++;
+                    this.token = Kind.CloseParenToken;
+                    break;
+                }
+
+                case '*':
+                {
+                    var next = this.charAt(1);
+                    if (next == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.AsteriskEqualsToken;
+                    }
+                    else
+                    {
+                        if (next == '*')
+                        {
+                            if (this.charAt(2) == '=')
+                            {
+                                this.pos += 3;
+                                this.token = Kind.AsteriskAsteriskEqualsToken;
+                            }
+                            else
+                            {
+                                this.pos += 2;
+                                this.token = Kind.AsteriskAsteriskToken;
+                            }
+                        }
+                        else
+                        {
+                            this.pos++;
+                            if (this.skipJSDocLeadingAsterisks != 0 && (this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocLeadingAsterisks) == 0 && (this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak) != 0)
+                            {
+                                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocLeadingAsterisks;
+                                continue;
+                            }
+
+                            this.token = Kind.AsteriskToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case '+':
+                {
+                    var next = this.charAt(1);
+                    if (next == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.PlusEqualsToken;
+                    }
+                    else
+                    {
+                        if (next == '+')
+                        {
+                            this.pos += 2;
+                            this.token = Kind.PlusPlusToken;
+                        }
+                        else
+                        {
+                            this.pos++;
+                            this.token = Kind.PlusToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case ',':
+                {
+                    this.pos++;
+                    this.token = Kind.CommaToken;
+                    break;
+                }
+
+                case '-':
+                {
+                    var next = this.charAt(1);
+                    if (next == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.MinusEqualsToken;
+                    }
+                    else
+                    {
+                        if (next == '-')
+                        {
+                            this.pos += 2;
+                            this.token = Kind.MinusMinusToken;
+                        }
+                        else
+                        {
+                            this.pos++;
+                            this.token = Kind.MinusToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case '.':
+                {
+                    var next = this.charAt(1);
+                    if (StringUtil.IsDigit(next))
+                    {
+                        this.token = this.scanNumber();
+                    }
+                    else
+                    {
+                        if (next == '.' && this.charAt(2) == '.')
+                        {
+                            this.pos += 3;
+                            this.token = Kind.DotDotDotToken;
+                        }
+                        else
+                        {
+                            this.pos++;
+                            this.token = Kind.DotToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case '/':
+                {
+                    if (this.charAt(1) == '/')
+                    {
+                        this.pos += 2;
                         while (true)
                         {
-                            var (whiteSpaceCh, size) = this.charAndSize();
-                            if (!StringUtil.IsWhiteSpaceSingleLine(whiteSpaceCh))
+                            this.scanASCIIWhile((b) =>
+                            {
+                                return b != '\n' && b != '\r';
+                            });
+                            var(ch1, size) = this.charAndSize();
+                            if (size == 0 || StringUtil.IsLineBreak(ch1))
                             {
                                 break;
                             }
@@ -397,440 +672,168 @@ public partial class Scanner
                             this.pos += size;
                         }
 
-                        this.token = Kind.WhitespaceTrivia;
-                        break;
-                    }
-
-                case '\n':
-                case '\r':
-                    {
-                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
+                        this.processCommentDirective(this.tokenStart, this.pos, false);
                         if (this.skipTrivia)
                         {
-                            this.pos++;
-                            this.scanASCIIWhile((b) =>
-                            {
-                                return b == ' ' || b >= '\t' && b <= '\r';
-                            });
                             continue;
                         }
 
-                        if (ch == '\r' && this.charAt(1) == '\n')
-                        {
-                            this.pos += 2;
-                        }
-                        else
-                        {
-                            this.pos++;
-                        }
-
-                        this.token = Kind.NewLineTrivia;
-                        break;
+                        this.token = Kind.SingleLineCommentTrivia;
+                        return this.token;
                     }
 
-                case '!':
+                    if (this.charAt(1) == '*')
                     {
-                        if (this.charAt(1) == '=')
+                        this.pos += 2;
+                        var isJSDoc = this.charCode() == '*' && this.charAt(1) != '/';
+                        var commentClosed = false;
+                        var lastLineStart = this.tokenStart;
+                        while (true)
                         {
-                            if (this.charAt(2) == '=')
+                            this.scanASCIIWhile((b) =>
                             {
-                                this.pos += 3;
-                                this.token = Kind.ExclamationEqualsEqualsToken;
+                                return b != '*' && b != '\n' && b != '\r';
+                            });
+                            var(ch1, size) = this.charAndSize();
+                            if (size == 0)
+                            {
+                                break;
                             }
-                            else
+
+                            if (ch1 == '*' && this.charAt(1) == '/')
                             {
                                 this.pos += 2;
-                                this.token = Kind.ExclamationEqualsToken;
+                                commentClosed = true;
+                                break;
                             }
-                        }
-                        else
-                        {
-                            this.pos++;
-                            this.token = Kind.ExclamationToken;
-                        }
 
-                        break;
-                    }
-
-                case '"':
-                case '\'':
-                    {
-                        this.tokenValue = this.scanString(false);
-                        this.token = Kind.StringLiteral;
-                        break;
-                    }
-
-                case '`':
-                    {
-                        this.token = this.scanTemplateAndSetTokenValue(false);
-                        break;
-                    }
-
-                case '%':
-                    {
-                        if (this.charAt(1) == '=')
-                        {
-                            this.pos += 2;
-                            this.token = Kind.PercentEqualsToken;
-                        }
-                        else
-                        {
-                            this.pos++;
-                            this.token = Kind.PercentToken;
-                        }
-
-                        break;
-                    }
-
-                case '&':
-                    {
-                        var next = this.charAt(1);
-                        if (next == '&')
-                        {
-                            if (this.charAt(2) == '=')
+                            this.pos += size;
+                            if (StringUtil.IsLineBreak(ch1))
                             {
-                                this.pos += 3;
-                                this.token = Kind.AmpersandAmpersandEqualsToken;
-                            }
-                            else
-                            {
-                                this.pos += 2;
-                                this.token = Kind.AmpersandAmpersandToken;
-                            }
-                        }
-                        else
-                        {
-                            if (next == '=')
-                            {
-                                this.pos += 2;
-                                this.token = Kind.AmpersandEqualsToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.AmpersandToken;
+                                lastLineStart = this.pos;
+                                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
                             }
                         }
 
-                        break;
+                        if (isJSDoc)
+                        {
+                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocComment;
+                            this.scanJSDocCommentForTags(this.text.Substring(this.tokenStart, this.pos - this.tokenStart));
+                        }
+
+                        this.processCommentDirective(lastLineStart, this.pos, true);
+                        if (!commentClosed)
+                        {
+                            this.error(Diagnostics.Asterisk_Slash_expected);
+                        }
+
+                        if (this.skipTrivia)
+                        {
+                            continue;
+                        }
+
+                        if (!commentClosed)
+                        {
+                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
+                        }
+
+                        this.token = Kind.MultiLineCommentTrivia;
+                        return this.token;
                     }
 
-                case '(':
+                    if (this.charAt(1) == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.SlashEqualsToken;
+                    }
+                    else
                     {
                         this.pos++;
-                        this.token = Kind.OpenParenToken;
-                        break;
+                        this.token = Kind.SlashToken;
                     }
 
-                case ')':
-                    {
-                        this.pos++;
-                        this.token = Kind.CloseParenToken;
-                        break;
-                    }
-
-                case '*':
-                    {
-                        var next = this.charAt(1);
-                        if (next == '=')
-                        {
-                            this.pos += 2;
-                            this.token = Kind.AsteriskEqualsToken;
-                        }
-                        else
-                        {
-                            if (next == '*')
-                            {
-                                if (this.charAt(2) == '=')
-                                {
-                                    this.pos += 3;
-                                    this.token = Kind.AsteriskAsteriskEqualsToken;
-                                }
-                                else
-                                {
-                                    this.pos += 2;
-                                    this.token = Kind.AsteriskAsteriskToken;
-                                }
-                            }
-                            else
-                            {
-                                this.pos++;
-                                if (this.skipJSDocLeadingAsterisks != 0 && (this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocLeadingAsterisks) == 0 && (this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak) != 0)
-                                {
-                                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocLeadingAsterisks;
-                                    continue;
-                                }
-
-                                this.token = Kind.AsteriskToken;
-                            }
-                        }
-
-                        break;
-                    }
-
-                case '+':
-                    {
-                        var next = this.charAt(1);
-                        if (next == '=')
-                        {
-                            this.pos += 2;
-                            this.token = Kind.PlusEqualsToken;
-                        }
-                        else
-                        {
-                            if (next == '+')
-                            {
-                                this.pos += 2;
-                                this.token = Kind.PlusPlusToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.PlusToken;
-                            }
-                        }
-
-                        break;
-                    }
-
-                case ',':
-                    {
-                        this.pos++;
-                        this.token = Kind.CommaToken;
-                        break;
-                    }
-
-                case '-':
-                    {
-                        var next = this.charAt(1);
-                        if (next == '=')
-                        {
-                            this.pos += 2;
-                            this.token = Kind.MinusEqualsToken;
-                        }
-                        else
-                        {
-                            if (next == '-')
-                            {
-                                this.pos += 2;
-                                this.token = Kind.MinusMinusToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.MinusToken;
-                            }
-                        }
-
-                        break;
-                    }
-
-                case '.':
-                    {
-                        var next = this.charAt(1);
-                        if (StringUtil.IsDigit(next))
-                        {
-                            this.token = this.scanNumber();
-                        }
-                        else
-                        {
-                            if (next == '.' && this.charAt(2) == '.')
-                            {
-                                this.pos += 3;
-                                this.token = Kind.DotDotDotToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.DotToken;
-                            }
-                        }
-
-                        break;
-                    }
-
-                case '/':
-                    {
-                        if (this.charAt(1) == '/')
-                        {
-                            this.pos += 2;
-                            while (true)
-                            {
-                                this.scanASCIIWhile((b) =>
-                                {
-                                    return b != '\n' && b != '\r';
-                                });
-                                var (ch1, size) = this.charAndSize();
-                                if (size == 0 || StringUtil.IsLineBreak(ch1))
-                                {
-                                    break;
-                                }
-
-                                this.pos += size;
-                            }
-
-                            this.processCommentDirective(this.tokenStart, this.pos, false);
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-
-                            this.token = Kind.SingleLineCommentTrivia;
-                            return this.token;
-                        }
-
-                        if (this.charAt(1) == '*')
-                        {
-                            this.pos += 2;
-                            var isJSDoc = this.charCode() == '*' && this.charAt(1) != '/';
-                            var commentClosed = false;
-                            var lastLineStart = this.tokenStart;
-                            while (true)
-                            {
-                                this.scanASCIIWhile((b) =>
-                                {
-                                    return b != '*' && b != '\n' && b != '\r';
-                                });
-                                var (ch1, size) = this.charAndSize();
-                                if (size == 0)
-                                {
-                                    break;
-                                }
-
-                                if (ch1 == '*' && this.charAt(1) == '/')
-                                {
-                                    this.pos += 2;
-                                    commentClosed = true;
-                                    break;
-                                }
-
-                                this.pos += size;
-                                if (StringUtil.IsLineBreak(ch1))
-                                {
-                                    lastLineStart = this.pos;
-                                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
-                                }
-                            }
-
-                            if (isJSDoc)
-                            {
-                                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocComment;
-                                this.scanJSDocCommentForTags(this.text.Substring(this.tokenStart, this.pos - this.tokenStart));
-                            }
-
-                            this.processCommentDirective(lastLineStart, this.pos, true);
-                            if (!commentClosed)
-                            {
-                                this.error(Diagnostics.Asterisk_Slash_expected);
-                            }
-
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-
-                            if (!commentClosed)
-                            {
-                                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
-                            }
-
-                            this.token = Kind.MultiLineCommentTrivia;
-                            return this.token;
-                        }
-
-                        if (this.charAt(1) == '=')
-                        {
-                            this.pos += 2;
-                            this.token = Kind.SlashEqualsToken;
-                        }
-                        else
-                        {
-                            this.pos++;
-                            this.token = Kind.SlashToken;
-                        }
-
-                        break;
-                    }
+                    break;
+                }
 
                 case '0':
+                {
+                    if (this.charAt(1) == 'X' || this.charAt(1) == 'x')
                     {
-                        if (this.charAt(1) == 'X' || this.charAt(1) == 'x')
+                        var start = this.pos;
+                        this.pos += 2;
+                        var digits = this.scanHexDigits(1, true, true);
+                        if (digits == "")
                         {
-                            var start = this.pos;
-                            this.pos += 2;
-                            var digits = this.scanHexDigits(1, true, true);
-                            if (digits == "")
-                            {
-                                this.error(Diagnostics.Hexadecimal_digit_expected);
-                                digits = "0";
-                            }
+                            this.error(Diagnostics.Hexadecimal_digit_expected);
+                            digits = "0";
+                        }
 
-                            if (this.hexNumberCache == null)
-                            {
-                                this.hexNumberCache = new Dictionary<string, string>();
-                            }
+                        if (this.hexNumberCache == null)
+                        {
+                            this.hexNumberCache = new Dictionary<string, string>();
+                        }
 
+                        {
+                            var ok = this.hexNumberCache.TryGetValue(digits, out var cachedValue);
+                            if (ok)
                             {
-                                var ok = this.hexNumberCache.TryGetValue(digits, out var cachedValue);
-                                if (ok)
+                                this.tokenValue = cachedValue!;
+                            }
+                            else
+                            {
+                                var rawText = this.text.Substring(start, this.pos - start);
+                                if (GoStrings.HasPrefix(rawText, "0x") && rawText.Substring(2) == digits)
                                 {
-                                    this.tokenValue = cachedValue!;
+                                    this.tokenValue = rawText;
                                 }
                                 else
                                 {
-                                    var rawText = this.text.Substring(start, this.pos - start);
-                                    if (GoStrings.HasPrefix(rawText, "0x") && rawText.Substring(2) == digits)
-                                    {
-                                        this.tokenValue = rawText;
-                                    }
-                                    else
-                                    {
-                                        this.tokenValue = "0x" + digits;
-                                    }
-
-                                    this.hexNumberCache[digits] = this.tokenValue;
+                                    this.tokenValue = "0x" + digits;
                                 }
-                            }
 
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.HexSpecifier;
-                            this.token = this.scanBigIntSuffix();
-                            break;
+                                this.hexNumberCache[digits] = this.tokenValue;
+                            }
                         }
 
-                        if (this.charAt(1) == 'B' || this.charAt(1) == 'b')
-                        {
-                            this.pos += 2;
-                            var digits = this.scanBinaryOrOctalDigits(2);
-                            if (digits == "")
-                            {
-                                this.error(Diagnostics.Binary_digit_expected);
-                                digits = "0";
-                            }
-
-                            this.tokenValue = "0b" + digits;
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.BinarySpecifier;
-                            this.token = this.scanBigIntSuffix();
-                            break;
-                        }
-
-                        if (this.charAt(1) == 'O' || this.charAt(1) == 'o')
-                        {
-                            this.pos += 2;
-                            var digits = this.scanBinaryOrOctalDigits(8);
-                            if (digits == "")
-                            {
-                                this.error(Diagnostics.Octal_digit_expected);
-                                digits = "0";
-                            }
-
-                            this.tokenValue = "0o" + digits;
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.OctalSpecifier;
-                            this.token = this.scanBigIntSuffix();
-                            break;
-                        }
-
-                        goto case '1';
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.HexSpecifier;
+                        this.token = this.scanBigIntSuffix();
+                        break;
                     }
+
+                    if (this.charAt(1) == 'B' || this.charAt(1) == 'b')
+                    {
+                        this.pos += 2;
+                        var digits = this.scanBinaryOrOctalDigits(2);
+                        if (digits == "")
+                        {
+                            this.error(Diagnostics.Binary_digit_expected);
+                            digits = "0";
+                        }
+
+                        this.tokenValue = "0b" + digits;
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.BinarySpecifier;
+                        this.token = this.scanBigIntSuffix();
+                        break;
+                    }
+
+                    if (this.charAt(1) == 'O' || this.charAt(1) == 'o')
+                    {
+                        this.pos += 2;
+                        var digits = this.scanBinaryOrOctalDigits(8);
+                        if (digits == "")
+                        {
+                            this.error(Diagnostics.Octal_digit_expected);
+                            digits = "0";
+                        }
+
+                        this.tokenValue = "0o" + digits;
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.OctalSpecifier;
+                        this.token = this.scanBigIntSuffix();
+                        break;
+                    }
+
+                    goto case '1';
+                }
 
                 case '1':
                 case '2':
@@ -841,386 +844,386 @@ public partial class Scanner
                 case '7':
                 case '8':
                 case '9':
-                    {
-                        this.token = this.scanNumber();
-                        break;
-                    }
+                {
+                    this.token = this.scanNumber();
+                    break;
+                }
 
                 case ':':
-                    {
-                        this.pos++;
-                        this.token = Kind.ColonToken;
-                        break;
-                    }
+                {
+                    this.pos++;
+                    this.token = Kind.ColonToken;
+                    break;
+                }
 
                 case ';':
-                    {
-                        this.pos++;
-                        this.token = Kind.SemicolonToken;
-                        break;
-                    }
+                {
+                    this.pos++;
+                    this.token = Kind.SemicolonToken;
+                    break;
+                }
 
                 case '<':
+                {
+                    if (this.charAt(1) == '<' && isConflictMarkerTrivia(this.text, this.pos))
                     {
-                        if (this.charAt(1) == '<' && isConflictMarkerTrivia(this.text, this.pos))
+                        this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
+                        if (this.skipTrivia)
                         {
-                            this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                this.token = Kind.ConflictMarkerTrivia;
-                                return this.token;
-                            }
-                        }
-
-                        if (this.charAt(1) == '<')
-                        {
-                            if (this.charAt(2) == '=')
-                            {
-                                this.pos += 3;
-                                this.token = Kind.LessThanLessThanEqualsToken;
-                            }
-                            else
-                            {
-                                this.pos += 2;
-                                this.token = Kind.LessThanLessThanToken;
-                            }
+                            continue;
                         }
                         else
                         {
-                            if (this.charAt(1) == '=')
+                            this.token = Kind.ConflictMarkerTrivia;
+                            return this.token;
+                        }
+                    }
+
+                    if (this.charAt(1) == '<')
+                    {
+                        if (this.charAt(2) == '=')
+                        {
+                            this.pos += 3;
+                            this.token = Kind.LessThanLessThanEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos += 2;
+                            this.token = Kind.LessThanLessThanToken;
+                        }
+                    }
+                    else
+                    {
+                        if (this.charAt(1) == '=')
+                        {
+                            this.pos += 2;
+                            this.token = Kind.LessThanEqualsToken;
+                        }
+                        else
+                        {
+                            if (this.languageVariant == LanguageVariant.JSX && this.charAt(1) == '/' && this.charAt(2) != '*')
                             {
                                 this.pos += 2;
-                                this.token = Kind.LessThanEqualsToken;
+                                this.token = Kind.LessThanSlashToken;
                             }
                             else
                             {
-                                if (this.languageVariant == LanguageVariant.JSX && this.charAt(1) == '/' && this.charAt(2) != '*')
-                                {
-                                    this.pos += 2;
-                                    this.token = Kind.LessThanSlashToken;
-                                }
-                                else
-                                {
-                                    this.pos++;
-                                    this.token = Kind.LessThanToken;
-                                }
+                                this.pos++;
+                                this.token = Kind.LessThanToken;
                             }
                         }
-
-                        break;
                     }
+
+                    break;
+                }
 
                 case '=':
+                {
+                    if (this.charAt(1) == '=' && isConflictMarkerTrivia(this.text, this.pos))
                     {
-                        if (this.charAt(1) == '=' && isConflictMarkerTrivia(this.text, this.pos))
+                        this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
+                        if (this.skipTrivia)
                         {
-                            this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                this.token = Kind.ConflictMarkerTrivia;
-                                return this.token;
-                            }
-                        }
-
-                        if (this.charAt(1) == '=')
-                        {
-                            if (this.charAt(2) == '=')
-                            {
-                                this.pos += 3;
-                                this.token = Kind.EqualsEqualsEqualsToken;
-                            }
-                            else
-                            {
-                                this.pos += 2;
-                                this.token = Kind.EqualsEqualsToken;
-                            }
+                            continue;
                         }
                         else
                         {
-                            if (this.charAt(1) == '>')
-                            {
-                                this.pos += 2;
-                                this.token = Kind.EqualsGreaterThanToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.EqualsToken;
-                            }
+                            this.token = Kind.ConflictMarkerTrivia;
+                            return this.token;
                         }
-
-                        break;
                     }
 
-                case '>':
+                    if (this.charAt(1) == '=')
                     {
-                        if (this.charAt(1) == '>' && isConflictMarkerTrivia(this.text, this.pos))
+                        if (this.charAt(2) == '=')
                         {
-                            this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                this.token = Kind.ConflictMarkerTrivia;
-                                return this.token;
-                            }
-                        }
-
-                        this.pos++;
-                        this.token = Kind.GreaterThanToken;
-                        break;
-                    }
-
-                case '?':
-                    {
-                        if (this.charAt(1) == '.' && !StringUtil.IsDigit(this.charAt(2)))
-                        {
-                            this.pos += 2;
-                            this.token = Kind.QuestionDotToken;
+                            this.pos += 3;
+                            this.token = Kind.EqualsEqualsEqualsToken;
                         }
                         else
                         {
-                            if (this.charAt(1) == '?')
-                            {
-                                if (this.charAt(2) == '=')
-                                {
-                                    this.pos += 3;
-                                    this.token = Kind.QuestionQuestionEqualsToken;
-                                }
-                                else
-                                {
-                                    this.pos += 2;
-                                    this.token = Kind.QuestionQuestionToken;
-                                }
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.QuestionToken;
-                            }
+                            this.pos += 2;
+                            this.token = Kind.EqualsEqualsToken;
                         }
-
-                        break;
                     }
-
-                case '[':
+                    else
                     {
-                        this.pos++;
-                        this.token = Kind.OpenBracketToken;
-                        break;
-                    }
-
-                case ']':
-                    {
-                        this.pos++;
-                        this.token = Kind.CloseBracketToken;
-                        break;
-                    }
-
-                case '^':
-                    {
-                        if (this.charAt(1) == '=')
+                        if (this.charAt(1) == '>')
                         {
                             this.pos += 2;
-                            this.token = Kind.CaretEqualsToken;
+                            this.token = Kind.EqualsGreaterThanToken;
                         }
                         else
                         {
                             this.pos++;
-                            this.token = Kind.CaretToken;
+                            this.token = Kind.EqualsToken;
                         }
-
-                        break;
                     }
 
-                case '{':
-                    {
-                        this.pos++;
-                        this.token = Kind.OpenBraceToken;
-                        break;
-                    }
+                    break;
+                }
 
-                case '|':
+                case '>':
+                {
+                    if (this.charAt(1) == '>' && isConflictMarkerTrivia(this.text, this.pos))
                     {
-                        if (this.charAt(1) == '|' && isConflictMarkerTrivia(this.text, this.pos))
+                        this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
+                        if (this.skipTrivia)
                         {
-                            this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
-                            if (this.skipTrivia)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                this.token = Kind.ConflictMarkerTrivia;
-                                return this.token;
-                            }
+                            continue;
                         }
+                        else
+                        {
+                            this.token = Kind.ConflictMarkerTrivia;
+                            return this.token;
+                        }
+                    }
 
-                        if (this.charAt(1) == '|')
+                    this.pos++;
+                    this.token = Kind.GreaterThanToken;
+                    break;
+                }
+
+                case '?':
+                {
+                    if (this.charAt(1) == '.' && !StringUtil.IsDigit(this.charAt(2)))
+                    {
+                        this.pos += 2;
+                        this.token = Kind.QuestionDotToken;
+                    }
+                    else
+                    {
+                        if (this.charAt(1) == '?')
                         {
                             if (this.charAt(2) == '=')
                             {
                                 this.pos += 3;
-                                this.token = Kind.BarBarEqualsToken;
+                                this.token = Kind.QuestionQuestionEqualsToken;
                             }
                             else
                             {
                                 this.pos += 2;
-                                this.token = Kind.BarBarToken;
+                                this.token = Kind.QuestionQuestionToken;
                             }
                         }
                         else
                         {
-                            if (this.charAt(1) == '=')
-                            {
-                                this.pos += 2;
-                                this.token = Kind.BarEqualsToken;
-                            }
-                            else
-                            {
-                                this.pos++;
-                                this.token = Kind.BarToken;
-                            }
+                            this.pos++;
+                            this.token = Kind.QuestionToken;
                         }
-
-                        break;
                     }
 
-                case '}':
+                    break;
+                }
+
+                case '[':
+                {
+                    this.pos++;
+                    this.token = Kind.OpenBracketToken;
+                    break;
+                }
+
+                case ']':
+                {
+                    this.pos++;
+                    this.token = Kind.CloseBracketToken;
+                    break;
+                }
+
+                case '^':
+                {
+                    if (this.charAt(1) == '=')
+                    {
+                        this.pos += 2;
+                        this.token = Kind.CaretEqualsToken;
+                    }
+                    else
                     {
                         this.pos++;
-                        this.token = Kind.CloseBraceToken;
-                        break;
+                        this.token = Kind.CaretToken;
                     }
 
-                case '~':
-                    {
-                        this.pos++;
-                        this.token = Kind.TildeToken;
-                        break;
-                    }
+                    break;
+                }
 
-                case '@':
-                    {
-                        this.pos++;
-                        this.token = Kind.AtToken;
-                        break;
-                    }
+                case '{':
+                {
+                    this.pos++;
+                    this.token = Kind.OpenBraceToken;
+                    break;
+                }
 
-                case '\\':
+                case '|':
+                {
+                    if (this.charAt(1) == '|' && isConflictMarkerTrivia(this.text, this.pos))
                     {
-                        if (this.scanIdentifier(0, identifierVariant.Standard))
+                        this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
+                        if (this.skipTrivia)
                         {
-                            this.token = GetIdentifierToken(this.tokenValue);
+                            continue;
                         }
                         else
                         {
-                            this.scanInvalidCharacter();
-                        }
-
-                        break;
-                    }
-
-                case '#':
-                    {
-                        if (this.charAt(1) == '!')
-                        {
-                            if (this.pos == 0)
-                            {
-                                this.pos += 2;
-                                {
-                                    var (shebangCh, size) = this.charAndSize();
-                                    for (; size > 0 && !StringUtil.IsLineBreak(shebangCh); (shebangCh, size) = this.charAndSize())
-                                    {
-                                        this.pos += size;
-                                    }
-                                }
-
-                                continue;
-                            }
-
-                            this.errorAt(Diagnostics.X_can_only_be_used_at_the_start_of_a_file, this.pos, 2);
-                            this.pos += 2;
-                            this.token = Kind.Unknown;
-                            break;
-                        }
-
-                        if (!this.scanIdentifier(1, identifierVariant.Standard))
-                        {
-                            this.errorAt(Diagnostics.Invalid_character, this.pos - 1, 1);
-                            this.tokenValue = "#";
-                        }
-
-                        this.token = Kind.PrivateIdentifier;
-                        break;
-                    }
-
-                default:
-                    {
-                        if (ch < 0)
-                        {
-                            this.token = Kind.EndOfFile;
-                            break;
-                        }
-
-                        if (this.scanIdentifier(0, identifierVariant.Standard))
-                        {
-                            this.token = GetIdentifierToken(this.tokenValue);
-                            break;
-                        }
-
-                        var (decodedCh, size) = this.charAndSize();
-                        if (decodedCh == Utf8.RuneError)
-                        {
-                            this.errorAt(Diagnostics.File_appears_to_be_binary, 0, 0);
-                            this.pos = this.text.Length;
-                            this.token = Kind.NonTextFileMarkerTrivia;
-                            break;
-                        }
-
-                        if (StringUtil.IsWhiteSpaceSingleLine(decodedCh))
-                        {
-                            this.pos += size;
-                            if (decodedCh == 0x0085 || this.skipTrivia)
-                            {
-                                continue;
-                            }
-
-                            while (true)
-                            {
-                                (decodedCh, size) = this.charAndSize();
-                                if (!StringUtil.IsWhiteSpaceSingleLine(decodedCh))
-                                {
-                                    break;
-                                }
-
-                                this.pos += size;
-                            }
-
-                            this.token = Kind.WhitespaceTrivia;
+                            this.token = Kind.ConflictMarkerTrivia;
                             return this.token;
                         }
+                    }
 
-                        if (StringUtil.IsLineBreak(decodedCh))
+                    if (this.charAt(1) == '|')
+                    {
+                        if (this.charAt(2) == '=')
                         {
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
-                            this.pos += size;
+                            this.pos += 3;
+                            this.token = Kind.BarBarEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos += 2;
+                            this.token = Kind.BarBarToken;
+                        }
+                    }
+                    else
+                    {
+                        if (this.charAt(1) == '=')
+                        {
+                            this.pos += 2;
+                            this.token = Kind.BarEqualsToken;
+                        }
+                        else
+                        {
+                            this.pos++;
+                            this.token = Kind.BarToken;
+                        }
+                    }
+
+                    break;
+                }
+
+                case '}':
+                {
+                    this.pos++;
+                    this.token = Kind.CloseBraceToken;
+                    break;
+                }
+
+                case '~':
+                {
+                    this.pos++;
+                    this.token = Kind.TildeToken;
+                    break;
+                }
+
+                case '@':
+                {
+                    this.pos++;
+                    this.token = Kind.AtToken;
+                    break;
+                }
+
+                case '\\':
+                {
+                    if (this.scanIdentifier(0, identifierVariant.Standard))
+                    {
+                        this.token = GetIdentifierToken(this.tokenValue);
+                    }
+                    else
+                    {
+                        this.scanInvalidCharacter();
+                    }
+
+                    break;
+                }
+
+                case '#':
+                {
+                    if (this.charAt(1) == '!')
+                    {
+                        if (this.pos == 0)
+                        {
+                            this.pos += 2;
+                            {
+                                var(shebangCh, size) = this.charAndSize();
+                                for (; size > 0 && !StringUtil.IsLineBreak(shebangCh); (shebangCh, size) = this.charAndSize())
+                                {
+                                    this.pos += size;
+                                }
+                            }
+
                             continue;
                         }
 
-                        this.scanInvalidCharacter();
+                        this.errorAt(Diagnostics.X_can_only_be_used_at_the_start_of_a_file, this.pos, 2);
+                        this.pos += 2;
+                        this.token = Kind.Unknown;
                         break;
                     }
+
+                    if (!this.scanIdentifier(1, identifierVariant.Standard))
+                    {
+                        this.errorAt(Diagnostics.Invalid_character, this.pos - 1, 1);
+                        this.tokenValue = "#";
+                    }
+
+                    this.token = Kind.PrivateIdentifier;
+                    break;
+                }
+
+                default:
+                {
+                    if (ch < 0)
+                    {
+                        this.token = Kind.EndOfFile;
+                        break;
+                    }
+
+                    if (this.scanIdentifier(0, identifierVariant.Standard))
+                    {
+                        this.token = GetIdentifierToken(this.tokenValue);
+                        break;
+                    }
+
+                    var(decodedCh, size) = this.charAndSize();
+                    if (decodedCh == Utf8.RuneError)
+                    {
+                        this.errorAt(Diagnostics.File_appears_to_be_binary, 0, 0);
+                        this.pos = this.text.Length;
+                        this.token = Kind.NonTextFileMarkerTrivia;
+                        break;
+                    }
+
+                    if (StringUtil.IsWhiteSpaceSingleLine(decodedCh))
+                    {
+                        this.pos += size;
+                        if (decodedCh == 0x0085 || this.skipTrivia)
+                        {
+                            continue;
+                        }
+
+                        while (true)
+                        {
+                            (decodedCh, size) = this.charAndSize();
+                            if (!StringUtil.IsWhiteSpaceSingleLine(decodedCh))
+                            {
+                                break;
+                            }
+
+                            this.pos += size;
+                        }
+
+                        this.token = Kind.WhitespaceTrivia;
+                        return this.token;
+                    }
+
+                    if (StringUtil.IsLineBreak(decodedCh))
+                    {
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
+                        this.pos += size;
+                        continue;
+                    }
+
+                    this.scanInvalidCharacter();
+                    break;
+                }
             }
 
             return this.token;
@@ -1266,21 +1269,21 @@ public partial class Scanner
         switch (true)
         {
             case var case2 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-expect-error"):
-                {
-                    kind = global::TypeScript.Scanner.CommentDirectiveKind.ExpectError;
-                    break;
-                }
+            {
+                kind = global::TypeScript.Scanner.CommentDirectiveKind.ExpectError;
+                break;
+            }
 
             case var case1002 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-ignore"):
-                {
-                    kind = global::TypeScript.Scanner.CommentDirectiveKind.Ignore;
-                    break;
-                }
+            {
+                kind = global::TypeScript.Scanner.CommentDirectiveKind.Ignore;
+                break;
+            }
 
             default:
-                {
-                    return;
-                }
+            {
+                return;
+            }
         }
 
         this.commentDirectives.Add(new CommentDirective(new TextRange(start, end), kind));
@@ -1390,52 +1393,52 @@ public partial class Scanner
                 switch (true)
                 {
                     case var case3 when StringUtil.IsLineBreak(ch):
-                        {
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
-                            goto loopEnd;
-                        }
+                    {
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
+                        goto loopEnd;
+                    }
 
                     case var case1003 when inEscape:
-                        {
-                            inEscape = false;
-                            break;
-                        }
+                    {
+                        inEscape = false;
+                        break;
+                    }
 
                     case var case2003 when (ch == '/' && !inCharacterClass):
-                        {
-                            goto loopEnd;
-                        }
+                    {
+                        goto loopEnd;
+                    }
 
                     case var case3003 when (ch == '['):
-                        {
-                            inCharacterClass = true;
-                            break;
-                        }
+                    {
+                        inCharacterClass = true;
+                        break;
+                    }
 
                     case var case4003 when (ch == '\\'):
-                        {
-                            inEscape = true;
-                            break;
-                        }
+                    {
+                        inEscape = true;
+                        break;
+                    }
 
                     case var case5003 when (ch == ']'):
-                        {
-                            inCharacterClass = false;
-                            break;
-                        }
+                    {
+                        inCharacterClass = false;
+                        break;
+                    }
 
                     case var case6003 when (!inCharacterClass && ch == '(' && p + 1 < this.end && this.text[p + 1] == '?' && p + 2 < this.end && this.text[p + 2] == '<' && (p + 3 >= this.end || this.text[p + 3] != '=' && this.text[p + 3] != '!')):
-                        {
-                            namedCaptureGroups = true;
-                            break;
-                        }
+                    {
+                        namedCaptureGroups = true;
+                        break;
+                    }
                 }
 
                 p++;
             }
 
-        loopEnd:
-            ;
+            loopEnd:
+                ;
             var endOfRegExpBody = p;
             if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.Unterminated) != 0)
             {
@@ -1519,7 +1522,7 @@ public partial class Scanner
 
                 while (p > startOfRegExpBody)
                 {
-                    var (ch, size) = Utf8.DecodeLastRuneInString(this.text.AsSpan(0, p - 0));
+                    var(ch, size) = Utf8.DecodeLastRuneInString(this.text.AsSpan(0, p - 0));
                     if (StringUtil.IsWhiteSpaceLike(ch) || ch == ';')
                     {
                         p -= size;
@@ -1538,7 +1541,7 @@ public partial class Scanner
                 regularExpressionFlags regExpFlags = default;
                 while (p < this.end)
                 {
-                    var (ch, size) = Utf8.DecodeRuneInString(this.text.AsSpan(p));
+                    var(ch, size) = Utf8.DecodeRuneInString(this.text.AsSpan(p));
                     if (ch == Utf8.RuneError || !IsIdentifierPart(ch))
                     {
                         break;
@@ -1657,100 +1660,100 @@ public partial class Scanner
         switch (true)
         {
             case var case4 when (ch < 0):
-                {
-                    this.token = Kind.EndOfFile;
-                    break;
-                }
+            {
+                this.token = Kind.EndOfFile;
+                break;
+            }
 
             case var case1004 when (ch == '<'):
+            {
+                if (this.charAt(1) == '/')
                 {
-                    if (this.charAt(1) == '/')
+                    this.pos += 2;
+                    this.token = Kind.LessThanSlashToken;
+                }
+                else
+                {
+                    this.pos++;
+                    this.token = Kind.LessThanToken;
+                }
+
+                break;
+            }
+
+            case var case2004 when (ch == '{'):
+            {
+                this.pos++;
+                this.token = Kind.OpenBraceToken;
+                break;
+            }
+
+            default:
+            {
+                var firstNonWhitespace = 0;
+                while (true)
+                {
+                    var(jsxCh, size) = this.charAndSize();
+                    if (size == 0 || jsxCh == '{')
                     {
-                        this.pos += 2;
-                        this.token = Kind.LessThanSlashToken;
+                        break;
+                    }
+
+                    if (jsxCh == '<')
+                    {
+                        if (isConflictMarkerTrivia(this.text, this.pos))
+                        {
+                            this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
+                            this.token = Kind.ConflictMarkerTrivia;
+                            return this.token;
+                        }
+
+                        break;
+                    }
+
+                    if (jsxCh == '>')
+                    {
+                        this.errorAt(Diagnostics.Unexpected_token_Did_you_mean_or_gt, this.pos, 1);
                     }
                     else
                     {
-                        this.pos++;
-                        this.token = Kind.LessThanToken;
+                        if (jsxCh == '}')
+                        {
+                            this.errorAt(Diagnostics.Unexpected_token_Did_you_mean_or_rbrace, this.pos, 1);
+                        }
                     }
 
-                    break;
-                }
-
-            case var case2004 when (ch == '{'):
-                {
-                    this.pos++;
-                    this.token = Kind.OpenBraceToken;
-                    break;
-                }
-
-            default:
-                {
-                    var firstNonWhitespace = 0;
-                    while (true)
+                    if (StringUtil.IsLineBreak(jsxCh) && firstNonWhitespace == 0)
                     {
-                        var (jsxCh, size) = this.charAndSize();
-                        if (size == 0 || jsxCh == '{')
+                        firstNonWhitespace = -1;
+                    }
+                    else
+                    {
+                        if (!allowMultilineJsxText && StringUtil.IsLineBreak(jsxCh) && firstNonWhitespace > 0)
                         {
                             break;
                         }
-
-                        if (jsxCh == '<')
-                        {
-                            if (isConflictMarkerTrivia(this.text, this.pos))
-                            {
-                                this.pos = scanConflictMarkerTrivia(this.text, this.pos, this.errorAt);
-                                this.token = Kind.ConflictMarkerTrivia;
-                                return this.token;
-                            }
-
-                            break;
-                        }
-
-                        if (jsxCh == '>')
-                        {
-                            this.errorAt(Diagnostics.Unexpected_token_Did_you_mean_or_gt, this.pos, 1);
-                        }
                         else
                         {
-                            if (jsxCh == '}')
+                            if (!StringUtil.IsWhiteSpaceLike(jsxCh))
                             {
-                                this.errorAt(Diagnostics.Unexpected_token_Did_you_mean_or_rbrace, this.pos, 1);
+                                firstNonWhitespace = this.pos;
                             }
                         }
-
-                        if (StringUtil.IsLineBreak(jsxCh) && firstNonWhitespace == 0)
-                        {
-                            firstNonWhitespace = -1;
-                        }
-                        else
-                        {
-                            if (!allowMultilineJsxText && StringUtil.IsLineBreak(jsxCh) && firstNonWhitespace > 0)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                if (!StringUtil.IsWhiteSpaceLike(jsxCh))
-                                {
-                                    firstNonWhitespace = this.pos;
-                                }
-                            }
-                        }
-
-                        this.pos += size;
                     }
 
-                    this.tokenValue = this.text.Substring(this.fullStartPos, this.pos - this.fullStartPos);
-                    this.token = Kind.JsxText;
-                    if (firstNonWhitespace == -1)
-                    {
-                        this.token = Kind.JsxTextAllWhiteSpaces;
-                    }
-
-                    break;
+                    this.pos += size;
                 }
+
+                this.tokenValue = this.text.Substring(this.fullStartPos, this.pos - this.fullStartPos);
+                this.token = Kind.JsxText;
+                if (firstNonWhitespace == -1)
+                {
+                    this.token = Kind.JsxTextAllWhiteSpaces;
+                }
+
+                break;
+            }
         }
 
         return this.token;
@@ -1772,7 +1775,7 @@ public partial class Scanner
     {
         this.fullStartPos = this.pos;
         {
-            var (ch, size) = this.charAndSize();
+            var(ch, size) = this.charAndSize();
             for (; size > 0 && StringUtil.IsWhiteSpaceLike(ch); (ch, size) = this.charAndSize())
             {
                 this.pos += size;
@@ -1784,16 +1787,16 @@ public partial class Scanner
         {
             case '"':
             case '\'':
-                {
-                    this.tokenValue = this.scanString(true);
-                    this.token = Kind.StringLiteral;
-                    return this.token;
-                }
+            {
+                this.tokenValue = this.scanString(true);
+                this.token = Kind.StringLiteral;
+                return this.token;
+            }
 
             default:
-                {
-                    return this.Scan();
-                }
+            {
+                return this.Scan();
+            }
         }
     }
 
@@ -1817,7 +1820,7 @@ public partial class Scanner
 
         this.tokenStart = this.pos;
         {
-            var (ch, size) = this.charAndSize();
+            var(ch, size) = this.charAndSize();
             for (; this.pos < this.text.Length && !StringUtil.IsLineBreak(ch) && ch != '`'; (ch, size) = this.charAndSize())
             {
                 if (!inBackticks)
@@ -1830,10 +1833,10 @@ public partial class Scanner
                     {
                         if (ch == '@' && this.pos >= 0)
                         {
-                            var (previous, _) = Utf8.DecodeLastRuneInString(this.text.AsSpan(0, this.pos - 0));
+                            var(previous, _) = Utf8.DecodeLastRuneInString(this.text.AsSpan(0, this.pos - 0));
                             if (StringUtil.IsWhiteSpaceSingleLine(previous))
                             {
-                                var (next, _) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos + size));
+                                var(next, _) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos + size));
                                 if (IsIdentifierStart(next))
                                 {
                                     break;
@@ -1867,7 +1870,7 @@ public partial class Scanner
             return true;
         }
 
-        var (ch, _) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos));
+        var(ch, _) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos));
         return IsIdentifierStart(ch) || StringUtil.IsWhiteSpaceSingleLine(ch) || StringUtil.IsLineBreak(ch);
     }
 
@@ -1882,7 +1885,7 @@ public partial class Scanner
         }
 
         this.tokenStart = this.pos;
-        var (ch, size) = this.charAndSize();
+        var(ch, size) = this.charAndSize();
         this.pos += size;
         switch (ch)
         {
@@ -1890,125 +1893,125 @@ public partial class Scanner
             case '\v':
             case '\f':
             case ' ':
+            {
                 {
+                    var(ch2, size2) = this.charAndSize();
+                    for (; size2 > 0 && StringUtil.IsWhiteSpaceSingleLine(ch2); (ch2, size2) = this.charAndSize())
                     {
-                        var (ch2, size2) = this.charAndSize();
-                        for (; size2 > 0 && StringUtil.IsWhiteSpaceSingleLine(ch2); (ch2, size2) = this.charAndSize())
-                        {
-                            this.pos += size2;
-                        }
+                        this.pos += size2;
                     }
-
-                    this.token = Kind.WhitespaceTrivia;
-                    return this.token;
                 }
+
+                this.token = Kind.WhitespaceTrivia;
+                return this.token;
+            }
 
             case '@':
-                {
-                    this.token = Kind.AtToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.AtToken;
+                return this.token;
+            }
 
             case '\r':
+            {
+                if (this.charCode() == '\n')
                 {
-                    if (this.charCode() == '\n')
-                    {
-                        this.pos++;
-                    }
-
-                    goto case '\n';
+                    this.pos++;
                 }
+
+                goto case '\n';
+            }
 
             case '\n':
-                {
-                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
-                    this.token = Kind.NewLineTrivia;
-                    return this.token;
-                }
+            {
+                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingLineBreak;
+                this.token = Kind.NewLineTrivia;
+                return this.token;
+            }
 
             case '*':
-                {
-                    this.token = Kind.AsteriskToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.AsteriskToken;
+                return this.token;
+            }
 
             case '{':
-                {
-                    this.token = Kind.OpenBraceToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.OpenBraceToken;
+                return this.token;
+            }
 
             case '}':
-                {
-                    this.token = Kind.CloseBraceToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.CloseBraceToken;
+                return this.token;
+            }
 
             case '[':
-                {
-                    this.token = Kind.OpenBracketToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.OpenBracketToken;
+                return this.token;
+            }
 
             case ']':
-                {
-                    this.token = Kind.CloseBracketToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.CloseBracketToken;
+                return this.token;
+            }
 
             case '(':
-                {
-                    this.token = Kind.OpenParenToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.OpenParenToken;
+                return this.token;
+            }
 
             case ')':
-                {
-                    this.token = Kind.CloseParenToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.CloseParenToken;
+                return this.token;
+            }
 
             case '<':
-                {
-                    this.token = Kind.LessThanToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.LessThanToken;
+                return this.token;
+            }
 
             case '>':
-                {
-                    this.token = Kind.GreaterThanToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.GreaterThanToken;
+                return this.token;
+            }
 
             case '=':
-                {
-                    this.token = Kind.EqualsToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.EqualsToken;
+                return this.token;
+            }
 
             case ',':
-                {
-                    this.token = Kind.CommaToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.CommaToken;
+                return this.token;
+            }
 
             case '.':
-                {
-                    this.token = Kind.DotToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.DotToken;
+                return this.token;
+            }
 
             case '`':
-                {
-                    this.token = Kind.BacktickToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.BacktickToken;
+                return this.token;
+            }
 
             case '#':
-                {
-                    this.token = Kind.HashToken;
-                    return this.token;
-                }
+            {
+                this.token = Kind.HashToken;
+                return this.token;
+            }
         }
 
         this.pos = this.tokenStart;
@@ -2078,7 +2081,7 @@ public partial class Scanner
         if (ch == '\\')
         {
             {
-                var (escaped, ok) = this.scanIdentifierEscape(IsIdentifierStart, variant == identifierVariant.RegExpGroupName);
+                var(escaped, ok) = this.scanIdentifierEscape(IsIdentifierStart, variant == identifierVariant.RegExpGroupName);
                 if (ok)
                 {
                     this.tokenValue = this.text.Substring(start, identifierStart - start) + GoString.FromRune(escaped) + this.scanIdentifierParts(variant);
@@ -2102,7 +2105,7 @@ public partial class Scanner
 
         while (true)
         {
-            var (ch, size) = this.charAndSize();
+            var(ch, size) = this.charAndSize();
             if (IsIdentifierPartEx(ch, languageVariant))
             {
                 this.pos += size;
@@ -2113,7 +2116,7 @@ public partial class Scanner
             {
                 var escapeStart = this.pos;
                 {
-                    var (escaped, ok) = this.scanIdentifierEscape((ch) =>
+                    var(escaped, ok) = this.scanIdentifierEscape((ch) =>
                     {
                         return IsIdentifierPartEx(ch, languageVariant);
                     }, variant == identifierVariant.RegExpGroupName);
@@ -2150,7 +2153,7 @@ public partial class Scanner
             if (this.charAt(2) != '{')
             {
                 {
-                    var (codePoint, ok) = this.scanLowSurrogateEscape(escaped);
+                    var(codePoint, ok) = this.scanLowSurrogateEscape(escaped);
                     if (ok && isValid(codePoint))
                     {
                         return (codePoint, true);
@@ -2316,183 +2319,145 @@ public partial class Scanner
         switch (ch)
         {
             case '0':
+            {
+                if (!StringUtil.IsDigit(this.charCode()))
                 {
-                    if (!StringUtil.IsDigit(this.charCode()))
-                    {
-                        return "\x00";
-                    }
-
-                    goto case '1';
+                    return "\x00";
                 }
+
+                goto case '1';
+            }
 
             case '1':
             case '2':
             case '3':
+            {
+                if (StringUtil.IsOctalDigit(this.charCode()))
                 {
-                    if (StringUtil.IsOctalDigit(this.charCode()))
-                    {
-                        this.pos++;
-                    }
-
-                    goto case '4';
+                    this.pos++;
                 }
+
+                goto case '4';
+            }
 
             case '4':
             case '5':
             case '6':
             case '7':
+            {
+                if (StringUtil.IsOctalDigit(this.charCode()))
                 {
-                    if (StringUtil.IsOctalDigit(this.charCode()))
-                    {
-                        this.pos++;
-                    }
-
-                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
-                    if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
-                    {
-                        var (code, _) = Strconv.ParseInt(this.text.Substring(start + 1, this.pos - (start + 1)), 8, 32);
-                        if ((flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AtomEscape) == 0 && ch != '0')
-                        {
-                            this.errorAt(Diagnostics.Octal_escape_sequences_and_backreferences_are_not_allowed_in_a_character_class_If_this_was_intended_as_an_escape_sequence_use_the_syntax_0_instead, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
-                        }
-                        else
-                        {
-                            this.errorAt(Diagnostics.Octal_escape_sequences_are_not_allowed_Use_the_syntax_0, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
-                        }
-
-                        return GoString.FromRune((int)code);
-                    }
-
-                    return this.text.Substring(start, this.pos - start);
+                    this.pos++;
                 }
+
+                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
+                if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
+                {
+                    var(code, _) = Strconv.ParseInt(this.text.Substring(start + 1, this.pos - (start + 1)), 8, 32);
+                    if ((flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AtomEscape) == 0 && ch != '0')
+                    {
+                        this.errorAt(Diagnostics.Octal_escape_sequences_and_backreferences_are_not_allowed_in_a_character_class_If_this_was_intended_as_an_escape_sequence_use_the_syntax_0_instead, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
+                    }
+                    else
+                    {
+                        this.errorAt(Diagnostics.Octal_escape_sequences_are_not_allowed_Use_the_syntax_0, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
+                    }
+
+                    return GoString.FromRune((int)code);
+                }
+
+                return this.text.Substring(start, this.pos - start);
+            }
 
             case '8':
             case '9':
+            {
+                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
+                if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
                 {
-                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
-                    if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
+                    if ((flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AtomEscape) == 0)
                     {
-                        if ((flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AtomEscape) == 0)
-                        {
-                            this.errorAt(Diagnostics.Decimal_escape_sequences_and_backreferences_are_not_allowed_in_a_character_class, start, this.pos - start);
-                        }
-                        else
-                        {
-                            this.errorAt(Diagnostics.Escape_sequence_0_is_not_allowed, start, this.pos - start, this.text.Substring(start, this.pos - start));
-                        }
-
-                        return GoString.FromRune(ch);
+                        this.errorAt(Diagnostics.Decimal_escape_sequences_and_backreferences_are_not_allowed_in_a_character_class, start, this.pos - start);
+                    }
+                    else
+                    {
+                        this.errorAt(Diagnostics.Escape_sequence_0_is_not_allowed, start, this.pos - start, this.text.Substring(start, this.pos - start));
                     }
 
-                    return this.text.Substring(start, this.pos - start);
+                    return GoString.FromRune(ch);
                 }
+
+                return this.text.Substring(start, this.pos - start);
+            }
 
             case 'b':
-                {
-                    return "\b";
-                }
+            {
+                return "\b";
+            }
 
             case 't':
-                {
-                    return "\t";
-                }
+            {
+                return "\t";
+            }
 
             case 'n':
-                {
-                    return "\n";
-                }
+            {
+                return "\n";
+            }
 
             case 'v':
-                {
-                    return "\v";
-                }
+            {
+                return "\v";
+            }
 
             case 'f':
-                {
-                    return "\f";
-                }
+            {
+                return "\f";
+            }
 
             case 'r':
-                {
-                    return "\r";
-                }
+            {
+                return "\r";
+            }
 
             case '\'':
-                {
-                    return "'";
-                }
+            {
+                return "'";
+            }
 
             case '"':
-                {
-                    return "\"";
-                }
+            {
+                return "\"";
+            }
 
             case 'u':
+            {
+                var extended = this.charCode() == '{';
+                this.pos -= 2;
+                var codePoint = this.scanUnicodeEscape((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0);
+                if (extended)
                 {
-                    var extended = this.charCode() == '{';
-                    this.pos -= 2;
-                    var codePoint = this.scanUnicodeEscape((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0);
-                    if (extended)
+                    if ((flags & EscapeSequenceScanningFlags.AllowExtendedUnicodeEscape) == 0)
                     {
-                        if ((flags & EscapeSequenceScanningFlags.AllowExtendedUnicodeEscape) == 0)
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
+                        if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
                         {
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
-                            if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
-                            {
-                                this.errorAt(Diagnostics.Unicode_escape_sequences_are_only_available_when_the_Unicode_u_flag_or_the_Unicode_Sets_v_flag_is_set, start, this.pos - start);
-                            }
+                            this.errorAt(Diagnostics.Unicode_escape_sequences_are_only_available_when_the_Unicode_u_flag_or_the_Unicode_Sets_v_flag_is_set, start, this.pos - start);
                         }
-
-                        if (codePoint < 0)
-                        {
-                            return this.text.Substring(start, this.pos - start);
-                        }
-
-                        if ((flags & EscapeSequenceScanningFlags.RegularExpression) == 0 && StringUtil.IsHighSurrogate(codePoint))
-                        {
-                            {
-                                var (combined, ok) = this.scanLowSurrogateEscape(codePoint);
-                                if (ok)
-                                {
-                                    return GoString.FromRune(combined);
-                                }
-                            }
-                        }
-
-                        return StringUtil.EncodeJSStringRune(codePoint);
                     }
 
                     if (codePoint < 0)
                     {
                         return this.text.Substring(start, this.pos - start);
                     }
-                    else
-                    {
-                        if (StringUtil.IsHighSurrogate(codePoint))
-                        {
-                            if ((flags & EscapeSequenceScanningFlags.RegularExpression) == 0)
-                            {
-                                {
-                                    var (combined, ok) = this.scanLowSurrogateEscape(codePoint);
-                                    if (ok)
-                                    {
-                                        return GoString.FromRune(combined);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if ((flags & EscapeSequenceScanningFlags.AnyUnicodeMode) != 0 && this.charCode() == '\\' && this.charAt(1) == 'u' && this.charAt(2) != '{')
-                                {
-                                    var savedPos = this.pos;
-                                    var nextCodePoint = this.scanUnicodeEscape((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0);
-                                    if (StringUtil.IsLowSurrogate(nextCodePoint))
-                                    {
-                                        return GoString.FromRune(StringUtil.SurrogatePairToCodePoint(codePoint, nextCodePoint));
-                                    }
 
-                                    this.pos = savedPos;
-                                }
+                    if ((flags & EscapeSequenceScanningFlags.RegularExpression) == 0 && StringUtil.IsHighSurrogate(codePoint))
+                    {
+                        {
+                            var(combined, ok) = this.scanLowSurrogateEscape(codePoint);
+                            if (ok)
+                            {
+                                return GoString.FromRune(combined);
                             }
                         }
                     }
@@ -2500,64 +2465,102 @@ public partial class Scanner
                     return StringUtil.EncodeJSStringRune(codePoint);
                 }
 
-            case 'x':
+                if (codePoint < 0)
                 {
-                    for (; this.pos < start + 4; this.pos++)
+                    return this.text.Substring(start, this.pos - start);
+                }
+                else
+                {
+                    if (StringUtil.IsHighSurrogate(codePoint))
                     {
-                        if (!StringUtil.IsHexDigit(this.charCode()))
+                        if ((flags & EscapeSequenceScanningFlags.RegularExpression) == 0)
                         {
-                            this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
-                            if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
                             {
-                                this.error(Diagnostics.Hexadecimal_digit_expected);
+                                var(combined, ok) = this.scanLowSurrogateEscape(codePoint);
+                                if (ok)
+                                {
+                                    return GoString.FromRune(combined);
+                                }
                             }
+                        }
+                        else
+                        {
+                            if ((flags & EscapeSequenceScanningFlags.AnyUnicodeMode) != 0 && this.charCode() == '\\' && this.charAt(1) == 'u' && this.charAt(2) != '{')
+                            {
+                                var savedPos = this.pos;
+                                var nextCodePoint = this.scanUnicodeEscape((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0);
+                                if (StringUtil.IsLowSurrogate(nextCodePoint))
+                                {
+                                    return GoString.FromRune(StringUtil.SurrogatePairToCodePoint(codePoint, nextCodePoint));
+                                }
 
-                            return this.text.Substring(start, this.pos - start);
+                                this.pos = savedPos;
+                            }
                         }
                     }
-
-                    this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.HexEscape;
-                    var (escapedValue, _) = Strconv.ParseInt(this.text.Substring(start + 2, this.pos - (start + 2)), 16, 32);
-                    return GoString.FromRune((int)escapedValue);
                 }
+
+                return StringUtil.EncodeJSStringRune(codePoint);
+            }
+
+            case 'x':
+            {
+                for (; this.pos < start + 4; this.pos++)
+                {
+                    if (!StringUtil.IsHexDigit(this.charCode()))
+                    {
+                        this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
+                        if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
+                        {
+                            this.error(Diagnostics.Hexadecimal_digit_expected);
+                        }
+
+                        return this.text.Substring(start, this.pos - start);
+                    }
+                }
+
+                this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.HexEscape;
+                var(escapedValue, _) = Strconv.ParseInt(this.text.Substring(start + 2, this.pos - (start + 2)), 16, 32);
+                return GoString.FromRune((int)escapedValue);
+            }
 
             case '\r':
+            {
+                if (this.charCode() == '\n')
                 {
-                    if (this.charCode() == '\n')
-                    {
-                        this.pos++;
-                    }
-
-                    goto case '\n';
+                    this.pos++;
                 }
 
+                goto case '\n';
+            }
+
             case '\n':
+            {
+                return "";
+            }
+
+            default:
+            {
+                if (ch >= Utf8.RuneSelf)
+                {
+                    this.pos--;
+                    int size = default;
+                    (ch, size) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos));
+                    this.pos += size;
+                }
+
+                if (ch == '\u2028' || ch == '\u2029')
                 {
                     return "";
                 }
 
-            default:
+                if ((flags & EscapeSequenceScanningFlags.AnyUnicodeMode) != 0 || (flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AnnexB) == 0 && IsIdentifierPart(ch))
                 {
-                    if (ch >= Utf8.RuneSelf)
-                    {
-                        this.pos--;
-                        int size = default;
-                        (ch, size) = Utf8.DecodeRuneInString(this.text.AsSpan(this.pos));
-                        this.pos += size;
-                    }
-
-                    if (ch == '\u2028' || ch == '\u2029')
-                    {
-                        return "";
-                    }
-
-                    if ((flags & EscapeSequenceScanningFlags.AnyUnicodeMode) != 0 || (flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AnnexB) == 0 && IsIdentifierPart(ch))
-                    {
-                        this.errorAt(Diagnostics.This_character_cannot_be_escaped_in_a_regular_expression, start, this.pos - start);
-                    }
-
-                    return GoString.FromRune(ch);
+                    this.errorAt(Diagnostics.This_character_cannot_be_escaped_in_a_regular_expression, start, this.pos - start);
                 }
+
+                return GoString.FromRune(ch);
+            }
         }
     }
 
@@ -2590,7 +2593,7 @@ public partial class Scanner
             return -1;
         }
 
-        var (hexValue, _) = Strconv.ParseInt(hexDigits, 16, 32);
+        var(hexValue, _) = Strconv.ParseInt(hexDigits, 16, 32);
         if (extended)
         {
             var isInvalidExtendedEscape = false;
@@ -2702,7 +2705,7 @@ public partial class Scanner
             }
             else
             {
-                var (digits, isOctal) = this.scanDigits();
+                var(digits, isOctal) = this.scanDigits();
                 if (digits == "")
                 {
                     fixedPart = "0";
@@ -2716,7 +2719,7 @@ public partial class Scanner
                     }
                     else
                     {
-                        var (val, _) = Strconv.ParseInt(digits, 8, 64);
+                        var(val, _) = Strconv.ParseInt(digits, 8, 64);
                         this.tokenValue = Strconv.FormatInt(val, 10);
                         this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Octal;
                         var withMinus = this.token == Kind.MinusToken;
@@ -2806,7 +2809,7 @@ public partial class Scanner
             result = Kind.NumericLiteral;
         }
 
-        var (ch, _) = this.charAndSize();
+        var(ch, _) = this.charAndSize();
         if (IsIdentifierStart(ch))
         {
             var idStart = this.pos;
@@ -3094,7 +3097,7 @@ public partial class Scanner
 
     private void scanInvalidCharacter()
     {
-        var (_, size) = this.charAndSize();
+        var(_, size) = this.charAndSize();
         this.errorAt(Diagnostics.Invalid_character, this.pos, size);
         this.pos += size;
         this.token = Kind.Unknown;
@@ -3138,19 +3141,19 @@ public partial class Scanner
                 case '|':
                 case '=':
                 case '>':
-                    {
-                        return true;
-                    }
+                {
+                    return true;
+                }
 
                 case '#':
-                    {
-                        return pos == 0;
-                    }
+                {
+                    return pos == 0;
+                }
 
                 default:
-                    {
-                        return ch > maxAsciiCharacter;
-                    }
+                {
+                    return ch > maxAsciiCharacter;
+                }
             }
         }
     }
@@ -3183,139 +3186,139 @@ public partial class Scanner
                 return pos;
             }
 
-            var (ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+            var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
             switch (ch)
             {
                 case '\r':
-                    {
-                        if (pos + 1 < textLen && text[pos + 1] == '\n')
-                        {
-                            pos++;
-                        }
-
-                        goto case '\n';
-                    }
-
-                case '\n':
+                {
+                    if (pos + 1 < textLen && text[pos + 1] == '\n')
                     {
                         pos++;
-                        if (options.StopAfterLineBreak)
-                        {
-                            return pos;
-                        }
-
-                        canConsumeStar = options.InJSDoc;
-                        continue;
                     }
+
+                    goto case '\n';
+                }
+
+                case '\n':
+                {
+                    pos++;
+                    if (options.StopAfterLineBreak)
+                    {
+                        return pos;
+                    }
+
+                    canConsumeStar = options.InJSDoc;
+                    continue;
+                }
 
                 case '\t':
                 case '\v':
                 case '\f':
                 case ' ':
-                    {
-                        pos++;
-                        continue;
-                    }
+                {
+                    pos++;
+                    continue;
+                }
 
                 case '/':
+                {
+                    if (options.StopAtComments)
                     {
-                        if (options.StopAtComments)
-                        {
-                            break;
-                        }
-
-                        if (pos + 1 < textLen)
-                        {
-                            if (text[pos + 1] == '/')
-                            {
-                                pos += 2;
-                                while (pos < textLen)
-                                {
-                                    var (commentCh, commentSize) = Utf8.DecodeRuneInString(text.AsSpan(pos));
-                                    if (StringUtil.IsLineBreak(commentCh))
-                                    {
-                                        break;
-                                    }
-
-                                    pos += commentSize;
-                                }
-
-                                canConsumeStar = false;
-                                continue;
-                            }
-
-                            if (text[pos + 1] == '*')
-                            {
-                                pos += 2;
-                                while (pos < textLen)
-                                {
-                                    if (text[pos] == '*' && pos + 1 < textLen && text[pos + 1] == '/')
-                                    {
-                                        pos += 2;
-                                        break;
-                                    }
-
-                                    var (_, commentSize) = Utf8.DecodeRuneInString(text.AsSpan(pos));
-                                    pos += commentSize;
-                                }
-
-                                canConsumeStar = false;
-                                continue;
-                            }
-                        }
-
                         break;
                     }
+
+                    if (pos + 1 < textLen)
+                    {
+                        if (text[pos + 1] == '/')
+                        {
+                            pos += 2;
+                            while (pos < textLen)
+                            {
+                                var(commentCh, commentSize) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                                if (StringUtil.IsLineBreak(commentCh))
+                                {
+                                    break;
+                                }
+
+                                pos += commentSize;
+                            }
+
+                            canConsumeStar = false;
+                            continue;
+                        }
+
+                        if (text[pos + 1] == '*')
+                        {
+                            pos += 2;
+                            while (pos < textLen)
+                            {
+                                if (text[pos] == '*' && pos + 1 < textLen && text[pos + 1] == '/')
+                                {
+                                    pos += 2;
+                                    break;
+                                }
+
+                                var(_, commentSize) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                                pos += commentSize;
+                            }
+
+                            canConsumeStar = false;
+                            continue;
+                        }
+                    }
+
+                    break;
+                }
 
                 case '<':
                 case '|':
                 case '=':
                 case '>':
+                {
+                    if (isConflictMarkerTrivia(text, pos))
                     {
-                        if (isConflictMarkerTrivia(text, pos))
-                        {
-                            pos = scanConflictMarkerTrivia(text, pos, null);
-                            canConsumeStar = false;
-                            continue;
-                        }
-
-                        break;
+                        pos = scanConflictMarkerTrivia(text, pos, null);
+                        canConsumeStar = false;
+                        continue;
                     }
+
+                    break;
+                }
 
                 case '#':
+                {
+                    if (pos == 0 && isShebangTrivia(text, pos))
                     {
-                        if (pos == 0 && isShebangTrivia(text, pos))
-                        {
-                            pos = scanShebangTrivia(text, pos);
-                            canConsumeStar = false;
-                            continue;
-                        }
-
-                        break;
+                        pos = scanShebangTrivia(text, pos);
+                        canConsumeStar = false;
+                        continue;
                     }
+
+                    break;
+                }
 
                 case '*':
+                {
+                    if (canConsumeStar)
                     {
-                        if (canConsumeStar)
-                        {
-                            pos++;
-                            canConsumeStar = false;
-                            continue;
-                        }
-
-                        break;
+                        pos++;
+                        canConsumeStar = false;
+                        continue;
                     }
+
+                    break;
+                }
 
                 default:
+                {
+                    if (ch > (int)maxAsciiCharacter && StringUtil.IsWhiteSpaceLike(ch))
                     {
-                        if (ch > (int)maxAsciiCharacter && StringUtil.IsWhiteSpaceLike(ch))
-                        {
-                            pos += size;
-                            continue;
-                        }
-
-                        break;
+                        pos += size;
+                        continue;
                     }
+
+                    break;
+                }
             }
 
             return pos;
@@ -3337,7 +3340,7 @@ public partial class Scanner
         var atLineStart = pos == 0 || StringUtil.IsLineBreak((int)text[pos - 1]);
         if (!atLineStart && pos >= 2)
         {
-            var (prev, _) = Utf8.DecodeLastRuneInString(text.AsSpan(0, pos - 2 - 0));
+            var(prev, _) = Utf8.DecodeLastRuneInString(text.AsSpan(0, pos - 2 - 0));
             atLineStart = StringUtil.IsLineBreak(prev);
         }
 
@@ -3366,7 +3369,7 @@ public partial class Scanner
             reportError(Diagnostics.Merge_conflict_marker_encountered, pos, mergeConflictMarkerLength);
         }
 
-        var (ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+        var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
         var length = text.Length;
         if (ch == '<' || ch == '>')
         {
@@ -3418,7 +3421,7 @@ public partial class Scanner
         pos += 2;
         while (pos < text.Length)
         {
-            var (ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+            var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
             if (StringUtil.IsLineBreak(ch))
             {
                 break;
@@ -3527,7 +3530,7 @@ public partial class Scanner
                     break;
                 }
 
-                var (r, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                var(r, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
                 utf16Count += (int)Utf16.RuneLen(r);
                 pos += size;
             }
@@ -3586,7 +3589,7 @@ public partial class Scanner
 
         while (pos >= 0 && pos < text.Length)
         {
-            var (ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+            var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
             switch (ch)
             {
                 case '\r':
@@ -3608,50 +3611,50 @@ public partial class Scanner
                     pos++;
                     continue;
                 case '/':
+                {
+                    int nextChar = pos + 1 < text.Length ? text[pos + 1] : 0;
+                    bool hasTrailingNewLine = false;
+                    if (nextChar == '/' || nextChar == '*')
                     {
-                        int nextChar = pos + 1 < text.Length ? text[pos + 1] : 0;
-                        bool hasTrailingNewLine = false;
-                        if (nextChar == '/' || nextChar == '*')
+                        Kind kind = nextChar == '/' ? Kind.SingleLineCommentTrivia : Kind.MultiLineCommentTrivia;
+                        int startPos = pos;
+                        pos += 2;
+                        if (nextChar == '/')
                         {
-                            Kind kind = nextChar == '/' ? Kind.SingleLineCommentTrivia : Kind.MultiLineCommentTrivia;
-                            int startPos = pos;
-                            pos += 2;
-                            if (nextChar == '/')
+                            while (pos < text.Length)
                             {
-                                while (pos < text.Length)
+                                var(c, s) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                                if (StringUtil.IsLineBreak(c))
                                 {
-                                    var (c, s) = Utf8.DecodeRuneInString(text.AsSpan(pos));
-                                    if (StringUtil.IsLineBreak(c))
-                                    {
-                                        hasTrailingNewLine = true;
-                                        break;
-                                    }
-
-                                    pos += s;
+                                    hasTrailingNewLine = true;
+                                    break;
                                 }
-                            }
-                            else
-                            {
-                                int i = GoStrings.Index(text.Substring(pos), "*/");
-                                pos = i >= 0 ? pos + i + 2 : text.Length;
-                            }
 
-                            if (collecting)
-                            {
-                                if (hasPendingCommentRange)
-                                    yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
-                                pendingPos = startPos;
-                                pendingEnd = pos;
-                                pendingKind = kind;
-                                pendingHasTrailingNewLine = hasTrailingNewLine;
-                                hasPendingCommentRange = true;
+                                pos += s;
                             }
-
-                            continue;
+                        }
+                        else
+                        {
+                            int i = GoStrings.Index(text.Substring(pos), "*/");
+                            pos = i >= 0 ? pos + i + 2 : text.Length;
                         }
 
-                        goto scanEnd;
+                        if (collecting)
+                        {
+                            if (hasPendingCommentRange)
+                                yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
+                            pendingPos = startPos;
+                            pendingEnd = pos;
+                            pendingKind = kind;
+                            pendingHasTrailingNewLine = hasTrailingNewLine;
+                            hasPendingCommentRange = true;
+                        }
+
+                        continue;
                     }
+
+                    goto scanEnd;
+                }
 
                 default:
                     if (ch > 127 && StringUtil.IsWhiteSpaceLike(ch))
@@ -3666,9 +3669,9 @@ public partial class Scanner
             }
         }
 
-    scanEnd:
-        if (hasPendingCommentRange)
-            yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
+        scanEnd:
+            if (hasPendingCommentRange)
+                yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
     }
 
     public Scanner()
@@ -3686,6 +3689,7 @@ public partial class Scanner
         languageVariant = default;
         scriptTarget = default;
         onError = null;
+        onErrorUsesByteStrings = false;
         skipTrivia = true;
         token = default;
         tokenValue = "";
@@ -3758,7 +3762,7 @@ public partial class Scanner
             return false;
         for (int i = 0; i < value.Length;)
         {
-            var (ch, size) = Utf8.DecodeRuneInString(value.Substring(i));
+            var(ch, size) = Utf8.DecodeRuneInString(value.Substring(i));
             if (i == 0 && !IsIdentifierStart(ch) || i != 0 && !IsIdentifierPart(ch))
                 return false;
             i += size;
@@ -3837,6 +3841,18 @@ public partial class Scanner
             ["`"] = Kind.BacktickToken,
         };
         return result;
+    }
+
+    // Port of tsc/internal/scanner/scanner.go GetTokenPosOfNode.
+    public static int GetTokenPosOfNode(Node node, SourceFile sourceFile, bool includeJSDoc)
+    {
+        if (Ast.NodeIsMissing(node))
+            return node.Pos();
+        if (Ast.IsJSDocNodeKind(node.Kind) || node.Kind == Kind.JsxText)
+            return skipTriviaEx(sourceFile.Text(), node.Pos(), new SkipTriviaOptions { StopAtComments = true });
+        if (includeJSDoc && GoRuntime.Len(node.JSDoc(sourceFile)) > 0)
+            return GetTokenPosOfNode(node.JSDoc(sourceFile)[0], sourceFile, false);
+        return skipTriviaEx(sourceFile.Text(), node.Pos(), new SkipTriviaOptions { InJSDoc = (node.Flags & NodeFlags.JSDoc) != 0 });
     }
 }
 

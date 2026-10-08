@@ -3,9 +3,13 @@
 To restart work, give the new session this instruction:
 
 > Read START-HERE.md in /home/greg/projects/typescript-dotnet and resume the
-> scanner feasibility study. Follow the original user prompt and subsequent
+> current bounded phase. Follow the original user prompt and subsequent
 > directions recorded here. Inspect existing work and the last verified
 > subsystem checkpoints before taking action; do not restart the port.
+
+The parser checkpoint is now accepted and stopped. If [STATE.md](./docs/STATE.md)
+still records no active work, report that checkpoint and wait for the next bounded
+mandate; this resume instruction does not authorize starting the full compiler.
 
 ## User mandate
 
@@ -44,6 +48,24 @@ Later user directions, in chronological order:
    not authorize profiling, experiments, or implementation changes on resumption.
    The user reiterated that actual deeper investigation should wait until later;
    retain brief hypotheses from existing evidence rather than extending analysis.
+8. The user directed committing progress and proceeding to **parser and required
+   syntax AST support**, with structural and syntax-diagnostic agreement on valid
+   and malformed input, Native AOT execution, and scanner regressions. Read the
+   exact [parser mandate](./docs/PARSER-PROMPT.md). The scanner checkpoint was
+   committed as `0a50e67`. This supersedes the initial scanner-only scope for the
+   current phase; binding, checking, module resolution and code generation remain
+   excluded.
+9. During parser work the user reconfirmed GPT-6.1 Sol delegation and close Go
+   source fidelity. They clarified that raw speed is not the concern: efficient
+   work should reduce repeated effort and token cost. **“Slow and steady wins the
+   race.”** Treat time estimates as observations, not deadlines that justify
+   shortcuts, extra agents, or weakened verification.
+10. After parser acceptance, the user asked for **basic performance tests against
+    Go and recorded findings, like the scanner comparison**. This authorizes a
+    separate benchmark harness and measurements on the accepted parser snapshot.
+    It does not authorize optimization, profiling or deeper performance diagnosis.
+    The [basic comparison](./docs/PARSER-PERFORMANCE.md) is complete; do not rerun
+    or extend it automatically on resumption.
 
 ## Recovery sequence
 
@@ -60,6 +82,8 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The scope remains scanner-only. A checkpoint can be accepted, incomplete, or
-blocked; never infer completion from source presence, an agent finishing, or a
-small set of passing tests. A later full compiler phase needs a new bounded mandate.
+The current scope is parser plus required syntax AST support. A checkpoint can
+be accepted, incomplete, or blocked; never infer completion from source presence,
+an agent finishing, or a small set of passing tests. A later full compiler phase
+needs a new bounded mandate. Follow STATE.md for the active phase instead of
+resuming completed scanner or performance work.

@@ -3,8 +3,7 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Port of tsc/internal/core/options_generated.go.
 namespace TypeScript.Scanner;
-
-// Scanner-only ScriptTarget slice.
+// ScriptTarget plus parser-required ModuleKind/NewLineKind enum slices.
 public enum ScriptTarget
 {
     None = 0,
@@ -25,4 +24,29 @@ public enum ScriptTarget
     JSON = 100,
     Latest = ESNext,
     LatestStandard = ES2026,
+}
+
+public enum ModuleKind
+{
+    None = 0,
+    CommonJS = 1,
+    AMD = 2,
+    UMD = 3,
+    System = 4,
+    ES2015 = 5,
+    ES2020 = 6,
+    ES2022 = 7,
+    ESNext = 99,
+    Node16 = 100,
+    Node18 = 101,
+    Node20 = 102,
+    NodeNext = 199,
+    Preserve = 200
+}
+
+internal enum NewLineKind
+{
+    None = 0,
+    CRLF = 1,
+    LF = 2
 }

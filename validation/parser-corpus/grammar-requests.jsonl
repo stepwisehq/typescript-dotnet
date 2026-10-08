@@ -1,0 +1,88 @@
+{"name":"empty","text":""}
+{"name":"variables","text":"let x: number = 1, y = 2; const {a:b,...rest} = obj; let [first,,...tail] = arr;"}
+{"name":"control","text":"if (x) y(); else z(); for(let i=0;i<3;i++) x+=i; for(const k in o){} for(const v of xs){} while(x--){} do{}while(false); switch(x){case 1:break;default:throw x;} try{}catch(e){}finally{}"}
+{"name":"functions","text":"async function* f<T extends string>(x?:T,...rest: T[]): Promise<T> {yield await x; return x!;} const g = <T,>(x:T)=>x; function overload(x:string):void;"}
+{"name":"classes","text":"@decorator export abstract class C<T> extends Base<T> implements I<T> { #p=1; static {this.x=1;} constructor(public readonly x:T){} get value():T{return this.x;} set value(v:T){} async *method<U>(x:U){yield x;} }"}
+{"name":"types","text":"type T<X> = X extends infer U ? keyof U : never; type F=(x:number)=>string; type M<T>={readonly [K in keyof T as `get${K & string}`]?: T[K]}; type A = [name:string,...rest:number[]]; type Q = import(\"m\").X; type R=typeof x; type B = A[0] | (string & {});"}
+{"name":"interface-enum","text":"interface I<T> extends Base<T> { readonly p?:T; (x:T):void; new(x:T):I<T>; [k:string]:T; m<U>(x:U):T; } const enum E {A,B=2,C=\"c\"} namespace N { export let x=1; } declare module \"m\" { export interface X{} }"}
+{"name":"expressions","text":"const x = a?.b?.(1)?.[k] ?? (new C<T>(1)); const y = /[a-z]+/giu; const z=`head${x}tail`; const q={a,...b, get x(){return 1}, method(){}}; x satisfies T; const v=<T>x; const t=x as T; import.meta; import(\"m\");"}
+{"name":"imports","text":"import type {X as Y} from \"m\"; import d, * as ns from \"n\"; import eq = require(\"m\"); export {x as y}; export type * from \"m\"; export default function(){}; export = x;"}
+{"name":"source-phase-upstream","text":"import source a from \"./a.wasm\"; import source from from \"./module.js\"; import source from \"./module.js\"; import.source(\"./a.wasm\", {with:{type:\"webassembly\"}});"}
+{"name":"heritage-upstream","text":"class C extends Base<number> implements Contract<string> {} interface I extends Parent<boolean> {} interface Invalid implements Recovery {} interface MissingExtends extends A. {} class MissingImplements implements B. {}"}
+{"name":"escaped-phase-upstream","text":"import.s\\u006furce(\"./a.wasm\"); import.d\\u0065fer(\"./a.js\");"}
+{"name":"using","text":"using resource = open(); await using asyncResource = openAsync();"}
+{"name":"regex-diagnostics","text":"const r=/(?<name>a)\\k<missing>/u; const bad=/a{3,2}/u;"}
+{"name":"unicode-literals","text":"const \u03b1=\"\ud83e\udd80\\ud800\\uD83E\\uDD80\"; const \u4e2d\u6587 = \u03b1 + 0xffffffffffffffff; const x = `\u03a9\\n`; const \ud801\udc00 = 1;"}
+{"name":"directives","text":"/// <reference path=\"./a.ts\"/>\n/// <reference types=\"node\" resolution-mode=\"import\"/>\n/// <reference lib=\"es2025\"/>\n// @ts-ignore\nconst x=1;"}
+{"name":"recovery-0","text":"const = ;"}
+{"name":"recovery-1","text":"function f( {"}
+{"name":"recovery-2","text":"class C extends {}"}
+{"name":"recovery-3","text":"interface I { p: ; m( }"}
+{"name":"recovery-4","text":"const x = a?.;"}
+{"name":"recovery-5","text":"type T = { [K in ]: };"}
+{"name":"recovery-6","text":"import { from \"m\";"}
+{"name":"recovery-7","text":"if (x { y();"}
+{"name":"recovery-8","text":"const r=/unterminated\nnext();"}
+{"name":"recovery-9","text":"const x = `head${;"}
+{"name":"recovery-10","text":"export default;"}
+{"name":"recovery-11","text":"let [a,...] = ;"}
+{"name":"recovery-12","text":"for (let i=;i<;i++) {"}
+{"name":"recovery-13","text":"try { throw } catch {"}
+{"name":"recovery-14","text":"const x = f<T(1);"}
+{"name":"recovery-15","text":"@dec class {"}
+{"name":"recovery-16","text":"namespace N { export"}
+{"name":"recovery-17","text":"type T = [a?:string,b:number];"}
+{"name":"truncated-function-1","text":"f"}
+{"name":"truncated-function-10","text":"function f"}
+{"name":"truncated-function-21","text":"function f<T>(a:T):T "}
+{"name":"truncated-function-31","text":"function f<T>(a:T):T {return a;"}
+{"name":"truncated-class-1","text":"c"}
+{"name":"truncated-class-12","text":"class C { x="}
+{"name":"truncated-class-24","text":"class C { x=1; m(){retur"}
+{"name":"truncated-class-35","text":"class C { x=1; m(){return this.x;} "}
+{"name":"truncated-template-1","text":"c"}
+{"name":"truncated-template-5","text":"const"}
+{"name":"truncated-template-11","text":"const x=`a$"}
+{"name":"truncated-template-16","text":"const x=`a${b}c`"}
+{"name":"tsx-elements","text":"const x=<><A prop=\"\u03b1\" {...rest}>text{value}<B /></A></>;","scriptKind":4}
+{"name":"tsx-recovery","text":"const x=<A prop={}><B></A>;","scriptKind":4}
+{"name":"jsx-elements","text":"const x=<div data-id=\"1\">text {x}</div>;","scriptKind":2,"externalModuleJSX":true}
+{"name":"js-syntax-diagnostics","text":"interface I{} const x:number=1; function f<T>(x:T):T{return x;}","scriptKind":1}
+{"name":"js-commonjs","text":"exports.x = 1; const x=require(\"m\"); module.exports=x;","scriptKind":1}
+{"name":"json-valid","text":"{\"x\":[1,true,null],\"y\":-1}","scriptKind":6}
+{"name":"json-recovery","text":"{'x':undefined, bad: NaN, // comment\n y: [1,,] } trailing","scriptKind":6}
+{"name":"declaration-file","text":"declare const x: number; export interface I { x:number; }","fileName":"/index.d.ts"}
+{"name":"forced-module","text":"const x=1;","externalModuleForce":true}
+{"name":"jsdoc-types-1","text":"/** @template T\n * @param {T} x input\n * @returns {T}\n */ function f(x){return x;}","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-recovery-1","text":"/** @param {Array.<} x\n * @param {number} x\n * @returns { */ function f(x){}","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-types-3","text":"/** @template T\n * @param {T} x input\n * @returns {T}\n */ function f(x){return x;}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-recovery-3","text":"/** @param {Array.<} x\n * @param {number} x\n * @returns { */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-reparse-upstream","text":"/**\n * @typedef {(\n * \"a\" |\n * \"b\"\n * )[]} T\n */ const value=0;","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-import-parent-upstream","text":"test(\"\", async function(){ ;(/** @type {typeof import(\"a\")} */ ({})); ;(/** @type {typeof import(\"a\")} */ a); });","scriptKind":1,"resolveJSDoc":true}
+{"name":"malformed-utf8-7961b9d9","text":"","textBytesBase64":"Y29uc3QgeD0i/yI7"}
+{"name":"malformed-utf8-08605051","text":"","textBytesBase64":"Y29uc3Qg7aCAPTE7"}
+{"name":"malformed-utf8-2e4fe023","text":"","textBytesBase64":"/2Z1bmN0aW9uIGYoKXt9"}
+{"name":"module-jsx-runtime-function-False","text":"function f(){return <div/>;}","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-runtime-function-True","text":"function f(){return <div/>;}","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-ambient-function-False","text":"declare function f(){return <div/>;}","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-ambient-function-True","text":"declare function f(){return <div/>;}","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-runtime-class-False","text":"class C { m(){return <div/>;} }","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-runtime-class-True","text":"class C { m(){return <div/>;} }","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-ambient-class-False","text":"declare class C { m(){return <div/>;} }","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-ambient-class-True","text":"declare class C { m(){return <div/>;} }","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-ambient-namespace-False","text":"declare namespace N { const x=<div/>; }","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-ambient-namespace-True","text":"declare namespace N { const x=<div/>; }","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-declare-const-False","text":"declare const x=<div/>;","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-declare-const-True","text":"declare const x=<div/>;","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-typequery-recovery-False","text":"type T = typeof (<div/>);","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-typequery-recovery-True","text":"type T = typeof (<div/>);","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-typealias-recovery-False","text":"type T = (<div/>);","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-typealias-recovery-True","text":"type T = (<div/>);","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-call-typeargs-recovery-False","text":"f<(<div/>)>();","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-call-typeargs-recovery-True","text":"f<(<div/>)>();","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-jsx-typeargs-recovery-False","text":"const x=<A<(<div/>)> />;","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-jsx-typeargs-recovery-True","text":"const x=<A<(<div/>)> />;","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-extends-typeargs-recovery-False","text":"class C extends A<(<div/>)> {}","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-extends-typeargs-recovery-True","text":"class C extends A<(<div/>)> {}","scriptKind":4,"externalModuleJSX":true}
+{"name":"module-jsx-fragment-runtime-False","text":"const x=<><div/></>;","scriptKind":4,"externalModuleJSX":false}
+{"name":"module-jsx-fragment-runtime-True","text":"const x=<><div/></>;","scriptKind":4,"externalModuleJSX":true}

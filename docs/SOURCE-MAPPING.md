@@ -21,11 +21,25 @@ Each entry records:
 - `destination`: C# or harness path, or null for an excluded upstream file.
 - `status`: `ported`, `partial`, `excluded`, or `new`.
 - `scope`: included behavior and explicit omissions or adaptations.
+- `implementationState`: `draft` while an active phase is awaiting its gates.
+- `upstreamSha256`: checksum of the exact original source file where recorded.
+
+The top-level `acceptedScannerCheckpoint` preserves historical acceptance while
+`activePhase` tracks parser work independently. A prior scanner result does not
+verify later changes to shared source. Per-subsystem recovery checkpoints live in
+[progress/](./progress/).
 
 `ported` means implementation coverage, not proof of exhaustive behavioral
 equivalence. A support file with only a few required definitions is `partial`
 even if all currently required scanner behavior passes. Excluded AST-facing
 functions are listed explicitly; no placeholder AST implementation is introduced.
+
+Parser algorithm files preserve the corresponding Go file boundaries and include
+upstream function locations. AST schema-derived factories/traversal remain with
+`ast_generated.go`; handwritten syntax support and accessors remain with `ast.go`.
+The private JSX fact projection is deliberately partial: it retains the upstream
+syntax conditions needed for module detection, with all other fact bits excluded.
+It must not be presented as the full transform-facts API.
 
 New byte-string compatibility helpers, oracle protocol, test corpus, and command
 line validation code are identified separately from translated upstream code.

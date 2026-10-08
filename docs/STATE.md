@@ -1,115 +1,75 @@
-# Scanner feasibility study
+# Current project state
 
-Status: **accepted for the bounded scanner feasibility checkpoint**. Started
-2026-10-08 14:46 UTC; final Native AOT publication 2026-10-08 15:05:47 UTC.
-All mandatory gates passed against the frozen source snapshot. No active
-implementation or verification work remains. See [ASSESSMENT.md](./ASSESSMENT.md)
-and [VERIFICATION.md](./VERIFICATION.md) for the decision, evidence, and limits.
+**Accepted bounded parser checkpoint, 2026-10-08. Basic parser benchmark complete.**
+Scanner checkpoint commit: `0a50e67`. Parser changes and evidence form this
+checkpoint; nothing has been pushed. Do not restart completed work or begin
+compiler stages without a new bounded mandate.
 
-Follow-up authorized 2026-10-08 15:10 UTC: the user requested a basic measured
-performance comparison with Go. **Complete**; see [PERFORMANCE.md](./PERFORMANCE.md)
-and [raw samples](../benchmarks/results.json). Across three workloads the current
-Native AOT scanner API takes about 1.9–2.7 times Go's time per byte and allocates
-more managed heap memory. Five alternating samples per implementation/workload
-matched token counts/checksums. Independent Sol review found no measurement
-blockers. The scanner acceptance source hash is unchanged; no optimization was
-performed. No active benchmark work remains.
+## Mandate and boundary
 
-The user subsequently requested investigation ideas while explicitly deferring
-optimization. [PERFORMANCE-INVESTIGATIONS.md](./PERFORMANCE-INVESTIGATIONS.md)
-records observations, hypotheses, and possible future measurements. No profiling,
-additional benchmark runs, or implementation changes are authorized by that note.
+Read [START-HERE.md](../START-HERE.md), [INITIAL-PROMPT.md](./INITIAL-PROMPT.md) and
+[PARSER-PROMPT.md](./PARSER-PROMPT.md). The upstream pin remains
+`fed0bf24149fb1ed36039212648bafdafc1ea10e` from maintained `microsoft/TypeScript/tsc`.
+The supported contract is initial JS/JSX/TS/TSX/JSON source-file parsing, required
+syntax AST support, syntax diagnostics, JSDoc and required reparsing. Binding,
+checking, module resolution and code generation remain excluded. Performance
+investigation and optimization remain deferred.
 
-Recovery entry point: [START-HERE.md](../START-HERE.md), then
-[RESUMING.md](./RESUMING.md). Fine-grained subsystem records
-live under [progress/](./progress/); update them at verified implementation,
-integration, and review boundaries.
+The user prioritizes efficient, deliberate verified work over elapsed speed.
+The main session coordinates; substantive work and independent reviews use
+explicitly selected GPT-6.1 Sol agents. Three agents were reused by domain:
 
-## Reference and scope
+- `scanner`: parser/scanner integration; [checkpoint](./progress/parser.md).
+- `support`: AST and syntax dependencies; [checkpoint](./progress/ast.md).
+- `verification`: independent oracle/tests/native gates; [checkpoint](./progress/parser-verification.md).
 
-The reference is the Go compiler in `microsoft/TypeScript`, revision
-`fed0bf24149fb1ed36039212648bafdafc1ea10e`, under `tsc/`.
-See [the lock file](../upstream.lock.json). The archived `typescript-go` repository
-was initially fetched in error; the user directed use of the latest maintained
-source before implementation. It is not the reference for this port.
+## Final evidence
 
-Port `scanner.go`, `regexp.go`, `unicodeproperties.go`, and the minimum support
-needed to exercise scanner behavior independently. Text-only utilities are in
-scope where useful; utilities requiring compiler AST nodes are excluded. Do not
-implement a parser, binder, checker, emitter, language service, or compiler AST.
+The combined gate passed on Linux x64 at 16:30 UTC, taking 24.001 seconds:
 
-## Acceptance and checkpoint
+- Parser xUnit: 464 passed, zero failures.
+- Actual Native AOT parser: 460 matching cases, 19,268 nodes, 318 diagnostics.
+- Scanner regressions: 1,287 xUnit tests, 1,276 native cases and 178 helper outputs.
+- Fresh unchanged-Go expectations, selected upstream tests and frozen source/asset
+  hash guards passed. The native parser is 4,088,712 bytes, linked to libc/libm.
+- Coverage: all186 parser-factory payload types,247 kinds,78 diagnostic codes;
+  68/97 directly referenced parser codes observed,29 still unobserved.
 
-1. Build a readable, traceable C# scanner with every scanner entry point either
-   implemented or explicitly identified as incomplete. Keep upstream algorithms,
-   function boundaries, and control flow where practical.
-2. Record source-to-destination mappings, dependency slices, meaningful language
-   adaptations, and upstream license/attribution notices.
-3. Verify byte offsets, token kinds, raw text/value bytes, token flags, diagnostics,
-   and comment directives against the pinned Go implementation. Exercise ordinary
-   scans and explicit contextual rescan/JSX/JSDoc/state operations.
-4. Run xUnit tests, including relevant upstream cases and a deterministic oracle
-   corpus covering malformed input, Unicode, numeric boundaries, and regex syntax.
-5. Publish the validation executable with .NET Native AOT and run behavioral
-   comparisons against that actual native executable. A JIT pass is insufficient.
-6. Obtain independent Sol review of fidelity, readability, test limitations, and
-   AOT evidence; resolve acceptance-critical findings.
-7. Deliver reproducible commands and an evidence-based feasibility assessment.
+Source SHA256: `d441e371cf28045777b3c8041d51e524ce96904ddecf6ff7e4f105edaf2edf8d`.
+See [verification and reproduction](./PARSER-VERIFICATION.md),
+[durable results](../validation/results/parser-verified.json),
+[assessment](./PARSER-ASSESSMENT.md), and [source map](../source-map.json).
+Independent [parser review](./progress/review-parser.md) and
+[AST/harness review](./progress/review-parser-support.md) found no remaining blocker.
+Five parser algorithm files reproduced byte-for-byte in scratch after documented
+adapters/formatting. Handwritten support remains authoritative.
 
-The checkpoint is one scanner implementation/integration/review cycle, including
-fixes needed for these gates. Stop and report an incomplete or blocked outcome if
-isolation requires compiler implementation or an environmental prerequisite cannot
-be obtained. Passing a bounded corpus does not prove correctness for all inputs.
-AST-dependent utility exclusions do not silently become scanner API exclusions.
+Historical scanner evidence remains in [SCANNER-STATE.md](./SCANNER-STATE.md),
+[VERIFICATION.md](./VERIFICATION.md) and its original machine-readable result.
+It must not be confused with the new parser/shared-library source snapshot.
 
-## Working arrangement
+## Limits and next action
 
-The main session coordinates scope, technical decisions, integration gates, and
-assessment. Three explicitly selected GPT-6.1 Sol agents own:
+The authorized basic Go versus C# Native AOT parser benchmark is complete.
+Two existing Sol agents implemented and independently reviewed it. Forty samples
+across four workloads passed all observer/drift checks, with34canonical preflight
+cases. Real TypeScript medians:Go71.0MiB/s,C#60.4MiB/s (1.17x elapsed time);
+TSX microfixtures were close with overlapping ranges; JSDoc/recovery were1.40x/
+1.26x elapsed time. C# heap allocation volume was higher in allgroups.
+See [performance report](./PARSER-PERFORMANCE.md),
+[raw results](../benchmarks/parser-results.json), and
+[benchmark checkpoint](./progress/parser-benchmark.md). Accepted source hash and
+historical scanner results are unchanged. No optimization, profiling or deeper
+investigation was performed or authorized. No active work remains.
 
-- `scanner`: scanner translation and its project.
-- `support`: regex scanner and minimal support dependencies.
-- `verification`: Go oracle, local toolchain, xUnit, corpus, and native harness.
+This is a completed bounded milestone, not full parser/API/branch parity. Remaining
+limits include unobserved diagnostics/recovery paths, isolated entity-name API
+coverage, source position maps, general transform facts, compiler/service state,
+incremental edits and platforms other than Linux x64. Scanner diagnostic1513 is
+still unobserved. Exclusions and partial files remain explicit in the source map.
 
-Reuse completed agents for independent review instead of starting another wave.
-Shared filesystem ownership is split to avoid overlapping edits. Agents coordinate
-the representation and public API directly; root resolves scope questions.
-The collaboration tool explicitly accepted `gpt-6.1-sol` for all three agents.
-The main session's model identity/selection is not exposed by the session metadata
-tool, so this record does not claim it independently verified Astra selection.
-
-## Decisions and risks
-
-- .NET 10 SDK 10.0.401 is installed. Go and a native compiler were missing initially;
-  the verification agent is establishing pinned local tools without sudo.
-- Go positions are byte offsets. The implementation uses a byte-preserving internal
-  string representation to retain indexing and slicing behavior, with explicit
-  conversions at C# API boundaries. Raw-byte APIs are needed for malformed UTF-8
-  and Go's encoding of lone JavaScript surrogate values.
-- .NET regex matching is not a substitute for the ECMAScript regex syntax scanner.
-- Preserve upstream Unicode tables rather than relying on potentially different
-  runtime Unicode classifications.
-- Tests must retain raw value bytes, since ordinary JSON strings cannot faithfully
-  transmit all upstream values.
-- The byte-preserving representation is a feasibility choice, not a performance
-  claim: .NET strings use UTF-16 storage, and substring/conversion allocation may
-  exceed Go's cost. Measure before recommending a production representation.
-- The user offered root access. Requested Ubuntu prerequisites are `clang` and
-  `zlib1g-dev`; Go 1.27.1 is available locally. A local extracted compiler passed
-  a C probe, but this is not evidence of Native AOT acceptance.
-
-## Measurements
-
-Three Sol agents were used and reused for review. Final results: 1,287 xUnit tests
-passed; the published native executable matched 1,276 oracle cases and 178 helper
-outputs. Source hashes and detailed measurements are retained in
-[verified.json](../validation/results/verified.json). Token consumption and cost
-were unavailable. The user corrected source selection, offered root/package help,
-and requested recovery documentation; no manual code fixes were required.
-
-## Next action after recovery
-
-Read [START-HERE.md](../START-HERE.md) and the checkpoint assessment. Do not
-automatically start a compiler port or continue adding tests after this accepted
-checkpoint. If source differs from the recorded hash, rerun applicable verification
-before relying on acceptance. A next bounded phase requires the user's direction.
+No additional compiler implementation is authorized at this stopping point. A useful next
+bounded phase would close targeted parser correctness/API gaps and separately
+inventory binder dependencies before selecting an implementation boundary. Keep
+performance ideas deferred. Resume by reading these records and inspecting the
+working tree; do not rerun every investigation merely to recover context.

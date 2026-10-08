@@ -3,7 +3,6 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Port of tsc/internal/core/text.go.
 namespace TypeScript.Scanner;
-
 public readonly record struct TextRange(int Start, int Finish)
 {
     public int Pos() => Start;
@@ -18,4 +17,14 @@ public readonly record struct TextRange(int Start, int Finish)
     public bool ContainedBy(TextRange other) => other.Start <= Start && other.Finish >= Finish;
     public bool Overlaps(TextRange other) => Math.Max(Start, other.Start) < Math.Min(Finish, other.Finish);
     public bool Intersects(TextRange other) => Math.Max(Start, other.Start) <= Math.Min(Finish, other.Finish);
+}
+
+internal static partial class Core
+{
+    public static TextRange NewTextRange(int pos, int end) => new(pos, end);
+    public static int CompareTextRanges(TextRange first, TextRange second)
+    {
+        int comparison = first.Pos() - second.Pos();
+        return comparison != 0 ? comparison : first.End() - second.End();
+    }
 }

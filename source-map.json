@@ -1,18 +1,17 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "accepted bounded scanner phase; implementation coverage reviewed; behavioral evidence in validation/results/verified.json",
+  "checkpoint": "Accepted bounded parser/required syntax AST checkpoint; original scanner acceptance preserved separately. See docs/PARSER-VERIFICATION.md and docs/PARSER-ASSESSMENT.md.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
       "destination": "src/TypeScript.Scanner/Scanner/Scanner.cs",
       "status": "partial",
-      "scope": "All lexical scanner functions, pure text/line helpers, and comment range enumeration; named AST/source-file helpers excluded. defaultScanner/cleared folded into C# initialization/Reset; comment records replace NodeFactory allocation.",
+      "scope": "All lexical scanner functions, pure text/line helpers, comment range enumeration and parser-required GetTokenPosOfNode; named remaining AST/source-file helpers excluded. Raw parser adapters preserve byte-string semantics.",
       "upstreamSha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
       "excludedSymbols": [
         "GetScannerForSourceFile",
         "ScanTokenAtPosition",
         "GetRangeOfTokenAtPosition",
-        "GetTokenPosOfNode",
         "getErrorRangeForArrowFunction",
         "findOriginatingJSDocSatisfiesTag",
         "GetErrorRangeForNode",
@@ -43,15 +42,24 @@
       "upstream": "tsc/internal/scanner/utilities.go",
       "destination": "src/TypeScript.Scanner/Scanner/Utilities.cs",
       "status": "partial",
-      "scope": "tokenIsIdentifierOrKeyword only; all other utilities excluded, including AST utilities, JSDoc text normalization, IsIdentifierText, and IsIntrinsicJsxName.",
-      "upstreamSha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0"
+      "scope": "tokenIsIdentifierOrKeyword; source/node text helpers and JSDoc normalization required by parser; remaining utilities explicitly excluded.",
+      "upstreamSha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0",
+      "scannerCheckpointScope": "tokenIsIdentifierOrKeyword only; all other utilities excluded, including AST utilities, JSDoc text normalization, IsIdentifierText, and IsIntrinsicJsxName.",
+      "excludedSymbols": [
+        "IdentifierToKeywordKind",
+        "GetTextOfJSDocComment",
+        "DeclarationNameToString",
+        "IsIdentifierText",
+        "IsIntrinsicJsxName"
+      ]
     },
     {
       "upstream": "tsc/internal/ast/kind_generated.go",
       "destination": "src/TypeScript.Scanner/Ast/KindGenerated.cs",
-      "status": "partial",
-      "scope": "Token kinds and token boundary aliases only; compiler AST node kinds excluded.",
-      "upstreamSha256": "be3f110de809077fc0f443ef6c7f8ad7b6ce5221a01b9fac5076c3facba14d72"
+      "status": "ported",
+      "scope": "All353 maintained syntax kinds and aliases; original numeric token IDs preserved.",
+      "upstreamSha256": "be3f110de809077fc0f443ef6c7f8ad7b6ce5221a01b9fac5076c3facba14d72",
+      "scannerCheckpointScope": "Token kinds and token boundary aliases only; compiler AST node kinds excluded."
     },
     {
       "upstream": "tsc/internal/ast/tokenflags.go",
@@ -64,14 +72,15 @@
       "upstream": "tsc/internal/ast/ast.go",
       "destination": "src/TypeScript.Scanner/Ast/Ast.cs",
       "status": "partial",
-      "scope": "Comment directive records only; no compiler AST.",
-      "upstreamSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f"
+      "scope": "Tagged syntax nodes, source-file parse metadata/diagnostics, node lists, parser factory support/accessors and JSDoc registration/cache. Compiler symbols, flow/service state, position-map API and general public transform facts excluded. Private JSX fact projection preserves module-detection pruning.",
+      "upstreamSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f",
+      "scannerCheckpointScope": "Comment directive records only; no compiler AST."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
       "destination": "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
       "status": "partial",
-      "scope": "ScriptTarget only.",
+      "scope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded.",
       "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af"
     },
     {
@@ -85,22 +94,23 @@
       "upstream": "tsc/internal/core/text.go",
       "destination": "src/TypeScript.Scanner/Core/Text.cs",
       "status": "partial",
-      "scope": "TextRange used by scanner; other compiler position support excluded.",
+      "scope": "TextRange, NewTextRange and CompareTextRanges; SourceFile position-map cache/API excluded.",
       "upstreamSha256": "dad1b4d0bb8fbd4a1c3c686a6a4fff940cfac17551c7c5ca564c33273e2277e4"
     },
     {
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Spelling suggestions and weighted edit distance needed by regex diagnostics.",
+      "scope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
       "status": "partial",
-      "scope": "Only diagnostics referenced by scanner/regex.",
-      "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f"
+      "scope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded.",
+      "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f",
+      "scannerCheckpointScope": "Only diagnostics referenced by scanner/regex."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics.go",
@@ -208,8 +218,208 @@
       "upstream": null,
       "destination": "benchmarks",
       "status": "new",
-      "scope": "Separate Native AOT performance harness, workload manifest and raw Go/C# measurements. Original scanner source snapshot unchanged; see docs/PERFORMANCE.md."
+      "scope": "Separate scanner and parser Native AOT performance harnesses, workload manifests and raw Go/C# measurements. Accepted implementation snapshots unchanged by benchmarking; see docs/PERFORMANCE.md and docs/PARSER-PERFORMANCE.md."
+    },
+    {
+      "upstream": "tsc/internal/parser/parser.go",
+      "destination": "src/TypeScript.Scanner/Parser/Parser.cs",
+      "status": "ported",
+      "scope": "All source-file parser algorithms; managed allocation replaces pooled getParser/putParser (putParser omitted), static initialization registers JSDoc callback. Public .NET string/byte input wrappers adapt raw Go text. No semantic compiler stages.",
+      "upstreamSha256": "18fbeb9644a2c642d2757188107f2a802e8084cf1ed56a24c78bab1933328c2e"
+    },
+    {
+      "upstream": "tsc/internal/parser/jsdoc.go",
+      "destination": "src/TypeScript.Scanner/Parser/Jsdoc.cs",
+      "status": "ported",
+      "scope": "All54JSDoc parser functions; static registration replaces Go init where necessary.",
+      "upstreamSha256": "02d23ecd8435148c3b69634739a75a1a5d9a1fcd5c683dcac131efe97699f51c"
+    },
+    {
+      "upstream": "tsc/internal/parser/reparser.go",
+      "destination": "src/TypeScript.Scanner/Parser/Reparser.cs",
+      "status": "ported",
+      "scope": "All21syntax reparser functions used by JSDoc transformations; no general emit pipeline.",
+      "upstreamSha256": "59f3d5e33405ec35406480413e901787d0f204e7255a172f8e563a7bfefc468a"
+    },
+    {
+      "upstream": "tsc/internal/parser/types.go",
+      "destination": "src/TypeScript.Scanner/Parser/Types.cs",
+      "status": "ported",
+      "scope": "ParseFlags constants; parser and JSDoc declarations remain with original algorithm-file counterparts.",
+      "upstreamSha256": "f49640e07ffe4e301acbac85b6cbce37f69953a02a15c3b6a0bdff6692940633"
+    },
+    {
+      "upstream": "tsc/internal/parser/utilities.go",
+      "destination": "src/TypeScript.Scanner/Parser/Utilities.cs",
+      "status": "ported",
+      "scope": "All6parser utility functions, with internal raw byte-string scanner adapters.",
+      "upstreamSha256": "f2b4aed094eb84605ecec2c79a83633656de0937168b43cda462da6bffdd9a46"
+    },
+    {
+      "upstream": "tsc/internal/parser/references.go",
+      "destination": "src/TypeScript.Scanner/Parser/References.cs",
+      "status": "ported",
+      "scope": "Both syntax reference metadata functions; fixed built-in name lookup only, no module resolution.",
+      "upstreamSha256": "def5d5dc418fa3d9d868828a315ad6e24adfce60683d2cc818746e8a93e507d7"
+    },
+    {
+      "upstream": "tsc/internal/ast/ast_generated.go",
+      "destination": "src/TypeScript.Scanner/Ast/AstGenerated.cs",
+      "status": "partial",
+      "scope": "190 typed syntax payloads and192New factories with syntax Update/Clone/ForEachChild/VisitEachChild and static verification fields. Checker-owned SyntheticExpression excluded; compiler-only fields excluded. Private JSX fact projection only.",
+      "upstreamSha256": "b6fc40ffc5f43adbe9e0f6e1a53bd90e5c20c86ae1c738bb0ae5716bc540bb5a"
+    },
+    {
+      "upstream": "tsc/internal/ast/nodeflags.go",
+      "destination": "src/TypeScript.Scanner/Ast/NodeFlags.cs",
+      "status": "ported",
+      "scope": "Complete maintained node flags and numeric values.",
+      "upstreamSha256": "8be5737c5cfe5478fcef3f0b50847d7ca4045157a6d039ffaac658977a181dc2"
+    },
+    {
+      "upstream": "tsc/internal/ast/modifierflags.go",
+      "destination": "src/TypeScript.Scanner/Ast/ModifierFlags.cs",
+      "status": "ported",
+      "scope": "Complete maintained modifier flags and numeric values.",
+      "upstreamSha256": "50506485a8ff50b536d1cac387cf031a82133b7507a0e5a0a09cd257b50d67c8"
+    },
+    {
+      "upstream": "tsc/internal/ast/diagnostic.go",
+      "destination": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
+      "status": "partial",
+      "scope": "Parse diagnostic construction, spans, raw arguments and related information; full compiler diagnostic processing excluded.",
+      "upstreamSha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4"
+    },
+    {
+      "upstream": "tsc/internal/ast/parseoptions.go",
+      "destination": "src/TypeScript.Scanner/Ast/ParseOptions.cs",
+      "status": "partial",
+      "scope": "Explicit source-file parse options and SetExternalModuleIndicator with all downstream syntax detection. Compiler-option selection GetExternalModuleIndicatorOptions/isFileForcedToBeModuleByFormat excluded; callers supply options. Path wrapper represented as string.",
+      "upstreamSha256": "d39e2cf56e0e9c0a69ca401d5f9db4a4c12fdefef4d012df0aed2782dbad1dd3"
+    },
+    {
+      "upstream": "tsc/internal/ast/visitor.go",
+      "destination": "src/TypeScript.Scanner/Ast/Visitor.cs",
+      "status": "ported",
+      "scope": "Syntax traversal/list visitors required by parser and JSDoc reparsing; no transformation pipeline.",
+      "upstreamSha256": "6754fe0df4e97fd31fe665408b14cb1a30c542f71ecec5b3f29288da4f2a3795"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+      "status": "new",
+      "scope": "Parser compatibility and raw byte-string scanner bridge; draft pending verification."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Scanner/ParserBridge.cs",
+      "status": "new",
+      "scope": "Parser compatibility and raw byte-string scanner bridge; draft pending verification."
+    },
+    {
+      "upstream": "tsc/internal/ast/deepclone.go",
+      "destination": "src/TypeScript.Scanner/Ast/Deepclone.cs",
+      "status": "ported",
+      "scope": "Syntax deep cloning needed by JSDoc reparsing; compiler-owned state excluded.",
+      "upstreamSha256": "7100eff959ac01d9cb285e832b3fe50cf19669bc68dc820ab14ad782be6d628f"
+    },
+    {
+      "upstream": "tsc/internal/ast/kind_stringer_generated.go",
+      "destination": "src/TypeScript.Scanner/Ast/KindStringerGenerated.cs",
+      "status": "ported",
+      "scope": "Pinned kind display names used by syntax helpers.",
+      "upstreamSha256": "dc75cd5f77f542cffb77ca8566eb51c9f3bea13450f972b9d933c0277972be63"
+    },
+    {
+      "upstream": "tsc/internal/ast/precedence.go",
+      "destination": "src/TypeScript.Scanner/Ast/Precedence.cs",
+      "status": "partial",
+      "scope": "Parser-required operator precedence slice.",
+      "upstreamSha256": "94a5f9f3e4ce8ac9dc0c46d9253ffe4def40e90618ec226f4209b2e9d436aa7a"
+    },
+    {
+      "upstream": "tsc/internal/ast/utilities.go",
+      "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
+      "status": "partial",
+      "scope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded.",
+      "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3"
+    },
+    {
+      "upstream": "tsc/internal/core/nodemodules.go",
+      "destination": "src/TypeScript.Scanner/Core/NodeModules.cs",
+      "status": "partial",
+      "scope": "Two fixed built-in module name tables used for syntax reference metadata; no resolution.",
+      "upstreamSha256": "48f2b6c2cade9277da82ea9cb8153cd5a7a6b42cc819500029106d9430739879"
+    },
+    {
+      "upstream": "tsc/internal/tspath/path.go",
+      "destination": "src/TypeScript.Scanner/TsPath/Path.cs",
+      "status": "partial",
+      "scope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup.",
+      "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/ParserStrings.cs",
+      "status": "new",
+      "scope": "Compatibility adapters for Go UTF8 string trimming and Unicode whitespace semantics required by parser."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Parser.Validation",
+      "status": "new",
+      "scope": "Authored reflection-free canonical syntax graph and diagnostics JSONL harness; Native AOT target."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/parser-corpus",
+      "status": "new",
+      "scope": "Authored and pinned-upstream grammar, malformed, fuzz and helper requests with Go expected syntax graphs."
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests",
+      "status": "new",
+      "scope": "Authored xUnit differential and named upstream regression coverage."
+    },
+    {
+      "upstream": "tsc/internal/core/scriptkind.go",
+      "destination": "src/TypeScript.Scanner/Core/ScriptKind.cs",
+      "status": "partial",
+      "scope": "Maintained parser script-kind values; reserved IDs not exposed as named modes.",
+      "upstreamSha256": "b2212cedf2d48fbd5b695adb58d4be6392fee49a7f74d8097e1be417a49d3de1"
+    },
+    {
+      "upstream": "tsc/internal/core/tristate.go",
+      "destination": "src/TypeScript.Scanner/Core/Tristate.cs",
+      "status": "partial",
+      "scope": "Exact numeric tristate enum only; unrelated conversion/JSON helpers excluded.",
+      "upstreamSha256": "0e0a4dbe70e80b031f85988ae78c19ba3e3eeaa0d631aaa55cf0fbb48b80ede0"
+    },
+    {
+      "upstream": "tsc/internal/core/compileroptions.go",
+      "destination": "src/TypeScript.Scanner/Core/CompilerOptions.cs",
+      "status": "partial",
+      "scope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation.",
+      "upstreamSha256": "fef841f3f06b3ef5f68124672e56996983795c43d3c1c10fa46d978820dc3564"
+    },
+    {
+      "upstream": "tsc/internal/ast/subtreefacts.go",
+      "destination": "src/TypeScript.Scanner/Ast/Subtreefacts.cs",
+      "status": "partial",
+      "scope": "Private JSX-only projection of fact constants/helpers for external-module detection. All non-JSX bits project to zero; full public transform facts API excluded. Projection methods stay in their original Ast.cs/AstGenerated.cs counterparts.",
+      "upstreamSha256": "76dabb52846aea3686afc3d70b5f8daacf4de625f977187f2bb1c1adddaef911"
     }
   ],
-  "verifiedSourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
+  "activePhase": {
+    "name": "parser",
+    "status": "accepted-bounded-checkpoint",
+    "acceptance": "validation/results/parser-verified.json",
+    "sourceTreeSha256": "d441e371cf28045777b3c8041d51e524ce96904ddecf6ff7e4f105edaf2edf8d",
+    "note": "Actual linux-x64 Native AOT passed460structural/diagnostic cases plus scanner regressions. Bounded source-file parsing evidence, not full parser/API/branch parity."
+  },
+  "acceptedScannerCheckpoint": {
+    "commit": "0a50e67",
+    "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
+  }
 }

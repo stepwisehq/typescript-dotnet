@@ -1,0 +1,89 @@
+{"name":"remaining-expressions","text":"const C=class extends B{}; const big=123n; const a=[...xs]; tag`x${a}`; delete a.x; void a; debugger; with(a){};"}
+{"name":"remaining-types","text":"type F=abstract new<T>(x:T)=>T; class C { self():this{return this;} } type T=[string?,...number[]];"}
+{"name":"namespace-exports","text":"export * as ns from \"m\"; export as namespace N;"}
+{"name":"import-attributes","text":"import x from \"m\" with { type:\"json\", \"mode\":\"test\" }; export {x} from \"m\" with {type:\"json\"};"}
+{"name":"jsx-namespace","text":"const x=<svg:path xml:lang=\"en\"/>;","scriptKind":4}
+{"name":"jsdoc-gap-augments","text":"/**\n * @augments {Base<T>}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-implements","text":"/**\n * @implements {I}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-deprecated","text":"/**\n * @deprecated old\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-callback","text":"/**\n * @callback F\n * @param {number} x\n * @returns {string}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-overload","text":"/**\n * @overload\n * @param {string} x\n * @returns {number}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-override","text":"/**\n * @override\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-private","text":"/**\n * @private\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-protected","text":"/**\n * @protected\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-public","text":"/**\n * @public\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-readonly","text":"/**\n * @readonly\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-satisfies","text":"/**\n * @satisfies {T}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-see","text":"/**\n * @see Foo.bar\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-this","text":"/**\n * @this {Window}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-throws","text":"/**\n * @throws {Error} bad\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-import","text":"/**\n * @import { A as B } from \"m\"\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-links","text":"/**\n * Text {@link Foo.bar label} {@linkcode Foo} {@linkplain Foo text}\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"jsdoc-gap-rest-optional","text":"/**\n * @param {...number} xs\n * @param {string=} name\n */ function f(x){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"diagnostic-gap-element-access","text":"a[];","scriptKind":3}
+{"name":"diagnostic-gap-super","text":"class C extends B {m(){super;}}","scriptKind":3}
+{"name":"diagnostic-gap-reference","text":"/// <reference bad=\"x\" />\nconst x=1;","scriptKind":3}
+{"name":"diagnostic-gap-resolution-mode","text":"/// <reference types=\"a\" resolution-mode=\"bad\" />","scriptKind":3}
+{"name":"diagnostic-gap-statement","text":"else {}","scriptKind":3}
+{"name":"diagnostic-gap-switch","text":"switch(x){ x(); }","scriptKind":3}
+{"name":"diagnostic-gap-property","text":"interface I { = }","scriptKind":3}
+{"name":"diagnostic-gap-enum","text":"enum E { 1 }","scriptKind":3}
+{"name":"diagnostic-gap-typeparam","text":"function f<>(){}","scriptKind":3}
+{"name":"diagnostic-gap-typearg","text":"type T=A<,>;","scriptKind":3}
+{"name":"diagnostic-gap-linebreak","text":"function f(){throw\nx;}","scriptKind":3}
+{"name":"diagnostic-gap-jsx-empty","text":"const x=<>;","scriptKind":4}
+{"name":"diagnostic-gap-jsx-parents","text":"const x=<A/><B/>;","scriptKind":4}
+{"name":"diagnostic-gap-jsx-unclosed","text":"const x=<A>text;","scriptKind":4}
+{"name":"diagnostic-gap-jsx-fragment-close","text":"const x=<><A/></A>;","scriptKind":4}
+{"name":"diagnostic-gap-destructuring-object","text":"const {,} = obj;","scriptKind":3}
+{"name":"diagnostic-gap-destructuring-array","text":"const [...,] = arr;","scriptKind":3}
+{"name":"diagnostic-gap-decorator-position","text":"function f(){@dec x();}","scriptKind":3}
+{"name":"diagnostic-gap-decorator-this","text":"function f(@dec this:T){}","scriptKind":3}
+{"name":"diagnostic-gap-decorator-property","text":"class C { public @dec x=1; }","scriptKind":3}
+{"name":"diagnostic-gap-decorator-export","text":"@a export @b class C{}","scriptKind":3}
+{"name":"diagnostic-gap-optional-new","text":"new a?.b();","scriptKind":3}
+{"name":"diagnostic-gap-predicate","text":"let x: a is string;","scriptKind":3}
+{"name":"diagnostic-gap-enum-separator","text":"enum E { A B }","scriptKind":3}
+{"name":"diagnostic-gap-reserved-name","text":"class const {}","scriptKind":3}
+{"name":"diagnostic-gap-reserved-variable","text":"let if=1;","scriptKind":3}
+{"name":"diagnostic-gap-reserved-parameter","text":"function f(if){}","scriptKind":3}
+{"name":"diagnostic-gap-union-function","text":"type T=string | ()=>void;","scriptKind":3}
+{"name":"diagnostic-gap-union-constructor","text":"type T=string | new()=>T;","scriptKind":3}
+{"name":"diagnostic-gap-intersection-function","text":"type T=string & ()=>void;","scriptKind":3}
+{"name":"diagnostic-gap-intersection-constructor","text":"type T=string & new()=>T;","scriptKind":3}
+{"name":"diagnostic-gap-typo-keyword","text":"intrface I{}","scriptKind":3}
+{"name":"diagnostic-gap-namespace-name","text":"namespace {}","scriptKind":3}
+{"name":"diagnostic-gap-interface-name","text":"interface {}","scriptKind":3}
+{"name":"diagnostic-gap-typealias-name","text":"type = number;","scriptKind":3}
+{"name":"diagnostic-gap-variable-location","text":"if(true) let x=1;","scriptKind":3}
+{"name":"diagnostic-gap-call-type","text":"let x: A(1);","scriptKind":3}
+{"name":"diagnostic-gap-module-name","text":"module 1 {}","scriptKind":3}
+{"name":"diagnostic-gap-try-finally","text":"try {} x();","scriptKind":3}
+{"name":"diagnostic-gap-instantiation-member","text":"f<T>.x;","scriptKind":3}
+{"name":"diagnostic-gap-import-name","text":"import {1} from \"m\";","scriptKind":3}
+{"name":"diagnostic-gap-invalid-interface-name","text":"interface string {}","scriptKind":3}
+{"name":"diagnostic-gap-invalid-type-name","text":"type string=1;","scriptKind":3}
+{"name":"diagnostic-gap-invalid-namespace-name","text":"namespace string {}","scriptKind":3}
+{"name":"diagnostic-gap-super-typeargs","text":"class C extends B { constructor(){super<T>();} }","scriptKind":3}
+{"name":"diagnostic-gap-block-destructuring","text":"{} = x;","scriptKind":3}
+{"name":"diagnostic-gap-old-import-assert","text":"import x from \"m\" assert {type:\"json\"};","scriptKind":3}
+{"name":"diagnostic-gap-unary-exponent","text":"const x=-a ** b;","scriptKind":3}
+{"name":"diagnostic-gap-assertion-exponent","text":"const x=<T>a ** b;","scriptKind":3}
+{"name":"diagnostic-gap-private-parameter","text":"function f(#x){}","scriptKind":3}
+{"name":"diagnostic-gap-private-outside","text":"x.#y;","scriptKind":3}
+{"name":"diagnostic-gap-private-var","text":"let #x=1;","scriptKind":3}
+{"name":"diagnostic-gap-private-chain","text":"class C{#x; m(){return this?.#x;}}","scriptKind":3}
+{"name":"js-diagnostic-gap-0","text":"import x=require(\"m\");","scriptKind":1}
+{"name":"js-diagnostic-gap-1","text":"export = x;","scriptKind":1}
+{"name":"js-diagnostic-gap-2","text":"class C implements I{}","scriptKind":1}
+{"name":"js-diagnostic-gap-3","text":"type T=number;","scriptKind":1}
+{"name":"js-diagnostic-gap-4","text":"abstract class C{}","scriptKind":1}
+{"name":"js-diagnostic-gap-5","text":"f<T>();","scriptKind":1}
+{"name":"js-diagnostic-gap-6","text":"class C{constructor(public x){}}","scriptKind":1}
+{"name":"js-diagnostic-gap-7","text":"x!;","scriptKind":1}
+{"name":"js-diagnostic-gap-8","text":"const x=<T>y;","scriptKind":1}
+{"name":"js-diagnostic-gap-9","text":"x satisfies T;","scriptKind":1}
+{"name":"jsdoc-diagnostic-gap-duplicate","text":"/**\n * @returns {number}\n * @returns {string}\n */ const x=1;","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-diagnostic-gap-typedef-types","text":"/**\n * @typedef {number} T\n * @type {string}\n */ const x=1;","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-diagnostic-gap-template-order","text":"/**\n * @typedef {number} T\n * @template X\n */ const x=1;","scriptKind":1,"resolveJSDoc":true}
+{"name":"jsdoc-diagnostic-gap-template-curly","text":"/**\n * @template {T} {}\n */ const x=1;","scriptKind":1,"resolveJSDoc":true}

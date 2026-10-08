@@ -1,10 +1,13 @@
-# TypeScript scanner port feasibility study
+# TypeScript port feasibility study
 
-A C# port of the Go TypeScript scanner, pinned to the maintained
-[microsoft/TypeScript source](./UPSTREAM.md). This repository is a scanner study,
-not a compiler implementation. The bounded checkpoint is accepted; see the
-[feasibility assessment](./docs/ASSESSMENT.md) and
-[verification evidence](./docs/VERIFICATION.md) for results and limitations.
+A C# port of the Go TypeScript scanner and required syntax parser/AST support,
+pinned to the maintained [microsoft/TypeScript source](./UPSTREAM.md).
+See [current state](./docs/STATE.md) and [parser plan](./docs/PARSER-PLAN.md).
+Binding, checking, module resolution and code generation remain outside scope.
+Both bounded checkpoints passed actual Native AOT verification. See the
+[parser assessment](./docs/PARSER-ASSESSMENT.md) and
+[parser verification](./docs/PARSER-VERIFICATION.md) for current results and limits;
+the [scanner assessment](./docs/ASSESSMENT.md) preserves the earlier checkpoint.
 
 The [scanner library](./src/TypeScript.Scanner) targets .NET 10. The
 [validation executable](./validation/Scanner.Validation) supports Native AOT;
@@ -36,10 +39,27 @@ For the faster managed test loop, using the checked-in oracle corpus:
 dotnet test tests/Scanner.Tests/Scanner.Tests.csproj -c Release
 ```
 
+The parser phase has its own gate, including scanner regressions:
+
+```sh
+./tools/verify-parser.sh
+```
+
+For its managed test loop, run
+`dotnet test tests/Parser.Tests/Parser.Tests.csproj -c Release`.
+See the [parser plan](./docs/PARSER-PLAN.md) for the canonical tree/diagnostic
+contract and the [parser assessment](./docs/PARSER-ASSESSMENT.md) for current limits.
+
 A basic Go versus Native AOT throughput/allocation comparison is recorded in
 [PERFORMANCE.md](./docs/PERFORMANCE.md), with raw samples and explicit measurement
 limits. Reproduce it with `./tools/benchmark.sh`. It measures the current scanner
 API, including input conversion, and does not benchmark the full compiler.
+
+The parser has a separate [basic performance report](./docs/PARSER-PERFORMANCE.md)
+and [raw samples](./benchmarks/parser-results.json). Reproduce with
+`./tools/parser-benchmark.sh` after the parser verification gate has created the
+accepted native validator. It measures parsing and a small result observer;
+optimization and deeper investigation remain deferred.
 
 To publish and check Native AOT explicitly:
 
@@ -64,10 +84,11 @@ the corresponding .NET UTF-16 value. Raw bytes are authoritative for differentia
 verification.
 
 The port covers lexical scanning, contextual rescans, JSX/JSDoc modes, regex syntax
-validation, token flags, diagnostic callbacks, and comment directives. Supporting
-AST definitions are restricted to token kinds and scanner records. Compiler-node
-and source-file utilities are explicitly excluded; no parser/checker/emitter is
-implemented. See [source-map.json](./source-map.json) and the
+validation, token flags, diagnostic callbacks, and comment directives. The completed
+parser phase adds syntax trees, syntax diagnostics and required AST support;
+its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Binding,
+checking, module resolution and code generation remain excluded.
+See [source-map.json](./source-map.json) and the
 [mapping convention](./docs/SOURCE-MAPPING.md) for per-file completeness and
 exceptions. Ported source and newly authored compatibility/harness code are marked
 separately. Applicable notices are preserved under [licenses/](./licenses/).

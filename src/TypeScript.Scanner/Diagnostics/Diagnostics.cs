@@ -12,8 +12,10 @@ public enum DiagnosticCategory
     Message
 }
 
-public sealed class Message(int code, DiagnosticCategory category, string key, string text)
+public sealed class Message(int code, DiagnosticCategory category, string key, string text, bool reportsUnnecessary = false, bool reportsDeprecated = false)
 {
+    public bool ReportsUnnecessary() => reportsUnnecessary;
+    public bool ReportsDeprecated() => reportsDeprecated;
     public int Code() => code;
     public DiagnosticCategory Category() => category;
     public string Key() => key;

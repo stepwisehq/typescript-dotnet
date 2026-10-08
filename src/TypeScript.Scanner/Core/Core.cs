@@ -1,12 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/core/core.go, scanner-only spelling suggestion slice.
+// Port of tsc/internal/core/core.go, scanner spelling and parser-required syntax helpers.
 namespace TypeScript.Scanner;
 internal static partial class Core
 {
     public static T IfElse<T>(bool condition, T a, T b) => condition ? a : b;
-    public static TextRange NewTextRange(int pos, int end) => new(pos, end);
     public static string GetSpellingSuggestionForStrings(string name, IEnumerable<string> candidates)
     {
         int[] runeName = GoString.Runes(name);
@@ -76,5 +75,65 @@ internal static partial class Core
 
         double res = previous[s2.Length];
         return res > maxValue ? -1 : res;
+    }
+}
+
+internal static partial class Core
+{
+    public static T? FirstOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[0];
+    public static int FindIndex<T>(List<T>? values, Func<T, bool> predicate) => values?.FindIndex(x => predicate(x)) ?? -1;
+    public static T? Find<T>(List<T>? values, Func<T, bool> predicate) => values is null ? default : values.FirstOrDefault(predicate);
+    public static bool Some<T>(List<T>? values, Func<T, bool> predicate) => values?.Any(predicate) ?? false;
+    public static bool Every<T>(List<T>? values, Func<T, bool> predicate) => values?.All(predicate) ?? true;
+    public static T? LastOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[^1];
+    public static List<U>? Map<T, U>(List<T>? values, Func<T, U> map) => values?.Select(map).ToList();
+    public static ScriptKind GetScriptKindFromFileName(string name) => Path.GetExtension(name).ToLowerInvariant() switch
+    {
+        ".js" or ".mjs" or ".cjs" => ScriptKind.JS,
+        ".jsx" => ScriptKind.JSX,
+        ".ts" or ".mts" or ".cts" => ScriptKind.TS,
+        ".tsx" => ScriptKind.TSX,
+        ".json" => ScriptKind.JSON,
+        _ => ScriptKind.Unknown
+    };
+}
+
+internal static partial class Core
+{
+    public static List<int> ComputeECMALineStarts(string text) => ComputeECMALineStartsSeq(text).ToList();
+    public static IEnumerable<int> ComputeECMALineStartsSeq(string text)
+    {
+        int textLen = text.Length, pos = 0, lineStart = 0;
+        while (pos < textLen)
+        {
+            int b = text[pos];
+            if (b < Utf8.RuneSelf)
+            {
+                pos++;
+                switch (b)
+                {
+                    case '\r':
+                        if (pos < textLen && text[pos] == '\n')
+                            pos++;
+                        goto case '\n';
+                    case '\n':
+                        yield return lineStart;
+                        lineStart = pos;
+                        break;
+                }
+            }
+            else
+            {
+                var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                pos += size;
+                if (StringUtil.IsLineBreak(ch))
+                {
+                    yield return lineStart;
+                    lineStart = pos;
+                }
+            }
+        }
+
+        yield return lineStart;
     }
 }
