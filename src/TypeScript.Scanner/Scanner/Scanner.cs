@@ -109,7 +109,7 @@ public partial class Scanner
         ["of"] = Kind.OfKeyword,
     };
     private static readonly Dictionary<string, Kind> textToToken = CreateTextToToken();
-    private static readonly Dictionary<Kind, string> tokenToText = textToToken.ToDictionary(x => x.Value, x => x.Key);
+    private static readonly string[] tokenToText = CreateTokenToText();
     public Kind Token()
     {
         return this.token;
@@ -3569,12 +3569,16 @@ public partial class Scanner
         return res;
     }
 
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(string text, int pos) => iterateCommentRanges(GoString.ToUtf8(text), pos, false);
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(byte[] text, int pos) => iterateCommentRanges(GoString.FromBytes(text), pos, false);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(string text, int pos) => iterateCommentRanges(GoString.ToUtf8(text), pos, true);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(byte[] text, int pos) => iterateCommentRanges(GoString.FromBytes(text), pos, true);
-    // Port of iterateCommentRanges; record construction replaces the upstream NodeFactory.
-    private static IEnumerable<CommentRange> iterateCommentRanges(string text, int pos, bool trailing)
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(string text, int pos) => iterateCommentRanges(null, GoString.ToUtf8(text), pos, false);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, GoString.FromBytes(text), pos, false);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(string text, int pos) => iterateCommentRanges(null, GoString.ToUtf8(text), pos, true);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, GoString.FromBytes(text), pos, true);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, GoString.ToUtf8(text), pos, false);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, GoString.FromBytes(text), pos, false);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, GoString.ToUtf8(text), pos, true);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, GoString.FromBytes(text), pos, true);
+    // ast.CommentRange is a value struct; NewCommentRange has no node hooks/identity.
+    private static IEnumerable<CommentRange> iterateCommentRanges(NodeFactory? factory, string text, int pos, bool trailing)
     {
         int pendingPos = 0, pendingEnd = 0;
         Kind pendingKind = default;
@@ -3642,7 +3646,7 @@ public partial class Scanner
                         if (collecting)
                         {
                             if (hasPendingCommentRange)
-                                yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
+                                yield return factory?.NewCommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine) ?? new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
                             pendingPos = startPos;
                             pendingEnd = pos;
                             pendingKind = kind;
@@ -3671,7 +3675,7 @@ public partial class Scanner
 
         scanEnd:
             if (hasPendingCommentRange)
-                yield return new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
+                yield return factory?.NewCommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine) ?? new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
     }
 
     public Scanner()
@@ -3771,9 +3775,19 @@ public partial class Scanner
         return true;
     }
 
-    public static string TokenToString(Kind token) => tokenToText.GetValueOrDefault(token, "");
+    public static string TokenToString(Kind token) => tokenToText[(int)token];
     public static Kind StringToToken(string s) => textToToken.GetValueOrDefault(s);
     public static string[] GetViableKeywordSuggestions() => textToKeyword.Keys.Where(x => x.Length > 2).ToArray();
+    // scanner.go:2255. The Go fixed-size array preserves bounds failures for invalid kinds.
+    private static string[] CreateTokenToText()
+    {
+        var result = new string[(int)Kind.Count];
+        Array.Fill(result, "");
+        foreach (var entry in textToToken)
+            result[(int)entry.Value] = entry.Key;
+        return result;
+    }
+
     private static Dictionary<string, Kind> CreateTextToToken()
     {
         var result = new Dictionary<string, Kind>(textToKeyword, StringComparer.Ordinal)
@@ -3862,8 +3876,27 @@ public partial class Scanner
         return Core.NewTextRange(scanner.tokenStart, scanner.pos);
     }
 
-    public static List<int> GetECMALineStarts(SourceFile sourceFile) => sourceFile.ECMALineMap();
-    public static int GetECMALineOfPosition(SourceFile sourceFile, int pos) => ComputeLineOfPosition(GetECMALineStarts(sourceFile).ToArray(), pos);
+    public static List<int> GetECMALineStarts(SourceFileLike sourceFile) => sourceFile.ECMALineMap();
+    public static int GetECMALineOfPosition(SourceFileLike sourceFile, int pos) => ComputeLineOfPosition(GetECMALineStarts(sourceFile).ToArray(), pos);
+    // scanner.go:2685-2701. Positions are UTF8 byte offsets; characters are UTF16 code units.
+    public static (int Line, int Character) GetECMALineAndUTF16CharacterOfPosition(SourceFileLike sourceFile, int pos)
+    {
+        var lineMap = GetECMALineStarts(sourceFile);
+        int line = ComputeLineOfPosition(lineMap.ToArray(), pos);
+        int character = Core.UTF16Len(sourceFile.Text()[lineMap[line]..pos]);
+        return (line, character);
+    }
+
+    public static (int Line, int ByteOffset) GetECMALineAndByteOffsetOfPosition(SourceFileLike sourceFile, int pos)
+    {
+        var lineMap = GetECMALineStarts(sourceFile);
+        int line = ComputeLineOfPosition(lineMap.ToArray(), pos);
+        return (line, pos - lineMap[line]);
+    }
+
+    // scanner.go:2717-2728. Use the internal byte-string directly (no second UTF8 encoding).
+    public static int GetECMAPositionOfLineAndUTF16Character(SourceFileLike sourceFile, int line, int character) => computePositionOfLineAndUTF16Character(GetECMALineStarts(sourceFile).ToArray(), line, character, sourceFile.Text(), false);
+    public static int GetECMAPositionOfLineAndByteOffset(SourceFileLike sourceFile, int line, int byteOffset) => ComputePositionOfLineAndByteOffset(GetECMALineStarts(sourceFile).ToArray(), line, byteOffset);
     public static int GetECMAEndLinePosition(SourceFile sourceFile, int line)
     {
         int pos = GetECMALineStarts(sourceFile)[line];
@@ -4068,4 +4101,20 @@ internal enum EscapeSequenceScanningFlags
     AllowExtendedUnicodeEscape = String | AnyUnicodeMode
 }
 
-public readonly record struct CommentRange(Kind Kind, int Pos, int End, bool HasTrailingNewLine);
+// ast.go:3111. TextRange embedding is exposed through Loc and forwarding methods;
+// Pos/End remain C# properties for compatibility with the existing public adapter.
+public readonly record struct CommentRange(Kind Kind, int Pos, int End, bool HasTrailingNewLine)
+{
+    public TextRange Loc => new(Pos, End);
+
+    public int Len() => Loc.Len();
+    public bool IsValid() => Loc.IsValid();
+    public bool Contains(int pos) => Loc.Contains(pos);
+    public bool ContainsInclusive(int pos) => Loc.ContainsInclusive(pos);
+    public bool ContainsExclusive(int pos) => Loc.ContainsExclusive(pos);
+    public TextRange WithPos(int pos) => Loc.WithPos(pos);
+    public TextRange WithEnd(int end) => Loc.WithEnd(end);
+    public bool ContainedBy(TextRange range) => Loc.ContainedBy(range);
+    public bool Overlaps(TextRange range) => Loc.Overlaps(range);
+    public bool Intersects(TextRange range) => Loc.Intersects(range);
+}

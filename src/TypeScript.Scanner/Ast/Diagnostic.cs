@@ -68,13 +68,51 @@ public sealed class Diagnostic
         return this;
     }
 
-    public string String() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : message.FormatByteArguments(messageArgs);
+    // The ordinary syntax source has no content-mapper span aliases, so display arguments remain stored arguments.
+    public string Localize() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : (message ?? Diagnostics.KeyToMessage(messageKey) ?? throw new InvalidOperationException("Unknown diagnostic message: " + messageKey)).FormatByteArguments(messageArgs);
+    public string String() => Localize();
     public override string ToString() => String();
     public Diagnostic Clone() => (Diagnostic)MemberwiseClone();
 }
 
 public static partial class Ast
 {
+    public static Diagnostic NewDiagnosticFromSerialized(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string messageKey, List<string> messageArgs, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated, bool skippedOnNoEmit) => new()
+    {
+        file = file,
+        loc = loc,
+        code = code,
+        category = category,
+        messageKey = messageKey,
+        messageArgs = messageArgs,
+        messageChain = messageChain,
+        relatedInformation = relatedInformation,
+        reportsUnnecessary = reportsUnnecessary,
+        reportsDeprecated = reportsDeprecated,
+        skippedOnNoEmit = skippedOnNoEmit
+    };
+    // Text is ordinary .NET Unicode display text; serialized message arguments retain raw byte strings.
+    public static Diagnostic NewDiagnosticFromText(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string text, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated) => new()
+    {
+        file = file,
+        loc = loc,
+        code = code,
+        category = category,
+        message = Diagnostics.NewAdHocMessage(text),
+        messageChain = messageChain,
+        relatedInformation = relatedInformation,
+        reportsUnnecessary = reportsUnnecessary,
+        reportsDeprecated = reportsDeprecated
+    };
+    public static Diagnostic NewExternalDiagnostic(SourceFile file, TextRange loc, string source, DiagnosticCategory category, int code, string messageText) => new()
+    {
+        file = file,
+        loc = loc,
+        source = source,
+        category = category,
+        code = code,
+        messageText = messageText
+    };
     public static Diagnostic NewDiagnostic(SourceFile file, TextRange loc, Message message, params object[] args) => new()
     {
         file = file,

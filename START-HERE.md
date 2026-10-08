@@ -118,6 +118,19 @@ Later user directions, in chronological order:
     behavior with actual Native AOT and all earlier regressions. This mandate is
     fulfilled by the campaign delivery commit; no next campaign is authorized.
 
+16. The user redirected the next campaign to **completion and verification of scanner,
+    parser and syntax-AST foundations**, with systematic upstream test incorporation.
+    Read the [exact foundation mandate](./docs/FOUNDATION-PROMPT.md). Baseline is
+    `b6b22b9`; no callable work was started. The coordinator must define a substantial
+    source-based contract and finish its internal milestones autonomously. Original
+    test assertions, adaptations, compiler-input reuse and additional comparisons
+    must remain distinct. Actual Native AOT and binder/checker regressions are gates.
+    Direction 15 is completed. This foundation contract is now accepted with actual
+    Linux x64 Native AOT and retained regressions; see the
+    [assessment](./docs/FOUNDATION-ASSESSMENT.md). No subsequent campaign is authorized.
+    Report executed data-driven cases separately from upstream test functions and
+    no-panic seeds separately from structural comparisons, as the user clarified.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -133,7 +146,8 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The latest completed scope is the data-type checking campaign and required support. A checkpoint can
+No campaign is active after committed foundation delivery. The latest accepted
+checkpoint is the defined foundation contract. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

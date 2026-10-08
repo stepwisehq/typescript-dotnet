@@ -101,6 +101,24 @@ internal static partial class TsPath
     }
 
     public static bool IsRootedDiskPath(string path) => GetEncodedRootLength(path) > 0;
+    public static int GetRootLength(string path)
+    {
+        var rootLength = GetEncodedRootLength(path);
+        return rootLength < 0 ? ~rootLength : rootLength;
+    }
+
+    public static string NormalizeSlashes(string path) => path.Replace('\\', '/');
+    public static string GetBaseFileName(string path) => getBaseFileNameFromNormalized(NormalizeSlashes(path));
+    private static string getBaseFileNameFromNormalized(string path)
+    {
+        var rootLength = GetRootLength(path);
+        if (rootLength == path.Length)
+            return "";
+        if (path.Length > 0 && path[^1] == '/')
+            path = path[..^1];
+        return path[Math.Max(GetRootLength(path), path.LastIndexOf('/') + 1)..];
+    }
+
     public static bool PathIsRelative(string path)
     {
         if (path == "." || path == "..")

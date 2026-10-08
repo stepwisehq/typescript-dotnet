@@ -23,7 +23,15 @@ internal static partial class JsNum
                 return ((long)Value).ToString(CultureInfo.InvariantCulture);
             // .NET supplies a shortest round-trip decimal; adjust the presentation to
             // the ECMAScript/Go JSON exponent and fixed notation boundaries.
-            string text = Math.Abs(Value).ToString("R", CultureInfo.InvariantCulture);
+            double absolute = Math.Abs(Value);
+            string text = absolute.ToString("R", CultureInfo.InvariantCulture);
+            // The runtime's shortest formatter can choose a decimal outside the
+            // asymmetric rounding interval at a binary exponent boundary. Check
+            // its round-trip contract before using it; G17 retains all binary64
+            // digits when that contract fails. This is a library adaptation, not
+            // a special case for a particular literal (see the original Ryu rows).
+            if (double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture) != absolute)
+                text = absolute.ToString("G17", CultureInfo.InvariantCulture);
             int e = text.IndexOf('E');
             int exponent = e < 0 ? 0 : int.Parse(text[(e + 1)..], CultureInfo.InvariantCulture);
             string mantissa = e < 0 ? text : text[..e];

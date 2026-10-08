@@ -1,0 +1,11 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sources": {
+    "internal/jsnum/string_test.go": "52908d6be0ffb8511e9e4ac5507361dcd60c15c02132fa56ec44e1dad7de1dfe",
+    "internal/jsnum/ryu_test.go": "baa7c4964b3845f825d93433d0806160dbe708df6218cac73c52ca566ffe4bdc"
+  },
+  "formatRows": 153,
+  "parseRows": 95,
+  "outputSha256": "b6456976dd3b04e7375549afa6cc969c56d9fd191bae6e166d86e25a574896e5",
+  "method": "Original Go expressions evaluated as float64 then stored as uint64 bits and unchanged expected strings."
+}

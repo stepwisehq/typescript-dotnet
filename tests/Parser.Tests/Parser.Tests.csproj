@@ -5,6 +5,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1"><PrivateAssets>all</PrivateAssets></PackageReference>
     <ProjectReference Include="../../validation/Parser.Validation/Parser.Validation.csproj" />
+    <ProjectReference Include="../../validation/Foundation.Checks/Foundation.Checks.csproj" />
     <None Include="../../validation/parser-corpus/*.jsonl" Link="corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,56 @@
+{
+  "commands": [
+    {
+      "command": [
+        "tools/.cache/go/bin/go",
+        "-C",
+        "upstream/TypeScript/tsc",
+        "test",
+        "./internal/jsnum",
+        "-run",
+        "^$",
+        "-fuzz",
+        "^FuzzStringJS$",
+        "-fuzztime=156x",
+        "-parallel=1"
+      ],
+      "expectedDeduplicatedBaselineSeeds": 156,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "tools/.cache/go/bin/go",
+        "-C",
+        "upstream/TypeScript/tsc",
+        "test",
+        "./internal/jsnum",
+        "-run",
+        "^$",
+        "-fuzz",
+        "^FuzzFromStringJS$",
+        "-fuzztime=236x",
+        "-parallel=1"
+      ],
+      "expectedDeduplicatedBaselineSeeds": 236,
+      "exitCode": 0
+    }
+  ],
+  "elapsedSeconds": 9.239,
+  "log": "artifacts/foundation-validation/original-go-numeric-finite.log",
+  "logSha256": "3e08beaf74a92870f3a08e9dd068af16dcfa396431b3db57e96caefe774d2936",
+  "sharedPortRowsPerFunction": 248,
+  "seedCountBasis": "Go fuzz infrastructure deduplicates equivalent corpus arguments; shared C# ports retain every original table seed row.",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceSha256": "d14cb48750c8ce35f0767f97885b01f9b0d63c853390f6cfb4f9b3f4cb50fd67",
+  "recordedAtUTC": "2026-10-08T23:10:36.980738+00:00",
+  "goRuntime": {
+    "version": "go version go1.27.1 linux/amd64",
+    "binarySha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624"
+  },
+  "nodeRuntime": {
+    "version": "v24.21.0",
+    "binarySha256": "7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c"
+  },
+  "logText": "Command: ['tools/.cache/go/bin/go', '-C', 'upstream/TypeScript/tsc', 'test', './internal/jsnum', '-run', '^$', '-fuzz', '^FuzzStringJS$', '-fuzztime=156x', '-parallel=1']\nfuzz: elapsed: 0s, gathering baseline coverage: 0/156 completed\nfuzz: elapsed: 3s, gathering baseline coverage: 139/156 completed\nfuzz: elapsed: 3s, gathering baseline coverage: 156/156 completed, now fuzzing with 1 workers\nfuzz: elapsed: 3s, execs: 156 (49/sec), new interesting: 0 (total: 156)\nPASS\nok  \tgithub.com/microsoft/TypeScript/tsc/internal/jsnum\t3.349s\nCommand: ['tools/.cache/go/bin/go', '-C', 'upstream/TypeScript/tsc', 'test', './internal/jsnum', '-run', '^$', '-fuzz', '^FuzzFromStringJS$', '-fuzztime=236x', '-parallel=1']\nfuzz: elapsed: 0s, gathering baseline coverage: 0/236 completed\nfuzz: elapsed: 3s, gathering baseline coverage: 117/236 completed\nfuzz: elapsed: 6s, gathering baseline coverage: 236/236 completed, now fuzzing with 1 workers\nfuzz: elapsed: 6s, execs: 236 (47/sec), new interesting: 0 (total: 236)\nPASS\nok  \tgithub.com/microsoft/TypeScript/tsc/internal/jsnum\t5.563s\n",
+  "scope": "Separate full finite original Go numeric baseline replay. The main frozen gate uses1x smoke calls; these bounded calls complete original deduplicated baseline arguments without a mutation campaign."
+}

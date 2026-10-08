@@ -1,0 +1,2017 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "phase": "completed bounded foundation source dispositions and final exact-source native evidence",
+  "files": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/scanner/scanner.go",
+      "sha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
+      "functions": [
+        {
+          "name": "defaultScanner",
+          "line": 226,
+          "status": "adapted",
+          "counterparts": [],
+          "notes": "Scanner constructor/default-field initialization preserves fresh defaults; managed object allocation replaces Go sync.Pool."
+        },
+        {
+          "name": "NewScanner",
+          "line": 233,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3685
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "Reset",
+          "line": 238,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3687
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "cleared",
+          "line": 248,
+          "status": "adapted",
+          "counterparts": [],
+          "notes": "Managed Reset/Clear retains nil dictionaries vs allocated cleared dictionaries, corresponding to Go cleared helper."
+        },
+        {
+          "name": "Text",
+          "line": 253,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3704
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "Token",
+          "line": 257,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 113
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenFlags",
+          "line": 261,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 117
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenFullStart",
+          "line": 265,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 122
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenStart",
+          "line": 269,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 127
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenEnd",
+          "line": 273,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 132
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenText",
+          "line": 277,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3707
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenValue",
+          "line": 281,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3709
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenRange",
+          "line": 285,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 137
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "CommentDirectives",
+          "line": 289,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 142
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "Mark",
+          "line": 293,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3724
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "Rewind",
+          "line": 297,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3736
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ResetPos",
+          "line": 301,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 147
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ResetTokenState",
+          "line": 310,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 159
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetSkipJSDocLeadingAsterisks",
+          "line": 317,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 167
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetSkipTrivia",
+          "line": 325,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 179
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasUnicodeEscape",
+          "line": 329,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 184
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasExtendedUnicodeEscape",
+          "line": 333,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 189
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasPrecedingLineBreak",
+          "line": 337,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 194
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasPrecedingJSDocComment",
+          "line": 341,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 199
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasPrecedingJSDocLeadingAsterisks",
+          "line": 345,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 204
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasPrecedingJSDocWithDeprecatedTag",
+          "line": 349,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 209
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "HasPrecedingJSDocWithSeeOrLink",
+          "line": 353,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 214
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanJSDocCommentForTags",
+          "line": 359,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 222
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "hasJSDocTag",
+          "line": 381,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 252
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetText",
+          "line": 397,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3711
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3712
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3713
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetOnError",
+          "line": 403,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 267
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetLanguageVariant",
+          "line": 407,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 273
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SetScriptTarget",
+          "line": 411,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 278
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "languageVersion",
+          "line": 415,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 283
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "error",
+          "line": 422,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 293
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 91
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "errorAt",
+          "line": 426,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 298
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "char",
+          "line": 435,
+          "status": "adapted",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 313
+            }
+          ],
+          "notes": "charCode name avoids C# char keyword; UTF8 decode/end sentinel behavior retained."
+        },
+        {
+          "name": "charAt",
+          "line": 443,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 324
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 86
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "charAndSize",
+          "line": 450,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 333
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanASCIIWhile",
+          "line": 465,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 353
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "Scan",
+          "line": 478,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 370
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "processCommentDirective",
+          "line": 969,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1232
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanLessThanToken",
+          "line": 1010,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1291
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanGreaterThanToken",
+          "line": 1018,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1302
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "reScanGreaterThanTokenInner",
+          "line": 1025,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1312
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanTemplateToken",
+          "line": 1049,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1354
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanAsteriskEqualsToken",
+          "line": 1055,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1361
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanSlashToken",
+          "line": 1064,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1373
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanJsxToken",
+          "line": 1222,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1618
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanHashToken",
+          "line": 1229,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1626
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanQuestionToken",
+          "line": 1237,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1637
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJsxToken",
+          "line": 1246,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1649
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJsxTokenEx",
+          "line": 1250,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1654
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJsxIdentifier",
+          "line": 1318,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1763
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJsxAttributeValue",
+          "line": 1331,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1773
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ReScanJsxAttributeValue",
+          "line": 1350,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1802
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJSDocCommentTextToken",
+          "line": 1357,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1811
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "CanFollowJSDocAt",
+          "line": 1393,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1866
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanJSDocToken",
+          "line": 1401,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 1876
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanIdentifier",
+          "line": 1485,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2028
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanIdentifierParts",
+          "line": 1531,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2095
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanIdentifierEscape",
+          "line": 1561,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2139
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanString",
+          "line": 1586,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2170
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanTemplateAndSetTokenValue",
+          "line": 1638,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2238
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanEscapeSequence",
+          "line": 1690,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2306
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanUnicodeEscape",
+          "line": 1855,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2568
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanLowSurrogateEscape",
+          "line": 1912,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2655
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "peekUnicodeEscape",
+          "line": 1932,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2677
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanNumber",
+          "line": 1944,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2691
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanNumberFragment",
+          "line": 2044,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2838
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanDigits",
+          "line": 2090,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2903
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1477
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanHexDigits",
+          "line": 2102,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2920
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanBinaryOrOctalDigits",
+          "line": 2151,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3003
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanBigIntSuffix",
+          "line": 2182,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3056
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanInvalidCharacter",
+          "line": 2207,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3097
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetIdentifierToken",
+          "line": 2214,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3755
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsValidIdentifier",
+          "line": 2224,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3761
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3763
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "isWordCharacter",
+          "line": 2237,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3107
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsIdentifierStart",
+          "line": 2241,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3111
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsIdentifierPart",
+          "line": 2245,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3116
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsIdentifierPartEx",
+          "line": 2249,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3121
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "TokenToString",
+          "line": 2263,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3778
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "StringToToken",
+          "line": 2267,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3780
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetViableKeywordSuggestions",
+          "line": 2275,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3781
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "couldStartTrivia",
+          "line": 2285,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3126
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SkipTrivia",
+          "line": 2307,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3160
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3750
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "SkipTriviaEx",
+          "line": 2311,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3747
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3749
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "isConflictMarkerTrivia",
+          "line": 2409,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3327
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanConflictMarkerTrivia",
+          "line": 2444,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3364
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "isShebangTrivia",
+          "line": 2475,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3403
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanShebangTrivia",
+          "line": 2485,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3418
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetShebang",
+          "line": 2497,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3751
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3752
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetScannerForSourceFile",
+          "line": 2506,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3862
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ScanTokenAtPosition",
+          "line": 2516,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3872
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetRangeOfTokenAtPosition",
+          "line": 2521,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3874
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetTokenPosOfNode",
+          "line": 2526,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 4060
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "getErrorRangeForArrowFunction",
+          "line": 2542,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3916
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "findOriginatingJSDocSatisfiesTag",
+          "line": 2556,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3931
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetErrorRangeForNode",
+          "line": 2588,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3968
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ComputeLineOfPosition",
+          "line": 2656,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3446
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMALineStarts",
+          "line": 2673,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3879
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMALineOfPosition",
+          "line": 2677,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3881
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMALineAndUTF16CharacterOfPosition",
+          "line": 2685,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3883
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMALineAndByteOffsetOfPosition",
+          "line": 2696,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3890
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMAEndLinePosition",
+          "line": 2703,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3904
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMAPositionOfLineAndUTF16Character",
+          "line": 2717,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3899
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetECMAPositionOfLineAndByteOffset",
+          "line": 2725,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3901
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ComputePositionOfLineAndByteOffset",
+          "line": 2731,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3477
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "ComputePositionOfLineAndUTF16Character",
+          "line": 2742,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3753
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3754
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetLeadingCommentRanges",
+          "line": 2800,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3571
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3573
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3576
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3577
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetTrailingCommentRanges",
+          "line": 2804,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3574
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3575
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3578
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3579
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "iterateCommentRanges",
+          "line": 2814,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 3581
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/scanner/regexp.go",
+      "sha256": "ddadb4e90539fd9acb8174cf58eb63a4ec168871ca55e1e0bffcfcd01459177b",
+      "functions": [
+        {
+          "name": "checkRegularExpressionFlagAvailability",
+          "line": 51,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 37
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "pos",
+          "line": 109,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 66
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "setPos",
+          "line": 113,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 71
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "incPos",
+          "line": 117,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 76
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "char",
+          "line": 121,
+          "status": "adapted",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 82
+            }
+          ],
+          "notes": "charCode name avoids C# char keyword; UTF8 decode/end sentinel behavior retained."
+        },
+        {
+          "name": "charAt",
+          "line": 125,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 324
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 86
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "error",
+          "line": 129,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 293
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 91
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "text",
+          "line": 133,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 96
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "compareDecimalStrings",
+          "line": 137,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 101
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanDisjunction",
+          "line": 156,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 126
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanAlternative",
+          "line": 224,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 193
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanPatternModifiers",
+          "line": 377,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 443
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanAtomEscape",
+          "line": 406,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 487
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanDecimalEscape",
+          "line": 434,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 532
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanCharacterEscape",
+          "line": 460,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 561
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanGroupName",
+          "line": 500,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 634
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "namedCapturingGroupsContains",
+          "line": 524,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 670
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "isClassContentExit",
+          "line": 533,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 682
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassRanges",
+          "line": 538,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 689
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassSetExpression",
+          "line": 593,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 744
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassSetSubExpression",
+          "line": 718,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 929
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassSetOperand",
+          "line": 777,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1020
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassStringDisjunctionContents",
+          "line": 809,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1069
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassSetCharacter",
+          "line": 837,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1110
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanClassAtom",
+          "line": 880,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1210
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanCharacterClassEscape",
+          "line": 906,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1248
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "getSpellingSuggestionForUnicodePropertyName",
+          "line": 984,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1385
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "getSpellingSuggestionForUnicodePropertyValue",
+          "line": 988,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1390
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "getSpellingSuggestionForUnicodePropertyNameOrValue",
+          "line": 996,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1400
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanWordCharacters",
+          "line": 1004,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1405
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanSourceCharacter",
+          "line": 1016,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1420
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanExpectedChar",
+          "line": 1059,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1465
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "scanDigits",
+          "line": 1067,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+              "line": 2903
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1477
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "run",
+          "line": 1075,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+              "line": 1487
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/scanner/utilities.go",
+      "sha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0",
+      "functions": [
+        {
+          "name": "tokenIsIdentifierOrKeyword",
+          "line": 14,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 8
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IdentifierToKeywordKind",
+          "line": 18,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 9
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetSourceTextOfNodeFromSourceFile",
+          "line": 22,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 77
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "isJSDocTypeExpressionOrChild",
+          "line": 26,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 10
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "normalizeJSDocTypeSourceText",
+          "line": 41,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 22
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "stripLeadingJSDocComment",
+          "line": 64,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 43
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetTextOfNodeFromSourceText",
+          "line": 72,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 73
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetTextOfNode",
+          "line": 102,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 118
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "GetTextOfJSDocComment",
+          "line": 106,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 105
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "DeclarationNameToString",
+          "line": 122,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 115
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsIdentifierText",
+          "line": 129,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 124
+            },
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 125
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        },
+        {
+          "name": "IsIntrinsicJsxName",
+          "line": 144,
+          "status": "implemented-counterpart-present",
+          "counterparts": [
+            {
+              "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+              "line": 126
+            }
+          ],
+          "notes": "Source branch fidelity and managed byte-string adaptations reviewed; named presence alone is not exhaustive parity evidence."
+        }
+      ]
+    }
+  ],
+  "tableFiles": [
+    "scanner/unicodeproperties.go",
+    "stringutil/identifier.go",
+    "stringutil/identifier_parts_generated.go"
+  ],
+  "requiredSupport": [
+    "core/core.go:ComputeECMALineStarts/Seq,PositionToLineAndByteOffset,UTF16Len,spelling suggestion helpers",
+    "core/text.go:all TextRange methods plus UndefinedTextRange",
+    "jsnum/string.go:Number.String,FromString and normalization/int/float helpers",
+    "jsnum/pseudobigint.go:ParsePseudoBigInt",
+    "stringutil/util.go:whitespace/digits/surrogate/JSString helpers",
+    "stringutil/identifier.go +generated tables:identifier predicates",
+    "runtime UTF8 decode behavior and pinned Go Unicode case/folding tables"
+  ],
+  "notes": [
+    "All158 named scanner/regexp/utilities function boundaries accounted for; defaultScanner/cleared are explicit managed adaptations.",
+    "Four SourceFileLike coordinate helpers and Scanner.Utilities omissions are implemented and supplementalGo helper assertions pass.",
+    "Number.String adaptation passed original153 formatting rows plus16,705Go/Node focusedIEEE patterns. Finite evidence, not exhaustive shortestness/IEEE proof.",
+    "Diagnostic1513 remains unobserved; source-path reasoning is pending independent challenge, not an observed code claim."
+  ],
+  "finalEvidence": {
+    "path": "validation/results/foundation-verified.json",
+    "sourceSha256": "d14cb48750c8ce35f0767f97885b01f9b0d63c853390f6cfb4f9b3f4cb50fd67",
+    "broadScannerRequests": 17723,
+    "broadScannerExact": 17723,
+    "limits": "Function presence/source review and finite observations do not prove exhaustive branch or numeric-shortestness parity; defensive1513 is source-unreachable, not observed."
+  }
+}

@@ -66,7 +66,7 @@ public static partial class Ast
         {
             if (found is not null)
                 return true;
-            if ((node.JsxFacts() & JsxProjection.ContainsJsx) == 0)
+            if ((node.SubtreeFactsValue() & SubtreeFactValues.ContainsJsx) == 0)
                 return false;
             if (IsJsxOpeningLikeElement(node) || IsJsxFragment(node))
             {

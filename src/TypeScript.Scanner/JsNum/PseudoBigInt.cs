@@ -20,15 +20,34 @@ internal static partial class JsNum
             return stringValue == "" ? "0" : stringValue;
         }
 
+        // Go big.Int.SetString(value, 0) permits underscores between digits and
+        // immediately after the base prefix, but never consecutive or trailing.
+        if (stringValue[0] != '0' || stringValue.Length <= 2)
+            throw new InvalidOperationException("Failed to parse big int: " + stringValue);
         BigInteger bi = 0;
-        foreach (char ch in stringValue[2..])
+        bool previousUnderscore = false;
+        bool hasDigit = false;
+        for (int i = 2; i < stringValue.Length; i++)
         {
+            char ch = stringValue[i];
+            if (ch == '_')
+            {
+                if (previousUnderscore || i == stringValue.Length - 1)
+                    throw new InvalidOperationException("Failed to parse big int: " + stringValue);
+                previousUnderscore = true;
+                continue;
+            }
+
             int digit = ch is >= '0' and <= '9' ? ch - '0' : ch is >= 'a' and <= 'f' ? ch - 'a' + 10 : ch is >= 'A' and <= 'F' ? ch - 'A' + 10 : -1;
             if (digit < 0 || digit >= radix)
                 throw new InvalidOperationException("Failed to parse big int: " + stringValue);
             bi = bi * radix + digit;
+            previousUnderscore = false;
+            hasDigit = true;
         }
 
+        if (!hasDigit)
+            throw new InvalidOperationException("Failed to parse big int: " + stringValue);
         return bi.ToString(CultureInfo.InvariantCulture);
     }
 }

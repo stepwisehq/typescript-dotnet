@@ -11,4 +11,5 @@ source=source.replace('\te.node(file.AsNode())','\tlastSyntaxEncoder = &e\n\te.n
 source=source.replace('value.Type().String() == "*ast.FlowNode"','value.Type().String() == "*ast.FlowNode" || value.Type().String() == "*ast.FlowList"')
 output=root/'upstream/TypeScript/tsc/cmd/binder-oracle'
 (output/'parser_graph.go').write_text(source)
-for name in ['fuzz.go','sources.go']:(output/name).write_bytes((root/'tools/parser-oracle'/name).read_bytes())
+for file in (root/'tools/parser-oracle').glob('*.go'):
+    if file.name!='main.go':(output/file.name).write_bytes(file.read_bytes())

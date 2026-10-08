@@ -1,0 +1,854 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "subsystem": "scanner-regexp-and-required-numeric-string-core",
+  "phase": "completed: all applicable original scanner/numeric/required-path assertions passed xUnit and identical Native AOT bodies; foundation gate accepted",
+  "files": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/scanner/scanner_test.go",
+      "sha256": "b46023319546710540b1ef60204e4a660544e0e51c8f02f4e1b518ce2dc0a6cd",
+      "testFunctions": [
+        {
+          "name": "TestScanStringPreservesLoneSurrogates",
+          "line": 13,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No table; standalone assertions.",
+          "assertionSummary": [
+            "Scan returns StringLiteral; TokenValue equals crab + U+D7FF + isolated U+D800/U+D801 + crab."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "tests/Scanner.Tests/OracleTests.cs",
+              "name": "ScanStringPreservesLoneSurrogatesLikeUpstream",
+              "notes": "Exact source input/kind; byte-array equality expresses Go JS byte-string identity."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Existing named test preserves original assertions through exact byte representation.",
+          "adaptationNotes": "Go byte-string equality becomes exact C# byte-array equality; intended assertion unchanged.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestNormalizeJSDocTypeSourceText",
+          "line": 25,
+          "kind": "test",
+          "tableCases": 5,
+          "tableCaseCountBasis": "5 explicit table rows",
+          "assertionSummary": [
+            "Normalized text equals LF-joined expected lines; covers ECMAScript separators, blanks/trailing lines, marker removal."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ScannerChecks.cs",
+              "name": "ScannerChecks.Run(TestNormalizeJSDocTypeSourceText/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestIsJSDocTypeExpressionOrChild",
+          "line": 49,
+          "kind": "test",
+          "tableCases": 7,
+          "tableCaseCountBasis": "7 explicit table rows",
+          "assertionSummary": [
+            "Seven synthetic node/parent/flag combinations return exact expected predicate result."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ScannerChecks.cs",
+              "name": "ScannerChecks.Run(TestIsJSDocTypeExpressionOrChild/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestGetTextOfNodeFromJSDocTypePreservesAsteriskType",
+          "line": 82,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No table; standalone assertions.",
+          "assertionSummary": [
+            "JSDocAllType text from newline/star source equals asterisk after normalization."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ScannerChecks.cs",
+              "name": "ScannerChecks.Run(TestGetTextOfNodeFromJSDocTypePreservesAsteriskType/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestScanSourceKeyword",
+          "line": 95,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No table; standalone assertions.",
+          "assertionSummary": [
+            "Scan SourceKeyword; token-to-text source; string-to-token SourceKeyword; next Identifier; value sourceValue."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "tests/Scanner.Tests/OracleTests.cs",
+              "name": "ScanSourceKeywordLikeUpstream",
+              "notes": "Five original assertions and exact source retained."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Existing named test retains all original assertions.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        }
+      ],
+      "notes": [
+        "5 test functions; 12 table rows; 15 effective cases. No tracked regexp-specific tests."
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/jsnum/string_test.go",
+      "sha256": "52908d6be0ffb8511e9e4ac5507361dcd60c15c02132fa56ec44e1dad7de1dfe",
+      "testFunctions": [
+        {
+          "name": "TestString",
+          "line": 54,
+          "kind": "test",
+          "tableCases": 153,
+          "tableCaseCountBasis": "29 stringTests rows +124 ryuTests rows; duplicates preserved.",
+          "assertionSummary": [
+            "Number.String equals literal expected decimal for all 29 main rows plus 124 Ryu fixture rows."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(TestString/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "observedRepair": "Original IEEE3e60000000000000 fixture exposed non-roundtripping .NET R output; general R-contract verification/G17 fallback implemented. Focused supplemental bit-pattern proof still required.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestFromString",
+          "line": 165,
+          "kind": "test",
+          "tableCases": 248,
+          "tableCaseCountBasis": "153 stringTests +95 fromStringTests rows, 554 numeric assertions.",
+          "assertionSummary": [
+            "153 stringTests numeric results each checked plain/leading-space/trailing-space;95 additional parsing cases checked; NaN equality explicit, signed zeros numerically equal."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(TestFromString/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestStringRoundtrip",
+          "line": 191,
+          "kind": "test",
+          "tableCases": 153,
+          "tableCaseCountBasis": "153 explicit table rows",
+          "assertionSummary": [
+            "FromString(expected text).String equals expected text, including NaN/infinities/negative-zero normalization."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(TestStringRoundtrip/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestStringJS",
+          "line": 202,
+          "kind": "test",
+          "tableCases": 248,
+          "tableCaseCountBasis": "153+95 rows;401 numeric/text assertions; original skips if Node unavailable.",
+          "assertionSummary": [
+            "Actual Node conversion:153 number/text roundtrips and95 string-to-number conversions; same NaN-aware numeric equality."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(TestStringJS/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "adaptationNotes": "Node operations batched, one output per original input; exact numeric/text and cardinality assertions retained. Node unavailable is an explicit prerequisite failure rather than a counted skip/pass. Deterministic fuzz seeds do not claim a fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "FuzzStringJS",
+          "line": 238,
+          "kind": "fuzz",
+          "tableCases": 248,
+          "tableCaseCountBasis": "153+95 f.Add calls only when Go test.fuzz active; deterministic port will preserve seed assertions, not claim a fuzz campaign.",
+          "assertionSummary": [
+            "For each finite retained seed: Node result count1; format equals JS string; numeric roundtrip matches, NaN-aware."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(FuzzStringJS/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            },
+            {
+              "path": "validation/results/foundation-go-numeric-fuzz-verified.json",
+              "name": "original Go finite baseline execution",
+              "notes": "FuzzStringJS156 and FuzzFromStringJS236 deduplicated original-Go baseline arguments passed; shared port retains248 source rows per function. Finite baseline only."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "adaptationNotes": "Node operations batched, one output per original input; exact numeric/text and cardinality assertions retained. Node unavailable is an explicit prerequisite failure rather than a counted skip/pass. Deterministic fuzz seeds do not claim a fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "FuzzFromStringJS",
+          "line": 266,
+          "kind": "fuzz",
+          "tableCases": 248,
+          "tableCaseCountBasis": "153+95 f.Add calls only when Go test.fuzz active; seed execution distinct from unbounded fuzzing.",
+          "assertionSummary": [
+            "Strings longer350bytes skip; Node result count1; parsed numeric matches, NaN-aware."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(FuzzFromStringJS/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            },
+            {
+              "path": "validation/results/foundation-go-numeric-fuzz-verified.json",
+              "name": "original Go finite baseline execution",
+              "notes": "FuzzStringJS156 and FuzzFromStringJS236 deduplicated original-Go baseline arguments passed; shared port retains248 source rows per function. Finite baseline only."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "adaptationNotes": "Node operations batched, one output per original input; exact numeric/text and cardinality assertions retained. Node unavailable is an explicit prerequisite failure rather than a counted skip/pass. Deterministic fuzz seeds do not claim a fuzz campaign.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/jsnum/ryu_test.go",
+      "sha256": "baa7c4964b3845f825d93433d0806160dbe708df6218cac73c52ca566ffe4bdc",
+      "testFunctions": [],
+      "notes": [
+        "No Test/Fuzz/Benchmark functions. 124 literal data rows consumed by string_test.go; ieeeParts2Double validates exponent/mantissa then preserves IEEE bits. Retain Ulf Adams Apache/Boost license notice when copying fixtures."
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/jsnum/pseudobigint_test.go",
+      "sha256": "7b728096893b4e4bc6f4553e562a78aa0377d07ad7b8b933744caac6c719c0fd",
+      "testFunctions": [
+        {
+          "name": "TestParsePseudoBigInt",
+          "line": 10,
+          "kind": "test",
+          "tableCases": 15,
+          "tableCaseCountBasis": "15 literal table rows; generated11060 +4 standalone assertions separately; total11079 equality checks.",
+          "assertionSummary": [
+            "1106 generated numbers *10 leading-zero lengths ->11060 decimal-strip assertions.",
+            "15 small binary/octal/hex/separator/uppercase-prefix rows preserve exact output.",
+            "4 large decimal/binary/octal/hex assertions preserve123456789012345678901234567890."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/NumberChecks.cs",
+              "name": "ScannerChecks.Run(TestParsePseudoBigInt/*)",
+              "notes": "Same assertion bodies invoked by xUnit and native runner; original table rows/finite seeds separately enumerated."
+            },
+            {
+              "path": "tests/Scanner.Tests/FoundationScannerTests.cs",
+              "name": "PreservesOriginalUpstreamAssertion",
+              "notes": "Thin wrapper; original two named scanner tests separately forward to shared bodies."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "original direct gate",
+              "notes": "2438 scanner xUnit and same2438 shared native assertions; Node reference prerequisite satisfied; expected values unchanged."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Original assertions implemented in shared xUnit/NativeAOT bodies; first focused managed gate passed after observed repairs. First shared direct NativeAOT gate passed (scanner2438 total); original finite seeds only, not an exhaustive fuzz campaign.",
+          "observedRepair": "Original underscore cases exposed missing Go big.Int.SetString(base0) separator behavior; repaired after original assertions failed.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/jsnum/jsnum_test.go",
+      "sha256": "9ef8793cee85ce0c3ff5b6fa6b0e0301eb0f5ab6e0616160a21a4af44421824e",
+      "testFunctions": [
+        {
+          "name": "TestToInt32",
+          "line": 261,
+          "kind": "test",
+          "tableCases": 46,
+          "tableCaseCountBasis": "46 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "BenchmarkToInt32",
+          "line": 288,
+          "kind": "benchmark",
+          "tableCases": 46,
+          "tableCaseCountBasis": "46 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Timing loops only; not correctness evidence."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestBitwiseNOT",
+          "line": 302,
+          "kind": "test",
+          "tableCases": 7,
+          "tableCaseCountBasis": "7 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestBitwiseAND",
+          "line": 344,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "4 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestBitwiseOR",
+          "line": 381,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "4 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestBitwiseXOR",
+          "line": 418,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "4 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestSignedRightShift",
+          "line": 455,
+          "kind": "test",
+          "tableCases": 13,
+          "tableCaseCountBasis": "13 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestUnsignedRightShift",
+          "line": 501,
+          "kind": "test",
+          "tableCases": 13,
+          "tableCaseCountBasis": "13 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestLeftShift",
+          "line": 547,
+          "kind": "test",
+          "tableCases": 11,
+          "tableCaseCountBasis": "11 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestRemainder",
+          "line": 591,
+          "kind": "test",
+          "tableCases": 24,
+          "tableCaseCountBasis": "24 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "TestExponentiate",
+          "line": 652,
+          "kind": "test",
+          "tableCases": 26,
+          "tableCaseCountBasis": "26 literal rows; Node subtest repeats same inputs.",
+          "assertionSummary": [
+            "Original numeric expected table equality plus Node result comparison; NaN-aware numerical equality.",
+            "Node comparison allows one ULP because spec permits implementation-approximated exponentiation; original fixed table equality exact."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        },
+        {
+          "name": "BenchmarkExponentiate",
+          "line": 719,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Benchmark fixed exponent-base inputs.",
+          "assertionSummary": [
+            "Timing loops only; not correctness evidence."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Number arithmetic/bitwise operations are not scanner/parser/coordinate dependencies; outside foundation numeric support. Cataloged to avoid claiming complete jsnum package tests."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/stringutil/util_test.go",
+      "sha256": "2ad3fc3489850b923465115f172abae2869b588f8cecff2b439381b41d986f78",
+      "testFunctions": [
+        {
+          "name": "TestEncodeURI",
+          "line": 5,
+          "kind": "test",
+          "tableCases": 3,
+          "tableCaseCountBasis": "3 explicit table rows",
+          "assertionSummary": [
+            "Spaces encode percent20, URI reserved characters preserved, bracket+Unicode UTF8 bytes percent-encoded."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "EncodeURI is not called by scanner or parser syntax/position paths; URI encoding outside required support."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/stringutil/js_case_test.go",
+      "sha256": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5",
+      "testFunctions": [
+        {
+          "name": "TestJSCasing",
+          "line": 5,
+          "kind": "test",
+          "tableCases": 26,
+          "tableCaseCountBasis": "26 explicit table rows",
+          "assertionSummary": [
+            "Exact JS lower/upper casing for ASCII, expansions, Greek final sigma/property skew, isolated surrogates."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "ToLowerJS/ToUpperJS are type-level checker intrinsics, not scanner/parser dependencies; regexp suggestions use separate pinned Go simple-fold helpers."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/core/pattern_test.go",
+      "sha256": "52d6450c846dae0cf1793de8aeba17220a3c1425ab385b438a448ae0dfbfa6b1",
+      "testFunctions": [
+        {
+          "name": "TestPatternOverlappingMatch",
+          "line": 5,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No table; standalone assertions.",
+          "assertionSummary": [
+            "Pattern matching or parallel breadth-first-search behavior, unrelated to scanner coordinate support."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "No scanner/regexp/position dependency; binder/checker patterns and parallel traversal are later-stage support."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/core/bfs_test.go",
+      "sha256": "47e51e2791f8479304955c6ef1476e903dd684d3f3d649b9fde49c5c5ab44dfd",
+      "testFunctions": [
+        {
+          "name": "TestBreadthFirstSearchParallel",
+          "line": 13,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No table; standalone assertions.",
+          "assertionSummary": [
+            "Pattern matching or parallel breadth-first-search behavior, unrelated to scanner coordinate support."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "No scanner/regexp/position dependency; binder/checker patterns and parallel traversal are later-stage support."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/tspath/path_test.go",
+      "sha256": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a",
+      "testFunctions": [
+        {
+          "name": "TestNormalizeSlashes",
+          "line": 12,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Standalone literal assertions: 4",
+          "assertionSummary": [
+            "Every original input/expected equality preserved against required TsPath helper."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestNormalizeSlashes",
+              "notes": "Shared bodies passed in scanner foundation xUnit/native final gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/additional-scanner-syntax-managed.log",
+              "name": "central11 focused required-path checks",
+              "notes": "All94 path assertion rows passed this earlier focused stage; final native pass is recorded below."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Direct scanner/parser filename/reference dependency.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestGetRootLength",
+          "line": 20,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Standalone literal assertions: 48",
+          "assertionSummary": [
+            "Every original input/expected equality preserved against required TsPath helper."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestGetRootLength",
+              "notes": "Shared bodies passed in scanner foundation xUnit/native final gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/additional-scanner-syntax-managed.log",
+              "name": "central11 focused required-path checks",
+              "notes": "All94 path assertion rows passed this earlier focused stage; final native pass is recorded below."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Direct scanner/parser filename/reference dependency.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestIsRootedDiskPath",
+          "line": 108,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Standalone literal assertions: 18",
+          "assertionSummary": [
+            "Every original input/expected equality preserved against required TsPath helper."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestIsRootedDiskPath",
+              "notes": "Shared bodies passed in scanner foundation xUnit/native final gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/additional-scanner-syntax-managed.log",
+              "name": "central11 focused required-path checks",
+              "notes": "All94 path assertion rows passed this earlier focused stage; final native pass is recorded below."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Direct scanner/parser filename/reference dependency.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        },
+        {
+          "name": "TestPathIsRelative",
+          "line": 737,
+          "kind": "test",
+          "tableCases": 24,
+          "tableCaseCountBasis": "12 literal entries plus init() appends all 12 with backslash replacement.",
+          "assertionSummary": [
+            "Every original input/expected equality preserved against required TsPath helper."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestPathIsRelative",
+              "notes": "Shared bodies passed in scanner foundation xUnit/native final gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/additional-scanner-syntax-managed.log",
+              "name": "central11 focused required-path checks",
+              "notes": "All94 path assertion rows passed this earlier focused stage; final native pass is recorded below."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "final foundation exact-source gate",
+              "notes": "All2532 scanner original assertion rows plus20 authored groups passed identical native bodies; scanner xUnit3837/3837. Original finite fuzz ports retain248 rows/function; no unbounded fuzz claim."
+            }
+          ],
+          "reason": "Direct scanner/parser filename/reference dependency.",
+          "phaseStatus": "passed-xUnit-and-native-shared-bodies"
+        }
+      ],
+      "notes": "Only required helper test functions listed here; unified test catalog classifies all other path tests."
+    }
+  ],
+  "notes": [
+    "Only pinned tracked test files inventoried; authored upstream oracle helpers excluded.",
+    "AST positionmap_test.go belongs syntax-AST owner and unified catalog; scanner coordinate quartet and core UTF16Len belong scanner implementation.",
+    "Disposition unresolved means planned original assertion port; existing differential corpus is additional evidence, never original-test parity."
+  ],
+  "finalEvidence": {
+    "path": "validation/results/foundation-verified.json",
+    "sourceSha256": "d14cb48750c8ce35f0767f97885b01f9b0d63c853390f6cfb4f9b3f4cb50fd67",
+    "sharedScannerCases": 2552,
+    "originalAssertionCases": 2532,
+    "additionalAuthoredGroups": 20,
+    "scannerXUnitTotal": 3837,
+    "scannerXUnitPassed": 3837,
+    "fullGateElapsedSeconds": 231.23,
+    "sourceDrift": false,
+    "assetDrift": false
+  }
+}

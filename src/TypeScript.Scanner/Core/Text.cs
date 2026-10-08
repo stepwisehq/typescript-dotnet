@@ -22,6 +22,7 @@ public readonly record struct TextRange(int Start, int Finish)
 internal static partial class Core
 {
     public static TextRange NewTextRange(int pos, int end) => new(pos, end);
+    public static TextRange UndefinedTextRange() => new(-1, -1);
     public static int CompareTextRanges(TextRange first, TextRange second)
     {
         int comparison = first.Pos() - second.Pos();

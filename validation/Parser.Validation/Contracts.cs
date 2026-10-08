@@ -13,9 +13,11 @@ public sealed class Request
     public bool ResolveJSDoc { get; set; }
     public List<int> TextProbeIds { get; set; } = [];
     public bool TextProbeIncludeJSDoc { get; set; }
+    public bool FoundationObservations { get; set; }
 }
 public sealed class CanonicalList
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Identity { get; set; }
     public int Pos { get; set; }
     public int End { get; set; }
     public bool NodesNull { get; set; }
@@ -105,6 +107,7 @@ public sealed class Response
     public List<CanonicalDiagnostic> JsDocDiagnostics { get; set; } = [];
     public Metadata Metadata { get; set; } = new();
     public List<CanonicalTextProbe> TextProbes { get; set; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public CanonicalFoundation? Foundation { get; set; }
 }
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, MaxDepth = 2048)]
 [JsonSerializable(typeof(Request))]

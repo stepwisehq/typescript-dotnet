@@ -18,6 +18,6 @@ public partial class Scanner
 
     internal static int SkipTriviaByteString(string source, int pos) => skipTriviaEx(source, pos, null);
     internal static bool IsValidIdentifierByteString(string source) => isValidIdentifier(source);
-    internal static IEnumerable<CommentRange> GetLeadingCommentRangesByteString(string source, int pos) => iterateCommentRanges(source, pos, false);
-    internal static IEnumerable<CommentRange> GetTrailingCommentRangesByteString(string source, int pos) => iterateCommentRanges(source, pos, true);
+    internal static IEnumerable<CommentRange> GetLeadingCommentRangesByteString(string source, int pos) => iterateCommentRanges(null, source, pos, false);
+    internal static IEnumerable<CommentRange> GetTrailingCommentRangesByteString(string source, int pos) => iterateCommentRanges(null, source, pos, true);
 }

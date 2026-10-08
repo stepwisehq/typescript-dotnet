@@ -1,0 +1,30 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "physicalInputs": 13017,
+  "physicalSourcesExtracted": 13017,
+  "counts": {
+    "extractedUnits": 17697,
+    "parsedUnits": 17672,
+    "originalFuzzSeeds": 17633,
+    "excludedAssets": 25,
+    "authoredModeAdaptationRequests": 4,
+    "committedFuzzSeeds": 10
+  },
+  "requests": 17723,
+  "modeCounts": {
+    "3": 15084,
+    "6": 657,
+    "1": 1480,
+    "4": 486,
+    "2": 16
+  },
+  "extractionFailures": [],
+  "scope": "Original assertions are finite FuzzParser seed bodies only; compiler/transpile inputs are syntax/scanner input-only reuse.",
+  "moduleDetectionMetadata": "Original helper with zero source-file project/package metadata; actual JSX/Force flag variants deduplicated.",
+  "expandedRequestsSha256": "0acf0105060adbf2b8a9dbdade82b4aabb77cbb2ebac8244801852887c49d3d1",
+  "files": {
+    "source-inputs.jsonl": "467a7fb05ae4f0c922fbc1b6a3b0eb717c50ee38ae4b32b7ea624255f878c728",
+    "source-units.jsonl.gz": "676a53efa3619f44d8c56423bad07b83ec73f507368fa72f8527ef7a4ccf4700",
+    "source-requests.jsonl.gz": "47cbd12004d05692e28763afbfac8c102c1a41f661b0ca33641e6b6dbc840e87"
+  }
+}

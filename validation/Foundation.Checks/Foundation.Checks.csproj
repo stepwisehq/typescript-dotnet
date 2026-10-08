@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../Parser.Validation/Parser.Validation.csproj" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../foundation-corpus/source-requests.jsonl.gz" LogicalName="TypeScript.Foundation.ParserSeeds.jsonl.gz" />
+    <EmbeddedResource Include="../foundation-corpus/syntax-service-fixtures.json" LogicalName="TypeScript.Foundation.SyntaxServices.json" />
+    <EmbeddedResource Include="../foundation-corpus/clone-fixtures.json" LogicalName="TypeScript.Foundation.CloneGraphs.json" />
+    <EmbeddedResource Include="../foundation-corpus/diagnostic-gaps-requests.jsonl" LogicalName="TypeScript.Foundation.DiagnosticGapRequests.jsonl" />
+    <EmbeddedResource Include="../foundation-corpus/diagnostic-gaps-expected.jsonl" LogicalName="TypeScript.Foundation.DiagnosticGapExpected.jsonl" />
+    <EmbeddedResource Include="../foundation-corpus/syntax-helper-fixtures.json" LogicalName="TypeScript.Foundation.SyntaxHelperFixtures.json" Condition="Exists('../foundation-corpus/syntax-helper-fixtures.json')" />
+    <EmbeddedResource Include="../foundation-corpus/scanner-helper-fixtures.json" LogicalName="TypeScript.Foundation.ScannerHelperFixtures.json" Condition="Exists('../foundation-corpus/scanner-helper-fixtures.json')" />
+    <EmbeddedResource Include="../foundation-corpus/scanner-number-patterns.json" LogicalName="TypeScript.Foundation.ScannerNumberPatterns.json" Condition="Exists('../foundation-corpus/scanner-number-patterns.json')" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,26 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "authoredHelperSha256": "9206a0664a6302fd2367f8928b6cfc825c1ef0ab19053b84679fa7386ff124f2",
+  "authoredSources": {
+    "tools/foundation-helpers/main.go": "9206a0664a6302fd2367f8928b6cfc825c1ef0ab19053b84679fa7386ff124f2",
+    "tools/foundation-helpers/filter.go": "40337430dd9427c1c601874ed610a24c7ec8e0f10ecaf1e7f4f9112e798d5ac1",
+    "tools/foundation-helpers/syntax.go": "11d2edb186c5be478af7104856dc7fc07781ad6782d29784d4c93e89ae31022a"
+  },
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "expectedAssets": {
+    "scanner-helper-fixtures.json": "d6269b95bdb9b02990eaa5166a367ff686ac227d0663451729b9a19692dfc206",
+    "scanner-number-patterns.json": "a6e2f13ae765adc1a39355f7843fc35f9c8f5805d64f782e2bc8a26c50b13cf3",
+    "syntax-helper-fixtures.json": "a10758f94e4ace77f148d743e99d56aed5dcf7e173b08f3d22b6ccc215e68411"
+  },
+  "classification": "Additional differential evidence; not original upstream test cases.",
+  "numberFamilies": "All representable binary powers and immediate neighbors/both signs; presentation thresholds and4096fixed recurrence bits.",
+  "sources": {
+    "scanner/scanner.go": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
+    "scanner/utilities.go": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0",
+    "ast/utilities.go": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
+    "ast/precedence.go": "94a5f9f3e4ce8ac9dc0c46d9253ffe4def40e90618ec226f4209b2e9d436aa7a",
+    "core/core.go": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+    "jsnum/string.go": "79cba5294aa96796c280169b6d3d5ed1b62da2b2aad312c8d9d06dc0a563d62b",
+    "jsnum/pseudobigint.go": "512d46777b6d9955db52bef696cca72ec3002309f4b8a2d12cba0529f809a64a"
+  }
+}

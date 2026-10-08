@@ -105,12 +105,14 @@ internal static class GoSlices
 
     public static IEnumerable<T> Values<T>(IEnumerable<T> values) => values ?? [];
     public static List<T> Clone<T>(List<T> values) => values is null ? null : new(values);
-    public static void SortFunc<T>(List<T> values, Comparison<T> compare) => values?.Sort(compare);
+    public static void SortFunc<T>(List<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values, compare);
     public static List<T> DeleteFunc<T>(List<T> values, Func<T, bool> pred) => values?.Where(x => !pred(x)).ToList();
 }
 
 internal static class ParserPaths
 {
     public static string AsString(this string value) => value ?? "";
-    public static bool IsDeclarationFile(this string value) => value is not null && (value.EndsWith(".d.ts", StringComparison.Ordinal) || value.EndsWith(".d.mts", StringComparison.Ordinal) || value.EndsWith(".d.cts", StringComparison.Ordinal));
+    // RootedFilePath.IsDeclarationFile forwards to the normalized-path extension algorithm.
+    public static bool IsDeclarationFile(this string value) =>
+        TsPath.getDeclarationFileExtensionFromNormalized(value ?? "") != "";
 }

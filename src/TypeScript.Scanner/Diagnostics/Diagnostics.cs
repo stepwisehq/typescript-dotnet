@@ -3,7 +3,7 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Port of tsc/internal/diagnostics/diagnostics.go.
 namespace TypeScript.Scanner;
-// Scanner-only English diagnostic metadata and argument formatting.
+// Pinned default-English diagnostic metadata and argument formatting; translated locale catalogs are excluded.
 public enum DiagnosticCategory
 {
     Warning,
@@ -21,6 +21,7 @@ public sealed class Message(int code, DiagnosticCategory category, string key, s
     public DiagnosticCategory Category() => category;
     public string Key() => key;
     public string String() => text;
+    public string Localize(params object[] args) => Format(args);
     public override string ToString() => text;
     // Upstream diagnostics.go:128-145 Format sanitizes each stored byte argument
     // using strings.ToValidUTF8: one replacement for each consecutive invalid run.
@@ -78,4 +79,36 @@ public sealed class Message(int code, DiagnosticCategory category, string key, s
 
         return result.ToString();
     }
+}
+
+public static partial class Diagnostics
+{
+    private static readonly Lazy<Dictionary<string, Message>> messagesByKey = new(() =>
+    {
+        var messages = new Dictionary<string, Message>(StringComparer.Ordinal);
+        foreach (var message in GetAllMessages())
+            messages[message.Key()] = message;
+        return messages;
+    });
+    // Default-English counterpart of diagnostics.go Localize; locale catalogs are outside this contract.
+    internal static Message? KeyToMessage(string key) => messagesByKey.Value.TryGetValue(key, out var message) ? message : null;
+    public static string Localize(string key, params string[] args)
+    {
+        var message = KeyToMessage(key) ?? throw new InvalidOperationException("Unknown diagnostic message: " + key);
+        return message.Format(args.Cast<object>().ToArray());
+    }
+
+    // Ad-hoc message text uses the same ordinary .NET Unicode representation as catalog text.
+    public static Message NewAdHocMessage(string message) => new(-1, DiagnosticCategory.Error, "-1", message);
+}
+
+public static class DiagnosticCategoryExtensions
+{
+    public static string Name(this DiagnosticCategory category) => category switch
+    {
+        DiagnosticCategory.Warning => "warning",
+        DiagnosticCategory.Error => "error",
+        DiagnosticCategory.Suggestion => "suggestion",
+        DiagnosticCategory.Message => "message",
+        _ => throw new InvalidOperationException("Unhandled diagnostic category")};
 }

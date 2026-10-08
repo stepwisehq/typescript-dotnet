@@ -1,0 +1,24 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "tables": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/scanner/unicodeproperties.go",
+      "counterpart": "src/TypeScript.Scanner/Scanner/UnicodeProperties.cs",
+      "comparison": "strings",
+      "entryCount": 524,
+      "canonicalValuesSha256": "7eff1e9e34d895b882a86a9f348ac2df5947cb363245a1fa32670671330ab070",
+      "equal": true
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/stringutil/identifier_parts_generated.go",
+      "counterpart": "src/TypeScript.Scanner/StringUtil/IdentifierPartsGenerated.cs",
+      "comparison": "ranges",
+      "entryCount": 1365,
+      "canonicalValuesSha256": "0eccd8dd02ef43ddd8e9f23878a82a0ec02e2ad9ce39e27cf70d756dcde3387f",
+      "equal": true
+    }
+  ],
+  "notes": [
+    "Ordered quoted data atoms compare map/set keys and values; range triples compare everyR16/R32range including stride. Source adapters separately preserve dictionaries/sets and sharedScript/Script_Extensions table references. Unicodeidentifier source is15.1.0; Go casing support isseparately17.0.0."
+  ]
+}

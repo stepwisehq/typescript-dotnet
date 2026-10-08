@@ -1,12 +1,13 @@
 # TypeScript port feasibility study
 
-A C# port of the Go TypeScript scanner, syntax parser/AST, source-file binder and
-bounded scalar/object/data-type checking, pinned to maintained
-[microsoft/TypeScript source](./UPSTREAM.md). All six bounded checkpoints passed
-actual Native AOT verification. See the [current state](./docs/STATE.md),
-[data-type assessment](./docs/DATA-TYPES-ASSESSMENT.md),
-[completion contract](./docs/DATA-TYPES-CONTRACT.md) and
-[verification](./docs/DATA-TYPES-VERIFICATION.md) for scope and evidence.
+A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
+and bounded scalar/object/data-type checking, pinned to maintained
+[microsoft/TypeScript source](./UPSTREAM.md). The defined scanner/parser/syntax-AST
+foundation contract and six earlier bounded checkpoints passed actual **Linux x64
+Native AOT** verification. See the [current state](./docs/STATE.md),
+[foundation assessment](./docs/FOUNDATION-ASSESSMENT.md),
+[completion contract](./docs/FOUNDATION-CONTRACT.md) and
+[verification](./docs/FOUNDATION-VERIFICATION.md) for scope and evidence.
 
 The semantic capability checks standalone scalar/object data shapes: named aliases,
 data-only interfaces with inheritance and merging, recursive properties, unions and
@@ -15,9 +16,10 @@ fixed single-file no-library options. Missing-library errors stay separately vis
 (normally eight; source builtin declarations can change the exact result).
 Unsupported inputs fail explicitly.
 
-**Functions/methods/signatures, arrays/tuples, classes, source generics, branching,
+**Semantic checking of functions/methods/signatures, arrays/tuples, classes, source generics, branching,
 explicit writes, standard libraries, modules and project checking remain excluded.**
-This supports data-shape checking, not typical complete applications or full checker parity.
+These constructs can be parsed; checking supports data shapes, not typical complete
+applications or full checker parity.
 
 The [library](./src/TypeScript.Scanner) targets .NET 10. Separate executable harnesses
 for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation),
@@ -25,11 +27,39 @@ for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Val
 support Native AOT; xUnit compares stored pinned-Go results. No Go process is
 needed to use the C# implementation.
 
+## Foundation completion verification
+
+The [foundation contract](./docs/FOUNDATION-CONTRACT.md),
+[assessment](./docs/FOUNDATION-ASSESSMENT.md) and
+[upstream test inventory](./docs/foundation-test-catalog.json) describe the accepted
+scanner/parser/syntax-AST completion campaign. Compiler-input reuse establishes syntax comparisons,
+not full compiler test success.
+
+From the repository root, run the guarded native and regression gate:
+
+```sh
+python3 tools/run-foundation-gate.py
+```
+
+The gate includes original Go subsystem tests, all xUnit suites, Native AOT publication,
+shared foundation assertions, finite parser fuzz seeds and full corpus comparisons.
+For the complete original numeric fuzz baseline sets, also run:
+
+```sh
+tools/.cache/go/bin/go -C upstream/TypeScript/tsc test ./internal/jsnum -run '^$' -fuzz '^FuzzStringJS$' -fuzztime=156x -parallel=1
+tools/.cache/go/bin/go -C upstream/TypeScript/tsc test ./internal/jsnum -run '^$' -fuzz '^FuzzFromStringJS$' -fuzztime=236x -parallel=1
+```
+
+These are bounded seed checks, not an open-ended fuzz campaign. The main gate's
+short numeric fuzz invocations are smoke checks; the additional commands establish
+complete Go baseline execution. See [verification](./docs/FOUNDATION-VERIFICATION.md)
+for provenance, observation limits and detailed reproduction instructions.
+
 ## Build and verify
 
 The reproducible toolchain targets **Linux x64**. Install .NET SDK 10.0.401
 (or a compatible patch selected by [global.json](./global.json)), Git, Python 3,
-curl, and the native build prerequisites. On Ubuntu:
+curl, Node.js (for the original numeric reference assertions), and the native build prerequisites. On Ubuntu:
 
 ```sh
 sudo apt-get update

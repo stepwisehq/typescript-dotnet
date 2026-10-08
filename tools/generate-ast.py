@@ -105,7 +105,7 @@ for n in sorted(bases-base_excluded):
 for n in concrete:
     ff=fields(n); aa=ancestors(n)
     parts.append('public sealed partial class '+n+' : NodeData'+''.join(', '+a for a in aa)+'\n{')
-    if composite(n):parts.append('    internal override bool CacheJsxFacts => true;')
+    if composite(n):parts.append('    internal override bool CacheSubtreeFacts => true;')
     for f,t in ff:
         ct=typ(t);initial=' = "";' if ct=='string' else ''
         parts.append('    public '+ct+' '+cname(f)+' { get; set; }'+initial)

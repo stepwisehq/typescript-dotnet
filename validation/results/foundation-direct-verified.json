@@ -1,0 +1,83 @@
+{
+  "phase": "foundation-original-direct-assertion-milestone",
+  "campaignAccepted": false,
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "command": [
+    "bash",
+    "tools/verify-foundation-direct.sh"
+  ],
+  "startedAtUTC": "2026-10-08T22:13:49.672859+00:00",
+  "elapsedSeconds": 22.313,
+  "exitCode": 0,
+  "sourceSha256": "32b8147face48cf804c0fcd014f1ea374bd6cd3799c0ab46e8f169b5c3d53093",
+  "sourceDrift": false,
+  "xUnit": {
+    "scanner-direct": {
+      "total": 2438,
+      "executed": 2438,
+      "passed": 2438,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0,
+      "inconclusive": 0,
+      "passedButRunAborted": 0,
+      "notRunnable": 0,
+      "notExecuted": 0,
+      "disconnected": 0,
+      "warning": 0,
+      "completed": 0,
+      "inProgress": 0,
+      "pending": 0
+    },
+    "parser-ast-direct": {
+      "total": 563,
+      "executed": 563,
+      "passed": 563,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0,
+      "inconclusive": 0,
+      "passedButRunAborted": 0,
+      "notRunnable": 0,
+      "notExecuted": 0,
+      "disconnected": 0,
+      "warning": 0,
+      "completed": 0,
+      "inProgress": 0,
+      "pending": 0
+    }
+  },
+  "nativeCases": {
+    "cases": 3001,
+    "scannerCases": 2438,
+    "parserAstCases": 563,
+    "elapsedSeconds": 0.0483637
+  },
+  "native": {
+    "path": "artifacts/foundation-direct/native/Foundation.Validation",
+    "bytes": 4346536,
+    "sha256": "48bc5958df41cbad3f37645a542dc7045186a85ffd33301efcb744aba3402678",
+    "file": "artifacts/foundation-direct/native/Foundation.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=f0287f8512dd87d89cbd017d2164e90e9af4178b, for GNU/Linux 3.2.0, stripped",
+    "dependencies": "linux-vdso.so.1 (0x000075156944c000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x0000751569318000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000751568a00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000075156944e000)"
+  },
+  "nodeVersion": "v24.21.0",
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "log": "artifacts/foundation-direct/direct-gate.log",
+  "assertionScope": {
+    "scannerTestFunctions": 10,
+    "parserAstDiagnosticTestFunctions": 23,
+    "numericFuzzFunctions": 2,
+    "numericFiniteFuzzSeedCases": 496,
+    "parserFiniteFuzzStatus": "pending",
+    "notes": [
+      "33 original test functions represented; TestLocalize intentionally preserves three English rows, excludes ten locale-dependent rows.",
+      "Native shared cases count original table/group instances, not test functions or individual assertion calls.",
+      "Actual unchanged Go TestMakeUnitsFromTest passes as source-splitter infrastructure evidence; not a C# runner port."
+    ]
+  },
+  "limitations": [
+    "Broad corpus, additional helper parity, finite parser fuzz seeding, implementation completion inventory and full regressions remain pending."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "historicalParserGaps": 29,
+  "closedByBinderReadiness": 14,
+  "closedByBroadTopLevelDiagnostics": [
+    1142,
+    1206,
+    1228,
+    1389,
+    1441,
+    1443,
+    17021,
+    8011,
+    8038
+  ],
+  "remainingDispositionRows": [
+    {
+      "code": 1140,
+      "disposition": "source-unreachable",
+      "upstreamPath": "tsc/internal/parser/parser.go",
+      "functions": [
+        "isListElement",
+        "isListTerminator",
+        "parseDelimitedList",
+        "parsingContextErrors"
+      ],
+      "rationale": "For PCTypeArguments, comma is a list element and every non-comma token is a list terminator. The non-element/non-terminator abort needed to emit1140 cannot occur.",
+      "review": "Independent support source proof confirmed by scanner source review docs/progress/review-foundation-syntax-support.md",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 1179,
+      "disposition": "source-unreachable",
+      "upstreamPath": "tsc/internal/parser/parser.go",
+      "functions": [
+        "parseHeritageClauses",
+        "parseHeritageClause",
+        "parseDelimitedList",
+        "parsingContextErrors",
+        "parseErrorAtRange"
+      ],
+      "rationale": "Outer heritage lists start only at extends/implements. Normal inner return tokens are outer elements/terminators. Other inner return tokens already have a comma/expression diagnostic at the unchanged scanner position; outer1179 is suppressed by the last-diagnostic same-position rule. No clearing occurs between those operations.",
+      "review": "Independent support source proof confirmed by scanner source review docs/progress/review-foundation-syntax-support.md",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 1439,
+      "disposition": "source-unreachable",
+      "upstreamPath": "tsc/internal/parser/parser.go",
+      "functions": [
+        "parseErrorForMissingSemicolonAfter",
+        "parseErrorForInvalidName",
+        "parseThrowStatement",
+        "parseExpressionOrLabeledStatement",
+        "parseSemicolonAfterPropertyName",
+        "parseInitializer"
+      ],
+      "rationale": "Blank type-name1439 requires identifier expression text type and current EqualsToken in a missing-semicolon caller. Throw/expression callers consume equals as assignment and change the node into BinaryExpression; the property caller consumes equals through parseInitializer before missing-semicolon handling. That state cannot coexist through these source paths.",
+      "review": "Independent support source proof confirmed by scanner source review docs/progress/review-foundation-syntax-support.md",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 1129,
+      "disposition": "observed-targeted-original-Go",
+      "requestName": "foundation-diagnostic-switch-context",
+      "channel": "parseDiagnostics",
+      "requests": "diagnostic-gaps-requests.jsonl",
+      "expected": "diagnostic-gaps-expected.jsonl",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 1486,
+      "disposition": "observed-targeted-original-Go",
+      "requestName": "foundation-diagnostic-decorator-related",
+      "channel": "jsDiagnostics.related",
+      "requests": "diagnostic-gaps-requests.jsonl",
+      "expected": "diagnostic-gaps-expected.jsonl",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 18016,
+      "disposition": "observed-targeted-original-Go",
+      "requestName": "foundation-diagnostic-private-name",
+      "channel": "parseDiagnostics",
+      "requests": "diagnostic-gaps-requests.jsonl",
+      "expected": "diagnostic-gaps-expected.jsonl",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    },
+    {
+      "code": 1513,
+      "subsystem": "regexp-scanner",
+      "disposition": "source-unreachable-from-public-rescan",
+      "upstreamPaths": [
+        "tsc/internal/scanner/scanner.go",
+        "tsc/internal/scanner/regexp.go"
+      ],
+      "rationale": "An odd final backslash cannot occur in a terminated regexp body: the scanner consumes escaped delimiter rather than terminating it. EOF after escape creates an unterminated regexp and returns before regexp-parser parseCharacterEscape can emit1513. Actual /\\ witness emits1161 only.",
+      "sharedCase": "AdditionalHelper/unterminatedBackslashAnd1513Boundary",
+      "review": "Scanner source proof plus actual /\\ public-rescan1161 witness; root contract accepts public reachability distinction",
+      "executionEvidence": "validation/results/foundation-verified.json (generated only after successful final gate)"
+    }
+  ]
+}

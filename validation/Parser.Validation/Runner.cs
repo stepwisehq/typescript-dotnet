@@ -7,12 +7,14 @@ public sealed class Encoder
 {
     private readonly SourceFile file;
     private readonly bool resolveJsDoc;
+    public bool FoundationEnabled { get; }
+    private readonly Dictionary<NodeList, int> listIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<Node, int> ids = new(ReferenceEqualityComparer.Instance);
     private readonly List<Node> raw = [];
     private readonly Dictionary<Node, List<Node>?> resolvedDocs = new(ReferenceEqualityComparer.Instance);
     public List<CanonicalNode> Nodes { get; } = [];
     public IReadOnlyList<Node> RawNodes => raw;
-    public Encoder(SourceFile file, bool resolveJsDoc) { this.file = file; this.resolveJsDoc = resolveJsDoc; }
+    public Encoder(SourceFile file, bool resolveJsDoc, bool foundation = false) { this.file = file; this.resolveJsDoc = resolveJsDoc; FoundationEnabled = foundation; }
     public static string Bytes(string text) => Convert.ToBase64String(Encoding.Latin1.GetBytes(text));
     public int Add(Node node)
     {
@@ -52,11 +54,20 @@ public sealed class Encoder
     }
     private CanonicalList AddList(NodeList list) => new()
     {
+        Identity = ListIdentity(list),
         Pos = list.Pos(), End = list.End(), NodesNull = list.Nodes is null,
         Missing = list.IsMissing, TrailingComma = list.HasTrailingComma(),
         ModifierFlags = list is ModifierList modifiers ? (uint)modifiers.ModifierFlags : null,
         Items = list.Nodes?.Select(Add).ToList() ?? [],
     };
+    private int? ListIdentity(NodeList list)
+    {
+        if (!FoundationEnabled) return null;
+        if (listIds.TryGetValue(list, out int id)) return id;
+        id = listIds.Count;
+        listIds.Add(list, id);
+        return id;
+    }
     public void FinishParents()
     {
         for (int i = 0; i < raw.Count; i++)
@@ -105,7 +116,9 @@ public static class Runner
     public static Response Run(Request request) => Encode(Parse(request), request);
     public static Response Encode(SourceFile file, Request request, Encoder? suppliedEncoder = null)
     {
-        var encoder = suppliedEncoder ?? new Encoder(file, request.ResolveJSDoc);
+        var encoder = suppliedEncoder ?? new Encoder(file, request.ResolveJSDoc, request.FoundationObservations);
+        if (request.FoundationObservations && !encoder.FoundationEnabled)
+            throw new InvalidOperationException("Foundation request needs a foundation-enabled encoder");
         encoder.Add(file.AsNode());
         var metadata = new Metadata
         {
@@ -121,6 +134,8 @@ public static class Runner
                 p.Args?.ToDictionary(kv => kv.Key, kv => new CanonicalPragmaArgument(kv.Value.TextRange.Pos(), kv.Value.TextRange.End(), Encoder.Bytes(kv.Value.Value))) ?? [])).ToList() ?? [],
         };
         encoder.FinishParents();
-        return new() { Nodes = encoder.Nodes, Metadata = metadata, ParseDiagnostics = Encoder.Diagnostics(file.Diagnostics()), JsDiagnostics = Encoder.Diagnostics(file.JSDiagnostics()), JsDocDiagnostics = Encoder.Diagnostics(file.JSDocDiagnostics()), TextProbes = (request.TextProbeIds ?? []).Select(id => encoder.TextProbe(id, request.TextProbeIncludeJSDoc)).ToList() };
+        var response = new Response { Nodes = encoder.Nodes, Metadata = metadata, ParseDiagnostics = Encoder.Diagnostics(file.Diagnostics()), JsDiagnostics = Encoder.Diagnostics(file.JSDiagnostics()), JsDocDiagnostics = Encoder.Diagnostics(file.JSDocDiagnostics()), TextProbes = (request.TextProbeIds ?? []).Select(id => encoder.TextProbe(id, request.TextProbeIncludeJSDoc)).ToList() };
+        if (request.FoundationObservations) response.Foundation = FoundationEncoder.Observe(file, encoder.RawNodes);
+        return response;
     }
 }

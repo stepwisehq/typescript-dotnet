@@ -12,6 +12,7 @@ source = source.replace('\te.node(file.AsNode())', '\tlastSyntaxEncoder = &e\n\t
 output = root/'upstream/TypeScript/tsc/cmd/checker-oracle'
 output.mkdir(parents=True, exist_ok=True)
 (output/'parser_graph.go').write_text(source)
+(output/'foundation.go').write_bytes((root/'tools/parser-oracle/foundation.go').read_bytes())
 access=root/'upstream/TypeScript/tsc/internal/checker/oracle_object_access.go'
 if access.exists() and not access.read_text().startswith('// Independent read-only observations'):
     raise RuntimeError('Refusing to replace unknown upstream observation helper')

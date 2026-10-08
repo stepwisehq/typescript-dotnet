@@ -1,20 +1,18 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted bounded scanner, parser, source-file binder, fixed noLib single-file scalar, anonymous object and named/recursive/composite data-type checker checkpoints; broader checker/compiler phases remain excluded.",
+  "checkpoint": "Accepted defined scanner/parser/syntax-AST foundation contract and prior bounded source-file binder/scalar/object/named-data checking checkpoints. Later compiler subsystems remain partial or excluded.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
       "destination": "src/TypeScript.Scanner/Scanner/Scanner.cs",
-      "status": "partial",
-      "scope": "Lexical scanner and pure text/line/comment helpers; parser-required GetTokenPosOfNode; source-file token/error-range scanning and ECMA line-start/line/end lookups required by binding. Four named full coordinate-mapping functions remain excluded.",
+      "status": "ported",
+      "scope": "All lexical scanner functions and ECMAScript line/byte/UTF16 helpers. Source audit accounts for all functions and tables; public regex diagnostic 1513 has a reviewed unreachability argument, with defensive arm retained. Final foundation gate passed on Linux x64.",
       "upstreamSha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
-      "excludedSymbols": [
-        "GetECMALineAndUTF16CharacterOfPosition",
-        "GetECMALineAndByteOffsetOfPosition",
-        "GetECMAPositionOfLineAndUTF16Character",
-        "GetECMAPositionOfLineAndByteOffset"
-      ],
-      "parserCheckpointScope": "All lexical scanner functions, pure text/line helpers, comment range enumeration and parser-required GetTokenPosOfNode; named remaining AST/source-file helpers excluded. Raw parser adapters preserve byte-string semantics."
+      "excludedSymbols": [],
+      "parserCheckpointScope": "All lexical scanner functions, pure text/line helpers, comment range enumeration and parser-required GetTokenPosOfNode; named remaining AST/source-file helpers excluded. Raw parser adapters preserve byte-string semantics.",
+      "dataTypesCheckpointScope": "Lexical scanner and pure text/line/comment helpers; parser-required GetTokenPosOfNode; source-file token/error-range scanning and ECMA line-start/line/end lookups required by binding. Four named full coordinate-mapping functions remain excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/scanner/regexp.go",
@@ -33,20 +31,18 @@
     {
       "upstream": "tsc/internal/scanner/utilities.go",
       "destination": "src/TypeScript.Scanner/Scanner/Utilities.cs",
-      "status": "partial",
-      "scope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded. Object extension: Selected raw IsIdentifierTextByteString from utilities.go:129 added for property-name diagnostic classification; public/raw source and declaration-name wrappers retain accepted behavior. No additional general scanner coordinate APIs.",
+      "status": "ported",
+      "scope": "All scanner syntax helpers, raw-byte/public text adapters, JSDoc normalization, identifier and intrinsic JSX predicates, comment ranges and factories. Explicit managed string/lazy-iterator adaptations; final foundation gate passed on Linux x64.",
       "upstreamSha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0",
       "scannerCheckpointScope": "tokenIsIdentifierOrKeyword only; all other utilities excluded, including AST utilities, JSDoc text normalization, IsIdentifierText, and IsIntrinsicJsxName.",
-      "excludedSymbols": [
-        "IdentifierToKeywordKind",
-        "GetTextOfJSDocComment",
-        "IsIdentifierText",
-        "IsIntrinsicJsxName"
-      ],
+      "excludedSymbols": [],
       "parserCheckpointScope": "tokenIsIdentifierOrKeyword; source/node text helpers and JSDoc normalization required by parser; remaining utilities explicitly excluded.",
       "scalarCheckerCheckpointScope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded.",
       "objectCheckerCheckpointScope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded. Object extension: Selected raw IsIdentifierTextByteString from utilities.go:129 added for property-name diagnostic classification; public/raw source and declaration-name wrappers retain accepted behavior. No additional general scanner coordinate APIs.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "dataTypesCheckpointScope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded. Object extension: Selected raw IsIdentifierTextByteString from utilities.go:129 added for property-name diagnostic classification; public/raw source and declaration-name wrappers retain accepted behavior. No additional general scanner coordinate APIs.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/kind_generated.go",
@@ -67,10 +63,13 @@
       "upstream": "tsc/internal/ast/ast.go",
       "destination": "src/TypeScript.Scanner/Ast/Ast.cs",
       "status": "partial",
-      "scope": "Tagged syntax nodes, node lists, factory/accessor/parser metadata and JSDoc registration/cache; exact declaration/export/local/flow embedded bases and forwards; SourceFile symbol/local/container state, binding diagnostics/count/pattern/global-export metadata, synchronized BindOnce/IsBound and lazy ECMALineMap. Static BoundFields separates binding state from syntax metadata. Checker/service state, content-mapper/position-map API and general public transform facts remain excluded; private JSX projection preserves module-detection pruning.",
+      "scope": "Accepted foundation extension: full syntax subtree-fact computations/caches and source position, identifier/name/token/declaration services, ordinary node/factory accessors. Bound Symbol identity is read only where original declaration maps require existing binding; no new binding/checking. Explicit function-by-function scope and review dispositions are in the foundation syntax inventory.",
       "upstreamSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f",
       "scannerCheckpointScope": "Comment directive records only; no compiler AST.",
-      "parserCheckpointScope": "Tagged syntax nodes, source-file parse metadata/diagnostics, node lists, parser factory support/accessors and JSDoc registration/cache. Compiler symbols, flow/service state, position-map API and general public transform facts excluded. Private JSX fact projection preserves module-detection pruning."
+      "parserCheckpointScope": "Tagged syntax nodes, source-file parse metadata/diagnostics, node lists, parser factory support/accessors and JSDoc registration/cache. Compiler symbols, flow/service state, position-map API and general public transform facts excluded. Private JSX fact projection preserves module-detection pruning.",
+      "dataTypesCheckpointScope": "Tagged syntax nodes, node lists, factory/accessor/parser metadata and JSDoc registration/cache; exact declaration/export/local/flow embedded bases and forwards; SourceFile symbol/local/container state, binding diagnostics/count/pattern/global-export metadata, synchronized BindOnce/IsBound and lazy ECMALineMap. Static BoundFields separates binding state from syntax metadata. Checker/service state, content-mapper/position-map API and general public transform facts remain excluded; private JSX projection preserves module-detection pruning.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -90,24 +89,30 @@
     {
       "upstream": "tsc/internal/core/text.go",
       "destination": "src/TypeScript.Scanner/Core/Text.cs",
-      "status": "partial",
-      "scope": "TextRange, NewTextRange and CompareTextRanges; SourceFile position-map cache/API excluded.",
-      "upstreamSha256": "dad1b4d0bb8fbd4a1c3c686a6a4fff940cfac17551c7c5ca564c33273e2277e4"
+      "status": "ported",
+      "scope": "TextRange representation and every range method, NewTextRange, UndefinedTextRange and CompareTextRanges. Managed int stores upstream int32 TextPos; syntax positions remain byte offsets. PositionMap is separately mapped from ast/positionmap.go.",
+      "upstreamSha256": "dad1b4d0bb8fbd4a1c3c686a6a4fff940cfac17551c7c5ca564c33273e2277e4",
+      "dataTypesCheckpointScope": "TextRange, NewTextRange and CompareTextRanges; SourceFile position-map cache/API excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded.",
+      "scope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded. Foundation adds UTF16Len, PositionToLineAndByteOffset and nil/identity-preserving Filter for actual syntax dependencies.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
       "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
-      "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded."
+      "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded.",
+      "dataTypesCheckpointScope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
-      "status": "partial",
-      "scope": "Generated selected scanner/parser/binder/scalar/object/data-type diagnostic metadata catalog; only actual retained source references selected, not the full diagnostics catalog.",
+      "status": "ported",
+      "scope": "All 2,222 pinned default-English diagnostic metadata records, preserving names/codes/categories/keys/text/report flags. Independent field comparison exact. This data support does not implement every emitting compiler stage.",
       "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f",
       "scannerCheckpointScope": "Only diagnostics referenced by scanner/regex.",
       "parserCheckpointScope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded.",
@@ -117,18 +122,24 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Generated selected scanner/parser/binder/scalar/object/data-type diagnostic metadata catalog; only actual retained source references selected, not the full diagnostics catalog.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "dataTypesCheckpointScope": "Generated selected scanner/parser/binder/scalar/object/data-type diagnostic metadata catalog; only actual retained source references selected, not the full diagnostics catalog.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
       "status": "partial",
-      "scope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded. Object extension: Compatibility-pyramid elision metadata exposed for actual recursive relation error-chain formatting; raw argument/display invalid-UTF8 boundary remains separate from scanner JS surrogate semantics.",
+      "scope": "Default-English metadata, localization/formatting, key lookup, ad-hoc messages and category names; raw argument sanitation preserves strings.ToValidUTF8 semantics. Translated catalogs and locale selection excluded.",
       "upstreamSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238",
       "binderCheckpointScope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system.",
       "scalarCheckerCheckpointScope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded.",
       "objectCheckerCheckpointScope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded. Object extension: Compatibility-pyramid elision metadata exposed for actual recursive relation error-chain formatting; raw argument/display invalid-UTF8 boundary remains separate from scanner JS surrogate semantics.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "dataTypesCheckpointScope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded. Object extension: Compatibility-pyramid elision metadata exposed for actual recursive relation error-chain formatting; raw argument/display invalid-UTF8 boundary remains separate from scanner JS surrogate semantics.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/stringutil/identifier_parts_generated.go",
@@ -155,15 +166,21 @@
       "upstream": "tsc/internal/jsnum/string.go",
       "destination": "src/TypeScript.Scanner/JsNum/String.cs",
       "status": "partial",
-      "scope": "Numeric parse and string conversion required by scanner; .NET double/BigInteger adaptation.",
-      "upstreamSha256": "79cba5294aa96796c280169b6d3d5ed1b62da2b2aad312c8d9d06dc0a563d62b"
+      "scope": "Number.String/FromString and required helpers retain upstream branches using .NET numeric facilities. Original numeric assertions exposed a runtime R-format roundtrip discrepancy; general verified-roundtrip/G17 fallback added. Original assertions, independent review and 16,705 supplemental Go/Node bit-pattern comparisons pass natively; no arithmetic/exponentiation API port.",
+      "upstreamSha256": "79cba5294aa96796c280169b6d3d5ed1b62da2b2aad312c8d9d06dc0a563d62b",
+      "dataTypesCheckpointScope": "Numeric parse and string conversion required by scanner; .NET double/BigInteger adaptation.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/jsnum/pseudobigint.go",
       "destination": "src/TypeScript.Scanner/JsNum/PseudoBigInt.cs",
       "status": "partial",
-      "scope": "ParsePseudoBigInt only.",
-      "upstreamSha256": "512d46777b6d9955db52bef696cca72ec3002309f4b8a2d12cba0529f809a64a"
+      "scope": "Original scanner-required ParsePseudoBigInt algorithm and .NET BigInteger adaptation. Original tests exposed numeric-separator handling; repaired by original nondecimal parsing rules. Other numeric APIs remain outside foundation scope.",
+      "upstreamSha256": "512d46777b6d9955db52bef696cca72ec3002309f4b8a2d12cba0529f809a64a",
+      "dataTypesCheckpointScope": "ParsePseudoBigInt only.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": null,
@@ -278,12 +295,15 @@
       "upstream": "tsc/internal/ast/ast_generated.go",
       "destination": "src/TypeScript.Scanner/Ast/AstGenerated.cs",
       "status": "partial",
-      "scope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
+      "scope": "Complete parseable syntax payload fields, accessors, factories, update/clone/traversal, full facts and lazy child iterators within the foundation contract. Checker-only SyntheticExpression and later-stage-owned state remain excluded; final foundation gate passed on Linux x64.",
       "upstreamSha256": "b6fc40ffc5f43adbe9e0f6e1a53bd90e5c20c86ae1c738bb0ae5716bc540bb5a",
       "parserCheckpointScope": "190 typed syntax payloads and192New factories with syntax Update/Clone/ForEachChild/VisitEachChild and static verification fields. Checker-owned SyntheticExpression excluded; compiler-only fields excluded. Private JSX fact projection only.",
       "scalarCheckerCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only.",
       "objectCheckerCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "dataTypesCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -303,10 +323,13 @@
       "upstream": "tsc/internal/ast/diagnostic.go",
       "destination": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
       "status": "partial",
-      "scope": "Parser/binder/selected-checker diagnostic construction, actual mutable category/metadata, raw arguments, related-info/message chains; complete DiagnosticsCollection Add/Lookup/global/file/all retrieval and exact equality/comparison closure. Managed locks/lists preserve mutex, nil/empty, stable per-file/global ordering and result-copy semantics. Content-mapper alias substitution, locale services, incremental repopulation and general serialized/external constructors excluded.",
+      "scope": "Syntax and retained binder/checker diagnostic construction, metadata/arguments/related chains, complete collection ordering/deduplication, serialized/text/ad-hoc/external constructors. Content-mapper alias substitution and incremental repopulation remain later-stage exclusions. Independent foundation review and Linux x64 native gate passed.",
       "upstreamSha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4",
       "parserCheckpointScope": "Parse diagnostic construction, spans, raw arguments and related information; full compiler diagnostic processing excluded.",
-      "binderCheckpointScope": "Parser and binder diagnostic construction, spans, raw arguments, ordering and related information; full compiler diagnostic processing excluded."
+      "binderCheckpointScope": "Parser and binder diagnostic construction, spans, raw arguments, ordering and related information; full compiler diagnostic processing excluded.",
+      "dataTypesCheckpointScope": "Parser/binder/selected-checker diagnostic construction, actual mutable category/metadata, raw arguments, related-info/message chains; complete DiagnosticsCollection Add/Lookup/global/file/all retrieval and exact equality/comparison closure. Managed locks/lists preserve mutex, nil/empty, stable per-file/global ordering and result-copy semantics. Content-mapper alias substitution, locale services, incremental repopulation and general serialized/external constructors excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/parseoptions.go",
@@ -319,15 +342,21 @@
       "upstream": "tsc/internal/ast/visitor.go",
       "destination": "src/TypeScript.Scanner/Ast/Visitor.cs",
       "status": "ported",
-      "scope": "Syntax traversal/list visitors required by parser and JSDoc reparsing; no transformation pipeline.",
-      "upstreamSha256": "6754fe0df4e97fd31fe665408b14cb1a30c542f71ecec5b3f29288da4f2a3795"
+      "scope": "Ordinary syntax/list visitor algorithms, lift/delete/update behavior and captured-slice callback length semantics. Managed prefix copying adapts Go slice headers; no transformation pipeline or general backing-array alias guarantee.",
+      "upstreamSha256": "6754fe0df4e97fd31fe665408b14cb1a30c542f71ecec5b3f29288da4f2a3795",
+      "dataTypesCheckpointScope": "Syntax traversal/list visitors required by parser and JSDoc reparsing; no transformation pipeline.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
       "status": "new",
-      "scope": "Authored Go slice/list/null/range and parser runtime compatibility, with binder-required GoSlices.Index. Narrow managed adaptation, not a full Go runtime.",
-      "parserCheckpointScope": "Authored parser Go slice/list/null/range runtime compatibility; not a full Go runtime."
+      "scope": "Authored Go slice/list/null/range and parser runtime compatibility, including selected earlier binder support. Required SortFunc now forwards to separately mapped pinned-Go comparator sorting; no general Go runtime.",
+      "parserCheckpointScope": "Authored parser Go slice/list/null/range runtime compatibility; not a full Go runtime.",
+      "dataTypesCheckpointScope": "Authored Go slice/list/null/range and parser runtime compatibility, with binder-required GoSlices.Index. Narrow managed adaptation, not a full Go runtime.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": null,
@@ -353,19 +382,22 @@
     {
       "upstream": "tsc/internal/ast/precedence.go",
       "destination": "src/TypeScript.Scanner/Ast/Precedence.cs",
-      "status": "partial",
-      "scope": "Parser operator-precedence slice plus complete pure TypePrecedence enum/GetTypeNodePrecedence syntax switch required by diagnostic union/intersection/type-operator parentheses. Handwritten selected supplement; no complete AST regeneration claim.",
+      "status": "ported",
+      "scope": "All six upstream precedence functions and enums, including expression/type precedence and leftmost-expression traversal. Independent body review complete; final foundation gate passed on Linux x64.",
       "upstreamSha256": "94a5f9f3e4ce8ac9dc0c46d9253ffe4def40e90618ec226f4209b2e9d436aa7a",
       "objectCheckerCheckpointScope": "Parser-required operator precedence slice.",
       "dataTypesScope": "Parser operator-precedence slice plus complete pure TypePrecedence enum/GetTypeNodePrecedence syntax switch required by diagnostic union/intersection/type-operator parentheses. Handwritten selected supplement; no complete AST regeneration claim.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "dataTypesCheckpointScope": "Parser operator-precedence slice plus complete pure TypePrecedence enum/GetTypeNodePrecedence syntax switch required by diagnostic union/intersection/type-operator parentheses. Handwritten selected supplement; no complete AST regeneration claim.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/utilities.go",
       "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
       "status": "partial",
-      "scope": "Accepted parser/binder syntax closure expanded by selected semantic/diagnostic data name/entity/heritage/type/ancestor predicates, scope containers, static-key and existing-source reuse helpers. General cross-file/transform AST semantics excluded; handwritten supplements remain authoritative.",
+      "scope": "Foundation syntax predicates, accessors, ancestors, names, declarations, modifiers and construction support; 424 upstream functions dispositioned in docs/foundation-utilities-source-inventory.json. Eleven later-state/configuration/emit exclusions remain explicit. Managed adaptations preserve upstream algorithms; independent body review and native campaign gate passed.",
       "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
       "parserCheckpointScope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded.",
       "binderCheckpointScope": "Parser syntax predicate/accessor closure plus 73 generated binder dependency functions and handwritten atomic node/symbol IDs, lazy symbol-table and raw ambient/private-name helpers. Includes source-local ModuleInstanceState/ancestor/export analysis, assignment/name/strictness predicates. Unneeded utilities, checker/cross-file name or reference resolution and general transform facts excluded.",
@@ -385,7 +417,10 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Accepted parser/binder syntax closure expanded by selected semantic/diagnostic data name/entity/heritage/type/ancestor predicates, scope containers, static-key and existing-source reuse helpers. General cross-file/transform AST semantics excluded; handwritten supplements remain authoritative.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "dataTypesCheckpointScope": "Accepted parser/binder syntax closure expanded by selected semantic/diagnostic data name/entity/heritage/type/ancestor predicates, scope containers, static-key and existing-source reuse helpers. General cross-file/transform AST semantics excluded; handwritten supplements remain authoritative.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -398,8 +433,11 @@
       "upstream": "tsc/internal/tspath/path.go",
       "destination": "src/TypeScript.Scanner/TsPath/Path.cs",
       "status": "partial",
-      "scope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup.",
-      "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328"
+      "scope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup. Foundation adds GetRootLength and normalized base-filename extraction required by declaration-file recognition. Managed separator replacement retains original normalization semantics.",
+      "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328",
+      "dataTypesCheckpointScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": null,
@@ -450,9 +488,12 @@
     {
       "upstream": "tsc/internal/ast/subtreefacts.go",
       "destination": "src/TypeScript.Scanner/Ast/Subtreefacts.cs",
-      "status": "partial",
-      "scope": "Private JSX-only projection of fact constants/helpers for external-module detection. All non-JSX bits project to zero; full public transform facts API excluded. Projection methods stay in their original Ast.cs/AstGenerated.cs counterparts.",
-      "upstreamSha256": "76dabb52846aea3686afc3d70b5f8daacf4de625f977187f2bb1c1adddaef911"
+      "status": "ported",
+      "scope": "All pure syntax fact constants, masks and propagation helpers. Complete node computations/cache support are mapped in Ast.cs/AstGenerated.cs. Does not execute transformations; final foundation gate passed on Linux x64.",
+      "upstreamSha256": "76dabb52846aea3686afc3d70b5f8daacf4de625f977187f2bb1c1adddaef911",
+      "dataTypesCheckpointScope": "Private JSX-only projection of fact constants/helpers for external-module detection. All non-JSX bits project to zero; full public transform facts API excluded. Projection methods stay in their original Ast.cs/AstGenerated.cs counterparts.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/binder/nameresolver.go",
@@ -524,8 +565,11 @@
       "upstream": "tsc/internal/tspath/extension.go",
       "destination": "src/TypeScript.Scanner/TsPath/Extension.cs",
       "status": "partial",
-      "scope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded.",
-      "upstreamSha256": "2b8814ec6b8408f8df45709f853556f057af227d3262ae8cd8fd794794a07101"
+      "scope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded. Foundation adds exact declaration-file extension recognition, including arbitrary .d.*.ts names; no module lookup.",
+      "upstreamSha256": "2b8814ec6b8408f8df45709f853556f057af227d3262ae8cd8fd794794a07101",
+      "dataTypesCheckpointScope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     },
     {
       "upstream": null,
@@ -1115,17 +1159,145 @@
       "scope": "Authored static observation inventory of actual reachable type/link/table/cache fields; does not populate missing state.",
       "dataTypesManifestState": "accepted-bounded",
       "dataTypesEvidence": "validation/results/data-types-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/ast/positionmap.go",
+      "destination": "src/TypeScript.Scanner/Ast/PositionMap.cs",
+      "status": "ported",
+      "scope": "Original bidirectional byte/UTF16 binary-search map and rune algorithm. Public UTF16 string and byte-array wrappers preserve internal raw byte semantics; private nil slice becomes managed empty list. Direct original assertions and full foundation native acceptance pass.",
+      "foundationManifestState": "accepted-foundation",
+      "upstreamSha256": "f81056ea8a0aec589f5c2b03a3eadb2691d280b99a93c4d20e1fccfd99c0e7a6",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/FoundationAccess.cs",
+      "status": "new",
+      "scope": "Authored friend-assembly access for shared direct upstream assertion bodies and native validation; no replacement semantic algorithms.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/debug/debug.go",
+      "destination": "src/TypeScript.Scanner/Debug/Debug.cs",
+      "status": "partial",
+      "scope": "Fail and default-message FailBadSyntaxKind required by syntax helpers. Go panic maps to InvalidOperationException; arbitrary fmt.Sprint message overloads and other debug facilities excluded.",
+      "upstreamSha256": "dd3aca7541d9f41c2e40629d27d768c393d5f3d134f341388e89ebabb34a092d",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Foundation.Checks",
+      "status": "new",
+      "scope": "Shared static assertion ports of original scanner/parser/AST/required numeric tests and separately identified authored support probes and finite original fuzz bodies; both xUnit and Native AOT execute these bodies. Per-function original provenance in foundation test inventories.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Foundation.Validation",
+      "status": "new",
+      "scope": "Authored Native AOT executable dispatch for shared foundation assertion bodies; no replacement compiler algorithms.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/foundation-corpus",
+      "status": "new",
+      "scope": "Original compiler/parser inputs and finite fuzz seeds with source hashes/dispositions; pinned Go expectations and authored targeted observations remain distinguished from original upstream assertions.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Scanner.Tests/FoundationScannerTests.cs",
+      "status": "new",
+      "scope": "Thin authored xUnit dispatch to shared original scanner/numeric assertion ports and separately authored helper differentials.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/FoundationDirectTests.cs",
+      "status": "new",
+      "scope": "Thin authored xUnit dispatch to shared original parser/AST/default-English diagnostic assertion ports.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/FoundationFuzzTests.cs",
+      "status": "new",
+      "scope": "Thin authored xUnit dispatch preserving the finite original FuzzParser seed assertion; no-crash evidence only.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/FoundationCloneGraphTests.cs",
+      "status": "new",
+      "scope": "Authored xUnit full graph/identity comparisons supplementing the weaker original clone assertions.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/FoundationSyntaxServiceTests.cs",
+      "status": "new",
+      "scope": "Authored xUnit actual-Go syntax service, factory, update and identity comparisons.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/slices/sort.go",
+      "destination": "src/TypeScript.Scanner/Runtime/Slices/Sort.cs",
+      "status": "partial",
+      "scope": "Required comparator SortFunc entry, bit-length seed and xorshift helpers. Actual parser ReparsedClones output exposes unstable equal-key order; .NET List.Sort differs. Other slices APIs excluded.",
+      "upstreamSha256": "e6cd273b637e7dd2f547596c22e6236b92ae9b376f31ceb7b3c3269dd60a38df",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/slices/zsortanyfunc.go",
+      "destination": "src/TypeScript.Scanner/Runtime/Slices/Zsortanyfunc.cs",
+      "status": "partial",
+      "scope": "Thirteen comparator PDQ sort helpers used by SortFunc, retaining pinned Go algorithm and tie permutation. Stable sort/merge and other slice operations excluded.",
+      "upstreamSha256": "50398783e085ac9cc1d7c6249ebe75a5cc4425dcdc6a4cc448ea6e7179126492",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/FoundationDiagnosticGapTests.cs",
+      "status": "new",
+      "scope": "Authored xUnit dispatch to pinned-Go diagnostic-gap witnesses, including related-information diagnostic 1486; shared Native AOT bodies verify the same graphs.",
+      "foundationManifestState": "accepted-foundation",
+      "foundationEvidence": "validation/results/foundation-verified.json"
     }
   ],
   "activePhase": {
-    "name": "data-types-checker",
-    "status": "completed",
-    "acceptance": "accepted-bounded",
-    "manifestState": "accepted",
-    "note": "Bounded D1-D7 data-type contract completed and Linux x64 Native AOT gate passed on the frozen source/assets. No active implementation work. Historical accepted checkpoints remain separate.",
-    "contract": "docs/DATA-TYPES-CONTRACT.md",
-    "departures": "docs/DATA-TYPES-DEPARTURES.md",
-    "evidence": "validation/results/data-types-verified.json"
+    "name": "foundation-completion",
+    "status": "complete",
+    "acceptance": "accepted-contract",
+    "manifestState": "accepted-foundation",
+    "baselineCommit": "b6b22b9",
+    "contract": "docs/FOUNDATION-CONTRACT.md",
+    "statusInventory": "docs/FOUNDATION-STATUS.md",
+    "note": "Fixed F1\u2013F6 foundation contract passed Linux x64 Native AOT and retained regressions. No next campaign is authorized.",
+    "implementationInventory": [
+      "docs/foundation-scanner-functions.json",
+      "docs/foundation-syntax-source-inventory.json",
+      "docs/foundation-utilities-source-inventory.json"
+    ],
+    "testInventory": "docs/foundation-test-catalog.json",
+    "departures": "docs/FOUNDATION-DEPARTURES.md",
+    "evidence": "validation/results/foundation-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -1172,6 +1344,21 @@
     "functionCount": 941,
     "coverage": "validation/data-types-corpus/coverage.json",
     "departures": "docs/DATA-TYPES-DEPARTURES.md",
-    "platform": "Linux x64"
+    "platform": "Linux x64",
+    "commit": "b6b22b9"
+  },
+  "acceptedFoundationCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "b6b22b9",
+    "contract": "docs/FOUNDATION-CONTRACT.md",
+    "assessment": "docs/FOUNDATION-ASSESSMENT.md",
+    "evidence": "validation/results/foundation-verified.json",
+    "supplementalEvidence": "validation/results/foundation-go-numeric-fuzz-verified.json",
+    "sourceTreeSha256": "d14cb48750c8ce35f0767f97885b01f9b0d63c853390f6cfb4f9b3f4cb50fd67",
+    "verificationAssetsSha256": "5aea5174cca50b6fb7d3b62af93c5056781dedeec5dfd79b11554dbedfe3e526",
+    "platform": "Linux x64",
+    "scope": "All lexical scanning and initial JS/JSX/TS/TSX/JSON parser paths, parseable syntax-node representation/ordinary factories/clones/visitors/helpers/full facts, positions/source syntax caches and default-English diagnostics within fixed foundation contract; later-stage state/project/transform/emit/services remain excluded.",
+    "upstreamTestInventory": "docs/foundation-test-catalog.json",
+    "departures": "docs/FOUNDATION-DEPARTURES.md"
   }
 }

@@ -1,0 +1,8 @@
+{"name":"foundation-plain","textBytesBase64":"Y29uc3QgeCA9IDE7","scriptKind":3,"foundationObservations":true}
+{"name":"foundation-syntax-facts","textBytesBase64":"QGQgY2xhc3MgQyB7IHggPSAyICoqIDM7IHN0YXRpYyB7IHRoaXMueCA/Pz0gMTsgfSBhc3luYyBtKCl7IHVzaW5nIHggPSBhOyBhd2FpdCB4Py5mKCk7IH0gfQ==","scriptKind":3,"foundationObservations":true}
+{"name":"foundation-eraseable-scopes","textBytesBase64":"ZGVjbGFyZSBjbGFzcyBDIHsgcmVhZG9ubHkgcDogRm9vPHN0cmluZz47IG0oKTogdm9pZDsgfQp0eXBlIFggPSAoKSA9PiB0eXBlb2YgZm9vOyBpbnRlcmZhY2UgSSBleHRlbmRzIFQ8bnVtYmVyPiB7IHg/OiBzdHJpbmcgfQ==","scriptKind":3,"foundationObservations":true,"fileName":"/fixture.d.ts"}
+{"name":"foundation-jsx-prepopulated","textBytesBase64":"ZGVjbGFyZSBmdW5jdGlvbiBmPFQ+KCk6IHR5cGVvZiB4OyA8QyBhPXt0aGlzPy54fSAvPjs=","scriptKind":4,"foundationObservations":true,"externalModuleJSX":true}
+{"name":"foundation-jsdoc-lazy","textBytesBase64":"LyoqIEB0eXBlZGVmIHt7cDogc3RyaW5nfX0gVCAqLwpjb25zdCB4ID0gMTsgLyoqIEB0eXBlIHtUfSAqLyBsZXQgeTs=","scriptKind":1,"foundationObservations":true,"resolveJSDoc":true}
+{"name":"foundation-json","textBytesBase64":"eyJ4IjpbdHJ1ZSxudWxsLDFdLCAieSI6e319","scriptKind":6,"foundationObservations":true}
+{"name":"foundation-top-level-await","textBytesBase64":"YXdhaXQgKGZvbyk7IGV4cG9ydCB7fTsgY29uc3QgeCA9ICgpPT50aGlzPy54Ow==","scriptKind":3,"foundationObservations":true,"externalModuleForce":true}
+{"name":"foundation-malformed-utf8","textBytesBase64":"Y29uc3Qg/yA9ICftoIAnOw==","scriptKind":3,"foundationObservations":true}

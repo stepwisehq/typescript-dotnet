@@ -78,7 +78,8 @@ public sealed class NodeVisitor
     {
         if (nodes is null || Visit is null)
             return (nodes, false);
-        for (var i = 0; i < nodes.Count; i++)
+        var count = nodes.Count;
+        for (var i = 0; i < count; i++)
         {
             var node = nodes[i];
             if (Visit is null)
@@ -98,7 +99,7 @@ public sealed class NodeVisitor
                     }
 
                     i++;
-                    if (i >= nodes.Count)
+                    if (i >= count)
                         break;
                     if (Visit is not null)
                     {
@@ -107,7 +108,7 @@ public sealed class NodeVisitor
                     }
                     else
                     {
-                        updated.AddRange(nodes.GetRange(i, nodes.Count - i));
+                        updated.AddRange(nodes.GetRange(i, count - i));
                         break;
                     }
                 }
@@ -116,7 +117,7 @@ public sealed class NodeVisitor
             }
         }
 
-        return (nodes, false);
+        return (nodes.Count == count ? nodes : nodes.GetRange(0, count), false);
     }
 
     public Node VisitEachChild(Node node) => node is null || Visit is null ? node : node.VisitEachChild(this);

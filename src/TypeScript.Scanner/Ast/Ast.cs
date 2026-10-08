@@ -68,7 +68,8 @@ public sealed partial class Node
     public int End() => Loc.End();
     public short KindValue() => (short)Kind;
     public string KindString() => Kind.String();
-    internal uint JsxFacts() => data.JsxFacts();
+    public SubtreeFacts SubtreeFacts() => (SubtreeFacts)data.SubtreeFactsValue();
+    internal uint SubtreeFactsValue() => data.SubtreeFactsValue();
     public Node Name() => data.Name();
     public ModifierList Modifiers() => data.Modifiers();
     public void SetModifiers(ModifierList modifiers) => data.SetModifiers(modifiers);
@@ -77,11 +78,18 @@ public sealed partial class Node
     public BodyBase BodyData() => data as BodyBase;
     public LiteralLikeNodeBase LiteralLikeData() => data as LiteralLikeNodeBase;
     public TemplateLiteralLikeNodeBase TemplateLiteralLikeData() => data as TemplateLiteralLikeNodeBase;
-    public NodeList ParameterList() => FunctionLikeData()?.Parameters;
-    public List<Node> Parameters() => ParameterList()?.Nodes;
+    public NodeList ParameterList() => FunctionLikeData().Parameters;
+    public List<Node> Parameters() => ParameterList().Nodes;
     public Node Body() => BodyData()?.Body;
     public ModifierFlags ModifierFlags() => Modifiers()?.ModifierFlags ?? TypeScript.Scanner.ModifierFlags.None;
     public List<Node> ModifierNodes() => Modifiers()?.Nodes;
+    public List<Node> Decorators()
+    {
+        if (Modifiers()is null)
+            return null;
+        return Core.Filter(Modifiers().Nodes, Ast.IsDecorator);
+    }
+
     public List<Node> Arguments() => ArgumentList()?.Nodes;
     public List<Node> TypeArguments() => TypeArgumentList()?.Nodes;
     public List<Node> TypeParameters() => TypeParameterList()?.Nodes;
@@ -93,17 +101,7 @@ public sealed partial class Node
     public bool ForEachChild(Visitor visitor) => data.ForEachChild(visitor);
     public string DataType() => data.DataType();
     public IEnumerable<SyntaxField> SyntaxFields() => data.SyntaxFields();
-    public IEnumerable<Node> IterChildren()
-    {
-        var nodes = new List<Node>();
-        ForEachChild(n =>
-        {
-            nodes.Add(n);
-            return false;
-        });
-        return nodes;
-    }
-
+    public IEnumerable<Node> IterChildren() => data.IterChildren();
     public bool Contains(Node descendant)
     {
         for (var n = descendant; n is not null; n = n.Parent)
@@ -122,13 +120,20 @@ public sealed partial class Node
     {
         Kind.Identifier => AsIdentifier().Text,
         Kind.PrivateIdentifier => AsPrivateIdentifier().Text,
+        Kind.StringLiteral => AsStringLiteral().Text,
+        Kind.NumericLiteral => AsNumericLiteral().Text,
+        Kind.BigIntLiteral => AsBigIntLiteral().Text,
+        Kind.NoSubstitutionTemplateLiteral => AsNoSubstitutionTemplateLiteral().Text,
+        Kind.TemplateHead => AsTemplateHead().Text,
+        Kind.TemplateMiddle => AsTemplateMiddle().Text,
+        Kind.TemplateTail => AsTemplateTail().Text,
+        Kind.RegularExpressionLiteral => AsRegularExpressionLiteral().Text,
         Kind.MetaProperty => AsMetaProperty().Name().Text(),
         Kind.JsxNamespacedName => AsJsxNamespacedName().Namespace.Text() + ":" + Name().Text(),
         Kind.JSDocText => string.Concat(AsJSDocText().text ?? []),
         Kind.JSDocLink => string.Concat(AsJSDocLink().text ?? []),
         Kind.JSDocLinkCode => string.Concat(AsJSDocLinkCode().text ?? []),
         Kind.JSDocLinkPlain => string.Concat(AsJSDocLinkPlain().text ?? []),
-        _ when data is LiteralLikeNodeBase literal => literal.Text,
         _ => throw new InvalidOperationException("Unhandled Node.Text kind " + Kind),
     };
     public byte[] TextBytes() => GoString.Bytes(Text());
@@ -164,21 +169,31 @@ public abstract partial class NodeData : INodeData
     public ModifierFlags ModifierFlags() => Modifiers()?.ModifierFlags ?? TypeScript.Scanner.ModifierFlags.None;
     public int Pos() => node.Pos();
     public int End() => node.End();
-    internal virtual uint ComputeJsxFacts() => 0;
-    internal virtual uint PropagateJsxFacts() => JsxFacts();
-    private int cachedJsxFacts = -1;
-    internal virtual bool CacheJsxFacts => false;
-
-    internal uint JsxFacts()
+    internal virtual uint ComputeSubtreeFacts()
     {
-        if (!CacheJsxFacts)
-            return ComputeJsxFacts();
-        var cached = System.Threading.Volatile.Read(ref cachedJsxFacts);
-        if (cached >= 0)
-            return (uint)cached;
-        var computed = ComputeJsxFacts();
-        System.Threading.Volatile.Write(ref cachedJsxFacts, (int)computed);
-        return computed;
+        // NodeDefault returns no facts; CompositeBase requires a concrete computation.
+        if (CacheSubtreeFacts)
+            throw new InvalidOperationException("not implemented");
+        return 0;
+    }
+
+    internal virtual uint PropagateSubtreeFacts() => SubtreeFactsValue();
+    private int cachedSubtreeFacts;
+    internal virtual bool CacheSubtreeFacts => false;
+    internal uint CachedSubtreeFacts => (uint)System.Threading.Volatile.Read(ref cachedSubtreeFacts);
+
+    internal uint SubtreeFactsValue()
+    {
+        if (!CacheSubtreeFacts)
+            return ComputeSubtreeFacts();
+        uint facts = CachedSubtreeFacts;
+        if ((facts & SubtreeFactValues.FactsComputed) == 0)
+        {
+            facts |= ComputeSubtreeFacts() | SubtreeFactValues.FactsComputed;
+            System.Threading.Volatile.Write(ref cachedSubtreeFacts, (int)facts);
+        }
+
+        return facts & ~SubtreeFactValues.FactsComputed;
     }
 
     public virtual Node Name() => null;
@@ -188,6 +203,11 @@ public abstract partial class NodeData : INodeData
     }
 
     public virtual bool ForEachChild(Visitor visitor) => false;
+    internal virtual IEnumerable<Node> IterChildren()
+    {
+        yield break;
+    }
+
     public virtual Node Clone(NodeFactoryCoercible factory) => null;
     public virtual Node VisitEachChild(NodeVisitor visitor) => AsNode();
     public abstract string DataType();
@@ -241,6 +261,16 @@ public sealed partial class NodeFactory : NodeFactoryCoercible
 
 public static partial class Ast
 {
+    // Capture the slice reference/count when its traversal begins, as a Go range does.
+    internal static IEnumerable<Node> IterateSyntaxNodes(List<Node> nodes)
+    {
+        if (nodes is null)
+            yield break;
+        var count = nodes.Count;
+        for (var i = 0; i < count; i++)
+            yield return nodes[i];
+    }
+
     internal static bool SameSyntaxSlice<T>(List<T> left, List<T> right) => (left?.Count ?? 0) == (right?.Count ?? 0) && ((left?.Count ?? 0) == 0 || ReferenceEquals(left, right));
     internal static bool ForEachChildJSDocParameterOrPropertyTag(JSDocParameterOrPropertyTag node, Visitor v) => Visit(v, node.TagName) || (node.IsNameFirst && (Visit(v, node.name) || Visit(v, node.TypeExpression))) || (!node.IsNameFirst && (Visit(v, node.TypeExpression) || Visit(v, node.name))) || VisitNodeList(v, node.Comment);
     internal static Node VisitEachChildJSDocParameterOrPropertyTag(JSDocParameterOrPropertyTag node, NodeVisitor v) => v.Factory.UpdateJSDocParameterOrPropertyTag(node, v.visitNode(node.TagName), v.visitNode(node.name), node.IsBracketed, v.visitNode(node.TypeExpression), node.IsNameFirst, v.visitNodes(node.Comment));
@@ -248,8 +278,9 @@ public static partial class Ast
     {
         if (nodes is null)
             return null;
+        var count = nodes.Count;
         List<Node> result = null;
-        for (var i = 0; i < nodes.Count; i++)
+        for (var i = 0; i < count; i++)
         {
             var node = nodes[i];
             var mapped = map(node);
@@ -258,24 +289,8 @@ public static partial class Ast
             result?.Add(mapped);
         }
 
-        return result ?? nodes;
-    }
-
-    public static void SetParentInChildren(Node node)
-    {
-        Node parent = null;
-        Visitor visitor = null;
-        visitor = n =>
-        {
-            if (parent is not null)
-                n.Parent = parent;
-            var saveParent = parent;
-            parent = n;
-            n.ForEachChild(visitor);
-            parent = saveParent;
-            return false;
-        };
-        visitor(node);
+        // A Go parameter retains its slice-header length if a callback appends to the caller.
+        return result ?? (nodes.Count == count ? nodes : nodes.GetRange(0, count));
     }
 
     internal static Func<SourceFile, Node, List<Node>> ParseJSDocForNode;
@@ -305,9 +320,13 @@ public static partial class Ast
     internal static bool VisitNodes(Visitor v, List<Node> nodes)
     {
         if (nodes is not null)
-            foreach (var node in nodes)
-                if (v(node))
+        {
+            var count = nodes.Count;
+            for (var i = 0; i < count; i++)
+                if (v(nodes[i]))
                     return true;
+        }
+
         return false;
     }
 
@@ -352,7 +371,13 @@ public sealed class Pragma
     public Dictionary<string, PragmaArgument> Args;
 }
 
-public sealed partial class SourceFile : NodeData
+public interface SourceFileLike
+{
+    string Text();
+    List<int> ECMALineMap();
+}
+
+public sealed partial class SourceFile : NodeData, SourceFileLike
 {
     internal SourceFileParseOptions parseOptions;
     internal string text = "";
@@ -374,6 +399,16 @@ public sealed partial class SourceFile : NodeData
     internal List<Node> imports;
     private Dictionary<Node, List<Node>> jsdocCache;
     private bool hasLazyJSDoc;
+    private readonly object positionMapLock = new();
+    private Lazy<PositionMap> positionMap;
+    public PositionMap GetPositionMap()
+    {
+        Lazy<PositionMap> once;
+        lock (positionMapLock)
+            once = positionMap ??= new(() => Ast.ComputePositionMapByteString(text), LazyThreadSafetyMode.ExecutionAndPublication);
+        return once.Value;
+    }
+
     public SourceFileParseOptions ParseOptions() => parseOptions;
     public string FileName() => parseOptions.FileName;
     public string PathKey() => parseOptions.PathKey;
@@ -418,9 +453,9 @@ public sealed partial class SourceFile : NodeData
     }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, Statements) || Ast.Visit(v, EndOfFileToken);
-    internal override bool CacheJsxFacts => true;
+    internal override bool CacheSubtreeFacts => true;
 
-    internal override uint ComputeJsxFacts() => Ast.JsxListFacts(Statements, Ast.JsxPropagate);
+    internal override uint ComputeSubtreeFacts() => Ast.PropagateNodeListSubtreeFacts(Statements, Ast.PropagateSubtreeFacts);
     public override string DataType() => "SourceFile";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -557,16 +592,16 @@ public static partial class Ast
     public static bool IsLocalsContainer(Node node) => node.LocalsContainerData()is not null;
 }
 
-// BEGIN GENERATED JSX PROJECTION (tools/generate-jsx-projection.go; upstream ast.go)
+// BEGIN GENERATED SUBTREE FACTS (tools/generate-subtreefacts.go; upstream ast.go)
 public sealed partial class Token
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         switch (this.Kind)
         {
             case Kind.UsingKeyword:
             {
-                return JsxProjection.ContainsUsing;
+                return SubtreeFactValues.ContainsUsing;
             }
 
             case Kind.PublicKeyword:
@@ -592,105 +627,105 @@ public sealed partial class Token
             case Kind.UndefinedKeyword:
             case Kind.ExportKeyword:
             {
-                return JsxProjection.ContainsTypeScript;
+                return SubtreeFactValues.ContainsTypeScript;
             }
 
             case Kind.AccessorKeyword:
             {
-                return JsxProjection.ContainsClassFields;
+                return SubtreeFactValues.ContainsClassFields;
             }
 
             case Kind.AsyncKeyword:
             {
-                return JsxProjection.ContainsAnyAwait;
+                return SubtreeFactValues.ContainsAnyAwait;
             }
 
             case Kind.SuperKeyword:
             {
-                return JsxProjection.ContainsLexicalSuper;
+                return SubtreeFactValues.ContainsLexicalSuper;
             }
 
             case Kind.ThisKeyword:
             {
-                return JsxProjection.ContainsLexicalThis;
+                return SubtreeFactValues.ContainsLexicalThis;
             }
 
             case Kind.AsteriskAsteriskToken:
             case Kind.AsteriskAsteriskEqualsToken:
             {
-                return JsxProjection.ContainsExponentiationOperator;
+                return SubtreeFactValues.ContainsExponentiationOperator;
             }
 
             case Kind.QuestionQuestionToken:
             {
-                return JsxProjection.ContainsNullishCoalescing;
+                return SubtreeFactValues.ContainsNullishCoalescing;
             }
 
             case Kind.QuestionDotToken:
             {
-                return JsxProjection.ContainsOptionalChaining;
+                return SubtreeFactValues.ContainsOptionalChaining;
             }
 
             case Kind.QuestionQuestionEqualsToken:
             case Kind.BarBarEqualsToken:
             case Kind.AmpersandAmpersandEqualsToken:
             {
-                return JsxProjection.ContainsLogicalAssignments;
+                return SubtreeFactValues.ContainsLogicalAssignments;
             }
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class Identifier
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsIdentifier;
+        return SubtreeFactValues.ContainsIdentifier;
     }
 }
 
 public sealed partial class PrivateIdentifier
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsClassFields;
+        return SubtreeFactValues.ContainsClassFields;
     }
 }
 
 public sealed partial class Decorator
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsTypeScript) | JsxProjection.ContainsDecorators);
+        return ((Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsTypeScript) | SubtreeFactValues.ContainsDecorators);
     }
 }
 
 public sealed partial class ForInOrOfStatement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.Initializer) | Ast.JsxPropagate(this.Expression)) | Ast.JsxPropagate(this.Statement)) | Core.IfElse((this.AwaitModifier != null), JsxProjection.ContainsForAwaitOrAsyncGenerator, JsxProjection.FactsNone));
+        return (((Ast.PropagateSubtreeFacts(this.Initializer) | Ast.PropagateSubtreeFacts(this.Expression)) | Ast.PropagateSubtreeFacts(this.Statement)) | Core.IfElse((this.AwaitModifier != null), SubtreeFactValues.ContainsForAwaitOrAsyncGenerator, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class ReturnStatement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsForAwaitOrAsyncGenerator);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsForAwaitOrAsyncGenerator);
     }
 }
 
 public sealed partial class CatchClause
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        var res = (Ast.JsxPropagate(this.VariableDeclaration) | Ast.JsxPropagate(this.Block));
+        var res = (Ast.PropagateSubtreeFacts(this.VariableDeclaration) | Ast.PropagateSubtreeFacts(this.Block));
         if ((this.VariableDeclaration == null))
         {
-            res |= JsxProjection.ContainsMissingCatchClauseVariable;
+            res |= SubtreeFactValues.ContainsMissingCatchClauseVariable;
         }
 
         return res;
@@ -699,70 +734,70 @@ public sealed partial class CatchClause
 
 public sealed partial class CatchClause
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsCatchClause);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsCatchClause);
     }
 }
 
 public sealed partial class VariableStatement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Ambient) != 0)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.DeclarationList));
+            return (Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.DeclarationList));
         }
     }
 }
 
 public sealed partial class VariableDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.name) | Ast.JsxEraseableFacts(this.ExclamationToken)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxPropagate(this.Initializer));
+        return (((Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.ExclamationToken)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.Initializer));
     }
 }
 
 public sealed partial class VariableDeclarationList
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxListFacts(this.Declarations, Ast.JsxPropagate) | Core.IfElse(((this.Flags & TypeScript.Scanner.NodeFlags.Using) != 0), JsxProjection.ContainsUsing, JsxProjection.FactsNone));
+        return (Ast.PropagateNodeListSubtreeFacts(this.Declarations, Ast.PropagateSubtreeFacts) | Core.IfElse(((this.Flags & TypeScript.Scanner.NodeFlags.Using) != 0), SubtreeFactValues.ContainsUsing, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class VariableDeclarationList
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsVariableDeclarationList);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsVariableDeclarationList);
     }
 }
 
 public sealed partial class BindingPattern
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         switch (this.Kind)
         {
             case Kind.ObjectBindingPattern:
             {
-                return Ast.JsxListFacts(this.Elements, Ast.JsxPropagate);
+                return Ast.PropagateNodeListSubtreeFacts(this.Elements, Ast.PropagateObjectBindingElementSubtreeFacts);
             }
 
             case Kind.ArrayBindingPattern:
             {
-                return Ast.JsxListFacts(this.Elements, Ast.JsxPropagate);
+                return Ast.PropagateNodeListSubtreeFacts(this.Elements, Ast.PropagateBindingElementSubtreeFacts);
             }
 
             default:
             {
-                return JsxProjection.FactsNone;
+                return SubtreeFactValues.FactsNone;
             }
         }
     }
@@ -770,133 +805,133 @@ public sealed partial class BindingPattern
 
 public sealed partial class BindingPattern
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsBindingPattern);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsBindingPattern);
     }
 }
 
 public sealed partial class ParameterDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.name != null) && Ast.IsThisIdentifier(this.name)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableFacts(this.QuestionToken)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxPropagate(this.Initializer));
+            return ((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.QuestionToken)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.Initializer));
         }
     }
 }
 
 public sealed partial class ParameterDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsParameter);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsParameter);
     }
 }
 
 public sealed partial class BindingElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.PropertyName) | Ast.JsxPropagate(this.name)) | Ast.JsxPropagate(this.Initializer)) | Core.IfElse((this.DotDotDotToken != null), JsxProjection.ContainsRestOrSpread, JsxProjection.FactsNone));
+        return (((Ast.PropagateSubtreeFacts(this.PropertyName) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateSubtreeFacts(this.Initializer)) | Core.IfElse((this.DotDotDotToken != null), SubtreeFactValues.ContainsRestOrSpread, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class FunctionDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.Body == null) || ((this.ModifierFlags() & TypeScript.Scanner.ModifierFlags.Ambient) != 0)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
             var isAsync = ((this.ModifierFlags() & TypeScript.Scanner.ModifierFlags.Async) != 0);
             var isGenerator = (this.AsteriskToken != null);
-            return (((((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.AsteriskToken)) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body)) | Core.IfElse((isAsync && isGenerator), JsxProjection.ContainsForAwaitOrAsyncGenerator, JsxProjection.FactsNone)) | Core.IfElse((isAsync && !isGenerator), JsxProjection.ContainsAnyAwait, JsxProjection.FactsNone));
+            return (((((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.AsteriskToken)) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body)) | Core.IfElse((isAsync && isGenerator), SubtreeFactValues.ContainsForAwaitOrAsyncGenerator, SubtreeFactValues.FactsNone)) | Core.IfElse((isAsync && !isGenerator), SubtreeFactValues.ContainsAnyAwait, SubtreeFactValues.FactsNone));
         }
     }
 }
 
 public sealed partial class FunctionDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsFunction);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsFunction);
     }
 }
 
 public sealed partial class ClassDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Ambient) != 0)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.HeritageClauses, Ast.JsxPropagate)) | Ast.JsxListFacts(this.Members, Ast.JsxPropagate));
+            return ((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.HeritageClauses, Ast.PropagateSubtreeFacts)) | Ast.PropagateNodeListSubtreeFacts(this.Members, Ast.PropagateSubtreeFacts));
         }
     }
 }
 
 public sealed partial class ClassDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsClass);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsClass);
     }
 }
 
 public sealed partial class ClassExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Ambient) != 0)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.HeritageClauses, Ast.JsxPropagate)) | Ast.JsxListFacts(this.Members, Ast.JsxPropagate));
+            return ((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.HeritageClauses, Ast.PropagateSubtreeFacts)) | Ast.PropagateNodeListSubtreeFacts(this.Members, Ast.PropagateSubtreeFacts));
         }
     }
 }
 
 public sealed partial class ClassExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsClass);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsClass);
     }
 }
 
 public sealed partial class HeritageClause
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         switch (this.Token)
         {
             case Kind.ExtendsKeyword:
             {
-                return Ast.JsxListFacts(this.Types, Ast.JsxPropagate);
+                return Ast.PropagateNodeListSubtreeFacts(this.Types, Ast.PropagateSubtreeFacts);
             }
 
             case Kind.ImplementsKeyword:
             {
-                return JsxProjection.ContainsTypeScript;
+                return SubtreeFactValues.ContainsTypeScript;
             }
 
             default:
             {
-                return JsxProjection.FactsNone;
+                return SubtreeFactValues.FactsNone;
             }
         }
     }
@@ -904,1367 +939,1375 @@ public sealed partial class HeritageClause
 
 public sealed partial class InterfaceDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class InterfaceDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeAliasDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeAliasDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class EnumMember
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.name) | Ast.JsxPropagate(this.Initializer)) | JsxProjection.ContainsTypeScript);
+        return ((Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateSubtreeFacts(this.Initializer)) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class EnumDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Ambient) != 0)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxListFacts(this.Members, Ast.JsxPropagate)) | JsxProjection.ContainsTypeScript);
+            return (((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateNodeListSubtreeFacts(this.Members, Ast.PropagateSubtreeFacts)) | SubtreeFactValues.ContainsTypeScript);
         }
     }
 }
 
 public sealed partial class ExportAssignment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.Type)) | Ast.JsxPropagate(this.Expression)) | Core.IfElse(this.IsExportEquals, JsxProjection.ContainsTypeScript, JsxProjection.FactsNone));
+        return (((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.Expression)) | Core.IfElse(this.IsExportEquals, SubtreeFactValues.ContainsTypeScript, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class NamespaceExportDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class NamespaceExportDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ExportSpecifier
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (this.IsTypeOnly)
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (Ast.JsxPropagate(this.PropertyName) | Ast.JsxPropagate(this.name));
+            return (Ast.PropagateSubtreeFacts(this.PropertyName) | Ast.PropagateSubtreeFacts(this.name));
         }
     }
 }
 
 public sealed partial class CallSignatureDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class CallSignatureDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConstructSignatureDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConstructSignatureDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConstructorDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.Body == null))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body));
+            return (((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body));
         }
     }
 }
 
 public sealed partial class ConstructorDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsConstructor);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsConstructor);
     }
 }
 
 public sealed partial class GetAccessorDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.Body == null))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body));
+            return ((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body));
         }
     }
 }
 
 public sealed partial class GetAccessorDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return ((this.JsxFacts() & ~JsxProjection.ExclusionsAccessor) | Ast.JsxPropagate(this.name));
+        return ((this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsAccessor) | Ast.PropagateSubtreeFacts(this.name));
     }
 }
 
 public sealed partial class SetAccessorDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.Body == null))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body));
+            return ((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body));
         }
     }
 }
 
 public sealed partial class SetAccessorDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return ((this.JsxFacts() & ~JsxProjection.ExclusionsAccessor) | Ast.JsxPropagate(this.name));
+        return ((this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsAccessor) | Ast.PropagateSubtreeFacts(this.name));
     }
 }
 
 public sealed partial class IndexSignatureDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class IndexSignatureDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class MethodSignatureDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class MethodSignatureDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class MethodDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.Body == null))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
             var isAsync = ((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Async) != 0));
             var isGenerator = (this.AsteriskToken != null);
-            return ((((((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.AsteriskToken)) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableFacts(this.PostfixToken)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxPropagate(this.Body)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Core.IfElse((isAsync && isGenerator), JsxProjection.ContainsForAwaitOrAsyncGenerator, JsxProjection.FactsNone)) | Core.IfElse((isAsync && !isGenerator), JsxProjection.ContainsAnyAwait, JsxProjection.FactsNone));
+            return ((((((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.AsteriskToken)) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.PostfixToken)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateSubtreeFacts(this.Body)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Core.IfElse((isAsync && isGenerator), SubtreeFactValues.ContainsForAwaitOrAsyncGenerator, SubtreeFactValues.FactsNone)) | Core.IfElse((isAsync && !isGenerator), SubtreeFactValues.ContainsAnyAwait, SubtreeFactValues.FactsNone));
         }
     }
 }
 
 public sealed partial class MethodDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return ((this.JsxFacts() & ~JsxProjection.ExclusionsMethod) | Ast.JsxPropagate(this.name));
+        return ((this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsMethod) | Ast.PropagateSubtreeFacts(this.name));
     }
 }
 
 public sealed partial class PropertySignatureDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class PropertySignatureDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class PropertyDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableFacts(this.PostfixToken)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxPropagate(this.Initializer)) | JsxProjection.ContainsClassFields);
+        return (((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.PostfixToken)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.Initializer)) | SubtreeFactValues.ContainsClassFields);
     }
 }
 
 public sealed partial class PropertyDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return ((this.JsxFacts() & ~JsxProjection.ExclusionsProperty) | Ast.JsxPropagate(this.name));
+        return ((this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsProperty) | Ast.PropagateSubtreeFacts(this.name));
     }
 }
 
 public sealed partial class ClassStaticBlockDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.Body)) | JsxProjection.ContainsClassFields);
+        return ((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.Body)) | SubtreeFactValues.ContainsClassFields);
     }
 }
 
 public sealed partial class KeywordExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         switch (this.Kind)
         {
             case Kind.ThisKeyword:
             {
-                return JsxProjection.ContainsLexicalThis;
+                return SubtreeFactValues.ContainsLexicalThis;
             }
 
             case Kind.SuperKeyword:
             {
-                return JsxProjection.ContainsLexicalSuper;
+                return SubtreeFactValues.ContainsLexicalSuper;
             }
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class BigIntLiteral
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class NoSubstitutionTemplateLiteral
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.TemplateFlags & TypeScript.Scanner.TokenFlags.ContainsInvalidEscape) != 0))
         {
-            return JsxProjection.ContainsInvalidTemplateEscape;
+            return SubtreeFactValues.ContainsInvalidTemplateEscape;
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class BinaryExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        var facts = (((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.Left)) | Ast.JsxPropagate(this.Type)) | Ast.JsxPropagate(this.OperatorToken)) | Ast.JsxPropagate(this.Right)) | Core.IfElse(((this.OperatorToken.Kind == Kind.InKeyword) && Ast.IsPrivateIdentifier(this.Left)), (JsxProjection.ContainsClassFields | JsxProjection.ContainsPrivateIdentifierInExpression), JsxProjection.FactsNone));
+        var facts = (((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.Left)) | Ast.PropagateSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.OperatorToken)) | Ast.PropagateSubtreeFacts(this.Right)) | Core.IfElse(((this.OperatorToken.Kind == Kind.InKeyword) && Ast.IsPrivateIdentifier(this.Left)), (SubtreeFactValues.ContainsClassFields | SubtreeFactValues.ContainsPrivateIdentifierInExpression), SubtreeFactValues.FactsNone));
+        if ((this.OperatorToken.Kind == Kind.EqualsToken))
+        {
+            if ((((Ast.IsObjectLiteralExpression(this.Left) || Ast.IsArrayLiteralExpression(this.Left))) && Ast.ContainsObjectRestOrSpread(this.Left)))
+            {
+                facts |= SubtreeFactValues.ContainsObjectRestOrSpread;
+            }
+        }
+
         return facts;
     }
 }
 
 public sealed partial class YieldExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsForAwaitOrAsyncGenerator);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsForAwaitOrAsyncGenerator);
     }
 }
 
 public sealed partial class ArrowFunction
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body)) | Core.IfElse(((this.ModifierFlags() & TypeScript.Scanner.ModifierFlags.Async) != 0), JsxProjection.ContainsAnyAwait, JsxProjection.FactsNone));
+        return ((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body)) | Core.IfElse(((this.ModifierFlags() & TypeScript.Scanner.ModifierFlags.Async) != 0), SubtreeFactValues.ContainsAnyAwait, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class ArrowFunction
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsArrowFunction);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsArrowFunction);
     }
 }
 
 public sealed partial class FunctionExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         var isAsync = ((this.modifiers != null) && ((this.modifiers.ModifierFlags & TypeScript.Scanner.ModifierFlags.Async) != 0));
         var isGenerator = (this.AsteriskToken != null);
-        return (((((((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.AsteriskToken)) | Ast.JsxPropagate(this.name)) | Ast.JsxEraseableListFacts(this.TypeParameters)) | Ast.JsxListFacts(this.Parameters, Ast.JsxPropagate)) | Ast.JsxEraseableFacts(this.Type)) | Ast.JsxEraseableFacts(this.FullSignature)) | Ast.JsxPropagate(this.Body)) | Core.IfElse((isAsync && isGenerator), JsxProjection.ContainsForAwaitOrAsyncGenerator, JsxProjection.FactsNone)) | Core.IfElse((isAsync && !isGenerator), JsxProjection.ContainsAnyAwait, JsxProjection.FactsNone));
+        return (((((((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.AsteriskToken)) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeParameters)) | Ast.PropagateNodeListSubtreeFacts(this.Parameters, Ast.PropagateSubtreeFacts)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.Type)) | Ast.PropagateEraseableSyntaxSubtreeFacts(this.FullSignature)) | Ast.PropagateSubtreeFacts(this.Body)) | Core.IfElse((isAsync && isGenerator), SubtreeFactValues.ContainsForAwaitOrAsyncGenerator, SubtreeFactValues.FactsNone)) | Core.IfElse((isAsync && !isGenerator), SubtreeFactValues.ContainsAnyAwait, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class FunctionExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsFunction);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsFunction);
     }
 }
 
 public sealed partial class AsExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsTypeScript);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class AsExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsOuterExpression);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsOuterExpression);
     }
 }
 
 public sealed partial class SatisfiesExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsTypeScript);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class SatisfiesExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsOuterExpression);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsOuterExpression);
     }
 }
 
 public sealed partial class PropertyAccessExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        var privateName = JsxProjection.FactsNone;
+        var privateName = SubtreeFactValues.FactsNone;
         if (!Ast.IsIdentifier(this.name))
         {
-            privateName = JsxProjection.ContainsPrivateIdentifierInExpression;
+            privateName = SubtreeFactValues.ContainsPrivateIdentifierInExpression;
         }
 
-        return (((Ast.JsxPropagate(this.Expression) | Ast.JsxPropagate(this.QuestionDotToken)) | Ast.JsxPropagate(this.name)) | privateName);
+        return (((Ast.PropagateSubtreeFacts(this.Expression) | Ast.PropagateSubtreeFacts(this.QuestionDotToken)) | Ast.PropagateSubtreeFacts(this.name)) | privateName);
     }
 }
 
 public sealed partial class PropertyAccessExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsPropertyAccess);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsPropertyAccess);
     }
 }
 
 public sealed partial class ElementAccessExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsElementAccess);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsElementAccess);
     }
 }
 
 public sealed partial class CallExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((((Ast.JsxPropagate(this.Expression) | Ast.JsxPropagate(this.QuestionDotToken)) | Ast.JsxEraseableListFacts(this.TypeArguments)) | Ast.JsxListFacts(this.Arguments, Ast.JsxPropagate)) | Core.IfElse(Ast.IsImportCall(this.AsNode()), JsxProjection.ContainsDynamicImport, JsxProjection.FactsNone));
+        return ((((Ast.PropagateSubtreeFacts(this.Expression) | Ast.PropagateSubtreeFacts(this.QuestionDotToken)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments)) | Ast.PropagateNodeListSubtreeFacts(this.Arguments, Ast.PropagateSubtreeFacts)) | Core.IfElse(Ast.IsImportCall(this.AsNode()), SubtreeFactValues.ContainsDynamicImport, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class CallExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsCall);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsCall);
     }
 }
 
 public sealed partial class NewExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.Expression) | Ast.JsxEraseableListFacts(this.TypeArguments)) | Ast.JsxListFacts(this.Arguments, Ast.JsxPropagate));
+        return ((Ast.PropagateSubtreeFacts(this.Expression) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments)) | Ast.PropagateNodeListSubtreeFacts(this.Arguments, Ast.PropagateSubtreeFacts));
     }
 }
 
 public sealed partial class NewExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsNew);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsNew);
     }
 }
 
 public sealed partial class MetaProperty
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.name) & ~JsxProjection.ContainsIdentifier);
+        return (Ast.PropagateSubtreeFacts(this.name) & ~SubtreeFactValues.ContainsIdentifier);
     }
 }
 
 public sealed partial class NonNullExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsTypeScript);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class SpreadElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsRestOrSpread);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsRestOrSpread);
     }
 }
 
 public sealed partial class TaggedTemplateExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.Tag) | Ast.JsxPropagate(this.QuestionDotToken)) | Ast.JsxEraseableListFacts(this.TypeArguments)) | Ast.JsxPropagate(this.Template));
+        return (((Ast.PropagateSubtreeFacts(this.Tag) | Ast.PropagateSubtreeFacts(this.QuestionDotToken)) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments)) | Ast.PropagateSubtreeFacts(this.Template));
     }
 }
 
 public sealed partial class ArrayLiteralExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsArrayLiteral);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsArrayLiteral);
     }
 }
 
 public sealed partial class ObjectLiteralExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsObjectLiteral);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsObjectLiteral);
     }
 }
 
 public sealed partial class SpreadAssignment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsESObjectRestOrSpread) | JsxProjection.ContainsObjectRestOrSpread);
+        return ((Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsESObjectRestOrSpread) | SubtreeFactValues.ContainsObjectRestOrSpread);
     }
 }
 
 public sealed partial class PropertyAssignment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.name) | Ast.JsxPropagate(this.Type)) | Ast.JsxPropagate(this.Initializer));
+        return ((Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.Initializer));
     }
 }
 
 public sealed partial class ShorthandPropertyAssignment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.name) | Ast.JsxPropagate(this.Type)) | Ast.JsxPropagate(this.ObjectAssignmentInitializer)) | JsxProjection.ContainsTypeScript);
+        return (((Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateSubtreeFacts(this.Type)) | Ast.PropagateSubtreeFacts(this.ObjectAssignmentInitializer)) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class AwaitExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsAwait) | JsxProjection.ContainsAnyAwait) | JsxProjection.ContainsForAwaitOrAsyncGenerator);
+        return (((Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsAwait) | SubtreeFactValues.ContainsAnyAwait) | SubtreeFactValues.ContainsForAwaitOrAsyncGenerator);
     }
 }
 
 public sealed partial class TypeAssertion
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsTypeScript);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsTypeScript);
     }
 }
 
 public sealed partial class TypeAssertion
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsOuterExpression);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsOuterExpression);
     }
 }
 
 public sealed partial class KeywordTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class KeywordTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class UnionTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class UnionTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class IntersectionTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class IntersectionTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConditionalTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConditionalTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeOperatorNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeOperatorNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class InferTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class InferTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ArrayTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ArrayTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class IndexedAccessTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class IndexedAccessTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeReferenceNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeReferenceNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ExpressionWithTypeArguments
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | Ast.JsxEraseableListFacts(this.TypeArguments));
+        return (Ast.PropagateSubtreeFacts(this.Expression) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments));
     }
 }
 
 public sealed partial class LiteralTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class LiteralTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ThisTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ThisTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypePredicateNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypePredicateNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeQueryNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeQueryNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class MappedTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class MappedTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeLiteralNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeLiteralNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TupleTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TupleTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class NamedTupleMember
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class NamedTupleMember
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class OptionalTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class OptionalTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class RestTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class RestTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ParenthesizedTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ParenthesizedTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class FunctionTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class FunctionTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConstructorTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ConstructorTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TemplateHead
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.TemplateFlags & TypeScript.Scanner.TokenFlags.ContainsInvalidEscape) != 0))
         {
-            return JsxProjection.ContainsInvalidTemplateEscape;
+            return SubtreeFactValues.ContainsInvalidTemplateEscape;
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class TemplateMiddle
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.TemplateFlags & TypeScript.Scanner.TokenFlags.ContainsInvalidEscape) != 0))
         {
-            return JsxProjection.ContainsInvalidTemplateEscape;
+            return SubtreeFactValues.ContainsInvalidTemplateEscape;
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class TemplateTail
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.TemplateFlags & TypeScript.Scanner.TokenFlags.ContainsInvalidEscape) != 0))
         {
-            return JsxProjection.ContainsInvalidTemplateEscape;
+            return SubtreeFactValues.ContainsInvalidTemplateEscape;
         }
 
-        return JsxProjection.FactsNone;
+        return SubtreeFactValues.FactsNone;
     }
 }
 
 public sealed partial class TemplateLiteralTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TemplateLiteralTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TemplateLiteralTypeSpan
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TemplateLiteralTypeSpan
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JsxElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.OpeningElement) | Ast.JsxListFacts(this.Children, Ast.JsxPropagate)) | Ast.JsxPropagate(this.ClosingElement)) | JsxProjection.ContainsJsx);
+        return (((Ast.PropagateSubtreeFacts(this.OpeningElement) | Ast.PropagateNodeListSubtreeFacts(this.Children, Ast.PropagateSubtreeFacts)) | Ast.PropagateSubtreeFacts(this.ClosingElement)) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxAttributes
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxListFacts(this.Properties, Ast.JsxPropagate) | JsxProjection.ContainsJsx);
+        return (Ast.PropagateNodeListSubtreeFacts(this.Properties, Ast.PropagateSubtreeFacts) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxNamespacedName
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.Namespace) | Ast.JsxPropagate(this.name)) | JsxProjection.ContainsJsx);
+        return ((Ast.PropagateSubtreeFacts(this.Namespace) | Ast.PropagateSubtreeFacts(this.name)) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxOpeningElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.TagName) | Ast.JsxEraseableListFacts(this.TypeArguments)) | Ast.JsxPropagate(this.Attributes)) | JsxProjection.ContainsJsx);
+        return (((Ast.PropagateSubtreeFacts(this.TagName) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments)) | Ast.PropagateSubtreeFacts(this.Attributes)) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxSelfClosingElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (((Ast.JsxPropagate(this.TagName) | Ast.JsxEraseableListFacts(this.TypeArguments)) | Ast.JsxPropagate(this.Attributes)) | JsxProjection.ContainsJsx);
+        return (((Ast.PropagateSubtreeFacts(this.TagName) | Ast.PropagateEraseableSyntaxListSubtreeFacts(this.TypeArguments)) | Ast.PropagateSubtreeFacts(this.Attributes)) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxFragment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxListFacts(this.Children, Ast.JsxPropagate) | JsxProjection.ContainsJsx);
+        return (Ast.PropagateNodeListSubtreeFacts(this.Children, Ast.PropagateSubtreeFacts) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxOpeningFragment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsJsx;
+        return SubtreeFactValues.ContainsJsx;
     }
 }
 
 public sealed partial class JsxClosingFragment
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsJsx;
+        return SubtreeFactValues.ContainsJsx;
     }
 }
 
 public sealed partial class JsxAttribute
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((Ast.JsxPropagate(this.name) | Ast.JsxPropagate(this.Initializer)) | JsxProjection.ContainsJsx);
+        return ((Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateSubtreeFacts(this.Initializer)) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxSpreadAttribute
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsJsx);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxClosingElement
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.TagName) | JsxProjection.ContainsJsx);
+        return (Ast.PropagateSubtreeFacts(this.TagName) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return (Ast.JsxPropagate(this.Expression) | JsxProjection.ContainsJsx);
+        return (Ast.PropagateSubtreeFacts(this.Expression) | SubtreeFactValues.ContainsJsx);
     }
 }
 
 public sealed partial class JsxText
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsJsx;
+        return SubtreeFactValues.ContainsJsx;
     }
 }
 
 public sealed partial class JSDocTypeExpression
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocTypeExpression
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNonNullableType
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNonNullableType
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNullableType
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNullableType
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocAllType
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocAllType
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocVariadicType
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocVariadicType
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocOptionalType
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocOptionalType
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocSignature
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocSignature
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNameReference
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocNameReference
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ModuleDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (((this.ModifierFlags() & TypeScript.Scanner.ModifierFlags.Ambient) != 0))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxPropagate(this.Body)) | JsxProjection.ContainsTypeScript);
+            return (((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateSubtreeFacts(this.Body)) | SubtreeFactValues.ContainsTypeScript);
         }
     }
 }
 
 public sealed partial class ModuleDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return (this.JsxFacts() & ~JsxProjection.ExclusionsModule);
+        return (this.SubtreeFactsValue() & ~SubtreeFactValues.ExclusionsModule);
     }
 }
 
 public sealed partial class ImportEqualsDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.IsTypeOnly || !Ast.IsExternalModuleReference(this.ModuleReference)))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return ((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.name)) | Ast.JsxPropagate(this.ModuleReference));
+            return ((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.name)) | Ast.PropagateSubtreeFacts(this.ModuleReference));
         }
     }
 }
 
 public sealed partial class ExportDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return ((((Ast.JsxModifierFacts(this.modifiers) | Ast.JsxPropagate(this.ExportClause)) | Ast.JsxPropagate(this.ModuleSpecifier)) | Ast.JsxPropagate(this.Attributes)) | Core.IfElse(this.IsTypeOnly, JsxProjection.ContainsTypeScript, JsxProjection.FactsNone));
+        return ((((Ast.PropagateModifierListSubtreeFacts(this.modifiers) | Ast.PropagateSubtreeFacts(this.ExportClause)) | Ast.PropagateSubtreeFacts(this.ModuleSpecifier)) | Ast.PropagateSubtreeFacts(this.Attributes)) | Core.IfElse(this.IsTypeOnly, SubtreeFactValues.ContainsTypeScript, SubtreeFactValues.FactsNone));
     }
 }
 
 public sealed partial class ImportTypeNode
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ImportTypeNode
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class ImportClause
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if ((this.PhaseModifier == Kind.TypeKeyword))
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (Ast.JsxPropagate(this.name) | Ast.JsxPropagate(this.NamedBindings));
+            return (Ast.PropagateSubtreeFacts(this.name) | Ast.PropagateSubtreeFacts(this.NamedBindings));
         }
     }
 }
 
 public sealed partial class ImportSpecifier
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
         if (this.IsTypeOnly)
         {
-            return JsxProjection.ContainsTypeScript;
+            return SubtreeFactValues.ContainsTypeScript;
         }
         else
         {
-            return (Ast.JsxPropagate(this.PropertyName) | Ast.JsxPropagate(this.name));
+            return (Ast.PropagateSubtreeFacts(this.PropertyName) | Ast.PropagateSubtreeFacts(this.name));
         }
     }
 }
 
 public sealed partial class TypeParameterDeclaration
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class TypeParameterDeclaration
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocTypeLiteral
 {
-    internal override uint ComputeJsxFacts()
+    internal override uint ComputeSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
 public sealed partial class JSDocTypeLiteral
 {
-    internal override uint PropagateJsxFacts()
+    internal override uint PropagateSubtreeFacts()
     {
-        return JsxProjection.ContainsTypeScript;
+        return SubtreeFactValues.ContainsTypeScript;
     }
 }
 
-// END GENERATED JSX PROJECTION
+// END GENERATED SUBTREE FACTS
 // BEGIN GENERATED AST ACCESSORS (tools/generate-ast-accessors.go)
 public sealed partial class Node
 {
@@ -4045,3 +4088,896 @@ public sealed partial class Node
     }
 } // END GENERATED AST ACCESSORS
 
+// Additional syntax access/declaration helpers from ast.go. Symbols are read-only existing state.
+public enum AccessKind : int
+{
+    Read = 0,
+    Write = 1,
+    ReadWrite = 2
+}
+
+public static partial class Ast
+{
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1268:1.
+    public static bool IsWriteOnlyAccess(Node node)
+    {
+        return (accessKind(node) == AccessKind.Write);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1272:1.
+    public static bool IsWriteAccess(Node node)
+    {
+        return (accessKind(node) != AccessKind.Read);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1276:1.
+    public static bool IsWriteAccessForReference(Node node)
+    {
+        var decl = GetDeclarationFromName(node);
+        return (((((decl != null) && declarationIsWriteAccess(decl))) || (node.Kind == Kind.DefaultKeyword)) || IsWriteAccess(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1281:1.
+    public static Node GetDeclarationFromName(Node name)
+    {
+        if (((name == null) || (name.Parent == null)))
+        {
+            return null;
+        }
+
+        var parent = name.Parent;
+        switch (name.Kind)
+        {
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.NumericLiteral:
+            {
+                if (IsComputedPropertyName(parent))
+                {
+                    return parent.Parent;
+                }
+
+                goto case Kind.Identifier;
+            }
+
+            case Kind.Identifier:
+            {
+                if (IsDeclaration(parent))
+                {
+                    if ((parent.Name() == name))
+                    {
+                        return parent;
+                    }
+
+                    return null;
+                }
+
+                if (IsQualifiedName(parent))
+                {
+                    var tag = parent.Parent;
+                    if ((IsJSDocParameterTag(tag) && (tag.Name() == parent)))
+                    {
+                        return tag;
+                    }
+
+                    return null;
+                }
+
+                var binExp = parent.Parent;
+                if ((IsBinaryExpression(binExp) && (GetAssignmentDeclarationKind(binExp) != JSDeclarationKind.None)))
+                {
+                    var leftHasSymbol = false;
+                    if (((binExp.AsBinaryExpression().Left != null) && (binExp.AsBinaryExpression().Left.Symbol() != null)))
+                    {
+                        leftHasSymbol = true;
+                    }
+
+                    if ((leftHasSymbol || (binExp.Symbol() != null)))
+                    {
+                        if ((GetNameOfDeclaration(binExp.AsNode()) == name))
+                        {
+                            return binExp.AsNode();
+                        }
+                    }
+                }
+
+                break;
+            }
+
+            case Kind.PrivateIdentifier:
+            {
+                if ((IsDeclaration(parent) && (parent.Name() == name)))
+                {
+                    return parent;
+                }
+
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1327:1.
+    private static bool declarationIsWriteAccess(Node decl)
+    {
+        if ((decl == null))
+        {
+            return false;
+        }
+
+        if (((decl.Flags & NodeFlags.Ambient) != 0))
+        {
+            return true;
+        }
+
+        switch (decl.Kind)
+        {
+            case Kind.BinaryExpression:
+            case Kind.BindingElement:
+            case Kind.ClassDeclaration:
+            case Kind.ClassExpression:
+            case Kind.DefaultKeyword:
+            case Kind.EnumDeclaration:
+            case Kind.EnumMember:
+            case Kind.ExportSpecifier:
+            case Kind.ImportClause:
+            case Kind.ImportEqualsDeclaration:
+            case Kind.ImportSpecifier:
+            case Kind.InterfaceDeclaration:
+            case Kind.JSDocCallbackTag:
+            case Kind.JSDocTypedefTag:
+            case Kind.JsxAttribute:
+            case Kind.ModuleDeclaration:
+            case Kind.NamespaceExportDeclaration:
+            case Kind.NamespaceImport:
+            case Kind.NamespaceExport:
+            case Kind.Parameter:
+            case Kind.ShorthandPropertyAssignment:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.TypeParameter:
+            {
+                return true;
+            }
+
+            case Kind.PropertyAssignment:
+            {
+                return !IsArrayLiteralOrObjectLiteralDestructuringPattern(decl.Parent);
+            }
+
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.Constructor:
+            case Kind.MethodDeclaration:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            {
+                switch (decl.Kind)
+                {
+                    case Kind.FunctionDeclaration:
+                    {
+                        return (decl.AsFunctionDeclaration().Body != null);
+                    }
+
+                    case Kind.FunctionExpression:
+                    {
+                        return (decl.AsFunctionExpression().Body != null);
+                    }
+
+                    case Kind.Constructor:
+                    {
+                        return (decl.AsConstructorDeclaration().Body != null);
+                    }
+
+                    case Kind.MethodDeclaration:
+                    {
+                        return (decl.AsMethodDeclaration().Body != null);
+                    }
+
+                    case Kind.GetAccessor:
+                    {
+                        return (decl.AsGetAccessorDeclaration().Body != null);
+                    }
+
+                    case Kind.SetAccessor:
+                    {
+                        return (decl.AsSetAccessorDeclaration().Body != null);
+                    }
+                }
+
+                return false;
+            }
+
+            case Kind.VariableDeclaration:
+            case Kind.PropertyDeclaration:
+            {
+                bool hasInit = default;
+                switch (decl.Kind)
+                {
+                    case Kind.VariableDeclaration:
+                    {
+                        hasInit = (decl.AsVariableDeclaration().Initializer != null);
+                        break;
+                    }
+
+                    case Kind.PropertyDeclaration:
+                    {
+                        hasInit = (decl.AsPropertyDeclaration().Initializer != null);
+                        break;
+                    }
+                }
+
+                return (hasInit || IsCatchClause(decl.Parent));
+            }
+
+            case Kind.MethodSignature:
+            case Kind.PropertySignature:
+            case Kind.JSDocPropertyTag:
+            case Kind.JSDocParameterTag:
+            {
+                return false;
+            }
+
+            default:
+            {
+                throw new InvalidOperationException("Unhandled case in declarationIsWriteAccess");
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1406:1.
+    public static bool IsArrayLiteralOrObjectLiteralDestructuringPattern(Node node)
+    {
+        if (!((IsArrayLiteralExpression(node) || IsObjectLiteralExpression(node))))
+        {
+            return false;
+        }
+
+        var parent = node.Parent;
+        if (((IsBinaryExpression(parent) && (parent.AsBinaryExpression().Left == node)) && (parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)))
+        {
+            return true;
+        }
+
+        if ((IsForOfStatement(parent) && (parent.Initializer() == node)))
+        {
+            return true;
+        }
+
+        if (IsPropertyAssignment(parent))
+        {
+            return IsArrayLiteralOrObjectLiteralDestructuringPattern(parent.Parent);
+        }
+
+        return IsArrayLiteralOrObjectLiteralDestructuringPattern(parent);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1430:1.
+    private static AccessKind accessKind(Node node)
+    {
+        var parent = node.Parent;
+        if ((parent == null))
+        {
+            return AccessKind.Read;
+        }
+
+        switch (parent.Kind)
+        {
+            case Kind.ParenthesizedExpression:
+            {
+                return accessKind(parent);
+            }
+
+            case Kind.PrefixUnaryExpression:
+            {
+                var @operator = parent.AsPrefixUnaryExpression().Operator;
+                if (((@operator == Kind.PlusPlusToken) || (@operator == Kind.MinusMinusToken)))
+                {
+                    return AccessKind.ReadWrite;
+                }
+
+                return AccessKind.Read;
+            }
+
+            case Kind.PostfixUnaryExpression:
+            {
+                var operator2 = parent.AsPostfixUnaryExpression().Operator;
+                if (((operator2 == Kind.PlusPlusToken) || (operator2 == Kind.MinusMinusToken)))
+                {
+                    return AccessKind.ReadWrite;
+                }
+
+                return AccessKind.Read;
+            }
+
+            case Kind.BinaryExpression:
+            {
+                if ((parent.AsBinaryExpression().Left == node))
+                {
+                    var operator3 = parent.AsBinaryExpression().OperatorToken;
+                    if (IsAssignmentOperator(operator3.Kind))
+                    {
+                        if ((operator3.Kind == Kind.EqualsToken))
+                        {
+                            return AccessKind.Write;
+                        }
+
+                        return AccessKind.ReadWrite;
+                    }
+                }
+
+                return AccessKind.Read;
+            }
+
+            case Kind.PropertyAccessExpression:
+            {
+                if ((parent.AsPropertyAccessExpression().Name() != node))
+                {
+                    return AccessKind.Read;
+                }
+
+                return accessKind(parent);
+            }
+
+            case Kind.PropertyAssignment:
+            {
+                var parentAccess = accessKind(parent.Parent);
+                if ((node == parent.AsPropertyAssignment().Name()))
+                {
+                    return reverseAccessKind(parentAccess);
+                }
+
+                return parentAccess;
+            }
+
+            case Kind.ShorthandPropertyAssignment:
+            {
+                if ((node == parent.AsShorthandPropertyAssignment().ObjectAssignmentInitializer))
+                {
+                    return AccessKind.Read;
+                }
+
+                return accessKind(parent.Parent);
+            }
+
+            case Kind.ArrayLiteralExpression:
+            {
+                return accessKind(parent);
+            }
+
+            case Kind.ForInStatement:
+            case Kind.ForOfStatement:
+            {
+                if ((node == parent.AsForInOrOfStatement().Initializer))
+                {
+                    return AccessKind.Write;
+                }
+
+                return AccessKind.Read;
+            }
+
+            default:
+            {
+                return AccessKind.Read;
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1491:1.
+    private static AccessKind reverseAccessKind(AccessKind a)
+    {
+        switch (a)
+        {
+            case AccessKind.Read:
+            {
+                return AccessKind.Write;
+            }
+
+            case AccessKind.Write:
+            {
+                return AccessKind.Read;
+            }
+
+            case AccessKind.ReadWrite:
+            {
+                return AccessKind.ReadWrite;
+            }
+        }
+
+        throw new InvalidOperationException("Unhandled case in reverseAccessKind");
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1832:1.
+    public static bool IsTypeOrJSTypeAliasDeclaration(Node node)
+    {
+        return ((node.Kind == Kind.TypeAliasDeclaration) || (node.Kind == Kind.JSTypeAliasDeclaration));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1878:1.
+    public static bool IsImportDeclarationOrJSImportDeclaration(Node node)
+    {
+        return ((node.Kind == Kind.ImportDeclaration) || (node.Kind == Kind.JSImportDeclaration));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:1904:1.
+    public static bool IsAnyExportAssignment(Node node)
+    {
+        return (node.Kind == Kind.ExportAssignment);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:3089:1.
+    public static string GetDeclarationName(Node declaration)
+    {
+        var name = GetNonAssignedNameOfDeclaration(declaration);
+        if ((name != null))
+        {
+            if (IsComputedPropertyName(name))
+            {
+                if (IsStringOrNumericLiteralLike(name.Expression()))
+                {
+                    return name.Expression().Text();
+                }
+
+                if (IsPropertyAccessExpression(name.Expression()))
+                {
+                    return name.Expression().Name().Text();
+                }
+            }
+            else
+            {
+                if (IsPropertyName(name))
+                {
+                    return name.Text();
+                }
+            }
+        }
+
+        return "";
+    }
+}
+
+public sealed partial class SourceFile
+{
+    private readonly object identifiersLock = new(), nameTableLock = new(), tokenCacheLock = new(), declarationMapLock = new();
+    private bool identifiersInitialized, nameTableInitialized;
+    private HashSet<string> identifiers;
+    private Dictionary<string, int> nameTable;
+    private Dictionary<(Node Parent, TextRange Loc), Node> tokenCache;
+    private NodeFactory tokenFactory;
+    private Dictionary<string, List<Node>> declarationMap;
+    /// <summary>Checks a raw UTF-8 byte-string name, as returned by Node.Text().</summary>
+    public bool HasIdentifier(string name)
+    {
+        lock (identifiersLock)
+        {
+            if (!identifiersInitialized)
+            {
+                try
+                {
+                    identifiers = Ast.CollectIdentifiersForSourceFile(this);
+                }
+                finally
+                {
+                    identifiersInitialized = true;
+                }
+            }
+
+            return identifiers?.Contains(name) ?? false;
+        }
+    }
+
+    public Dictionary<string, int> GetNameTable()
+    {
+        lock (nameTableLock)
+        {
+            if (!nameTableInitialized)
+            {
+                try
+                {
+                    var table = new Dictionary<string, int>(IdentifierCount, StringComparer.Ordinal);
+                    bool Walk(Node n)
+                    {
+                        if (Ast.IsIdentifier(n) && !Ast.IsTagName(n) && n.Text() != "" || Ast.IsStringOrNumericLiteralLike(n) && Ast.literalIsName(n) || Ast.IsPrivateIdentifier(n))
+                        {
+                            var value = n.Text();
+                            table[value] = table.ContainsKey(value) ? -1 : n.Pos();
+                        }
+
+                        n.ForEachChild(Walk);
+                        foreach (var doc in n.JSDoc(this) ?? [])
+                            doc.ForEachChild(Walk);
+                        return false;
+                    }
+
+                    ForEachChild(Walk);
+                    nameTable = table;
+                }
+                finally
+                {
+                    nameTableInitialized = true;
+                }
+            }
+
+            return nameTable;
+        }
+    }
+
+    public bool IsJS() => Ast.IsSourceFileJS(this);
+    public Node GetOrCreateToken(Kind kind, int pos, int end, Node parent, TokenFlags flags)
+    {
+        lock (tokenCacheLock)
+        {
+            var loc = new TextRange(pos, end);
+            if (tokenCache is not null && tokenCache.TryGetValue((parent, loc), out var cached))
+            {
+                if (cached.Kind != kind)
+                    throw new InvalidOperationException($"Token cache mismatch: {cached.Kind} != {kind}");
+                return cached;
+            }
+
+            if ((parent.Flags & NodeFlags.Reparsed) != 0)
+                throw new InvalidOperationException($"Cannot create token from reparsed node of kind {parent.Kind}");
+            tokenCache ??= new();
+            var token = createToken(kind, pos, end, flags);
+            token.Loc = loc;
+            token.Parent = parent;
+            tokenCache[(parent, loc)] = token;
+            return token;
+        }
+    }
+
+    private Node createToken(Kind kind, int pos, int end, TokenFlags flags)
+    {
+        tokenFactory ??= new();
+        var value = text.Substring(pos, end - pos);
+        return kind switch
+        {
+            Kind.NumericLiteral => tokenFactory.NewNumericLiteral(value, flags),
+            Kind.BigIntLiteral => tokenFactory.NewBigIntLiteral(value, flags),
+            Kind.StringLiteral => tokenFactory.NewStringLiteral(value, flags),
+            Kind.JsxText or Kind.JsxTextAllWhiteSpaces => tokenFactory.NewJsxText(value, kind == Kind.JsxTextAllWhiteSpaces),
+            Kind.RegularExpressionLiteral => tokenFactory.NewRegularExpressionLiteral(value, flags),
+            Kind.NoSubstitutionTemplateLiteral => tokenFactory.NewNoSubstitutionTemplateLiteral(value, flags),
+            Kind.TemplateHead => tokenFactory.NewTemplateHead(value, "", flags),
+            Kind.TemplateMiddle => tokenFactory.NewTemplateMiddle(value, "", flags),
+            Kind.TemplateTail => tokenFactory.NewTemplateTail(value, "", flags),
+            Kind.Identifier => tokenFactory.NewIdentifier(value),
+            Kind.PrivateIdentifier => tokenFactory.NewPrivateIdentifier(value),
+            _ => tokenFactory.NewToken(kind)};
+    }
+}
+
+public static partial class Ast
+{
+    internal static HashSet<string> CollectIdentifiersForSourceFile(SourceFile sourceFile)
+    {
+        var identifiers = new HashSet<string>(StringComparer.Ordinal);
+        bool Collect(Node node)
+        {
+            switch (node.Kind)
+            {
+                case Kind.Identifier:
+                case Kind.PrivateIdentifier:
+                case Kind.StringLiteral:
+                case Kind.NumericLiteral:
+                case Kind.BigIntLiteral:
+                case Kind.NoSubstitutionTemplateLiteral:
+                    identifiers.Add(node.Text());
+                    break;
+            }
+
+            node.ForEachChild(Collect);
+            return false;
+        }
+
+        Collect(sourceFile.AsNode());
+        return identifiers;
+    }
+}
+
+public sealed partial class NodeFactory
+{
+    public CommentRange NewCommentRange(Kind kind, int pos, int end, bool hasTrailingNewLine) => new(kind, pos, end, hasTrailingNewLine);
+}
+
+[Flags]
+public enum PragmaKindFlags : byte
+{
+    None = 0,
+    TripleSlashXML = 1,
+    SingleLine = 2,
+    MultiLine = 4,
+    All = TripleSlashXML | SingleLine | MultiLine,
+    Default = All
+}
+
+public sealed class PragmaArgumentSpecification
+{
+    public string Name;
+    public bool Optional, CaptureSpan;
+}
+
+public sealed class PragmaSpecification
+{
+    public List<PragmaArgumentSpecification> Args;
+    public PragmaKindFlags Kind;
+    public bool IsTripleSlash() => (Kind & PragmaKindFlags.TripleSlashXML) > 0;
+}
+
+public sealed partial class SourceFile
+{
+    /// <summary>Builds the declaration-name index. Overload grouping additionally observes existing symbol identity.</summary>
+    public Dictionary<string, List<Node>> GetDeclarationMap()
+    {
+        lock (declarationMapLock)
+            return declarationMap ??= computeDeclarationMap();
+    }
+
+    private Dictionary<string, List<Node>> computeDeclarationMap()
+    {
+        var result = new Dictionary<string, List<Node>>(StringComparer.Ordinal);
+        void AddDeclaration(Node declaration)
+        {
+            var name = Ast.GetDeclarationName(declaration);
+            if (name != "")
+            {
+                if (!result.TryGetValue(name, out var declarations))
+                    result[name] = declarations = [];
+                declarations.Add(declaration);
+            }
+        }
+
+        bool Visit(Node node)
+        {
+            switch (node.Kind)
+            {
+                case Kind.FunctionDeclaration:
+                case Kind.FunctionExpression:
+                case Kind.MethodDeclaration:
+                case Kind.MethodSignature:
+                    var declarationName = Ast.GetDeclarationName(node);
+                    if (declarationName != "")
+                    {
+                        result.TryGetValue(declarationName, out var declarations);
+                        var lastDeclaration = declarations is { Count: > 0 } ? declarations[^1] : null;
+                        if (lastDeclaration is not null && node.Parent == lastDeclaration.Parent && node.Symbol() == lastDeclaration.Symbol())
+                        {
+                            if (node.Body()is not null && lastDeclaration.Body()is null)
+                                declarations[^1] = node;
+                        }
+                        else
+                        {
+                            if (declarations is null)
+                                result[declarationName] = declarations = [];
+                            declarations.Add(node);
+                        }
+                    }
+
+                    node.ForEachChild(Visit);
+                    break;
+                case Kind.ClassDeclaration:
+                case Kind.ClassExpression:
+                case Kind.InterfaceDeclaration:
+                case Kind.TypeAliasDeclaration:
+                case Kind.EnumDeclaration:
+                case Kind.ModuleDeclaration:
+                case Kind.ImportEqualsDeclaration:
+                case Kind.ImportClause:
+                case Kind.NamespaceImport:
+                case Kind.GetAccessor:
+                case Kind.SetAccessor:
+                case Kind.TypeLiteral:
+                    AddDeclaration(node);
+                    node.ForEachChild(Visit);
+                    break;
+                case Kind.ImportSpecifier:
+                case Kind.ExportSpecifier:
+                    if (node.PropertyName()is not null)
+                        AddDeclaration(node);
+                    break;
+                case Kind.Parameter:
+                    if (!Ast.HasSyntacticModifier(node, TypeScript.Scanner.ModifierFlags.ParameterPropertyModifier))
+                        break;
+                    goto case Kind.VariableDeclaration;
+                case Kind.VariableDeclaration:
+                case Kind.BindingElement:
+                    var name = node.Name();
+                    if (name is not null)
+                    {
+                        if (Ast.IsBindingPattern(name))
+                            node.Name().ForEachChild(Visit);
+                        else
+                        {
+                            if (node.Initializer()is not null)
+                                Visit(node.Initializer());
+                            AddDeclaration(node);
+                        }
+                    }
+
+                    break;
+                case Kind.EnumMember:
+                case Kind.PropertyDeclaration:
+                case Kind.PropertySignature:
+                    AddDeclaration(node);
+                    break;
+                case Kind.ExportDeclaration:
+                    var exportClause = node.AsExportDeclaration().ExportClause;
+                    if (exportClause is not null)
+                    {
+                        if (Ast.IsNamedExports(exportClause))
+                            foreach (var element in exportClause.Elements() ?? [])
+                                Visit(element);
+                        else
+                            Visit(exportClause.AsNamespaceExport().Name());
+                    }
+
+                    break;
+                case Kind.ImportDeclaration:
+                    var importClause = node.AsImportDeclaration().ImportClause;
+                    if (importClause is not null)
+                    {
+                        if (importClause.Name()is not null)
+                            AddDeclaration(importClause.Name());
+                        var namedBindings = importClause.AsImportClause().NamedBindings;
+                        if (namedBindings is not null)
+                        {
+                            if (namedBindings.Kind == Kind.NamespaceImport)
+                                AddDeclaration(namedBindings);
+                            else
+                                foreach (var element in namedBindings.Elements() ?? [])
+                                    Visit(element);
+                        }
+                    }
+
+                    break;
+                case Kind.BinaryExpression:
+                    switch (Ast.GetAssignmentDeclarationKind(node))
+                    {
+                        case JSDeclarationKind.ExportsProperty:
+                        case JSDeclarationKind.ThisProperty:
+                        case JSDeclarationKind.Property:
+                            AddDeclaration(node);
+                            break;
+                    }
+
+                    node.ForEachChild(Visit);
+                    break;
+                default:
+                    node.ForEachChild(Visit);
+                    break;
+            }
+
+            return false;
+        }
+
+        ForEachChild(Visit);
+        return result;
+    }
+}
+
+public static partial class Ast
+{
+    public static (ResolutionMode Mode, bool Found) GetResolutionModeOverride(this Node node, Func<Node, Message, object[], bool> grammarErrorOnNode = null)
+    {
+        if (node is null)
+            return (ResolutionMode.None, false);
+        var attributes = node.AsImportAttributes().Attributes;
+        Node attribute = null;
+        foreach (var candidate in attributes.Nodes ?? [])
+            if (candidate.Name().Text() == "resolution-mode")
+            {
+                attribute = candidate;
+                break;
+            }
+
+        if (attribute is null)
+            return (ResolutionMode.None, false);
+        var elem = attribute.AsImportAttribute();
+        if (!IsStringLiteralLike(elem.Value))
+            return (ResolutionMode.None, false);
+        if (elem.Value.Text() != "import" && elem.Value.Text() != "require")
+        {
+            grammarErrorOnNode?.Invoke(elem.Value, Diagnostics.X_resolution_mode_should_be_either_require_or_import, []);
+            return (ResolutionMode.None, false);
+        }
+
+        if (elem.Value.Text() == "import")
+            return (ResolutionMode.ESNext, true);
+        return (ResolutionMode.CommonJS, true);
+    }
+}
+
+// BEGIN GENERATED SYNTAX ITERATORS
+// Generated by tools/generate-syntax-iterators.py from ast.go.
+public partial class SourceFile
+{
+    internal override IEnumerable<Node> IterChildren()
+    {
+        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes))
+            yield return child;
+        if (this.EndOfFileToken is not null)
+            yield return this.EndOfFileToken;
+    }
+}
+
+// END GENERATED SYNTAX ITERATORS
+// Stage-neutral lazy source-file attachment storage from ast.go.
+public sealed class SourceFileDataKey<T>
+{
+    internal readonly ulong key;
+    public SourceFileDataKey()
+    {
+    }
+
+    internal SourceFileDataKey(ulong key)
+    {
+        this.key = key;
+    }
+}
+
+internal sealed class SourceFileDataCell<T>
+{
+    private readonly object gate = new();
+    private bool computing, completed;
+    private T value;
+    internal T GetOrCompute(SourceFile file, Func<SourceFile, T> compute)
+    {
+        lock (gate)
+        {
+            while (computing)
+                Monitor.Wait(gate);
+            if (completed)
+                return value;
+            computing = true;
+        }
+
+        try
+        {
+            value = compute(file);
+            return value;
+        }
+        finally
+        {
+            // sync.Once marks the call complete even when its function panics.
+            lock (gate)
+            {
+                completed = true;
+                computing = false;
+                Monitor.PulseAll(gate);
+            }
+        }
+    }
+}
+
+public static partial class Ast
+{
+    private static long sourceFileDataKeyCounter;
+    public static SourceFileDataKey<T> NewSourceFileDataKey<T>() => new(unchecked((ulong)Interlocked.Increment(ref sourceFileDataKeyCounter)));
+}
+
+public partial class SourceFile
+{
+    private readonly object dataMu = new();
+    private Dictionary<ulong, object> sourceFileData;
+    public T GetOrComputeData<T>(SourceFileDataKey<T> key, Func<SourceFile, T> compute)
+    {
+        var cell = getDataCell(key);
+        return cell.GetOrCompute(this, compute);
+    }
+
+    private SourceFileDataCell<T> getDataCell<T>(SourceFileDataKey<T> key)
+    {
+        if (key is null || key.key == 0)
+            throw new InvalidOperationException("invalid SourceFileDataKey; use NewSourceFileDataKey");
+        lock (dataMu)
+        {
+            sourceFileData ??= new();
+            if (sourceFileData.TryGetValue(key.key, out var cell))
+                return (SourceFileDataCell<T>)cell;
+            var created = new SourceFileDataCell<T>();
+            sourceFileData.Add(key.key, created);
+            return created;
+        }
+    }
+}

@@ -44,22 +44,13 @@ public class OracleTests
     [Fact]
     public void ScanStringPreservesLoneSurrogatesLikeUpstream()
     {
-        var scanner = new Scanner();
-        scanner.SetText("\"🦀\\ud7ff\\ud800\\ud801\\uD83E\\uDD80\"");
-        Assert.Equal(Kind.StringLiteral, scanner.Scan());
-        Assert.Equal(Convert.FromHexString("F09FA680ED9FBFEDA080EDA081F09FA680"), scanner.TokenValueBytes());
+        TypeScript.Foundation.ScannerChecks.Run("TestScanStringPreservesLoneSurrogates");
     }
 
     [Fact]
     public void ScanSourceKeywordLikeUpstream()
     {
-        var scanner = new Scanner();
-        scanner.SetText("source sourceValue");
-        Assert.Equal(Kind.SourceKeyword, scanner.Scan());
-        Assert.Equal("source", Scanner.TokenToString(Kind.SourceKeyword));
-        Assert.Equal(Kind.SourceKeyword, Scanner.StringToToken("source"));
-        Assert.Equal(Kind.Identifier, scanner.Scan());
-        Assert.Equal("sourceValue", scanner.TokenValue());
+        TypeScript.Foundation.ScannerChecks.Run("TestScanSourceKeyword");
     }
 
 }

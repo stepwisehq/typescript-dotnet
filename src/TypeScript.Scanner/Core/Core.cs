@@ -222,3 +222,76 @@ internal static partial class Core
         return null;
     }
 }
+
+// core.go:466-500. ECMAScript byte/UTF16 coordinate support.
+internal static partial class Core
+{
+    public static (int Line, int ByteOffset) PositionToLineAndByteOffset(int position, IReadOnlyList<int> lineStarts)
+    {
+        int low = 0, high = lineStarts.Count;
+        // sort.Search: find the first line start greater than the position.
+        while (low < high)
+        {
+            int middle = low + (high - low) / 2;
+            if (lineStarts[middle] > position)
+                high = middle;
+            else
+                low = middle + 1;
+        }
+
+        int line = Math.Max(low - 1, 0);
+        return (line, position - lineStarts[line]);
+    }
+
+    // Input is a Go UTF8 byte-string. Invalid sequences consume one byte and
+    // contribute U+FFFD, including each byte of a JS surrogate sentinel.
+    public static int UTF16Len(string text)
+    {
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] >= Utf8.RuneSelf)
+            {
+                int length = i;
+                for (int position = i; position < text.Length;)
+                {
+                    var(rune, size) = Utf8.DecodeRuneInString(text.AsSpan(position));
+                    length += rune >= 0x10000 ? 2 : 1;
+                    position += size;
+                }
+
+                return length;
+            }
+        }
+
+        return text.Length;
+    }
+}
+
+// core.go:36. Preserve Go nil and the original slice when every item matches.
+internal static partial class Core
+{
+    public static List<T>? Filter<T>(List<T>? values, Func<T, bool> predicate)
+    {
+        if (values == null)
+            return null;
+        int count = values.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (!predicate(values[i]))
+            {
+                var result = values.GetRange(0, i);
+                for (i++; i < count; i++)
+                {
+                    T value = values[i];
+                    if (predicate(value))
+                        result.Add(value);
+                }
+
+                return result;
+            }
+        }
+
+        // Go returns its captured slice header even if the caller appended through a callback.
+        return values.Count == count ? values : values.GetRange(0, count);
+    }
+}

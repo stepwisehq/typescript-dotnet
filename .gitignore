@@ -6,3 +6,5 @@
 *.user
 __pycache__/
 *.pyc
+/validation/foundation-corpus/source-requests.jsonl
+/validation/foundation-corpus/source-units.jsonl

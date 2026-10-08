@@ -20,18 +20,20 @@ import (
 )
 
 type Request struct {
-	Name                  string          `json:"name"`
-	Text                  string          `json:"text"`
-	TextBytesBase64       *string         `json:"textBytesBase64"`
-	ScriptKind            core.ScriptKind `json:"scriptKind"`
-	FileName              string          `json:"fileName"`
-	ExternalModuleJSX     bool            `json:"externalModuleJSX"`
-	ExternalModuleForce   bool            `json:"externalModuleForce"`
-	ResolveJSDoc          bool            `json:"resolveJSDoc"`
-	TextProbeIDs          []int           `json:"textProbeIds"`
-	TextProbeIncludeJSDoc bool            `json:"textProbeIncludeJSDoc"`
+	Name                   string          `json:"name"`
+	Text                   string          `json:"text"`
+	TextBytesBase64        *string         `json:"textBytesBase64"`
+	ScriptKind             core.ScriptKind `json:"scriptKind"`
+	FileName               string          `json:"fileName"`
+	ExternalModuleJSX      bool            `json:"externalModuleJSX"`
+	ExternalModuleForce    bool            `json:"externalModuleForce"`
+	ResolveJSDoc           bool            `json:"resolveJSDoc"`
+	TextProbeIDs           []int           `json:"textProbeIds"`
+	TextProbeIncludeJSDoc  bool            `json:"textProbeIncludeJSDoc"`
+	FoundationObservations bool            `json:"foundationObservations"`
 }
 type List struct {
+	Identity      *int    `json:"identity,omitempty"`
 	Pos           int     `json:"pos"`
 	End           int     `json:"end"`
 	NodesNull     bool    `json:"nodesNull"`
@@ -88,6 +90,7 @@ type Response struct {
 	JSDocDiagnostics []Diagnostic   `json:"jsDocDiagnostics"`
 	Metadata         map[string]any `json:"metadata"`
 	TextProbes       []TextProbe    `json:"textProbes"`
+	Foundation       *Foundation    `json:"foundation,omitempty"`
 }
 type TextProbe struct {
 	NodeID     int    `json:"nodeId"`
@@ -101,6 +104,8 @@ type encoder struct {
 	raw          []*ast.Node
 	output       []*Node
 	resolvedDocs map[*ast.Node][]*ast.Node
+	foundation   bool
+	listIDs      map[*ast.NodeList]int
 }
 
 func bytes(s string) string { return base64.StdEncoding.EncodeToString([]byte(s)) }
@@ -236,6 +241,14 @@ func (e *encoder) fields(v reflect.Value, n *Node) {
 }
 func (e *encoder) list(l *ast.NodeList, modifiers *uint32) *List {
 	result := &List{Pos: l.Loc.Pos(), End: l.Loc.End(), NodesNull: l.Nodes == nil, Missing: cap(l.Nodes) == 1 && unsafe.SliceData(l.Nodes) == missingBacking, TrailingComma: l.HasTrailingComma(), ModifierFlags: modifiers, Items: []int{}}
+	if e.foundation {
+		id, ok := e.listIDs[l]
+		if !ok {
+			id = len(e.listIDs)
+			e.listIDs[l] = id
+		}
+		result.Identity = ptr(id)
+	}
 	for _, item := range l.Nodes {
 		result.Items = append(result.Items, e.node(item))
 	}
@@ -281,7 +294,7 @@ func run(r Request) Response {
 		r.FileName = "/index" + extensions[r.ScriptKind]
 	}
 	file := parser.ParseSourceFile(ast.SourceFileParseOptions{FileName: tspath.RootedFilePathFromNormalized(r.FileName), PathKey: tspath.PathKeyFromCanonical(r.FileName), ExternalModuleIndicatorOptions: ast.ExternalModuleIndicatorOptions{JSX: r.ExternalModuleJSX, Force: r.ExternalModuleForce}}, text, r.ScriptKind)
-	e := encoder{file: file, resolveJSDoc: r.ResolveJSDoc, ids: map[*ast.Node]int{}}
+	e := encoder{file: file, resolveJSDoc: r.ResolveJSDoc, ids: map[*ast.Node]int{}, foundation: r.FoundationObservations, listIDs: map[*ast.NodeList]int{}}
 	e.node(file.AsNode())
 	indicator := func(n *ast.Node) any {
 		if n == nil {
@@ -361,9 +374,21 @@ func run(r Request) Response {
 		n := e.raw[id]
 		probes = append(probes, TextProbe{id, bytes(scanner.GetTextOfNode(n)), scanner.GetTokenPosOfNode(n, file, r.TextProbeIncludeJSDoc)})
 	}
-	return Response{e.output, diagnostics(file.Diagnostics()), diagnostics(file.JSDiagnostics()), diagnostics(file.JSDocDiagnostics()), metadata, probes}
+	var foundation *Foundation
+	if r.FoundationObservations {
+		foundation = e.foundationObservation()
+	}
+	return Response{e.output, diagnostics(file.Diagnostics()), diagnostics(file.JSDiagnostics()), diagnostics(file.JSDocDiagnostics()), metadata, probes, foundation}
 }
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--foundation-clones" {
+		foundationCloneFixtures()
+		return
+	}
+	if len(os.Args) == 3 && os.Args[1] == "--extract-foundation-files" {
+		extractFoundationSources(os.Args[2])
+		return
+	}
 	if len(os.Args) == 3 && os.Args[1] == "--extract-test-files" {
 		out := json.NewEncoder(os.Stdout)
 		for _, request := range extractTestFiles(os.Args[2]) {

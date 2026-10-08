@@ -1,0 +1,1156 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "subsystem": "parser-and-syntax-ast",
+  "files": [
+    {
+      "path": "tsc/internal/parser/parser_test.go",
+      "testFunctions": [
+        {
+          "name": "BenchmarkParse",
+          "line": 26,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "FuzzParser",
+          "line": 81,
+          "kind": "fuzz",
+          "tableCases": 17633,
+          "tableCaseCountBasis": "Finite supported seeds:166rawfixture +9322compiler +8135conformance extracted units +10committed regressions; excludes transpile/options variants/unsupported assets.",
+          "assertionSummary": [
+            "Supported-extension parser invocation must not panic for fixture/compiler/conformance units and committed seeds."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserFuzzChecks.cs",
+              "name": "Shared original finite body",
+              "notes": "Original extension membership, /index filename, byte input, JSX/Force options and no-panic parse invariant; same body xUnit/native. Final managed/native17633/17633 passed."
+            },
+            {
+              "path": "validation/foundation-corpus/source-manifest.json",
+              "name": "Original splitter and seed provenance"
+            }
+          ],
+          "reason": "Finite original seeds and committed regression body preserved; unbounded mutation fuzz engine not ported or claimed.",
+          "executionStatus": "passed-original-finite-body-managed-and-native-final-foundation",
+          "finiteSeedCases": 17633,
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestHeritageClauseElementKinds",
+          "line": 160,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact payload kinds for six extends/implements/recovery heritage elements."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestHeritageClauseElementKinds",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestParseStaticSourcePhaseImport",
+          "line": 191,
+          "kind": "test",
+          "tableCases": 7,
+          "tableCaseCountBasis": "Seven literal records in tests table.",
+          "assertionSummary": [
+            "No parse diagnostics, one ImportDeclaration and nonnil ImportClause/name.",
+            "PhaseModifier, binding text and optional attributes equal each table row."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestParseStaticSourcePhaseImport",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestParseSourceAsImportEqualsBinding",
+          "line": 267,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "No diagnostics; one ImportEqualsDeclaration with name source."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestParseSourceAsImportEqualsBinding",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestParseInvalidStaticSourcePhaseImports",
+          "line": 279,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "Four literal records in tests table.",
+          "assertionSummary": [
+            "No parse diagnostics; one ImportDeclaration with Source phase.",
+            "Name/namedBindings presence equals each table row (invalid syntax accepted as original parser recovery)."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestParseInvalidStaticSourcePhaseImports",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestParseDynamicSourcePhaseImport",
+          "line": 310,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Call-expression/import-call shape, full DynamicImport subtree fact, meta keyword/name, two args.",
+            "SourceFile dynamic-import flag true, import-meta flag false, no external-module indicator."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestParseDynamicSourcePhaseImport",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestParseEscapedDynamicImportPhase",
+          "line": 334,
+          "kind": "test",
+          "tableCases": 2,
+          "tableCaseCountBasis": "Two literal records in tests table.",
+          "assertionSummary": [
+            "Exactly one keyword-escape diagnostic, one import-call shape and correct decoded phase.",
+            "SourceFile import/dynamic-meta flags exactly original."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestParseEscapedDynamicImportPhase",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestJSDocImportTypeParentChain",
+          "line": 368,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "No adjacent duplicate clone records with equal span/kind.",
+            "Every reparsed import has nonnil source-file parent chain."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestJSDocImportTypeParentChain",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestJSDocTypeSourceSurvivesReparse",
+          "line": 415,
+          "kind": "test",
+          "tableCases": 2,
+          "tableCaseCountBasis": "Original/reparsed nodes table.",
+          "assertionSummary": [
+            "Exact function/type-alias/JSDoc tag/type-expression structure and counts.",
+            "Original/reparsed source-normalized text equals original literal expectations; constructed type Reparsed flag and token position checked."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestJSDocTypeSourceSurvivesReparse",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestJSDocTypeSourcePropagatesToConstructedReparse",
+          "line": 463,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact function/type-alias/JSDoc tag/type-expression structure and counts.",
+            "Original/reparsed source-normalized text equals original literal expectations; constructed type Reparsed flag and token position checked."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestJSDocTypeSourcePropagatesToConstructedReparse",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestSourceFilePositionMapWithNonASCIIStringLiteral",
+          "line": 490,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Lazy source position map reports non-ASCII.",
+            "Offsets after three-byte literal and at end subtract exactly two."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestSourceFilePositionMapWithNonASCIIStringLiteral",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        }
+      ],
+      "notes": "Read-only inventory; no AST/parser direct function is blocked by binder/checker. Test helpers that only format failure output may be adapted without deleting success assertions."
+    },
+    {
+      "path": "tsc/internal/ast/deepclone_test.go",
+      "testFunctions": [
+        {
+          "name": "TestDeepCloneNodeSanityCheck",
+          "line": 25,
+          "kind": "test",
+          "tableCases": 541,
+          "tableCaseCountBasis": "Literal data records with title field, including duplicate title and unused jsx flag exactly as upstream.",
+          "assertionSummary": [
+            "All 541 data rows parse with jsx=false exactly as upstream, despite unused jsx field.",
+            "Every visited original node differs by identity from clone.",
+            "VisitEachChild children lengths and corresponding BFS child positions match."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestDeepCloneNodeSanityCheck",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        }
+      ],
+      "notes": "Read-only inventory; no AST/parser direct function is blocked by binder/checker. Test helpers that only format failure output may be adapted without deleting success assertions."
+    },
+    {
+      "path": "tsc/internal/ast/diagnostic_test.go",
+      "testFunctions": [
+        {
+          "name": "TestDiagnosticsCollectionDeduplicatesExactDiagnosticsOnAdd",
+          "line": 12,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Add returns canonical original identity for exact duplicate, distinct identity for different related info.",
+            "Mutating canonical related info survives; two global records and two canonical related entries."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestDiagnosticsCollectionDeduplicatesExactDiagnosticsOnAdd",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestDiagnosticsCollectionPreservesDistinctAdHocMessages",
+          "line": 44,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Two different same-code adhoc messages survive collection dedup."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestDiagnosticsCollectionPreservesDistinctAdHocMessages",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestDiagnosticsCollectionGetsDiagnosticsForEquivalentSourceFile",
+          "line": 59,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Same PathKey on distinct SourceFile instances retrieves exact diagnostic identity."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestDiagnosticsCollectionGetsDiagnosticsForEquivalentSourceFile",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestExternalDiagnosticIdentity",
+          "line": 81,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "Four explicit diagnostic instances including first canonical instance.",
+          "assertionSummary": [
+            "Message/source/category differences are unequal under both comparator and equality, except canonical self.",
+            "Collection preserves four distinct diagnostic identities."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestExternalDiagnosticIdentity",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        }
+      ],
+      "notes": "Read-only inventory; no AST/parser direct function is blocked by binder/checker. Test helpers that only format failure output may be adapted without deleting success assertions."
+    },
+    {
+      "path": "tsc/internal/ast/positionmap_test.go",
+      "testFunctions": [
+        {
+          "name": "TestPositionMapASCII",
+          "line": 12,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapASCII",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestPositionMapTwoByte",
+          "line": 29,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapTwoByte",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestPositionMapFourByte",
+          "line": 69,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapFourByte",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestPositionMapMultipleNonASCII",
+          "line": 93,
+          "kind": "test",
+          "tableCases": 4,
+          "tableCaseCountBasis": "Four literal UTF8/UTF16 boundary pairs.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapMultipleNonASCII",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestPositionMapLoneSurrogateSentinel",
+          "line": 123,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapLoneSurrogateSentinel",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestPositionMapRoundtrip",
+          "line": 139,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Exact source-defined UTF8ToUTF16/UTF16ToUTF8 mappings, ASCII flag and roundtrip assertions; sentinel encoding retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestPositionMapRoundtrip",
+              "notes": "Shared xUnit/Native AOT assertion source; same assertions passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "artifacts/foundation-validation/foundation-direct-initial.trx",
+              "name": "FoundationDirectTests",
+              "notes": "561 original direct bodies passed, including541clone rows."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Complete original assertions retained with byte-string/API representation adaptation; no invariant removed.",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "adaptationNotes": [
+            "Go node/table pointer identity uses ReferenceEquals; byte-string fixtures preserved through explicit public/raw APIs; Go nil slices checked by corresponding observable conditions."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "BenchmarkComputePositionMap_ASCII",
+          "line": 155,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "BenchmarkComputePositionMap_NonASCII",
+          "line": 165,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "BenchmarkUTF8ToUTF16_ASCII",
+          "line": 175,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "BenchmarkUTF8ToUTF16_NonASCII",
+          "line": 188,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "BenchmarkUTF16ToUTF8_NonASCII",
+          "line": 201,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        },
+        {
+          "name": "BenchmarkComputePositionMap_CheckerTS",
+          "line": 215,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        }
+      ],
+      "notes": "Read-only inventory; no AST/parser direct function is blocked by binder/checker. Test helpers that only format failure output may be adapted without deleting success assertions."
+    },
+    {
+      "path": "tsc/internal/ast/utilities_bench_test.go",
+      "testFunctions": [
+        {
+          "name": "BenchmarkGetCombinedFlags",
+          "line": 14,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "No explicit fixed table; body inspected separately.",
+          "assertionSummary": [
+            "Benchmark timing/sink operations are not correctness assertions."
+          ],
+          "disposition": "excluded",
+          "evidence": [],
+          "reason": "Timing workload, no correctness assertions; performance work not authorized.",
+          "executionStatus": "not-applicable-to-foundation-contract"
+        }
+      ],
+      "notes": "Read-only inventory; no AST/parser direct function is blocked by binder/checker. Test helpers that only format failure output may be adapted without deleting success assertions."
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/diagnostics/diagnostics_test.go",
+      "testFunctions": [
+        {
+          "name": "TestLocalize",
+          "line": 22,
+          "kind": "test",
+          "tableCases": 13,
+          "tableCaseCountBasis": "literal source rows",
+          "assertionSummary": [
+            "Exact localized/default-English text and interpolation"
+          ],
+          "disposition": "adapted-assertions",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented-default-English-subset",
+          "portedTableCases": 3,
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestLocalize/default-English",
+              "notes": "All 563 shared parser/AST/default-English cases passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Three English rows retained; locale selection/undefined/unknown fallback and translated rows excluded under fixed default-English contract.",
+          "adaptationNotes": [
+            "Default-English API omits locale catalogs explicitly."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestLocalize_ByKey",
+          "line": 124,
+          "kind": "test",
+          "tableCases": 2,
+          "tableCaseCountBasis": "literal source rows",
+          "assertionSummary": [
+            "Exact localized/default-English text and interpolation"
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "passed-managed-and-native-final-foundation",
+          "implementationStatus": "implemented",
+          "portedTableCases": 2,
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/ParserAstChecks.cs",
+              "name": "TestLocalize_ByKey",
+              "notes": "All 563 shared parser/AST/default-English cases passed managed and Native AOT in the final foundation gate."
+            },
+            {
+              "path": "validation/results/foundation-direct-verified.json",
+              "name": "foundation-direct-verified",
+              "notes": "Same shared assertion bodies xUnit/native;3001total cases (parser563/scanner2438). Historical direct snapshot; final expanded-source acceptance is recorded separately."
+            },
+            {
+              "path": "validation/results/foundation-verified.json",
+              "name": "Final frozen foundation gate",
+              "notes": "All 563 shared parser/AST/default-English cases passed xUnit and Native AOT; original assertions and documented English subset retained."
+            }
+          ],
+          "reason": "Two original by-key English assertions retained using actual lazy key lookup.",
+          "adaptationNotes": [
+            "Default-English API omits locale catalogs explicitly."
+          ],
+          "finalEvidence": "validation/results/foundation-verified.json"
+        },
+        {
+          "name": "TestLocaleFiles",
+          "line": 158,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "dynamic locale/files/generator observations",
+          "assertionSummary": [
+            "Locale catalog/generated archive canonicalization and regeneration"
+          ],
+          "disposition": "excluded",
+          "executionStatus": "not-applicable-to-foundation-contract",
+          "implementationStatus": "excluded",
+          "portedTableCases": 0,
+          "evidence": [],
+          "reason": "Locale catalog files, translation artifacts and generator execution explicitly excluded by foundation contract.",
+          "adaptationNotes": []
+        },
+        {
+          "name": "TestLocaleFilesIgnoreStaleDiagnostics",
+          "line": 204,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "dynamic locale/files/generator observations",
+          "assertionSummary": [
+            "Locale catalog/generated archive canonicalization and regeneration"
+          ],
+          "disposition": "excluded",
+          "executionStatus": "not-applicable-to-foundation-contract",
+          "implementationStatus": "excluded",
+          "portedTableCases": 0,
+          "evidence": [],
+          "reason": "Locale catalog files, translation artifacts and generator execution explicitly excluded by foundation contract.",
+          "adaptationNotes": []
+        },
+        {
+          "name": "TestGenerateLocalizations",
+          "line": 216,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "dynamic locale/files/generator observations",
+          "assertionSummary": [
+            "Locale catalog/generated archive canonicalization and regeneration"
+          ],
+          "disposition": "excluded",
+          "executionStatus": "not-applicable-to-foundation-contract",
+          "implementationStatus": "excluded",
+          "portedTableCases": 0,
+          "evidence": [],
+          "reason": "Locale catalog files, translation artifacts and generator execution explicitly excluded by foundation contract.",
+          "adaptationNotes": []
+        }
+      ],
+      "notes": "Default-English diagnostics dependency; excluded locale execution remains visible."
+    }
+  ],
+  "executionStatus": "accepted-within-foundation-contract; original and adapted assertions retain explicit provenance"
+}
