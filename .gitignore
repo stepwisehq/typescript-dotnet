@@ -1,0 +1,6 @@
+/upstream/
+**/bin/
+**/obj/
+/tools/.cache/
+/artifacts/
+*.user

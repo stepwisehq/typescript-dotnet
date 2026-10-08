@@ -1,0 +1,56 @@
+{
+  "cases": 1276,
+  "tokens": 17977,
+  "diagnostics": 1547,
+  "distinctTokenKinds": 158,
+  "distinctDiagnosticCodes": 69,
+  "referencedLexicalDiagnostics": 70,
+  "unobservedDiagnostics": [
+    {
+      "name": "Undetermined_character_escape",
+      "code": 1513
+    }
+  ],
+  "utilityOperations": {
+    "ComputeLineOfPosition": 14,
+    "ComputePositionOfLineAndByteOffset": 8,
+    "ComputePositionOfLineAndUTF16Character": 48,
+    "GetIdentifierToken": 11,
+    "GetLeadingCommentRanges": 7,
+    "GetShebang": 7,
+    "GetTrailingCommentRanges": 7,
+    "IsIdentifierPart": 10,
+    "IsIdentifierPartEx": 10,
+    "IsIdentifierStart": 10,
+    "IsValidIdentifier": 11,
+    "SkipTrivia": 7,
+    "SkipTriviaEx": 28
+  },
+  "utilityResults": 178,
+  "explicitOperations": {
+    "Mark": 1,
+    "ReScanAsteriskEqualsToken": 1,
+    "ReScanGreaterThanToken": 5,
+    "ReScanHashToken": 1,
+    "ReScanJsxAttributeValue": 1,
+    "ReScanJsxToken": 1,
+    "ReScanLessThanToken": 1,
+    "ReScanQuestionToken": 1,
+    "ReScanSlashToken": 511,
+    "ReScanTemplateToken": 6,
+    "Reset": 1,
+    "ResetPos": 1,
+    "ResetTokenState": 1,
+    "Rewind": 1,
+    "Scan": 1078,
+    "ScanJSDocCommentTextToken": 8,
+    "ScanJSDocToken": 14,
+    "ScanJsxAttributeValue": 1,
+    "ScanJsxIdentifier": 1,
+    "ScanJsxToken": 8,
+    "ScanJsxTokenEx": 8,
+    "SetText": 1
+  },
+  "requestsSha256": "cd5e7a2226138491631e5220c8a2b051dfb1c7c0e261aceb4f80444363649c9e",
+  "expectedSha256": "8c2873a5b8aeabd608fc75c3bcae7c3fb356dcd7c292de3721bc7870e2f8da8f"
+}

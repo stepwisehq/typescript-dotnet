@@ -1,0 +1,151 @@
+{
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "workloads": [
+    {
+      "name": "real-typescript",
+      "inputBytes": 176279,
+      "inputFiles": 23,
+      "files": [
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/activeJsTsEditorTracker.ts",
+          "bytes": 3516,
+          "sha256": "4ece7bd98f6b202bcb0a5569719cfcafc8b4789314b35491c69364b09b17d83d"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/client.ts",
+          "bytes": 31651,
+          "sha256": "36d288e269daafc7842ad52f63e376b4f15618867d55b695e10b11b4d8d04dec"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/commands.ts",
+          "bytes": 4229,
+          "sha256": "adaee4e5a4067e05d4d60709c56ec5cfc6f22693bd7eaa08eaf5ba3d861425cc"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/configurationMiddleware.ts",
+          "bytes": 12451,
+          "sha256": "f30b55425352ce21e9ca5640e050800ed84ea786b15583add4087458d1aacbef"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/contentMapperContributions.ts",
+          "bytes": 4095,
+          "sha256": "9dcab54427f3f97181c9089df24aac044b72d0735a45b3e8fd648fc52416ba4a"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/experimentationService.ts",
+          "bytes": 2212,
+          "sha256": "8160d6b12d28490757d54280af9994501cd7f7ca79fd935f1611abd92baa8307"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/extension.ts",
+          "bytes": 11123,
+          "sha256": "7acfb30e4e9105ca5ffdf2edb50ef13da625769e293848053b857a711715edc2"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/languageFeatures/documentHighlight.ts",
+          "bytes": 3086,
+          "sha256": "16cdb3bb4607c19bab74ffbd1060b5a3f7740ea793e8944d1f3519a32b12622c"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/languageFeatures/hover.ts",
+          "bytes": 2985,
+          "sha256": "b51e0c650491dd6a9912e99cc13c59bf2fe8cc321390d29f2634a80090f94029"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/languageFeatures/onAutoInsert.ts",
+          "bytes": 7027,
+          "sha256": "c221b1382cbdf77c92807ccead8e5811b435947a36324fd469d8e69b073a808c"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/languageFeatures/sourceDefinition.ts",
+          "bytes": 3366,
+          "sha256": "cdc648720e6240fa7f4cc1b5313d653b71f82ee7b33a452440418c76e0dfd16c"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/languageFeatures/util/dependentRegistration.ts",
+          "bytes": 2905,
+          "sha256": "5697f2480ec12a54d387c6b990e01474f9c94d3ea5ebc395db196cc1920dd02d"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/lspMiddleware.ts",
+          "bytes": 6266,
+          "sha256": "13bc5f9d8c8ab7df7e2c89f57ea7b62d55c7120d1724edff8ef9d4b2d94449ad"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/managedFileContext.ts",
+          "bytes": 1883,
+          "sha256": "779bdb056e5dcfd9556a742c270d91e61a70ee39fc3bc7bb0dfc7c162c1be861"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/projectStatus.ts",
+          "bytes": 6561,
+          "sha256": "4b087268867edc81938f20399bb03e6ff1869aa373de9a9a516e7fd81b92a69a"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/session.ts",
+          "bytes": 35042,
+          "sha256": "fc04f9f8c0147d6a197fa73ae7bc5bcbcaaa6fcf4848672d58f083b1e5132e54"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/statusBar.ts",
+          "bytes": 675,
+          "sha256": "4a598d16eb267324ef30eb81799db2bc0e1f7c27a68e2d012b8fe394c7465962"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/telemetryReporting.ts",
+          "bytes": 4315,
+          "sha256": "64dec90cfb4f6494d2f1b441d7737d500e3216a800a67664a8b63edcb100e9a3"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/tsdkPackage.ts",
+          "bytes": 5003,
+          "sha256": "70a898a8c397892179497be1dda81dbc47515119082038168ae3a541ba75511f"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/util.ts",
+          "bytes": 20918,
+          "sha256": "a2d6791649eed6dd17126d35d28de0d405bb63b79ea9b0f122a2244a99888e69"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/vscode.proposed.editorHoverVerbosityLevel.d.ts",
+          "bytes": 2673,
+          "sha256": "3cef0c4786e7e0d2fa3dc4496428228e3de7319f669a3613bce5b2c7db1f1576"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/vscode.proposed.multiDocumentHighlightProvider.d.ts",
+          "bytes": 2863,
+          "sha256": "39a47787e8ae2662435c79afb8e0d37b54140f89591bcdc15da5ec52e2cca56a"
+        },
+        {
+          "path": "upstream/TypeScript/packages/vscode-typescript/src/workspaceSymbolMiddleware.ts",
+          "bytes": 1434,
+          "sha256": "53e280d07fbefd9a2629deded4e89c0d064942dd98db2cab09511854a53826b9"
+        }
+      ]
+    },
+    {
+      "name": "ascii-synthetic",
+      "inputBytes": 262224,
+      "inputFiles": 1,
+      "files": [
+        {
+          "path": "tools/.cache/benchmark-data/ascii.ts",
+          "bytes": 262224,
+          "sha256": "593e97511111c19abf098e22caa66a1dcda7bee1666780615b8a09d45abb7d9b"
+        }
+      ]
+    },
+    {
+      "name": "unicode-string-number",
+      "inputBytes": 262260,
+      "inputFiles": 1,
+      "files": [
+        {
+          "path": "tools/.cache/benchmark-data/unicode.ts",
+          "bytes": 262260,
+          "sha256": "6bfac811693a46a004289cd60349d09be7cc21238467941505f56c485a8f0703"
+        }
+      ]
+    }
+  ]
+}

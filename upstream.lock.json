@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/microsoft/TypeScript.git",
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceRoot": "tsc",
+  "checkout": "upstream/TypeScript",
+  "selectedAtUtc": "2026-10-08T14:49:17Z",
+  "selection": "Latest maintained main at study start; fixed for implementation and verification",
+  "license": "Apache-2.0",
+  "supportReferences": [
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "sourceRoot": "src/unicode",
+      "purpose": "Exact ToLower/SimpleFold semantics used by scanner spelling suggestions",
+      "archive": "https://go.dev/dl/go1.27.1.linux-amd64.tar.gz",
+      "archiveSha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445",
+      "license": "BSD-3-Clause"
+    }
+  ]
+}

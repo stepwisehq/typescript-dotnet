@@ -1,0 +1,28 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
+// Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Port of tsc/internal/core/options_generated.go.
+namespace TypeScript.Scanner;
+
+// Scanner-only ScriptTarget slice.
+public enum ScriptTarget
+{
+    None = 0,
+    ES5 = 1,
+    ES2015 = 2,
+    ES2016 = 3,
+    ES2017 = 4,
+    ES2018 = 5,
+    ES2019 = 6,
+    ES2020 = 7,
+    ES2021 = 8,
+    ES2022 = 9,
+    ES2023 = 10,
+    ES2024 = 11,
+    ES2025 = 12,
+    ES2026 = 13,
+    ESNext = 99,
+    JSON = 100,
+    Latest = ESNext,
+    LatestStandard = ES2026,
+}

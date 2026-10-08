@@ -1,0 +1,609 @@
+{
+  "upstreamRepository": "https://github.com/microsoft/TypeScript",
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "goVersion": "1.27.1",
+  "seed": "0x5CA77E",
+  "totalCases": 1276,
+  "upstreamFiles": [
+    {
+      "path": "testdata/tests/cases/compiler/declFileTypeAnnotationStringLiteral.ts",
+      "sha256": "924cdc955f0b19a5a12a8724b378edfebc0e8cfdeaecfdc5c5c58a800e764dab",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/declarationEmitNonAsciiStringLiteralType.ts",
+      "sha256": "891c54cd884e7b4ac44bff8c5c2415c1dce7b0216633907ad072f545d6021780",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/didYouMeanStringLiteral.ts",
+      "sha256": "a8d6fb17ba4bac0f73f5bcf8721d83f87ef0369ea1c1bd710f3b676547048bd9",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/doubleUnderStringLiteralAssignability.ts",
+      "sha256": "aeb042c9efcb87ea3b818a46ad746fc1d5195679bf0bf8ecdaa6c6cae85f196d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/enumUnicodeEscapeMemberName.ts",
+      "sha256": "1ee81a6cc3a1c9d14f07346a077c14f016639adacd5e091640f53a8513e24b63",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/enumWithUnicodeEscape1.ts",
+      "sha256": "14a245fbf1987449df6c3b3efcff1568351202eb7bbcd97b3fb6cc0116ccd022",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/extendedUnicodeEscapeSequenceIdentifiers.ts",
+      "sha256": "6e02e8742ac0c64043d4e757c74c1852ee47786ed3e01bcc71e890f182518659",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/identifierStartAfterNumericLiteral.ts",
+      "sha256": "5dcea0bad11786a6d6369f96f5b1576b3017d96ca2e5dbbc399ec50ec375f371",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/inferObjectTypeFromStringLiteralToKeyof.ts",
+      "sha256": "55c44523b343e5fdde5134e371a4ba263e596a1f752c928774babb45d1d6b5ea",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/inferStringLiteralUnionForBindingElement.ts",
+      "sha256": "88ba19641f6809e67da858d39834c767a14b7eb7dcfa7b6114f7af99d460fc26",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/invalidUnicodeEscapeSequance.ts",
+      "sha256": "2bd4ecc24c7066c1eb545ebef6216dc212084807a978f50e0d0468d05d26455e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/invalidUnicodeEscapeSequance2.ts",
+      "sha256": "9a1e65b060aa3db41ada4d0b6a506ee2d55fe7c64f7e2ab9e0603a449ceac428",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/invalidUnicodeEscapeSequance3.ts",
+      "sha256": "d09800a169f5e67fc4d47a42bdac999c60452cec0ceeb41ce56e2faba70c7683",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/invalidUnicodeEscapeSequance4.ts",
+      "sha256": "a4f46b6a21969cb2c8fbc414b9d13a01bc8e86f08cbdba16eddd5ccaeec4935e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/largeStringLiteralUnionSuggestion.ts",
+      "sha256": "7460deabf59b1ae242db7f6d7f38cc7380b56c572f9d0c5227ad80e94e8a3496",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/loneSurrogateStringLiteralTypes.ts",
+      "sha256": "55a150b3a0d5a6187e9e2b1d1b1237b6ff4deabe8b64629431f57ee51fac0712",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/metadataOfStringLiteral.ts",
+      "sha256": "ece17f57c3f9b3c069857aec90eaf53649b66affb6f9066388b34b5cc2c40999",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/noSubstitutionTemplateStringLiteralTypes.ts",
+      "sha256": "162a8e961182bdc95af77f52d425ea407ea8291e8325f17b7be178ae94858c41",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/numericLiteralsWithTrailingDecimalPoints01.ts",
+      "sha256": "f4198293db362c7797607a02baec8953095c9cd099fba085e04f6f914746ce36",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/numericLiteralsWithTrailingDecimalPoints02.ts",
+      "sha256": "bbc29bef32561dda4e23656eff2c3f6756eb67f2b3cd9ff911fa4d2a76fb1f1d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/propertyNamesWithStringLiteral.ts",
+      "sha256": "477fdf16ee7e0ccebb29e268b268d334c63bcb58875456acca4099a067a06794",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/regularExpressionExtendedUnicodeEscapes.ts",
+      "sha256": "30eabe9a0e8e1fbf8b41e3db4bd7dc494e6b0f684eaf494d02b3d20242954cd5",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/regularExpressionGroupNameUnicodeEscapes.ts",
+      "sha256": "1f2b7d506e7c6cac731d833c2c99bfb186df610fe2caf52b7c860dfdc89633e1",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/sourceMap-StringLiteralWithNewLine.ts",
+      "sha256": "589bfb379c3ad3ab21b99dcfa691f7611e9634376f7c223f2d783660bae8fe1b",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/stringLiteralObjectLiteralDeclaration1.ts",
+      "sha256": "78d25de9950b87bf756a7ae751779a2e6854fc844c08cd12c833c674e871d21a",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/stringLiteralPropertyNameWithLineContinuation1.ts",
+      "sha256": "1542144de3dd851784ea8a118326b4734ecb733e92af636cd2d4c9b49fa8bf0e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/stringLiteralsErrors.ts",
+      "sha256": "a6557b94ac6ef8750d06b26a76b594252761d9e13da2f2dcb13eef88a8b54aac",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/taggedTemplateStringsWithUnicodeEscapes.ts",
+      "sha256": "df82ec74ceaf720a78c7b51e50f4cc66f9d99d98e6ffef8a6c7237178ae06123",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/taggedTemplateStringsWithUnicodeEscapesES6.ts",
+      "sha256": "f1dfc51bf0b74db66c41fa60429c8f74b91c6416087569ce08ff031cc10296fb",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeEscapesInJSDoc.ts",
+      "sha256": "64e3127bc6c574df1342ed04f95e370a8e471bfc9e8b5e9545bd3fe54c182706",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeEscapesInNames01.ts",
+      "sha256": "b1d646d9bc1dc69173b4b4fac31639119553b698dd9acc02490045cf4d11dc8d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeEscapesInNames02.ts",
+      "sha256": "7d755e2e99010074648e12f2a3d83bd0f24dfeb8061e59388433be3ea2eb1611",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeEscapesInNames03.ts",
+      "sha256": "bc10a445724528702692fc287b17eec815f47220a86d4380c65ca5ca0576001c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeStringLiteral.ts",
+      "sha256": "7dae31b928ff9531311df8e9300d9c34b711870ba5516317f5c16be47cc80d2e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unicodeSurrogatesInStringLiterals.ts",
+      "sha256": "42d42c2203a3a882ae99339d775f71115cddbe99eaa994abb29057b9852c5349",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/unterminatedStringLiteralWithBackslash1.ts",
+      "sha256": "d224b2d6a024654db2ffba64411e4c2a33919ab5899f68277f3131f199424672",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/compiler/yieldStringLiteral.ts",
+      "sha256": "8cb09d0045d509ecbafb0788f8865349205fe742275f03f874cd19b7fdae3c27",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/es2019/allowUnescapedParagraphAndLineSeparatorsInStringLiteral.ts",
+      "sha256": "ec629b300bebff1492ab262fa141a315bbb2a6f69c95cae5c5368394319e5ae1",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/es6/propertyAccess/propertyAccessNumericLiterals.es6.ts",
+      "sha256": "0497d189bea3ccd8cfe2512d8f6d31929578f244e7cb72adbed616635547b719",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/expressions/binaryOperators/comparisonOperator/comparisonOperatorWithNumericLiteral.ts",
+      "sha256": "7e9b08708e4b4e946fc7f3481039f70cb747c168775fa45197d76e8442048ffc",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/expressions/propertyAccess/propertyAccessNumericLiterals.ts",
+      "sha256": "38f28e9934160e30eaf33d239a90f8adf20c82695fb4fd11aba8f24b2d75c901",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/externalModules/importNonStringLiteral.ts",
+      "sha256": "e2a77703f07c37ee20e7f46c2122ee113bec7f2f22dbf1aba47da44d8314e1be",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/jsdoc/jsdocImportTypeReferenceToStringLiteral.ts",
+      "sha256": "62033c448852cf05384eb8b6c4c40520af5dc23a762dc871f3a18706b6901807",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/parser/ecmascript2021/numericSeparators/parser.numericSeparators.unicodeEscape.ts",
+      "sha256": "2b2c45367c1e222df8f4c864a445618afe0b5e4aff394726227645b4856f035d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral1.ts",
+      "sha256": "78aabac49964a8f550ae6599ce9aa10bd1316bff989f895ab6ddbc654ce63711",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts",
+      "sha256": "21a25a1afe6076d8e7f71bc73d5b2cec135613f2903ba29c281b9f1807dc1d72",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral3.ts",
+      "sha256": "7d69cbc0e299ec0ecb16f61ca11a835175cb33444278b38e0474f7ea4d76a21e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral4.ts",
+      "sha256": "c133436c1850ecdfa6c686db5c914cc4b9953eca9fe35fa2adc1d08c526f4ce5",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral5.ts",
+      "sha256": "2cef445b5412d4d868b9ce06f756c8d5041926c75175fc708473ddef84d6b6e0",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral6.ts",
+      "sha256": "3119fabb9d6e3b9f92bd10abb77b49889388898b7e37fd9e7c7c26c8a33c37b1",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral7.ts",
+      "sha256": "fbd40e8e3c5349807efe74d9f6dcb54e763082bece04f1794e75912ae687ffe2",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scanner10.1.1-8gs.ts",
+      "sha256": "1c4f13ce38354118a8ae44dde5cdf7dcee049523d600916ffe5df561ca147770",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerAdditiveExpression1.ts",
+      "sha256": "e0b2849a8e4b5ae0ca457144fa56581edca25d00d3d25ac8bc99a9b2ad0647ec",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerClass2.ts",
+      "sha256": "88be6378444a3fbeaba49d7cea4c40775dec353c707c1331a34d863a07583b0f",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerEnum1.ts",
+      "sha256": "1b7e67bb29a8e1c305f49ec5085bf3e653e932546d63029def4d668e71bbe13c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerImportDeclaration1.ts",
+      "sha256": "606fa97e8af03641fe438a5e32ce2b4831096fdd558d4d725100f9455434cdb0",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNonAsciiHorizontalWhitespace.ts",
+      "sha256": "da3642caebfebcd40129cdd6a0d8642b90889a532177491d1ce1fcc0fb8f2230",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral1.ts",
+      "sha256": "3c120843186c4be2bd0122dbfc9b83a4b089eb6fa5fe83aeb841de07b0069166",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral2.ts",
+      "sha256": "a5a149d11f5f61cb81cbca94b9029151b9778a06c74d422c6478a7b25a2de1ac",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral3.ts",
+      "sha256": "9c204d2306d03ccbd21eb371675a58af5079915de78d39886182ad129ff2aea6",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral4.ts",
+      "sha256": "84118bc22bf9bf09a2fde96336da98a94fe09c5285ed64254d10eda13e9d1e5c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral5.ts",
+      "sha256": "fcc90012a23f7060614d3d16450743cc97faf9b0c9ed0a0341f76cb4d3eebab8",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral6.ts",
+      "sha256": "94972d483eba3649324f8b81f0a2bdf3423f28983b6ec79a012c371fbe885097",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral7.ts",
+      "sha256": "ed341f693206c210819da21fa47ef792246980560268c2c98606f50e962ead2e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral8.ts",
+      "sha256": "9ea2b25833290c193550d48368740e7f201b09f959d2e842342da86fe38368c0",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerNumericLiteral9.ts",
+      "sha256": "8c40a9351899d46d0b77440f0dfcb41e96b3a7745443e25ff898ca3fa5661536",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.2_A1.5_T2.ts",
+      "sha256": "6db0ba749bb332a3c1c7b7e3309760337573ba84629851a6919693791bab790f",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.3_A1.1_T2.ts",
+      "sha256": "8eb4cae2b5d280bfc7594d21ae2d5cd9f49188b39b6e793325c54c9105b42f13",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.4_A2_T2.ts",
+      "sha256": "935c86bb1f7b4c1abc0c46e147a1f352fd01bf69eb59dfaea6cc2243eaf85794",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.6_A4.2_T1.ts",
+      "sha256": "5b8b79f8d29a6bbed028c10a01c253e1afb20c1c9df39f1eefbeaa30b564dcca",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.8.3_A6.1_T1.ts",
+      "sha256": "e44bb1298b021771b1a4f585b8a0b7b626a3ec1cfba633b73086a310cf80af67",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerS7.8.4_A7.1_T4.ts",
+      "sha256": "6c01301059d9605167e43d2318737b42ac4a615dc612bd60ea067d640eb56993",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerStringLiteralWithContainingNullCharacter1.ts",
+      "sha256": "3ffbf71f29ec7a65f7f4798489f9a034d669c4be66590c390a3afa05dc0b3bd9",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerStringLiterals.ts",
+      "sha256": "d84f11ec01379668c3e91104665565c5cee065c138e857c9a3670bf28b7ab60d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerUnexpectedNullCharacter1.ts",
+      "sha256": "b775411361689ee58df143849a1e3545546b9367461f4d0d2f3182c1798e6338",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerUnicodeEscapeInKeyword1.ts",
+      "sha256": "68a051a12073c8e440cea1b5bc9b4ddc658805ef9b9a6e86fcf38253015f2546",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannerUnicodeEscapeInKeyword2.ts",
+      "sha256": "249fe63ddac127145682150d2e00c98595759a277d8776a86b88bffa729b1a1c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/scanner/ecmascript5/scannertest1.ts",
+      "sha256": "b04941883d8627c7d00e9f3ba49b2fa785ae63f52b409299b9666e939eae9238",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/numericLiteralTypes1.ts",
+      "sha256": "c7fd3d13ea666c92b5d5b4279d7cdc44aa6d89a87f0f737a3a643e839df25ad1",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/numericLiteralTypes2.ts",
+      "sha256": "64a8730d9826c5bfde63ea252dc9c1aeff336946fe39bd66f44823d9dacc3c6c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/numericLiteralTypes3.ts",
+      "sha256": "fce800227e9d19105d79643d42b7cf6380fb30266cc329708f041af374239bc8",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/numericStringLiteralTypes.ts",
+      "sha256": "a89153f8d322bf6cb51da5b52394abe2a782e6e75e0a209b7f461cd73a7eded8",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsAssertionsInEqualityComparisons01.ts",
+      "sha256": "2523e39a6e662a6ccb670598e1b616bedd646d7538f9ac1209cfb0772b401023",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsAssertionsInEqualityComparisons02.ts",
+      "sha256": "6a7a6049b5539cb90e681d57d494cb5d406c1f19f27a814255d4dcb71943fb2c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsAssignedToStringMappings.ts",
+      "sha256": "a3db600c4e770aba862d57c789659ee391eef811ae3b4a97149c48008d286854",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithEqualityChecks01.ts",
+      "sha256": "e6dfb68ff2503fb5f454c183644a634d5190565115539070614ececa1d163b96",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithEqualityChecks02.ts",
+      "sha256": "0f4d1d4ef7a851135ba74a217ebe6809a8df297e2a4087eaa3271f2dcd3a9135",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithEqualityChecks03.ts",
+      "sha256": "663ecb39bfd79b4f14ab383bdf29c04c6920d06986ad5544e619204502982045",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithEqualityChecks04.ts",
+      "sha256": "b05ed2b786065981c3fd05658a778069339f5b9714278dbd64772cc72c852c57",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithSwitchStatements01.ts",
+      "sha256": "029a5b3c4d95274c02208dfb9f7dbfd99021b63e3805a9ab49424d60b220f131",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithSwitchStatements02.ts",
+      "sha256": "0e263588725a93891439cfab3ce8244d5bccfb9c9313f803d09e6b0ac1c9f0b4",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithSwitchStatements03.ts",
+      "sha256": "339cb4c054fd344acd184472d6a64175af50441769038f268e6b38c89899e14b",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithSwitchStatements04.ts",
+      "sha256": "15e301efde6b80276d47f9cb01a545233be6628f52efb99064f82d30890f2fe6",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/literal/stringLiteralsWithTypeAssertions01.ts",
+      "sha256": "0d07f7df5ffa6cb0316a04e0b2577c1907291dba170ce065097762f74abc50bb",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/objectTypeLiteral/callSignatures/stringLiteralTypesInImplementationSignatures.ts",
+      "sha256": "9733b790cfae989de3901bf8b924409c6917364ecf9ffb894bef2fe119e88611",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/objectTypeLiteral/callSignatures/stringLiteralTypesInImplementationSignatures2.ts",
+      "sha256": "eaf144dc3064b9b7e1b193bedf86d5b5ff8edc8c495f19d456f058983f993f8a",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/primitives/stringLiteral/stringLiteralType.ts",
+      "sha256": "7b9876e5a2ee7f4e34599ba985b7a6bd17afb143fb7a09a450d128948a33a2ac",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralCheckedInIf01.ts",
+      "sha256": "402e17a2d0a0aeb6ef3a32676f50d632677dc9020e2c8fa28a24bd9994dc405e",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralCheckedInIf02.ts",
+      "sha256": "d133c8b68ba843a386f33f955a72b92272726ca27a8930bae7a085343d9d4c97",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralMatchedInSwitch01.ts",
+      "sha256": "4ad312abfd3e091e117c920abc060b93dfa224a3a2ca629b2f35ca1f6083f73f",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypeAssertion01.ts",
+      "sha256": "e5b96bd3f5c2c7b61254760eb61db76fd1e1abe4f095b03c4b03009c78f8e30d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAndLogicalOrExpressions01.ts",
+      "sha256": "d170de3bb41fc1736d3b9d91cda23546e6a86067b9f48401cc0a09a9abbfb20c",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAndParenthesizedExpressions01.ts",
+      "sha256": "537b1d4ca13911b6e67060ad7733ca479e1d3ec1eca976065d9f5f151d7b5fd4",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAndTuples01.ts",
+      "sha256": "d20e0cab26d66adccbb4f68d78ce270d0c49409446333c2b9a0c6cb673ee4e38",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAsTags01.ts",
+      "sha256": "fd9a7eb2fa078bd7b12e289e322d61aad6cac585c60819dbb3defc6ccd57421f",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAsTags02.ts",
+      "sha256": "207c1938c0ffef715e2b8e096964057274607c9ecce8188988d0eebd867a9a35",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAsTags03.ts",
+      "sha256": "640a31b47c08910363b1e7a38ca235e09e5a60b95ff93e9c26f1a62d0985618a",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAsTypeParameterConstraint01.ts",
+      "sha256": "d8293b8fb49800bd63454c52e9a571f16d2eb03b76f5afae727586658832ff1d",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAsTypeParameterConstraint02.ts",
+      "sha256": "8d6a0dacd2f89c457d1d2a40000aac0aadb69a9f0f96fd1e5aa9e385668fb779",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesInUnionTypes01.ts",
+      "sha256": "22b85930a9a02da710d2ebf84ee25e5b3bad8869ede6a59102f0d6f619723785",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesInUnionTypes02.ts",
+      "sha256": "dced37c091ad348debbc267d28b551bb91144412105989701791dbf0902f3a01",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesInUnionTypes03.ts",
+      "sha256": "07d6858a35dda729bfeb8bf22f90467fa3e625d68046ddb4f395a5640e61e339",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesInUnionTypes04.ts",
+      "sha256": "658a7a9a96f92becfbdfd13fb7628eb420dd1da2703378744ad6ddb0de64858b",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesInVariableDeclarations01.ts",
+      "sha256": "cef9b0205083db25514aa0f0285d839b150ea31652dfab0813f226cebc2ea09b",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloadAssignability01.ts",
+      "sha256": "96821165d4039b341398347f09a977d21f6158c456ac58d61392d978d6b19e99",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloadAssignability02.ts",
+      "sha256": "4d7d3d93e9e06171f46cb3ed97f3d62fba7a436313cba6b0976ecf11f899cda1",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloadAssignability03.ts",
+      "sha256": "5d10281b97155aa3fc737c80338f3fbef7fc8dc116bc3b6bfc7de73fb2e60742",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloadAssignability04.ts",
+      "sha256": "1d2d7fb71ee09b6e3f1574bd56efb529e037040ee882914f4541b01def635f11",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloadAssignability05.ts",
+      "sha256": "6a9bd7a15c6e0dce2a3f0cf205e786c3802ee2500fdf696dee1c7d632c095e32",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    },
+    {
+      "path": "testdata/tests/cases/conformance/types/stringLiteral/stringLiteralTypesOverloads01.ts",
+      "sha256": "8d15d0456b541ebb94bdbefbd7ce0dd8a9663d151652965daed3a611a8f79c8a",
+      "license": "Apache-2.0 (licenses/TypeScript-LICENSE.txt)"
+    }
+  ]
+}

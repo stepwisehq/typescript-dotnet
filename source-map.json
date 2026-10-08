@@ -1,0 +1,215 @@
+{
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "checkpoint": "accepted bounded scanner phase; implementation coverage reviewed; behavioral evidence in validation/results/verified.json",
+  "entries": [
+    {
+      "upstream": "tsc/internal/scanner/scanner.go",
+      "destination": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+      "status": "partial",
+      "scope": "All lexical scanner functions, pure text/line helpers, and comment range enumeration; named AST/source-file helpers excluded. defaultScanner/cleared folded into C# initialization/Reset; comment records replace NodeFactory allocation.",
+      "upstreamSha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
+      "excludedSymbols": [
+        "GetScannerForSourceFile",
+        "ScanTokenAtPosition",
+        "GetRangeOfTokenAtPosition",
+        "GetTokenPosOfNode",
+        "getErrorRangeForArrowFunction",
+        "findOriginatingJSDocSatisfiesTag",
+        "GetErrorRangeForNode",
+        "GetECMALineStarts",
+        "GetECMALineOfPosition",
+        "GetECMALineAndUTF16CharacterOfPosition",
+        "GetECMALineAndByteOffsetOfPosition",
+        "GetECMAEndLinePosition",
+        "GetECMAPositionOfLineAndUTF16Character",
+        "GetECMAPositionOfLineAndByteOffset"
+      ]
+    },
+    {
+      "upstream": "tsc/internal/scanner/regexp.go",
+      "destination": "src/TypeScript.Scanner/Scanner/Regexp.cs",
+      "status": "ported",
+      "scope": "ECMAScript regular-expression syntax scanning and diagnostics; does not use .NET Regex to substitute syntax.",
+      "upstreamSha256": "ddadb4e90539fd9acb8174cf58eb63a4ec168871ca55e1e0bffcfcd01459177b"
+    },
+    {
+      "upstream": "tsc/internal/scanner/unicodeproperties.go",
+      "destination": "src/TypeScript.Scanner/Scanner/UnicodeProperties.cs",
+      "status": "ported",
+      "scope": "Unicode regex property names, aliases and value sets.",
+      "upstreamSha256": "fe5999f1ce91a2d376d1edf4d3288f13de261227cfc91b69289f4a7f71aac437"
+    },
+    {
+      "upstream": "tsc/internal/scanner/utilities.go",
+      "destination": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+      "status": "partial",
+      "scope": "tokenIsIdentifierOrKeyword only; all other utilities excluded, including AST utilities, JSDoc text normalization, IsIdentifierText, and IsIntrinsicJsxName.",
+      "upstreamSha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0"
+    },
+    {
+      "upstream": "tsc/internal/ast/kind_generated.go",
+      "destination": "src/TypeScript.Scanner/Ast/KindGenerated.cs",
+      "status": "partial",
+      "scope": "Token kinds and token boundary aliases only; compiler AST node kinds excluded.",
+      "upstreamSha256": "be3f110de809077fc0f443ef6c7f8ad7b6ce5221a01b9fac5076c3facba14d72"
+    },
+    {
+      "upstream": "tsc/internal/ast/tokenflags.go",
+      "destination": "src/TypeScript.Scanner/Ast/TokenFlags.cs",
+      "status": "ported",
+      "scope": "Token flags.",
+      "upstreamSha256": "98f7010c7113b1ac781205175de9fe0c9c9c5854b10744d03e32127eb72f2b29"
+    },
+    {
+      "upstream": "tsc/internal/ast/ast.go",
+      "destination": "src/TypeScript.Scanner/Ast/Ast.cs",
+      "status": "partial",
+      "scope": "Comment directive records only; no compiler AST.",
+      "upstreamSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f"
+    },
+    {
+      "upstream": "tsc/internal/core/options_generated.go",
+      "destination": "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
+      "status": "partial",
+      "scope": "ScriptTarget only.",
+      "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af"
+    },
+    {
+      "upstream": "tsc/internal/core/languagevariant.go",
+      "destination": "src/TypeScript.Scanner/Core/LanguageVariant.cs",
+      "status": "ported",
+      "scope": "LanguageVariant enum.",
+      "upstreamSha256": "d87097b04fcd3e9419cb151bbda1b47d342fd8c1524d9eb41b1750d47fcc11a0"
+    },
+    {
+      "upstream": "tsc/internal/core/text.go",
+      "destination": "src/TypeScript.Scanner/Core/Text.cs",
+      "status": "partial",
+      "scope": "TextRange used by scanner; other compiler position support excluded.",
+      "upstreamSha256": "dad1b4d0bb8fbd4a1c3c686a6a4fff940cfac17551c7c5ca564c33273e2277e4"
+    },
+    {
+      "upstream": "tsc/internal/core/core.go",
+      "destination": "src/TypeScript.Scanner/Core/Core.cs",
+      "status": "partial",
+      "scope": "Spelling suggestions and weighted edit distance needed by regex diagnostics.",
+      "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0"
+    },
+    {
+      "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
+      "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
+      "status": "partial",
+      "scope": "Only diagnostics referenced by scanner/regex.",
+      "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f"
+    },
+    {
+      "upstream": "tsc/internal/diagnostics/diagnostics.go",
+      "destination": "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
+      "status": "partial",
+      "scope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system.",
+      "upstreamSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238"
+    },
+    {
+      "upstream": "tsc/internal/stringutil/identifier_parts_generated.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/IdentifierPartsGenerated.cs",
+      "status": "ported",
+      "scope": "Pinned identifier range data; independent of runtime Unicode version.",
+      "upstreamSha256": "5fac39c9509df8bcd337dcfc9d148c8c94b0f4569a8e4df5022b2ecbcb0ff563"
+    },
+    {
+      "upstream": "tsc/internal/stringutil/identifier.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/Identifier.cs",
+      "status": "ported",
+      "scope": "Identifier range membership; C# binary search replaces Go unicode.In.",
+      "upstreamSha256": "e127bf574e83de35dff8f13d1a5078828415564b104bfd4a08ca79a04eec293a"
+    },
+    {
+      "upstream": "tsc/internal/stringutil/util.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/Util.cs",
+      "status": "partial",
+      "scope": "Scanner character classification and JavaScript string surrogate encoding.",
+      "upstreamSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e"
+    },
+    {
+      "upstream": "tsc/internal/jsnum/string.go",
+      "destination": "src/TypeScript.Scanner/JsNum/String.cs",
+      "status": "partial",
+      "scope": "Numeric parse and string conversion required by scanner; .NET double/BigInteger adaptation.",
+      "upstreamSha256": "79cba5294aa96796c280169b6d3d5ed1b62da2b2aad312c8d9d06dc0a563d62b"
+    },
+    {
+      "upstream": "tsc/internal/jsnum/pseudobigint.go",
+      "destination": "src/TypeScript.Scanner/JsNum/PseudoBigInt.cs",
+      "status": "partial",
+      "scope": "ParsePseudoBigInt only.",
+      "upstreamSha256": "512d46777b6d9955db52bef696cca72ec3002309f4b8a2d12cba0529f809a64a"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/GoString.cs",
+      "status": "new",
+      "scope": "Compatibility support for byte strings and required Go standard-library semantics; not a full Go runtime."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/ScannerCompat.cs",
+      "status": "new",
+      "scope": "Compatibility support for byte strings and required Go standard-library semantics; not a full Go runtime."
+    },
+    {
+      "upstream": "tsc/internal/scanner/scanner_test.go",
+      "destination": "tests/Scanner.Tests/OracleTests.cs",
+      "status": "partial",
+      "scope": "Lone-surrogate and source-keyword upstream regression tests plus newly authored differential tests; AST utilities excluded."
+    },
+    {
+      "upstream": null,
+      "destination": "tools",
+      "status": "new",
+      "scope": "Authored oracle, pinned bootstrap, deterministic corpus and verification commands."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Scanner.Validation",
+      "status": "new",
+      "scope": "Authored source-generated JSONL executable validation harness; Native AOT target."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/corpus",
+      "status": "new",
+      "scope": "Authored requests and pinned-Go expected results plus upstream source samples with manifest."
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/unicode/letter.go",
+      "destination": "src/TypeScript.Scanner/Runtime/UnicodeCase.cs",
+      "status": "partial",
+      "scope": "ToLower/SimpleFold and required helpers only; exact pinned Go Unicode semantics.",
+      "upstreamSha256": "b35a6d259313cef88d07e9e4027b8bd72c60ae140418f5be2c41a2ecea6074fe"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/unicode/tables.go",
+      "destination": "src/TypeScript.Scanner/Runtime/UnicodeCaseTables.cs",
+      "status": "partial",
+      "scope": "CaseRanges and caseOrbit data only; generated with tools/generate-unicode-case.py, not a full Unicode runtime port.",
+      "upstreamSha256": "ac0e5d5d1b58ed4b02d7cb4a0085bdefbdb4f7aae6fadddbc9477f8463da8bd8"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Scanner.Tests/UtilityTests.cs",
+      "status": "new",
+      "scope": "Public .NET API regression tests for helper functions and state behavior."
+    },
+    {
+      "upstream": null,
+      "destination": "benchmarks",
+      "status": "new",
+      "scope": "Separate Native AOT performance harness, workload manifest and raw Go/C# measurements. Original scanner source snapshot unchanged; see docs/PERFORMANCE.md."
+    }
+  ],
+  "verifiedSourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
+}
