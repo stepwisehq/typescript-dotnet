@@ -1,0 +1,9 @@
+{"name":"valid-literal","text":"let x:number=1; const y=\"a\"; let b:boolean=true;"}
+{"name":"mismatch","text":"let x:number=\"bad\";"}
+{"name":"unresolved","text":"let x:number=missing;"}
+{"name":"typo","text":"let count=1;let x=coun;"}
+{"name":"shadow","text":"let x=1;{let x=\"s\";let y=x;}let z=x;"}
+{"name":"forward","text":"let y=x;let x=1;"}
+{"name":"self","text":"let x=x;"}
+{"name":"undefined","text":"let x:undefined=undefined;"}
+{"name":"null","text":"let x:number=null;"}

@@ -1,0 +1,82 @@
+[
+  {
+    "name": "paged.unallocated",
+    "boolValue": true
+  },
+  {
+    "name": "paged.same-page-zero",
+    "boolValue": true
+  },
+  {
+    "name": "paged.stable-distinct-slots",
+    "boolValue": true
+  },
+  {
+    "name": "paged.other-page-unallocated",
+    "boolValue": true
+  },
+  {
+    "name": "paged.last-list-first-map-stable",
+    "boolValue": true
+  },
+  {
+    "name": "paged.high-map-neighbor-zero",
+    "boolValue": true
+  },
+  {
+    "name": "paged.high-other-page-unallocated",
+    "boolValue": true
+  },
+  {
+    "name": "node.unallocated",
+    "boolValue": true
+  },
+  {
+    "name": "node.same-page-zero",
+    "boolValue": true
+  },
+  {
+    "name": "node.stable-identities",
+    "boolValue": true
+  },
+  {
+    "name": "symbol.unallocated",
+    "boolValue": true
+  },
+  {
+    "name": "symbol.same-page-still-nil",
+    "boolValue": true
+  },
+  {
+    "name": "symbol.stable-distinct-identities",
+    "boolValue": true
+  },
+  {
+    "name": "tables.initially-nil",
+    "boolValue": true
+  },
+  {
+    "name": "tables.allocated-empty",
+    "boolValue": true
+  },
+  {
+    "name": "tables.locals-count",
+    "intValue": 0
+  },
+  {
+    "name": "tables.members-count",
+    "intValue": 0
+  },
+  {
+    "name": "tables.exports-count",
+    "intValue": 0
+  },
+  {
+    "name": "tables.stable-lazy-identities",
+    "boolValue": true
+  },
+  {
+    "name": "tables.distinct-identities",
+    "boolValue": true
+  }
+]

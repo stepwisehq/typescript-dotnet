@@ -9,8 +9,8 @@ and the [durable evidence](../validation/results/binder-verified.json).
 This is not a claim of full binder parity.
 
 The preceding parser/performance work was committed as `de25b66` before this
-phase began. Binder work is saved in the working tree and has not been committed
-or pushed at this checkpoint. The unchanged upstream pin is
+phase began. Binder work was saved uncommitted at this checkpoint, then committed as `e94cc6f`
+before the next bounded checker phase. Nothing has been pushed. The unchanged upstream pin is
 `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 
 ## Implemented scope and dependency cost

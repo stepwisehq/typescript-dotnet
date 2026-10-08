@@ -1,0 +1,167 @@
+// Authored admission boundary for the bounded upstream semantic checking slice.
+using TypeScript.Scanner;
+
+namespace TypeScript.Checking;
+public sealed class UnsupportedSemanticFeatureException : NotSupportedException
+{
+    public string Feature { get; }
+    public Kind Kind { get; }
+    public int Pos { get; }
+    public int End { get; }
+    public string FileName { get; }
+
+    internal UnsupportedSemanticFeatureException(string feature) : base($"Semantic checking does not support {feature}.")
+    {
+        Feature = feature;
+        Kind = Kind.Unknown;
+        Pos = -1;
+        End = -1;
+        FileName = "";
+    }
+
+    internal UnsupportedSemanticFeatureException(SourceFile file, Node node, string feature) : base($"Semantic checking does not support {feature} ({node.Kind}) at byte range [{node.Pos()}, {node.End()}).")
+    {
+        Feature = feature;
+        Kind = node.Kind;
+        Pos = node.Pos();
+        End = node.End();
+        FileName = file.FileName() ?? "";
+    }
+}
+
+public sealed partial class Checker
+{
+    public static Checker Create(SourceFile file)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        SemanticAdmission.Validate(file);
+        return CreateCore(file);
+    }
+}
+
+internal static class SemanticAdmission
+{
+    internal static void ValidateOwnedNode(SourceFile file, Node node)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        var seen = new HashSet<Node>(ReferenceEqualityComparer.Instance);
+        for (Node? current = node; current is not null && seen.Add(current); current = current.Parent)
+            if (ReferenceEquals(current, file.AsNode()))
+                return;
+        Reject(file, node, "foreignNode");
+    }
+
+    private static void Reject(SourceFile file, Node node, string feature) => throw new UnsupportedSemanticFeatureException(file, node, feature);
+    public static void Validate(SourceFile file)
+    {
+        Node root = file.AsNode();
+        if (file.ScriptKind != ScriptKind.TS)
+            Reject(file, root, "scriptKind");
+        if (file.IsDeclarationFile)
+            Reject(file, root, "declarationFile");
+        if (file.Diagnostics()is { Count: > 0 })
+            Reject(file, root, "parseErrors");
+        if (file.CheckJsDirective is not null || file.CommentDirectives is { Count: > 0 })
+            Reject(file, root, "checkingDirective");
+        if (file.ReferencedFiles is { Count: > 0 } || file.TypeReferenceDirectives is { Count: > 0 } || file.LibReferenceDirectives is { Count: > 0 })
+            Reject(file, root, "externalReference");
+        if (file.ExternalModuleIndicator is not null || file.CommonJSModuleIndicator is not null)
+            Reject(file, root, "module");
+        foreach (Node statement in file.Statements.Nodes ?? [])
+            Statement(file, statement);
+    }
+
+    private static void Documentation(SourceFile file, Node node)
+    {
+        foreach (Node doc in node.JSDoc(file) ?? [])
+            foreach (Node tag in doc.AsJSDoc().Tags?.Nodes ?? [])
+                Reject(file, tag, "jsDocTag");
+    }
+
+    private static void Statement(SourceFile file, Node node)
+    {
+        Documentation(file, node);
+        if (node.ModifierNodes()is { Count: > 0 })
+            Reject(file, node, "modifiers");
+        switch (node.Kind)
+        {
+            case Kind.Block:
+                foreach (Node child in node.AsBlock().Statements?.Nodes ?? [])
+                    Statement(file, child);
+                return;
+            case Kind.VariableStatement:
+                var list = node.AsVariableStatement().DeclarationList;
+                if ((list.Flags & NodeFlags.Using) != 0)
+                    Reject(file, list, "using");
+                foreach (Node declaration in list.AsVariableDeclarationList().Declarations?.Nodes ?? [])
+                {
+                    Documentation(file, declaration);
+                    var variable = declaration.AsVariableDeclaration();
+                    if (variable.Name().Kind != Kind.Identifier)
+                        Reject(file, variable.Name(), "bindingPattern");
+                    if (variable.ExclamationToken is not null)
+                        Reject(file, variable.ExclamationToken, "definiteAssignmentAssertion");
+                    if (variable.Type is not null)
+                        Annotation(file, variable.Type);
+                    if (variable.Initializer is not null)
+                        Expression(file, variable.Initializer);
+                }
+
+                return;
+            default:
+                Reject(file, node, "statement");
+                return;
+        }
+    }
+
+    private static void Annotation(SourceFile file, Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.NumberKeyword:
+            case Kind.StringKeyword:
+            case Kind.BooleanKeyword:
+            case Kind.AnyKeyword:
+            case Kind.UnknownKeyword:
+            case Kind.NeverKeyword:
+            case Kind.VoidKeyword:
+            case Kind.UndefinedKeyword:
+            case Kind.BigIntKeyword:
+            case Kind.SymbolKeyword:
+                return;
+            case Kind.ParenthesizedType:
+                Annotation(file, node.AsParenthesizedTypeNode().Type);
+                return;
+            case Kind.LiteralType:
+                var literal = node.AsLiteralTypeNode().Literal;
+                if (literal.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword)
+                    return;
+                Reject(file, literal, "literalType");
+                return;
+            default:
+                Reject(file, node, "type");
+                return;
+        }
+    }
+
+    private static void Expression(SourceFile file, Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.StringLiteral:
+            case Kind.NumericLiteral:
+            case Kind.TrueKeyword:
+            case Kind.FalseKeyword:
+            case Kind.NullKeyword:
+                return;
+            case Kind.Identifier:
+                return;
+            case Kind.ParenthesizedExpression:
+                Expression(file, node.AsParenthesizedExpression().Expression);
+                return;
+            default:
+                Reject(file, node, "expression");
+                return;
+        }
+    }
+}

@@ -1,17 +1,21 @@
 # TypeScript port feasibility study
 
-A C# port of the Go TypeScript scanner, syntax parser/AST and source-file binder,
-pinned to the maintained [microsoft/TypeScript source](./UPSTREAM.md).
-All three bounded checkpoints passed actual Native AOT verification. See the
-[current state](./docs/STATE.md), [binder assessment](./docs/BINDER-ASSESSMENT.md)
-and [binder verification](./docs/BINDER-VERIFICATION.md) for current evidence and
-limits. Checking, cross-file semantic resolution, module resolution and code
-generation remain outside scope.
+A C# port of the Go TypeScript scanner, syntax parser/AST, source-file binder and
+first bounded semantic checker slice, pinned to maintained
+[microsoft/TypeScript source](./UPSTREAM.md). All four bounded checkpoints passed
+actual Native AOT verification. See the [current state](./docs/STATE.md),
+[checker assessment](./docs/CHECKER-ASSESSMENT.md) and
+[verification](./docs/CHECKER-VERIFICATION.md) for scope and evidence.
 
-The [library](./src/TypeScript.Scanner) targets .NET 10. Separate
-[scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation)
-and [binder](./validation/Binder.Validation) executable harnesses support Native
-AOT; xUnit compares against stored results from pinned Go. No Go process is
+The semantic slice checks single-file scalar declarations and references under
+fixed no-library options. It preserves the eight upstream missing-library errors
+separately from file semantic diagnostics and rejects unsupported inputs explicitly.
+General object/function/project checking, modules and code generation are excluded.
+
+The [library](./src/TypeScript.Scanner) targets .NET 10. Separate executable harnesses
+for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation),
+[binder](./validation/Binder.Validation) and [checker](./validation/Checker.Validation)
+support Native AOT; xUnit compares stored pinned-Go results. No Go process is
 needed to use the C# implementation.
 
 ## Build and verify
@@ -39,7 +43,19 @@ For the faster managed test loop, using the checked-in oracle corpus:
 dotnet test tests/Scanner.Tests/Scanner.Tests.csproj -c Release
 ```
 
-The complete binder gate includes parser and scanner regressions:
+The complete checker gate includes binder, parser and scanner regressions:
+
+```sh
+./tools/verify-checker.sh
+```
+
+For a managed checker development loop:
+
+```sh
+dotnet test tests/Checker.Tests/Checker.Tests.csproj -c Release
+```
+
+The binder gate also remains available, including parser and scanner regressions:
 
 ```sh
 ./tools/verify-binder.sh
@@ -87,6 +103,22 @@ Native publish success alone is insufficient: the comparison must pass. Detailed
 test logs and generated binaries go under ignored `artifacts/`; durable result
 summaries belong in the project documentation.
 
+## Bounded semantic API
+
+```csharp
+using TypeScript.Scanner;
+using TypeScript.Checking;
+
+var file = Parser.ParseSourceFile(new("/main.ts", "/main.ts"),
+    "const n: number = \"text\";", ScriptKind.TS);
+var checker = Checker.Create(file); // Includes source-file binding.
+var fileDiagnostics = checker.GetDiagnostics(); // Includes error 2322.
+var environmentDiagnostics = checker.GetGlobalDiagnostics(); // Eight noLib errors.
+```
+
+Unsupported input raises `UnsupportedSemanticFeatureException`; it is not a
+completed semantic check. Keep the parsed tree immutable while using its checker.
+
 ## Representation and scope
 
 Positions are **UTF-8 byte offsets**, matching Go. `SetText(string)` encodes a .NET
@@ -101,8 +133,10 @@ validation, token flags, diagnostic callbacks, and comment directives. The compl
 parser phase adds syntax trees, syntax diagnostics and required AST support;
 its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Source-file
 binding now adds declaration/symbol relationships, scope tables, binder diagnostics
-and control-flow graphs. Checking, cross-file semantic resolution, module resolution
-and code generation remain excluded.
+and control-flow graphs. The first checker slice adds selected scalar semantic
+checks; its [exact boundary](./docs/CHECKER-VERIFICATION.md) remains narrow. Broad
+checking, cross-file semantic resolution, module resolution and code generation
+remain excluded.
 See [source-map.json](./source-map.json) and the
 [mapping convention](./docs/SOURCE-MAPPING.md) for per-file completeness and
 exceptions. Ported source and newly authored compatibility/harness code are marked

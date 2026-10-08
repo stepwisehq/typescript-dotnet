@@ -1,0 +1,1 @@
+IsDeclarationNameOrImportPropertyName,IsJsxTagName,IsExpressionNode,IsInExpressionContext,IsPartOfTypeNode,isPartOfTypeNodeInParent,isPartOfTypeExpressionWithTypeArguments,IsJSDocLinkLike

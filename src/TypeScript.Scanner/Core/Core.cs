@@ -151,3 +151,74 @@ internal static partial class Core
         return GoRuntime.Append(values, element);
     }
 }
+
+// Exact generic spelling-selection control flow from core/core.go:581-632.
+internal static partial class Core
+{
+    public static T? GetSpellingSuggestion<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare) => getSpellingSuggestion(name, candidates, getName, compare, 0);
+    public static T? GetSpellingSuggestionWithMaxCandidateCount<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare, int maxCandidates) => getSpellingSuggestion(name, candidates, getName, compare, maxCandidates);
+    private static T? getSpellingSuggestion<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare, int maxCandidates)
+    {
+        int[] runeName = GoString.Runes(name);
+        int maximumLengthDifference = Math.Max(2, (int)(runeName.Length * 0.34));
+        double bestDistance = Math.Floor(runeName.Length * 0.4) + 0.9;
+        // Go string's zero value is empty, unlike a C# reference's zero value.
+        T? zero = typeof(T) == typeof(string) ? (T)(object)"" : default;
+        T? bestCandidate = zero;
+        bool hasBest = false;
+        int checkedCandidates = 0;
+        foreach (T candidate in candidates)
+        {
+            checkedCandidates++;
+            if (maxCandidates > 0 && checkedCandidates > maxCandidates)
+                return zero;
+            string candidateName = getName(candidate);
+            int maxLen = Math.Max(candidateName.Length, runeName.Length);
+            int minLen = Math.Min(candidateName.Length, runeName.Length);
+            if (candidateName != "" && maxLen - minLen <= maximumLengthDifference)
+            {
+                if (candidateName == name)
+                    continue;
+                if (candidateName.Length < 3 && !UnicodeCase.EqualFold(candidateName, name))
+                    continue;
+                double distance = levenshteinWithMax(runeName, GoString.Runes(candidateName), bestDistance);
+                if (distance < 0)
+                    continue;
+                Debug.Assert(distance <= bestDistance);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestCandidate = candidate;
+                    hasBest = true;
+                }
+                else if (!hasBest || compare(candidate, bestCandidate!) < 0)
+                {
+                    bestCandidate = candidate;
+                    hasBest = true;
+                }
+            }
+        }
+
+        return bestCandidate;
+    }
+}
+
+// Upstream core/core.go:285; selected mapped outputs are pointer-like references.
+internal static partial class Core
+{
+    public static TOut? FirstNonNil<TIn, TOut>(List<TIn>? slice, Func<TIn, TOut?> map)
+        where TOut : class
+    {
+        if (slice is not null)
+        {
+            foreach (var value in slice)
+            {
+                var mapped = map(value);
+                if (mapped is not null)
+                    return mapped;
+            }
+        }
+
+        return null;
+    }
+}

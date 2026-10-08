@@ -1,0 +1,122 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 45,
+  "astNodes": 713,
+  "types": 215,
+  "symbols": 205,
+  "tables": 88,
+  "queries": 274,
+  "relations": 121,
+  "relationTrue": 50,
+  "fileDiagnostics": 31,
+  "globalDiagnostics": 360,
+  "diagnosticCodes": {
+    "1155": 1,
+    "2304": 4,
+    "2322": 12,
+    "2397": 3,
+    "2403": 1,
+    "2448": 3,
+    "2454": 3,
+    "2552": 1,
+    "2693": 3
+  },
+  "globalDiagnosticCodes": {
+    "2318": 360
+  },
+  "bindDiagnosticCodes": {
+    "2451": 2
+  },
+  "typePayloads": {
+    "IntrinsicType": 68,
+    "LiteralType": 142,
+    "UnionType": 5
+  },
+  "typeFlags": {
+    "1": 19,
+    "1024": 52,
+    "128": 1,
+    "134217984": 5,
+    "16": 3,
+    "2": 3,
+    "2048": 62,
+    "262144": 3,
+    "32": 7,
+    "4": 3,
+    "512": 1,
+    "64": 26,
+    "8": 2,
+    "8192": 28
+  },
+  "typeFlagBits": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    18,
+    27
+  ],
+  "objectFlagBits": [
+    15
+  ],
+  "symbolFlagBits": [
+    0,
+    1,
+    2,
+    9,
+    10,
+    25
+  ],
+  "checkFlagBits": [
+    3
+  ],
+  "queryKinds": {
+    "10": 29,
+    "105": 3,
+    "111": 10,
+    "115": 3,
+    "132": 3,
+    "135": 2,
+    "146": 3,
+    "150": 6,
+    "154": 3,
+    "155": 1,
+    "157": 2,
+    "159": 3,
+    "163": 1,
+    "198": 2,
+    "203": 11,
+    "79": 153,
+    "8": 38,
+    "96": 1
+  },
+  "freshTypeEdges": 142,
+  "regularTypeEdges": 142,
+  "unionConstituentEdges": 10,
+  "globalsExportAliases": 45,
+  "observedAllocatedEmptyTables": 0,
+  "relatedDiagnostics": 5,
+  "chainDiagnostics": 0,
+  "independentAdmissionControls": 35,
+  "goUtilityObservations": 20,
+  "authoredApiAssertions": 10,
+  "limits": [
+    "Single-file TS scripts under fixed noLib/noResolve scalar admission; eight global2318 errors retained.",
+    "No objects/calls/functions/controlflow/module/project/library/emit semantic acceptance.",
+    "Selected public type graph observables, not every mutable cache field; union regularType omitted.",
+    "Parser structural snapshot before semantic admission/checking; lazy documentation cache not serialized afterward.",
+    "Assigned symbol/flow binder graph covered by preserved binder regression, not repeated in semantic JSON.",
+    "No malformed semantic recovery admission; parse errors explicitly rejected.",
+    "No diagnostic chains observed in accepted scalar grammar; related information observed.",
+    "Allocated-empty tables covered by separate actual Go utility observations, not scalar graph corpus."
+  ]
+}

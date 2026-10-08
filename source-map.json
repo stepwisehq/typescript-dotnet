@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted bounded scanner, parser and source-file binder checkpoints; historical scanner/parser scopes and resolver exclusions retained.",
+  "checkpoint": "Accepted bounded scanner, parser, source-file binder and noLib single-file scalar checker checkpoints; broader compiler phases remain excluded.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -73,8 +73,9 @@
       "upstream": "tsc/internal/core/options_generated.go",
       "destination": "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
       "status": "partial",
-      "scope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded.",
-      "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af"
+      "scope": "ScriptTarget, ModuleKind and NewLineKind enums plus actual selected CompilerOptions fields for fixed noLib scalar checking; general option records, configuration parsing and serialization excluded.",
+      "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af",
+      "binderCheckpointScope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded."
     },
     {
       "upstream": "tsc/internal/core/languagevariant.go",
@@ -94,25 +95,28 @@
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded.",
+      "scope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
-      "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded."
+      "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
+      "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
       "status": "partial",
-      "scope": "198 pinned diagnostic records referenced by scanner/regex/parser/binder syntax dependencies, retaining numeric codes/categories/keys/text and report flags; unrelated compiler messages excluded.",
+      "scope": "226 pinned message records referenced by scanner/regex/parser/binder and selected checker branches, retaining numeric codes/categories/keys/text/report flags; unrelated compiler diagnostics excluded.",
       "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f",
       "scannerCheckpointScope": "Only diagnostics referenced by scanner/regex.",
-      "parserCheckpointScope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded."
+      "parserCheckpointScope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded.",
+      "binderCheckpointScope": "198 pinned diagnostic records referenced by scanner/regex/parser/binder syntax dependencies, retaining numeric codes/categories/keys/text and report flags; unrelated compiler messages excluded."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
       "status": "partial",
-      "scope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system.",
-      "upstreamSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238"
+      "scope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded.",
+      "upstreamSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238",
+      "binderCheckpointScope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system."
     },
     {
       "upstream": "tsc/internal/stringutil/identifier_parts_generated.go",
@@ -165,7 +169,8 @@
       "upstream": "tsc/internal/scanner/scanner_test.go",
       "destination": "tests/Scanner.Tests/OracleTests.cs",
       "status": "partial",
-      "scope": "Lone-surrogate and source-keyword upstream regression tests plus newly authored differential tests; AST utilities excluded."
+      "scope": "Lone-surrogate and source-keyword upstream regression tests plus newly authored differential tests; AST utilities excluded.",
+      "upstreamSha256": "b46023319546710540b1ef60204e4a660544e0e51c8f02f4e1b518ce2dc0a6cd"
     },
     {
       "upstream": null,
@@ -283,9 +288,10 @@
       "upstream": "tsc/internal/ast/diagnostic.go",
       "destination": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
       "status": "partial",
-      "scope": "Parser and binder diagnostic construction, spans, raw arguments, ordering and related information; full compiler diagnostic processing excluded.",
+      "scope": "Parser/binder/selected-checker diagnostic construction, actual mutable category/metadata, raw arguments, related-info/message chains; complete DiagnosticsCollection Add/Lookup/global/file/all retrieval and exact equality/comparison closure. Managed locks/lists preserve mutex, nil/empty, stable per-file/global ordering and result-copy semantics. Content-mapper alias substitution, locale services, incremental repopulation and general serialized/external constructors excluded.",
       "upstreamSha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4",
-      "parserCheckpointScope": "Parse diagnostic construction, spans, raw arguments and related information; full compiler diagnostic processing excluded."
+      "parserCheckpointScope": "Parse diagnostic construction, spans, raw arguments and related information; full compiler diagnostic processing excluded.",
+      "binderCheckpointScope": "Parser and binder diagnostic construction, spans, raw arguments, ordering and related information; full compiler diagnostic processing excluded."
     },
     {
       "upstream": "tsc/internal/ast/parseoptions.go",
@@ -340,9 +346,21 @@
       "upstream": "tsc/internal/ast/utilities.go",
       "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
       "status": "partial",
-      "scope": "Parser syntax predicate/accessor closure plus 73 generated binder dependency functions and handwritten atomic node/symbol IDs, lazy symbol-table and raw ambient/private-name helpers. Includes source-local ModuleInstanceState/ancestor/export analysis, assignment/name/strictness predicates. Unneeded utilities, checker/cross-file name or reference resolution and general transform facts excluded.",
+      "scope": "Accepted parser/binder syntax closure, atomic IDs/lazy symbol tables/private names, plus selected NameResolver/checker helpers and eight contextual query predicates from utilities.go. Retains declaration/type/expression context, lexical scope and ancestor tests. Broad semantic/cross-file/reference resolution and general transform facts excluded.",
       "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
-      "parserCheckpointScope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded."
+      "parserCheckpointScope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded.",
+      "binderCheckpointScope": "Parser syntax predicate/accessor closure plus 73 generated binder dependency functions and handwritten atomic node/symbol IDs, lazy symbol-table and raw ambient/private-name helpers. Includes source-local ModuleInstanceState/ancestor/export analysis, assignment/name/strictness predicates. Unneeded utilities, checker/cross-file name or reference resolution and general transform facts excluded.",
+      "checkerGeneratedFunctions": [
+        "IsDeclarationNameOrImportPropertyName",
+        "IsJsxTagName",
+        "IsExpressionNode",
+        "IsInExpressionContext",
+        "IsPartOfTypeNode",
+        "isPartOfTypeNodeInParent",
+        "isPartOfTypeExpressionWithTypeArguments",
+        "IsJSDocLinkLike"
+      ],
+      "checkerGenerator": "tools/checker-support-port/main.go with query-functions.txt; query-ast.py preserves prior slices; scratch LF regeneration matched reviewed source. Other selected helpers are handwritten."
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -400,8 +418,9 @@
       "upstream": "tsc/internal/core/compileroptions.go",
       "destination": "src/TypeScript.Scanner/Core/CompilerOptions.cs",
       "status": "partial",
-      "scope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation.",
-      "upstreamSha256": "fef841f3f06b3ef5f68124672e56996983795c43d3c1c10fa46d978820dc3564"
+      "scope": "ResolutionMode bounded enum plus selected target/module/strict-option/wildcard-types/isolated-module/standard-class-field accessors; general compiler-option evaluation, config merging and module-resolution options excluded.",
+      "upstreamSha256": "fef841f3f06b3ef5f68124672e56996983795c43d3c1c10fa46d978820dc3564",
+      "binderCheckpointScope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation."
     },
     {
       "upstream": "tsc/internal/ast/subtreefacts.go",
@@ -412,17 +431,21 @@
     },
     {
       "upstream": "tsc/internal/binder/nameresolver.go",
-      "destination": null,
-      "status": "excluded",
-      "scope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase.",
-      "upstreamSha256": "8e1f41019362d886e74599b9bf4dae5486d85c41d2d6f7634024c674f0fbbee2"
+      "destination": "src/TypeScript.Scanner/Binder/Nameresolver.cs",
+      "status": "ported",
+      "scope": "All thirteen original NameResolver functions and callback fields, preserving lexical/global lookup, raw-byte names, nil maps and optional hooks. Managed delegates replace Go function values; selected checker hooks explicitly reject unsupported features. ReferenceResolver remains excluded.",
+      "upstreamSha256": "8e1f41019362d886e74599b9bf4dae5486d85c41d2d6f7634024c674f0fbbee2",
+      "binderCheckpointScope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase.",
+      "binderCheckpointStatus": "excluded",
+      "generator": "tools/checker-support-port/main.go + patch.py; LF formatting; scratch reproduction matched reviewed source."
     },
     {
       "upstream": "tsc/internal/binder/referenceresolver.go",
       "destination": null,
       "status": "excluded",
-      "scope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase.",
-      "upstreamSha256": "d4ff84553926d47b86f38dbe9717c57d3cfd5de32596a7c0ed1f6766dec7b7b7"
+      "scope": "ReferenceResolver remains excluded: not called by the accepted source-file binder or selected scalar checker. NameResolver is mapped separately; emit/reference and cross-file resolution dependencies remain outside this bounded phase.",
+      "upstreamSha256": "d4ff84553926d47b86f38dbe9717c57d3cfd5de32596a7c0ed1f6766dec7b7b7",
+      "binderCheckpointScope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase."
     },
     {
       "upstream": "tsc/internal/binder/binder.go",
@@ -435,8 +458,9 @@
       "upstream": "tsc/internal/ast/symbol.go",
       "destination": "src/TypeScript.Scanner/Ast/Symbol.cs",
       "status": "partial",
-      "scope": "Binder Symbol fields, ordinal raw-byte SymbolTable keys and null-returning missing reads, exact internal-name constants and all upstream symbol helpers. Atomic ID storage retained; checker-only CheckFlags explicitly omitted (Go oracle asserts zero).",
-      "upstreamSha256": "3be43d53668f71260e6446e631210a937f3543e37646513dfc169890e148ea10"
+      "scope": "All source-file binder Symbol fields/helpers, ordinal raw-byte SymbolTable keys and nil/missing reads; actual CheckFlags field added for checker-owned transient symbols. Atomic IDs and shared table identities retained. Binder-only oracle still asserts CheckFlags zero; checker graphs observe real values.",
+      "upstreamSha256": "3be43d53668f71260e6446e631210a937f3543e37646513dfc169890e148ea10",
+      "binderCheckpointScope": "Binder Symbol fields, ordinal raw-byte SymbolTable keys and null-returning missing reads, exact internal-name constants and all upstream symbol helpers. Atomic ID storage retained; checker-only CheckFlags explicitly omitted (Go oracle asserts zero)."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -507,13 +531,168 @@
       "destination": "tools/binder-oracle",
       "status": "new",
       "scope": "Authored independent pinned-Go source-file binder oracle, strict reflected original embedded fields, symbol/table/flow identities and owner-validated generated names; no C# metadata or emitted AST schema used as the oracle."
+    },
+    {
+      "upstream": "tsc/internal/checker/checker.go",
+      "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "status": "partial",
+      "scope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
+      "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8"
+    },
+    {
+      "upstream": "tsc/internal/checker/types.go",
+      "destination": "src/TypeScript.Scanner/Checker/Types.cs",
+      "status": "partial",
+      "scope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags enums; stable Type wrapper plus IntrinsicType/LiteralType fresh-regular cycles, UnionType and actual partial ObjectType initialization markers; selected node/symbol/assignment cache records. Managed classes flatten Go embedded payload bases; static DataType is authored AOT-safe graph metadata. Unselected signature/mapper/type-parameter/structured payloads and object signature/index/instantiation state excluded.",
+      "upstreamSha256": "0265c1f309f28f4c6a608ea20243fe30625ba055e3b779b662dbec93172f9eb7",
+      "generator": "tools/generate-checker-support-enums.py generates enum prefix and preserves handwritten model suffix; scratch reproduction checked."
+    },
+    {
+      "upstream": "tsc/internal/checker/links.go",
+      "destination": "src/TypeScript.Scanner/Checker/Links.cs",
+      "status": "ported",
+      "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Managed cells/classes replace Go struct slot addresses and arena pointers, preserving page presence, nil indirect slots and object identity; no general Go arena runtime.",
+      "upstreamSha256": "afa761a66e450720a7193ab885047e0cc0c480c4abe59deaa9ad0e5223254841"
+    },
+    {
+      "upstream": "tsc/internal/checker/relater.go",
+      "destination": "src/TypeScript.Scanner/Checker/Relater.cs",
+      "status": "partial",
+      "scope": "Selected scalar, literal, boolean and undefined-union relationships; general structured relationships excluded.",
+      "upstreamSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47"
+    },
+    {
+      "upstream": "tsc/internal/checker/flow.go",
+      "destination": "src/TypeScript.Scanner/Checker/Flow.cs",
+      "status": "partial",
+      "scope": "Straight-line start/assignment flow paths used by scalar identifier references; branching flow excluded.",
+      "upstreamSha256": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c"
+    },
+    {
+      "upstream": "tsc/internal/checker/utilities.go",
+      "destination": "src/TypeScript.Scanner/Checker/Utilities.cs",
+      "status": "partial",
+      "scope": "Selected semantic predicates, literal handling and missing-library feature suggestions.",
+      "upstreamSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0"
+    },
+    {
+      "upstream": "tsc/internal/checker/grammarchecks.go",
+      "destination": "src/TypeScript.Scanner/Checker/GrammarChecks.cs",
+      "status": "partial",
+      "scope": "Selected scalar declaration/script grammar checks.",
+      "upstreamSha256": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9"
+    },
+    {
+      "upstream": "tsc/internal/ast/checkflags.go",
+      "destination": "src/TypeScript.Scanner/Ast/CheckFlags.cs",
+      "status": "ported",
+      "scope": "Complete pinned CheckFlags enum, compound masks and numeric uint32 values. NodeCheckFlags belongs to checker/types.go and is mapped separately.",
+      "upstreamSha256": "665e753fe1cc48bc06a2b438d6f07c6beea2b1098174983f1effbe784ac8d7ea",
+      "generator": "tools/generate-checker-support-enums.py; scratch reproduction checked."
+    },
+    {
+      "upstream": "tsc/internal/core/linkstore.go",
+      "destination": "src/TypeScript.Scanner/Core/Linkstore.cs",
+      "status": "ported",
+      "scope": "All LinkStore/PagedLinkStore methods and constants; managed stable cells/classes replace Go addresses/arenas for selected payloads, retaining 256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Generic payloads are class representations of upstream structs/pointers, not a full arbitrary Go-value runtime.",
+      "upstreamSha256": "e63a7687c7145979ad689546f3f4b07f22e2a85791222fc190814fb64016ae33"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/Admission.cs",
+      "status": "new",
+      "scope": "Authored input admission and public checker creation adapter; explicit unsupported feature exception, not ported semantic logic."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/VerificationAccess.cs",
+      "status": "new",
+      "scope": "Authored test/Native AOT harness internal visibility, with no public test-only API."
+    },
+    {
+      "upstream": "tsc/internal/checker/nodebuilder.go",
+      "destination": "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
+      "status": "partial",
+      "scope": "Selected TypeToTypeNode and SymbolToNode/context entry-exit branches for synthesized scalar types and unqualified diagnostic identifiers; general declaration serialization, context/tracker/expansion/verbosity options excluded.",
+      "upstreamSha256": "4e8a07599eb531900eabf825a0b6552bc812e0c541cdee5ab261405e39699a46"
+    },
+    {
+      "upstream": "tsc/internal/checker/nodebuilderimpl.go",
+      "destination": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+      "status": "partial",
+      "scope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
+      "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302"
+    },
+    {
+      "upstream": "tsc/internal/checker/printer.go",
+      "destination": "src/TypeScript.Scanner/Checker/Printer.cs",
+      "status": "partial",
+      "scope": "Default scalar TypeToString/typeToString byte helper and selected symbol naming wrappers for diagnostics; public strings decode once, internal diagnostic strings remain raw. Includes serialization-level guard and default byte cutoff; general signature/qualified naming/verbosity/print options excluded.",
+      "upstreamSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5"
+    },
+    {
+      "upstream": "tsc/internal/printer/printer.go",
+      "destination": "src/TypeScript.Scanner/Printer/Printer.cs",
+      "status": "partial",
+      "scope": "Diagnostic-only synthesized scalar keyword/literal/unqualified identifier dispatch and required emitter branches; no public emit API, source maps, comments or general statements/declarations.",
+      "upstreamSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c"
+    },
+    {
+      "upstream": "tsc/internal/printer/textwriter.go",
+      "destination": "src/TypeScript.Scanner/Printer/Textwriter.cs",
+      "status": "partial",
+      "scope": "Required default single-line writer construction/clear/string/write/keyword/string-literal/identifier branches; managed builder replaces byte builder. General position tracking/indent/newline/options excluded.",
+      "upstreamSha256": "a41ab6981ff7e604fd43f4f1b9cebc02af1aa4628f688629630b471156affa89"
+    },
+    {
+      "upstream": "tsc/internal/printer/utilities.go",
+      "destination": "src/TypeScript.Scanner/Printer/Utilities.cs",
+      "status": "partial",
+      "scope": "Synthesized numeric/string literal getLiteralText and NeverAsciiEscape string-worker/UTF16-escape branches required for diagnostic types. Retains invalid-byte/lone-surrogate/control/line separator/null-before-digit behavior; original-source reuse, JSX/backtick and general literal modes excluded.",
+      "upstreamSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Checker.Validation",
+      "status": "new",
+      "scope": "Authored reflection-free source-generated JSONL semantic graph/query/global-file diagnostic/assignability harness and internal identity/page/table utility observations; Native AOT target. Final bounded gate records 45 semantic cases, 35 admission controls, 20 independent Go utility observations and 10 authored API assertions.",
+      "evidence": "validation/results/checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.Tests",
+      "status": "new",
+      "scope": "Authored pinned-Go differential, independent unsupported boundary and utility/API checks for the selected semantic slice; final bounded gate records 82 passing xUnit tests.",
+      "evidence": "validation/results/checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/checker-corpus",
+      "status": "new",
+      "scope": "Independent pinned-Go semantic requests/results and foundation utility observations; selected query graphs, missing-library globals and unsupported boundary controls accepted only for the bounded slice. Diagnostic-chain and allocated-empty-table semantic graph coverage are absent; separate utility observations cover allocated-empty tables.",
+      "evidence": "validation/results/checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/checker-oracle",
+      "status": "new",
+      "scope": "Authored real pinned-Go compiler/checker host, independent semantic graph serializer and utility probes; no C# admission/function manifest dependency."
+    },
+    {
+      "upstream": "tsc/internal/checker/exports.go",
+      "destination": "src/TypeScript.Scanner/Checker/Exports.cs",
+      "status": "partial",
+      "scope": "Only public IsTypeAssignableTo forwarding to actual isTypeAssignableTo; authored ownership guard rejects foreign checker types. All other checker exports excluded.",
+      "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf"
     }
   ],
   "activePhase": {
-    "name": "binder",
-    "status": "accepted-bounded",
-    "acceptance": "validation/results/binder-verified.json",
-    "note": "118 Go/Native AOT bound-graph cases and 122 binder xUnit tests passed, including four semantic publication/idempotence/default-options checks; scanner/parser regression gates passed. No active implementation work."
+    "name": "checker-slice",
+    "status": "complete",
+    "acceptance": "accepted-bounded",
+    "note": "Final guarded Native AOT gate passed for the fixed noLib/noResolve single-file TS scalar slice only. Historical checkpoint evidence/scopes remain distinct; this is not general checker or compiler acceptance.",
+    "manifestState": "final",
+    "evidence": "validation/results/checker-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -525,10 +704,14 @@
     "evidence": "validation/results/parser-verified.json"
   },
   "acceptedBinderCheckpoint": {
-    "sourceSha256": "0386f000d85382e8331fa97dee83e50dd469bdca4b90bead795075a18436bf18",
-    "sourceHashAlgorithm": "SHA256 of sorted UTF8 relative path + NUL + raw bytes + NUL for .cs/.csproj under src,tests,validation/Scanner.Validation,validation/Parser.Validation,validation/Binder.Validation excluding bin/obj",
-    "verificationAssetsSha256": "96b0d68823559d3fdc9b88792c690537159fcd8631a4fe681d2e171546b40549",
-    "evidence": "validation/results/binder-verified.json",
-    "scope": "Bounded source-file binding only; checker, resolver siblings, cross-file/module resolution, incremental rebinding and emit stages excluded."
+    "commit": "e94cc6f",
+    "sourceTreeSha256": "0386f000d85382e8331fa97dee83e50dd469bdca4b90bead795075a18436bf18",
+    "evidence": "validation/results/binder-verified.json"
+  },
+  "acceptedCheckerCheckpoint": {
+    "sourceTreeSha256": "ac38adb32995090a01777c010452f0405aed99e768a370c0178febc196cb940e",
+    "verificationAssetsSha256": "c9f669c200dab74c04f908780cdff2ad95ff44ff655bcef034f24d8a52897824",
+    "evidence": "validation/results/checker-verified.json",
+    "scope": "Fixed noLib/noResolve single-file TS scripts: selected scalar declarations, annotations, literal/identifier initializers and nested blocks; selected type/symbol queries and scalar assignability. Unsupported syntax/environments reject explicitly. No library/project/module/structured-type/control-flow/emit acceptance."
   }
 }

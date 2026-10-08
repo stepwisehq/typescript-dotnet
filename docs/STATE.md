@@ -1,77 +1,80 @@
 # Current project state
 
-**Bounded source-file binder checkpoint accepted; no active implementation work.**
-Final combined verification passed on 2026-10-08. Stop here unless the user gives
-a new bounded mandate. Do not begin a type checker or repeat completed performance
-investigations on re-entry.
+**First bounded semantic checker milestone accepted; no active implementation work.**
+The final stable source/assets gate passed on 2026-10-08. Stop here unless the user
+provides a new bounded mandate. Do not begin general checking, libraries or projects
+from the resume instruction alone.
 
 ## Saved checkpoints
 
-- Scanner: commit `0a50e67`; historical [assessment](./ASSESSMENT.md).
-- Parser and basic performance: committed before binding as `de25b66`; historical
-  [parser state](./PARSER-STATE.md) and [performance report](./PARSER-PERFORMANCE.md).
-- Binder: accepted, saved **uncommitted** in the working tree; nothing pushed.
-  [Assessment](./BINDER-ASSESSMENT.md), [verification](./BINDER-VERIFICATION.md),
-  [durable results](../validation/results/binder-verified.json).
+- Scanner: `0a50e67`; [historical assessment](./ASSESSMENT.md).
+- Parser/performance: `de25b66`; [parser state](./PARSER-STATE.md).
+- Binder: committed as `e94cc6f` before this phase; [binder assessment](./BINDER-ASSESSMENT.md).
+- First checker slice: accepted, saved **uncommitted**; nothing pushed.
+  [Assessment](./CHECKER-ASSESSMENT.md), [verification](./CHECKER-VERIFICATION.md),
+  [durable evidence](../validation/results/checker-verified.json).
 
-Upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e` in maintained
-microsoft/TypeScript/tsc. Read [START-HERE](../START-HERE.md), the exact
-[binder mandate](./BINDER-PROMPT.md), and [source map](../source-map.json).
+Upstream stays `fed0bf24149fb1ed36039212648bafdafc1ea10e`. Read
+[START-HERE](../START-HERE.md), the exact [mandate](./CHECKER-PROMPT.md),
+[source map](../source-map.json), [function inventory](./checker-functions.json)
+and [departures](./checker-departures.md).
 
 ## Latest verified boundary
 
-Actual Native AOT binder: 118 exact canonical comparisons and four semantic
-self-tests, zero differences. Graphs cover 5,182 syntax/synthetic nodes, 858 symbols,
-430 tables, 700 flows, 150 linked flow records and 41 binder diagnostics. All
-122 binder, 475 parser and 1,287 scanner xUnit tests passed. Native parser regressions
-passed 471 cases; scanner regressions passed 1,276 cases plus 178 helper outputs.
+Actual Native AOT checker: 45 semantic cases, 274 queries and 121 assignability
+comparisons, zero differences. Separate native checks: 35 admission controls
+(33 reject/two admit), 20 actual Go utility observations and ten authored API checks.
+Checker/binder/parser/scanner xUnit: 82/122/475/1,287, all passed. Native regressions:
+binder 118, parser 471, scanner 1,276 cases plus 178 scanner helpers.
 
 Executable source SHA256:
-`0386f000d85382e8331fa97dee83e50dd469bdca4b90bead795075a18436bf18`.
-Native binder SHA256:
-`11350baa2fcf008fd24faa93c288d4e886d9c02fc2d1cc5b77f07b386db64d31`.
+`ac38adb32995090a01777c010452f0405aed99e768a370c0178febc196cb940e`.
 Verification assets SHA256:
-`96b0d68823559d3fdc9b88792c690537159fcd8631a4fe681d2e171546b40549`.
-The durable result specifies inputs and all individual corpus/native hashes.
-Historical scanner/parser result records remain unchanged.
+`c9f669c200dab74c04f908780cdff2ad95ff44ff655bcef034f24d8a52897824`.
+Native checker SHA256:
+`d886b2e58750043164efa856c984e1e79451967626b4bf669a1a2ee348ecca62`.
 
-Acceptance compares declarations/symbol relationships, scopes, ordered diagnostics
-and complete represented flow graphs, with pre/post syntax snapshots. Counts alone
-are not the contract. Reproduction: `./tools/verify-binder.sh`; see verification
-for prerequisites and evidence recording. No repeated gate is needed absent source
-or verification changes, a new environment, or a concrete unresolved concern.
+The final gate took 47.701 seconds and exited zero. The first run passed runtime
+checks but was rejected because an inventory-tool edit changed guarded assets;
+that 51.463-second attempt is recorded, not treated as acceptance. All writers
+stopped before the full successful repeat. Prior acceptance records are unchanged.
 
-## Limits and next decision
+Reproduce with `./tools/verify-checker.sh`; see verification for prerequisites and
+recording commands. No repeated gate is needed absent changes, a new environment
+or a concrete unresolved concern. Freeze all source/tool/corpus writers before
+future evidence runs, including inventory generators.
 
-There is no unresolved observed discrepancy. This is bounded agreement, not full
-binder parity. Shared table identities, shared FlowList identities and allocated
-empty tables remain unexercised. Three unobserved binder diagnostic codes occur
-in an unused helper. Readiness closed 14 of the previous 29 parser diagnostic gaps;
-15 remain unobserved, as does scanner diagnostic 1513. Exact lists and coverage
-limits are in the verification report.
+## Scope and limits
 
-NameResolver/ReferenceResolver, checker/transient state, cross-file/global semantic
-merges, module resolution, emit, incremental rebinding and language services remain
-excluded. Full transform facts and full position mapping are still partial.
-No binder performance measurement or optimization was performed.
+Supported: fixed one-file TS script, scalar variable declarations/nested blocks,
+literal/identifier initializers, primitive/literal annotations, real name resolution,
+literal freshness/widening, selected scalar relationships, forward/self-reference
+flow and semantic diagnostics. The exact admission and runtime boundaries are in
+the verification/departures documents. Unsupported input throws explicitly.
 
-An initial single-file checker slice is justified as the next study, subject to a
-new mandate and explicit dependency inventory. Do not infer authorization from
-this recommendation or from the resume instruction.
+This is **noLib/noResolve**, with no supplied standard declarations. Every accepted
+case preserves eight actual missing-global 2318 environment diagnostics separately
+from file errors. There is no claim of a complete standard-library program or of
+full checker parity. No object/function/call, generic/alias, branching flow, module,
+project, emit, incremental or service semantics are accepted. Malformed syntax is
+rejected by this semantic slice; parser recovery remains independently covered.
 
-## Coordination and recovery
+Shared globals/globalThis table identity is now compared; allocated empty tables
+and page-store semantics have direct Go/native probes. Shared FlowList identities,
+full position mapping, unobserved historical diagnostic codes and unrepresented
+mutable type caches remain explicit limits. There is no unresolved observed
+checker discrepancy. No performance measurement or optimization was performed.
 
-The main session owned scope, contracts and acceptance; three explicitly selected
-GPT-6.1 Sol agents handled implementation and independent review. Own coordinator
-model selection could not be independently verified through available metadata.
-Agents have no remaining assigned implementation work. Their persisted records:
+## Recovery and next decision
 
-- [Binder algorithms](./progress/binder.md).
-- [AST/support](./progress/binder-support.md).
-- [Verification](./progress/binder-verification.md).
-- [Binder review](./progress/review-binder.md).
-- [Support/oracle review](./progress/review-binder-support.md).
+Three reused, explicitly selected GPT-6.1 Sol agents implemented and cross-reviewed
+this phase. The main session coordinated decisions/acceptance; its own model could
+not be independently verified through available metadata. All assigned work is
+complete. Read [algorithm](./progress/checker.md), [support](./progress/checker-support.md),
+[verification](./progress/checker-verification.md), [algorithm review](./progress/review-checker.md)
+and [support/harness review](./progress/review-checker-support.md) before changes.
 
-Uncommitted source is saved work, not disposable scratch. Inspect changes before
-regeneration; generated and handwritten ownership is recorded in the source map
-and subsystem notes. Do not reconstruct completed work from old conversation.
+The assessment recommends investigating simple object/interface relationships and
+non-generic signatures/calls, with an explicit standard-library/dependency boundary.
+That recommendation is not authorization to start. Uncommitted source is saved work;
+do not discard it or regenerate hand-ported algorithms from old temporary scripts.

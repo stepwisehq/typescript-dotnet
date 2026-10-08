@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/ast/diagnostic.go; parse diagnostic slice.
+// Port of tsc/internal/ast/diagnostic.go; parse/bind diagnostics plus selected checker collection/comparison slice.
 #nullable disable
 namespace TypeScript.Scanner;
 public sealed class Diagnostic
@@ -9,6 +9,10 @@ public sealed class Diagnostic
     internal SourceFile file;
     internal TextRange loc;
     internal Message message;
+    internal int code;
+    internal DiagnosticCategory category;
+    internal string source = "", messageText = "", messageKey = "";
+    internal bool reportsUnnecessary, reportsDeprecated, skippedOnNoEmit;
     internal List<string> messageArgs;
     internal List<Diagnostic> relatedInformation, messageChain;
     public SourceFile File() => file;
@@ -16,16 +20,26 @@ public sealed class Diagnostic
     public int End() => loc.End();
     public int Len() => loc.Len();
     public TextRange Loc() => loc;
-    public int Code() => message.Code();
-    public DiagnosticCategory Category() => message.Category();
-    public string MessageKey() => message.Key();
-    public string MessageText() => "";
+    public int Code() => code;
+    public DiagnosticCategory Category() => category;
+    public string MessageKey() => messageKey;
+    public string MessageText() => messageText;
     public List<string> MessageArgs() => messageArgs;
     public List<Diagnostic> RelatedInformation() => relatedInformation;
     public List<Diagnostic> MessageChain() => messageChain;
-    public bool ReportsUnnecessary() => message.ReportsUnnecessary();
-    public bool ReportsDeprecated() => message.ReportsDeprecated();
-    public string Source() => "";
+    public bool ReportsUnnecessary() => reportsUnnecessary;
+    public bool ReportsDeprecated() => reportsDeprecated;
+    public string Source() => source;
+    public bool SkippedOnNoEmit() => skippedOnNoEmit;
+    public void SetCategory(DiagnosticCategory value) => category = value;
+    public void SetSkippedOnNoEmit() => skippedOnNoEmit = true;
+    public Diagnostic SetExternalData(string source, string messageText)
+    {
+        this.source = source;
+        this.messageText = messageText;
+        return this;
+    }
+
     public void SetFile(SourceFile value) => file = value;
     public void SetLocation(TextRange value) => loc = value;
     public Diagnostic AddRelatedInfo(Diagnostic value)
@@ -54,7 +68,7 @@ public sealed class Diagnostic
         return this;
     }
 
-    public string String() => message.Format(messageArgs?.Select(s => (object)ScannerString.ToJsString(s)).ToArray() ?? []);
+    public string String() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : message.FormatByteArguments(messageArgs);
     public override string ToString() => String();
     public Diagnostic Clone() => (Diagnostic)MemberwiseClone();
 }
@@ -66,6 +80,11 @@ public static partial class Ast
         file = file,
         loc = loc,
         message = message,
+        code = message.Code(),
+        category = message.Category(),
+        messageKey = message.Key(),
+        reportsUnnecessary = message.ReportsUnnecessary(),
+        reportsDeprecated = message.ReportsDeprecated(),
         messageArgs = args is { Length: > 0 } ? args.Select(StringifyArgument).ToList() : null
     };
     private static string StringifyArgument(object value) => value switch
@@ -75,4 +94,264 @@ public static partial class Ast
         null => "<nil>",
         _ => Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "",
     };
+}
+
+// Selected exact comparator/collection closure from ast/diagnostic.go:258-533.
+public sealed class DiagnosticsCollection
+{
+    private readonly object mu = new();
+    private int count;
+    private readonly Dictionary<string, List<Diagnostic>> fileDiagnostics = new(StringComparer.Ordinal);
+    private readonly HashSet<string> fileDiagnosticsSorted = new(StringComparer.Ordinal);
+    private List<Diagnostic> nonFileDiagnostics;
+    private bool nonFileDiagnosticsSorted;
+    private readonly Dictionary<diagnosticLocationKey, Diagnostic> diagnosticIndex = new();
+    private readonly Dictionary<diagnosticLocationKey, List<Diagnostic>> diagnosticCollisions = new();
+    private readonly record struct diagnosticLocationKey(string path, TextRange loc, int code);
+    private static diagnosticLocationKey getDiagnosticLocationKey(Diagnostic diagnostic) => new(diagnostic.File()?.PathKey() ?? "", diagnostic.Loc(), diagnostic.Code());
+    public Diagnostic Add(Diagnostic diagnostic)
+    {
+        lock (mu)
+        {
+            var key = getDiagnosticLocationKey(diagnostic);
+            if (diagnosticIndex.TryGetValue(key, out var existing))
+            {
+                if (Ast.EqualDiagnostics(existing, diagnostic))
+                    return existing;
+                if (diagnosticCollisions.TryGetValue(key, out var collisions))
+                    foreach (var collision in collisions)
+                        if (Ast.EqualDiagnostics(collision, diagnostic))
+                            return collision;
+            }
+
+            if (existing is null)
+                diagnosticIndex[key] = diagnostic;
+            else
+            {
+                if (!diagnosticCollisions.TryGetValue(key, out var collisions))
+                    diagnosticCollisions[key] = collisions = [];
+                collisions.Add(diagnostic);
+            }
+
+            count++;
+            if (diagnostic.File()is not null)
+            {
+                var path = diagnostic.File().PathKey() ?? "";
+                if (!fileDiagnostics.TryGetValue(path, out var diagnostics))
+                    fileDiagnostics[path] = diagnostics = [];
+                diagnostics.Add(diagnostic);
+                fileDiagnosticsSorted.Remove(path);
+            }
+            else
+            {
+                (nonFileDiagnostics ??= []).Add(diagnostic);
+                nonFileDiagnosticsSorted = false;
+            }
+
+            return diagnostic;
+        }
+    }
+
+    public Diagnostic Lookup(Diagnostic diagnostic)
+    {
+        lock (mu)
+        {
+            var diagnostics = diagnostic.File()is not null ? getDiagnosticsForFileLocked(diagnostic.File()) : getGlobalDiagnosticsLocked();
+            var(index, found) = GoSlices.BinarySearchFunc(diagnostics, diagnostic, Ast.CompareDiagnostics);
+            return found ? diagnostics[index] : null;
+        }
+    }
+
+    public List<Diagnostic> GetGlobalDiagnostics()
+    {
+        lock (mu)
+            return getGlobalDiagnosticsLocked();
+    }
+
+    private List<Diagnostic> getGlobalDiagnosticsLocked()
+    {
+        if (!nonFileDiagnosticsSorted)
+        {
+            SortStable(nonFileDiagnostics);
+            nonFileDiagnosticsSorted = true;
+        }
+
+        return GoSlices.Clone(nonFileDiagnostics);
+    }
+
+    public List<Diagnostic> GetDiagnosticsForFile(SourceFile file)
+    {
+        lock (mu)
+            return getDiagnosticsForFileLocked(file);
+    }
+
+    private List<Diagnostic> getDiagnosticsForFileLocked(SourceFile file)
+    {
+        var path = file.PathKey() ?? "";
+        fileDiagnostics.TryGetValue(path, out var diagnostics);
+        if (!fileDiagnosticsSorted.Contains(path))
+        {
+            SortStable(diagnostics);
+            fileDiagnosticsSorted.Add(path);
+        }
+
+        return GoSlices.Clone(diagnostics);
+    }
+
+    public List<Diagnostic> GetDiagnostics()
+    {
+        lock (mu)
+        {
+            var diagnostics = new List<Diagnostic>(count);
+            if (nonFileDiagnostics is not null)
+                diagnostics.AddRange(nonFileDiagnostics);
+            foreach (var diags in fileDiagnostics.Values)
+                diagnostics.AddRange(diags);
+            diagnostics.Sort(Ast.CompareDiagnostics);
+            return diagnostics;
+        }
+    }
+
+    private static void SortStable(List<Diagnostic> diagnostics)
+    {
+        if (diagnostics is null)
+            return;
+        var sorted = diagnostics.OrderBy(d => d, Comparer<Diagnostic>.Create(Ast.CompareDiagnostics)).ToList();
+        for (int i = 0; i < sorted.Count; i++)
+            diagnostics[i] = sorted[i];
+    }
+}
+
+public static partial class Ast
+{
+    private static string getDiagnosticPath(Diagnostic d) => d.File()is not null ? GoString.ToUtf8(d.File().FileName() ?? "") : "";
+    public static bool EqualDiagnostics(Diagnostic d1, Diagnostic d2) => ReferenceEquals(d1, d2) || EqualDiagnosticsNoRelatedInfo(d1, d2) && equalDiagnosticSlices(d1.RelatedInformation(), d2.RelatedInformation(), EqualDiagnostics);
+    public static bool EqualDiagnosticsNoRelatedInfo(Diagnostic d1, Diagnostic d2)
+    {
+        if (ReferenceEquals(d1, d2))
+            return true;
+        return getDiagnosticPath(d1) == getDiagnosticPath(d2) && d1.Loc() == d2.Loc() && d1.Code() == d2.Code() && d1.Category() == d2.Category() && d1.Source() == d2.Source() && getDiagnosticMessageIdentity(d1) == getDiagnosticMessageIdentity(d2) && compareDiagnosticArgs(d1.MessageArgs(), d2.MessageArgs()) == 0 && equalDiagnosticSlices(d1.MessageChain(), d2.MessageChain(), equalMessageChain);
+    }
+
+    private static bool equalDiagnosticSlices(List<Diagnostic> x, List<Diagnostic> y, Func<Diagnostic, Diagnostic, bool> equal)
+    {
+        if (GoRuntime.Len(x) != GoRuntime.Len(y))
+            return false;
+        for (int i = 0; i < GoRuntime.Len(x); i++)
+            if (!equal(x[i], y[i]))
+                return false;
+        return true;
+    }
+
+    private static string getDiagnosticMessageIdentity(Diagnostic diagnostic)
+    {
+        if (diagnostic.MessageText() != "")
+            return diagnostic.MessageText();
+        if (diagnostic.message is not null && diagnostic.Code() == -1)
+            return diagnostic.message.String();
+        return diagnostic.MessageKey();
+    }
+
+    private static bool equalMessageChain(Diagnostic c1, Diagnostic c2) => ReferenceEquals(c1, c2) || c1.Code() == c2.Code() && compareDiagnosticArgs(c1.MessageArgs(), c2.MessageArgs()) == 0 && equalDiagnosticSlices(c1.MessageChain(), c2.MessageChain(), equalMessageChain);
+    private static int compareDiagnosticArgs(List<string> x, List<string> y)
+    {
+        for (int i = 0; i < Math.Min(GoRuntime.Len(x), GoRuntime.Len(y)); i++)
+        {
+            int c = StringComparer.Ordinal.Compare(x[i], y[i]);
+            if (c != 0)
+                return c;
+        }
+
+        return GoRuntime.Len(x) - GoRuntime.Len(y);
+    }
+
+    private static int compareMessageChainSize(List<Diagnostic> c1, List<Diagnostic> c2)
+    {
+        int c = GoRuntime.Len(c2) - GoRuntime.Len(c1);
+        if (c != 0)
+            return c;
+        for (int i = 0; i < GoRuntime.Len(c1); i++)
+        {
+            c = compareMessageChainSize(c1[i].MessageChain(), c2[i].MessageChain());
+            if (c != 0)
+                return c;
+        }
+
+        return 0;
+    }
+
+    private static int compareMessageChainContent(List<Diagnostic> c1, List<Diagnostic> c2)
+    {
+        for (int i = 0; i < GoRuntime.Len(c1); i++)
+        {
+            int c = compareDiagnosticArgs(c1[i].MessageArgs(), c2[i].MessageArgs());
+            if (c != 0)
+                return c;
+            if (c1[i].MessageChain()is not null)
+            {
+                c = compareMessageChainContent(c1[i].MessageChain(), c2[i].MessageChain());
+                if (c != 0)
+                    return c;
+            }
+        }
+
+        return 0;
+    }
+
+    private static int compareRelatedInfo(List<Diagnostic> r1, List<Diagnostic> r2)
+    {
+        int c = GoRuntime.Len(r2) - GoRuntime.Len(r1);
+        if (c != 0)
+            return c;
+        for (int i = 0; i < GoRuntime.Len(r1); i++)
+        {
+            c = CompareDiagnostics(r1[i], r2[i]);
+            if (c != 0)
+                return c;
+        }
+
+        return 0;
+    }
+
+    public static int CompareDiagnostics(Diagnostic d1, Diagnostic d2)
+    {
+        if (ReferenceEquals(d1, d2))
+            return 0;
+        int c = StringComparer.Ordinal.Compare(getDiagnosticPath(d1), getDiagnosticPath(d2));
+        if (c != 0)
+            return c;
+        c = d1.Pos() - d2.Pos();
+        if (c != 0)
+            return c;
+        c = d1.End() - d2.End();
+        if (c != 0)
+            return c;
+        c = d1.Code() - d2.Code();
+        if (c != 0)
+            return c;
+        c = (int)d1.Category() - (int)d2.Category();
+        if (c != 0)
+            return c;
+        c = StringComparer.Ordinal.Compare(d1.Source(), d2.Source());
+        if (c != 0)
+            return c;
+        c = StringComparer.Ordinal.Compare(getDiagnosticMessageIdentity(d1), getDiagnosticMessageIdentity(d2));
+        if (c != 0)
+            return c;
+        c = compareDiagnosticArgs(d1.MessageArgs(), d2.MessageArgs());
+        if (c != 0)
+            return c;
+        c = compareMessageChainSize(d1.MessageChain(), d2.MessageChain());
+        if (c != 0)
+            return c;
+        c = compareMessageChainContent(d1.MessageChain(), d2.MessageChain());
+        if (c != 0)
+            return c;
+        return compareRelatedInfo(d1.RelatedInformation(), d2.RelatedInformation());
+    }
+
+    // Upstream diagnostic.go:237.
+    public static Diagnostic NewCompilerDiagnostic(Message message, params object[] args) => NewDiagnostic(null, new(-1, -1), message, args);
+    // Upstream diagnostic.go:230.
+    public static Diagnostic NewDiagnosticChain(Diagnostic chain, Message message, params object[] args) => chain is not null ? NewDiagnostic(chain.file, chain.loc, message, args).AddMessageChain(chain).SetRelatedInfo(chain.relatedInformation) : NewDiagnostic(null, new(0, 0), message, args);
 }

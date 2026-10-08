@@ -1,0 +1,282 @@
+[
+  {
+    "name": "call",
+    "text": "let x=f();",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "assignment",
+    "text": "let x=(y=1);",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "object",
+    "text": "let x={};",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "array",
+    "text": "let x=[];",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "template",
+    "text": "let x=`abc`;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "negative-number",
+    "text": "let x=-1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "bigint-literal",
+    "text": "let x=1n;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "function",
+    "text": "function f(){}",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "alias",
+    "text": "type T=number;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "conditional",
+    "text": "if(true){let x=1;}",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "destructuring",
+    "text": "let {x}={x:1};",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "bindingPattern"
+  },
+  {
+    "name": "using",
+    "text": "using x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "using"
+  },
+  {
+    "name": "definite-assignment",
+    "text": "let x!:number;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "definiteAssignmentAssertion"
+  },
+  {
+    "name": "union-type",
+    "text": "let x:number|string=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "reference-type",
+    "text": "let x:Missing;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "object-type",
+    "text": "let x:{};",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "ambient",
+    "text": "declare const x:number;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "modifiers"
+  },
+  {
+    "name": "export",
+    "text": "export const x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "module"
+  },
+  {
+    "name": "import",
+    "text": "import x from \"x\";",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "module"
+  },
+  {
+    "name": "malformed",
+    "text": "let = ;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "parseErrors"
+  },
+  {
+    "name": "jsdoc-tag",
+    "text": "/** @type {number} */ let x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "jsDocTag"
+  },
+  {
+    "name": "ts-nocheck",
+    "text": "// @ts-nocheck\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "checkingDirective"
+  },
+  {
+    "name": "ts-check",
+    "text": "// @ts-check\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "checkingDirective"
+  },
+  {
+    "name": "ts-ignore",
+    "text": "// @ts-ignore\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "checkingDirective"
+  },
+  {
+    "name": "ts-expect-error",
+    "text": "// @ts-expect-error\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "checkingDirective"
+  },
+  {
+    "name": "reference-file",
+    "text": "/// <reference path=\"other.ts\" />\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "externalReference"
+  },
+  {
+    "name": "reference-types",
+    "text": "/// <reference types=\"node\" />\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "externalReference"
+  },
+  {
+    "name": "reference-lib",
+    "text": "/// <reference lib=\"es5\" />\nlet x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "externalReference"
+  },
+  {
+    "name": "mode-JS",
+    "text": "let x=1;",
+    "scriptKind": 1,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "scriptKind"
+  },
+  {
+    "name": "mode-JSX",
+    "text": "let x=1;",
+    "scriptKind": 2,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "scriptKind"
+  },
+  {
+    "name": "mode-TSX",
+    "text": "let x=1;",
+    "scriptKind": 4,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "scriptKind"
+  },
+  {
+    "name": "mode-JSON",
+    "text": "{}",
+    "scriptKind": 6,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": "scriptKind"
+  },
+  {
+    "name": "declaration-file",
+    "text": "declare const x:number;",
+    "scriptKind": 3,
+    "fileName": "/main.d.ts",
+    "admissionOnly": true,
+    "expectedFeature": "declarationFile"
+  },
+  {
+    "name": "local-globalThis",
+    "text": "{const globalThis=1;const x=globalThis;}",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "plain-documentation",
+    "text": "/** ordinary documentation */ let x=1;",
+    "scriptKind": 3,
+    "fileName": "/main.ts",
+    "admissionOnly": true,
+    "expectedFeature": null
+  }
+]

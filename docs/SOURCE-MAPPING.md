@@ -24,8 +24,9 @@ Each entry records:
 - `implementationState`: `draft` while an active phase is awaiting its gates.
 - `upstreamSha256`: checksum of the exact original source file where recorded.
 
-The top-level `acceptedScannerCheckpoint` and `acceptedParserCheckpoint` preserve
-historical acceptance while `activePhase` tracks the binder checkpoint independently.
+The top-level `acceptedScannerCheckpoint`, `acceptedParserCheckpoint` and
+`acceptedBinderCheckpoint` preserve historical acceptance while `activePhase`
+tracks the bounded checker checkpoint independently.
 A prior phase result does not verify later changes to shared source. Per-subsystem recovery checkpoints live in
 [progress/](./progress/).
 
@@ -40,6 +41,12 @@ upstream function locations. AST schema-derived factories/traversal remain with
 The private JSX fact projection is deliberately partial: it retains the upstream
 syntax conditions needed for module detection, with all other fact bits excluded.
 It must not be presented as the full transform-facts API.
+
+The checker retains upstream file boundaries, with partial functions and selected
+branches made explicit in the [function inventory](./checker-functions.json) and
+[departure notes](./checker-departures.md). Admission and executable observation
+code are authored support. A guarded partial checker file is not a complete port
+merely because the selected semantic contract passes.
 
 New byte-string compatibility helpers, oracle protocol, test corpus, and command
 line validation code are identified separately from translated upstream code.

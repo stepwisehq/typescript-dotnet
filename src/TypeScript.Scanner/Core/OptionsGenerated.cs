@@ -50,3 +50,17 @@ internal enum NewLineKind
     CRLF = 1,
     LF = 2
 }
+
+// Selected CompilerOptions fields from options_generated.go; semantic slice only.
+// No broad compiler option serialization/configuration/merge implementation.
+public sealed partial class CompilerOptions
+{
+    public ScriptTarget Target;
+    public ModuleKind Module;
+    public Tristate NoLib, Strict, StrictNullChecks, NoImplicitAny, NoImplicitThis;
+    public Tristate StrictFunctionTypes, StrictBindCallApply, StrictPropertyInitialization;
+    public Tristate StrictBuiltinIteratorReturn, UseUnknownInCatchVariables;
+    public Tristate ExactOptionalPropertyTypes, ExperimentalDecorators;
+    public Tristate VerbatimModuleSyntax, IsolatedModules, UseDefineForClassFields;
+    public List<string>? Types;
+}

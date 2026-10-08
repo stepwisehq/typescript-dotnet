@@ -1,0 +1,7 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selectedCases": 36,
+  "initialTinyCases": 9,
+  "selection": "Primitive/name/flow/formatting/cache relationships and independent unsupported controls; no standard library; all actual environment diagnostics retained",
+  "selectedRequestsSha256": "b937efcae0482e8e0bbb177c4ee1d5444385e720156ff15ee6300546424732c3"
+}

@@ -74,7 +74,23 @@ Later user directions, in chronological order:
     Type checking, cross-file semantic resolution, module resolution and emit
     remain excluded. Native AOT and scanner/parser regressions are mandatory.
     The [bounded binder checkpoint](./docs/BINDER-ASSESSMENT.md) is now accepted;
-    implementation work is saved uncommitted. No next compiler phase is authorized.
+    implementation work was subsequently committed as `e94cc6f`.
+
+12. The user authorized committing binding and proceeding toward the **first bounded
+    end-to-end type-checking milestone**. Read the exact
+    [checker mandate](./docs/CHECKER-PROMPT.md). Use real upstream name resolution
+    and type relationships on valid and invalid inputs; define standard-library
+    treatment and distinguish unsupported input from a successful check. Preserve
+    actual Native AOT and all prior regression gates. Broad module resolution,
+    project infrastructure, emit, incremental compilation and language services
+    remain excluded unless concrete scope pressure is reported and reconsidered.
+    The [first semantic checkpoint](./docs/CHECKER-ASSESSMENT.md) is now accepted;
+    new checker work is saved uncommitted. No subsequent phase is authorized.
+
+13. During checker work, the user again asked whether Go was being ported as directly
+    as possible. Preserve upstream function/file boundaries, control flow and models.
+    Selected partial branches and scoped initialization must be explicit; authored
+    admission/harness support must stay distinct from actual semantic algorithms.
 
 ## Recovery sequence
 
@@ -91,7 +107,7 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The current scope is source-file binding and required support. A checkpoint can
+The current scope is the first bounded semantic checking slice and required support. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

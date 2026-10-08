@@ -1258,6 +1258,544 @@ public static partial class Ast
     }
 } // END MANUAL BINDER ATOMIC/TABLE HELPERS
 
+// BEGIN MANUAL CHECKER RESOLVER AST HELPERS (ast/utilities.go)
+public static partial class Ast
+{
+    // Upstream utilities.go:498; excludes signature declarations.
+    public static bool IsFunctionLikeDeclaration(Node node) => node is not null && isFunctionLikeDeclarationKind(node.Kind);
+    // Upstream utilities.go:1334.
+    public static bool IsModuleOrEnumDeclaration(Node node) => node.Kind == Kind.ModuleDeclaration || node.Kind == Kind.EnumDeclaration;
+    // Upstream utilities.go:2545.
+    public static bool IsConstAssertion(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.AsExpression:
+            case Kind.TypeAssertionExpression:
+                return IsConstTypeReference(node.Type());
+        }
+
+        return false;
+    }
+
+    // Upstream utilities.go:2553.
+    public static bool IsConstTypeReference(Node node) => IsTypeReferenceNode(node) && GoRuntime.Len(node.TypeArguments()) == 0 && IsIdentifier(node.AsTypeReferenceNode().TypeName) && node.AsTypeReferenceNode().TypeName.Text() == "const";
+    // Upstream utilities.go:2557.
+    public static bool IsGlobalSourceFile(Node node) => node.Kind == Kind.SourceFile && !IsExternalOrCommonJSModule(node.AsSourceFile());
+    // Upstream utilities.go:2569.
+    public static Node GetDeclarationOfKind(Symbol symbol, Kind kind)
+    {
+        foreach (var declaration in GoRuntime.RangeValues(symbol.Declarations))
+            if (declaration.Kind == kind)
+                return declaration;
+        return null;
+    }
+
+    // Upstream utilities.go:2578.
+    public static Node FindConstructorDeclaration(Node node)
+    {
+        foreach (var member in GoRuntime.RangeValues(node.Members()))
+            if (IsConstructorDeclaration(member) && NodeIsPresent(member.Body()))
+                return member;
+        return null;
+    }
+}
+
+// END MANUAL CHECKER RESOLVER AST HELPERS
+// BEGIN MANUAL CHECKER SYNTAX HELPERS
+public static partial class Ast
+{
+    // Upstream utilities.go:319.
+    public static bool IsLiteralExpression(Node node) => IsLiteralKind(node.Kind);
+    // Upstream utilities.go:413.
+    private static bool isUnaryExpressionKind(Kind kind)
+    {
+        switch (kind)
+        {
+            case Kind.PrefixUnaryExpression:
+            case Kind.PostfixUnaryExpression:
+            case Kind.DeleteExpression:
+            case Kind.TypeOfExpression:
+            case Kind.VoidExpression:
+            case Kind.AwaitExpression:
+            case Kind.TypeAssertionExpression:
+                return true;
+        }
+
+        return isLeftHandSideExpressionKind(kind);
+    }
+
+    // Upstream utilities.go:434.
+    private static bool isExpressionKind(Kind kind)
+    {
+        switch (kind)
+        {
+            case Kind.ConditionalExpression:
+            case Kind.YieldExpression:
+            case Kind.ArrowFunction:
+            case Kind.BinaryExpression:
+            case Kind.SpreadElement:
+            case Kind.AsExpression:
+            case Kind.OmittedExpression:
+            case Kind.PartiallyEmittedExpression:
+            case Kind.SatisfiesExpression:
+                return true;
+        }
+
+        return isUnaryExpressionKind(kind);
+    }
+
+    // Upstream utilities.go:451.
+    public static bool IsExpression(Node node) => isExpressionKind(SkipPartiallyEmittedExpressions(node).Kind);
+    // Upstream utilities.go:527.
+    public static bool IsFunctionOrSourceFile(Node node) => IsFunctionLike(node) || IsSourceFile(node);
+    // Upstream utilities.go:1310.
+    public static bool IsDeclarationName(Node name) => !IsSourceFile(name) && !IsBindingPattern(name) && IsDeclaration(name.Parent) && name.Parent.Name() == name;
+    // Upstream utilities.go:2251.
+    public static Node GetEnclosingBlockScopeContainer(Node node) => FindAncestor(node.Parent, current => IsBlockScope(current, current.Parent));
+    // Upstream utilities.go:2257.
+    public static bool IsBlockScope(Node node, Node parentNode)
+    {
+        switch (node.Kind)
+        {
+            case Kind.SourceFile:
+            case Kind.CaseBlock:
+            case Kind.CatchClause:
+            case Kind.ModuleDeclaration:
+            case Kind.ForStatement:
+            case Kind.ForInStatement:
+            case Kind.ForOfStatement:
+            case Kind.Constructor:
+            case Kind.MethodDeclaration:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+            case Kind.PropertyDeclaration:
+            case Kind.ClassStaticBlockDeclaration:
+                return true;
+            case Kind.Block:
+                return !IsFunctionLikeOrClassStaticBlockDeclaration(parentNode);
+        }
+
+        return false;
+    }
+
+    // Upstream utilities.go:3658.
+    public static bool IsTypeDeclaration(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.TypeParameter:
+            case Kind.ClassDeclaration:
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.EnumDeclaration:
+                return true;
+            case Kind.ImportClause:
+                return node.IsTypeOnly() && node.AsImportClause().Name() != null;
+            case Kind.ImportSpecifier:
+            case Kind.ExportSpecifier:
+                return node.Parent.Parent.IsTypeOnly();
+            default:
+                return false;
+        }
+    }
+}
+
+// Upstream utilities.go:523/941.
+public static partial class Ast
+{
+    public static bool IsFunctionLikeOrClassStaticBlockDeclaration(Node node) => node != null && (IsFunctionLike(node) || IsClassStaticBlockDeclaration(node));
+    public static Node FindAncestorKind(Node node, Kind kind)
+    {
+        while (node != null)
+        {
+            if (node.Kind == kind)
+                return node;
+            node = node.Parent;
+        }
+
+        return null;
+    }
+}
+
+// Upstream utilities.go:1147.
+public static partial class Ast
+{
+    public static bool IsFunctionOrModuleBlock(Node node) => IsSourceFile(node) || IsModuleBlock(node) || IsBlock(node) && IsFunctionLike(node.Parent);
+}
+
+// Upstream utilities.go:76.
+public static partial class Ast
+{
+    // Upstream utilities.go:85.
+    public static bool PositionIsSynthesized(int pos) => pos < 0;
+    public static bool NodeIsSynthesized(Node node) => PositionIsSynthesized(node.Loc.Pos()) || PositionIsSynthesized(node.Loc.End());
+}
+
+// END MANUAL CHECKER SYNTAX HELPERS
+// BEGIN GENERATED CHECKER QUERY AST CLOSURE
+public static partial class Ast
+{
+    // Like 'isDeclarationName', but returns true for LHS of `import { x as y }` or `export { x as y }`.
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1315:1.
+    public static bool IsDeclarationNameOrImportPropertyName(Node name)
+    {
+        switch (name.Parent.Kind)
+        {
+            case Kind.ImportSpecifier:
+            case Kind.ExportSpecifier:
+            {
+                return (IsIdentifier(name) || (name.Kind == Kind.StringLiteral));
+            }
+
+            default:
+            {
+                return IsDeclarationName(name);
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1342:1.
+    public static bool IsJsxTagName(Node node)
+    {
+        var parent = node.Parent;
+        switch (parent.Kind)
+        {
+            case Kind.JsxOpeningElement:
+            case Kind.JsxClosingElement:
+            case Kind.JsxSelfClosingElement:
+            {
+                return (parent.TagName() == node);
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1997:1.
+    public static bool IsExpressionNode(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.SuperKeyword:
+            case Kind.NullKeyword:
+            case Kind.TrueKeyword:
+            case Kind.FalseKeyword:
+            case Kind.RegularExpressionLiteral:
+            case Kind.ArrayLiteralExpression:
+            case Kind.ObjectLiteralExpression:
+            case Kind.PropertyAccessExpression:
+            case Kind.ElementAccessExpression:
+            case Kind.CallExpression:
+            case Kind.NewExpression:
+            case Kind.TaggedTemplateExpression:
+            case Kind.AsExpression:
+            case Kind.TypeAssertionExpression:
+            case Kind.SatisfiesExpression:
+            case Kind.NonNullExpression:
+            case Kind.ParenthesizedExpression:
+            case Kind.FunctionExpression:
+            case Kind.ClassExpression:
+            case Kind.ArrowFunction:
+            case Kind.VoidExpression:
+            case Kind.DeleteExpression:
+            case Kind.TypeOfExpression:
+            case Kind.PrefixUnaryExpression:
+            case Kind.PostfixUnaryExpression:
+            case Kind.BinaryExpression:
+            case Kind.ConditionalExpression:
+            case Kind.SpreadElement:
+            case Kind.TemplateExpression:
+            case Kind.OmittedExpression:
+            case Kind.JsxElement:
+            case Kind.JsxSelfClosingElement:
+            case Kind.JsxFragment:
+            case Kind.YieldExpression:
+            case Kind.AwaitExpression:
+            {
+                return true;
+            }
+
+            case Kind.MetaProperty:
+            {
+                return (!IsImportCall(node.Parent) || (node.Parent.Expression() != node));
+            }
+
+            case Kind.ExpressionWithTypeArguments:
+            {
+                return !IsHeritageClause(node.Parent);
+            }
+
+            case Kind.QualifiedName:
+            {
+                while ((node.Parent.Kind == Kind.QualifiedName))
+                {
+                    node = node.Parent;
+                }
+
+                return (((IsTypeQueryNode(node.Parent) || IsJSDocLinkLike(node.Parent)) || IsJSDocNameReference(node.Parent)) || IsJsxTagName(node));
+            }
+
+            case Kind.PrivateIdentifier:
+            {
+                return ((IsBinaryExpression(node.Parent) && (node.Parent.AsBinaryExpression().Left == node)) && (node.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.InKeyword));
+            }
+
+            case Kind.Identifier:
+            {
+                if ((((IsTypeQueryNode(node.Parent) || IsJSDocLinkLike(node.Parent)) || IsJSDocNameReference(node.Parent)) || IsJsxTagName(node)))
+                {
+                    return true;
+                }
+
+                goto case Kind.NumericLiteral;
+            }
+
+            case Kind.NumericLiteral:
+            case Kind.BigIntLiteral:
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.ThisKeyword:
+            {
+                return IsInExpressionContext(node);
+            }
+
+            default:
+            {
+                return false;
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2032:1.
+    public static bool IsInExpressionContext(Node node)
+    {
+        var parent = node.Parent;
+        switch (parent.Kind)
+        {
+            case Kind.VariableDeclaration:
+            case Kind.Parameter:
+            case Kind.PropertyDeclaration:
+            case Kind.PropertySignature:
+            case Kind.EnumMember:
+            case Kind.PropertyAssignment:
+            case Kind.BindingElement:
+            {
+                return (parent.Initializer() == node);
+            }
+
+            case Kind.ExpressionStatement:
+            case Kind.IfStatement:
+            case Kind.DoStatement:
+            case Kind.WhileStatement:
+            case Kind.ReturnStatement:
+            case Kind.WithStatement:
+            case Kind.SwitchStatement:
+            case Kind.CaseClause:
+            case Kind.DefaultClause:
+            case Kind.ThrowStatement:
+            case Kind.TypeAssertionExpression:
+            case Kind.AsExpression:
+            case Kind.TemplateSpan:
+            case Kind.ComputedPropertyName:
+            case Kind.SatisfiesExpression:
+            {
+                return (parent.Expression() == node);
+            }
+
+            case Kind.ForStatement:
+            {
+                var s = parent.AsForStatement();
+                return ((((s.Initializer == node) && (s.Initializer.Kind != Kind.VariableDeclarationList)) || (s.Condition == node)) || (s.Incrementor == node));
+            }
+
+            case Kind.ForInStatement:
+            case Kind.ForOfStatement:
+            {
+                var s2 = parent.AsForInOrOfStatement();
+                return (((s2.Initializer == node) && (s2.Initializer.Kind != Kind.VariableDeclarationList)) || (s2.Expression == node));
+            }
+
+            case Kind.Decorator:
+            case Kind.JsxExpression:
+            case Kind.JsxSpreadAttribute:
+            case Kind.SpreadAssignment:
+            {
+                return true;
+            }
+
+            case Kind.ExpressionWithTypeArguments:
+            {
+                return ((parent.Expression() == node) && !IsPartOfTypeNode(parent));
+            }
+
+            case Kind.ShorthandPropertyAssignment:
+            {
+                return (parent.AsShorthandPropertyAssignment().ObjectAssignmentInitializer == node);
+            }
+
+            case Kind.FunctionExpression:
+            case Kind.ClassExpression:
+            {
+                return (parent.Name() != node);
+            }
+
+            default:
+            {
+                return IsExpressionNode(parent);
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2061:1.
+    public static bool IsPartOfTypeNode(Node node)
+    {
+        var kind = node.Kind;
+        if (((kind >= Kind.FirstTypeNode) && (kind <= Kind.LastTypeNode)))
+        {
+            return true;
+        }
+
+        switch (node.Kind)
+        {
+            case Kind.AnyKeyword:
+            case Kind.UnknownKeyword:
+            case Kind.NumberKeyword:
+            case Kind.BigIntKeyword:
+            case Kind.StringKeyword:
+            case Kind.BooleanKeyword:
+            case Kind.SymbolKeyword:
+            case Kind.ObjectKeyword:
+            case Kind.UndefinedKeyword:
+            case Kind.NullKeyword:
+            case Kind.NeverKeyword:
+            {
+                return true;
+            }
+
+            case Kind.VoidKeyword:
+            {
+                return (node.Parent.Kind != Kind.VoidExpression);
+            }
+
+            case Kind.ExpressionWithTypeArguments:
+            {
+                return isPartOfTypeExpressionWithTypeArguments(node);
+            }
+
+            case Kind.TypeParameter:
+            {
+                return ((node.Parent.Kind == Kind.MappedType) || (node.Parent.Kind == Kind.InferType));
+            }
+
+            case Kind.Identifier:
+            {
+                var parent = node.Parent;
+                if ((IsQualifiedName(parent) && (parent.AsQualifiedName().Right == node)))
+                {
+                    return isPartOfTypeNodeInParent(parent);
+                }
+
+                if ((IsPropertyAccessExpression(parent) && (parent.AsPropertyAccessExpression().Name() == node)))
+                {
+                    return isPartOfTypeNodeInParent(parent);
+                }
+
+                return isPartOfTypeNodeInParent(node);
+            }
+
+            case Kind.QualifiedName:
+            case Kind.PropertyAccessExpression:
+            case Kind.ThisKeyword:
+            {
+                return isPartOfTypeNodeInParent(node);
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2092:1.
+    private static bool isPartOfTypeNodeInParent(Node node)
+    {
+        var parent = node.Parent;
+        if ((parent.Kind == Kind.TypeQuery))
+        {
+            return false;
+        }
+
+        if ((parent.Kind == Kind.ImportType))
+        {
+            return !parent.AsImportTypeNode().IsTypeOf;
+        }
+
+        if (((parent.Kind >= Kind.FirstTypeNode) && (parent.Kind <= Kind.LastTypeNode)))
+        {
+            return true;
+        }
+
+        switch (parent.Kind)
+        {
+            case Kind.ExpressionWithTypeArguments:
+            {
+                return isPartOfTypeExpressionWithTypeArguments(parent);
+            }
+
+            case Kind.TypeParameter:
+            {
+                return (node == parent.AsTypeParameterDeclaration().Constraint);
+            }
+
+            case Kind.VariableDeclaration:
+            case Kind.Parameter:
+            case Kind.PropertyDeclaration:
+            case Kind.PropertySignature:
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+            case Kind.Constructor:
+            case Kind.MethodDeclaration:
+            case Kind.MethodSignature:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.CallSignature:
+            case Kind.ConstructSignature:
+            case Kind.IndexSignature:
+            case Kind.TypeAssertionExpression:
+            {
+                return (node == parent.Type());
+            }
+
+            case Kind.CallExpression:
+            case Kind.NewExpression:
+            case Kind.TaggedTemplateExpression:
+            {
+                return (parent.TypeArguments()?.Contains(node) == true);
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2126:1.
+    private static bool isPartOfTypeExpressionWithTypeArguments(Node node)
+    {
+        var parent = node.Parent;
+        return (((IsHeritageClause(parent) && ((!IsClassLike(parent.Parent) || (parent.AsHeritageClause().Token == Kind.ImplementsKeyword)))) || IsJSDocImplementsTag(parent)) || IsJSDocAugmentsTag(parent));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2133:1.
+    public static bool IsJSDocLinkLike(Node node)
+    {
+        return NodeKindIs(node, Kind.JSDocLink, Kind.JSDocLinkCode, Kind.JSDocLinkPlain);
+    }
+}
+
+// END GENERATED CHECKER QUERY AST CLOSURE
 // BEGIN GENERATED BINDER UTILITY CLOSURE
 // Port of tsc/internal/ast/utilities.go; additional source-file binder dependency closure.
 public static partial class Ast
@@ -2577,5 +3115,5 @@ public enum ModuleInstanceState : int
     NonInstantiated = 1,
     Instantiated = 2,
     ConstEnumOnly = 3
-}// END GENERATED BINDER UTILITY CLOSURE
+} // END GENERATED BINDER UTILITY CLOSURE
 

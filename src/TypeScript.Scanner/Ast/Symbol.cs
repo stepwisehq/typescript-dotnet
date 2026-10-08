@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/ast/symbol.go; binder-owned state. Checker-only CheckFlags excluded.
+// Port of tsc/internal/ast/symbol.go; binding and selected checker state.
 #nullable disable
 namespace TypeScript.Scanner;
 public sealed class Symbol
 {
     public SymbolFlags Flags;
+    public CheckFlags CheckFlags;
     public string Name = "";
     public List<Node> Declarations;
     public Node ValueDeclaration;

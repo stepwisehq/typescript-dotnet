@@ -21,6 +21,35 @@ public sealed class Message(int code, DiagnosticCategory category, string key, s
     public string Key() => key;
     public string String() => text;
     public override string ToString() => text;
+    // Upstream diagnostics.go:128-145 Format sanitizes each stored byte argument
+    // using strings.ToValidUTF8: one replacement for each consecutive invalid run.
+    // Public Format receives ordinary .NET display strings; this internal path keeps
+    // diagnostic storage raw and applies Go's byte-formatting boundary exactly once.
+    internal string FormatByteArguments(IEnumerable<string>? args) => Format(args?.Select(s => (object)validUtf8Argument(s)).ToArray() ?? []);
+    private static string validUtf8Argument(string arg)
+    {
+        var result = new System.Text.StringBuilder(arg.Length);
+        bool inInvalidRun = false;
+        for (int i = 0; i < arg.Length;)
+        {
+            var(rune, size) = Utf8.DecodeRuneInString(arg.AsSpan(i));
+            i += size;
+            if (rune == Utf8.RuneError && size == 1)
+            {
+                if (!inInvalidRun)
+                    result.Append('\uFFFD');
+                inInvalidRun = true;
+            }
+            else
+            {
+                inInvalidRun = false;
+                result.Append(new System.Text.Rune(rune).ToString());
+            }
+        }
+
+        return result.ToString();
+    }
+
     public string Format(params object[] args)
     {
         if (args.Length == 0)
