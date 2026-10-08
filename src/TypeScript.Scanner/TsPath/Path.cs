@@ -3,7 +3,7 @@
 // Modified C# port of tsc/internal/tspath/path.go syntax-reference helpers.
 // Pinned upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 namespace TypeScript.Scanner;
-internal static class TsPath
+internal static partial class TsPath
 {
     private const string DynamicURIFileNamePrefix = "^/~ts-uri~/";
     private const string urlSchemeSeparator = "://";

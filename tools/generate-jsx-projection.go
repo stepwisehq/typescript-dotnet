@@ -412,6 +412,12 @@ func stmt(s ast.Stmt) {
 }
 
 func main() {
+	outputRoot := "src/TypeScript.Scanner/Ast"
+	if len(os.Args) == 2 {
+		outputRoot = os.Args[1]
+	} else if len(os.Args) != 1 {
+		panic("usage: generate-jsx-projection [output-directory]")
+	}
 	root := "upstream/TypeScript/tsc/internal/ast/"
 	structs := map[string][]string{}
 	methods := map[string]map[string]*ast.FuncDecl{}
@@ -454,24 +460,28 @@ func main() {
 		}
 	}
 	find := func(n, method string) *ast.FuncDecl {
-        // Go promotes the unique method at the shallowest embedding depth.
-        level := []string{n}
-        for len(level) != 0 {
-            next := []string{}
-            var found *ast.FuncDecl
-            for _, name := range level {
-                if fn := methods[name][method]; fn != nil {
-                    if found != nil && found != fn { panic("ambiguous promoted method: " + n + "." + method) }
-                    found = fn
-                }
-                next = append(next, structs[name]...)
-            }
-            if found != nil { return found }
-            level = next
-        }
-        return nil
-    }
-	b, _ := os.ReadFile("src/TypeScript.Scanner/Ast/AstGenerated.cs")
+		// Go promotes the unique method at the shallowest embedding depth.
+		level := []string{n}
+		for len(level) != 0 {
+			next := []string{}
+			var found *ast.FuncDecl
+			for _, name := range level {
+				if fn := methods[name][method]; fn != nil {
+					if found != nil && found != fn {
+						panic("ambiguous promoted method: " + n + "." + method)
+					}
+					found = fn
+				}
+				next = append(next, structs[name]...)
+			}
+			if found != nil {
+				return found
+			}
+			level = next
+		}
+		return nil
+	}
+	b, _ := os.ReadFile(outputRoot + "/AstGenerated.cs")
 	payloads := regexp.MustCompile(`public sealed partial class (\w+) : NodeData`).FindAllStringSubmatch(string(b), -1)
 	outputs := map[string]*strings.Builder{"ast.go": {}, "ast_generated.go": {}}
 	for _, m := range payloads {
@@ -518,9 +528,9 @@ func main() {
 		}
 	}
 	for file, body := range outputs {
-		dest := "src/TypeScript.Scanner/Ast/Ast.cs"
+		dest := outputRoot + "/Ast.cs"
 		if file == "ast_generated.go" {
-			dest = "src/TypeScript.Scanner/Ast/AstGenerated.cs"
+			dest = outputRoot + "/AstGenerated.cs"
 		}
 		data, _ := os.ReadFile(dest)
 		start := "// BEGIN GENERATED JSX PROJECTION"

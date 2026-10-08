@@ -11,6 +11,7 @@ public sealed class Encoder
     private readonly List<Node> raw = [];
     private readonly Dictionary<Node, List<Node>?> resolvedDocs = new(ReferenceEqualityComparer.Instance);
     public List<CanonicalNode> Nodes { get; } = [];
+    public IReadOnlyList<Node> RawNodes => raw;
     public Encoder(SourceFile file, bool resolveJsDoc) { this.file = file; this.resolveJsDoc = resolveJsDoc; }
     public static string Bytes(string text) => Convert.ToBase64String(Encoding.Latin1.GetBytes(text));
     public int Add(Node node)
@@ -93,14 +94,18 @@ public sealed class Encoder
 
 public static class Runner
 {
-    public static Response Run(Request request)
+    public static SourceFile Parse(Request request)
     {
         var kind = (ScriptKind)(request.ScriptKind == 0 ? 3 : request.ScriptKind);
         string extension = kind switch { ScriptKind.JS => ".js", ScriptKind.JSX => ".jsx", ScriptKind.TS => ".ts", ScriptKind.TSX => ".tsx", ScriptKind.JSON => ".json", _ => throw new ArgumentException("Unsupported ScriptKind") };
         string fileName = request.FileName.Length == 0 ? "/index" + extension : request.FileName;
         byte[] bytes = request.TextBytesBase64 is { } encoded ? Convert.FromBase64String(encoded) : Encoding.UTF8.GetBytes(request.Text);
-        var file = Parser.ParseSourceFile(new(fileName, fileName, new(request.ExternalModuleJSX, request.ExternalModuleForce)), bytes, kind);
-        var encoder = new Encoder(file, request.ResolveJSDoc);
+        return Parser.ParseSourceFile(new(fileName, fileName, new(request.ExternalModuleJSX, request.ExternalModuleForce)), bytes, kind);
+    }
+    public static Response Run(Request request) => Encode(Parse(request), request);
+    public static Response Encode(SourceFile file, Request request, Encoder? suppliedEncoder = null)
+    {
+        var encoder = suppliedEncoder ?? new Encoder(file, request.ResolveJSDoc);
         encoder.Add(file.AsNode());
         var metadata = new Metadata
         {

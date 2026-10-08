@@ -1,18 +1,18 @@
 # TypeScript port feasibility study
 
-A C# port of the Go TypeScript scanner and required syntax parser/AST support,
+A C# port of the Go TypeScript scanner, syntax parser/AST and source-file binder,
 pinned to the maintained [microsoft/TypeScript source](./UPSTREAM.md).
-See [current state](./docs/STATE.md) and [parser plan](./docs/PARSER-PLAN.md).
-Binding, checking, module resolution and code generation remain outside scope.
-Both bounded checkpoints passed actual Native AOT verification. See the
-[parser assessment](./docs/PARSER-ASSESSMENT.md) and
-[parser verification](./docs/PARSER-VERIFICATION.md) for current results and limits;
-the [scanner assessment](./docs/ASSESSMENT.md) preserves the earlier checkpoint.
+All three bounded checkpoints passed actual Native AOT verification. See the
+[current state](./docs/STATE.md), [binder assessment](./docs/BINDER-ASSESSMENT.md)
+and [binder verification](./docs/BINDER-VERIFICATION.md) for current evidence and
+limits. Checking, cross-file semantic resolution, module resolution and code
+generation remain outside scope.
 
-The [scanner library](./src/TypeScript.Scanner) targets .NET 10. The
-[validation executable](./validation/Scanner.Validation) supports Native AOT;
-[xUnit tests](./tests/Scanner.Tests) compare against stored results from the pinned
-Go scanner. No Go process is needed to use the C# scanner.
+The [library](./src/TypeScript.Scanner) targets .NET 10. Separate
+[scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation)
+and [binder](./validation/Binder.Validation) executable harnesses support Native
+AOT; xUnit compares against stored results from pinned Go. No Go process is
+needed to use the C# implementation.
 
 ## Build and verify
 
@@ -39,7 +39,19 @@ For the faster managed test loop, using the checked-in oracle corpus:
 dotnet test tests/Scanner.Tests/Scanner.Tests.csproj -c Release
 ```
 
-The parser phase has its own gate, including scanner regressions:
+The complete binder gate includes parser and scanner regressions:
+
+```sh
+./tools/verify-binder.sh
+```
+
+For a managed binder development loop:
+
+```sh
+dotnet test tests/Binder.Tests/Binder.Tests.csproj -c Release
+```
+
+The parser also retains its own gate, including scanner regressions:
 
 ```sh
 ./tools/verify-parser.sh
@@ -57,8 +69,9 @@ API, including input conversion, and does not benchmark the full compiler.
 
 The parser has a separate [basic performance report](./docs/PARSER-PERFORMANCE.md)
 and [raw samples](./benchmarks/parser-results.json). Reproduce with
-`./tools/parser-benchmark.sh` after the parser verification gate has created the
-accepted native validator. It measures parsing and a small result observer;
+`./tools/parser-benchmark.sh` from parser checkpoint `de25b66` after its verification gate has created the
+accepted native validator. Its source guard intentionally rejects later binder changes;
+see the report for historical reproduction. It measures parsing and a small result observer;
 optimization and deeper investigation remain deferred.
 
 To publish and check Native AOT explicitly:
@@ -86,8 +99,10 @@ verification.
 The port covers lexical scanning, contextual rescans, JSX/JSDoc modes, regex syntax
 validation, token flags, diagnostic callbacks, and comment directives. The completed
 parser phase adds syntax trees, syntax diagnostics and required AST support;
-its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Binding,
-checking, module resolution and code generation remain excluded.
+its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Source-file
+binding now adds declaration/symbol relationships, scope tables, binder diagnostics
+and control-flow graphs. Checking, cross-file semantic resolution, module resolution
+and code generation remain excluded.
 See [source-map.json](./source-map.json) and the
 [mapping convention](./docs/SOURCE-MAPPING.md) for per-file completeness and
 exceptions. Ported source and newly authored compatibility/harness code are marked

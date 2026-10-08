@@ -1,0 +1,36 @@
+{
+  "executable": "artifacts/parser-validation/native/Parser.Validation",
+  "cases": 11,
+  "nodes": 156,
+  "diagnostics": 29,
+  "failures": [],
+  "elapsedSeconds": 0.01,
+  "groups": [
+    {
+      "name": "readiness-requests",
+      "cases": 11,
+      "requestsSha256": "842fa633be96b5f3300bc63293dd761f58dcb6c309cc3927cef9ad7c211424fc",
+      "expectedSha256": "dc1abadf146daf5389d37f078b6e525a32abf3c43394c44dc2a079f38a885c45"
+    }
+  ],
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "acceptedParserCheckpoint": "de25b66",
+  "acceptedParserSourceSha256": "d441e371cf28045777b3c8041d51e524ce96904ddecf6ff7e4f105edaf2edf8d",
+  "nativeSha256": "c0d12d543b3f3ae226dfa94ed080f8fc69183393855410c3635a9f920d762ffa",
+  "newDiagnosticCodes": [
+    1132,
+    1139,
+    1144,
+    1181,
+    1359,
+    1478,
+    2427,
+    2457,
+    8016,
+    8033,
+    8034,
+    8039,
+    17002,
+    18029
+  ]
+}

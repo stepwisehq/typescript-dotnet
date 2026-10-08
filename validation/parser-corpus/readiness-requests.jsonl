@@ -1,0 +1,11 @@
+{"name":"binder-readiness-jsdoc-typedef-multiple","text":"/** @typedef T\n * @type {number}\n * @type {string}\n */ var x;","scriptKind":1,"resolveJSDoc":true}
+{"name":"binder-readiness-jsdoc-callback-template","text":"/** @callback F\n * @template T\n * @returns {T}\n */ function f(){}","scriptKind":1,"resolveJSDoc":true}
+{"name":"binder-readiness-reserved-function","text":"function class(){}","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-private-binding","text":"var x, #y;","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-recovery-declarations","text":"class C{ m() @bad } enum E{ @bad } function f<T,@bad>(){} type T=A<number,@bad>;","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-recovery-array","text":"const [a,@bad]=x;","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-invalid-interface","text":"interface 1 {}","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-invalid-typealias","text":"type 1 = number;","scriptKind":3,"resolveJSDoc":true}
+{"name":"binder-readiness-js-assertion","text":"x as T;","scriptKind":1,"resolveJSDoc":true}
+{"name":"binder-readiness-jsx-mismatch","text":"const x=<A></B>;","scriptKind":4,"resolveJSDoc":true}
+{"name":"binder-readiness-import-attributes","text":"import x from \"m\" with { @bad };","scriptKind":3,"resolveJSDoc":true}

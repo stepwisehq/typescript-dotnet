@@ -74,6 +74,16 @@ public partial class Scanner
     internal static string GetSourceTextOfNodeFromSourceFileByteString(SourceFile sourceFile, Node node, bool includeTrivia) => GetTextOfNodeFromSourceTextByteString(sourceFile.Text(), node, includeTrivia);
     public static string GetSourceTextOfNodeFromSourceFile(SourceFile sourceFile, Node node, bool includeTrivia) => ScannerString.ToJsString(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
     public static byte[] GetSourceTextOfNodeFromSourceFileBytes(SourceFile sourceFile, Node node, bool includeTrivia) => GoString.Bytes(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
+    internal static string GetTextOfNodeByteString(Node node) => GetSourceTextOfNodeFromSourceFileByteString(Ast.GetSourceFileOfNode(node), node, false);
+    internal static string DeclarationNameToStringByteString(Node? name)
+    {
+        if (name == null || name.Pos() == name.End())
+            return "(Missing)";
+        return GetTextOfNodeByteString(name);
+    }
+
+    public static string DeclarationNameToString(Node? name) => ScannerString.ToJsString(DeclarationNameToStringByteString(name));
+    public static byte[] DeclarationNameToStringBytes(Node? name) => GoString.Bytes(DeclarationNameToStringByteString(name));
     public static string GetTextOfNode(Node node) => GetSourceTextOfNodeFromSourceFile(Ast.GetSourceFileOfNode(node), node, false);
     public static byte[] GetTextOfNodeBytes(Node node) => GetSourceTextOfNodeFromSourceFileBytes(Ast.GetSourceFileOfNode(node), node, false);
 }

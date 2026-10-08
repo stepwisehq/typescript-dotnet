@@ -1,0 +1,31 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selectedCases": 78,
+  "opaqueCases": 36,
+  "parserReadinessCases": 11,
+  "realSourceUnits": 3,
+  "requestsSha256": "a207c5e2ed598c6da1f755191f476176df5048e18196cef8164d9a11d4d65671",
+  "opaqueRequestsSha256": "5c68bbeef30d992d484a081b68143c5f3abd402b31e5c266af4cb34ed22d4f90",
+  "selection": "Authored symbol/scope/diagnostic/flow cases plus three pinned real TS source units; opaque ID counters shifted between identical targets",
+  "upstreamFiles": [
+    {
+      "path": "packages/typescript/src/ast/modifiers.ts",
+      "sha256": "b3ab17e5d757b064b09a9f5f8a75f2ff05663bc35b2a70fc43c472c817477951",
+      "bytes": 1583,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "packages/typescript/src/ast/utils.ts",
+      "sha256": "6185dda310fccb7d18ade74af2d217c8baf4ccda8b61fba8dff8393ac9ee0a02",
+      "bytes": 15584,
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "packages/typescript/src/ast/visitor.ts",
+      "sha256": "b12d5790f964e73568ccba8be58d396ce7183cc4258a0fbfb00971a5e9200992",
+      "bytes": 4266,
+      "license": "Apache-2.0"
+    }
+  ],
+  "upstreamPanics": []
+}

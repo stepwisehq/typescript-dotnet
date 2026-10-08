@@ -87,6 +87,7 @@ internal static class GoRuntime
 
 internal static class GoSlices
 {
+    public static int Index<T>(List<T> values, T target) => values?.IndexOf(target) ?? -1;
     public static (int Index, bool Found) BinarySearchFunc<T>(List<T> values, T target, Comparison<T> compare)
     {
         int low = 0, high = values?.Count ?? 0;

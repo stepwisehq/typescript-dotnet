@@ -137,3 +137,17 @@ internal static partial class Core
         yield return lineStart;
     }
 }
+
+// Pointer-comparable combinators required by source-file binding.
+internal static partial class Core
+{
+    public static T? OrElse<T>(T? value, T? defaultValue)
+        where T : class => value ?? defaultValue;
+    public static List<T> AppendIfUnique<T>(List<T>? values, T element)
+        where T : class
+    {
+        if (values?.Contains(element) == true)
+            return values;
+        return GoRuntime.Append(values, element);
+    }
+}

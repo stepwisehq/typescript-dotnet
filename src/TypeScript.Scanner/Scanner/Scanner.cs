@@ -3843,6 +3843,181 @@ public partial class Scanner
         return result;
     }
 
+    // Upstream scanner.go source-file scanning and diagnostic span helpers.
+    public static Scanner GetScannerForSourceFile(SourceFile sourceFile, int pos)
+    {
+        var scanner = NewScanner();
+        scanner.text = sourceFile.Text();
+        scanner.pos = pos;
+        scanner.end = scanner.text.Length;
+        scanner.languageVariant = sourceFile.LanguageVariant;
+        scanner.Scan();
+        return scanner;
+    }
+
+    public static Kind ScanTokenAtPosition(SourceFile sourceFile, int pos) => GetScannerForSourceFile(sourceFile, pos).token;
+    public static TextRange GetRangeOfTokenAtPosition(SourceFile sourceFile, int pos)
+    {
+        var scanner = GetScannerForSourceFile(sourceFile, pos);
+        return Core.NewTextRange(scanner.tokenStart, scanner.pos);
+    }
+
+    public static List<int> GetECMALineStarts(SourceFile sourceFile) => sourceFile.ECMALineMap();
+    public static int GetECMALineOfPosition(SourceFile sourceFile, int pos) => ComputeLineOfPosition(GetECMALineStarts(sourceFile).ToArray(), pos);
+    public static int GetECMAEndLinePosition(SourceFile sourceFile, int line)
+    {
+        int pos = GetECMALineStarts(sourceFile)[line];
+        while (true)
+        {
+            var(ch, size) = Utf8.DecodeRuneInString(sourceFile.Text().AsSpan(pos));
+            if (size == 0 || StringUtil.IsLineBreak(ch))
+                return pos - 1;
+            pos += size;
+        }
+    }
+
+    private static TextRange getErrorRangeForArrowFunction(SourceFile sourceFile, Node node)
+    {
+        int pos = SkipTriviaByteString(sourceFile.Text(), node.Pos());
+        var body = node.Body();
+        if (body != null && body.Kind == Kind.Block)
+        {
+            int startLine = GetECMALineOfPosition(sourceFile, body.Pos());
+            int endLine = GetECMALineOfPosition(sourceFile, body.End());
+            if (startLine < endLine)
+                return Core.NewTextRange(pos, GetECMAEndLinePosition(sourceFile, startLine) + 1);
+        }
+
+        return Core.NewTextRange(pos, node.End());
+    }
+
+    private static Node? findOriginatingJSDocSatisfiesTag(SourceFile sourceFile, Node node)
+    {
+        var targetType = node.AsSatisfiesExpression().Type;
+        if ((targetType.Flags & NodeFlags.Reparsed) == 0)
+            return null;
+        for (Node? current = node.Parent; current != null; current = current.Parent)
+        {
+            if ((current.Flags & NodeFlags.HasJSDoc) == 0)
+                continue;
+            Node? firstSatisfiesTag = null;
+            foreach (var jsDoc in GoRuntime.RangeValues(current.EagerJSDoc(sourceFile)))
+            {
+                var tags = jsDoc.AsJSDoc().Tags;
+                if (tags == null)
+                    continue;
+                foreach (var tag in GoRuntime.RangeValues(tags.Nodes))
+                {
+                    if (!Ast.IsJSDocSatisfiesTag(tag))
+                        continue;
+                    if (firstSatisfiesTag == null)
+                        firstSatisfiesTag = tag;
+                    var typeExpr = tag.AsJSDocSatisfiesTag().TypeExpression;
+                    if (typeExpr != null)
+                    {
+                        var type = typeExpr.Type();
+                        if (type != null && type.Loc == targetType.Loc)
+                            return tag;
+                    }
+                }
+            }
+
+            return firstSatisfiesTag;
+        }
+
+        return null;
+    }
+
+    public static TextRange GetErrorRangeForNode(SourceFile sourceFile, Node node)
+    {
+        Node? errorNode = node;
+        switch (node.Kind)
+        {
+            case Kind.SourceFile:
+            {
+                int pos = SkipTriviaByteString(sourceFile.Text(), 0);
+                if (pos == sourceFile.Text().Length)
+                    return Core.NewTextRange(0, 0);
+                return GetRangeOfTokenAtPosition(sourceFile, pos);
+            }
+
+            case Kind.FunctionDeclaration:
+            case Kind.MethodDeclaration:
+                if ((node.Flags & NodeFlags.Reparsed) != 0)
+                {
+                    errorNode = node;
+                    break;
+                }
+
+                goto case Kind.VariableDeclaration;
+            case Kind.VariableDeclaration:
+            case Kind.BindingElement:
+            case Kind.ClassDeclaration:
+            case Kind.InterfaceDeclaration:
+            case Kind.ModuleDeclaration:
+            case Kind.EnumDeclaration:
+            case Kind.EnumMember:
+            case Kind.FunctionExpression:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.PropertyDeclaration:
+            case Kind.PropertySignature:
+            case Kind.NamespaceImport:
+                errorNode = Ast.GetNameOfDeclaration(node);
+                break;
+            case Kind.ClassExpression:
+                errorNode = node.Name();
+                break;
+            case Kind.ArrowFunction:
+                return getErrorRangeForArrowFunction(sourceFile, node);
+            case Kind.CaseClause:
+            case Kind.DefaultClause:
+            {
+                int start = SkipTriviaByteString(sourceFile.Text(), node.Pos());
+                int end = node.End();
+                var statements = node.Statements();
+                if (GoRuntime.Len(statements) != 0)
+                    end = statements[0].Pos();
+                return Core.NewTextRange(start, end);
+            }
+
+            case Kind.ReturnStatement:
+            case Kind.YieldExpression:
+                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), node.Pos()));
+            case Kind.SatisfiesExpression:
+            {
+                var jsDocSatisfiesTag = findOriginatingJSDocSatisfiesTag(sourceFile, node);
+                if (jsDocSatisfiesTag != null)
+                    return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), jsDocSatisfiesTag.TagName().Pos()));
+                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), node.AsSatisfiesExpression().Expression.End()));
+            }
+
+            case Kind.Constructor:
+            {
+                if ((node.Flags & NodeFlags.Reparsed) != 0)
+                {
+                    errorNode = node;
+                    break;
+                }
+
+                var scanner = GetScannerForSourceFile(sourceFile, node.Pos());
+                int start = scanner.TokenStart();
+                while (scanner.Token() != Kind.ConstructorKeyword && scanner.Token() != Kind.StringLiteral && scanner.Token() != Kind.EndOfFile)
+                    scanner.Scan();
+                return Core.NewTextRange(start, scanner.TokenEnd());
+            }
+        }
+
+        if (errorNode == null)
+            return GetRangeOfTokenAtPosition(sourceFile, node.Pos());
+        int errorPos = errorNode.Pos();
+        if (!Ast.NodeIsMissing(errorNode) && !Ast.IsJsxText(errorNode))
+            errorPos = SkipTriviaByteString(sourceFile.Text(), errorPos);
+        return Core.NewTextRange(errorPos, errorNode.End());
+    }
+
     // Port of tsc/internal/scanner/scanner.go GetTokenPosOfNode.
     public static int GetTokenPosOfNode(Node node, SourceFile sourceFile, bool includeJSDoc)
     {

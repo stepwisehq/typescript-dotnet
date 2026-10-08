@@ -107,7 +107,9 @@ programs, but those investigations remain deferred.
 ## Reproduce
 
 Use the Linux x64 prerequisites in the [README](../README.md). A clean checkout
-first needs the accepted native validator and its local evidence:
+of the measured parser checkpoint `de25b66` first needs the accepted native
+validator and its local evidence. The source-hash guard deliberately rejects
+later implementation snapshots, including binder-phase changes:
 
 ```sh
 ./tools/verify-parser.sh

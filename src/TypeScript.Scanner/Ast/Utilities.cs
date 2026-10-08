@@ -1193,3 +1193,1389 @@ public enum JSDeclarationKind : int
     ObjectDefinePropertyValue = 5,
     ObjectDefinePropertyExports = 6,
 }
+
+// BEGIN MANUAL BINDER ATOMIC/TABLE HELPERS
+public static partial class Ast
+{
+    private static long nextNodeId, nextSymbolId;
+    public static ulong GetNodeId(Node node)
+    {
+        long id = System.Threading.Volatile.Read(ref node.id);
+        if (id == 0)
+        {
+            id = System.Threading.Interlocked.Increment(ref nextNodeId);
+            long previous = System.Threading.Interlocked.CompareExchange(ref node.id, id, 0);
+            if (previous != 0)
+                id = previous;
+        }
+
+        return unchecked((ulong)id);
+    }
+
+    public static ulong GetSymbolId(Symbol symbol)
+    {
+        long id = System.Threading.Volatile.Read(ref symbol.id);
+        if (id == 0)
+        {
+            id = System.Threading.Interlocked.Increment(ref nextSymbolId);
+            long previous = System.Threading.Interlocked.CompareExchange(ref symbol.id, id, 0);
+            if (previous != 0)
+                id = previous;
+        }
+
+        return unchecked((ulong)id);
+    }
+
+    internal static SymbolTable GetSymbolTable(GoRef<SymbolTable> data)
+    {
+        if (data.Value is null)
+            data.Value = new SymbolTable();
+        return data.Value;
+    }
+
+    public static SymbolTable GetMembers(Symbol symbol) => symbol.Members ??= new SymbolTable();
+    public static SymbolTable GetExports(Symbol symbol) => symbol.Exports ??= new SymbolTable();
+    public static SymbolTable GetLocals(Node container) => container.LocalsContainerData().Locals ??= new SymbolTable();
+}
+
+public static partial class Ast
+{
+    public static bool IsMethodOrAccessor(Node node) => node.Kind is Kind.MethodDeclaration or Kind.GetAccessor or Kind.SetAccessor;
+    public static bool IsPrivateIdentifierClassElementDeclaration(Node node) => (IsPropertyDeclaration(node) || IsMethodOrAccessor(node)) && IsPrivateIdentifier(node.Name());
+    public static bool IsAmbientModuleSymbolName(string s) => TryGetAmbientModuleNameFromSymbolName(s).Item2;
+    public static (string, bool) TryGetAmbientModuleNameFromSymbolName(string s)
+    {
+        if (s.StartsWith("\"", StringComparison.Ordinal) && s.EndsWith("\"", StringComparison.Ordinal))
+            return (s.Substring(1, s.Length - 2), true);
+        string prefix = InternalSymbolNamePrefix + "\"";
+        if (!s.StartsWith(prefix, StringComparison.Ordinal))
+            return ("", false);
+        string rest = s.Substring(prefix.Length);
+        int markerIndex = rest.LastIndexOf("\"pattern@", StringComparison.Ordinal);
+        if (markerIndex < 1)
+            return ("", false);
+        return (rest.Substring(0, markerIndex), true);
+    }
+} // END MANUAL BINDER ATOMIC/TABLE HELPERS
+
+// BEGIN GENERATED BINDER UTILITY CLOSURE
+// Port of tsc/internal/ast/utilities.go; additional source-file binder dependency closure.
+public static partial class Ast
+{
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:132:1.
+    public static bool IsDestructuringAssignment(Node node)
+    {
+        if (IsAssignmentExpression(node, true))
+        {
+            var kind = node.AsBinaryExpression().Left.Kind;
+            return ((kind == Kind.ObjectLiteralExpression) || (kind == Kind.ArrayLiteralExpression));
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:166:1.
+    public static bool IsBindingPattern(Node node)
+    {
+        return ((node.Kind == Kind.ObjectBindingPattern) || (node.Kind == Kind.ArrayBindingPattern));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:170:1.
+    public static bool IsForInOrOfStatement(Node node)
+    {
+        return ((node != null) && (((node.Kind == Kind.ForInStatement) || (node.Kind == Kind.ForOfStatement))));
+    }
+
+    // A node is an assignment target if it is on the left hand side of an '=' token, if it is parented by a property
+    // assignment in an object literal that is an assignment target, or if it is parented by an array literal that is
+    // an assignment target. Examples include 'a = xxx', '{ p: a } = xxx', '[{ a }] = xxx'.
+    // (Note that `p` is not a target in the above examples, only `a`.)
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:178:1.
+    public static bool IsAssignmentTarget(Node node)
+    {
+        return (GetAssignmentTarget(node) != null);
+    }
+
+    // Returns the BinaryExpression, PrefixUnaryExpression, PostfixUnaryExpression, or ForInOrOfStatement that references
+    // the given node as an assignment target
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:184:1.
+    public static Node GetAssignmentTarget(Node node)
+    {
+        while (true)
+        {
+            var parent = node.Parent;
+            switch (parent.Kind)
+            {
+                case Kind.BinaryExpression:
+                {
+                    if ((IsAssignmentOperator(parent.AsBinaryExpression().OperatorToken.Kind) && (parent.AsBinaryExpression().Left == node)))
+                    {
+                        return parent;
+                    }
+
+                    return null;
+                }
+
+                case Kind.PrefixUnaryExpression:
+                {
+                    if (((parent.AsPrefixUnaryExpression().Operator == Kind.PlusPlusToken) || (parent.AsPrefixUnaryExpression().Operator == Kind.MinusMinusToken)))
+                    {
+                        return parent;
+                    }
+
+                    return null;
+                }
+
+                case Kind.PostfixUnaryExpression:
+                {
+                    if (((parent.AsPostfixUnaryExpression().Operator == Kind.PlusPlusToken) || (parent.AsPostfixUnaryExpression().Operator == Kind.MinusMinusToken)))
+                    {
+                        return parent;
+                    }
+
+                    return null;
+                }
+
+                case Kind.ForInStatement:
+                case Kind.ForOfStatement:
+                {
+                    if ((parent.Initializer() == node))
+                    {
+                        return parent;
+                    }
+
+                    return null;
+                }
+
+                case Kind.ParenthesizedExpression:
+                case Kind.ArrayLiteralExpression:
+                case Kind.SpreadElement:
+                case Kind.NonNullExpression:
+                {
+                    node = parent;
+                    break;
+                }
+
+                case Kind.SpreadAssignment:
+                {
+                    node = parent.Parent;
+                    break;
+                }
+
+                case Kind.ShorthandPropertyAssignment:
+                {
+                    if ((parent.AsShorthandPropertyAssignment().Name() != node))
+                    {
+                        return null;
+                    }
+
+                    node = parent.Parent;
+                    break;
+                }
+
+                case Kind.PropertyAssignment:
+                {
+                    if ((parent.AsPropertyAssignment().Name() == node))
+                    {
+                        return null;
+                    }
+
+                    node = parent.Parent;
+                    break;
+                }
+
+                default:
+                {
+                    return null;
+                }
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:228:1.
+    public static bool IsLogicalBinaryOperator(Kind token)
+    {
+        return ((token == Kind.BarBarToken) || (token == Kind.AmpersandAmpersandToken));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:232:1.
+    public static bool IsLogicalOrCoalescingBinaryOperator(Kind token)
+    {
+        return (IsLogicalBinaryOperator(token) || (token == Kind.QuestionQuestionToken));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:236:1.
+    public static bool IsLogicalOrCoalescingBinaryExpression(Node expr)
+    {
+        return (IsBinaryExpression(expr) && IsLogicalOrCoalescingBinaryOperator(expr.AsBinaryExpression().OperatorToken.Kind));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:240:1.
+    public static bool IsLogicalOrCoalescingAssignmentExpression(Node expr)
+    {
+        return (IsBinaryExpression(expr) && IsLogicalOrCoalescingAssignmentOperator(expr.AsBinaryExpression().OperatorToken.Kind));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:244:1.
+    public static bool IsLogicalExpression(Node node)
+    {
+        while (true)
+        {
+            if ((node.Kind == Kind.ParenthesizedExpression))
+            {
+                node = node.Expression();
+            }
+            else
+            {
+                if (((node.Kind == Kind.PrefixUnaryExpression) && (node.AsPrefixUnaryExpression().Operator == Kind.ExclamationToken)))
+                {
+                    node = node.AsPrefixUnaryExpression().Operand;
+                }
+                else
+                {
+                    return IsLogicalOrCoalescingBinaryExpression(node);
+                }
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:260:1.
+    public static bool IsPropertyNameLiteral(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.NumericLiteral:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Return true if the given identifier is classified as an IdentifierName by inspecting the parent of the node
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:292:1.
+    public static bool IsIdentifierName(Node node)
+    {
+        var parent = node.Parent;
+        switch (parent.Kind)
+        {
+            case Kind.PropertyDeclaration:
+            case Kind.PropertySignature:
+            case Kind.MethodDeclaration:
+            case Kind.MethodSignature:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.EnumMember:
+            case Kind.PropertyAssignment:
+            case Kind.PropertyAccessExpression:
+            {
+                return (parent.Name() == node);
+            }
+
+            case Kind.QualifiedName:
+            {
+                return (parent.AsQualifiedName().Right == node);
+            }
+
+            case Kind.BindingElement:
+            {
+                return (parent.PropertyName() == node);
+            }
+
+            case Kind.ImportSpecifier:
+            {
+                return (parent.PropertyName() == node);
+            }
+
+            case Kind.ExportSpecifier:
+            case Kind.JsxAttribute:
+            case Kind.JsxSelfClosingElement:
+            case Kind.JsxOpeningElement:
+            case Kind.JsxClosingElement:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:310:1.
+    public static bool IsPushOrUnshiftIdentifier(Node node)
+    {
+        var text = node.Text();
+        return ((text == "push") || (text == "unshift"));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:315:1.
+    public static bool IsBooleanLiteral(Node node)
+    {
+        return ((node.Kind == Kind.TrueKeyword) || (node.Kind == Kind.FalseKeyword));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:335:1.
+    public static bool IsSignedNumericLiteral(Node node)
+    {
+        if ((node.Kind == Kind.PrefixUnaryExpression))
+        {
+            var node2 = node.AsPrefixUnaryExpression();
+            return ((((node2.Operator == Kind.PlusToken) || (node2.Operator == Kind.MinusToken))) && IsNumericLiteral(node2.Operand));
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:357:1.
+    private static Node getQuestionDotToken(Node node)
+    {
+        return node.QuestionDotToken();
+    }
+
+    // Determines if node is the root expression of an OptionalChain
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:362:1.
+    public static bool IsOptionalChainRoot(Node node)
+    {
+        return ((IsOptionalChain(node) && !IsNonNullExpression(node)) && (getQuestionDotToken(node) != null));
+    }
+
+    // Determines whether a node is the outermost `OptionalChain` in an ECMAScript `OptionalExpression`:
+    //
+    //  1. For `a?.b.c`, the outermost chain is `a?.b.c` (`c` is the end of the chain starting at `a?.`)
+    //  2. For `a?.b!`, the outermost chain is `a?.b` (`b` is the end of the chain starting at `a?.`)
+    //  3. For `(a?.b.c).d`, the outermost chain is `a?.b.c` (`c` is the end of the chain starting at `a?.` since parens end the chain)
+    //  4. For `a?.b.c?.d`, both `a?.b.c` and `a?.b.c?.d` are outermost (`c` is the end of the chain starting at `a?.`, and `d` is
+    //     the end of the chain starting at `c?.`)
+    //  5. For `a?.(b?.c).d`, both `b?.c` and `a?.(b?.c)d` are outermost (`c` is the end of the chain starting at `b`, and `d` is
+    //     the end of the chain starting at `a?.`)
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:375:1.
+    public static bool IsOutermostOptionalChain(Node node)
+    {
+        var parent = node.Parent;
+        return ((!IsOptionalChain(parent) || IsOptionalChainRoot(parent)) || (node != parent.Expression()));
+    }
+
+    // Determines whether a node is the expression preceding an optional chain (i.e. `a` in `a?.b`).
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:383:1.
+    public static bool IsExpressionOfOptionalChainRoot(Node node)
+    {
+        return (IsOptionalChainRoot(node.Parent) && (node.Parent.Expression() == node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:387:1.
+    public static bool IsNullishCoalesce(Node node)
+    {
+        return ((node.Kind == Kind.BinaryExpression) && (node.AsBinaryExpression().OperatorToken.Kind == Kind.QuestionQuestionToken));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:531:1.
+    public static bool IsClassLike(Node node)
+    {
+        return ((node.Kind == Kind.ClassDeclaration) || (node.Kind == Kind.ClassExpression));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:539:1.
+    public static bool IsClassElement(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Constructor:
+            case Kind.PropertyDeclaration:
+            case Kind.MethodDeclaration:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.IndexSignature:
+            case Kind.ClassStaticBlockDeclaration:
+            case Kind.SemicolonClassElement:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:566:1.
+    public static bool IsObjectLiteralOrClassExpressionMethodOrAccessor(Node node)
+    {
+        var kind = node.Kind;
+        return (((((kind == Kind.MethodDeclaration) || (kind == Kind.GetAccessor)) || (kind == Kind.SetAccessor))) && (((node.Parent.Kind == Kind.ObjectLiteralExpression) || (node.Parent.Kind == Kind.ClassExpression))));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:600:1.
+    public static bool IsObjectLiteralMethod(Node node)
+    {
+        return (((node != null) && (node.Kind == Kind.MethodDeclaration)) && (node.Parent.Kind == Kind.ObjectLiteralExpression));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:604:1.
+    public static bool IsAutoAccessorPropertyDeclaration(Node node)
+    {
+        return (IsPropertyDeclaration(node) && HasAccessorModifier(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:608:1.
+    public static bool IsParameterPropertyDeclaration(Node node, Node parent)
+    {
+        return ((IsParameterDeclaration(node) && HasSyntacticModifier(node, ModifierFlags.ParameterPropertyModifier)) && (parent.Kind == Kind.Constructor));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:628:1.
+    private static bool isDeclarationStatementKind(Kind kind)
+    {
+        switch (kind)
+        {
+            case Kind.FunctionDeclaration:
+            case Kind.MissingDeclaration:
+            case Kind.ClassDeclaration:
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.EnumDeclaration:
+            case Kind.ModuleDeclaration:
+            case Kind.ImportDeclaration:
+            case Kind.JSImportDeclaration:
+            case Kind.ImportEqualsDeclaration:
+            case Kind.ExportDeclaration:
+            case Kind.ExportAssignment:
+            case Kind.NamespaceExportDeclaration:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Determines whether a node is a DeclarationStatement. Ideally this does not use Parent pointers, but it may use them
+    // to rule out a Block node that is part of `try` or `catch` or is the Block-like body of a function.
+    //
+    // NOTE: ECMA262 would just call this a Declaration
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:653:1.
+    public static bool IsDeclarationStatement(Node node)
+    {
+        return isDeclarationStatementKind(node.Kind);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:717:1.
+    public static bool IsBlockOrCatchScoped(Node declaration)
+    {
+        return (((GetCombinedNodeFlags(declaration) & NodeFlags.BlockScoped) != 0) || IsCatchClauseVariableDeclarationOrBindingElement(declaration));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:721:1.
+    public static bool IsCatchClauseVariableDeclarationOrBindingElement(Node declaration)
+    {
+        var node = GetRootDeclaration(declaration);
+        return ((node.Kind == Kind.VariableDeclaration) && (node.Parent.Kind == Kind.CatchClause));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:767:1.
+    public static bool IsPrologueDirective(Node node)
+    {
+        return ((node.Kind == Kind.ExpressionStatement) && (node.Expression().Kind == Kind.StringLiteral));
+    }
+
+    // Walks up the parents of a node to find the ancestor that matches the callback
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:911:1.
+    public static Node FindAncestor(Node node, Func<Node, bool> callback)
+    {
+        while ((node != null))
+        {
+            if (callback(node))
+            {
+                return node;
+            }
+
+            node = node.Parent;
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1040:1.
+    public static bool HasAccessorModifier(Node node)
+    {
+        return HasSyntacticModifier(node, ModifierFlags.Accessor);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1044:1.
+    public static bool HasStaticModifier(Node node)
+    {
+        return HasSyntacticModifier(node, ModifierFlags.Static);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1048:1.
+    public static bool IsStatic(Node node)
+    {
+        return ((IsClassElement(node) && HasStaticModifier(node)) || IsClassStaticBlockDeclaration(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1151:1.
+    public static bool IsFunctionExpressionOrArrowFunction(Node node)
+    {
+        return (IsFunctionExpression(node) || IsArrowFunction(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1173:1.
+    public static Node GetRootDeclaration(Node node)
+    {
+        while ((node.Kind == Kind.BindingElement))
+        {
+            node = node.Parent.Parent;
+        }
+
+        return node;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1180:1.
+    public static ModifierFlags GetCombinedModifierFlags(Node node)
+    {
+        node = GetRootDeclaration(node);
+        var flags = node.ModifierFlags();
+        if ((node.Kind == Kind.VariableDeclaration))
+        {
+            node = node.Parent;
+        }
+
+        if (((node != null) && (node.Kind == Kind.VariableDeclarationList)))
+        {
+            flags |= node.ModifierFlags();
+            node = node.Parent;
+        }
+
+        if (((node != null) && (node.Kind == Kind.VariableStatement)))
+        {
+            flags |= node.ModifierFlags();
+        }
+
+        return flags;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1196:1.
+    public static NodeFlags GetCombinedNodeFlags(Node node)
+    {
+        node = GetRootDeclaration(node);
+        var flags = node.Flags;
+        if ((node.Kind == Kind.VariableDeclaration))
+        {
+            node = node.Parent;
+        }
+
+        if (((node != null) && (node.Kind == Kind.VariableDeclarationList)))
+        {
+            flags |= node.Flags;
+            node = node.Parent;
+        }
+
+        if (((node != null) && (node.Kind == Kind.VariableStatement)))
+        {
+            flags |= node.Flags;
+        }
+
+        return flags;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1302:1.
+    public static bool IsDeclaration(Node node)
+    {
+        if ((node.Kind == Kind.TypeParameter))
+        {
+            return (node.Parent != null);
+        }
+
+        return IsDeclarationNode(node);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1453:1.
+    public static Node GetNameOfDeclaration(Node declaration)
+    {
+        if ((declaration == null))
+        {
+            return null;
+        }
+
+        var nonAssignedName = GetNonAssignedNameOfDeclaration(declaration);
+        if ((nonAssignedName != null))
+        {
+            return nonAssignedName;
+        }
+
+        if (((IsFunctionExpression(declaration) || IsArrowFunction(declaration)) || IsClassExpression(declaration)))
+        {
+            return GetAssignedName(declaration);
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1467:1.
+    public static Node GetNonAssignedNameOfDeclaration(Node declaration)
+    {
+        switch (declaration.Kind)
+        {
+            case Kind.BinaryExpression:
+            case Kind.CallExpression:
+            {
+                switch (GetAssignmentDeclarationKind(declaration))
+                {
+                    case JSDeclarationKind.Property:
+                    case JSDeclarationKind.ThisProperty:
+                    case JSDeclarationKind.ExportsProperty:
+                    {
+                        var left = declaration.AsBinaryExpression().Left;
+                        {
+                            var name = GetElementOrPropertyAccessName(left);
+                            if ((name != null))
+                            {
+                                return name;
+                            }
+                        }
+
+                        return left;
+                    }
+
+                    case JSDeclarationKind.ObjectDefinePropertyValue:
+                    case JSDeclarationKind.ObjectDefinePropertyExports:
+                    {
+                        return declaration.Arguments()[1];
+                    }
+                }
+
+                return null;
+            }
+
+            case Kind.ExportAssignment:
+            {
+                var expr = declaration.Expression();
+                if (IsIdentifier(expr))
+                {
+                    return expr;
+                }
+
+                return null;
+            }
+        }
+
+        return declaration.Name();
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1492:1.
+    public static Node GetAssignedName(Node node)
+    {
+        var parent = node.Parent;
+        if ((parent != null))
+        {
+            switch (parent.Kind)
+            {
+                case Kind.PropertyAssignment:
+                {
+                    return parent.AsPropertyAssignment().Name();
+                }
+
+                case Kind.BindingElement:
+                {
+                    return parent.AsBindingElement().Name();
+                }
+
+                case Kind.BinaryExpression:
+                {
+                    if ((node == parent.AsBinaryExpression().Right))
+                    {
+                        var left = parent.AsBinaryExpression().Left;
+                        switch (left.Kind)
+                        {
+                            case Kind.Identifier:
+                            {
+                                return left;
+                            }
+
+                            case Kind.PropertyAccessExpression:
+                            {
+                                return left.AsPropertyAccessExpression().Name();
+                            }
+
+                            case Kind.ElementAccessExpression:
+                            {
+                                var arg = SkipParentheses(left.AsElementAccessExpression().ArgumentExpression);
+                                if (IsStringOrNumericLiteralLike(arg))
+                                {
+                                    return arg;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+                case Kind.VariableDeclaration:
+                {
+                    var name = parent.AsVariableDeclaration().Name();
+                    if (IsIdentifier(name))
+                    {
+                        return name;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // *
+    // * A declaration has a dynamic name if all of the following are true:
+    // *   1. The declaration has a computed property name.
+    // *   2. The computed name is *not* expressed as a StringLiteral.
+    // *   3. The computed name is *not* expressed as a NumericLiteral.
+    // *   4. The computed name is *not* expressed as a PlusToken or MinusToken
+    // *      immediately followed by a NumericLiteral.
+    // 
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1602:1.
+    public static bool HasDynamicName(Node declaration)
+    {
+        var name = GetNameOfDeclaration(declaration);
+        return ((name != null) && IsDynamicName(name));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1607:1.
+    public static bool IsDynamicName(Node name)
+    {
+        Node expr = default;
+        switch (name.Kind)
+        {
+            case Kind.ComputedPropertyName:
+            {
+                expr = name.Expression();
+                break;
+            }
+
+            case Kind.ElementAccessExpression:
+            {
+                expr = SkipParentheses(name.AsElementAccessExpression().ArgumentExpression);
+                break;
+            }
+
+            default:
+            {
+                return false;
+            }
+        }
+
+        return (!IsStringOrNumericLiteralLike(expr) && !IsSignedNumericLiteral(expr));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1638:1.
+    public static bool IsDottedName(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+            case Kind.ThisKeyword:
+            case Kind.SuperKeyword:
+            case Kind.MetaProperty:
+            {
+                return true;
+            }
+
+            case Kind.PropertyAccessExpression:
+            case Kind.ParenthesizedExpression:
+            {
+                return IsDottedName(node.Expression());
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1690:1.
+    public static bool IsExternalOrCommonJSModule(SourceFile file)
+    {
+        return ((file.ExternalModuleIndicator != null) || (file.CommonJSModuleIndicator != null));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1720:1.
+    public static bool IsModuleAugmentationExternal(Node node)
+    {
+        switch (node.Parent.Kind)
+        {
+            case Kind.SourceFile:
+            {
+                return IsExternalModule(node.Parent.AsSourceFile());
+            }
+
+            case Kind.ModuleBlock:
+            {
+                var grandParent = node.Parent.Parent;
+                return ((IsAmbientModule(grandParent) && IsSourceFile(grandParent.Parent)) && !IsExternalModule(grandParent.Parent.AsSourceFile()));
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1738:1.
+    public static Node GetContainingClass(Node node)
+    {
+        return FindAncestor(node.Parent, IsClassLike);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1799:1.
+    public static bool IsPartOfTypeQuery(Node node)
+    {
+        while (((node.Kind == Kind.QualifiedName) || (node.Kind == Kind.Identifier)))
+        {
+            node = node.Parent;
+        }
+
+        return (node.Kind == Kind.TypeQuery);
+    }
+
+    // *
+    // * This function returns true if the this node's root declaration is a parameter.
+    // * For example, passing a `ParameterDeclaration` will return true, as will passing a
+    // * binding element that is a child of a `ParameterDeclaration`.
+    // *
+    // * If you are looking to test that a `Node` is a `ParameterDeclaration`, use `isParameter`.
+    // 
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1813:1.
+    public static bool IsPartOfParameterDeclaration(Node node)
+    {
+        return (GetRootDeclaration(node).Kind == Kind.Parameter);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1817:1.
+    public static bool IsInTopLevelContext(Node node)
+    {
+        if (IsIdentifier(node))
+        {
+            var parent = node.Parent;
+            if ((((IsClassDeclaration(parent) || IsFunctionDeclaration(parent))) && (parent.Name() == node)))
+            {
+                node = parent;
+            }
+        }
+
+        var container = GetThisContainer(node, true, false);
+        return IsSourceFile(container);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1829:1.
+    public static Node GetThisContainer(Node node, bool includeArrowFunctions, bool includeClassComputedPropertyName)
+    {
+        while (true)
+        {
+            node = node.Parent;
+            if ((node == null))
+            {
+                throw new InvalidOperationException("nil parent in getThisContainer");
+            }
+
+            switch (node.Kind)
+            {
+                case Kind.ComputedPropertyName:
+                {
+                    if ((includeClassComputedPropertyName && IsClassLike(node.Parent.Parent)))
+                    {
+                        return node;
+                    }
+
+                    node = node.Parent.Parent;
+                    break;
+                }
+
+                case Kind.Decorator:
+                {
+                    if (((node.Parent.Kind == Kind.Parameter) && IsClassElement(node.Parent.Parent)))
+                    {
+                        node = node.Parent.Parent;
+                    }
+                    else
+                    {
+                        if (IsClassElement(node.Parent))
+                        {
+                            node = node.Parent;
+                        }
+                    }
+
+                    break;
+                }
+
+                case Kind.ArrowFunction:
+                {
+                    if (includeArrowFunctions)
+                    {
+                        return node;
+                    }
+
+                    break;
+                }
+
+                case Kind.FunctionDeclaration:
+                case Kind.FunctionExpression:
+                case Kind.ModuleDeclaration:
+                case Kind.ClassStaticBlockDeclaration:
+                case Kind.PropertyDeclaration:
+                case Kind.PropertySignature:
+                case Kind.MethodDeclaration:
+                case Kind.MethodSignature:
+                case Kind.Constructor:
+                case Kind.GetAccessor:
+                case Kind.SetAccessor:
+                case Kind.CallSignature:
+                case Kind.ConstructSignature:
+                case Kind.IndexSignature:
+                case Kind.EnumDeclaration:
+                case Kind.SourceFile:
+                {
+                    return node;
+                }
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1892:1.
+    public static Node GetImmediatelyInvokedFunctionExpression(Node fn)
+    {
+        if (IsFunctionExpressionOrArrowFunction(fn))
+        {
+            var prev = fn;
+            var parent = fn.Parent;
+            while (IsParenthesizedExpression(parent))
+            {
+                prev = parent;
+                parent = parent.Parent;
+            }
+
+            if ((IsCallExpression(parent) && (parent.Expression() == prev)))
+            {
+                return parent;
+            }
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1907:1.
+    public static bool IsEnumConst(Node node)
+    {
+        return ((GetCombinedModifierFlags(node) & ModifierFlags.Const) != 0);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1911:1.
+    public static bool ExpressionIsAlias(Node node)
+    {
+        return (IsEntityNameExpression(node) || IsClassExpression(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1934:1.
+    public static bool IsJsonSourceFile(SourceFile file)
+    {
+        return (file.ScriptKind == ScriptKind.JSON);
+    }
+
+    // Push a virtual parent pointer onto `ancestors` and return it.
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2379:1.
+    private static List<Node> pushAncestor(List<Node> ancestors, Node parent)
+    {
+        return GoRuntime.Append(ancestors, parent);
+    }
+
+    // If a virtual `Parent` exists on the stack, returns the previous stack entry and the virtual `Parent“.
+    // Otherwise, we return `nil` and the value of `node.Parent`.
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2385:1.
+    private static (List<Node>, Node) popAncestor(List<Node> ancestors, Node node)
+    {
+        if ((GoRuntime.Len(ancestors) == 0))
+        {
+            return (null, node.Parent);
+        }
+
+        var n = (GoRuntime.Len(ancestors) - 1);
+        return (GoRuntime.Slice(ancestors, 0, n), ancestors[n]);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2402:1.
+    public static ModuleInstanceState GetModuleInstanceState(Node node)
+    {
+        return getModuleInstanceState(node, null, null);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2406:1.
+    private static ModuleInstanceState getModuleInstanceState(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    {
+        var module = node.AsModuleDeclaration();
+        if ((module.Body != null))
+        {
+            return getModuleInstanceStateCached(module.Body, pushAncestor(ancestors, node), visited);
+        }
+        else
+        {
+            return ModuleInstanceState.Instantiated;
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2415:1.
+    private static ModuleInstanceState getModuleInstanceStateCached(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    {
+        if ((visited == null))
+        {
+            visited = new Dictionary<ulong, ModuleInstanceState>();
+        }
+
+        var nodeId = GetNodeId(node);
+        {
+            var ok = visited.TryGetValue(nodeId, out var cached);
+            if (ok)
+            {
+                if ((cached != ModuleInstanceState.Unknown))
+                {
+                    return cached;
+                }
+
+                return ModuleInstanceState.NonInstantiated;
+            }
+        }
+
+        visited[nodeId] = ModuleInstanceState.Unknown;
+        var result = getModuleInstanceStateWorker(node, ancestors, visited);
+        visited[nodeId] = result;
+        return result;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2432:1.
+    private static ModuleInstanceState getModuleInstanceStateWorker(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    {
+        switch (node.Kind)
+        {
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            {
+                return ModuleInstanceState.NonInstantiated;
+            }
+
+            case Kind.EnumDeclaration:
+            {
+                if (IsEnumConst(node))
+                {
+                    return ModuleInstanceState.ConstEnumOnly;
+                }
+
+                break;
+            }
+
+            case Kind.ImportDeclaration:
+            case Kind.JSImportDeclaration:
+            case Kind.ImportEqualsDeclaration:
+            {
+                if (!HasSyntacticModifier(node, ModifierFlags.Export))
+                {
+                    return ModuleInstanceState.NonInstantiated;
+                }
+
+                break;
+            }
+
+            case Kind.ExportDeclaration:
+            {
+                var decl = node.AsExportDeclaration();
+                if ((((decl.ModuleSpecifier == null) && (decl.ExportClause != null)) && (decl.ExportClause.Kind == Kind.NamedExports)))
+                {
+                    var state = ModuleInstanceState.NonInstantiated;
+                    ancestors = pushAncestor(ancestors, node);
+                    ancestors = pushAncestor(ancestors, decl.ExportClause);
+                    {
+                        foreach (var specifier in GoRuntime.RangeValues(decl.ExportClause.Elements()))
+                        {
+                            var specifierState = getModuleInstanceStateForAliasTarget(specifier, ancestors, visited);
+                            if ((specifierState > state))
+                            {
+                                state = specifierState;
+                            }
+
+                            if ((state == ModuleInstanceState.Instantiated))
+                            {
+                                return state;
+                            }
+                        }
+                    }
+
+                    return state;
+                }
+
+                break;
+            }
+
+            case Kind.ModuleBlock:
+            {
+                var state2 = ModuleInstanceState.NonInstantiated;
+                ancestors = pushAncestor(ancestors, node);
+                node.ForEachChild((n) =>
+                {
+                    var childState = getModuleInstanceStateCached(n, ancestors, visited);
+                    switch (childState)
+                    {
+                        case ModuleInstanceState.NonInstantiated:
+                        {
+                            return false;
+                        }
+
+                        case ModuleInstanceState.ConstEnumOnly:
+                        {
+                            state2 = ModuleInstanceState.ConstEnumOnly;
+                            return false;
+                        }
+
+                        case ModuleInstanceState.Instantiated:
+                        {
+                            state2 = ModuleInstanceState.Instantiated;
+                            return true;
+                        }
+                    }
+
+                    throw new InvalidOperationException("Unhandled case in getModuleInstanceStateWorker");
+                });
+                return state2;
+            }
+
+            case Kind.ModuleDeclaration:
+            {
+                return getModuleInstanceState(node, ancestors, visited);
+            }
+        }
+
+        return ModuleInstanceState.Instantiated;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2486:1.
+    private static ModuleInstanceState getModuleInstanceStateForAliasTarget(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    {
+        var name = node.PropertyNameOrName();
+        if ((name.Kind != Kind.Identifier))
+        {
+            return ModuleInstanceState.Instantiated;
+        }
+
+        {
+            var tuple2 = popAncestor(ancestors, node);
+            var ancestors2 = tuple2.Item1;
+            var p = tuple2.Item2;
+            for (; (p != null); (ancestors2, p) = popAncestor(ancestors2, p))
+            {
+                if (((IsBlock(p) || IsModuleBlock(p)) || IsSourceFile(p)))
+                {
+                    var found = ModuleInstanceState.Unknown;
+                    var statementsAncestors = pushAncestor(ancestors2, p);
+                    {
+                        foreach (var statement in GoRuntime.RangeValues(p.Statements()))
+                        {
+                            if (NodeHasName(statement, name))
+                            {
+                                var state = getModuleInstanceStateCached(statement, statementsAncestors, visited);
+                                if (((found == ModuleInstanceState.Unknown) || (state > found)))
+                                {
+                                    found = state;
+                                }
+
+                                if ((found == ModuleInstanceState.Instantiated))
+                                {
+                                    return found;
+                                }
+
+                                if ((statement.Kind == Kind.ImportEqualsDeclaration))
+                                {
+                                    found = ModuleInstanceState.Instantiated;
+                                }
+                            }
+                        }
+                    }
+
+                    if ((found != ModuleInstanceState.Unknown))
+                    {
+                        return found;
+                    }
+                }
+            }
+        }
+
+        return ModuleInstanceState.Instantiated;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2529:1.
+    public static bool NodeHasName(Node statement, Node id)
+    {
+        var name = statement.Name();
+        if ((name != null))
+        {
+            return (IsIdentifier(name) && (name.Text() == id.Text()));
+        }
+
+        if (IsVariableStatement(statement))
+        {
+            var declarations = statement.AsVariableStatement().DeclarationList.AsVariableDeclarationList().Declarations.Nodes;
+            return Core.Some(declarations, (d) =>
+            {
+                return NodeHasName(d, id);
+            });
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2619:1.
+    public static bool ModuleExportNameIsDefault(Node node)
+    {
+        return (node.Text() == InternalSymbolNameDefault);
+    }
+
+    // Of the form: `const x = require("x")` or `const { x } = require("x")` or with `var` or `let`
+    // The variable must not be exported and must not have a type annotation, even a jsdoc one.
+    // The initializer must be a call to `require` with a string literal or a string literal-like argument.
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2905:1.
+    public static bool IsVariableDeclarationInitializedToRequire(Node node)
+    {
+        if ((node.Kind == Kind.BindingElement))
+        {
+            node = node.Parent.Parent;
+        }
+
+        return isVariableDeclarationInitializedWithRequireHelper(node, false);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2916:1.
+    private static bool isVariableDeclarationInitializedWithRequireHelper(Node node, bool allowAccessedRequire)
+    {
+        if (!IsInJSFile(node))
+        {
+            return false;
+        }
+
+        if ((node.Kind != Kind.VariableDeclaration))
+        {
+            return false;
+        }
+
+        var initializer = node.Initializer();
+        if ((initializer == null))
+        {
+            return false;
+        }
+
+        if (allowAccessedRequire)
+        {
+            initializer = GetLeftmostAccessExpression(initializer);
+        }
+
+        return ((((node.Parent.Parent.ModifierFlags() & ModifierFlags.Export) == 0) && (node.Type() == null)) && IsRequireCall(initializer, true));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2973:1.
+    public static Node GetLeftmostAccessExpression(Node expr)
+    {
+        while (IsAccessExpression(expr))
+        {
+            expr = expr.Expression();
+        }
+
+        return expr;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4209:1.
+    public static bool IsExpandoInitializer(Node declaration, Node initializer)
+    {
+        if ((initializer == null))
+        {
+            return false;
+        }
+
+        if (IsFunctionExpressionOrArrowFunction(initializer))
+        {
+            return true;
+        }
+
+        if (IsInJSFile(initializer))
+        {
+            return (IsClassExpression(initializer) || (((IsObjectLiteralExpression(initializer) && (GoRuntime.Len(initializer.Properties()) == 0)) && (declaration.Type() == null))));
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4257:1.
+    public static bool IsImplicitlyExportedJSDocDeclaration(Node node)
+    {
+        if ((!IsSourceFile(node.Parent) || !IsExternalOrCommonJSModule(node.Parent.AsSourceFile())))
+        {
+            return false;
+        }
+
+        if (IsJSTypeAliasDeclaration(node))
+        {
+            return true;
+        }
+
+        return (IsModuleDeclaration(node) && ((node.Flags & NodeFlags.Reparsed) != 0));
+    }
+
+    // Returns true for nodes that are considered executable for the purposes of unreachable code detection.
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4302:1.
+    public static bool IsPotentiallyExecutableNode(Node node)
+    {
+        if (((Kind.FirstStatement <= node.Kind) && (node.Kind <= Kind.LastStatement)))
+        {
+            if (IsVariableStatement(node))
+            {
+                var declarationList = node.AsVariableStatement().DeclarationList;
+                if (((GetCombinedNodeFlags(declarationList) & NodeFlags.BlockScoped) != 0))
+                {
+                    return true;
+                }
+
+                var declarations = declarationList.AsVariableDeclarationList().Declarations.Nodes;
+                return Core.Some(declarations, (d) =>
+                {
+                    return (d.Initializer() != null);
+                });
+            }
+
+            return true;
+        }
+
+        return ((IsClassDeclaration(node) || IsEnumDeclaration(node)) || IsModuleDeclaration(node));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4507:1.
+    public static bool IsAsyncFunction(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+            case Kind.MethodDeclaration:
+            {
+                var data = node.BodyData();
+                return (((data.Body != null) && (data.AsteriskToken == null)) && HasSyntacticModifier(node, ModifierFlags.Async));
+            }
+        }
+
+        return false;
+    }
+}
+
+public enum ModuleInstanceState : int
+{
+    Unknown = 0,
+    NonInstantiated = 1,
+    Instantiated = 2,
+    ConstEnumOnly = 3
+}// END GENERATED BINDER UTILITY CLOSURE
+

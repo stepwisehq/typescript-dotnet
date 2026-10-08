@@ -1,75 +1,77 @@
 # Current project state
 
-**Accepted bounded parser checkpoint, 2026-10-08. Basic parser benchmark complete.**
-Scanner checkpoint commit: `0a50e67`. Parser changes and evidence form this
-checkpoint; nothing has been pushed. Do not restart completed work or begin
-compiler stages without a new bounded mandate.
+**Bounded source-file binder checkpoint accepted; no active implementation work.**
+Final combined verification passed on 2026-10-08. Stop here unless the user gives
+a new bounded mandate. Do not begin a type checker or repeat completed performance
+investigations on re-entry.
 
-## Mandate and boundary
+## Saved checkpoints
 
-Read [START-HERE.md](../START-HERE.md), [INITIAL-PROMPT.md](./INITIAL-PROMPT.md) and
-[PARSER-PROMPT.md](./PARSER-PROMPT.md). The upstream pin remains
-`fed0bf24149fb1ed36039212648bafdafc1ea10e` from maintained `microsoft/TypeScript/tsc`.
-The supported contract is initial JS/JSX/TS/TSX/JSON source-file parsing, required
-syntax AST support, syntax diagnostics, JSDoc and required reparsing. Binding,
-checking, module resolution and code generation remain excluded. Performance
-investigation and optimization remain deferred.
+- Scanner: commit `0a50e67`; historical [assessment](./ASSESSMENT.md).
+- Parser and basic performance: committed before binding as `de25b66`; historical
+  [parser state](./PARSER-STATE.md) and [performance report](./PARSER-PERFORMANCE.md).
+- Binder: accepted, saved **uncommitted** in the working tree; nothing pushed.
+  [Assessment](./BINDER-ASSESSMENT.md), [verification](./BINDER-VERIFICATION.md),
+  [durable results](../validation/results/binder-verified.json).
 
-The user prioritizes efficient, deliberate verified work over elapsed speed.
-The main session coordinates; substantive work and independent reviews use
-explicitly selected GPT-6.1 Sol agents. Three agents were reused by domain:
+Upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e` in maintained
+microsoft/TypeScript/tsc. Read [START-HERE](../START-HERE.md), the exact
+[binder mandate](./BINDER-PROMPT.md), and [source map](../source-map.json).
 
-- `scanner`: parser/scanner integration; [checkpoint](./progress/parser.md).
-- `support`: AST and syntax dependencies; [checkpoint](./progress/ast.md).
-- `verification`: independent oracle/tests/native gates; [checkpoint](./progress/parser-verification.md).
+## Latest verified boundary
 
-## Final evidence
+Actual Native AOT binder: 118 exact canonical comparisons and four semantic
+self-tests, zero differences. Graphs cover 5,182 syntax/synthetic nodes, 858 symbols,
+430 tables, 700 flows, 150 linked flow records and 41 binder diagnostics. All
+122 binder, 475 parser and 1,287 scanner xUnit tests passed. Native parser regressions
+passed 471 cases; scanner regressions passed 1,276 cases plus 178 helper outputs.
 
-The combined gate passed on Linux x64 at 16:30 UTC, taking 24.001 seconds:
+Executable source SHA256:
+`0386f000d85382e8331fa97dee83e50dd469bdca4b90bead795075a18436bf18`.
+Native binder SHA256:
+`11350baa2fcf008fd24faa93c288d4e886d9c02fc2d1cc5b77f07b386db64d31`.
+Verification assets SHA256:
+`96b0d68823559d3fdc9b88792c690537159fcd8631a4fe681d2e171546b40549`.
+The durable result specifies inputs and all individual corpus/native hashes.
+Historical scanner/parser result records remain unchanged.
 
-- Parser xUnit: 464 passed, zero failures.
-- Actual Native AOT parser: 460 matching cases, 19,268 nodes, 318 diagnostics.
-- Scanner regressions: 1,287 xUnit tests, 1,276 native cases and 178 helper outputs.
-- Fresh unchanged-Go expectations, selected upstream tests and frozen source/asset
-  hash guards passed. The native parser is 4,088,712 bytes, linked to libc/libm.
-- Coverage: all186 parser-factory payload types,247 kinds,78 diagnostic codes;
-  68/97 directly referenced parser codes observed,29 still unobserved.
+Acceptance compares declarations/symbol relationships, scopes, ordered diagnostics
+and complete represented flow graphs, with pre/post syntax snapshots. Counts alone
+are not the contract. Reproduction: `./tools/verify-binder.sh`; see verification
+for prerequisites and evidence recording. No repeated gate is needed absent source
+or verification changes, a new environment, or a concrete unresolved concern.
 
-Source SHA256: `d441e371cf28045777b3c8041d51e524ce96904ddecf6ff7e4f105edaf2edf8d`.
-See [verification and reproduction](./PARSER-VERIFICATION.md),
-[durable results](../validation/results/parser-verified.json),
-[assessment](./PARSER-ASSESSMENT.md), and [source map](../source-map.json).
-Independent [parser review](./progress/review-parser.md) and
-[AST/harness review](./progress/review-parser-support.md) found no remaining blocker.
-Five parser algorithm files reproduced byte-for-byte in scratch after documented
-adapters/formatting. Handwritten support remains authoritative.
+## Limits and next decision
 
-Historical scanner evidence remains in [SCANNER-STATE.md](./SCANNER-STATE.md),
-[VERIFICATION.md](./VERIFICATION.md) and its original machine-readable result.
-It must not be confused with the new parser/shared-library source snapshot.
+There is no unresolved observed discrepancy. This is bounded agreement, not full
+binder parity. Shared table identities, shared FlowList identities and allocated
+empty tables remain unexercised. Three unobserved binder diagnostic codes occur
+in an unused helper. Readiness closed 14 of the previous 29 parser diagnostic gaps;
+15 remain unobserved, as does scanner diagnostic 1513. Exact lists and coverage
+limits are in the verification report.
 
-## Limits and next action
+NameResolver/ReferenceResolver, checker/transient state, cross-file/global semantic
+merges, module resolution, emit, incremental rebinding and language services remain
+excluded. Full transform facts and full position mapping are still partial.
+No binder performance measurement or optimization was performed.
 
-The authorized basic Go versus C# Native AOT parser benchmark is complete.
-Two existing Sol agents implemented and independently reviewed it. Forty samples
-across four workloads passed all observer/drift checks, with34canonical preflight
-cases. Real TypeScript medians:Go71.0MiB/s,C#60.4MiB/s (1.17x elapsed time);
-TSX microfixtures were close with overlapping ranges; JSDoc/recovery were1.40x/
-1.26x elapsed time. C# heap allocation volume was higher in allgroups.
-See [performance report](./PARSER-PERFORMANCE.md),
-[raw results](../benchmarks/parser-results.json), and
-[benchmark checkpoint](./progress/parser-benchmark.md). Accepted source hash and
-historical scanner results are unchanged. No optimization, profiling or deeper
-investigation was performed or authorized. No active work remains.
+An initial single-file checker slice is justified as the next study, subject to a
+new mandate and explicit dependency inventory. Do not infer authorization from
+this recommendation or from the resume instruction.
 
-This is a completed bounded milestone, not full parser/API/branch parity. Remaining
-limits include unobserved diagnostics/recovery paths, isolated entity-name API
-coverage, source position maps, general transform facts, compiler/service state,
-incremental edits and platforms other than Linux x64. Scanner diagnostic1513 is
-still unobserved. Exclusions and partial files remain explicit in the source map.
+## Coordination and recovery
 
-No additional compiler implementation is authorized at this stopping point. A useful next
-bounded phase would close targeted parser correctness/API gaps and separately
-inventory binder dependencies before selecting an implementation boundary. Keep
-performance ideas deferred. Resume by reading these records and inspecting the
-working tree; do not rerun every investigation merely to recover context.
+The main session owned scope, contracts and acceptance; three explicitly selected
+GPT-6.1 Sol agents handled implementation and independent review. Own coordinator
+model selection could not be independently verified through available metadata.
+Agents have no remaining assigned implementation work. Their persisted records:
+
+- [Binder algorithms](./progress/binder.md).
+- [AST/support](./progress/binder-support.md).
+- [Verification](./progress/binder-verification.md).
+- [Binder review](./progress/review-binder.md).
+- [Support/oracle review](./progress/review-binder-support.md).
+
+Uncommitted source is saved work, not disposable scratch. Inspect changes before
+regeneration; generated and handwritten ownership is recorded in the source map
+and subsystem notes. Do not reconstruct completed work from old conversation.

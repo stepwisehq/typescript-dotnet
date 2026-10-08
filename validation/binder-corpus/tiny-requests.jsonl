@@ -1,0 +1,4 @@
+{"name":"tiny-symbols","text":"let x=1; function f(a:number){ let y=a; {const z=y;} return y; }"}
+{"name":"tiny-duplicate","text":"let x=1; let x=2;"}
+{"name":"tiny-loop-finally","text":"function f(x:number){while(x>0){try{x--;}finally{x+=1;} if(x===2)break;} return x;}"}
+{"name":"tiny-switch","text":"function f(x:number){switch(x){case 1:x=2;break;case 2:case 3:x++;default:x=0;} return x;}"}

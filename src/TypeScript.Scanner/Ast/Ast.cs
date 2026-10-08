@@ -140,7 +140,7 @@ public sealed partial class Node
     public Node VisitEachChild(NodeVisitor visitor) => data.VisitEachChild(visitor);
 }
 
-public abstract class NodeData : INodeData
+public abstract partial class NodeData : INodeData
 {
     private readonly Node node;
     protected NodeData()
@@ -192,6 +192,10 @@ public abstract class NodeData : INodeData
     public virtual Node VisitEachChild(NodeVisitor visitor) => AsNode();
     public abstract string DataType();
     public abstract IEnumerable<SyntaxField> SyntaxFields();
+    public virtual IEnumerable<SyntaxField> BoundFields()
+    {
+        yield break;
+    }
 }
 
 public sealed partial class NodeFactory : NodeFactoryCoercible
@@ -467,6 +471,90 @@ public sealed partial class NodeFactory
         updated.copyFrom(node);
         return Ast.UpdateNode(updated.AsNode(), node.AsNode(), hooks);
     }
+}
+
+// Binder-owned state from ast.go. Interfaces retain exact upstream embedding tests.
+public sealed partial class Node
+{
+    internal long id;
+    public DeclarationBase DeclarationData() => data as DeclarationBase;
+    public ExportableBase ExportableData() => data as ExportableBase;
+    public LocalsContainerBase LocalsContainerData() => data as LocalsContainerBase;
+    public FlowNodeBase FlowNodeData() => data as FlowNodeBase;
+    public Symbol Symbol() => DeclarationData()?.Symbol;
+    public Symbol LocalSymbol() => ExportableData()?.LocalSymbol;
+    public SymbolTable Locals() => LocalsContainerData()?.Locals;
+    public IEnumerable<SyntaxField> BoundFields() => data.BoundFields();
+}
+
+public abstract partial class NodeData
+{
+    public DeclarationBase DeclarationData() => this as DeclarationBase;
+    public ExportableBase ExportableData() => this as ExportableBase;
+    public LocalsContainerBase LocalsContainerData() => this as LocalsContainerBase;
+    public FlowNodeBase FlowNodeData() => this as FlowNodeBase;
+}
+
+public sealed class PatternAmbientModule
+{
+    public Pattern Pattern;
+    public Symbol Symbol;
+}
+
+public sealed partial class SourceFile : DeclarationBase, LocalsContainerBase
+{
+    public Symbol Symbol { get; set; }
+    public SymbolTable Locals { get; set; }
+    public Node NextContainer { get; set; }
+
+    public int SymbolCount;
+    public List<PatternAmbientModule> PatternAmbientModules;
+    public SymbolTable GlobalExports;
+    private List<Diagnostic> bindDiagnostics;
+    private readonly System.Threading.SemaphoreSlim bindMutex = new(1, 1);
+    private bool bindInvoked, isBound;
+    private readonly object ecmaLineMapMutex = new();
+    private List<int> ecmaLineMap;
+    public List<Diagnostic> BindDiagnostics() => bindDiagnostics;
+    public void SetBindDiagnostics(List<Diagnostic> diagnostics) => bindDiagnostics = diagnostics;
+    public bool IsBound() => System.Threading.Volatile.Read(ref isBound);
+    public void BindOnce(Action bind)
+    {
+        // A non-reentrant gate preserves sync.Once's callback serialization.
+        bindMutex.Wait();
+        try
+        {
+            if (bindInvoked)
+                return;
+            // sync.Once marks the invocation done even when its callback panics.
+            bindInvoked = true;
+            bind();
+            System.Threading.Volatile.Write(ref isBound, true);
+        }
+        finally
+        {
+            bindMutex.Release();
+        }
+    }
+
+    public List<int> ECMALineMap()
+    {
+        lock (ecmaLineMapMutex)
+            return ecmaLineMap ??= Core.ComputeECMALineStarts(Text());
+    }
+
+    public override IEnumerable<SyntaxField> BoundFields()
+    {
+        yield return new("Symbol", "symbol", Symbol);
+        yield return new("Locals", "table", Locals);
+        yield return new("NextContainer", "node", NextContainer);
+    }
+}
+
+public static partial class Ast
+{
+    public static bool IsDeclarationNode(Node node) => node.DeclarationData()is not null;
+    public static bool IsLocalsContainer(Node node) => node.LocalsContainerData()is not null;
 }
 
 // BEGIN GENERATED JSX PROJECTION (tools/generate-jsx-projection.go; upstream ast.go)

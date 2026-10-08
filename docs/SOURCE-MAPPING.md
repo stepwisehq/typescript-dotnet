@@ -24,9 +24,9 @@ Each entry records:
 - `implementationState`: `draft` while an active phase is awaiting its gates.
 - `upstreamSha256`: checksum of the exact original source file where recorded.
 
-The top-level `acceptedScannerCheckpoint` preserves historical acceptance while
-`activePhase` tracks parser work independently. A prior scanner result does not
-verify later changes to shared source. Per-subsystem recovery checkpoints live in
+The top-level `acceptedScannerCheckpoint` and `acceptedParserCheckpoint` preserve
+historical acceptance while `activePhase` tracks the binder checkpoint independently.
+A prior phase result does not verify later changes to shared source. Per-subsystem recovery checkpoints live in
 [progress/](./progress/).
 
 `ported` means implementation coverage, not proof of exhaustive behavioral

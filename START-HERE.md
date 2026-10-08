@@ -7,9 +7,9 @@ To restart work, give the new session this instruction:
 > directions recorded here. Inspect existing work and the last verified
 > subsystem checkpoints before taking action; do not restart the port.
 
-The parser checkpoint is now accepted and stopped. If [STATE.md](./docs/STATE.md)
-still records no active work, report that checkpoint and wait for the next bounded
-mandate; this resume instruction does not authorize starting the full compiler.
+Follow the active phase in [STATE.md](./docs/STATE.md). If it records no active
+work, report that checkpoint and wait for a new bounded mandate; this resume
+instruction does not authorize starting the full compiler.
 
 ## User mandate
 
@@ -53,8 +53,8 @@ Later user directions, in chronological order:
    and malformed input, Native AOT execution, and scanner regressions. Read the
    exact [parser mandate](./docs/PARSER-PROMPT.md). The scanner checkpoint was
    committed as `0a50e67`. This supersedes the initial scanner-only scope for the
-   current phase; binding, checking, module resolution and code generation remain
-   excluded.
+   parser phase; binding was then excluded. Direction 11 below authorizes the
+   subsequent bounded binder phase; checking, resolution and emit remain excluded.
 9. During parser work the user reconfirmed GPT-6.1 Sol delegation and close Go
    source fidelity. They clarified that raw speed is not the concern: efficient
    work should reduce repeated effort and token cost. **“Slow and steady wins the
@@ -66,6 +66,15 @@ Later user directions, in chronological order:
     It does not authorize optimization, profiling or deeper performance diagnosis.
     The [basic comparison](./docs/PARSER-PERFORMANCE.md) is complete; do not rerun
     or extend it automatically on resumption.
+11. The user authorized committing parser/performance work and proceeding to
+    **source-file binding and required support**. That checkpoint is `de25b66`.
+    Read the exact [binder mandate](./docs/BINDER-PROMPT.md). Review parser evidence
+    and the 29 unobserved diagnostic codes before extending code; compare symbols,
+    declarations, scopes, binder diagnostics and flow structures with pinned Go.
+    Type checking, cross-file semantic resolution, module resolution and emit
+    remain excluded. Native AOT and scanner/parser regressions are mandatory.
+    The [bounded binder checkpoint](./docs/BINDER-ASSESSMENT.md) is now accepted;
+    implementation work is saved uncommitted. No next compiler phase is authorized.
 
 ## Recovery sequence
 
@@ -82,7 +91,7 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The current scope is parser plus required syntax AST support. A checkpoint can
+The current scope is source-file binding and required support. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of
