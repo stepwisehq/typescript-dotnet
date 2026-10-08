@@ -264,9 +264,15 @@ public class StructuredType : ConstrainedType
 {
     internal SymbolTable members;
     internal List<Symbol> properties;
+    internal List<Signature> signatures;
+    internal int callSignatureCount;
+    internal List<IndexInfo> indexInfos;
     internal Type objectTypeWithoutAbstractConstructSignatures;
-    // signatures/callSignatureCount/indexInfos excluded from scalar initialization.
     public override StructuredType AsStructuredType() => this;
+    // types.go:949/953. The admitted object slice creates no signatures; callers
+    // guard nonempty lists before attempting unselected signature semantics.
+    public List<Signature> CallSignatures() => signatures?.GetRange(0, callSignatureCount);
+    public List<Signature> ConstructSignatures() => signatures?.GetRange(callSignatureCount, signatures.Count - callSignatureCount);
     public List<Symbol> Properties() => properties;
 }
 
@@ -301,8 +307,62 @@ internal sealed class SymbolReferenceLinks
 
 internal sealed class ValueSymbolLinks
 {
+    internal bool functionOrConstructorChecked;
     internal Type resolvedType, writeType;
     internal Symbol target;
+    internal Type nameType, containingType;
+}
+
+// types.go:290/296. Tables remain nullable independently and retain identity.
+internal enum MembersOrExportsResolutionKind
+{
+    ResolvedExports = 0,
+    ResolvedMembers = 1,
+}
+
+internal sealed class MembersAndExportsLinks
+{
+    private readonly SymbolTable[] tables = new SymbolTable[2];
+    internal SymbolTable this[MembersOrExportsResolutionKind kind] { get => tables[(int)kind]; set => tables[(int)kind] = value; }
+}
+
+// Actual partial types.go:1312 payload for typed absent signature storage only.
+// No signature is allocated by the admitted object slice. Mapper/predicate/
+// composite and call-resolution behavior remain excluded, guarded by callers.
+public sealed class Signature
+{
+    internal uint id;
+    internal uint flags;
+    internal int minArgumentCount, resolvedMinArgumentCount;
+    internal Node declaration;
+    internal List<Type> typeParameters;
+    internal List<Symbol> parameters;
+    internal Symbol thisParameter;
+    internal Type resolvedReturnType, isolatedSignatureType;
+    internal Signature target;
+}
+
+// types.go:1404. Real index payload/storage; no instance is created by this slice.
+public sealed class IndexInfo
+{
+    internal Type keyType, valueType;
+    internal bool isReadonly;
+    internal Node declaration;
+    internal Symbol indexSymbol;
+    internal List<Node> components;
+    public Type KeyType() => keyType;
+    public Type ValueType() => valueType;
+    public bool IsReadonly() => isReadonly;
+    public Node Declaration() => declaration;
+}
+
+// types.go:1444. Bitwise combination preserves False < Unknown < Maybe < True.
+public enum Ternary : sbyte
+{
+    False = 0,
+    Unknown = 1,
+    Maybe = 3,
+    True = -1,
 }
 
 internal sealed class NodeLinks
@@ -328,4 +388,64 @@ internal sealed class MarkedAssignmentSymbolLinks
 {
     internal int lastAssignmentPos;
     internal bool hasDefiniteAssignment;
+}
+
+// types.go:409. Unused/JSX/emit-helper fields excluded by the admitted script slice.
+internal sealed class SourceFileLinks
+{
+    internal bool typeChecked;
+    internal GoOrderedNodeSet deferredNodes = new();
+}
+
+// Language adapter for collections.OrderedSet[*ast.Node]: insertion order and
+// reference identity, including duplicate Add suppression, remain observable.
+internal sealed class GoOrderedNodeSet
+{
+    private readonly HashSet<Node> set = new(ReferenceEqualityComparer.Instance);
+    private readonly List<Node> values = new();
+    internal void Add(Node node)
+    {
+        if (set.Add(node))
+            values.Add(node);
+    }
+
+    internal IEnumerable<Node> Values()
+    {
+        // Go's iterator walks the live ordered slice, including later additions.
+        for (int i = 0; i < values.Count; i++)
+            yield return values[i];
+    }
+}
+
+// types.go:342,1202; exact flags for retained property-key access helpers.
+[Flags]
+internal enum AccessFlags : uint
+{
+    None = 0,
+    IncludeUndefined = 1 << 0,
+    NoIndexSignatures = 1 << 1,
+    Writing = 1 << 2,
+    CacheSymbol = 1 << 3,
+    AllowMissing = 1 << 4,
+    ExpressionPosition = 1 << 5,
+    ReportDeprecated = 1 << 6,
+    SuppressNoImplicitAnyError = 1 << 7,
+    Contextual = 1 << 8,
+    Persistent = IncludeUndefined
+}
+
+[Flags]
+internal enum IndexFlags : uint
+{
+    None = 0,
+    StringsOnly = 1 << 0,
+    NoIndexSignatures = 1 << 1,
+    NoReducibleCheck = 1 << 2
+}
+
+// types.go:29. Signature payload behavior remains guarded.
+internal enum SignatureKind
+{
+    Call,
+    Construct
 }

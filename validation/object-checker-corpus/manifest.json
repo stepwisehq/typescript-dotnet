@@ -1,0 +1,31 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 43,
+  "groups": [
+    {
+      "name": "matrix",
+      "cases": 35,
+      "requests": "validation/object-checker-corpus/matrix-requests.jsonl",
+      "expected": "validation/object-checker-corpus/matrix-expected.jsonl",
+      "requestsSha256": "b7c7c8eb3f402639092ff03af709645dd128ca7a329cca5c27cc41fa7565b6bc",
+      "expectedSha256": "9ce579d35df400a8b8061b0f8f5509f208ddda76971dbde8e0b128cfbebb8325"
+    },
+    {
+      "name": "tiny",
+      "cases": 8,
+      "requests": "validation/object-checker-corpus/tiny-requests.jsonl",
+      "expected": "validation/object-checker-corpus/tiny-expected.jsonl",
+      "requestsSha256": "8950ae1a3127010a1ccab1e759ba9502fa859801b9dc860939010a8ed258fcc3",
+      "expectedSha256": "fbcc758f8f1bd58deb202403942bb52b2f89d6f061ce54120d9962fd746f2d93"
+    }
+  ],
+  "retiredHistoricalAdmissionControls": [
+    "object",
+    "object-type"
+  ],
+  "historicalScalarEvidence": "validation/results/checker-verified.json",
+  "observationOrder": "GetDiagnostics; query types/symbols and scalar graph formatting; assignability pairs; globals/diagnostics; relation-key equality; repeated widening; ascending canonical-type public property discovery and raw members/signature/index storage; property link work queue; selected existing cache reads; final flags. Queues expand only by index, no live collection foreach mutation. Regular cache is never forced.",
+  "instrumentation": "Authored tools/checker-oracle/object_access.go copied as untracked inside original checker package; reads actual links/cache storage and invokes actual relation key. No tracked upstream modifications.",
+  "newAuthoredAdmissionControls": 25,
+  "currentHistoricalControls": 33
+}

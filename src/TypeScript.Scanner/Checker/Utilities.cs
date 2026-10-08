@@ -18,13 +18,25 @@ public sealed partial class Checker
             return 1;
         if (t1.checker != t2.checker)
             throw new InvalidOperationException("Cannot compare types from different checkers");
-        int c = unchecked((int)t1.flags - (int)t2.flags);
+        int c = getSortOrderFlags(t1) - getSortOrderFlags(t2);
         if (c != 0)
             return c;
-        if (t1.alias != null || t2.alias != null || t1.symbol != null || t2.symbol != null)
-            throw unsupported("CompareTypes: named types");
+        c = compareTypeNames(t1, t2);
+        if (c != 0)
+            return c;
         if ((t1.flags & TypeFlags.Singleton) != 0)
         {
+        }
+        else if ((t1.flags & TypeFlags.Object) != 0)
+        {
+            if ((t1.objectFlags & (ObjectFlags.InstantiationExpressionType | ObjectFlags.Reference | ObjectFlags.Mapped | ObjectFlags.ReverseMapped)) != 0 || (t2.objectFlags & (ObjectFlags.InstantiationExpressionType | ObjectFlags.Reference | ObjectFlags.Mapped | ObjectFlags.ReverseMapped)) != 0)
+                throw unsupported("CompareTypes: object instantiation/reference/mapper");
+            c = t1.checker.compareSymbolsWorker(t1.symbol, t2.symbol);
+            if (c != 0)
+                return c;
+            c = (int)(t1.objectFlags & ObjectFlags.ObjectTypeKindMask) - (int)(t2.objectFlags & ObjectFlags.ObjectTypeKindMask);
+            if (c != 0)
+                return c;
         }
         else if ((t1.flags & TypeFlags.Union) != 0)
         {
@@ -66,9 +78,9 @@ public sealed partial class Checker
 
     private static int compareTypeLists(List<Type> left, List<Type> right)
     {
-        if (left.Count != right.Count)
-            return left.Count - right.Count;
-        for (int i = 0; i < left.Count; i++)
+        if ((left?.Count ?? 0) != (right?.Count ?? 0))
+            return (left?.Count ?? 0) - (right?.Count ?? 0);
+        for (int i = 0; i < (left?.Count ?? 0); i++)
         {
             int result = CompareTypes(left[i], right[i]);
             if (result != 0)
@@ -76,6 +88,28 @@ public sealed partial class Checker
         }
 
         return 0;
+    }
+
+    private static int getSortOrderFlags(Type t) => (t.flags & (TypeFlags.EnumLiteral | TypeFlags.Enum)) != 0 && (t.flags & TypeFlags.Union) == 0 ? (int)TypeFlags.Enum : (int)t.flags;
+    private static int compareTypeNames(Type t1, Type t2)
+    {
+        var s1 = getTypeNameSymbol(t1);
+        var s2 = getTypeNameSymbol(t2);
+        if (s1 == s2)
+            return compareTypeLists(t1.alias?.TypeArguments(), t2.alias?.TypeArguments());
+        if (s1 == null)
+            return 1;
+        if (s2 == null)
+            return -1;
+        var result = string.CompareOrdinal(s1.Name, s2.Name);
+        return result != 0 ? result : t1.checker.compareSymbolsWorker(s1, s2);
+    }
+
+    private static Symbol getTypeNameSymbol(Type t)
+    {
+        if (t.alias != null)
+            return t.alias.symbol;
+        return (t.flags & (TypeFlags.TypeParameter | TypeFlags.StringMapping)) != 0 || (t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0 ? t.symbol : null;
     }
 
     // isMutableLocalVariableDeclaration (1096).
@@ -146,4 +180,110 @@ public sealed partial class Checker
         var range = TypeScript.Scanner.Scanner.GetErrorRangeForNode(Ast.GetSourceFileOfNode(node), node);
         return Ast.NewDiagnostic(Ast.GetSourceFileOfNode(node), range, message, args);
     }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1140. Retained syntax-only declaration member dispatch.
+    private static List<Node> getMembersOfDeclaration(Node node) => node.Kind switch
+    {
+        Kind.InterfaceDeclaration or Kind.ClassDeclaration or Kind.ClassExpression or Kind.TypeLiteral => node.Members(),
+        Kind.ObjectLiteralExpression => node.Properties(),
+        _ => null
+    };
+}
+
+public sealed partial class Checker
+{
+    private static ModifierFlags getDeclarationModifierFlagsFromSymbol(Symbol symbol) => getDeclarationModifierFlagsFromSymbolEx(symbol, false);
+    private static ModifierFlags getDeclarationModifierFlagsFromSymbolEx(Symbol symbol, bool isWrite)
+    {
+        if ((symbol.CheckFlags & CheckFlags.Synthetic) != 0)
+        {
+            var access = (!isWrite && (symbol.CheckFlags & CheckFlags.ContainsPublic) != 0 || isWrite && (symbol.CheckFlags & CheckFlags.ContainsWritePublic) != 0) ? ModifierFlags.Public : (!isWrite && (symbol.CheckFlags & CheckFlags.ContainsProtected) != 0 || isWrite && (symbol.CheckFlags & CheckFlags.ContainsWriteProtected) != 0) ? ModifierFlags.Protected : (!isWrite && (symbol.CheckFlags & CheckFlags.ContainsPrivate) != 0 || isWrite && (symbol.CheckFlags & CheckFlags.ContainsWritePrivate) != 0) ? ModifierFlags.Private : ModifierFlags.None;
+            return (symbol.CheckFlags & CheckFlags.ContainsStatic) != 0 ? access | ModifierFlags.Static : access;
+        }
+
+        if (symbol.ValueDeclaration != null)
+        {
+            if ((symbol.Flags & SymbolFlags.Accessor) != 0)
+                throw unsupported("getDeclarationModifierFlagsFromSymbolEx: accessor");
+            var flags = Ast.GetCombinedModifierFlags(symbol.ValueDeclaration);
+            return symbol.Parent != null && (symbol.Parent.Flags & SymbolFlags.Class) != 0 ? flags : flags & ~ModifierFlags.AccessibilityModifier;
+        }
+
+        return (symbol.Flags & SymbolFlags.Prototype) != 0 ? ModifierFlags.Public | ModifierFlags.Static : ModifierFlags.None;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static string entityNameToString(Node node) => Ast.EntityNameToString(node, TypeScript.Scanner.Scanner.GetTextOfNodeByteString);
+}
+
+public sealed partial class Checker
+{
+    private static Diagnostic NewDiagnosticChainForNode(Diagnostic chain, Node node, Message message, params object[] args) => chain != null ? Ast.NewDiagnosticChain(chain, message, args) : NewDiagnosticForNode(node, message, args);
+}
+
+public sealed partial class Checker
+{
+    // checker/utilities.go:922/929, selected static property-name types.
+    private static bool isTypeUsableAsPropertyName(Type t) => (t.flags & TypeFlags.StringOrNumberLiteralOrUnique) != 0;
+    private static string getPropertyNameFromType(Type t)
+    {
+        if ((t.flags & TypeFlags.StringLiteral) != 0)
+            return (string)t.AsLiteralType().value;
+        if ((t.flags & TypeFlags.NumberLiteral) != 0)
+            return ((JsNum.Number)t.AsLiteralType().value).String();
+        if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
+            throw unsupported("getPropertyNameFromType: unique symbol");
+        throw new InvalidOperationException("Unhandled case in getPropertyNameFromType");
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker/utilities.go:298.
+    internal static bool isOptionalDeclaration(Node declaration) => Ast.HasQuestionToken(declaration);
+}
+
+public sealed partial class Checker
+{
+    private enum AssignmentKind
+    {
+        None,
+        Definite,
+        Compound
+    }
+
+    // checker/utilities.go:89. Pure syntax classification is complete; semantic
+    // write checking remains outside admission and explicitly guards when reached.
+    private static AssignmentKind getAssignmentTargetKind(Node node)
+    {
+        var target = Ast.GetAssignmentTarget(node);
+        if (target == null)
+            return AssignmentKind.None;
+        switch (target.Kind)
+        {
+            case Kind.BinaryExpression:
+                var binaryOperator = target.AsBinaryExpression().OperatorToken.Kind;
+                return binaryOperator == Kind.EqualsToken || Ast.IsLogicalOrCoalescingAssignmentOperator(binaryOperator) ? AssignmentKind.Definite : AssignmentKind.Compound;
+            case Kind.PrefixUnaryExpression:
+            case Kind.PostfixUnaryExpression:
+                return AssignmentKind.Compound;
+            case Kind.ForInStatement:
+            case Kind.ForOfStatement:
+                return AssignmentKind.Definite;
+            default:
+                throw new InvalidOperationException("Unhandled case in getAssignmentTargetKind");
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker/utilities.go:1018/1029.
+    private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.Name);
+    private static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
 }

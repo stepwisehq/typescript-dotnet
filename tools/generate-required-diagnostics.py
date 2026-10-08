@@ -16,7 +16,7 @@ for name,body in re.findall(r'^var (\w+) = &Message\{(.*)\}$',(up/'diagnostics/d
  for field in ['code','category','key','text']:
   if field not in fields:raise ValueError((name,field))
  category=fields['category'].removeprefix('Category');key=json.loads(fields['key']);text=json.loads(fields['text'])
- flags=', '+fields.get('reportsUnnecessary','false')+', '+fields.get('reportsDeprecated','false')
+ flags=', '+fields.get('reportsUnnecessary','false')+', '+fields.get('reportsDeprecated','false')+', '+fields.get('elidedInCompatibilityPyramid','false')
  rows.append('    public static readonly Message '+name+' = new('+fields['code']+', DiagnosticCategory.'+category+', '+json.dumps(key,ensure_ascii=False)+', '+json.dumps(text,ensure_ascii=False)+flags+');')
 old=set(re.findall(r'static readonly Message (\w+)',dest.read_text()))
 if old-found:raise ValueError(('old metadata lost',old-found))

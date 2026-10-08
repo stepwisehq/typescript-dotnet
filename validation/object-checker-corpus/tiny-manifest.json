@@ -1,0 +1,14 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 8,
+  "requestsSha256": "8950ae1a3127010a1ccab1e759ba9502fa859801b9dc860939010a8ed258fcc3",
+  "expectedSha256": "fbcc758f8f1bd58deb202403942bb52b2f89d6f061ce54120d9962fd746f2d93",
+  "selection": "Object tiny: fresh/indirect/weak/missing/nested chains/optional/readonly/shorthand/static names/empty tables",
+  "historicalScalarEvidence": "validation/results/checker-verified.json",
+  "retiredHistoricalAdmissionControls": [
+    "object",
+    "object-type"
+  ],
+  "instrumentation": "tools/checker-oracle/object_access.go copied as untracked original-module read-only private-store observer; tracked upstream and pin unchanged",
+  "observationOrder": "GetDiagnostics; query types/symbols and scalar graph formatting; assignability pairs; globals/diagnostics; relation-key equality; repeated widening; ascending canonical-type public property discovery and raw members/signature/index storage; property link work queue; selected existing cache reads; final flags. Queues expand only by index, no live collection foreach mutation. Regular cache is never forced."
+}

@@ -131,7 +131,15 @@ public sealed partial class Checker
             return new(t);
         }
 
-        // containsMatchingReference only checks dotted prefixes; none are admitted.
+        if (containsMatchingReference(f.reference, node))
+        {
+            if (!isReachableFlowNode(flow))
+                return new(unreachableNeverType);
+            if (node.Initializer()?.Kind is Kind.FunctionExpression or Kind.ArrowFunction)
+                throw unsupported("getTypeAtFlowAssignment: expando function flow");
+            return new(f.declaredType);
+        }
+
         return default;
     }
 
@@ -145,6 +153,10 @@ public sealed partial class Checker
                 return Ast.IsIdentifier(target) && getResolvedSymbol(source) == getResolvedSymbol(target) || Ast.IsVariableDeclaration(target) && getExportSymbolOfValueSymbolIfExported(getResolvedSymbol(source)) == getSymbolOfDeclaration(target);
             case Kind.ParenthesizedExpression:
                 return isMatchingReference(source.Expression(), target);
+            case Kind.PropertyAccessExpression:
+                if (target.Kind == Kind.PropertyAccessExpression)
+                    return source.Name().Text() == target.Name().Text() && isMatchingReference(source.Expression(), target.Expression());
+                return false;
             default:
                 throw unsupported("isMatchingReference: nonscalar reference");
         }
@@ -280,19 +292,38 @@ public sealed partial class Checker
     private bool hasParentWithAssignmentsMarked(Node node) => Ast.FindAncestor(node.Parent, n => Ast.IsFunctionOrSourceFile(n) && (nodeLinks.Get(n).flags & NodeCheckFlags.AssignmentsMarked) != 0) != null;
     private bool markNodeAssignmentsWorker(Node node)
     {
-        if (node.Kind == Kind.Identifier)
+        switch (node.Kind)
         {
-            // getAssignmentTargetKind: declaration names/initializer identifier reads
-            // are None. Explicit assignment target syntax is not admitted.
-            if (node.Parent.Kind is not (Kind.VariableDeclaration or Kind.ParenthesizedExpression))
-                throw unsupported("markNodeAssignmentsWorker: assignment identifier");
-            return false;
+            case Kind.Identifier:
+                if (getAssignmentTargetKind(node) != AssignmentKind.None)
+                    throw unsupported("markNodeAssignmentsWorker: source assignment target");
+                return false;
+            case Kind.ExportSpecifier:
+                throw unsupported("markNodeAssignmentsWorker: export assignment reference");
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.EnumDeclaration:
+                return false;
         }
 
         if (Ast.IsTypeNode(node))
             return false;
-        if (node.Kind is not (Kind.SourceFile or Kind.Block or Kind.VariableStatement or Kind.VariableDeclarationList or Kind.VariableDeclaration or Kind.ParenthesizedExpression or Kind.NumericLiteral or Kind.StringLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.EndOfFile))
-            throw unsupported("markNodeAssignmentsWorker: unsupported syntax");
         return node.ForEachChild(markNodeAssignmentsWorker);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool containsMatchingReference(Node source, Node target)
+    {
+        while (source.Kind == Kind.PropertyAccessExpression)
+        {
+            source = source.Expression();
+            if (isMatchingReference(source, target))
+                return true;
+        }
+
+        return false;
     }
 }

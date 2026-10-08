@@ -8,22 +8,45 @@ using TypeScript.Scanner;
 namespace TypeScript.DiagnosticPrinting;
 internal sealed partial class Printer
 {
-    private static string getLiteralText(Node node)
+    private string getLiteralText(Node node)
     {
+        if (currentSourceFile != null && canUseOriginalText(node))
+            return TypeScript.Scanner.Scanner.GetSourceTextOfNodeFromSourceFileByteString(currentSourceFile, node, false);
         if (node.Kind == Kind.NumericLiteral)
             return node.Text();
+        if (node.Kind == Kind.NoSubstitutionTemplateLiteral)
+        {
+            var template = new StringBuilder();
+            template.Append('`');
+            escapeStringWorker(node.Text(), '`', template, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
+            template.Append('`');
+            return template.ToString();
+        }
+
         if (node.Kind != Kind.StringLiteral)
             throw TypeScript.Checking.Checker.unsupported("getLiteralText: nonscalar literal");
         char quote = (node.AsStringLiteral().TokenFlags & TokenFlags.SingleQuote) != 0 ? '\'' : '"';
         var b = new StringBuilder(node.Text().Length + 2);
         b.Append(quote);
-        escapeStringWorker(node.Text(), quote, b);
+        escapeStringWorker(node.Text(), quote, b, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
         b.Append(quote);
         return b.ToString();
     }
 
-    // escapeStringWorker (77), NeverAsciiEscape; JSX/backtick flags excluded.
-    private static void escapeStringWorker(string s, char quote, StringBuilder b)
+    // utilities.go:198. Diagnostic printer target is ES5; invalid/separated
+    // numeric source text cannot be reused. Unterminated/source-bigint paths
+    // remain rejected by admission (TerminateUnterminatedLiterals is unset).
+    private static bool canUseOriginalText(Node node)
+    {
+        if (Ast.NodeIsSynthesized(node) || node.Parent == null)
+            return false;
+        if (node.Kind == Kind.NumericLiteral && (node.AsNumericLiteral().TokenFlags & (TokenFlags.IsInvalid | TokenFlags.ContainsSeparator)) != 0)
+            return false;
+        return node.Kind != Kind.BigIntLiteral;
+    }
+
+    // escapeStringWorker (77), selected node-specific NoAsciiEscaping; JSX excluded.
+    private static void escapeStringWorker(string s, char quote, StringBuilder b, bool neverAsciiEscape)
     {
         int pos = 0, i = 0;
         while (i < s.Length)
@@ -43,7 +66,7 @@ internal sealed partial class Printer
                     escape = true;
                     break;
                 default:
-                    if (ch == quote || ch <= 0x1F)
+                    if (ch == quote || ch <= 0x1F || !neverAsciiEscape && ch > 0x7F)
                         escape = true;
                     break;
             }

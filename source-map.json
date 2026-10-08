@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted bounded scanner, parser, source-file binder and noLib single-file scalar checker checkpoints; broader compiler phases remain excluded.",
+  "checkpoint": "Accepted bounded scanner, parser, source-file binder, fixed noLib single-file scalar and finite anonymous object checker checkpoints; broader checker/compiler phases remain excluded.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -34,7 +34,7 @@
       "upstream": "tsc/internal/scanner/utilities.go",
       "destination": "src/TypeScript.Scanner/Scanner/Utilities.cs",
       "status": "partial",
-      "scope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded.",
+      "scope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded. Object extension: Selected raw IsIdentifierTextByteString from utilities.go:129 added for property-name diagnostic classification; public/raw source and declaration-name wrappers retain accepted behavior. No additional general scanner coordinate APIs.",
       "upstreamSha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0",
       "scannerCheckpointScope": "tokenIsIdentifierOrKeyword only; all other utilities excluded, including AST utilities, JSDoc text normalization, IsIdentifierText, and IsIntrinsicJsxName.",
       "excludedSymbols": [
@@ -43,7 +43,10 @@
         "IsIdentifierText",
         "IsIntrinsicJsxName"
       ],
-      "parserCheckpointScope": "tokenIsIdentifierOrKeyword; source/node text helpers and JSDoc normalization required by parser; remaining utilities explicitly excluded."
+      "parserCheckpointScope": "tokenIsIdentifierOrKeyword; source/node text helpers and JSDoc normalization required by parser; remaining utilities explicitly excluded.",
+      "scalarCheckerCheckpointScope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded.",
+      "objectCheckerCheckpointScope": "Scanner predicate and parser node/JSDoc source-text normalization; binder DeclarationNameToString. Explicit internal raw byte-string and public decoded/byte wrappers preserve Go text semantics. Four named remaining utilities excluded. Object extension: Selected raw IsIdentifierTextByteString from utilities.go:129 added for property-name diagnostic classification; public/raw source and declaration-name wrappers retain accepted behavior. No additional general scanner coordinate APIs.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/kind_generated.go",
@@ -104,19 +107,25 @@
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
       "status": "partial",
-      "scope": "226 pinned message records referenced by scanner/regex/parser/binder and selected checker branches, retaining numeric codes/categories/keys/text/report flags; unrelated compiler diagnostics excluded.",
+      "scope": "273 pinned message records referenced by scanner/parser/binder and selected scalar/object checker branches, including actual compatibility-pyramid elision flag; unrelated compiler diagnostic records excluded.",
       "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f",
       "scannerCheckpointScope": "Only diagnostics referenced by scanner/regex.",
       "parserCheckpointScope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded.",
-      "binderCheckpointScope": "198 pinned diagnostic records referenced by scanner/regex/parser/binder syntax dependencies, retaining numeric codes/categories/keys/text and report flags; unrelated compiler messages excluded."
+      "binderCheckpointScope": "198 pinned diagnostic records referenced by scanner/regex/parser/binder syntax dependencies, retaining numeric codes/categories/keys/text and report flags; unrelated compiler messages excluded.",
+      "scalarCheckerCheckpointScope": "226 pinned message records referenced by scanner/regex/parser/binder and selected checker branches, retaining numeric codes/categories/keys/text/report flags; unrelated compiler diagnostics excluded.",
+      "objectCheckerCheckpointScope": "273 pinned message records referenced by scanner/parser/binder and selected scalar/object checker branches, including actual compatibility-pyramid elision flag; unrelated compiler diagnostic records excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
       "status": "partial",
-      "scope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded.",
+      "scope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded. Object extension: Compatibility-pyramid elision metadata exposed for actual recursive relation error-chain formatting; raw argument/display invalid-UTF8 boundary remains separate from scanner JS surrogate semantics.",
       "upstreamSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238",
-      "binderCheckpointScope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system."
+      "binderCheckpointScope": "Diagnostic metadata and argument formatting; no full compiler diagnostic system.",
+      "scalarCheckerCheckpointScope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded.",
+      "objectCheckerCheckpointScope": "English diagnostic metadata and public display-string argument formatting plus the selected internal diagnostics.go Format raw-byte argument boundary: consecutive invalid UTF8 runs collapse to one replacement character, as strings.ToValidUTF8. Raw stored arguments and scanner JS/surrogate decoding unchanged; localization/catalog services excluded. Object extension: Compatibility-pyramid elision metadata exposed for actual recursive relation error-chain formatting; raw argument/display invalid-UTF8 boundary remains separate from scanner JS surrogate semantics.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/stringutil/identifier_parts_generated.go",
@@ -266,9 +275,12 @@
       "upstream": "tsc/internal/ast/ast_generated.go",
       "destination": "src/TypeScript.Scanner/Ast/AstGenerated.cs",
       "status": "partial",
-      "scope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only.",
+      "scope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
       "upstreamSha256": "b6fc40ffc5f43adbe9e0f6e1a53bd90e5c20c86ae1c738bb0ae5716bc540bb5a",
-      "parserCheckpointScope": "190 typed syntax payloads and192New factories with syntax Update/Clone/ForEachChild/VisitEachChild and static verification fields. Checker-owned SyntheticExpression excluded; compiler-only fields excluded. Private JSX fact projection only."
+      "parserCheckpointScope": "190 typed syntax payloads and192New factories with syntax Update/Clone/ForEachChild/VisitEachChild and static verification fields. Checker-owned SyntheticExpression excluded; compiler-only fields excluded. Private JSX fact projection only.",
+      "scalarCheckerCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only.",
+      "objectCheckerCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -346,7 +358,7 @@
       "upstream": "tsc/internal/ast/utilities.go",
       "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
       "status": "partial",
-      "scope": "Accepted parser/binder syntax closure, atomic IDs/lazy symbol tables/private names, plus selected NameResolver/checker helpers and eight contextual query predicates from utilities.go. Retains declaration/type/expression context, lexical scope and ancestor tests. Broad semantic/cross-file/reference resolution and general transform facts excluded.",
+      "scope": "Accepted parser/binder syntax closure, atomic IDs/lazy symbol tables/private names, plus selected NameResolver/checker helpers and eight contextual query predicates from utilities.go. Retains declaration/type/expression context, lexical scope and ancestor tests. Broad semantic/cross-file/reference resolution and general transform facts excluded. Object extension: Anonymous-object diagnostic closure adds exact data/expression/name/question/primitive/assertion/deprecated/inferred-type/text/entity-name/synthesized/right-side predicates and helpers; general emit/semantic AST utility closure excluded.",
       "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
       "parserCheckpointScope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded.",
       "binderCheckpointScope": "Parser syntax predicate/accessor closure plus 73 generated binder dependency functions and handwritten atomic node/symbol IDs, lazy symbol-table and raw ambient/private-name helpers. Includes source-local ModuleInstanceState/ancestor/export analysis, assignment/name/strictness predicates. Unneeded utilities, checker/cross-file name or reference resolution and general transform facts excluded.",
@@ -360,7 +372,10 @@
         "isPartOfTypeExpressionWithTypeArguments",
         "IsJSDocLinkLike"
       ],
-      "checkerGenerator": "tools/checker-support-port/main.go with query-functions.txt; query-ast.py preserves prior slices; scratch LF regeneration matched reviewed source. Other selected helpers are handwritten."
+      "checkerGenerator": "tools/checker-support-port/main.go with query-functions.txt; query-ast.py preserves prior slices; scratch LF regeneration matched reviewed source. Other selected helpers are handwritten.",
+      "scalarCheckerCheckpointScope": "Accepted parser/binder syntax closure, atomic IDs/lazy symbol tables/private names, plus selected NameResolver/checker helpers and eight contextual query predicates from utilities.go. Retains declaration/type/expression context, lexical scope and ancestor tests. Broad semantic/cross-file/reference resolution and general transform facts excluded.",
+      "objectCheckerCheckpointScope": "Accepted parser/binder syntax closure, atomic IDs/lazy symbol tables/private names, plus selected NameResolver/checker helpers and eight contextual query predicates from utilities.go. Retains declaration/type/expression context, lexical scope and ancestor tests. Broad semantic/cross-file/reference resolution and general transform facts excluded. Object extension: Anonymous-object diagnostic closure adds exact data/expression/name/question/primitive/assertion/deprecated/inferred-type/text/entity-name/synthesized/right-side predicates and helpers; general emit/semantic AST utility closure excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -443,7 +458,7 @@
       "upstream": "tsc/internal/binder/referenceresolver.go",
       "destination": null,
       "status": "excluded",
-      "scope": "ReferenceResolver remains excluded: not called by the accepted source-file binder or selected scalar checker. NameResolver is mapped separately; emit/reference and cross-file resolution dependencies remain outside this bounded phase.",
+      "scope": "ReferenceResolver remains excluded: not called by the accepted source-file binder or selected scalar/finite anonymous object checker. NameResolver is mapped separately; emit/reference and cross-file resolution dependencies remain outside this bounded phase.",
       "upstreamSha256": "d4ff84553926d47b86f38dbe9717c57d3cfd5de32596a7c0ed1f6766dec7b7b7",
       "binderCheckpointScope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase."
     },
@@ -536,16 +551,22 @@
       "upstream": "tsc/internal/checker/checker.go",
       "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
       "status": "partial",
-      "scope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
-      "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8"
+      "scope": "Selected scalar and finite anonymous object construction/context/member resolution/property reads/widening/cache/deferred diagnostics/type cycles; actual finite property-key extraction and primitive literal-key intersection reduction for diagnostic best matching. Scoped noLib initialization; named/generic/signature/index/retained intersection paths reject. Complete selected relation-key preimage replaces opaque XXH3 representation, preserving identity-order normalization.",
+      "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
+      "scalarCheckerCheckpointScope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
+      "objectCheckerCheckpointScope": "Selected scalar and finite anonymous object construction/context/member resolution/property reads/widening/cache/deferred diagnostics/type cycles; actual finite property-key extraction and primitive literal-key intersection reduction for diagnostic best matching. Scoped noLib initialization; named/generic/signature/index/retained intersection paths reject. Complete selected relation-key preimage replaces opaque XXH3 representation, preserving identity-order normalization.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
       "destination": "src/TypeScript.Scanner/Checker/Types.cs",
       "status": "partial",
-      "scope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags enums; stable Type wrapper plus IntrinsicType/LiteralType fresh-regular cycles, UnionType and actual partial ObjectType initialization markers; selected node/symbol/assignment cache records. Managed classes flatten Go embedded payload bases; static DataType is authored AOT-safe graph metadata. Unselected signature/mapper/type-parameter/structured payloads and object signature/index/instantiation state excluded.",
+      "scope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags plus selected SignatureKind/AccessFlags/IndexFlags/Ternary enums; stable Type wrapper and intrinsic/literal/union/anonymous object payloads. Actual structured members/properties/signature/count/index storage, partial typed Signature/IndexInfo nil slots, selected member/property/source-file/cache records. Managed classes flatten embedded payload bases; AOT static metadata authored. No fake signature/index payload allocation; mapper/type-parameter/call/instantiation models excluded.",
       "upstreamSha256": "0265c1f309f28f4c6a608ea20243fe30625ba055e3b779b662dbec93172f9eb7",
-      "generator": "tools/generate-checker-support-enums.py generates enum prefix and preserves handwritten model suffix; scratch reproduction checked."
+      "generator": "tools/generate-checker-support-enums.py generates enum prefix and preserves handwritten model suffix; scratch reproduction checked.",
+      "scalarCheckerCheckpointScope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags enums; stable Type wrapper plus IntrinsicType/LiteralType fresh-regular cycles, UnionType and actual partial ObjectType initialization markers; selected node/symbol/assignment cache records. Managed classes flatten Go embedded payload bases; static DataType is authored AOT-safe graph metadata. Unselected signature/mapper/type-parameter/structured payloads and object signature/index/instantiation state excluded.",
+      "objectCheckerCheckpointScope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags plus selected SignatureKind/AccessFlags/IndexFlags/Ternary enums; stable Type wrapper and intrinsic/literal/union/anonymous object payloads. Actual structured members/properties/signature/count/index storage, partial typed Signature/IndexInfo nil slots, selected member/property/source-file/cache records. Managed classes flatten embedded payload bases; AOT static metadata authored. No fake signature/index payload allocation; mapper/type-parameter/call/instantiation models excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -558,29 +579,41 @@
       "upstream": "tsc/internal/checker/relater.go",
       "destination": "src/TypeScript.Scanner/Checker/Relater.cs",
       "status": "partial",
-      "scope": "Selected scalar, literal, boolean and undefined-union relationships; general structured relationships excluded.",
-      "upstreamSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47"
+      "scope": "Selected scalar/internal-union and finite anonymous structural relations: original ternary recursive cache/maybe/source-target stacks, identity/required-optional/readonly properties, excess/weak/missing-property checks, diagnostics chains/error snapshots, elaboration and discrimination. Actual Construct/Call signature resolution preserves cache side effects while nonempty signatures/indexes/retained intersections/generics reject. Managed prefix-list snapshots preserve Go slice error-state isolation.",
+      "upstreamSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47",
+      "scalarCheckerCheckpointScope": "Selected scalar, literal, boolean and undefined-union relationships; general structured relationships excluded.",
+      "objectCheckerCheckpointScope": "Selected scalar/internal-union and finite anonymous structural relations: original ternary recursive cache/maybe/source-target stacks, identity/required-optional/readonly properties, excess/weak/missing-property checks, diagnostics chains/error snapshots, elaboration and discrimination. Actual Construct/Call signature resolution preserves cache side effects while nonempty signatures/indexes/retained intersections/generics reject. Managed prefix-list snapshots preserve Go slice error-state isolation.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
       "destination": "src/TypeScript.Scanner/Checker/Flow.cs",
       "status": "partial",
-      "scope": "Straight-line start/assignment flow paths used by scalar identifier references; branching flow excluded.",
-      "upstreamSha256": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c"
+      "scope": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
+      "upstreamSha256": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c",
+      "scalarCheckerCheckpointScope": "Straight-line start/assignment flow paths used by scalar identifier references; branching flow excluded.",
+      "objectCheckerCheckpointScope": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
       "destination": "src/TypeScript.Scanner/Checker/Utilities.cs",
       "status": "partial",
-      "scope": "Selected semantic predicates, literal handling and missing-library feature suggestions.",
-      "upstreamSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0"
+      "scope": "Selected semantic predicates, literal handling, object/property name helpers, optionality and actual missing-library/name/property suggestions; unselected broad semantic utilities excluded.",
+      "upstreamSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0",
+      "scalarCheckerCheckpointScope": "Selected semantic predicates, literal handling and missing-library feature suggestions.",
+      "objectCheckerCheckpointScope": "Selected semantic predicates, literal handling, object/property name helpers, optionality and actual missing-library/name/property suggestions; unselected broad semantic utilities excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
       "destination": "src/TypeScript.Scanner/Checker/GrammarChecks.cs",
       "status": "partial",
-      "scope": "Selected scalar declaration/script grammar checks.",
-      "upstreamSha256": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9"
+      "scope": "Selected script/scalar declaration and anonymous object/data type-literal grammar checks, duplicate names/modifiers and actual numeric-literal suggestions. Methods/indexes/computed names/ambient/classes/unselected declarations excluded.",
+      "upstreamSha256": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9",
+      "scalarCheckerCheckpointScope": "Selected scalar declaration/script grammar checks.",
+      "objectCheckerCheckpointScope": "Selected script/scalar declaration and anonymous object/data type-literal grammar checks, duplicate names/modifiers and actual numeric-literal suggestions. Methods/indexes/computed names/ambient/classes/unselected declarations excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -601,7 +634,10 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/Admission.cs",
       "status": "new",
-      "scope": "Authored input admission and public checker creation adapter; explicit unsupported feature exception, not ported semantic logic."
+      "scope": "Authored fixed noLib single-file TS scalar plus finite anonymous object admission/public creation adapter; rejects unsupported syntax/environment/foreign queries explicitly, not ported semantic logic. Historical scalar-only object negatives retired in current selection without altering their evidence.",
+      "scalarCheckerCheckpointScope": "Authored input admission and public checker creation adapter; explicit unsupported feature exception, not ported semantic logic.",
+      "objectCheckerCheckpointScope": "Authored fixed noLib single-file TS scalar plus finite anonymous object admission/public creation adapter; rejects unsupported syntax/environment/foreign queries explicitly, not ported semantic logic. Historical scalar-only object negatives retired in current selection without altering their evidence.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": null,
@@ -613,57 +649,81 @@
       "upstream": "tsc/internal/checker/nodebuilder.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
       "status": "partial",
-      "scope": "Selected TypeToTypeNode and SymbolToNode/context entry-exit branches for synthesized scalar types and unqualified diagnostic identifiers; general declaration serialization, context/tracker/expansion/verbosity options excluded.",
-      "upstreamSha256": "4e8a07599eb531900eabf825a0b6552bc812e0c541cdee5ab261405e39699a46"
+      "scope": "Selected TypeToTypeNode/SymbolToNode/context stack/managed cached builder branches for scalar and finite anonymous diagnostic types; actual nonnil enclosing declaration and fully-qualified diagnostic variant retained. External trackers/verbosity/general declaration emit excluded.",
+      "upstreamSha256": "4e8a07599eb531900eabf825a0b6552bc812e0c541cdee5ab261405e39699a46",
+      "scalarCheckerCheckpointScope": "Selected TypeToTypeNode and SymbolToNode/context entry-exit branches for synthesized scalar types and unqualified diagnostic identifiers; general declaration serialization, context/tracker/expansion/verbosity options excluded.",
+      "objectCheckerCheckpointScope": "Selected TypeToTypeNode/SymbolToNode/context stack/managed cached builder branches for scalar and finite anonymous diagnostic types; actual nonnil enclosing declaration and fully-qualified diagnostic variant retained. External trackers/verbosity/general declaration emit excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
       "status": "partial",
-      "scope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
-      "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302"
+      "scope": "Selected scalar/literal/internal-union/anonymous object diagnostic nodes and static data-property serialization; actual pseudochecker reuse, enclosing symbol types, text-range/original links, cache reads/writes, truncation and cycle/symbol-depth states. Fixed default flag projection retains varying fully-qualified/InObjectTypeLiteral keys and actual reportedDiagnostic. Named/generic/mapped/accessor/signature/index/general emit branches reject.",
+      "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302",
+      "scalarCheckerCheckpointScope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
+      "objectCheckerCheckpointScope": "Selected scalar/literal/internal-union/anonymous object diagnostic nodes and static data-property serialization; actual pseudochecker reuse, enclosing symbol types, text-range/original links, cache reads/writes, truncation and cycle/symbol-depth states. Fixed default flag projection retains varying fully-qualified/InObjectTypeLiteral keys and actual reportedDiagnostic. Named/generic/mapped/accessor/signature/index/general emit branches reject.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
       "destination": "src/TypeScript.Scanner/Checker/Printer.cs",
       "status": "partial",
-      "scope": "Default scalar TypeToString/typeToString byte helper and selected symbol naming wrappers for diagnostics; public strings decode once, internal diagnostic strings remain raw. Includes serialization-level guard and default byte cutoff; general signature/qualified naming/verbosity/print options excluded.",
-      "upstreamSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5"
+      "scope": "Selected scalar/anonymous-object TypeToString and symbol naming wrappers; genuine enclosing-declaration diagnostic serialization, default/fully-qualified variants, recursion bound/default byte cutoff. Public Unicode decoded once; internal strings/diagnostic args remain raw byte strings. Signature/qualified symbol/verbosity/general print options excluded.",
+      "upstreamSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5",
+      "scalarCheckerCheckpointScope": "Default scalar TypeToString/typeToString byte helper and selected symbol naming wrappers for diagnostics; public strings decode once, internal diagnostic strings remain raw. Includes serialization-level guard and default byte cutoff; general signature/qualified naming/verbosity/print options excluded.",
+      "objectCheckerCheckpointScope": "Selected scalar/anonymous-object TypeToString and symbol naming wrappers; genuine enclosing-declaration diagnostic serialization, default/fully-qualified variants, recursion bound/default byte cutoff. Public Unicode decoded once; internal strings/diagnostic args remain raw byte strings. Signature/qualified symbol/verbosity/general print options excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/printer.go",
       "destination": "src/TypeScript.Scanner/Printer/Printer.cs",
       "status": "partial",
-      "scope": "Diagnostic-only synthesized scalar keyword/literal/unqualified identifier dispatch and required emitter branches; no public emit API, source maps, comments or general statements/declarations.",
-      "upstreamSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c"
+      "scope": "Diagnostic-only scalar/object/type-literal/property-signature/union/parenthesized/static-name output and selected source-context text reuse. Actual node-specific escape flags; no public emit API/source maps/comments/general statements/declarations.",
+      "upstreamSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c",
+      "scalarCheckerCheckpointScope": "Diagnostic-only synthesized scalar keyword/literal/unqualified identifier dispatch and required emitter branches; no public emit API, source maps, comments or general statements/declarations.",
+      "objectCheckerCheckpointScope": "Diagnostic-only scalar/object/type-literal/property-signature/union/parenthesized/static-name output and selected source-context text reuse. Actual node-specific escape flags; no public emit API/source maps/comments/general statements/declarations.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
       "destination": "src/TypeScript.Scanner/Printer/Textwriter.cs",
       "status": "partial",
-      "scope": "Required default single-line writer construction/clear/string/write/keyword/string-literal/identifier branches; managed builder replaces byte builder. General position tracking/indent/newline/options excluded.",
-      "upstreamSha256": "a41ab6981ff7e604fd43f4f1b9cebc02af1aa4628f688629630b471156affa89"
+      "scope": "Required single-line diagnostic writer construction/clear/string/write and token/property-name/punctuation/space/semicolon/string/identifier forwarding. Managed byte-string builder adaptation; full writer position/indent/newline/emit options excluded.",
+      "upstreamSha256": "a41ab6981ff7e604fd43f4f1b9cebc02af1aa4628f688629630b471156affa89",
+      "scalarCheckerCheckpointScope": "Required default single-line writer construction/clear/string/write/keyword/string-literal/identifier branches; managed builder replaces byte builder. General position tracking/indent/newline/options excluded.",
+      "objectCheckerCheckpointScope": "Required single-line diagnostic writer construction/clear/string/write and token/property-name/punctuation/space/semicolon/string/identifier forwarding. Managed byte-string builder adaptation; full writer position/indent/newline/emit options excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/utilities.go",
       "destination": "src/TypeScript.Scanner/Printer/Utilities.cs",
       "status": "partial",
-      "scope": "Synthesized numeric/string literal getLiteralText and NeverAsciiEscape string-worker/UTF16-escape branches required for diagnostic types. Retains invalid-byte/lone-surrogate/control/line separator/null-before-digit behavior; original-source reuse, JSX/backtick and general literal modes excluded.",
-      "upstreamSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e"
+      "scope": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
+      "upstreamSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e",
+      "scalarCheckerCheckpointScope": "Synthesized numeric/string literal getLiteralText and NeverAsciiEscape string-worker/UTF16-escape branches required for diagnostic types. Retains invalid-byte/lone-surrogate/control/line separator/null-before-digit behavior; original-source reuse, JSX/backtick and general literal modes excluded.",
+      "objectCheckerCheckpointScope": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": null,
       "destination": "validation/Checker.Validation",
       "status": "new",
-      "scope": "Authored reflection-free source-generated JSONL semantic graph/query/global-file diagnostic/assignability harness and internal identity/page/table utility observations; Native AOT target. Final bounded gate records 45 semantic cases, 35 admission controls, 20 independent Go utility observations and 10 authored API assertions.",
-      "evidence": "validation/results/checker-verified.json"
+      "scope": "Authored reflection-free source-generated JSONL scalar/object query/type/symbol/property/member/cache/widening/relation graph and diagnostic harness. Final bounded Native AOT object gate records43object+45scalar cases,58current admission controls,20actualGo utility observations and10authored API checks; private mutable cache parity not exhaustive.",
+      "evidence": "validation/results/object-checker-verified.json",
+      "scalarCheckerCheckpointScope": "Authored reflection-free source-generated JSONL semantic graph/query/global-file diagnostic/assignability harness and internal identity/page/table utility observations; Native AOT target. Final bounded gate records 45 semantic cases, 35 admission controls, 20 independent Go utility observations and 10 authored API assertions.",
+      "objectCheckerCheckpointScope": "Authored reflection-free source-generated JSONL semantic graph/query/global-file diagnostic/assignability harness and internal identity/page/table utility observations; Native AOT target. Final bounded gate records 45 semantic cases, 35 admission controls, 20 independent Go utility observations and 10 authored API assertions. Object extension: opt-in static/independent Go anonymous object metadata/property/cache/widening/relations observations; historical scalar DTO/corpus retained. Full mutable checker cache parity not claimed.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": null,
       "destination": "tests/Checker.Tests",
       "status": "new",
-      "scope": "Authored pinned-Go differential, independent unsupported boundary and utility/API checks for the selected semantic slice; final bounded gate records 82 passing xUnit tests.",
-      "evidence": "validation/results/checker-verified.json"
+      "scope": "Authored current scalar/object pinned-Go differential, explicit admission and utility/API xUnit checks: final bounded object gate records149passed. Historical scalar82-test scope/evidence retained separately.",
+      "evidence": "validation/results/object-checker-verified.json",
+      "scalarCheckerCheckpointScope": "Authored pinned-Go differential, independent unsupported boundary and utility/API checks for the selected semantic slice; final bounded gate records 82 passing xUnit tests.",
+      "objectCheckerCheckpointScope": "Authored pinned-Go differential, independent unsupported boundary and utility/API checks for the selected semantic slice; final bounded gate records 82 passing xUnit tests. Object extension: opt-in static/independent Go anonymous object metadata/property/cache/widening/relations observations; historical scalar DTO/corpus retained. Full mutable checker cache parity not claimed.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": null,
@@ -676,23 +736,203 @@
       "upstream": null,
       "destination": "tools/checker-oracle",
       "status": "new",
-      "scope": "Authored real pinned-Go compiler/checker host, independent semantic graph serializer and utility probes; no C# admission/function manifest dependency."
+      "scope": "Authored real pinned-Go compiler/checker host, independent semantic graph serializer and utility probes; no C# admission/function manifest dependency. Object extension: opt-in static/independent Go anonymous object metadata/property/cache/widening/relations observations; historical scalar DTO/corpus retained. Full mutable checker cache parity not claimed.",
+      "scalarCheckerCheckpointScope": "Authored real pinned-Go compiler/checker host, independent semantic graph serializer and utility probes; no C# admission/function manifest dependency.",
+      "objectCheckerCheckpointScope": "Authored real pinned-Go compiler/checker host, independent semantic graph serializer and utility probes; no C# admission/function manifest dependency. Object extension: opt-in static/independent Go anonymous object metadata/property/cache/widening/relations observations; historical scalar DTO/corpus retained. Full mutable checker cache parity not claimed.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/exports.go",
       "destination": "src/TypeScript.Scanner/Checker/Exports.cs",
       "status": "partial",
-      "scope": "Only public IsTypeAssignableTo forwarding to actual isTypeAssignableTo; authored ownership guard rejects foreign checker types. All other checker exports excluded.",
-      "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf"
+      "scope": "Selected public IsTypeAssignableTo and object/property/widening query forwarding over genuine selected checker helpers; authored type ownership guards. Unselected general checker exports excluded.",
+      "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
+      "scalarCheckerCheckpointScope": "Only public IsTypeAssignableTo forwarding to actual isTypeAssignableTo; authored ownership guard rejects foreign checker types. All other checker exports excluded.",
+      "objectCheckerCheckpointScope": "Selected public IsTypeAssignableTo and object/property/widening query forwarding over genuine selected checker helpers; authored type ownership guards. Unselected general checker exports excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/pseudotypenodebuilder.go",
+      "destination": "src/TypeScript.Scanner/Checker/PseudoTypeNodeBuilder.cs",
+      "status": "partial",
+      "scope": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
+      "upstreamSha256": "6388e508e9bdfc8a2f915c3d27ff15f2d756d9e38516c8bae58e37eb99fc2e7c",
+      "objectCheckerCheckpointScope": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/nodecopy.go",
+      "destination": "src/TypeScript.Scanner/Checker/NodeCopy.cs",
+      "status": "partial",
+      "scope": "Diagnostic static data/scalar existing-node visitor, name/type reuse and actual recovery restoration/length/original/text-range paths. Entity/type-reference/signature/JS/dynamic branches reject before excluded wrapped tracker/deferred symbol reports; full recovery/emit support not claimed.",
+      "upstreamSha256": "2c59724c3d8eaf7e96f19276274da04aefbe16670e47159e2368c1cffc2a3083",
+      "objectCheckerCheckpointScope": "Diagnostic static data/scalar existing-node visitor, name/type reuse and actual recovery restoration/length/original/text-range paths. Entity/type-reference/signature/JS/dynamic branches reject before excluded wrapped tracker/deferred symbol reports; full recovery/emit support not claimed.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/nodebuilderscopes.go",
+      "destination": "src/TypeScript.Scanner/Checker/NodeBuilderScopes.cs",
+      "status": "partial",
+      "scope": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
+      "upstreamSha256": "aaa98985ce7968f096070b570023ad7f3ced7db58dbcb1ee670c42c4c9330ce6",
+      "objectCheckerCheckpointScope": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/symboltracker.go",
+      "destination": "src/TypeScript.Scanner/Checker/SymbolTracker.cs",
+      "status": "partial",
+      "scope": "Selected nil-external-tracker construction, actual inference fallback nil behavior, cyclic report and reportedDiagnostic mutation. External tracker interfaces/tracked symbol/general diagnostic reports excluded.",
+      "upstreamSha256": "3cec9572fc8fcf98a06cf2ca527b0f73d3b9eb8da2c0fec612982837b0241acc",
+      "objectCheckerCheckpointScope": "Selected nil-external-tracker construction, actual inference fallback nil behavior, cyclic report and reportedDiagnostic mutation. External tracker interfaces/tracked symbol/general diagnostic reports excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/emitsupport.go",
+      "destination": "src/TypeScript.Scanner/Checker/EmitSupport.cs",
+      "status": "partial",
+      "scope": "Only requiresAddingImplicitUndefined property-signature branch required by diagnostic reuse; reverse-mapped/accessor/parameter/JS paths guard before unselected link-state behavior. General emit APIs excluded.",
+      "upstreamSha256": "486b68a3d05c9a7b36941ad246b7ce260646ea255f2b2d6c8a9c6d0c1fe1a6ae",
+      "objectCheckerCheckpointScope": "Only requiresAddingImplicitUndefined property-signature branch required by diagnostic reuse; reverse-mapped/accessor/parameter/JS paths guard before unselected link-state behavior. General emit APIs excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/emitcontext.go",
+      "destination": "src/TypeScript.Scanner/Printer/EmitContext.cs",
+      "status": "partial",
+      "scope": "Only actual Original/MostOriginal/SetOriginal/SetOriginalEx and per-node flag reads/writes; first original link copies selected flags, supporting cached/cloned diagnostic nodes. General transform/bookkeeping/auto-generated names/emit maps/helpers/source maps excluded.",
+      "upstreamSha256": "37a9323a77986ddc441007082c46d9271ed52321e1892e55a25af5f3b4e8f25c",
+      "objectCheckerCheckpointScope": "Only actual Original/MostOriginal/SetOriginal/SetOriginalEx and per-node flag reads/writes; first original link copies selected flags, supporting cached/cloned diagnostic nodes. General transform/bookkeeping/auto-generated names/emit maps/helpers/source maps excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/emitflags.go",
+      "destination": "src/TypeScript.Scanner/Printer/EmitFlags.cs",
+      "status": "partial",
+      "scope": "Only actual SingleLine and NoAsciiEscaping flag values plus None; remaining flags excluded.",
+      "upstreamSha256": "9381afd50eb7e56849400ad7bff6150a2d792b7d0dad3988a6a43c00feb6b02e",
+      "objectCheckerCheckpointScope": "Only actual SingleLine and NoAsciiEscaping flag values plus None; remaining flags excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/pseudochecker/checker.go",
+      "destination": "src/TypeScript.Scanner/Pseudochecker/Checker.cs",
+      "status": "partial",
+      "scope": "Diagnostic-only actual selected PseudoChecker constructor/fixed null/optional options; broader pseudochecking APIs excluded.",
+      "upstreamSha256": "ec27ec031c2858569ea094695d12342dcc82e5cd565f59bfc7b885ea4e49c8b7",
+      "objectCheckerCheckpointScope": "Diagnostic-only actual selected PseudoChecker constructor/fixed null/optional options; broader pseudochecking APIs excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/pseudochecker/type.go",
+      "destination": "src/TypeScript.Scanner/Pseudochecker/Type.cs",
+      "status": "partial",
+      "scope": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
+      "upstreamSha256": "7dfb2e16a131f4f37da033232b49e601de92c5a99c9908a88df3f045bc4e857f",
+      "objectCheckerCheckpointScope": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/pseudochecker/lookup.go",
+      "destination": "src/TypeScript.Scanner/Pseudochecker/Lookup.cs",
+      "status": "partial",
+      "scope": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
+      "upstreamSha256": "bf75df1ab50ad5af5c416e7c42fbd4d0b46b7774e085be53b9fd40998bc485b8",
+      "objectCheckerCheckpointScope": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/ObjectVerificationAccess.cs",
+      "status": "new",
+      "scope": "Authored friend-only existing object-cache and actual relation-key equality observations; no public test API or cache population solely for graph output.",
+      "objectCheckerCheckpointScope": "Authored friend-only existing object-cache and actual relation-key equality observations; no public test API or cache population solely for graph output.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/object-checker-corpus",
+      "status": "new",
+      "scope": "Authored independent pinned-Go43-case finite anonymous object queries/graphs/diagnostics/relations and separate boundary controls; historical scalar fixture bytes unchanged.",
+      "objectCheckerCheckpointScope": "Authored independent pinned-Go43-case finite anonymous object queries/graphs/diagnostics/relations and separate boundary controls; historical scalar fixture bytes unchanged.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "evidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.Tests/ObjectOracleTests.cs",
+      "status": "new",
+      "scope": "Authored actual Go object differential/xUnit observations plus object admission/API controls; Native AOT execution is a separate gate.",
+      "objectCheckerCheckpointScope": "Authored actual Go object differential/xUnit observations plus object admission/API controls; Native AOT execution is a separate gate.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "evidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/object-checker",
+      "status": "new",
+      "scope": "Authored bounded TypeFacts enum translation helper; generated algorithms are not a complete source regeneration claim.",
+      "objectCheckerCheckpointScope": "Authored bounded TypeFacts enum translation helper; generated algorithms are not a complete source regeneration claim.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/verify-object-checker.sh",
+      "status": "new",
+      "scope": "Authored guarded object Native AOT/regression gate entry, separate historical scalar boundary retirement selection.",
+      "objectCheckerCheckpointScope": "Authored guarded object Native AOT/regression gate entry, separate historical scalar boundary retirement selection.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "evidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/run-object-checker-gate.py",
+      "status": "new",
+      "scope": "Authored actual Go/managed/native object/scalar baseline and current admission/API comparison runner; no semantic algorithm code.",
+      "objectCheckerCheckpointScope": "Authored actual Go/managed/native object/scalar baseline and current admission/API comparison runner; no semantic algorithm code.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/check-object-checker-boundary.py",
+      "status": "new",
+      "scope": "Authored negative admission contract checks, distinct from original-Go semantic equivalence.",
+      "objectCheckerCheckpointScope": "Authored negative admission contract checks, distinct from original-Go semantic equivalence.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/inventory-object-checker.py",
+      "status": "new",
+      "scope": "Authored static independent observation coverage inventory; does not manufacture/cache-populate observations.",
+      "objectCheckerCheckpointScope": "Authored static independent observation coverage inventory; does not manufacture/cache-populate observations.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/generate-object-checker-corpus.py",
+      "status": "new",
+      "scope": "Authored independent original Go corpus generation; historical scalar bytes retained.",
+      "objectCheckerCheckpointScope": "Authored independent original Go corpus generation; historical scalar bytes retained.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/record-object-checker-evidence.py",
+      "status": "new",
+      "scope": "Authored guarded source/tool/corpus fingerprint and Native AOT acceptance evidence capture.",
+      "objectCheckerCheckpointScope": "Authored guarded source/tool/corpus fingerprint and Native AOT acceptance evidence capture.",
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
     }
   ],
   "activePhase": {
-    "name": "checker-slice",
+    "name": "object-checker-slice",
     "status": "complete",
     "acceptance": "accepted-bounded",
-    "note": "Final guarded Native AOT gate passed for the fixed noLib/noResolve single-file TS scalar slice only. Historical checkpoint evidence/scopes remain distinct; this is not general checker or compiler acceptance.",
     "manifestState": "final",
-    "evidence": "validation/results/checker-verified.json"
+    "note": "Final guarded Native AOT gate passed for fixed noLib/noResolve single-file TS scalar and finite anonymous object/type-literal data properties/contextual checking/dot reads/structural relationships only. Historical scalar and earlier evidence/scopes remain separate; no general checker/compiler acceptance.",
+    "evidence": "validation/results/object-checker-verified.json",
+    "departures": "docs/OBJECT-CHECKER-DEPARTURES.md"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -712,6 +952,18 @@
     "sourceTreeSha256": "ac38adb32995090a01777c010452f0405aed99e768a370c0178febc196cb940e",
     "verificationAssetsSha256": "c9f669c200dab74c04f908780cdff2ad95ff44ff655bcef034f24d8a52897824",
     "evidence": "validation/results/checker-verified.json",
-    "scope": "Fixed noLib/noResolve single-file TS scripts: selected scalar declarations, annotations, literal/identifier initializers and nested blocks; selected type/symbol queries and scalar assignability. Unsupported syntax/environments reject explicitly. No library/project/module/structured-type/control-flow/emit acceptance."
+    "scope": "Fixed noLib/noResolve single-file TS scripts: selected scalar declarations, annotations, literal/identifier initializers and nested blocks; selected type/symbol queries and scalar assignability. Unsupported syntax/environments reject explicitly. No library/project/module/structured-type/control-flow/emit acceptance.",
+    "commit": "7e692dd"
+  },
+  "acceptedObjectCheckerCheckpoint": {
+    "status": "accepted-bounded",
+    "scope": "Fixed noLib/noResolve single-file TS scalar plus finite anonymous object/type-literal static data properties, shorthand, nested optional/readonly declarations, dot reads, contextual checking and structural relationships; named/generic/signature/index/write/library/emit paths excluded.",
+    "scalarBaselineCommit": "7e692dd",
+    "functionInventory": "docs/checker-functions.json",
+    "coverage": "validation/object-checker-corpus/coverage.json",
+    "departures": "docs/OBJECT-CHECKER-DEPARTURES.md",
+    "sourceTreeSha256": "1ce0c30edf2f470ee4a7c527f336980e5a80d8afc17108774c8764d99d6c15b9",
+    "verificationAssetsSha256": "d27278a4a82192fc3b13fc54f2f90c7914c068b3628828e31723527f3ac2e30d",
+    "evidence": "validation/results/object-checker-verified.json"
   }
 }

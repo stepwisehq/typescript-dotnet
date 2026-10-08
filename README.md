@@ -1,16 +1,18 @@
 # TypeScript port feasibility study
 
 A C# port of the Go TypeScript scanner, syntax parser/AST, source-file binder and
-first bounded semantic checker slice, pinned to maintained
-[microsoft/TypeScript source](./UPSTREAM.md). All four bounded checkpoints passed
+bounded scalar/object checker slices, pinned to maintained
+[microsoft/TypeScript source](./UPSTREAM.md). All five bounded checkpoints passed
 actual Native AOT verification. See the [current state](./docs/STATE.md),
-[checker assessment](./docs/CHECKER-ASSESSMENT.md) and
-[verification](./docs/CHECKER-VERIFICATION.md) for scope and evidence.
+[object checker assessment](./docs/OBJECT-CHECKER-ASSESSMENT.md) and
+[verification](./docs/OBJECT-CHECKER-VERIFICATION.md) for scope and evidence.
 
-The semantic slice checks single-file scalar declarations and references under
-fixed no-library options. It preserves the eight upstream missing-library errors
+The semantic slice checks single-file scalar declarations, anonymous objects,
+inline object types, dot reads and structural relationships under fixed no-library
+options. It preserves the eight upstream missing-library errors
 separately from file semantic diagnostics and rejects unsupported inputs explicitly.
-General object/function/project checking, modules and code generation are excluded.
+Named types/interfaces, generics, calls, project checking, modules and code
+generation are excluded. This is a bounded object milestone, not full checker parity.
 
 The [library](./src/TypeScript.Scanner) targets .NET 10. Separate executable harnesses
 for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation),
@@ -27,13 +29,14 @@ curl, and the native build prerequisites. On Ubuntu:
 ```sh
 sudo apt-get update
 sudo apt-get install -y clang zlib1g-dev
-./tools/verify.sh
+./tools/verify-object-checker.sh
 ```
 
 The script fetches the exact upstream revision, bootstraps checksum-pinned Go
-1.27.1 locally, builds the Go oracle, runs upstream scanner tests, checks that the
-stored expected results still match Go, runs xUnit, publishes Native AOT, and
-compares the actual native executable's output with the same oracle results.
+1.27.1 locally, builds the Go oracle, checks fresh scalar/object expectations, runs
+xUnit, publishes Native AOT, and compares the actual native executable with Go.
+It also runs the binder, parser and scanner regression gates, including their
+native executables and upstream scanner tests.
 Initial setup requires network access for upstream source, Go, and NuGet packages.
 It refuses a mismatched or locally modified upstream checkout.
 
@@ -43,11 +46,16 @@ For the faster managed test loop, using the checked-in oracle corpus:
 dotnet test tests/Scanner.Tests/Scanner.Tests.csproj -c Release
 ```
 
-The complete checker gate includes binder, parser and scanner regressions:
+The current object checker gate includes scalar, binder, parser and scanner regressions:
 
 ```sh
-./tools/verify-checker.sh
+./tools/verify-object-checker.sh
 ```
+
+The historical scalar-only gate (`./tools/verify-checker.sh`) asserts the earlier
+admission boundary; reproduce it at scalar commit `7e692dd`. Two old object-syntax
+rejections deliberately became supported in this phase. Historical fixture bytes
+and evidence remain preserved.
 
 For a managed checker development loop:
 
@@ -110,7 +118,8 @@ using TypeScript.Scanner;
 using TypeScript.Checking;
 
 var file = Parser.ParseSourceFile(new("/main.ts", "/main.ts"),
-    "const n: number = \"text\";", ScriptKind.TS);
+    "const source = { count: \"text\" }; let target: { count: number } = source;",
+    ScriptKind.TS);
 var checker = Checker.Create(file); // Includes source-file binding.
 var fileDiagnostics = checker.GetDiagnostics(); // Includes error 2322.
 var environmentDiagnostics = checker.GetGlobalDiagnostics(); // Eight noLib errors.
@@ -133,8 +142,8 @@ validation, token flags, diagnostic callbacks, and comment directives. The compl
 parser phase adds syntax trees, syntax diagnostics and required AST support;
 its acceptance is tracked separately in [STATE.md](./docs/STATE.md). Source-file
 binding now adds declaration/symbol relationships, scope tables, binder diagnostics
-and control-flow graphs. The first checker slice adds selected scalar semantic
-checks; its [exact boundary](./docs/CHECKER-VERIFICATION.md) remains narrow. Broad
+and control-flow graphs. The checker adds selected scalar and anonymous-object
+semantic checks; its [exact boundary](./docs/OBJECT-CHECKER-VERIFICATION.md) remains narrow. Broad
 checking, cross-file semantic resolution, module resolution and code generation
 remain excluded.
 See [source-map.json](./source-map.json) and the

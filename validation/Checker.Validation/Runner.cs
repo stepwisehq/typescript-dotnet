@@ -6,8 +6,21 @@ using Encoder = TypeScript.Scanner.ParserValidation.Encoder;
 using CheckType = TypeScript.Checking.Type;
 
 namespace TypeScript.Checking.Validation;
-public sealed class Graph(Checker checker, Encoder syntax, Result result)
+public sealed partial class Graph
 {
+    private readonly Checker checker;
+    private readonly Encoder syntax;
+    private readonly Result result;
+    private readonly bool objectObservations;
+    private readonly List<CheckType> rawTypes = [];
+    public Graph(Checker checker, Encoder syntax, Result result, bool objectObservations = false)
+    {
+        this.checker = checker;
+        this.syntax = syntax;
+        this.result = result;
+        this.objectObservations = objectObservations;
+    }
+
     private readonly Dictionary<CheckType, int> types = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<Symbol, int> symbols = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<SymbolTable, int> tables = new(ReferenceEqualityComparer.Instance);
@@ -71,6 +84,7 @@ public sealed class Graph(Checker checker, Encoder syntax, Result result)
             return id;
         id = result.Types.Count;
         types.Add(type, id);
+        rawTypes.Add(type);
         var value = new TypeValue
         {
             Id = id,
@@ -125,6 +139,8 @@ public sealed class Graph(Checker checker, Encoder syntax, Result result)
                 foreach (var member in type.Types())
                     value.Types.Add(Type(member)!.Value);
                 break;
+            case "ObjectType" when objectObservations:
+                break;
             default:
                 throw new InvalidOperationException("Unsupported type payload in accepted semantic corpus: " + value.DataType);
         }
@@ -160,7 +176,7 @@ public static class Runner
             Parser = TypeScript.Scanner.ParserValidation.Runner.Encode(file, parserRequest, encoder)
         };
         var checker = Checker.Create(file);
-        var graph = new Graph(checker, encoder, result);
+        var graph = new Graph(checker, encoder, result, request.ObjectObservations);
         var fileDiagnostics = checker.GetDiagnostics();
         var ids = request.QueryNodeIds ?? encoder.RawNodes.Select((node, id) => (node, id)).Where(pair => Ast.IsIdentifier(pair.node) || Ast.IsLiteralExpression(pair.node) || pair.node.Kind is Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword).Select(pair => pair.id).ToList();
         var queried = new Dictionary<int, CheckType>();
@@ -189,6 +205,8 @@ public static class Runner
         result.BindDiagnostics = Diagnostics(file.BindDiagnostics());
         result.CheckerDiagnostics = Diagnostics(fileDiagnostics);
         result.GlobalDiagnostics = Diagnostics(checker.GetGlobalDiagnostics());
+        if (request.ObjectObservations)
+            result.ObjectGraph = graph.Objects(request.WidenNodeIds, queried);
         return result;
     }
 }

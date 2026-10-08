@@ -28,7 +28,19 @@ public sealed partial class Checker
     {
         if (node.Modifiers() == null)
             return false;
-        throw unsupported("checkGrammarModifiers: modifiers/decorators");
+        if (node.Kind != Kind.PropertySignature)
+            throw unsupported("checkGrammarModifiers: modifiers/decorators");
+        ModifierFlags flags = ModifierFlags.None;
+        foreach (var modifier in node.ModifierNodes())
+        {
+            if (modifier.Kind != Kind.ReadonlyKeyword)
+                throw unsupported("checkGrammarModifiers: nonreadonly modifier");
+            if ((flags & ModifierFlags.Readonly) != 0)
+                return grammarErrorOnNode(modifier, Diagnostics.X_0_modifier_already_seen, "readonly");
+            flags |= ModifierFlags.Readonly;
+        }
+
+        return false;
     }
 
     private bool checkGrammarSourceFile()
@@ -118,4 +130,59 @@ public sealed partial class Checker
     }
 
     private readonly List<Diagnostic> suggestionDiagnostics = new();
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarObjectLiteralExpression(Node node)
+    {
+        var seen = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var property in node.Properties() ?? [])
+        {
+            if (property.Kind is not (Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment))
+                throw unsupported("checkGrammarObjectLiteralExpression: spread/method/accessor");
+            var name = property.Name();
+            if (name.Kind == Kind.ComputedPropertyName)
+                throw unsupported("checkGrammarObjectLiteralExpression: computed name");
+            if (property.Kind == Kind.ShorthandPropertyAssignment && property.AsShorthandPropertyAssignment().ObjectAssignmentInitializer != null)
+                throw unsupported("checkGrammarObjectLiteralExpression: assignment pattern initializer");
+            if (name.Kind == Kind.PrivateIdentifier)
+                grammarErrorOnNode(name, Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
+            if ((property.ModifierNodes()?.Count ?? 0) != 0)
+                throw unsupported("checkGrammarObjectLiteralExpression: property modifiers");
+            var postfix = property.PostfixToken();
+            if (postfix?.Kind == Kind.ExclamationToken)
+                grammarErrorOnNode(postfix, Diagnostics.A_definite_assignment_assertion_is_not_permitted_in_this_context);
+            if (postfix?.Kind == Kind.QuestionToken)
+                grammarErrorOnNode(postfix, Diagnostics.An_object_member_cannot_be_declared_optional);
+            if (name.Kind == Kind.NumericLiteral)
+                checkGrammarNumericLiteral(name);
+            if (name.Kind == Kind.BigIntLiteral)
+                throw unsupported("checkGrammarObjectLiteralExpression: bigint key");
+            var(effectiveName, hasName) = getEffectivePropertyNameForPropertyNameNode(name);
+            if (hasName)
+            {
+                seen.TryGetValue(effectiveName, out int existingKind);
+                if (existingKind == 0)
+                    seen[effectiveName] = 1;
+                else
+                    grammarErrorOnNode(name, Diagnostics.An_object_literal_cannot_have_multiple_properties_with_the_same_name, TypeScript.Scanner.Scanner.GetTextOfNodeByteString(name));
+            }
+        }
+
+        return false;
+    }
+
+    private bool checkGrammarProperty(Node node)
+    {
+        if (node.Parent.Kind != Kind.TypeLiteral || node.Kind != Kind.PropertySignature)
+            throw unsupported("checkGrammarProperty: non-type-literal property");
+        if (node.Name().Kind == Kind.ComputedPropertyName)
+            throw unsupported("checkGrammarProperty: computed name");
+        if (node.Initializer() != null)
+            return grammarErrorOnNode(node.Initializer(), Diagnostics.A_type_literal_property_cannot_have_an_initializer);
+        if ((node.Flags & NodeFlags.Ambient) != 0)
+            throw unsupported("checkGrammarProperty: ambient initializer");
+        return false;
+    }
 }

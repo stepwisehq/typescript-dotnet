@@ -51,4 +51,8 @@ internal sealed class TextWriter
     internal void Write(string text) => writeText(text);
     internal void WriteKeyword(string text) => Write(text);
     internal void WriteStringLiteral(string text) => Write(text);
+    // textwriter.go: token-category methods all forward to Write in this writer.
+    internal void WriteSpace(string text) => Write(text);
+    internal void WritePunctuation(string text) => Write(text);
+    internal void WriteTrailingSemicolon(string text) => Write(text);
 }

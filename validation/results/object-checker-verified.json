@@ -1,0 +1,837 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceSha256": "1ce0c30edf2f470ee4a7c527f336980e5a80d8afc17108774c8764d99d6c15b9",
+  "sourceHashAlgorithm": "SHA256 sorted UTF8 relative path + NUL + raw bytes + NUL for .cs/.csproj under src,tests and all four validation adapters, excluding bin/obj",
+  "objectChecker": {
+    "executable": "/home/greg/projects/typescript-dotnet/artifacts/object-checker-validation/native/Checker.Validation",
+    "cases": 43,
+    "nodes": 885,
+    "symbols": 475,
+    "tables": 292,
+    "types": 363,
+    "queries": 398,
+    "diagnostics": 27,
+    "globalDiagnostics": 344,
+    "failures": [],
+    "elapsedSeconds": 0.041,
+    "groups": [
+      {
+        "name": "matrix-requests",
+        "cases": 35,
+        "requestsSha256": "b7c7c8eb3f402639092ff03af709645dd128ca7a329cca5c27cc41fa7565b6bc",
+        "expectedSha256": "9ce579d35df400a8b8061b0f8f5509f208ddda76971dbde8e0b128cfbebb8325"
+      },
+      {
+        "name": "tiny-requests",
+        "cases": 8,
+        "requestsSha256": "8950ae1a3127010a1ccab1e759ba9502fa859801b9dc860939010a8ed258fcc3",
+        "expectedSha256": "fbcc758f8f1bd58deb202403942bb52b2f89d6f061ce54120d9962fd746f2d93"
+      }
+    ],
+    "nativeSha256": "f66e0c539ef8b237fbcfa4974e183eaf36e3e0bf1d9b7b1661a71ec36062eab8",
+    "nativeBytes": 5682440,
+    "nativeFile": "/home/greg/projects/typescript-dotnet/artifacts/object-checker-validation/native/Checker.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=d47cbbcdaf81ffbef11a3ab8053e488b8c9b99d1, for GNU/Linux 3.2.0, stripped",
+    "nativeDependencies": "linux-vdso.so.1 (0x00007c1c4a947000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007c1c4a0da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007c1c49e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007c1c4a949000)",
+    "xUnit": {
+      "total": 149,
+      "executed": 149,
+      "passed": 149,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0
+    }
+  },
+  "scalarRegression": {
+    "executable": "/home/greg/projects/typescript-dotnet/artifacts/object-checker-validation/native/Checker.Validation",
+    "cases": 45,
+    "nodes": 713,
+    "symbols": 205,
+    "tables": 88,
+    "types": 215,
+    "queries": 274,
+    "diagnostics": 31,
+    "globalDiagnostics": 360,
+    "failures": [],
+    "elapsedSeconds": 0.03,
+    "groups": [
+      {
+        "name": "selected-requests",
+        "cases": 36,
+        "requestsSha256": "b937efcae0482e8e0bbb177c4ee1d5444385e720156ff15ee6300546424732c3",
+        "expectedSha256": "37d1f4cde32886375c7bc6be6377f3a2d386fcc8487b0029c893feffee57a435"
+      },
+      {
+        "name": "tiny-requests",
+        "cases": 9,
+        "requestsSha256": "b0a9e9d74d0199e8542910ee8e5e0bbcbc9dcba9c19d2d607b3ebcbbd7833ff0",
+        "expectedSha256": "55f1aed10f00337ef7b30eea0fee69ecb9b3e6d2bb98ddac2d1ccdb9f3beea9e"
+      }
+    ]
+  },
+  "boundary": {
+    "retiredHistoricalAdmissionControls": [
+      "object",
+      "object-type"
+    ],
+    "admissionControls": 58,
+    "admitted": 2,
+    "rejected": 56,
+    "goUtilityObservations": [
+      {
+        "name": "paged.unallocated",
+        "boolValue": true
+      },
+      {
+        "name": "paged.same-page-zero",
+        "boolValue": true
+      },
+      {
+        "name": "paged.stable-distinct-slots",
+        "boolValue": true
+      },
+      {
+        "name": "paged.other-page-unallocated",
+        "boolValue": true
+      },
+      {
+        "name": "paged.last-list-first-map-stable",
+        "boolValue": true
+      },
+      {
+        "name": "paged.high-map-neighbor-zero",
+        "boolValue": true
+      },
+      {
+        "name": "paged.high-other-page-unallocated",
+        "boolValue": true
+      },
+      {
+        "name": "node.unallocated",
+        "boolValue": true
+      },
+      {
+        "name": "node.same-page-zero",
+        "boolValue": true
+      },
+      {
+        "name": "node.stable-identities",
+        "boolValue": true
+      },
+      {
+        "name": "symbol.unallocated",
+        "boolValue": true
+      },
+      {
+        "name": "symbol.same-page-still-nil",
+        "boolValue": true
+      },
+      {
+        "name": "symbol.stable-distinct-identities",
+        "boolValue": true
+      },
+      {
+        "name": "tables.initially-nil",
+        "boolValue": true
+      },
+      {
+        "name": "tables.allocated-empty",
+        "boolValue": true
+      },
+      {
+        "name": "tables.locals-count",
+        "intValue": 0
+      },
+      {
+        "name": "tables.members-count",
+        "intValue": 0
+      },
+      {
+        "name": "tables.exports-count",
+        "intValue": 0
+      },
+      {
+        "name": "tables.stable-lazy-identities",
+        "boolValue": true
+      },
+      {
+        "name": "tables.distinct-identities",
+        "boolValue": true
+      }
+    ],
+    "authoredPublicApiAssertions": [
+      {
+        "name": "api.foreign-type-node",
+        "boolValue": true
+      },
+      {
+        "name": "api.foreign-symbol-node",
+        "boolValue": true
+      },
+      {
+        "name": "api.orphan-node",
+        "boolValue": true
+      },
+      {
+        "name": "api.cyclic-foreign-parent",
+        "boolValue": true
+      },
+      {
+        "name": "api.global-table-alias",
+        "boolValue": true
+      },
+      {
+        "name": "api.global-readonly",
+        "boolValue": true
+      },
+      {
+        "name": "api.no-library-errors-visible",
+        "boolValue": true
+      },
+      {
+        "name": "api.repeat-diagnostics",
+        "boolValue": true
+      },
+      {
+        "name": "api.repeat-type-identity",
+        "boolValue": true
+      },
+      {
+        "name": "api.builtin-object-read-unsupported",
+        "boolValue": true
+      }
+    ]
+  },
+  "binderRegression": {
+    "executable": "/home/greg/projects/typescript-dotnet/artifacts/binder-validation/native/Binder.Validation",
+    "cases": 118,
+    "nodes": 5182,
+    "symbols": 858,
+    "tables": 430,
+    "flows": 700,
+    "flowLists": 150,
+    "diagnostics": 41,
+    "failures": [],
+    "elapsedSeconds": 0.183,
+    "groups": [
+      {
+        "name": "opaque-requests",
+        "cases": 36,
+        "requestsSha256": "5c68bbeef30d992d484a081b68143c5f3abd402b31e5c266af4cb34ed22d4f90",
+        "expectedSha256": "e873b5eddf07fabe8c42776cc475da2755d2b5e592e1f190d26c6d5ab7716565"
+      },
+      {
+        "name": "selected-requests",
+        "cases": 78,
+        "requestsSha256": "a207c5e2ed598c6da1f755191f476176df5048e18196cef8164d9a11d4d65671",
+        "expectedSha256": "5597ac9feab6486103eeaa15c26bfb1ddc6b054584839827a9407f948ab8feb3"
+      },
+      {
+        "name": "tiny-requests",
+        "cases": 4,
+        "requestsSha256": "13b08f3d51c4199f9c2233b81b26d344fbc9ddc6f79c71ff250e4a238643da54",
+        "expectedSha256": "feff0dc666cfdefd3fac3ba0ee6c90eb2448aed16c6915daf5e4730b749f82a3"
+      }
+    ],
+    "nativeSha256": "ecf363320a79ed1dd63ae813cdc862b6c5b92bf2beb40153673345e332b7b7fa",
+    "nativeBytes": 4952024,
+    "nativeFile": "/home/greg/projects/typescript-dotnet/artifacts/binder-validation/native/Binder.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=c82ff6cef2558a5784f638381df76ec31e159fc2, for GNU/Linux 3.2.0, stripped",
+    "nativeDependencies": "linux-vdso.so.1 (0x000078dc59c89000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x000078dc594da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x000078dc59200000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000078dc59c8b000)",
+    "xUnit": {
+      "total": 122,
+      "executed": 122,
+      "passed": 122,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0
+    }
+  },
+  "parserRegression": {
+    "executable": "/home/greg/projects/typescript-dotnet/artifacts/parser-validation/native/Parser.Validation",
+    "cases": 471,
+    "nodes": 19424,
+    "diagnostics": 347,
+    "failures": [],
+    "elapsedSeconds": 0.303,
+    "groups": [
+      {
+        "name": "boundaries-requests",
+        "cases": 60,
+        "requestsSha256": "4491846a92901deb2c7052ee600f9fe55d8a6cf09c1d64f3315459c78f346b49",
+        "expectedSha256": "d471fc0249c398e6c46a9b63714cb64117f223fd13f3d51872e31470e2e734fb"
+      },
+      {
+        "name": "fuzz-requests",
+        "cases": 10,
+        "requestsSha256": "9cc617e9df4a2d07901d2a9fc29c0cc800ceb42534ffac8e9e904511e230e625",
+        "expectedSha256": "51e6b875798026aca962758edbd7783440d3b3acf55848a79049825c756258dc"
+      },
+      {
+        "name": "gaps-requests",
+        "cases": 89,
+        "requestsSha256": "b97d8e7b63194a2da3fac9e910418bfffa3f9cf6347363c26e4d96dede873c6c",
+        "expectedSha256": "1412031eeb48a45dbd607bc9f9e39dce33076cc2cda4c22b64be2ae5105a8ced"
+      },
+      {
+        "name": "grammar-requests",
+        "cases": 88,
+        "requestsSha256": "76d681c7d43b0894171b771683d19c63e9b4473affa21826cb408ea909304a40",
+        "expectedSha256": "e9859f6f7ee419754de8c35a2d272aa10bc3f182cc18890ac01bc7019e112d67"
+      },
+      {
+        "name": "helpers-requests",
+        "cases": 4,
+        "requestsSha256": "0eb7f16c5fc6a9e43081d1cbdb80f3cf32545d6f4bef1066b65c8fe920c9bc32",
+        "expectedSha256": "13f3221faf8e4b397481f070bc15c8ba36b24465a9c3493f73c6aee8e9dd70ed"
+      },
+      {
+        "name": "readiness-requests",
+        "cases": 11,
+        "requestsSha256": "842fa633be96b5f3300bc63293dd761f58dcb6c309cc3927cef9ad7c211424fc",
+        "expectedSha256": "dc1abadf146daf5389d37f078b6e525a32abf3c43394c44dc2a079f38a885c45"
+      },
+      {
+        "name": "tiny-requests",
+        "cases": 2,
+        "requestsSha256": "f4101d06e22f5a81192a3747cec49edebf298fc60a4028e2cf3ef3ac7ce4422a",
+        "expectedSha256": "32849602e65f3012a5687b4af5bf81329ccac9536fbf8a21dbadb09f6b994e3e"
+      },
+      {
+        "name": "upstream-requests",
+        "cases": 207,
+        "requestsSha256": "00fe0d4295296f4da2a089048daa5c525ac7de0637aa947b874b0c725ac3286e",
+        "expectedSha256": "62314fdb928952db4fcd97e71b2a1c475798cc0403e11a47a79d00ad956ad49f"
+      }
+    ],
+    "sourceSha256": "24c96321049fe253bd2cd91da88c937a41e03532d15388ce50f69a55793f85b4",
+    "nativeSha256": "4370a4f9ab8399e210f830e97085d272cbd8563a862561990aaed100b4d74f1b",
+    "nativeFile": "/home/greg/projects/typescript-dotnet/artifacts/parser-validation/native/Parser.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=8a86da8eef09e1d9b849ab8f11bc88ef8aaa948e, for GNU/Linux 3.2.0, stripped",
+    "nativeDependencies": "linux-vdso.so.1 (0x000078142396e000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007814232da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000781423000000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000781423970000)",
+    "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "nativeBytes": 4133784,
+    "xUnit": {
+      "total": 475,
+      "executed": 475,
+      "passed": 475,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0
+    }
+  },
+  "scannerRegression": {
+    "executable": "/home/greg/projects/typescript-dotnet/artifacts/validation/native/Scanner.Validation",
+    "cases": 1276,
+    "tokens": 17977,
+    "diagnostics": 1547,
+    "failures": [],
+    "elapsedSeconds": 0.062,
+    "requestsSha256": "cd5e7a2226138491631e5220c8a2b051dfb1c7c0e261aceb4f80444363649c9e",
+    "expectedSha256": "8c2873a5b8aeabd608fc75c3bcae7c3fb356dcd7c292de3721bc7870e2f8da8f",
+    "nativeSha256": "45f0e281fe7955106b8ee39ce80814e2385da15140e272bbda11050d868e11c7",
+    "nativeBytes": 3075496,
+    "nativeFile": "/home/greg/projects/typescript-dotnet/artifacts/validation/native/Scanner.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=3ddd44596bec7e56b03005eeb00a7358a296c61b, for GNU/Linux 3.2.0, stripped",
+    "nativeDependencies": "linux-vdso.so.1 (0x0000784fc56b5000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x0000784fc50da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000784fc4e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000784fc56b7000)",
+    "xUnit": {
+      "total": 1287,
+      "executed": 1287,
+      "passed": 1287,
+      "failed": 0,
+      "error": 0,
+      "timeout": 0,
+      "aborted": 0
+    }
+  },
+  "gate": {
+    "command": [
+      "bash",
+      "tools/verify-object-checker.sh"
+    ],
+    "startedAtUTC": "2026-10-08T19:57:00.891814+00:00",
+    "elapsedSeconds": 45.201,
+    "exitCode": 0,
+    "sourceSha256": "1ce0c30edf2f470ee4a7c527f336980e5a80d8afc17108774c8764d99d6c15b9",
+    "verificationAssetsSha256": "d27278a4a82192fc3b13fc54f2f90c7914c068b3628828e31723527f3ac2e30d",
+    "verificationAssetFiles": [
+      "tools/CSharpFormat/CSharpFormat.csproj",
+      "tools/CSharpFormat/Program.cs",
+      "tools/benchmark/main.go",
+      "tools/benchmark.py",
+      "tools/benchmark.sh",
+      "tools/binder-ast-port/main.go",
+      "tools/binder-coverage.py",
+      "tools/binder-oracle/main.go",
+      "tools/binder-oracle/prepare.py",
+      "tools/binder-port/main.go",
+      "tools/binder-port/main_test.go",
+      "tools/binder-port/patch.py",
+      "tools/binder-source-hash.py",
+      "tools/bootstrap-go.sh",
+      "tools/bootstrap-upstream.sh",
+      "tools/build-binder-oracle.sh",
+      "tools/build-checker-oracle.sh",
+      "tools/build-oracle.sh",
+      "tools/build-parser-oracle.sh",
+      "tools/check-checker-boundary.py",
+      "tools/check-object-checker-boundary.py",
+      "tools/checker-function-inventory.py",
+      "tools/checker-oracle/main.go",
+      "tools/checker-oracle/object_access.go",
+      "tools/checker-oracle/object_graph.go",
+      "tools/checker-oracle/prepare.py",
+      "tools/checker-oracle/utilities_test.go",
+      "tools/checker-source-hash.py",
+      "tools/checker-support-port/main.go",
+      "tools/checker-support-port/patch.py",
+      "tools/checker-support-port/query-ast.py",
+      "tools/compare-binder.py",
+      "tools/compare-checker.py",
+      "tools/compare-parser.py",
+      "tools/compare.py",
+      "tools/coverage.py",
+      "tools/fix-ast-functions.py",
+      "tools/generate-ast-accessors.go",
+      "tools/generate-ast-functions.go",
+      "tools/generate-ast.py",
+      "tools/generate-binder-corpus.py",
+      "tools/generate-binder-enums.py",
+      "tools/generate-checker-corpus.py",
+      "tools/generate-checker-feature-map.py",
+      "tools/generate-checker-support-enums.py",
+      "tools/generate-corpus.py",
+      "tools/generate-jsx-projection.go",
+      "tools/generate-object-checker-corpus.py",
+      "tools/generate-parser-boundaries.py",
+      "tools/generate-parser-corpus.py",
+      "tools/generate-parser-gaps.py",
+      "tools/generate-parser-readiness.py",
+      "tools/generate-parser-upstream.py",
+      "tools/generate-required-diagnostics.py",
+      "tools/generate-unicode-case.py",
+      "tools/inventory-checker.py",
+      "tools/inventory-object-checker.py",
+      "tools/object-checker/type-facts.py",
+      "tools/oracle/main.go",
+      "tools/parser-benchmark/main.go",
+      "tools/parser-benchmark.py",
+      "tools/parser-benchmark.sh",
+      "tools/parser-coverage.py",
+      "tools/parser-oracle/fuzz.go",
+      "tools/parser-oracle/main.go",
+      "tools/parser-oracle/sources.go",
+      "tools/parser-port/main.go",
+      "tools/parser-port/main_test.go",
+      "tools/parser-port/patch.py",
+      "tools/parser-source-hash.py",
+      "tools/probe-checker-utilities.py",
+      "tools/record-binder-evidence.py",
+      "tools/record-checker-evidence.py",
+      "tools/record-object-checker-evidence.py",
+      "tools/record-parser-evidence.py",
+      "tools/run-binder-gate.py",
+      "tools/run-checker-gate.py",
+      "tools/run-object-checker-gate.py",
+      "tools/run-parser-gate.py",
+      "tools/source-hash.py",
+      "tools/verify-binder.sh",
+      "tools/verify-checker.sh",
+      "tools/verify-object-checker.sh",
+      "tools/verify-parser.sh",
+      "tools/verify.sh",
+      "upstream.lock.json",
+      "validation/binder-corpus/coverage.json",
+      "validation/binder-corpus/manifest.json",
+      "validation/binder-corpus/opaque-expected.jsonl",
+      "validation/binder-corpus/opaque-requests.jsonl",
+      "validation/binder-corpus/selected-expected.jsonl",
+      "validation/binder-corpus/selected-requests.jsonl",
+      "validation/binder-corpus/tiny-expected.jsonl",
+      "validation/binder-corpus/tiny-requests.jsonl",
+      "validation/checker-corpus/admission-controls.json",
+      "validation/checker-corpus/coverage.json",
+      "validation/checker-corpus/manifest.json",
+      "validation/checker-corpus/selected-expected.jsonl",
+      "validation/checker-corpus/selected-requests.jsonl",
+      "validation/checker-corpus/tiny-expected.jsonl",
+      "validation/checker-corpus/tiny-requests.jsonl",
+      "validation/checker-corpus/utility-expected.json",
+      "validation/corpus/coverage.json",
+      "validation/corpus/expected.jsonl",
+      "validation/corpus/manifest.json",
+      "validation/corpus/requests.jsonl",
+      "validation/object-checker-corpus/admission-controls.json",
+      "validation/object-checker-corpus/coverage.json",
+      "validation/object-checker-corpus/manifest.json",
+      "validation/object-checker-corpus/matrix-expected.jsonl",
+      "validation/object-checker-corpus/matrix-manifest.json",
+      "validation/object-checker-corpus/matrix-requests.jsonl",
+      "validation/object-checker-corpus/tiny-expected.jsonl",
+      "validation/object-checker-corpus/tiny-manifest.json",
+      "validation/object-checker-corpus/tiny-requests.jsonl",
+      "validation/parser-corpus/boundaries-expected.jsonl",
+      "validation/parser-corpus/boundaries-requests.jsonl",
+      "validation/parser-corpus/coverage.json",
+      "validation/parser-corpus/fuzz-expected.jsonl",
+      "validation/parser-corpus/fuzz-requests.jsonl",
+      "validation/parser-corpus/gaps-expected.jsonl",
+      "validation/parser-corpus/gaps-requests.jsonl",
+      "validation/parser-corpus/grammar-expected.jsonl",
+      "validation/parser-corpus/grammar-requests.jsonl",
+      "validation/parser-corpus/helpers-expected.jsonl",
+      "validation/parser-corpus/helpers-requests.jsonl",
+      "validation/parser-corpus/manifest.json",
+      "validation/parser-corpus/readiness-expected.jsonl",
+      "validation/parser-corpus/readiness-requests.jsonl",
+      "validation/parser-corpus/tiny-expected.jsonl",
+      "validation/parser-corpus/tiny-requests.jsonl",
+      "validation/parser-corpus/upstream-expected.jsonl",
+      "validation/parser-corpus/upstream-files.json",
+      "validation/parser-corpus/upstream-manifest.json",
+      "validation/parser-corpus/upstream-requests.jsonl"
+    ],
+    "log": "artifacts/object-checker-validation/final-gate.log"
+  },
+  "coverage": {
+    "path": "validation/object-checker-corpus/coverage.json",
+    "sha256": "0c901ae936a6d8ad2d1a438becef78ea13a0795ef951273d769dc298a687de28",
+    "inventory": {
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+      "cases": 43,
+      "astNodes": 885,
+      "types": 363,
+      "symbols": 475,
+      "tables": 292,
+      "queries": 398,
+      "relations": 705,
+      "relationTrue": 485,
+      "fileDiagnostics": 27,
+      "globalDiagnostics": 344,
+      "topDiagnosticCodes": {
+        "1030": 1,
+        "1117": 1,
+        "18004": 1,
+        "18048": 1,
+        "2300": 2,
+        "2322": 9,
+        "2339": 1,
+        "2353": 2,
+        "2448": 2,
+        "2454": 1,
+        "2551": 2,
+        "2559": 1,
+        "2717": 1,
+        "2739": 1,
+        "2741": 1
+      },
+      "nestedDiagnosticCodes": {
+        "1030": 1,
+        "1117": 1,
+        "18004": 1,
+        "18048": 1,
+        "2200": 1,
+        "2300": 2,
+        "2322": 13,
+        "2326": 1,
+        "2339": 1,
+        "2353": 2,
+        "2448": 2,
+        "2454": 1,
+        "2551": 2,
+        "2559": 1,
+        "2717": 1,
+        "2728": 5,
+        "2739": 1,
+        "2741": 1,
+        "6203": 1,
+        "6500": 4
+      },
+      "typePayloads": {
+        "IntrinsicType": 60,
+        "LiteralType": 124,
+        "ObjectType": 169,
+        "UnionType": 10
+      },
+      "typeFlagBits": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        10,
+        11,
+        13,
+        20,
+        27
+      ],
+      "objectFlagBits": [
+        4,
+        7,
+        13,
+        15,
+        17,
+        21,
+        26
+      ],
+      "symbolFlagBits": [
+        1,
+        2,
+        9,
+        10,
+        11,
+        12,
+        24,
+        25
+      ],
+      "checkFlagBits": [
+        3
+      ],
+      "structuredTypes": 179,
+      "propertyEdges": 229,
+      "propertyModifierFlags": {
+        "0": 226,
+        "8": 3
+      },
+      "propertyDeclarationSymbolEdges": 233,
+      "transientVsDeclarationSymbolDifferences": 190,
+      "rawPropertiesNull": 27,
+      "publicPropertiesNull": 19,
+      "memberTablesNull": 12,
+      "allocatedEmptyTables": 15,
+      "sharedMemberTables": 0,
+      "boundSymbolMemberTableComparisons": 169,
+      "boundSymbolMemberTableMatchesIncludingNull": 37,
+      "boundSymbolMemberTableNonNullAliases": 35,
+      "globalsExportAliases": 43,
+      "objectTargetEdges": 0,
+      "propertyLinks": 226,
+      "absentPropertyLinks": 0,
+      "propertyLinkEdges": {
+        "target": 122,
+        "resolvedType": 226,
+        "writeType": 0,
+        "nameType": 0,
+        "containingType": 0
+      },
+      "wideningObservations": 46,
+      "stableRepeatedWidenings": 46,
+      "distinctWidenedIdentities": 46,
+      "existingWidenedCacheEdges": 53,
+      "existingRegularObjectCacheEdges": 0,
+      "actualRelationKeyEqualityObservations": 258,
+      "relationKeyNames": {
+        "relation-key.direction-distinct": 43,
+        "relation-key.identity-order-normalized": 43,
+        "relation-key.nongeneric-unconstrained": 43,
+        "relation-key.same-input-stable": 43,
+        "relation-key.state-source-distinct": 43,
+        "relation-key.state-target-distinct": 43
+      },
+      "limits": [
+        "No named aliases/interfaces/type references/generic types/source unions, calls/signatures/indexes, writes, spread/computed property expressions, arrays or source control-flow extension.",
+        "Single-file TS script noLib/noResolve; eight missing-library global diagnostics remain separate in every case.",
+        "Public property discovery/type formatting/relations intentionally populate some caches in identical observation order; selected existing Widened/RegularObjectLiteral cache entries are read without forcing them.",
+        "RegularObjectLiteral cache unhit if zero; union regularType and other unselected mutable caches remain unverified.",
+        "Zero ObjectType.target/shared member table/property writeType/nameType/containingType edges mean those nonzero paths remain unexercised despite field comparison.",
+        "Actual admitted object signature/index arrays must be empty; original Go mapper/instantiation presence asserts excluded generic payloads absent.",
+        "Binder graph identities have earlier independent regression coverage; semantic graph adds property targets/types but does not repeat full flow JSON.",
+        "Malformed parse recovery rejected; unsupported source syntax/API controls tested separately from original Go semantic agreement."
+      ]
+    }
+  },
+  "corpusManifest": {
+    "path": "validation/object-checker-corpus/manifest.json",
+    "sha256": "3d813a055f9506b2a5d787dca70df38a1ac1345d0761f2d2b07e473c41450de8"
+  },
+  "historicalEvidencePreserved": [
+    {
+      "path": "validation/results/verified.json",
+      "sha256": "794c6c6b1c50ee96fb17d45d6a7f1ca16f8f3c0fa9baa4fa77a0fbcebdf8566d"
+    },
+    {
+      "path": "validation/results/parser-verified.json",
+      "sha256": "c4705f350709326e92237f8bae20fc0ae474e7c03a662e8b404a5abf1ebaa952"
+    },
+    {
+      "path": "validation/results/binder-verified.json",
+      "sha256": "ed08ad90954f0c9229aa9661feef85bb3391d60970b16969b10d0c3ada8a7930"
+    },
+    {
+      "path": "validation/results/checker-verified.json",
+      "sha256": "bfe0d24ac5f17f007842aec7c48f6821531da2326977178ffaa34e006de5d12b"
+    }
+  ],
+  "intentionalBoundaryChanges": [
+    {
+      "control": "object",
+      "reason": "Anonymous object literals supported; new empty/basic cases replace historical negative"
+    },
+    {
+      "control": "object-type",
+      "reason": "Anonymous type literals supported; new empty/basic cases replace historical negative"
+    }
+  ],
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "dotnetSdkVersion": "10.0.401",
+  "earlierSuccessfulGate": {
+    "reason": "Avoidable final whitespace cleanup removed exactly one accidental EOF newline from AstGenerated.cs after a successful gate; repeated for exact final source identity. This was not a failed test or verification-asset drift.",
+    "changedSourceFile": "src/TypeScript.Scanner/Ast/AstGenerated.cs",
+    "previousSourceHashReconstructedByRestoringSingleNewline": true,
+    "finalGeneratedFileMatchesScalarCommit": "7e692dd",
+    "gate": {
+      "command": [
+        "bash",
+        "tools/verify-object-checker.sh"
+      ],
+      "startedAtUTC": "2026-10-08T19:47:47.237126+00:00",
+      "elapsedSeconds": 70.14,
+      "exitCode": 0,
+      "sourceSha256": "af29c89e01116033683cd729c4f136cc825c719c6c765914da5c55b4dbba319e",
+      "verificationAssetsSha256": "d27278a4a82192fc3b13fc54f2f90c7914c068b3628828e31723527f3ac2e30d",
+      "verificationAssetFiles": [
+        "tools/CSharpFormat/CSharpFormat.csproj",
+        "tools/CSharpFormat/Program.cs",
+        "tools/benchmark/main.go",
+        "tools/benchmark.py",
+        "tools/benchmark.sh",
+        "tools/binder-ast-port/main.go",
+        "tools/binder-coverage.py",
+        "tools/binder-oracle/main.go",
+        "tools/binder-oracle/prepare.py",
+        "tools/binder-port/main.go",
+        "tools/binder-port/main_test.go",
+        "tools/binder-port/patch.py",
+        "tools/binder-source-hash.py",
+        "tools/bootstrap-go.sh",
+        "tools/bootstrap-upstream.sh",
+        "tools/build-binder-oracle.sh",
+        "tools/build-checker-oracle.sh",
+        "tools/build-oracle.sh",
+        "tools/build-parser-oracle.sh",
+        "tools/check-checker-boundary.py",
+        "tools/check-object-checker-boundary.py",
+        "tools/checker-function-inventory.py",
+        "tools/checker-oracle/main.go",
+        "tools/checker-oracle/object_access.go",
+        "tools/checker-oracle/object_graph.go",
+        "tools/checker-oracle/prepare.py",
+        "tools/checker-oracle/utilities_test.go",
+        "tools/checker-source-hash.py",
+        "tools/checker-support-port/main.go",
+        "tools/checker-support-port/patch.py",
+        "tools/checker-support-port/query-ast.py",
+        "tools/compare-binder.py",
+        "tools/compare-checker.py",
+        "tools/compare-parser.py",
+        "tools/compare.py",
+        "tools/coverage.py",
+        "tools/fix-ast-functions.py",
+        "tools/generate-ast-accessors.go",
+        "tools/generate-ast-functions.go",
+        "tools/generate-ast.py",
+        "tools/generate-binder-corpus.py",
+        "tools/generate-binder-enums.py",
+        "tools/generate-checker-corpus.py",
+        "tools/generate-checker-feature-map.py",
+        "tools/generate-checker-support-enums.py",
+        "tools/generate-corpus.py",
+        "tools/generate-jsx-projection.go",
+        "tools/generate-object-checker-corpus.py",
+        "tools/generate-parser-boundaries.py",
+        "tools/generate-parser-corpus.py",
+        "tools/generate-parser-gaps.py",
+        "tools/generate-parser-readiness.py",
+        "tools/generate-parser-upstream.py",
+        "tools/generate-required-diagnostics.py",
+        "tools/generate-unicode-case.py",
+        "tools/inventory-checker.py",
+        "tools/inventory-object-checker.py",
+        "tools/object-checker/type-facts.py",
+        "tools/oracle/main.go",
+        "tools/parser-benchmark/main.go",
+        "tools/parser-benchmark.py",
+        "tools/parser-benchmark.sh",
+        "tools/parser-coverage.py",
+        "tools/parser-oracle/fuzz.go",
+        "tools/parser-oracle/main.go",
+        "tools/parser-oracle/sources.go",
+        "tools/parser-port/main.go",
+        "tools/parser-port/main_test.go",
+        "tools/parser-port/patch.py",
+        "tools/parser-source-hash.py",
+        "tools/probe-checker-utilities.py",
+        "tools/record-binder-evidence.py",
+        "tools/record-checker-evidence.py",
+        "tools/record-object-checker-evidence.py",
+        "tools/record-parser-evidence.py",
+        "tools/run-binder-gate.py",
+        "tools/run-checker-gate.py",
+        "tools/run-object-checker-gate.py",
+        "tools/run-parser-gate.py",
+        "tools/source-hash.py",
+        "tools/verify-binder.sh",
+        "tools/verify-checker.sh",
+        "tools/verify-object-checker.sh",
+        "tools/verify-parser.sh",
+        "tools/verify.sh",
+        "upstream.lock.json",
+        "validation/binder-corpus/coverage.json",
+        "validation/binder-corpus/manifest.json",
+        "validation/binder-corpus/opaque-expected.jsonl",
+        "validation/binder-corpus/opaque-requests.jsonl",
+        "validation/binder-corpus/selected-expected.jsonl",
+        "validation/binder-corpus/selected-requests.jsonl",
+        "validation/binder-corpus/tiny-expected.jsonl",
+        "validation/binder-corpus/tiny-requests.jsonl",
+        "validation/checker-corpus/admission-controls.json",
+        "validation/checker-corpus/coverage.json",
+        "validation/checker-corpus/manifest.json",
+        "validation/checker-corpus/selected-expected.jsonl",
+        "validation/checker-corpus/selected-requests.jsonl",
+        "validation/checker-corpus/tiny-expected.jsonl",
+        "validation/checker-corpus/tiny-requests.jsonl",
+        "validation/checker-corpus/utility-expected.json",
+        "validation/corpus/coverage.json",
+        "validation/corpus/expected.jsonl",
+        "validation/corpus/manifest.json",
+        "validation/corpus/requests.jsonl",
+        "validation/object-checker-corpus/admission-controls.json",
+        "validation/object-checker-corpus/coverage.json",
+        "validation/object-checker-corpus/manifest.json",
+        "validation/object-checker-corpus/matrix-expected.jsonl",
+        "validation/object-checker-corpus/matrix-manifest.json",
+        "validation/object-checker-corpus/matrix-requests.jsonl",
+        "validation/object-checker-corpus/tiny-expected.jsonl",
+        "validation/object-checker-corpus/tiny-manifest.json",
+        "validation/object-checker-corpus/tiny-requests.jsonl",
+        "validation/parser-corpus/boundaries-expected.jsonl",
+        "validation/parser-corpus/boundaries-requests.jsonl",
+        "validation/parser-corpus/coverage.json",
+        "validation/parser-corpus/fuzz-expected.jsonl",
+        "validation/parser-corpus/fuzz-requests.jsonl",
+        "validation/parser-corpus/gaps-expected.jsonl",
+        "validation/parser-corpus/gaps-requests.jsonl",
+        "validation/parser-corpus/grammar-expected.jsonl",
+        "validation/parser-corpus/grammar-requests.jsonl",
+        "validation/parser-corpus/helpers-expected.jsonl",
+        "validation/parser-corpus/helpers-requests.jsonl",
+        "validation/parser-corpus/manifest.json",
+        "validation/parser-corpus/readiness-expected.jsonl",
+        "validation/parser-corpus/readiness-requests.jsonl",
+        "validation/parser-corpus/tiny-expected.jsonl",
+        "validation/parser-corpus/tiny-requests.jsonl",
+        "validation/parser-corpus/upstream-expected.jsonl",
+        "validation/parser-corpus/upstream-files.json",
+        "validation/parser-corpus/upstream-manifest.json",
+        "validation/parser-corpus/upstream-requests.jsonl"
+      ],
+      "log": "artifacts/object-checker-validation/final-gate.log"
+    },
+    "evidencePath": "artifacts/object-checker-validation/before-whitespace-cleanup-evidence.json",
+    "evidenceSha256": "a02a4d60758a2f65981da83990a8b3b1618b170456408d183713e6496d1ff8fe",
+    "logPath": "artifacts/object-checker-validation/before-whitespace-cleanup-final-gate.log",
+    "logSha256": "ada3052770cc8c5c56d746b37e5d24f129156b5081dc6e8a59429be3a7c5c8b3",
+    "nativeSha256": "f1a34fc7ce2da02462e6a71d77a818a12c05e67d558b31ebaab05a3b14edca6b"
+  }
+}

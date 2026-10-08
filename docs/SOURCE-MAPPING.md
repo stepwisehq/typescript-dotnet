@@ -25,8 +25,9 @@ Each entry records:
 - `upstreamSha256`: checksum of the exact original source file where recorded.
 
 The top-level `acceptedScannerCheckpoint`, `acceptedParserCheckpoint` and
-`acceptedBinderCheckpoint` preserve historical acceptance while `activePhase`
-tracks the bounded checker checkpoint independently.
+`acceptedBinderCheckpoint` and `acceptedCheckerCheckpoint` preserve historical
+acceptance while `activePhase` and `acceptedObjectCheckerCheckpoint` track the
+bounded object checkpoint independently.
 A prior phase result does not verify later changes to shared source. Per-subsystem recovery checkpoints live in
 [progress/](./progress/).
 
@@ -44,7 +45,8 @@ It must not be presented as the full transform-facts API.
 
 The checker retains upstream file boundaries, with partial functions and selected
 branches made explicit in the [function inventory](./checker-functions.json) and
-[departure notes](./checker-departures.md). Admission and executable observation
+[scalar departure notes](./checker-departures.md) and
+[object departure notes](./OBJECT-CHECKER-DEPARTURES.md). Admission and executable observation
 code are authored support. A guarded partial checker file is not a complete port
 merely because the selected semantic contract passes.
 

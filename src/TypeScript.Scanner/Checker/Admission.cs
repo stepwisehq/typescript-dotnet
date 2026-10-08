@@ -1,5 +1,6 @@
 // Authored admission boundary for the bounded upstream semantic checking slice.
 using TypeScript.Scanner;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TypeScript.Checking;
 public sealed class UnsupportedSemanticFeatureException : NotSupportedException
@@ -51,6 +52,7 @@ internal static class SemanticAdmission
         Reject(file, node, "foreignNode");
     }
 
+    [DoesNotReturn]
     private static void Reject(SourceFile file, Node node, string feature) => throw new UnsupportedSemanticFeatureException(file, node, feature);
     public static void Validate(SourceFile file)
     {
@@ -132,6 +134,27 @@ internal static class SemanticAdmission
             case Kind.ParenthesizedType:
                 Annotation(file, node.AsParenthesizedTypeNode().Type);
                 return;
+            case Kind.TypeLiteral:
+                foreach (Node member in node.AsTypeLiteralNode().Members?.Nodes ?? [])
+                {
+                    Documentation(file, member);
+                    if (member.Kind != Kind.PropertySignature)
+                        Reject(file, member, "typeMember");
+                    StaticPropertyName(file, member.Name());
+                    foreach (Node modifier in member.ModifierNodes() ?? [])
+                        if (modifier.Kind != Kind.ReadonlyKeyword)
+                            Reject(file, modifier, "propertyModifier");
+                    var property = member.AsPropertySignatureDeclaration();
+                    if (property.PostfixToken is { Kind: not Kind.QuestionToken })
+                        Reject(file, property.PostfixToken, "propertyPostfix");
+                    if (property.Initializer is not null)
+                        Reject(file, property.Initializer, "propertyInitializer");
+                    if (property.Type is null)
+                        Reject(file, member, "missingPropertyType");
+                    Annotation(file, property.Type);
+                }
+
+                return;
             case Kind.LiteralType:
                 var literal = node.AsLiteralTypeNode().Literal;
                 if (literal.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword)
@@ -159,9 +182,52 @@ internal static class SemanticAdmission
             case Kind.ParenthesizedExpression:
                 Expression(file, node.AsParenthesizedExpression().Expression);
                 return;
+            case Kind.ObjectLiteralExpression:
+                foreach (Node member in node.Properties() ?? [])
+                {
+                    Documentation(file, member);
+                    if (member.ModifierNodes()is { Count: > 0 })
+                        Reject(file, member, "propertyModifier");
+                    if (member.Kind is not (Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment))
+                        Reject(file, member, "objectMember");
+                    StaticPropertyName(file, member.Name());
+                    if (member.Kind == Kind.PropertyAssignment)
+                    {
+                        var property = member.AsPropertyAssignment();
+                        if (property.Type is not null || property.PostfixToken is not null)
+                            Reject(file, member, "propertyShape");
+                        Expression(file, property.Initializer);
+                    }
+                    else if (member.Kind == Kind.ShorthandPropertyAssignment)
+                    {
+                        var property = member.AsShorthandPropertyAssignment();
+                        if (property.EqualsToken is not null || property.ObjectAssignmentInitializer is not null)
+                            Reject(file, member, "shorthandDefault");
+                    }
+                    else
+                        Reject(file, member, "objectMember");
+                }
+
+                return;
+            case Kind.PropertyAccessExpression:
+                var access = node.AsPropertyAccessExpression();
+                if (access.QuestionDotToken is not null)
+                    Reject(file, access.QuestionDotToken, "optionalChain");
+                if (access.Name().Kind != Kind.Identifier)
+                    Reject(file, access.Name(), "propertyName");
+                Expression(file, access.Expression);
+                return;
             default:
                 Reject(file, node, "expression");
                 return;
         }
+    }
+
+    private static void StaticPropertyName(SourceFile file, Node? node)
+    {
+        if (node is null)
+            Reject(file, file.AsNode(), "objectMember");
+        if (node!.Kind is not (Kind.Identifier or Kind.StringLiteral or Kind.NumericLiteral))
+            Reject(file, node, "propertyName");
     }
 }

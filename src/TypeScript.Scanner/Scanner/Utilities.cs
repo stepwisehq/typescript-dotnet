@@ -87,3 +87,23 @@ public partial class Scanner
     public static string GetTextOfNode(Node node) => GetSourceTextOfNodeFromSourceFile(Ast.GetSourceFileOfNode(node), node, false);
     public static byte[] GetTextOfNodeBytes(Node node) => GetSourceTextOfNodeFromSourceFileBytes(Ast.GetSourceFileOfNode(node), node, false);
 }
+
+public partial class Scanner
+{
+    // utilities.go:129. Input is the scanner's internal UTF8 byte-string.
+    internal static bool IsIdentifierTextByteString(string name, LanguageVariant languageVariant)
+    {
+        var(ch, size) = Utf8.DecodeRuneInString(name);
+        if (!IsIdentifierStart(ch))
+            return false;
+        for (int i = size; i < name.Length;)
+        {
+            (ch, size) = Utf8.DecodeRuneInString(name.AsSpan(i));
+            if (!IsIdentifierPartEx(ch, languageVariant))
+                return false;
+            i += size;
+        }
+
+        return true;
+    }
+}

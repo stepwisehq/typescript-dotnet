@@ -3117,3 +3117,146 @@ public enum ModuleInstanceState : int
     ConstEnumOnly = 3
 } // END GENERATED BINDER UTILITY CLOSURE
 
+// ast/utilities.go:1223/1241/1246. Lazy documentation lookup is real; tagged
+// documents remain rejected by semantic admission, rather than assumed absent.
+public static partial class Ast
+{
+    public static Node GetJSDocDeprecatedTag(Node node)
+    {
+        foreach (var jsdoc in node.JSDoc(null) ?? [])
+            if (jsdoc.AsJSDoc().Tags is { } tags)
+                foreach (var tag in tags.Nodes ?? [])
+                    if (IsJSDocDeprecatedTag(tag))
+                        return tag;
+        return null;
+    }
+
+    public static bool IsDeprecatedDeclaration(Node declaration) => IsDeprecatedDeclarationWithCachedFlags(declaration, GetCombinedNodeFlags(declaration));
+    public static bool IsDeprecatedDeclarationWithCachedFlags(Node declaration, NodeFlags combinedFlags)
+    {
+        if ((combinedFlags & NodeFlags.PossiblyContainsDeprecatedTag) == 0)
+            return false;
+        for (var n = declaration; n != null; n = n.Parent)
+            if ((n.Flags & NodeFlags.PossiblyContainsDeprecatedTag) != 0)
+                return GetJSDocDeprecatedTag(n) != null;
+        return false;
+    }
+}
+
+public static partial class Ast
+{
+    // utilities.go:2189
+    public static string EntityNameToString(Node name, Func<Node, string> getTextOfNode)
+    {
+        switch (name.Kind)
+        {
+            case Kind.ThisKeyword:
+                return "this";
+            case Kind.Identifier:
+            case Kind.PrivateIdentifier:
+                return NodeIsSynthesized(name) || getTextOfNode == null ? name.Text() : getTextOfNode(name);
+            case Kind.QualifiedName:
+                return EntityNameToString(name.AsQualifiedName().Left, getTextOfNode) + "." + EntityNameToString(name.AsQualifiedName().Right, getTextOfNode);
+            case Kind.PropertyAccessExpression:
+                return EntityNameToString(name.Expression(), getTextOfNode) + "." + EntityNameToString(name.Name(), getTextOfNode);
+            case Kind.JsxNamespacedName:
+                return EntityNameToString(name.AsJsxNamespacedName().Namespace, getTextOfNode) + ":" + EntityNameToString(name.Name(), getTextOfNode);
+            default:
+                throw new InvalidOperationException("Unhandled case in EntityNameToString");
+        }
+    }
+
+    // utilities.go:3236
+    public static string GetPropertyNameForPropertyNameNode(Node name)
+    {
+        switch (name.Kind)
+        {
+            case Kind.Identifier:
+            case Kind.PrivateIdentifier:
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.NumericLiteral:
+            case Kind.BigIntLiteral:
+            case Kind.JsxNamespacedName:
+                return name.Text();
+            case Kind.ComputedPropertyName:
+                var expression = name.Expression();
+                if (IsStringOrNumericLiteralLike(expression))
+                    return expression.Text();
+                if (IsSignedNumericLiteral(expression))
+                {
+                    var prefix = expression.AsPrefixUnaryExpression();
+                    var text = prefix.Operand.Text();
+                    if (prefix.Operator == Kind.MinusToken)
+                        text = "-" + text;
+                    return text;
+                }
+
+                return InternalSymbolNameMissing;
+            default:
+                throw new InvalidOperationException("Unhandled case in getPropertyNameForPropertyNameNode");
+        }
+    }
+}
+
+public static partial class Ast
+{
+    // utilities.go:279/391/587.
+    public static bool IsPropertyName(Node node) => node.Kind is Kind.Identifier or Kind.PrivateIdentifier or Kind.StringLiteral or Kind.NumericLiteral or Kind.ComputedPropertyName;
+    public static bool IsAssertionExpression(Node node) => node.Kind is Kind.TypeAssertionExpression or Kind.AsExpression;
+    public static bool IsObjectLiteralElement(Node node) => node.Kind is Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment or Kind.SpreadAssignment or Kind.MethodDeclaration or Kind.GetAccessor or Kind.SetAccessor;
+    // utilities.go:4150/4173.
+    public static bool IsPrimitiveLiteralValue(Node node, bool includeBigInt)
+    {
+        switch (node.Kind)
+        {
+            case Kind.TrueKeyword:
+            case Kind.FalseKeyword:
+            case Kind.NumericLiteral:
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+                return true;
+            case Kind.BigIntLiteral:
+                return includeBigInt;
+            case Kind.PrefixUnaryExpression:
+                var unary = node.AsPrefixUnaryExpression();
+                if (unary.Operator == Kind.MinusToken)
+                    return IsNumericLiteral(unary.Operand) || includeBigInt && IsBigIntLiteral(unary.Operand);
+                if (unary.Operator == Kind.PlusToken)
+                    return IsNumericLiteral(unary.Operand);
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    public static bool HasInferredType(Node node) => node.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration or Kind.BindingElement or Kind.PropertyAccessExpression or Kind.ElementAccessExpression or Kind.BinaryExpression or Kind.CallExpression or Kind.VariableDeclaration or Kind.ExportAssignment or Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment or Kind.JSDocParameterTag or Kind.JSDocPropertyTag;
+}
+
+public static partial class Ast
+{
+    // utilities.go:2731.
+    public static bool IsParseTreeNode(Node node) => (node.Flags & NodeFlags.Synthesized) == 0;
+}
+
+public static partial class Ast
+{
+    // utilities.go:3787.
+    public static bool HasQuestionToken(Node node) => IsQuestionToken(node.QuestionToken());
+}
+
+public static partial class Ast
+{
+    // utilities.go:3766.
+    public static bool IsRightSideOfQualifiedNameOrPropertyAccess(Node node)
+    {
+        var parent = node.Parent;
+        return parent.Kind switch
+        {
+            Kind.QualifiedName => parent.AsQualifiedName().Right == node,
+            Kind.PropertyAccessExpression => parent.AsPropertyAccessExpression().Name() == node,
+            Kind.MetaProperty => parent.AsMetaProperty().Name() == node,
+            _ => false
+        };
+    }
+}

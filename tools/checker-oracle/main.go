@@ -25,8 +25,10 @@ var lastSyntaxEncoder *encoder
 
 type SemanticRequest struct {
 	Request
-	QueryNodeIDs  []int    `json:"queryNodeIds"`
-	RelationPairs [][2]int `json:"relationPairs"`
+	QueryNodeIDs       []int    `json:"queryNodeIds"`
+	RelationPairs      [][2]int `json:"relationPairs"`
+	ObjectObservations bool     `json:"objectObservations"`
+	WidenNodeIDs       []int    `json:"widenNodeIds"`
 }
 type SemanticDiagnostic struct {
 	Diagnostic
@@ -116,6 +118,7 @@ type SemanticResult struct {
 	Locals             *int                 `json:"locals"`
 	Globals            *int                 `json:"globals"`
 	Options            map[string]any       `json:"options"`
+	ObjectGraph        *ObjectGraph         `json:"objectGraph,omitempty"`
 }
 type semanticGraph struct {
 	c       *checker.Checker
@@ -296,6 +299,9 @@ func runChecker(r SemanticRequest) SemanticResult {
 	result.BindDiagnostics = semanticDiagnostics(file.BindDiagnostics())
 	result.CheckerDiagnostics = semanticDiagnostics(fileDiagnostics)
 	result.GlobalDiagnostics = semanticDiagnostics(c.GetGlobalDiagnostics())
+	if r.ObjectObservations {
+		result.ObjectGraph = g.objectGraph(r.WidenNodeIDs, queried)
+	}
 	return result
 }
 func main() {

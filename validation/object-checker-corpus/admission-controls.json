@@ -1,0 +1,152 @@
+[
+  {
+    "name": "named-alias",
+    "text": "type Point={x:number};let p:Point={x:1};",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "interface",
+    "text": "interface Point{x:number}let p:Point={x:1};",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "nested-reference",
+    "text": "let x:{a:Missing};",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "source-union",
+    "text": "let x:{a:number}|undefined;",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "property-union",
+    "text": "let x:{a:number|string};",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "property-write",
+    "text": "let x:{readonly a:number}={a:1};x.a=2;",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "spread",
+    "text": "const x={...other};",
+    "admissionOnly": true,
+    "expectedFeature": "objectMember"
+  },
+  {
+    "name": "computed-literal",
+    "text": "const x={[\"a\"]:1};",
+    "admissionOnly": true,
+    "expectedFeature": "propertyName"
+  },
+  {
+    "name": "computed-expression",
+    "text": "const key=\"a\";const x={[key]:1};",
+    "admissionOnly": true,
+    "expectedFeature": "propertyName"
+  },
+  {
+    "name": "method",
+    "text": "const x={method(){}};",
+    "admissionOnly": true,
+    "expectedFeature": "objectMember"
+  },
+  {
+    "name": "getter",
+    "text": "const x={get a(){return 1}};",
+    "admissionOnly": true,
+    "expectedFeature": "objectMember"
+  },
+  {
+    "name": "setter",
+    "text": "const x={set a(x){}};",
+    "admissionOnly": true,
+    "expectedFeature": "objectMember"
+  },
+  {
+    "name": "type-method",
+    "text": "let x:{method():number};",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "call-signature",
+    "text": "let x:{():number};",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "construct-signature",
+    "text": "let x:{new():number};",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "index-signature",
+    "text": "let x:{[key:string]:number};",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "missing-property-type",
+    "text": "let x:{a};",
+    "admissionOnly": true,
+    "expectedFeature": "missingPropertyType"
+  },
+  {
+    "name": "type-property-initializer",
+    "text": "let x:{a:number=1};",
+    "admissionOnly": true,
+    "expectedFeature": "propertyInitializer"
+  },
+  {
+    "name": "shorthand-default",
+    "text": "const a=1;const x={a=2};",
+    "admissionOnly": true,
+    "expectedFeature": "shorthandDefault"
+  },
+  {
+    "name": "optional-chain",
+    "text": "const x={a:1};const y=x?.a;",
+    "admissionOnly": true,
+    "expectedFeature": "optionalChain"
+  },
+  {
+    "name": "element-access",
+    "text": "const x={a:1};const y=x[\"a\"];",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "object-call",
+    "text": "const x={a:1};const y=x.a();",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "const-assertion",
+    "text": "const x={a:1} as const;",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "satisfies",
+    "text": "const x={a:1} satisfies {a:number};",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "property-jsdoc-tag",
+    "text": "const x={\n/** @deprecated */\na:1};",
+    "admissionOnly": true,
+    "expectedFeature": "jsDocTag"
+  }
+]

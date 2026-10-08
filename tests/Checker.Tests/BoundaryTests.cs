@@ -8,9 +8,24 @@ public class BoundaryTests
 {
     public static IEnumerable<object? []> Controls()
     {
-        using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "corpus/admission-controls.json")));
-        foreach (var input in json.RootElement.EnumerateArray())
-            yield return[input.GetProperty("name").GetString()!, input.GetRawText(), input.GetProperty("expectedFeature").GetString()];
+        foreach (string path in new[]
+        {
+            "corpus/admission-controls.json",
+            "object-corpus/admission-controls.json"
+        }
+
+        )
+        {
+            using var json = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, path)));
+            foreach (var input in json.RootElement.EnumerateArray())
+            {
+                // Exactly two historical negatives became supported. Their original
+                // bytes/evidence remain unchanged; object positives replace them.
+                if (path.StartsWith("corpus/", StringComparison.Ordinal) && (input.GetProperty("name").GetString()is "object" or "object-type"))
+                    continue;
+                yield return[input.GetProperty("name").GetString()!, input.GetRawText(), input.GetProperty("expectedFeature").GetString()];
+            }
+        }
     }
 
     [Theory, MemberData(nameof(Controls))]

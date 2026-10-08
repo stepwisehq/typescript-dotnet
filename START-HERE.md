@@ -85,12 +85,24 @@ Later user directions, in chronological order:
     project infrastructure, emit, incremental compilation and language services
     remain excluded unless concrete scope pressure is reported and reconsidered.
     The [first semantic checkpoint](./docs/CHECKER-ASSESSMENT.md) is now accepted;
-    new checker work is saved uncommitted. No subsequent phase is authorized.
+    scalar checker work was subsequently committed as `7e692dd`.
 
 13. During checker work, the user again asked whether Go was being ported as directly
     as possible. Preserve upstream function/file boundaries, control flow and models.
     Selected partial branches and scoped initialization must be explicit; authored
     admission/harness support must stay distinct from actual semantic algorithms.
+
+14. The user authorized committing scalar checking and proceeding to **object types,
+    property access and structural assignability**. Read the exact
+    [object checker mandate](./docs/OBJECT-CHECKER-PROMPT.md) and current state.
+    Keep successful checks distinct from unsupported paths, exercise interacting
+    features and semantic failures, assess newly relevant binder identity/table
+    behavior, and retain actual Native AOT plus all earlier regression coverage.
+    Keep missing-global diagnostics separate. Generics, broad libraries, modules,
+    emit and services remain excluded; report concrete dependency pressure before
+    expanding the boundary.
+    The [object checkpoint](./docs/OBJECT-CHECKER-ASSESSMENT.md) is now accepted;
+    new object work is saved uncommitted. No subsequent phase is authorized.
 
 ## Recovery sequence
 
@@ -107,7 +119,7 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-The current scope is the first bounded semantic checking slice and required support. A checkpoint can
+The current scope is bounded object checking and required support. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of
