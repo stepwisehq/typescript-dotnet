@@ -1,0 +1,93 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "accepted-bounded-native-xunit-and-original-replay-passed",
+  "supportCatalog": "docs/projects-support-tests.json",
+  "provenanceTotals": {
+    "newAssertionPreservingOriginalFunctions": 11,
+    "adaptedOriginalSharedGroups": 4,
+    "authoredSharedGroups": 12,
+    "sharedGroups": 27,
+    "authoredDifferentialInputs": 48,
+    "newWholeUpstreamCompilerInputsReused": 0
+  },
+  "checkerAdaptation": {
+    "original": "internal/checker/checker_test.go:TestGetTypeAtLocationOfTypeOnlyImportClause",
+    "managed": "validation/Projects.Checks/ProjectControls.cs",
+    "assertions": "Three original type identity assertions and exact source retained; fixed genuine library/config/disk host adaptation disclosed.",
+    "execution": "passed-managed-shared-central8-and-native-and-xunit",
+    "nativeAndXUnit": "passed-final-repaired-source-gate"
+  },
+  "authoredControls": {
+    "ProjectControlsTests": {
+      "groups": 5,
+      "adaptedOriginal": 1,
+      "authored": 4
+    },
+    "ProjectSupportTests": {
+      "groups": 21,
+      "originalFull": 11,
+      "adapted": 3,
+      "authored": 7,
+      "catalog": "docs/projects-support-tests.json"
+    },
+    "ProjectProjectionTests": {
+      "groups": 1,
+      "authored": 1,
+      "purpose": "Owned import-token relocation preserves quoted/escaped path-like strings and real Unicode identifier continuation lookalikes in public and Go-byte text."
+    }
+  },
+  "corpus": {
+    "class": "ProjectsOracleTests",
+    "rows": 48,
+    "manifest": "validation/projects-corpus/manifest.json",
+    "runner": "validation/Projects.Validation/Runner.cs",
+    "comparison": "Same source-generated runner in xUnit and native; strict JSON types/fields/order/null equality via retained OracleTests.FirstDifference. Original expected outputs are independently produced by genuine Program/default resolver.",
+    "managed": "48/48 snapshot6",
+    "xUnit": "passed48-in-checker832",
+    "native": "passed48-actual-linux-x64-native-aot",
+    "acceptanceEvidence": "validation/results/projects-verified.json"
+  },
+  "applicability": "No new whole upstream compiler input units were imported. Authored differential cases exercise the fixed module contract; prior accepted compiler corpus and unchanged foundations are retained by the comprehensive regression cascade. Benchmarks/tracer/general module or package/config test suites are not claimed by these selected assertions.",
+  "evidence": {
+    "managedCorpus": "artifacts/projects-validation/build6/canonical-final/report.json",
+    "managedOrder": "artifacts/projects-validation/build6/order/report.json",
+    "managedShared": "artifacts/projects-validation/build8/shared-controls.json",
+    "originalHelperProvenance": [
+      "validation/projects-corpus/support-projection-provenance.json",
+      "validation/projects-corpus/specifier-helper-provenance.json"
+    ],
+    "managedCLI": "artifacts/projects-validation/build8/managed-cli/report.json",
+    "acceptance": "validation/results/projects-verified.json",
+    "nativeCorpus": "artifacts/projects-validation/native/canonical/report.json",
+    "nativeOrder": "artifacts/projects-validation/native-order/report.json",
+    "nativeCLI": "artifacts/projects-validation/native-cli/report.json",
+    "xUnitTRX": "artifacts/data-types-validation/checker.trx"
+  },
+  "supportCatalogDisposition": {
+    "entries": 148,
+    "assertionPreserving": 17,
+    "newProjectSharedFullOriginalFunctions": 11,
+    "retainedFoundationFullOriginalFunctions": 6,
+    "adapted": 3,
+    "excluded": 128,
+    "checkerImportClauseAdaptationIsAdditional": true,
+    "notes": "The checker import-clause adaptation is catalogued here, separately from the 148 host/path/program/specifier applicability entries. Registry counts are shared groups, not individual table assertions."
+  },
+  "lateAuthoredBoundary": "Existing resolution shared group adds strict scalar UTF8 path rejection and exact supplementary/U+FFFD positives; registry stays 27. Ordinary CLI adds a separate 10th case. Original lone-surrogate 2307 is preserved as investigation provenance, never substituted with authored host exit 2 in canonical expectations.",
+  "acceptance": {
+    "proof": "validation/results/projects-verified.json",
+    "allXUnitCases": 23542,
+    "checkerXUnitCases": 832,
+    "corpusXUnitCases": 48,
+    "sharedXUnitCases": 27,
+    "sharedNativeGroups": 27,
+    "ordinaryNativeCLICases": 10,
+    "lexicalControls": 14,
+    "originalGoOrderExact": 30,
+    "nativeOrderExact": 30,
+    "noSkippedTests": true,
+    "noDrift": true,
+    "elapsedSeconds": 780.934,
+    "originalSelectedNewFunctionPasses": 11
+  }
+}

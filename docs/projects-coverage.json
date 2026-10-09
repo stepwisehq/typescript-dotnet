@@ -1,0 +1,1189 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "2598ceb5ce339fdc03558c1f13724f90ff10ee1e",
+  "status": "accepted-bounded-native-and-regressions-passed",
+  "manifest": "validation/projects-corpus/manifest.json",
+  "managed": {
+    "snapshot": 6,
+    "cases": 48,
+    "exact": 48,
+    "elapsedSeconds": 28.377,
+    "report": "artifacts/projects-validation/build6/canonical-final/report.json"
+  },
+  "sharedChecks": {
+    "snapshot": 8,
+    "groups": 27,
+    "exitCode": 0,
+    "report": "artifacts/projects-validation/build8/shared-controls.json",
+    "snapshotPolicy": "Snapshot 8 adds strict scalar-UTF8 disk module-path decoding, verified by focused shared controls and ordinary CLI 10. Canonical managed 48/order comparisons retain historical snapshot 6 attribution. The final current-source comprehensive gate passed and is accepted under validation/results/projects-verified.json, including original/native 48, native shared 27, order 30 per runtime, CLI 10 and all 23,542 xUnit cases."
+  },
+  "order": {
+    "cases": 14,
+    "sequencesPerRuntime": 2,
+    "originalGoExact": 30,
+    "managedExact": 30,
+    "report": "artifacts/projects-validation/build6/order/report.json",
+    "nativeExact": 30,
+    "nativeReport": "artifacts/projects-validation/native-order/report.json",
+    "nativeElapsedSeconds": 33.961
+  },
+  "nativeStatus": "passed-actual-linux-x64-native-aot",
+  "corpusXUnitStatus": "passed48-in-comprehensive-checker-registry832",
+  "families": [
+    {
+      "contractRow": "P1",
+      "family": "fixed-library/options/config/disk-resolution",
+      "cases": [
+        "specifier-ts",
+        "specifier-js",
+        "dotted-name",
+        "duplicate-roots",
+        "P1-directory-index-parent-and-path-dedup",
+        "ancestor-package-type-module",
+        "ancestor-package-type-commonjs"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Genuine default resolver and source discovery, exact option/file/library records; unsupported host/config forms are separate shared and CLI controls.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P1",
+      "family": "Unicode/case/complete-diagnostic-ownership",
+      "cases": [
+        "unicode-paths",
+        "P2-script-unicode-not-module",
+        "P1-path-looking-user-literals",
+        "P1-linux-casing-conflict",
+        "P1-missing-root-related-config",
+        "P1-missing-root-and-semantic-error",
+        "missing-side-effect"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Full arguments, message chains, related config locations, byte ranges and file ownership; quoted path-looking user values remain unchanged.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P2",
+      "family": "default/named/namespace/string/local/reexport forms",
+      "cases": [
+        "P4-grouped-records",
+        "P2-default-anonymous-function",
+        "P2-default-recursive-interface",
+        "P2-default-named-recursive-function",
+        "P2-default-expression-and-local-renames",
+        "P2-string-named-export",
+        "P2-named-reexport-alias"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Named default interface and named/anonymous default functions are semantic cases. Anonymous default interface is original parse1003 in a separate complete diagnostic control.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P2",
+      "family": "declaration/specifier type-only forms",
+      "cases": [
+        "P2-type-only-namespace-value",
+        "P2-type-only-star-value-error",
+        "P2-type-only-namespace-reexport",
+        "P2-specifier-type-only-reexport-value",
+        "P2-inline-type-only-import-valid",
+        "P2-inline-type-only-import-invalid-value"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Actual type-only declaration and immediate/ultimate alias identities; valid type use and invalid value use.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P2",
+      "family": "scope/import/export errors",
+      "cases": [
+        "P2-imported-binding-write",
+        "P2-import-variable-collision",
+        "P2-import-function-collision",
+        "P2-conflicting-local-exports",
+        "P2-missing-default",
+        "P2-nonexported-hidden-nil-table",
+        "P2-namespace-call-error",
+        "P1-side-effect-script-globals"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Imported binding restrictions, mixed alias flags, genuine module-local and script-global scopes, nil export tables and original namespace-call diagnostics.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P3",
+      "family": "star/alias/type cycles and collision targets",
+      "cases": [
+        "recursive-type-star-cycle",
+        "P3-alias-export-cycle",
+        "P3-star-ambiguity",
+        "P3-star-explicit-override",
+        "P3-type-star-ordinary-override",
+        "P3-two-stars-same-ultimate-target"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Unknown-target cycle sentinels, same ultimate target versus different-target ambiguity, explicit overrides, and ordinary star overriding an earlier type-only star.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P3",
+      "family": "cross-file mutually recursive callable bodies/root order",
+      "cases": [
+        "P3-mutual-functions-valid-forward-roots",
+        "P3-mutual-functions-valid-reversed-roots",
+        "P3-mutual-functions-invalid-forward-roots",
+        "P3-mutual-functions-invalid-reversed-roots"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Both configurations compare their genuine distinct discovery ordering to original Program; invalid calls/returns preserve 2345/2322.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P3",
+      "family": "query order/repeated fresh environments",
+      "cases": [
+        "P4-demo-query-forward-repeat",
+        "P4-demo-query-reverse-repeat"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Reversed source query lists and nonadjacent repeats retain original results; process order subset repeats after intervening environments. Shared ownership controls also reject foreign nodes/symbols and require fresh library ASTs.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "contractRow": "P4",
+      "family": "practical disk application/invalid same-base application",
+      "cases": [
+        "P4-grouped-records",
+        "P4-grouped-records-invalid"
+      ],
+      "managedStatus": "passed-central6",
+      "nativeStatus": "passed-actual-linux-x64-native-aot",
+      "evidence": "artifacts/projects-validation/build6/canonical-final/report.json",
+      "note": "Readable models, links, generic grouping, barrel and application; all prior collection operations are composed across modules. Invalid application has eight original file-attributed diagnostics.",
+      "nativeEvidence": "artifacts/projects-validation/native/canonical/report.json",
+      "acceptanceEvidence": "validation/results/projects-verified.json"
+    }
+  ],
+  "cases": [
+    {
+      "case": "P4-grouped-records",
+      "queries": 50,
+      "types": 51,
+      "signatures": 22,
+      "aliases": 25,
+      "modules": 5,
+      "resolutionEdges": 11,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/links.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P4-grouped-records-invalid",
+      "queries": 62,
+      "types": 53,
+      "signatures": 24,
+      "aliases": 27,
+      "modules": 5,
+      "resolutionEdges": 13,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/links.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "recursive-type-star-cycle",
+      "queries": 8,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 5,
+      "modules": 3,
+      "resolutionEdges": 6,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/a.ts",
+        "/project/src/b.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "specifier-ts",
+      "queries": 25,
+      "types": 37,
+      "signatures": 14,
+      "aliases": 11,
+      "modules": 4,
+      "resolutionEdges": 8,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "specifier-js",
+      "queries": 25,
+      "types": 37,
+      "signatures": 14,
+      "aliases": 11,
+      "modules": 4,
+      "resolutionEdges": 8,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "missing-side-effect",
+      "queries": 25,
+      "types": 37,
+      "signatures": 14,
+      "aliases": 11,
+      "modules": 4,
+      "resolutionEdges": 9,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "ancestor-package-type-module",
+      "queries": 25,
+      "types": 37,
+      "signatures": 14,
+      "aliases": 11,
+      "modules": 4,
+      "resolutionEdges": 8,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "ancestor-package-type-commonjs",
+      "queries": 25,
+      "types": 37,
+      "signatures": 14,
+      "aliases": 11,
+      "modules": 4,
+      "resolutionEdges": 8,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "duplicate-roots",
+      "queries": 1,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 0,
+      "modules": 1,
+      "resolutionEdges": 0,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "unicode-paths",
+      "queries": 10,
+      "types": 5,
+      "signatures": 0,
+      "aliases": 4,
+      "modules": 5,
+      "resolutionEdges": 4,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/\ue000.ts",
+        "/project/\ud800\udc00.ts",
+        "/project/\u0130.ts",
+        "/project/i.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "dotted-name",
+      "queries": 3,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/models.types.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-imported-binding-write",
+      "queries": 2,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-import-variable-collision",
+      "queries": 3,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-import-function-collision",
+      "queries": 1,
+      "types": 2,
+      "signatures": 1,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-default-anonymous-function",
+      "queries": 3,
+      "types": 4,
+      "signatures": 2,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-default-recursive-interface",
+      "queries": 2,
+      "types": 5,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-star-ambiguity",
+      "queries": 4,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 4,
+      "resolutionEdges": 3,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/left.ts",
+        "/project/right.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-star-explicit-override",
+      "queries": 4,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 4,
+      "resolutionEdges": 4,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/left.ts",
+        "/project/right.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-script-unicode-not-module",
+      "queries": 3,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 1,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/\u00e9.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-type-only-namespace-value",
+      "queries": 4,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-alias-export-cycle",
+      "queries": 2,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 3,
+      "modules": 3,
+      "resolutionEdges": 3,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/b.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-namespace-call-error",
+      "queries": 4,
+      "types": 3,
+      "signatures": 1,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-nonexported-hidden-nil-table",
+      "queries": 3,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-string-named-export",
+      "queries": 3,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-default-named-recursive-function",
+      "queries": 4,
+      "types": 2,
+      "signatures": 1,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-default-expression-and-local-renames",
+      "queries": 4,
+      "types": 4,
+      "signatures": 0,
+      "aliases": 4,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-named-reexport-alias",
+      "queries": 5,
+      "types": 5,
+      "signatures": 2,
+      "aliases": 4,
+      "modules": 3,
+      "resolutionEdges": 2,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-type-only-star-value-error",
+      "queries": 5,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 3,
+      "resolutionEdges": 2,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-type-only-namespace-reexport",
+      "queries": 4,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 3,
+      "resolutionEdges": 2,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-side-effect-script-globals",
+      "queries": 2,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 0,
+      "modules": 1,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/boot.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-directory-index-parent-and-path-dedup",
+      "queries": 4,
+      "types": 4,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 2,
+      "resolutionEdges": 2,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/data/index.ts",
+        "/project/sub/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-missing-default",
+      "queries": 3,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-conflicting-local-exports",
+      "queries": 4,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 3,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-path-looking-user-literals",
+      "queries": 7,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-missing-root-and-semantic-error",
+      "queries": 1,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 0,
+      "modules": 1,
+      "resolutionEdges": 0,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-missing-root-related-config",
+      "queries": 1,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 0,
+      "modules": 1,
+      "resolutionEdges": 0,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P1-linux-casing-conflict",
+      "queries": 3,
+      "types": 2,
+      "signatures": 0,
+      "aliases": 0,
+      "modules": 3,
+      "resolutionEdges": 0,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/main.ts",
+        "/project/a.ts",
+        "/project/A.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P4-demo-query-forward-repeat",
+      "queries": 51,
+      "types": 51,
+      "signatures": 22,
+      "aliases": 25,
+      "modules": 5,
+      "resolutionEdges": 11,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/links.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P4-demo-query-reverse-repeat",
+      "queries": 51,
+      "types": 51,
+      "signatures": 22,
+      "aliases": 25,
+      "modules": 5,
+      "resolutionEdges": 11,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/src/links.ts",
+        "/project/src/models.ts",
+        "/project/src/grouping.ts",
+        "/project/src/index.ts",
+        "/project/src/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-type-star-ordinary-override",
+      "queries": 5,
+      "types": 3,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 3,
+      "resolutionEdges": 3,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-two-stars-same-ultimate-target",
+      "queries": 3,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 1,
+      "modules": 5,
+      "resolutionEdges": 5,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/c.ts",
+        "/project/barrel.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-specifier-type-only-reexport-value",
+      "queries": 3,
+      "types": 1,
+      "signatures": 0,
+      "aliases": 2,
+      "modules": 3,
+      "resolutionEdges": 2,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-mutual-functions-valid-forward-roots",
+      "queries": 9,
+      "types": 5,
+      "signatures": 2,
+      "aliases": 4,
+      "modules": 3,
+      "resolutionEdges": 4,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/odd.ts",
+        "/project/even.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-mutual-functions-valid-reversed-roots",
+      "queries": 9,
+      "types": 5,
+      "signatures": 2,
+      "aliases": 4,
+      "modules": 3,
+      "resolutionEdges": 4,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/even.ts",
+        "/project/odd.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-mutual-functions-invalid-forward-roots",
+      "queries": 13,
+      "types": 6,
+      "signatures": 2,
+      "aliases": 4,
+      "modules": 3,
+      "resolutionEdges": 4,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/odd.ts",
+        "/project/even.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P3-mutual-functions-invalid-reversed-roots",
+      "queries": 13,
+      "types": 6,
+      "signatures": 2,
+      "aliases": 4,
+      "modules": 3,
+      "resolutionEdges": 4,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/even.ts",
+        "/project/odd.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-inline-type-only-import-valid",
+      "queries": 4,
+      "types": 9,
+      "signatures": 2,
+      "aliases": 2,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 0,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/model.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    },
+    {
+      "case": "P2-inline-type-only-import-invalid-value",
+      "queries": 4,
+      "types": 9,
+      "signatures": 2,
+      "aliases": 2,
+      "modules": 2,
+      "resolutionEdges": 1,
+      "exitCode": 1,
+      "programFiles": [
+        "/lib/lib.es5.d.ts",
+        "/lib/lib.decorators.d.ts",
+        "/lib/lib.decorators.legacy.d.ts",
+        "/project/model.ts",
+        "/project/main.ts"
+      ],
+      "observations": "selected semantic relationships plus whole passive binding graph and full diagnostics"
+    }
+  ],
+  "observedStores": {
+    "aliasSymbolLinks": [
+      "immediateTarget",
+      "aliasTarget",
+      "referenced",
+      "typeOnlyDeclaration"
+    ],
+    "moduleSymbolLinks": [
+      "resolvedExports",
+      "typeOnlyExportStarMap",
+      "exportsChecked"
+    ],
+    "exportTypeLinks": [
+      "target",
+      "originatingImport"
+    ],
+    "membership": "Actual logical keys, null/allocated state and full counts. Reached objects preserve identity and file-qualified ownership."
+  },
+  "omissions": [
+    "Private unreachable export-type clones are a validated structural multiset with multiplicity and whole count, not an identity census or cloned-table topology claim; every reached clone retains genuine identity/target/import edges.",
+    "Selected type/signature model fields and public queries are compared; this campaign does not duplicate the prior comprehensive collection private-cache census. The accepted full collection corpus remains in the regression gate.",
+    "Private accessibility extended-container, package-scope, module-import-attribute and formatter topology are not asserted equal; selected original algorithms, demanded diagnostics/type formatting, finite helper controls and query/order behavior are reviewed and compared.",
+    "Malformed source and all-missing user roots receive diagnostic/CLI controls, not a complete semantic graph claim. Anonymous default interface is pinned parser1003 coverage.",
+    "Configuration parsing is the documented authored strict subset, not the full upstream tsconfig parser. Full config diagnostic graph equality is claimed only for accepted equivalent configurations; unsupported configurations are boundary controls."
+  ],
+  "instrumentation": "None. Oracle uses genuine pinned Program and default resolver; observation support reads stored fields without semantic re-query, ID allocation or closure invocation.",
+  "independentReview": {
+    "verdict": "Accepted bounded contract after late replacement-decoding repair, independent source/control review and successful fresh frozen native/regression gate. No known unresolved in-contract blocker. Explicit observation/host omissions remain; no whole Program/module parity claim.",
+    "toolingReview": "artifacts/projects-validation/tooling-independent-review.json",
+    "supportReview": "docs/progress/review-projects-support.md",
+    "coreReview": "docs/progress/review-projects-core.md",
+    "runtimeAcceptance": "passed-final-repaired-source-gate"
+  },
+  "nextCampaignRecommendation": "A separate bounded campaign for genuine upstream tsconfig discovery (files/include/exclude and their complete config diagnostics) would remove the current authored strict-config limitation while preserving package/incremental/emit exclusions. It needs a fresh contract and original Program oracle; no implementation is authorized by this recommendation.",
+  "lateFinding": {
+    "evidence": "artifacts/projects-investigation/surrogate-specifier/report.json",
+    "originalPositiveEvidence": "artifacts/projects-investigation/surrogate-specifier/review-original-summary.json",
+    "cause": "Replacement fallback in byte-to-disk decoding aliases invalid surrogate UTF-8 sequences to existing replacement-character paths.",
+    "original": "Lone escaped high/low surrogates retain diagnostic 2307 and load main only. Escaped valid supplementary pair and real U+FFFD resolve the correct distinct files.",
+    "repairPolicy": "Strict decoding at disk module-path boundaries; unsupported unrepresentable paths return structured host failure. No scanner/global GoString normalization and no equality claim that host exit 2 matches original2307.",
+    "status": "source-independently-reviewed-shared-and-native-controls-passed-final-repaired-source-gate-accepted",
+    "canonical48Goldens": "unchanged",
+    "review": "artifacts/projects-investigation/surrogate-specifier/independent-repair-review.json",
+    "acceptanceEvidence": "validation/results/projects-verified.json"
+  },
+  "managedCLI": {
+    "snapshot": 8,
+    "cases": 10,
+    "exact": 10,
+    "lexicalControls": 14,
+    "report": "artifacts/projects-validation/build8/managed-cli/report.json"
+  },
+  "native": {
+    "proof": "validation/results/projects-verified.json",
+    "cases": 48,
+    "exact": 48,
+    "elapsedSeconds": 41.528,
+    "report": "artifacts/projects-validation/native/canonical/report.json",
+    "sourceSha256": "355b4842fa619586687a2de72293e259e9d993b35609f4cd2ae367b9cf83f953",
+    "verificationAssetsSha256": "117226e06b6ef7181042b90512420614c07198d480c9dea705e7109d149cbcd7"
+  },
+  "acceptance": {
+    "proof": "validation/results/projects-verified.json",
+    "exitCode": 0,
+    "elapsedSeconds": 780.934,
+    "xUnitCases": 23542,
+    "checkerCases": 832,
+    "projectCorpusXUnitCases": 48,
+    "projectSharedXUnitCases": 27,
+    "skipped": 0,
+    "sharedNativeGroups": 27,
+    "orderCases": 14,
+    "originalGoOrderExact": 30,
+    "nativeOrderExact": 30,
+    "ordinaryNativeCLICases": 10,
+    "lexicalControls": 14,
+    "completeCanonicalDemoDiagnostics": true,
+    "sourceDrift": false,
+    "assetDrift": false,
+    "historicalAssetDrift": false,
+    "upstreamDrift": false,
+    "freshNativeBinaries": 9
+  },
+  "ordinaryNativeCLI": {
+    "cases": 10,
+    "exact": 10,
+    "elapsedSeconds": 2.197,
+    "lexicalControls": 14,
+    "completeCanonicalDemoDiagnostics": true,
+    "report": "artifacts/projects-validation/native-cli/report.json"
+  }
+}

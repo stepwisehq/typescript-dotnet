@@ -6612,3 +6612,16 @@ public static partial class Ast
     // utilities.go:1699. Pure enum classification, independent of option derivation.
     private static bool isCommonJSContainingModuleKind(ModuleKind kind) => kind == ModuleKind.CommonJS || ModuleKind.Node16 <= kind && kind <= ModuleKind.NodeNext;
 }
+
+public static partial class Ast
+{
+    // utilities.go:3644. A module's real declaration is preserved across alias printing.
+    public static SourceFile GetSourceFileOfModule(Symbol module)
+    {
+        var declaration = module.ValueDeclaration ?? GetNonAugmentationDeclaration(module);
+        return GetSourceFileOfNode(declaration);
+    }
+
+    // utilities.go:3652.
+    public static Node GetNonAugmentationDeclaration(Symbol symbol) => Core.Find(symbol.Declarations, declaration => !IsExternalModuleAugmentation(declaration) && !IsGlobalScopeAugmentation(declaration));
+}

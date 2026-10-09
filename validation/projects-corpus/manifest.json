@@ -1,0 +1,99 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "2598ceb5ce339fdc03558c1f13724f90ff10ee1e",
+  "cases": 48,
+  "groups": [
+    {
+      "group": "canonical",
+      "requests": "validation/projects-corpus/canonical-requests.jsonl",
+      "expected": "validation/projects-corpus/canonical-expected.jsonl.gz",
+      "cases": 48,
+      "requestsSha256": "3d77f086d6560adde3c48df2f8e04c14ea7c59cb869fd0c046b628bbc55994ff",
+      "expectedSha256": "8c7499397e4d9aec1cc9cba04b25988ffd19399abcbdcf3c363b9f6de9820271"
+    }
+  ],
+  "sharedChecks": {
+    "count": 27,
+    "xUnitClassCounts": {
+      "ProjectControlsTests": 5,
+      "ProjectSupportTests": 21,
+      "ProjectProjectionTests": 1
+    }
+  },
+  "corpusXUnitClassCounts": {
+    "ProjectsOracleTests": 48
+  },
+  "orderControls": {
+    "cases": 14,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 30,
+    "requests": "validation/projects-corpus/order-requests.jsonl",
+    "requestsSha256": "7924be244b59a0e857da587698e8021402558ded6ad5f2a7479c0db240147684"
+  },
+  "demonstrations": [
+    {
+      "name": "P4-grouped-records",
+      "directory": "examples/projects/grouped-records",
+      "exitCode": 0
+    },
+    {
+      "name": "P4-grouped-records-invalid",
+      "directory": "examples/projects/grouped-records-invalid",
+      "exitCode": 1
+    }
+  ],
+  "originalTests": [
+    {
+      "package": "./internal/tspath",
+      "functions": [
+        "TestGetDirectoryPath",
+        "TestGetPathComponents",
+        "TestReducePathComponents",
+        "TestCombinePaths",
+        "TestResolvePath",
+        "TestResolvePathWithoutTrailingDirectorySeparator",
+        "TestNormalizePathDriveRoot",
+        "TestGetNormalizedAbsolutePath",
+        "TestToFileNameLowerCase"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/tspath/path_test.go": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestIncludeReasonDiagnosticsAreProgramLocal"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/program_test.go": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d"
+      }
+    },
+    {
+      "package": "./internal/modulespecifiers",
+      "functions": [
+        "TestProcessEndingChecksRootedFilePath"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers_test.go": "57a883bb76e85d7daca35c4f4900f40270a60d8030b403dd0d101e0d2bd85356"
+      }
+    }
+  ],
+  "supportProjections": {
+    "expected": "validation/projects-corpus/support-projection-expected.json",
+    "provenance": "validation/projects-corpus/support-projection-provenance.json",
+    "expectedSha256": "f4cee8beb9e34593454e6f5ecb0d4ae835d1bda2371e903115dec5de9c58884a",
+    "provenanceSha256": "81e3c9ec1596d3e14aa1b9658458e037078b0db1c0145cbdeae1588a32644741",
+    "groups": 6
+  },
+  "specifierHelper": {
+    "expected": "validation/projects-corpus/specifier-helper-expected.jsonl",
+    "provenance": "validation/projects-corpus/specifier-helper-provenance.json",
+    "expectedSha256": "07bba7cd41d73cbeee4233ee8496d22024285594d97fd294806a74c2308fecac",
+    "provenanceSha256": "3bd1308fba68dabf16866f3e40ca3d6ff40232a2d87f62d3c74f92094ac110e1",
+    "cases": 5,
+    "requests": "validation/projects-corpus/specifier-helper-requests.jsonl",
+    "requestsSha256": "ec3327cbc685e6ead1a63c34336df52d668e92d69ae3712a4d9b3bc98a0fcb86"
+  },
+  "observationPolicy": "Whole passive binding graph plus selected reached types/signatures/aliases/module exports/resolution and full diagnostics. Private unreachable export clones validated as structural multisets with multiplicity; identity census/topology explicitly unclaimed. No metadata instrumentation. Earlier bootstrap/vertical assets remain investigation-only outside this manifest."
+}

@@ -1,0 +1,33 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "request": {
+    "name": "P2-default-anonymous-interface",
+    "files": {
+      "a.ts": "export default interface {value:number}",
+      "main.ts": "import type Shape from \"./a\"; const value:Shape={value:1};"
+    },
+    "config": "{\"files\":[\"main.ts\"]}"
+  },
+  "diagnostics": [
+    {
+      "file": "/project/a.ts",
+      "diagnostic": {
+        "code": 1003,
+        "category": 1,
+        "pos": 25,
+        "end": 26,
+        "key": "Identifier_expected_1003",
+        "argsBase64": null,
+        "text": "Identifier expected.",
+        "fileIndex": 3,
+        "sourceBase64": "",
+        "reportsUnnecessary": false,
+        "reportsDeprecated": false,
+        "skippedOnNoEmit": false,
+        "chain": null,
+        "related": null
+      }
+    }
+  ],
+  "disposition": "Actual original Program parse evidence; shared host-adapted Parser.AnonymousDefaultInterface preserves full diagnostic fields. No semantic completeness claim or corpus theory row."
+}

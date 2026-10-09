@@ -44,6 +44,16 @@ public enum ModuleKind
     Preserve = 200
 }
 
+public enum ModuleResolutionKind
+{
+    Unknown = 0,
+    Classic = 1,
+    Node10 = 2,
+    Node16 = 3,
+    NodeNext = 99,
+    Bundler = 100
+}
+
 internal enum NewLineKind
 {
     None = 0,
@@ -57,9 +67,13 @@ public sealed partial class CompilerOptions
 {
     public ScriptTarget Target;
     public ModuleKind Module;
+    public ModuleResolutionKind ModuleResolution;
+    public Tristate NoEmit, AllowImportingTsExtensions, RewriteRelativeImportExtensions;
+    public Tristate NoUncheckedSideEffectImports, ResolveJsonModule, AllowJs;
+    public Tristate ResolvePackageJsonExports, ResolvePackageJsonImports, ForceConsistentCasingInFileNames;
     public Tristate NoResolve, SkipLibCheck, DownlevelIteration, NoUncheckedIndexedAccess;
     public Tristate NoLib, Strict, StrictNullChecks, NoImplicitAny, NoImplicitThis, NoImplicitReturns;
-    public Tristate CheckJs;
+    public Tristate CheckJs, PreserveConstEnums;
     public Tristate StrictFunctionTypes, StrictBindCallApply, StrictPropertyInitialization;
     public Tristate StrictBuiltinIteratorReturn, UseUnknownInCatchVariables;
     public Tristate AllowUnreachableCode;

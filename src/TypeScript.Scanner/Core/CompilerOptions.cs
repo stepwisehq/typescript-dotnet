@@ -38,6 +38,24 @@ public sealed partial class CompilerOptions
         return ModuleKind.CommonJS;
     }
 
+    // compileroptions.go:51–111. Genuine accessors; project admission selects Bundler.
+    public ModuleResolutionKind GetModuleResolutionKind() => ModuleResolution switch
+    {
+        ModuleResolutionKind.Unknown or ModuleResolutionKind.Classic or ModuleResolutionKind.Node10 => GetEmitModuleKind() switch
+        {
+            ModuleKind.Node16 or ModuleKind.Node18 or ModuleKind.Node20 => ModuleResolutionKind.Node16,
+            ModuleKind.NodeNext => ModuleResolutionKind.NodeNext,
+            _ => ModuleResolutionKind.Bundler
+        },
+        _ => ModuleResolution
+    };
+    public bool GetResolvePackageJsonExports() => ResolvePackageJsonExports != Tristate.False;
+    public bool GetResolvePackageJsonImports() => ResolvePackageJsonImports != Tristate.False;
+    public bool GetAllowImportingTsExtensions() => AllowImportingTsExtensions == Tristate.True || RewriteRelativeImportExtensions == Tristate.True;
+    public bool AllowImportingTsExtensionsFrom(string fileName) => GetAllowImportingTsExtensions() || fileName.IsDeclarationFile();
+    public bool GetResolveJsonModule() => ResolveJsonModule != Tristate.Unknown ? ResolveJsonModule == Tristate.True : GetEmitModuleKind()is ModuleKind.Node20 or ModuleKind.NodeNext || GetModuleResolutionKind() == ModuleResolutionKind.Bundler;
+    public bool ShouldPreserveConstEnums() => PreserveConstEnums == Tristate.True || GetIsolatedModules();
+    public bool GetAllowJS() => AllowJs != Tristate.Unknown ? AllowJs == Tristate.True : CheckJs == Tristate.True;
     // Upstream compileroptions.go:122.
     public bool GetStrictOptionValue(Tristate value)
     {

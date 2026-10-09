@@ -8,7 +8,7 @@ internal static class CollectionAdmission
 {
     [DoesNotReturn]
     private static void Reject(SourceFile file, Node node, string feature) => throw new UnsupportedSemanticFeatureException(file, node, feature);
-    internal static void Validate(SourceFile file)
+    internal static void Validate(SourceFile file, bool project = false)
     {
         Node root = file.AsNode();
         if (file.ScriptKind != ScriptKind.TS)
@@ -21,14 +21,14 @@ internal static class CollectionAdmission
             Reject(file, root, "checkingDirective");
         if (file.ReferencedFiles is { Count: > 0 } || file.TypeReferenceDirectives is { Count: > 0 } || file.LibReferenceDirectives is { Count: > 0 })
             Reject(file, root, "externalReference");
-        if (file.ExternalModuleIndicator is not null || file.CommonJSModuleIndicator is not null)
+        if ((!project && file.ExternalModuleIndicator is not null) || file.CommonJSModuleIndicator is not null)
             Reject(file, root, "module");
-        Visit(file, root);
+        Visit(file, root, project);
     }
 
     private static Node? Field(Node node, string role) => node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as Node;
     private static List<Node>? List(Node node, string role) => (node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as NodeList)?.Nodes;
-    private static void Visit(SourceFile file, Node node)
+    private static void Visit(SourceFile file, Node node, bool project)
     {
         // Preserve ordinary documentation; semantic source JSDoc remains excluded.
         foreach (Node doc in node.JSDoc(file) ?? [])
@@ -59,6 +59,15 @@ internal static class CollectionAdmission
             Reject(file, node, "objectSpread");
         if (node.Kind == Kind.ComputedPropertyName)
             Reject(file, node, "computedProperty");
+        if (project && node.Kind is Kind.ImportDeclaration or Kind.ExportDeclaration)
+        {
+            if (Field(node, "Attributes") is not null)
+                Reject(file, node, "importAttributes");
+            if (Field(node, "ModuleSpecifier") is { } specifier)
+                ProjectAdmission.ValidateSpecifier(file, specifier);
+        }
+        if (project && node.Kind == Kind.ExportAssignment && node.AsExportAssignment().IsExportEquals)
+            Reject(file, node, "exportEquals");
         if (Field(node, "QuestionDotToken")is not null)
             Reject(file, node, "optionalChain");
         if (node.Kind == Kind.BinaryExpression && !BinaryOperator(node.AsBinaryExpression().OperatorToken.Kind))
@@ -67,11 +76,11 @@ internal static class CollectionAdmission
             Reject(file, node, "assignmentPattern");
         if (node.Kind == Kind.PrefixUnaryExpression && node.AsPrefixUnaryExpression().Operator is not (Kind.PlusToken or Kind.MinusToken or Kind.ExclamationToken or Kind.TildeToken or Kind.PlusPlusToken or Kind.MinusMinusToken))
             Reject(file, node, "unaryOperator");
-        if (!Allowed(node.Kind))
+        if (!Allowed(node.Kind) && !(project && ProjectAdmission.AllowedModuleSyntax(node.Kind)))
             Reject(file, node, "syntax");
         node.ForEachChild(child =>
         {
-            Visit(file, child);
+            Visit(file, child, project);
             return false;
         });
     }

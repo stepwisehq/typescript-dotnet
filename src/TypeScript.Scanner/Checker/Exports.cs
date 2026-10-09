@@ -105,7 +105,7 @@ public sealed partial class Checker
 
     public Signature GetResolvedSignature(Node node)
     {
-        SemanticAdmission.ValidateOwnedNode(sourceFile, node);
+        validateOwnedUserNode(node);
         return getResolvedSignature(node, null, CheckMode.Normal);
     }
 
@@ -121,4 +121,37 @@ public sealed partial class Checker
 {
     // exports.go:410.
     public static bool IsDistributedTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isDistributed;
+}
+
+public sealed partial class Checker
+{
+    // exports.go:123/127/131. Public ownership checks are authored API guards.
+    public Symbol GetImmediateAliasedSymbol(Symbol symbol)
+    {
+        validateOwnedProjectSymbol(symbol);
+        return getImmediateAliasedSymbol(symbol);
+    }
+
+    public Symbol GetTargetSymbol(Symbol symbol)
+    {
+        validateOwnedProjectSymbol(symbol);
+        return getTargetSymbol(symbol);
+    }
+
+    public Node GetTypeOnlyAliasDeclaration(Symbol symbol)
+    {
+        validateOwnedProjectSymbol(symbol);
+        return getTypeOnlyAliasDeclaration(symbol);
+    }
+
+    private void validateOwnedProjectSymbol(Symbol symbol)
+    {
+        ArgumentNullException.ThrowIfNull(symbol);
+        if (authoredOwnedSymbols.Contains(symbol))
+            return;
+        if ((symbol.Flags & SymbolFlags.Transient) != 0 || symbol.Declarations == null || symbol.Declarations.Count == 0)
+            throw new ArgumentException("Symbol belongs to a different checker", nameof(symbol));
+        foreach (var declaration in symbol.Declarations)
+            validateOwnedDeclaration(declaration);
+    }
 }

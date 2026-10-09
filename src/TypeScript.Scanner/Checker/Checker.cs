@@ -4,13 +4,19 @@
 // Selected scalar/data/callable/collection branches; omitted paths throw explicitly.
 #nullable disable
 using TypeScript.Scanner;
+using TypeScript.Compiler;
+using TypeScript.Modules;
 
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
     internal SourceFile sourceFile;
     // Authored profile state only for capability guards, never type semantics.
-    private bool authoredCollectionsProfile;
+    private bool authoredCollectionsProfile, authoredProjectsProfile;
+    internal ICheckerProgramHost program;
+    private ModuleKind moduleKind => compilerOptions.GetEmitModuleKind();
+    private ModuleResolutionKind moduleResolutionKind => compilerOptions.GetModuleResolutionKind();
+
     internal List<SourceFile> files;
     internal Dictionary<SourceFile, int> fileIndexMap;
     public IReadOnlyList<SourceFile> SourceFiles => files;
@@ -112,12 +118,28 @@ public sealed partial class Checker
     // declaration environment. General module/project discovery remains excluded.
     internal static Checker CreateCore(SourceFile file) => CreateCore(file, CheckerProfile.Legacy);
     internal static Checker CreateCore(SourceFile file, CheckerProfile profile) => CreateCore(file, profile, null);
-    internal static Checker CreateCore(SourceFile file, CheckerProfile profile, IReadOnlyList<SourceFile> libraryFiles)
+    internal static Checker CreateCore(SourceFile file, CheckerProfile profile, IReadOnlyList<SourceFile> libraryFiles) => CreateCore(file, profile, libraryFiles, null);
+    internal static Checker CreateForProgram(ICheckerProgramHost host)
     {
-        var files = new List<SourceFile>();
-        if (libraryFiles != null)
-            files.AddRange(libraryFiles);
-        files.Add(file);
+        ArgumentNullException.ThrowIfNull(host);
+        var userFiles = host.SourceFiles.Where(file => !file.IsDeclarationFile).ToList();
+        if (userFiles.Count == 0)
+            throw new ArgumentException("Project has no user source files", nameof(host));
+        foreach (var user in userFiles)
+            ProjectAdmission.Validate(user);
+        return CreateCore(userFiles[0], CheckerProfile.Projects, null, host);
+    }
+
+    private static Checker CreateCore(SourceFile file, CheckerProfile profile, IReadOnlyList<SourceFile> libraryFiles, ICheckerProgramHost host)
+    {
+        var files = host?.SourceFiles.ToList() ?? new List<SourceFile>();
+        if (host == null)
+        {
+            if (libraryFiles != null)
+                files.AddRange(libraryFiles);
+            files.Add(file);
+        }
+
         foreach (var source in files)
             Binder.BindSourceFile(source);
         var c = new Checker
@@ -125,10 +147,23 @@ public sealed partial class Checker
             sourceFile = file,
             files = files,
             fileIndexMap = createFileIndexMap(files),
-            compilerOptions = new CompilerOptions()
+            compilerOptions = host?.Options ?? new CompilerOptions(),
+            program = host
         };
         c.authoredCollectionsProfile = profile == CheckerProfile.Collections;
-        c.initializeScalarOptions(profile);
+        c.authoredProjectsProfile = profile == CheckerProfile.Projects;
+        c.canCollectSymbolAliasAccessibilityData = c.compilerOptions.VerbatimModuleSyntax != Tristate.True;
+        if (host == null)
+            c.initializeScalarOptions(profile);
+        else
+        {
+            c.strictNullChecks = c.compilerOptions.StrictNullChecks == Tristate.True;
+            c.noImplicitAny = c.compilerOptions.NoImplicitAny == Tristate.True;
+            c.noImplicitThis = c.compilerOptions.NoImplicitThis == Tristate.True;
+            c.strictFunctionTypes = c.compilerOptions.StrictFunctionTypes == Tristate.True;
+            c.exactOptionalPropertyTypes = c.compilerOptions.ExactOptionalPropertyTypes == Tristate.True;
+        }
+
         c.emitStandardClassFields = c.compilerOptions.GetEmitStandardClassFields();
         c.undefinedSymbol = c.newSymbol(SymbolFlags.Property, "undefined");
         c.argumentsSymbol = c.newSymbol(SymbolFlags.Property, "arguments");
@@ -222,7 +257,7 @@ public sealed partial class Checker
         c.getGlobalAwaitedSymbol = memoize(() => c.getGlobalTypeAliasSymbol("Awaited", 1, true));
         c.getGlobalAwaitedSymbolOrNil = memoize(() => c.getGlobalTypeAliasSymbol("Awaited", 1, false));
         c.getGlobalPromiseTypeChecked = memoize(() => c.getGlobalType("Promise", 1, true));
-        if (profile == CheckerProfile.Collections)
+        if (profile is CheckerProfile.Collections or CheckerProfile.Projects)
         {
             c.numericStringType = c.getTemplateLiteralType(["", ""], [c.numberType]);
             c.stringOrNumberType = c.getUnionType([c.stringType, c.numberType]);
@@ -250,8 +285,16 @@ public sealed partial class Checker
         {
             // The fixed roots are scripts. Import/module augmentation and pattern
             // ambient modules remain outside this explicit library environment.
-            if (Ast.IsExternalOrCommonJSModule(file) || (file.ModuleAugmentations?.Count ?? 0) != 0 || (file.PatternAmbientModules?.Count ?? 0) != 0)
-                throw unsupported("initializeChecker: module environment");
+            if ((file.ModuleAugmentations?.Count ?? 0) != 0 || (file.PatternAmbientModules?.Count ?? 0) != 0)
+                throw unsupported("initializeChecker: ambient module/augmentation");
+            if (Ast.IsExternalOrCommonJSModule(file))
+            {
+                if (!authoredProjectsProfile)
+                    throw unsupported("initializeChecker: module environment");
+                // checker.go:1314: external module locals never enter script globals.
+                continue;
+            }
+
             if (file.Locals?[globalThisSymbol.Name] is { } conflict)
                 foreach (var declaration in conflict.Declarations ?? [])
                     error(declaration, Diagnostics.Declaration_name_conflicts_with_built_in_global_identifier_0, globalThisSymbol.Name);
@@ -338,10 +381,14 @@ public sealed partial class Checker
     }
 
     internal static UnsupportedSemanticFeatureException unsupported(string feature) => new(feature);
-    public List<Diagnostic> GetDiagnostics()
+    public List<Diagnostic> GetDiagnostics() => GetDiagnostics(sourceFile);
+    public List<Diagnostic> GetDiagnostics(SourceFile file)
     {
-        checkSourceFile();
-        return diagnostics.GetDiagnosticsForFile(sourceFile);
+        ArgumentNullException.ThrowIfNull(file);
+        if (!fileIndexMap.ContainsKey(file))
+            throw new ArgumentException("Source file belongs to a different checker environment", nameof(file));
+        checkSourceFile(file);
+        return diagnostics.GetDiagnosticsForFile(file);
     }
 
     public List<Diagnostic> GetGlobalDiagnostics()
@@ -351,15 +398,22 @@ public sealed partial class Checker
     }
 
     // checkSourceFile (2240): user script checking with original deferred/registration work.
-    private void checkSourceFile()
+    private void checkSourceFile(SourceFile sourceFile)
     {
         var links = sourceFileLinks.Get(sourceFile.AsNode());
         if (links.typeChecked)
             return;
-        checkGrammarSourceFile();
+        checkGrammarSourceFile(sourceFile);
         checkSourceElements(sourceFile.Statements.Nodes);
         checkDeferredNodes(sourceFile);
+        if (Ast.IsExternalOrCommonJSModule(sourceFile))
+        {
+            checkExternalModuleExports(sourceFile.AsNode());
+            registerForUnusedIdentifiersCheck(sourceFile.AsNode());
+        }
+
         produceDeferredDiagnostics();
+        reportedUnreachableNodes.Clear();
         links.typeChecked = true;
     }
 
@@ -390,6 +444,15 @@ public sealed partial class Checker
             withinUnreachableCode = true;
         switch (node.Kind)
         {
+            case Kind.ImportDeclaration:
+                checkImportDeclaration(node);
+                break;
+            case Kind.ExportDeclaration:
+                checkExportDeclaration(node);
+                break;
+            case Kind.ExportAssignment:
+                checkExportAssignment(node);
+                break;
             case Kind.Parameter:
                 checkParameter(node);
                 break;
@@ -574,14 +637,18 @@ public sealed partial class Checker
         var initializer = node.Initializer();
         checkSourceElement(node.Type());
         var symbol = getSymbolOfDeclaration(node);
-        if ((symbol.Flags & SymbolFlags.Alias) != 0)
-            throw unsupported("checkVariableLikeDeclaration: alias");
+        if ((symbol.Flags & SymbolFlags.Alias) != 0 && Ast.IsVariableDeclarationInitializedToRequire(node))
+        {
+            checkAliasSymbol(node);
+            return;
+        }
+
         var t = convertAutoToAny(getTypeOfSymbol(symbol));
         if (node == symbol.ValueDeclaration)
         {
             if (initializer != null)
                 checkTypeAssignableToAndOptionallyElaborate(checkExpressionCached(initializer), t, node, initializer);
-            if ((symbol.Declarations?.Count ?? 0) > 1 && symbol.Declarations.Any(d => d != node && !areDeclarationFlagsIdentical(d, node)))
+            if ((symbol.Declarations?.Count ?? 0) > 1 && symbol.Declarations.Any(d => d != node && Ast.IsVariableLike(d) && !areDeclarationFlagsIdentical(d, node)))
                 error(name, Diagnostics.All_declarations_of_0_must_have_identical_modifiers, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
         }
         else
@@ -598,7 +665,8 @@ public sealed partial class Checker
         if (node.Kind != Kind.PropertySignature)
         {
             checkExportsOnMergedDeclarations(node);
-            checkVarDeclaredNamesNotShadowed(node);
+            if (Ast.IsVariableDeclaration(node) || Ast.IsBindingElement(node))
+                checkVarDeclaredNamesNotShadowed(node);
             checkCollisionsForDeclarationName(node, name);
         }
     }
@@ -652,8 +720,8 @@ public sealed partial class Checker
             var symbol = getMergedSymbol(symbols?[name]);
             if (symbol != null && (symbol.Flags & meaning) != 0)
                 return symbol;
-            if (symbol != null && (symbol.Flags & SymbolFlags.Alias) != 0)
-                throw unsupported("getSymbol: alias resolution");
+            if (symbol != null && (symbol.Flags & SymbolFlags.Alias) != 0 && (getSymbolFlags(symbol) & meaning) != 0)
+                return symbol;
         }
 
         return null;
@@ -1086,6 +1154,7 @@ public sealed partial class Checker
 
     private readonly List<TypeResolution> typeResolutions = new();
     private int resolutionStart;
+    internal readonly LinkStore<Symbol, AliasSymbolLinks> aliasSymbolLinks = new();
     internal readonly LinkStore<Symbol, TypeAliasLinks> typeAliasLinks = new();
     internal readonly LinkStore<Symbol, DeclaredTypeLinks> declaredTypeLinks = new();
     internal readonly LinkStore<Symbol, DeferredSymbolLinks> deferredSymbolLinks = new();
@@ -1260,7 +1329,12 @@ public sealed partial class Checker
         if ((candidate.Flags & meaning) != 0)
             return candidateName;
         if ((candidate.Flags & SymbolFlags.Alias) != 0)
-            throw unsupported("getSpellingSuggestionForName: alias");
+        {
+            var alias = tryResolveAlias(candidate);
+            if (alias != null && (alias.Flags & meaning) != 0)
+                return candidateName;
+        }
+
         return "";
     }, compareSymbolsWorker);
     private void onSuccessfullyResolvedSymbol(Node errorLocation, Symbol result, SymbolFlags meaning, Node lastLocation, Node associatedDeclarationForContainingInitializerOrBindingName, bool withinDeferredContext)
@@ -1278,7 +1352,14 @@ public sealed partial class Checker
 
         if (((isInExternalModule && (((meaning & SymbolFlags.Value)) == SymbolFlags.Value)) && ((errorLocation.Flags & NodeFlags.JSDoc) == 0)))
         {
-            throw unsupported("external module symbol");
+            var merged = this.getMergedSymbol(result);
+            if (((GoRuntime.Len(merged.Declarations) != 0) && Core.Every(merged.Declarations, (d) =>
+            {
+                return (Ast.IsNamespaceExportDeclaration(d) || (Ast.IsSourceFile(d) && (d.AsSourceFile().GlobalExports != null)));
+            })))
+            {
+                this.errorOrSuggestion((true /* fixed AllowUmdGlobalAccess=false */), errorLocation, Diagnostics.X_0_refers_to_a_UMD_global_but_the_current_file_is_a_module_Consider_adding_an_import_instead, name);
+            }
         }
 
         if ((((associatedDeclarationForContainingInitializerOrBindingName != null) && !withinDeferredContext) && (((meaning & SymbolFlags.Value)) == SymbolFlags.Value)))
@@ -1300,12 +1381,34 @@ public sealed partial class Checker
 
         if ((((((errorLocation != null) && ((meaning & SymbolFlags.Value) != 0)) && ((result.Flags & SymbolFlags.Alias) != 0)) && ((result.Flags & SymbolFlags.Value) == 0)) && !Ast.IsValidTypeOnlyAliasUseSite(errorLocation)))
         {
-            throw unsupported("type-only import alias");
+            var typeOnlyDeclaration = this.getTypeOnlyAliasDeclarationEx(result, SymbolFlags.Value);
+            if ((typeOnlyDeclaration != null))
+            {
+                var message = Core.IfElse(Ast.NodeKindIs(typeOnlyDeclaration, Kind.ExportSpecifier, Kind.ExportDeclaration, Kind.NamespaceExport), Diagnostics.X_0_cannot_be_used_as_a_value_because_it_was_exported_using_export_type, Diagnostics.X_0_cannot_be_used_as_a_value_because_it_was_imported_using_import_type);
+                this.addTypeOnlyDeclarationRelatedInfo(this.error(errorLocation, message, name), typeOnlyDeclaration, name);
+            }
         }
 
         if (((((this.compilerOptions.IsolatedModules == Tristate.True) && (result != null)) && isInExternalModule) && (((meaning & SymbolFlags.Value)) == SymbolFlags.Value)))
         {
-            throw unsupported("isolated module import collision");
+            var isGlobal = (this.getSymbol(this.globals, name, meaning) == result);
+            Symbol nonValueSymbol = default;
+            if ((isGlobal && Ast.IsSourceFile(lastLocation)))
+            {
+                nonValueSymbol = this.getSymbol(lastLocation.Locals(), name, ~SymbolFlags.Value);
+            }
+
+            if ((nonValueSymbol != null))
+            {
+                var importDecl = Core.Find(nonValueSymbol.Declarations, (d2) =>
+                {
+                    return Ast.NodeKindIs(d2, Kind.ImportSpecifier, Kind.ImportClause, Kind.NamespaceImport, Kind.ImportEqualsDeclaration);
+                });
+                if (((importDecl != null) && !Ast.IsTypeOnlyImportDeclaration(importDecl)))
+                {
+                    this.error(importDecl, Diagnostics.Import_0_conflicts_with_global_value_used_in_this_file_so_must_be_declared_with_a_type_only_import_when_isolatedModules_is_enabled, name);
+                }
+            }
         }
     }
 
@@ -1465,8 +1568,10 @@ public sealed partial class Checker
             return getTypeOfVariableOrParameterOrProperty(symbol);
         if ((symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0)
             return getTypeOfFuncClassEnumModule(symbol);
-        if ((symbol.Flags & (SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
-            throw unsupported("getTypeOfSymbol: enum member/import alias");
+        if ((symbol.Flags & SymbolFlags.EnumMember) != 0)
+            throw unsupported("getTypeOfSymbol: enum member");
+        if ((symbol.Flags & SymbolFlags.Alias) != 0)
+            return getTypeOfAlias(symbol);
         return errorType;
     }
 
@@ -1481,8 +1586,8 @@ public sealed partial class Checker
 
     private Type getTypeOfFuncClassEnumModuleWorker(Symbol symbol)
     {
-        if (symbol != globalThisSymbol && (symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method)) == 0)
-            throw unsupported("getTypeOfFuncClassEnumModuleWorker: source class/enum/module");
+        if (symbol != globalThisSymbol && (symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method)) == 0 && !(authoredProjectsProfile && (symbol.Flags & SymbolFlags.Module) != 0 && Core.Some(symbol.Declarations, Ast.IsSourceFile)))
+            throw unsupported("getTypeOfFuncClassEnumModuleWorker: source class/enum/ambient module");
         var t = newObjectType(ObjectFlags.Anonymous, symbol);
         return strictNullChecks && (symbol.Flags & SymbolFlags.Optional) != 0 ? getOptionalType(t, true) : t;
     }
@@ -1564,7 +1669,8 @@ public sealed partial class Checker
 
             case Kind.ExportAssignment:
             {
-                throw unsupported("export assignment");
+                result = declaration.Type() != null ? getTypeFromTypeNode(declaration.Type()) : widenTypeForVariableLikeDeclaration(checkExpressionCached(declaration.Expression()), declaration, false);
+                break;
             }
 
             case Kind.BinaryExpression:
@@ -1648,6 +1754,7 @@ public sealed partial class Checker
             TypeSystemPropertyName.ResolvedBaseConstructorType => ((Type)r.target).AsInterfaceType().resolvedBaseConstructorType != null,
             TypeSystemPropertyName.ResolvedBaseConstraint => ((Type)r.target).AsConstrainedType().resolvedBaseConstraint != null,
             TypeSystemPropertyName.WriteType => valueSymbolLinks.Get((Symbol)r.target).writeType != null,
+            TypeSystemPropertyName.AliasTarget => aliasSymbolLinks.Get((Symbol)r.target).aliasTarget != null,
             _ => throw unsupported("typeResolutionHasProperty: callable/assignment/module resolution")};
     }
 
@@ -2000,7 +2107,7 @@ public sealed partial class Checker
     // GetTypeAtLocation (32712), same reparsed-node normalization.
     public Type GetTypeAtLocation(Node node)
     {
-        SemanticAdmission.ValidateOwnedNode(sourceFile, node);
+        validateOwnedUserNode(node);
         return getTypeOfNode(Ast.GetReparsedNodeForNode(node));
     }
 
@@ -2023,7 +2130,7 @@ public sealed partial class Checker
             return typeSymbol != null ? getDeclaredTypeOfSymbol(typeSymbol) : errorType;
         }
 
-        if (Ast.IsVariableDeclaration(node) || node.Kind == Kind.PropertySignature)
+        if (Ast.IsDeclaration(node))
         {
             var symbol = getSymbolOfDeclaration(node);
             return symbol != null ? getTypeOfSymbol(symbol) : errorType;
@@ -2044,7 +2151,7 @@ public sealed partial class Checker
     // GetSymbolAtLocation/getSymbolAtLocation (32134/32147): script/ordinary name branches.
     public Symbol GetSymbolAtLocation(Node node)
     {
-        SemanticAdmission.ValidateOwnedNode(sourceFile, node);
+        validateOwnedUserNode(node);
         return getSymbolAtLocation(Ast.GetReparsedNodeForNode(node), true);
     }
 
@@ -2053,16 +2160,24 @@ public sealed partial class Checker
         if (Ast.IsSourceFile(node))
         {
             if (Ast.IsExternalOrCommonJSModule(node.AsSourceFile()))
-                throw unsupported("getSymbolAtLocation: module");
+                return getMergedSymbol(node.Symbol());
             return null;
         }
 
         if ((node.Flags & NodeFlags.InWithStatement) != 0)
             return null;
         if (Ast.IsDeclarationNameOrImportPropertyName(node))
-            return getSymbolOfDeclaration(node.Parent);
-        if (Ast.IsIdentifier(node) || node.Kind == Kind.PropertyAccessExpression)
+        {
+            var parentSymbol = getSymbolOfDeclaration(node.Parent);
+            if (Ast.IsImportOrExportSpecifier(node.Parent) && node.Parent.PropertyName() == node)
+                return getImmediateAliasedSymbol(parentSymbol);
+            return parentSymbol;
+        }
+
+        if (Ast.IsIdentifier(node) || node.Kind is Kind.PropertyAccessExpression or Kind.QualifiedName)
             return getSymbolOfNameOrPropertyAccessExpression(node);
+        if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral && node.Parent != null && node.Parent.Kind is Kind.ImportDeclaration or Kind.ExportDeclaration && Ast.GetExternalModuleName(node.Parent) == node)
+            return resolveExternalModuleName(node, node, ignoreErrors, getImportAttributesTypeForModuleSpecifier(node));
         if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ParenthesizedExpression)
             return null;
         // The omitted import/meta/member clauses cannot occur in admitted input.
@@ -2164,8 +2279,10 @@ public sealed partial class Checker
 
         if (symbol != null && symbol != unknownSymbol)
         {
-            if ((symbol.Flags & SymbolFlags.Alias) != 0)
-                throw unsupported("resolveEntityName: source module alias");
+            if (!Ast.NodeIsSynthesized(name) && Ast.IsEntityName(name) && ((symbol.Flags & SymbolFlags.Alias) != 0 || name.Parent != null && name.Parent.Kind == Kind.ExportAssignment))
+                markSymbolOfAliasDeclarationIfTypeOnly(getAliasDeclarationFromName(name), null);
+            while ((symbol.Flags & meaning) == 0 && !dontResolveAlias && (symbol.Flags & SymbolFlags.Alias) != 0)
+                symbol = resolveAlias(symbol);
         }
 
         return symbol;
@@ -2182,7 +2299,7 @@ public sealed partial class Checker
             throw unsupported("resolveQualifiedName: CommonJS module");
         var symbol = getMergedSymbol(getSymbol(getExportsOfSymbol(ns), right.Text(), meaning));
         if (symbol == null && (ns.Flags & SymbolFlags.Alias) != 0)
-            throw unsupported("resolveQualifiedName: module alias");
+            symbol = getMergedSymbol(getSymbol(getExportsOfSymbol(resolveAlias(ns)), right.Text(), meaning));
         if (symbol == null && !ignoreErrors)
         {
             var namespaceName = getFullyQualifiedName(ns, null);
@@ -2580,14 +2697,72 @@ public sealed partial class Checker
     private void checkExportsOnMergedDeclarations(Node node)
     {
         var symbol = node.LocalSymbol();
-        if (symbol == null)
+        if ((symbol == null))
         {
-            symbol = getSymbolOfDeclaration(node);
-            if (symbol.ExportSymbol == null)
+            symbol = this.getSymbolOfDeclaration(node);
+            if ((symbol.ExportSymbol == null))
+            {
                 return;
+            }
         }
 
-        throw unsupported("checkExportsOnMergedDeclarations: export merge");
+        if (((GoRuntime.Len(symbol.Declarations) < 2) || !this.mergedExportsChecked.Add(symbol)))
+        {
+            return;
+        }
+
+        var exportedDeclarationSpaces = DeclarationSpaces.None;
+        var nonExportedDeclarationSpaces = DeclarationSpaces.None;
+        var defaultExportedDeclarationSpaces = DeclarationSpaces.None;
+        {
+            foreach (var d in GoRuntime.RangeValues(symbol.Declarations))
+            {
+                var declarationSpaces = this.getDeclarationSpaces(d);
+                var effectiveDeclarationFlags = this.getEffectiveDeclarationFlags(d, (ModifierFlags.Export | ModifierFlags.Default));
+                if (((effectiveDeclarationFlags & ModifierFlags.Export) != 0))
+                {
+                    if (((effectiveDeclarationFlags & ModifierFlags.Default) != 0))
+                    {
+                        defaultExportedDeclarationSpaces |= declarationSpaces;
+                    }
+                    else
+                    {
+                        exportedDeclarationSpaces |= declarationSpaces;
+                    }
+                }
+                else
+                {
+                    nonExportedDeclarationSpaces |= declarationSpaces;
+                }
+            }
+        }
+
+        var nonDefaultExportedDeclarationSpaces = (exportedDeclarationSpaces | nonExportedDeclarationSpaces);
+        var commonDeclarationSpacesForExportsAndLocals = (exportedDeclarationSpaces & nonExportedDeclarationSpaces);
+        var commonDeclarationSpacesForDefaultAndNonDefault = (defaultExportedDeclarationSpaces & nonDefaultExportedDeclarationSpaces);
+        if (((commonDeclarationSpacesForExportsAndLocals != 0) || (commonDeclarationSpacesForDefaultAndNonDefault != 0)))
+        {
+            {
+                foreach (var range7 in GoRuntime.Range(symbol.Declarations))
+                {
+                    var _2 = range7.Key;
+                    var d2 = range7.Value;
+                    var declarationSpaces2 = this.getDeclarationSpaces(d2);
+                    var name = Ast.GetNameOfDeclaration(d2);
+                    if (((declarationSpaces2 & commonDeclarationSpacesForDefaultAndNonDefault) != 0))
+                    {
+                        this.error(name, Diagnostics.Merged_declaration_0_cannot_include_a_default_export_declaration_Consider_adding_a_separate_export_default_0_declaration_instead, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
+                    }
+                    else
+                    {
+                        if (((declarationSpaces2 & commonDeclarationSpacesForExportsAndLocals) != 0))
+                        {
+                            this.error(name, Diagnostics.Individual_declarations_in_merged_declaration_0_must_be_all_exported_or_all_local, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void checkVarDeclaredNamesNotShadowed(Node node)
@@ -2615,13 +2790,18 @@ public sealed partial class Checker
 
     private void checkCollisionsForDeclarationName(Node node, Node name)
     {
-        if (name == null)
+        if ((name == null))
+        {
             return;
-        // Every selected collision helper first excludes this ESNext script:
-        // require/exports: module>=ES2015; Object: !external module;
-        // Promise: target>=ES2017; WeakMap/Reflect: target>ES2021.
-        if (compilerOptions.GetEmitScriptTarget() != ScriptTarget.ESNext || compilerOptions.GetEmitModuleKind() < ModuleKind.ES2015 || sourceFile.ExternalModuleIndicator != null || sourceFile.CommonJSModuleIndicator != null)
-            throw unsupported("checkCollisionsForDeclarationName: emit collision context");
+        }
+
+        this.checkCollisionWithRequireExportsInGeneratedCode(node, name);
+        this.checkCollisionWithGlobalObjectInGeneratedCode(node, name);
+        this.checkCollisionWithGlobalPromiseInGeneratedCode(node, name);
+        this.recordPotentialCollisionWithWeakMapSetInGeneratedCode(node, name);
+        this.recordPotentialCollisionWithReflectInGeneratedCode(node, name);
+        if (Ast.IsClassLike(node) || Ast.IsEnumDeclaration(node))
+            throw unsupported("checkCollisionsForDeclarationName: class/enum");
     }
 }
 
@@ -2775,7 +2955,7 @@ public sealed partial class Checker
         if ((symbol.Flags & SymbolFlags.Value) != 0)
             return true;
         if ((symbol.Flags & SymbolFlags.Alias) != 0)
-            throw unsupported("symbolIsValueEx: alias");
+            return (getSymbolFlagsEx(symbol, !includeTypeOnlyMembers, false) & SymbolFlags.Value) != 0;
         return false;
     }
 }
@@ -3145,7 +3325,7 @@ public sealed partial class Checker
         return table;
     }
 
-    private SymbolTable getExportsOfSymbol(Symbol symbol)
+    internal SymbolTable getExportsOfSymbol(Symbol symbol)
     {
         if ((symbol.Flags & SymbolFlags.LateBindingContainer) != 0)
             return getResolvedMembersOrExportsOfSymbol(symbol, MembersOrExportsResolutionKind.ResolvedExports);
@@ -3170,34 +3350,129 @@ public sealed partial class Checker
 
     private (SymbolTable exports, Dictionary<string, Node> typeOnlyExportStarMap) getExportsOfModuleWorker(Symbol moduleSymbol)
     {
-        // Source modules/re-exports are rejected by admission; the genuine
-        // internal globalThis module still resolves and clones its exports.
-        if (moduleSymbol != globalThisSymbol)
-            throw unsupported("getExportsOfModuleWorker: source module");
-        List<Symbol> visitedSymbols = null;
+        SymbolTable exports = default;
+        Dictionary<string, Node> typeOnlyExportStarMap = default;
+        List<Symbol> visitedSymbols = default;
         var nonTypeOnlyNames = new HashSet<string>(StringComparer.Ordinal);
-        SymbolTable visit(Symbol symbol, Node exportStar, bool isTypeOnly)
+        Func<Symbol, Node, bool, SymbolTable> visit = default;
+        visit = (symbol, exportStar, isTypeOnly) =>
         {
-            if (!isTypeOnly && symbol != null)
-                foreach (var name in (IEnumerable<string>)symbol.Exports?.Keys ?? [])
-                    nonTypeOnlyNames.Add(name);
-            if (symbol == null || symbol.Exports == null || (visitedSymbols?.Contains(symbol) ?? false))
+            if ((!isTypeOnly && (symbol != null)))
+            {
+                {
+                    foreach (var name in GoRuntime.RangeKeys(symbol.Exports))
+                    {
+                        nonTypeOnlyNames.Add(name);
+                    }
+                }
+            }
+
+            if ((((symbol == null) || (symbol.Exports == null)) || GoSlices.Contains(visitedSymbols, symbol)))
+            {
                 return null;
+            }
+
             visitedSymbols = GoRuntime.Append(visitedSymbols, symbol);
-            var symbols = new SymbolTable();
-            foreach (var entry in symbol.Exports)
-                symbols[entry.Key] = entry.Value;
-            if (symbol.Exports[Ast.InternalSymbolNameExportStar] != null)
-                throw unsupported("getExportsOfModuleWorker: source export star");
+            var symbols = cloneMergeSymbolTable(symbol.Exports);
+            var exportStars = symbol.Exports[Ast.InternalSymbolNameExportStar];
+            if ((exportStars != null))
+            {
+                var nestedSymbols = new SymbolTable();
+                var lookupTable = new Dictionary<string, ExportCollision>(StringComparer.Ordinal);
+                {
+                    foreach (var node in GoRuntime.RangeValues(exportStars.Declarations))
+                    {
+                        var resolvedModule = this.resolveExternalModuleName(node, node.ModuleSpecifier(), false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node)));
+                        var exportedSymbols = visit(resolvedModule, node, (isTypeOnly || node.IsTypeOnly()));
+                        this.extendExportSymbols(nestedSymbols, exportedSymbols, lookupTable, node);
+                    }
+                }
+
+                {
+                    foreach (var range3 in GoRuntime.Range(lookupTable))
+                    {
+                        var id = range3.Key;
+                        var s = range3.Value;
+                        if ((((id == Ast.InternalSymbolNameExportEquals) || (GoRuntime.Len(s.exportsWithDuplicate) == 0)) || (symbols[id] != null)))
+                        {
+                            continue;
+                        }
+
+                        {
+                            foreach (var range4 in GoRuntime.Range(s.exportsWithDuplicate))
+                            {
+                                var _2 = range4.Key;
+                                var node2 = range4.Value;
+                                this.addDiagnostic(createDiagnosticForNode(node2, Diagnostics.Module_0_has_already_exported_a_member_named_1_Consider_explicitly_re_exporting_to_resolve_the_ambiguity, s.specifierText, id));
+                            }
+                        }
+                    }
+                }
+
+                this.extendExportSymbols(symbols, nestedSymbols, null, null);
+            }
+
+            if (((exportStar != null) && exportStar.IsTypeOnly()))
+            {
+                if ((typeOnlyExportStarMap == null))
+                {
+                    typeOnlyExportStarMap = new Dictionary<string, Node>();
+                }
+
+                {
+                    foreach (var name2 in GoRuntime.RangeKeys(symbols))
+                    {
+                        typeOnlyExportStarMap[name2] = exportStar;
+                    }
+                }
+            }
+
             return symbols;
+        };
+        Symbol originalModule = default;
+        if ((moduleSymbol != null))
+        {
+            if ((this.resolveSymbolEx(moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals], false) != null))
+            {
+                originalModule = moduleSymbol;
+            }
         }
 
-        if (moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals] != null)
-            throw unsupported("getExportsOfModuleWorker: source export equals");
-        var exports = visit(getMergedSymbol(moduleSymbol), null, false) ?? new SymbolTable();
-        Dictionary<string, Node> typeOnlyExportStarMap = null;
-        foreach (var name in nonTypeOnlyNames)
-            typeOnlyExportStarMap?.Remove(name);
+        moduleSymbol = this.resolveExternalModuleSymbol(moduleSymbol, false);
+        exports = visit(moduleSymbol, null, false);
+        if ((exports == null))
+        {
+            exports = new SymbolTable();
+        }
+
+        if (((originalModule != null) && (GoRuntime.Len(originalModule.Exports) > 1)))
+        {
+            {
+                foreach (var range6 in GoRuntime.Range(originalModule.Exports))
+                {
+                    var _3 = range6.Key;
+                    var symbol2 = range6.Value;
+                    if (((symbol2.Name == Ast.InternalSymbolNameExportEquals) || (symbol2.Name == Ast.InternalSymbolNameExportStar)))
+                    {
+                        continue;
+                    }
+
+                    var flags = this.getSymbolFlags(symbol2);
+                    if (((((flags & ((SymbolFlags.Type | SymbolFlags.Namespace))) != 0) && ((flags & SymbolFlags.Value) == 0)) && (exports[symbol2.Name] == null)))
+                    {
+                        exports[symbol2.Name] = symbol2;
+                    }
+                }
+            }
+        }
+
+        {
+            foreach (var name3 in nonTypeOnlyNames)
+            {
+                typeOnlyExportStarMap?.Remove(name3);
+            }
+        }
+
         return (exports, typeOnlyExportStarMap);
     }
 
@@ -4574,7 +4849,7 @@ public sealed partial class Checker
     }
 
     private bool isEmptyResolvedType(StructuredType t) => (t.properties?.Count ?? 0) == 0 && (t.signatures?.Count ?? 0) == 0 && (t.indexInfos?.Count ?? 0) == 0;
-    private bool isEmptyObjectType(Type t)
+    internal bool isEmptyObjectType(Type t)
     {
         switch (true)
         {
@@ -5151,9 +5426,9 @@ public sealed partial class Checker
         return compareTypes(getNonMissingTypeOfSymbol(sourceProperty), getNonMissingTypeOfSymbol(targetProperty));
     }
 
-    private Symbol getTargetSymbol(Symbol symbol)
+    internal Symbol getTargetSymbol(Symbol symbol)
     {
-        if ((symbol.CheckFlags & CheckFlags.Instantiated) != 0)
+        if (symbol != null && (symbol.CheckFlags & CheckFlags.Instantiated) != 0)
             return valueSymbolLinks.Get(symbol).target;
         return symbol;
     }
@@ -5312,12 +5587,55 @@ public sealed partial class Checker
         return this.getFlowTypeOfAccessExpression(node, prop, propType, right, checkMode);
     }
 
-    private Symbol getResolvedSymbolOrNil(Node node) => symbolNodeLinks.TryGet(node)?.resolvedSymbol;
-    private Symbol resolveAliasWithDeprecationCheck(Symbol symbol, Node location)
+    private Symbol getResolvedSymbolOrNil(Node node) => symbolNodeLinks.Get(node).resolvedSymbol;
+    internal Symbol resolveAliasWithDeprecationCheck(Symbol symbol, Node location)
     {
-        if ((symbol.Flags & SymbolFlags.Alias) != 0)
-            throw unsupported("resolveAliasWithDeprecationCheck: alias");
-        return symbol;
+        if (((((symbol.Flags & SymbolFlags.Alias) == 0) || this.isDeprecatedSymbol(symbol)) || (this.getDeclarationOfAliasSymbol(symbol) == null)))
+        {
+            return symbol;
+        }
+
+        var targetSymbol = this.resolveAlias(symbol);
+        if ((targetSymbol == this.unknownSymbol))
+        {
+            return targetSymbol;
+        }
+
+        while (((symbol.Flags & SymbolFlags.Alias) != 0))
+        {
+            var target = this.getImmediateAliasedSymbol(symbol);
+            if ((target != null))
+            {
+                if ((target == targetSymbol))
+                {
+                    break;
+                }
+
+                if ((GoRuntime.Len(target.Declarations) != 0))
+                {
+                    if (this.isDeprecatedSymbol(target))
+                    {
+                        this.addDeprecatedSuggestion(location, target.Declarations, target.Name);
+                        break;
+                    }
+                    else
+                    {
+                        if ((symbol == targetSymbol))
+                        {
+                            break;
+                        }
+
+                        symbol = target;
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return targetSymbol;
     }
 
     private void checkPropertyNotUsedBeforeDeclaration(Symbol property, Node node, Node right)
@@ -7384,8 +7702,10 @@ public sealed partial class Checker
             return getDeclaredTypeOfTypeParameter(symbol);
         if ((symbol.Flags & SymbolFlags.TypeAlias) != 0)
             return getDeclaredTypeOfTypeAlias(symbol);
-        if ((symbol.Flags & (SymbolFlags.Enum | SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
-            throw unsupported("tryGetDeclaredTypeOfSymbol: enum/source parameter/module alias");
+        if ((symbol.Flags & (SymbolFlags.Enum | SymbolFlags.EnumMember)) != 0)
+            throw unsupported("tryGetDeclaredTypeOfSymbol: enum");
+        if ((symbol.Flags & SymbolFlags.Alias) != 0)
+            return getDeclaredTypeOfAlias(symbol);
         return null;
     }
 
@@ -7438,7 +7758,7 @@ public sealed partial class Checker
         return links.declaredType;
     }
 
-    private List<Type> getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(Symbol symbol) => appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(null, symbol);
+    internal List<Type> getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(Symbol symbol) => appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(null, symbol);
     private List<Type> appendLocalTypeParametersOfClassOrInterfaceOrTypeAlias(List<Type> types, Symbol symbol)
     {
         foreach (var node in symbol.Declarations ?? [])
@@ -7776,7 +8096,7 @@ public sealed partial class Checker
         return true;
     }
 
-    private List<Type> getOuterTypeParametersOfClassOrInterface(Symbol symbol)
+    internal List<Type> getOuterTypeParametersOfClassOrInterface(Symbol symbol)
     {
         var declaration = getClassOrInterfaceLikeDeclaration(symbol);
         Debug.Assert(declaration != null);
@@ -8353,7 +8673,6 @@ public sealed partial class Checker
     private bool strictBuiltinIteratorReturn = false;
     // Written module aliases remain excluded. The generic type-alias-reference
     // branch retains this boundary rather than resolving arbitrary foreign imports.
-    private Symbol resolveAlias(Symbol symbol) => throw unsupported("resolveAlias: source import/export alias");
     // checker.go:2673. Explicit variance annotations remain outside Collections
     // admission; demanded library type parameters carry no in/out modifiers.
     private void checkTypeParameterDeferred(Node node)
@@ -9376,7 +9695,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     internal readonly HashSet<Type> markerTypes = new();
-    private int compareSymbols(Symbol left, Symbol right) => compareSymbolsWorker(left, right);
+    internal int compareSymbols(Symbol left, Symbol right) => compareSymbolsWorker(left, right);
     internal Type globalArrayType, globalReadonlyArrayType;
     private Type anyArrayType, autoArrayType, anyReadonlyArrayType;
     private Type globalIterableType, globalIterableIteratorType, globalAsyncIterableType, globalAsyncIterableIteratorType;
@@ -9731,11 +10050,13 @@ public sealed partial class Checker
 {
     private static string getStringLiteralValue(Type t) => (string)t.AsLiteralType().value;
     internal Type getBaseConstraintOrType(Type t) => getBaseConstraintOfType(t) ?? t;
-    private Symbol resolveSymbol(Symbol symbol) => resolveSymbolEx(symbol, false);
     private Symbol resolveSymbolEx(Symbol symbol, bool dontResolveAlias)
     {
-        if (!dontResolveAlias && Ast.IsNonLocalAlias(symbol, SymbolFlags.Value | SymbolFlags.Type | SymbolFlags.Namespace))
-            throw unsupported("resolveSymbolEx: source import/export alias");
+        if ((!dontResolveAlias && Ast.IsNonLocalAlias(symbol, ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace))))
+        {
+            return this.resolveAlias(symbol);
+        }
+
         return symbol;
     }
 
@@ -10059,7 +10380,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:20316:1.
-    private List<Type> getTypeParametersFromDeclaration(Node declaration)
+    internal List<Type> getTypeParametersFromDeclaration(Node declaration)
     {
         {
             var sig = this.getSignatureOfFullSignatureType(declaration);
@@ -14032,7 +14353,12 @@ public sealed partial class Checker
             return;
         var links = exportTypeLinks.Get(apparentType.symbol);
         if (links.originatingImport != null && !Ast.IsImportCall(links.originatingImport))
-            throw unsupported("invocationErrorRecovery: source import");
+        {
+            var signatures = getSignaturesOfType(getTypeOfSymbol(links.target), kind);
+            if (GoRuntime.Len(signatures) == 0)
+                return;
+            diagnostic.AddRelatedInfo(NewDiagnosticForNode(links.originatingImport, Diagnostics.Type_originates_at_this_import_A_namespace_style_import_cannot_be_called_or_constructed_and_will_cause_a_failure_at_runtime_Consider_using_a_default_import_or_import_require_here_instead));
+        }
     }
 }
 
@@ -15430,6 +15756,7 @@ public sealed partial class Checker
     // Partial checker.go export-origin links: imports remain outside script admission.
     private sealed class ExportTypeLinks
     {
+        internal Symbol target;
         internal Node originatingImport = null;
     }
 
@@ -16247,12 +16574,25 @@ public sealed partial class Checker
 {
     private readonly Dictionary<Type, Node> patternForType = new();
     private static bool throwUnsupportedDestructuring(Node node) => throw unsupported("destructuring assignment");
-    private Node getDeclarationOfAliasSymbol(Symbol symbol) => throw unsupported("import alias declaration");
     // checker.go:29331. Fixed VerbatimModuleSyntax=false; source imports are not admitted.
     private void markAliasReferenced(Symbol symbol, Node location)
     {
-        if (Ast.IsNonLocalAlias(symbol, SymbolFlags.Value) && !IsInTypeQuery(location))
-            throw unsupported("non-local import alias references");
+        if (!this.canCollectSymbolAliasAccessibilityData)
+        {
+            return;
+        }
+
+        if ((Ast.IsNonLocalAlias(symbol, SymbolFlags.Value) && !IsInTypeQuery(location)))
+        {
+            var target = this.resolveAlias(symbol);
+            if (((this.getSymbolFlagsEx(symbol, true, false) & ((SymbolFlags.Value | SymbolFlags.ExportValue))) != 0))
+            {
+                if (((this.compilerOptions.GetIsolatedModules() || (this.compilerOptions.ShouldPreserveConstEnums() && isExportOrExportExpression(location))) || !isConstEnumOrConstEnumOnlyModule(this.getExportSymbolOfValueSymbolIfExported(target))))
+                {
+                    this.markAliasSymbolAsReferenced(symbol);
+                }
+            }
+        }
     }
 }
 
@@ -17593,7 +17933,7 @@ public sealed partial class Checker
             return;
         }
 
-        if ((this.compilerOptions.GetIsolatedModules() || ((false /* fixed preserveConstEnums option */ && isExportOrExportExpression(location)))))
+        if ((this.compilerOptions.GetIsolatedModules() || ((this.compilerOptions.ShouldPreserveConstEnums() && isExportOrExportExpression(location)))))
         {
             this.markAliasReferenced(parentSymbol, location);
             return;
@@ -17627,7 +17967,7 @@ public sealed partial class Checker
             Symbol lexicallyScopedSymbol = default;
             if (Ast.IsPrivateIdentifier(right))
             {
-                throw unsupported("private class identifier lookup");
+                throw unsupported("markPropertyAliasReferenced: private identifier");
             }
 
             var assignmentKind = getAssignmentTargetKind(location);
@@ -17645,7 +17985,7 @@ public sealed partial class Checker
             {
                 if ((lexicallyScopedSymbol != null))
                 {
-                    throw unsupported("private class property type");
+                    throw unsupported("markPropertyAliasReferenced: private identifier");
                 }
             }
             else
@@ -24828,7 +25168,7 @@ public sealed partial class Checker
 
     // Fixed explicit-root noLib host: no file is a Program default library.
     // This differs from declaration-file skipping and fixed library ownership.
-    internal bool isSourceFileDefaultLibrary(SourceFile file) => false;
+    internal bool isSourceFileDefaultLibrary(SourceFile file) => program?.IsSourceFileDefaultLibrary(file) ?? false;
 }
 
 public sealed partial class Checker
@@ -26167,7 +26507,8 @@ public sealed partial class Checker
     // actual checker; do not guard library/inferred-rest algorithms or T[] elements.
     private void validateCollectionsResolvedRestType(Node node, Type type)
     {
-        if (!authoredCollectionsProfile || type == null || Ast.GetSourceFileOfNode(node) != sourceFile)
+        var file = Ast.GetSourceFileOfNode(node);
+        if (!(authoredCollectionsProfile || authoredProjectsProfile) || type == null || file == null || file.IsDeclarationFile || !fileIndexMap.ContainsKey(file))
             return;
         var visited = new HashSet<Type>();
         bool hasExcludedRestParameter(Type candidate)
@@ -26182,6 +26523,2706 @@ public sealed partial class Checker
         }
 
         if (hasExcludedRestParameter(type))
-            throw new UnsupportedSemanticFeatureException(sourceFile, node, Ast.IsParameterDeclaration(node) ? "genericTupleRestParameter" : "genericVariadicTuple");
+            throw new UnsupportedSemanticFeatureException(file, node, Ast.IsParameterDeclaration(node) ? "genericTupleRestParameter" : "genericVariadicTuple");
     }
+}
+
+public sealed partial class Checker
+{
+    private Node getTypeOnlyAliasDeclaration(Symbol symbol)
+    {
+        if (((symbol.Flags & SymbolFlags.Alias) != 0))
+        {
+            this.resolveAlias(symbol);
+            return this.aliasSymbolLinks.Get(symbol).typeOnlyDeclaration;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getTypeOnlyAliasDeclarationEx(Symbol symbol, SymbolFlags meaning)
+    {
+        while ((((symbol.Flags & SymbolFlags.Alias) != 0) && ((symbol.Flags & meaning) == 0)))
+        {
+            var resolved = this.resolveAlias(symbol);
+            var links = this.aliasSymbolLinks.Get(symbol);
+            if ((links.typeOnlyDeclaration != null))
+            {
+                return links.typeOnlyDeclaration;
+            }
+
+            symbol = resolved;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getImmediateAliasedSymbol(Symbol symbol)
+    {
+        Debug.Assert(((symbol.Flags & SymbolFlags.Alias) != 0), "Should only get Alias here.");
+        var links = this.aliasSymbolLinks.Get(symbol);
+        if ((links.immediateTarget == null))
+        {
+            var node = this.getDeclarationOfAliasSymbol(symbol);
+            if ((node == null))
+            {
+                throw new InvalidOperationException("Unexpected nil in getImmediateAliasedSymbol");
+            }
+
+            links.immediateTarget = this.getTargetOfAliasDeclaration(node);
+        }
+
+        return links.immediateTarget;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveSymbol(Symbol symbol)
+    {
+        return this.resolveSymbolEx(symbol, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfExportAssignment(Node node)
+    {
+        if (isContainedByNamespace(node))
+        {
+            return null;
+        }
+
+        var resolved = this.getTargetOfAliasLikeExpression(node.Expression());
+        this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+        return resolved;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfAliasLikeExpression(Node expression)
+    {
+        if (Ast.IsClassExpression(expression))
+            throw unsupported("getTargetOfAliasLikeExpression: source class expression");
+        if ((!Ast.IsEntityName(expression) && !Ast.IsEntityNameExpression(expression)))
+        {
+            return null;
+        }
+
+        var aliasLike = this.resolveEntityName(expression, ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace), true, true, null);
+        if ((aliasLike != null))
+        {
+            return aliasLike;
+        }
+
+        this.checkExpressionCached(expression);
+        return this.getResolvedSymbolOrNil(expression);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool markSymbolOfAliasDeclarationIfTypeOnly(Node aliasDeclaration, Node exportStarDeclaration)
+    {
+        if (((aliasDeclaration == null) || !Ast.IsDeclarationNode(aliasDeclaration)))
+        {
+            return false;
+        }
+
+        var sourceSymbol = this.getSymbolOfDeclaration(aliasDeclaration);
+        var links = this.aliasSymbolLinks.Get(sourceSymbol);
+        if (((links.typeOnlyDeclaration == null) && Ast.IsTypeOnlyImportOrExportDeclaration(aliasDeclaration)))
+        {
+            links.typeOnlyDeclaration = aliasDeclaration;
+            return true;
+        }
+
+        if (((links.typeOnlyDeclaration == null) && (exportStarDeclaration != null)))
+        {
+            links.typeOnlyDeclaration = exportStarDeclaration;
+            return true;
+        }
+
+        return (links.typeOnlyDeclaration != null);
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Symbol resolveAlias(Symbol symbol)
+    {
+        if (((symbol.Flags & SymbolFlags.Alias) == 0))
+        {
+            throw new InvalidOperationException("Should only get alias here");
+        }
+
+        var links = this.aliasSymbolLinks.Get(symbol);
+        if ((links.aliasTarget == null))
+        {
+            if (!this.pushTypeResolution(symbol, TypeSystemPropertyName.AliasTarget))
+            {
+                return this.unknownSymbol;
+            }
+
+            var node = this.getDeclarationOfAliasSymbol(symbol);
+            if ((node == null))
+            {
+                throw new InvalidOperationException(("Unexpected nil in resolveAlias for symbol: " + this.symbolToString(symbol)));
+            }
+
+            var target = this.getTargetOfAliasDeclaration(node);
+            if (Ast.IsNonLocalAlias(target, ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace)))
+            {
+                target = this.resolveIndirectionAlias(symbol, target);
+            }
+
+            links.aliasTarget = Core.OrElse(target, this.unknownSymbol);
+            if (!this.popTypeResolution())
+            {
+                this.error(node, Diagnostics.Circular_definition_of_import_alias_0, this.symbolToString(symbol));
+                links.aliasTarget = this.unknownSymbol;
+            }
+        }
+
+        return links.aliasTarget;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveIndirectionAlias(Symbol source, Symbol target)
+    {
+        var result = this.getMergedSymbol(this.resolveAlias(target));
+        {
+            var targetLinks = this.aliasSymbolLinks.Get(target);
+            if ((targetLinks.typeOnlyDeclaration != null))
+            {
+                {
+                    var sourceLinks = this.aliasSymbolLinks.Get(source);
+                    if ((sourceLinks.typeOnlyDeclaration == null))
+                    {
+                        sourceLinks.typeOnlyDeclaration = targetLinks.typeOnlyDeclaration;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol tryResolveAlias(Symbol symbol)
+    {
+        var links = this.aliasSymbolLinks.Get(symbol);
+        if (((links.aliasTarget != null) || (this.findResolutionCycleStartIndex(symbol, TypeSystemPropertyName.AliasTarget) < 0)))
+        {
+            return this.resolveAlias(symbol);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private SymbolFlags getSymbolFlags(Symbol symbol)
+    {
+        return this.getSymbolFlagsEx(symbol, false, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private SymbolFlags getSymbolFlagsEx(Symbol symbol, bool excludeTypeOnlyMeanings, bool excludeLocalMeanings)
+    {
+        HashSet<Symbol> seenSymbols = default;
+        SymbolFlags flags = default;
+        if (!excludeLocalMeanings)
+        {
+            flags = symbol.Flags;
+        }
+
+        while (((symbol.Flags & SymbolFlags.Alias) != 0))
+        {
+            if ((excludeTypeOnlyMeanings && (this.getTypeOnlyAliasDeclaration(symbol) != null)))
+            {
+                break;
+            }
+
+            var target = this.getExportSymbolOfValueSymbolIfExported(this.resolveAlias(symbol));
+            if ((target == this.unknownSymbol))
+            {
+                return SymbolFlags.All;
+            }
+
+            if (((target.Flags & SymbolFlags.Alias) != 0))
+            {
+                if (((target == symbol) || (seenSymbols?.Contains(target) == true)))
+                {
+                    break;
+                }
+
+                if (((seenSymbols?.Count ?? 0) == 0))
+                {
+                    (seenSymbols ??= new()).Add(symbol);
+                }
+
+                (seenSymbols ??= new()).Add(target);
+            }
+
+            flags |= target.Flags;
+            symbol = target;
+        }
+
+        return flags;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getDeclarationOfAliasSymbol(Symbol symbol)
+    {
+        return Core.FindLast(symbol.Declarations, Ast.IsAliasSymbolDeclaration);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeOfAlias(Symbol symbol)
+    {
+        var links = this.valueSymbolLinks.Get(symbol);
+        if ((links.resolvedType == null))
+        {
+            if (!this.pushTypeResolution(symbol, TypeSystemPropertyName.Type))
+            {
+                return this.errorType;
+            }
+
+            var targetSymbol = this.resolveAlias(symbol);
+            var exportSymbol = this.getTargetOfAliasDeclaration(this.getDeclarationOfAliasSymbol(symbol));
+            if ((links.resolvedType == null))
+            {
+                if (((this.getSymbolFlags(targetSymbol) & SymbolFlags.Value) != 0))
+                {
+                    links.resolvedType = this.getTypeOfSymbol(targetSymbol);
+                }
+                else
+                {
+                    links.resolvedType = this.errorType;
+                }
+            }
+
+            if (!this.popTypeResolution())
+            {
+                this.reportCircularityError(Core.OrElse(exportSymbol, symbol));
+                if ((links.resolvedType == null))
+                {
+                    links.resolvedType = this.errorType;
+                }
+
+                return links.resolvedType;
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getDeclaredTypeOfAlias(Symbol symbol)
+    {
+        var links = this.declaredTypeLinks.Get(symbol);
+        if ((links.declaredType == null))
+        {
+            links.declaredType = this.getDeclaredTypeOfSymbol(this.resolveAlias(symbol));
+        }
+
+        return links.declaredType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void markAliasSymbolAsReferenced(Symbol symbol)
+    {
+        var links = this.aliasSymbolLinks.Get(symbol);
+        if (!links.referenced)
+        {
+            links.referenced = true;
+            var node = this.getDeclarationOfAliasSymbol(symbol);
+            if ((node == null))
+            {
+                throw new InvalidOperationException("Unexpected nil in markAliasSymbolAsReferenced");
+            }
+
+            if ((Ast.IsImportEqualsDeclaration(node) && (node.AsImportEqualsDeclaration().ModuleReference.Kind != Kind.ExternalModuleReference)))
+            {
+                if (((this.getSymbolFlags(this.resolveSymbol(symbol)) & SymbolFlags.Value) != 0))
+                {
+                    var left = Ast.GetFirstIdentifier(node.AsImportEqualsDeclaration().ModuleReference);
+                    this.markIdentifierAliasReferenced(left);
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void markExportAsReferenced(Node node)
+    {
+        var symbol = this.getSymbolOfDeclaration(node);
+        var target = this.resolveAlias(symbol);
+        if ((target != null))
+        {
+            var markAlias = ((target == this.unknownSymbol) || (((((this.getSymbolFlagsEx(symbol, true, false) & SymbolFlags.Value) != 0)) && !isConstEnumOrConstEnumOnlyModule(target))));
+            if (markAlias)
+            {
+                this.markAliasSymbolAsReferenced(symbol);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:5761. Actual namespace-container test; source namespaces remain excluded.
+    private static bool isContainedByNamespace(Node node)
+    {
+        var container = node.Parent;
+        if (!Ast.IsSourceFile(container))
+            container = container.Parent;
+        return Ast.IsModuleDeclaration(container) && !Ast.IsAmbientModule(container);
+    }
+}
+
+public sealed partial class Checker
+{
+    // Authored API capability ownership; semantic lookups retain the complete file set.
+    private void validateOwnedUserNode(Node node)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        if (!authoredProjectsProfile)
+        {
+            SemanticAdmission.ValidateOwnedNode(sourceFile, node);
+            return;
+        }
+
+        var file = Ast.GetSourceFileOfNode(node);
+        if (file == null || file.IsDeclarationFile || !fileIndexMap.ContainsKey(file))
+            throw new ArgumentException("Node belongs to a different user project", nameof(node));
+        SemanticAdmission.ValidateOwnedNode(file, node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfImportClause(Node node)
+    {
+        if (node.AsImportClause().PhaseModifier == Kind.SourceKeyword)
+            throw unsupported("getTargetOfImportClause: source-phase import");
+        var moduleSymbol = this.resolveExternalModuleName(node, getModuleSpecifierFromNode(node.Parent), false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node.Parent)));
+        if ((moduleSymbol != null))
+        {
+            return this.getTargetOfModuleDefault(moduleSymbol, node, true);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfModuleDefault(Symbol moduleSymbol, Node node, bool dontResolveAlias)
+    {
+        var file = Core.Find(moduleSymbol.Declarations, Ast.IsSourceFile);
+        var specifier = this.getModuleSpecifierForImportOrExport(node);
+        Symbol exportDefaultSymbol = default;
+        Symbol exportModuleDotExportsSymbol = default;
+        if (isShorthandAmbientModuleSymbol(moduleSymbol))
+        {
+        }
+        else
+        {
+            if (((((((file != null) && (specifier != null)) && ((int)ModuleKind.Node20 <= (int)this.moduleKind)) && ((int)this.moduleKind <= (int)ModuleKind.NodeNext)) && (this.getEmitSyntaxForModuleSpecifierExpression(specifier) == ResolutionMode.CommonJS)) && (this.program.GetImpliedNodeFormatForEmit(file.AsSourceFile()) == ResolutionMode.ESNext)))
+            {
+                exportModuleDotExportsSymbol = this.resolveExportByName(moduleSymbol, Ast.InternalSymbolNameModuleExports, node, dontResolveAlias);
+            }
+        }
+
+        if ((exportModuleDotExportsSymbol != null))
+        {
+            this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+            return exportModuleDotExportsSymbol;
+        }
+        else
+        {
+            exportDefaultSymbol = this.resolveExportByName(moduleSymbol, Ast.InternalSymbolNameDefault, node, dontResolveAlias);
+        }
+
+        if ((specifier == null))
+        {
+            return exportDefaultSymbol;
+        }
+
+        Node attributes = default;
+        if (Ast.IsImportClause(node))
+        {
+            attributes = Ast.GetImportAttributes(node.Parent);
+        }
+        else
+        {
+            if (Ast.IsImportSpecifier(node))
+            {
+                attributes = Ast.GetImportAttributes(node.Parent.Parent.Parent);
+            }
+            else
+            {
+                if (Ast.IsExportSpecifier(node))
+                {
+                    attributes = Ast.GetImportAttributes(node.Parent.Parent);
+                }
+            }
+        }
+
+        var hasDefaultOnly = this.isOnlyImportableAsDefault(specifier, moduleSymbol, this.getTypeFromImportAttributes(attributes));
+        var hasSyntheticDefault = this.canHaveSyntheticDefault(file, moduleSymbol, dontResolveAlias, specifier);
+        if ((((exportDefaultSymbol == null) && !hasSyntheticDefault) && !hasDefaultOnly))
+        {
+            if (Ast.IsImportClause(node))
+            {
+                this.reportNonDefaultExport(moduleSymbol, node);
+            }
+            else
+            {
+                Node name = default;
+                if (Ast.IsImportOrExportSpecifier(node))
+                {
+                    name = node.PropertyNameOrName();
+                }
+                else
+                {
+                    name = node.Name();
+                }
+
+                this.errorNoModuleMemberSymbol(moduleSymbol, moduleSymbol, node, name);
+            }
+        }
+        else
+        {
+            if ((hasSyntheticDefault || hasDefaultOnly))
+            {
+                var resolved = this.resolveExternalModuleSymbol(moduleSymbol, dontResolveAlias);
+                if ((resolved == null))
+                {
+                    resolved = this.resolveSymbolEx(moduleSymbol, dontResolveAlias);
+                }
+
+                this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+                return resolved;
+            }
+        }
+
+        this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+        return exportDefaultSymbol;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void reportNonDefaultExport(Symbol moduleSymbol, Node node)
+    {
+        if (((moduleSymbol.Exports != null) && (moduleSymbol.Exports?[node.Symbol().Name] != null)))
+        {
+            this.error(node, Diagnostics.Module_0_has_no_default_export_Did_you_mean_to_use_import_1_from_0_instead, this.symbolToString(moduleSymbol), this.symbolToString(node.Symbol()));
+        }
+        else
+        {
+            var diagnostic = this.error(node.Name(), Diagnostics.Module_0_has_no_default_export, this.symbolToString(moduleSymbol));
+            Symbol exportStar = default;
+            if ((moduleSymbol.Exports != null))
+            {
+                exportStar = moduleSymbol.Exports?[Ast.InternalSymbolNameExportStar];
+            }
+
+            if ((exportStar != null))
+            {
+                var defaultExport = Core.Find(exportStar.Declarations, (decl) =>
+                {
+                    if (!((Ast.IsExportDeclaration(decl) && (decl.ModuleSpecifier() != null))))
+                    {
+                        return false;
+                    }
+
+                    var resolvedExternalModuleName = this.resolveExternalModuleName(decl, decl.ModuleSpecifier(), false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(decl)));
+                    return ((resolvedExternalModuleName != null) && (resolvedExternalModuleName.Exports?[Ast.InternalSymbolNameDefault] != null));
+                });
+                if ((defaultExport != null))
+                {
+                    diagnostic.AddRelatedInfo(createDiagnosticForNode(defaultExport, Diagnostics.X_export_Asterisk_does_not_re_export_a_default));
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveExportByName(Symbol moduleSymbol, string name, Node sourceNode, bool dontResolveAlias)
+    {
+        var exportValue = moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals];
+        Symbol exportSymbol = default;
+        if ((exportValue != null))
+        {
+            exportSymbol = this.getPropertyOfTypeEx(this.getTypeOfSymbol(exportValue), name, true, false);
+        }
+        else
+        {
+            exportSymbol = moduleSymbol.Exports?[name];
+        }
+
+        var resolved = this.resolveSymbolEx(exportSymbol, dontResolveAlias);
+        this.markSymbolOfAliasDeclarationIfTypeOnly(sourceNode, null);
+        return resolved;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfNamespaceImport(Node node)
+    {
+        var moduleSpecifier = this.getModuleSpecifierForImportOrExport(node);
+        var immediate = this.resolveExternalModuleName(node, moduleSpecifier, false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node.Parent.Parent)));
+        var resolved = this.resolveESModuleSymbol(immediate, node, moduleSpecifier);
+        this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+        return resolved;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfNamespaceExport(Node node)
+    {
+        var moduleSpecifier = this.getModuleSpecifierForImportOrExport(node);
+        if ((moduleSpecifier != null))
+        {
+            var immediate = this.resolveExternalModuleName(node, moduleSpecifier, false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node.Parent)));
+            var resolved = this.resolveESModuleSymbol(immediate, node, moduleSpecifier);
+            this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+            return resolved;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfImportSpecifier(Node node)
+    {
+        var name = node.PropertyNameOrName();
+        if ((Ast.IsImportSpecifier(node) && Ast.ModuleExportNameIsDefault(name)))
+        {
+            var specifier = this.getModuleSpecifierForImportOrExport(node);
+            if ((specifier != null))
+            {
+                var moduleSymbol = this.resolveExternalModuleName(node, specifier, false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node.Parent.Parent.Parent)));
+                if ((moduleSymbol != null))
+                {
+                    return this.getTargetOfModuleDefault(moduleSymbol, node, true);
+                }
+            }
+        }
+
+        var root = node.Parent.Parent.Parent;
+        if (Ast.IsBindingElement(node))
+        {
+            root = Ast.GetRootDeclaration(node);
+        }
+
+        var resolved = this.getExternalModuleMember(root, node, true);
+        this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+        return resolved;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getExternalModuleMember(Node node, Node specifier, bool dontResolveAlias)
+    {
+        var moduleSpecifier = getExternalModuleRequireArgument(node);
+        if ((moduleSpecifier == null))
+        {
+            moduleSpecifier = Ast.GetExternalModuleName(node);
+        }
+
+        Node attributes = default;
+        if (Ast.HasImportAttributes(node))
+        {
+            attributes = Ast.GetImportAttributes(node);
+        }
+
+        var importAttributesType = this.getTypeFromImportAttributes(attributes);
+        var moduleSymbol = this.resolveExternalModuleName(node, moduleSpecifier, false, importAttributesType);
+        Node name = default;
+        if (!Ast.IsPropertyAccessExpression(specifier))
+        {
+            name = specifier.PropertyNameOrName();
+        }
+        else
+        {
+            name = specifier.Name();
+        }
+
+        if ((!Ast.IsIdentifier(name) && !Ast.IsStringLiteral(name)))
+        {
+            return null;
+        }
+
+        var nameText = name.Text();
+        var targetSymbol = this.resolveESModuleSymbol(moduleSymbol, specifier, moduleSpecifier);
+        if ((targetSymbol != null))
+        {
+            if (((nameText != "") || (name.Kind == Kind.StringLiteral)))
+            {
+                if (isShorthandAmbientModuleSymbol(moduleSymbol))
+                {
+                    return moduleSymbol;
+                }
+
+                Symbol symbolFromVariable = default;
+                if (((moduleSymbol != null) && (moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals] != null)))
+                {
+                    symbolFromVariable = this.getPropertyOfTypeEx(this.getTypeOfSymbol(targetSymbol), nameText, true, false);
+                }
+                else
+                {
+                    symbolFromVariable = this.getPropertyOfVariable(targetSymbol, nameText);
+                }
+
+                symbolFromVariable = this.resolveSymbolEx(symbolFromVariable, dontResolveAlias);
+                var exportContainer = targetSymbol;
+                if (((moduleSymbol != null) && (moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals] != null)))
+                {
+                    exportContainer = moduleSymbol;
+                }
+
+                var symbolFromModule = this.getExportOfModule(exportContainer, nameText, specifier, dontResolveAlias);
+                if (((symbolFromModule == null) && (nameText == Ast.InternalSymbolNameDefault)))
+                {
+                    var file = Core.Find(moduleSymbol.Declarations, Ast.IsSourceFile);
+                    if ((this.isOnlyImportableAsDefault(moduleSpecifier, moduleSymbol, importAttributesType) || this.canHaveSyntheticDefault(file, moduleSymbol, dontResolveAlias, moduleSpecifier)))
+                    {
+                        symbolFromModule = this.resolveExternalModuleSymbol(moduleSymbol, dontResolveAlias);
+                        if ((symbolFromModule == null))
+                        {
+                            symbolFromModule = this.resolveSymbolEx(moduleSymbol, dontResolveAlias);
+                        }
+                    }
+                }
+
+                var symbol = symbolFromVariable;
+                if ((symbolFromModule != null))
+                {
+                    symbol = symbolFromModule;
+                    if ((symbolFromVariable != null))
+                    {
+                        symbol = this.combineValueAndTypeSymbols(symbolFromVariable, symbolFromModule);
+                    }
+                }
+
+                if (((Ast.IsImportOrExportSpecifier(specifier) && this.isOnlyImportableAsDefault(moduleSpecifier, moduleSymbol, importAttributesType)) && (nameText != Ast.InternalSymbolNameDefault)))
+                {
+                    this.error(name, Diagnostics.Named_imports_from_a_JSON_file_into_an_ECMAScript_module_are_not_allowed_when_module_is_set_to_0, this.moduleKind.ToString());
+                }
+                else
+                {
+                    if ((symbol == null))
+                    {
+                        this.errorNoModuleMemberSymbol(moduleSymbol, targetSymbol, node, name);
+                    }
+                }
+
+                return symbol;
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getExportOfModule(Symbol symbol, string nameText, Node specifier, bool dontResolveAlias)
+    {
+        if (((symbol.Flags & SymbolFlags.Module) != 0))
+        {
+            var exportSymbol = this.getExportsOfSymbol(symbol)[nameText];
+            var resolved = this.resolveSymbolEx(exportSymbol, dontResolveAlias);
+            var exportStarDeclaration = this.moduleSymbolLinks.Get(symbol).typeOnlyExportStarMap?.GetValueOrDefault(nameText);
+            this.markSymbolOfAliasDeclarationIfTypeOnly(specifier, exportStarDeclaration);
+            return resolved;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isOnlyImportableAsDefault(Node usage, Symbol resolvedModule, Type importAttributesType)
+    {
+        if ((((int)ModuleKind.Node16 <= (int)this.moduleKind) && ((int)this.moduleKind <= (int)ModuleKind.NodeNext)))
+        {
+            var usageMode = this.getEmitSyntaxForModuleSpecifierExpression(usage);
+            if ((usageMode == ResolutionMode.ESNext))
+            {
+                if ((resolvedModule == null))
+                {
+                    resolvedModule = this.resolveExternalModuleName(usage, usage, true, importAttributesType);
+                }
+
+                SourceFile targetFile = default;
+                if ((resolvedModule != null))
+                {
+                    targetFile = Ast.GetSourceFileOfModule(resolvedModule);
+                }
+
+                return ((targetFile != null) && ((Ast.IsJsonSourceFile(targetFile) || (targetFile.FileName().EndsWith(".d.json.ts", StringComparison.Ordinal)))));
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool canHaveSyntheticDefault(Node file, Symbol moduleSymbol, bool dontResolveAlias, Node usage)
+    {
+        ResolutionMode usageMode = default;
+        if ((file != null))
+        {
+            usageMode = this.getEmitSyntaxForModuleSpecifierExpression(usage);
+        }
+
+        if (((file != null) && (usageMode != ResolutionMode.None)))
+        {
+            var targetMode = this.program.GetImpliedNodeFormatForEmit(file.AsSourceFile());
+            if (((((usageMode == ResolutionMode.ESNext) && (targetMode == ResolutionMode.CommonJS)) && ((int)ModuleKind.Node16 <= (int)this.moduleKind)) && ((int)this.moduleKind <= (int)ModuleKind.NodeNext)))
+            {
+                return true;
+            }
+
+            if (((usageMode == ResolutionMode.ESNext) && (targetMode == ResolutionMode.ESNext)))
+            {
+                return false;
+            }
+        // Fixed host has no project-reference redirection. Original redirect-only
+        // declaration-file branch therefore has no producer in this profile.
+        }
+
+        if (((file == null) || file.AsSourceFile().IsDeclarationFile))
+        {
+            var defaultExportSymbol = this.resolveExportByName(moduleSymbol, Ast.InternalSymbolNameDefault, null, true);
+            if (((defaultExportSymbol != null) && Core.Some(defaultExportSymbol.Declarations, isSyntacticDefault)))
+            {
+                return false;
+            }
+
+            if ((this.resolveExportByName(moduleSymbol, "__esModule", null, dontResolveAlias) != null))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (!Ast.IsInJSFile(file))
+        {
+            return hasExportAssignmentSymbol(moduleSymbol);
+        }
+
+        return ((((file.AsSourceFile().ExternalModuleIndicator == null) || (file.AsSourceFile().ExternalModuleIndicator == file))) && (this.resolveExportByName(moduleSymbol, "__esModule", null, dontResolveAlias) == null));
+    }
+}
+
+public sealed partial class Checker
+{
+    private ResolutionMode getEmitSyntaxForModuleSpecifierExpression(Node usage)
+    {
+        if (Ast.IsStringLiteralLike(usage))
+        {
+            return this.program.GetEmitSyntaxForUsageLocation(Ast.GetSourceFileOfNode(usage), usage);
+        }
+
+        return ResolutionMode.None;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void errorNoModuleMemberSymbol(Symbol moduleSymbol, Symbol targetSymbol, Node node, Node name)
+    {
+        // Fixed NoCheck=false retains normal error reporting.
+        var moduleName = this.getFullyQualifiedName(moduleSymbol, node);
+        var declarationName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name);
+        Symbol suggestion = default;
+        if (Ast.IsIdentifier(name))
+        {
+            suggestion = this.getSuggestedSymbolForNonexistentModule(name, targetSymbol);
+        }
+
+        if ((suggestion != null))
+        {
+            var suggestionName = this.symbolToString(suggestion);
+            var diagnostic = this.error(name, Diagnostics.X_0_has_no_exported_member_named_1_Did_you_mean_2, moduleName, declarationName, suggestionName);
+            if ((suggestion.ValueDeclaration != null))
+            {
+                diagnostic.AddRelatedInfo(createDiagnosticForNode(suggestion.ValueDeclaration, Diagnostics.X_0_is_declared_here, suggestionName));
+            }
+        }
+        else
+        {
+            if ((moduleSymbol.Exports?[Ast.InternalSymbolNameDefault] != null))
+            {
+                this.error(name, Diagnostics.Module_0_has_no_exported_member_1_Did_you_mean_to_use_import_1_from_0_instead, moduleName, declarationName);
+            }
+            else
+            {
+                this.reportNonExportedMember(name, declarationName, moduleSymbol, moduleName);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void reportNonExportedMember(Node name, string declarationName, Symbol moduleSymbol, string moduleName)
+    {
+        Symbol localSymbol = default;
+        {
+            var locals = moduleSymbol.ValueDeclaration.Locals();
+            if ((locals != null))
+            {
+                localSymbol = locals[name.Text()];
+            }
+        }
+
+        var exports = moduleSymbol.Exports;
+        if ((localSymbol != null))
+        {
+            {
+                var exportedEqualsSymbol = exports?[Ast.InternalSymbolNameExportEquals];
+                if ((exportedEqualsSymbol != null))
+                {
+                    if ((this.getSymbolIfSameReference(exportedEqualsSymbol, localSymbol) != null))
+                    {
+                        throw unsupported("reportNonExportedMember: import-equals/export-equals");
+                    }
+                    else
+                    {
+                        this.error(name, Diagnostics.Module_0_has_no_exported_member_1, moduleName, declarationName);
+                    }
+                }
+                else
+                {
+                    var exportedSymbol = findInSymbolTable(exports, (symbol) =>
+                    {
+                        return (this.getSymbolIfSameReference(symbol, localSymbol) != null);
+                    });
+                    Diagnostic diagnostic = default;
+                    if ((exportedSymbol != null))
+                    {
+                        diagnostic = this.error(name, Diagnostics.Module_0_declares_1_locally_but_it_is_exported_as_2, moduleName, declarationName, this.symbolToString(exportedSymbol));
+                    }
+                    else
+                    {
+                        diagnostic = this.error(name, Diagnostics.Module_0_declares_1_locally_but_it_is_not_exported, moduleName, declarationName);
+                    }
+
+                    {
+                        foreach (var range1 in GoRuntime.Range(localSymbol.Declarations))
+                        {
+                            var i = range1.Key;
+                            var decl = range1.Value;
+                            diagnostic.AddRelatedInfo(createDiagnosticForNode(decl, Core.IfElse((i == 0), Diagnostics.X_0_is_declared_here, Diagnostics.X_and_here), declarationName));
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            this.error(name, Diagnostics.Module_0_has_no_exported_member_1, moduleName, declarationName);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfExportSpecifier(Node node, SymbolFlags meaning, bool dontResolveAlias)
+    {
+        var name = node.PropertyNameOrName();
+        if (Ast.ModuleExportNameIsDefault(name))
+        {
+            var specifier = this.getModuleSpecifierForImportOrExport(node);
+            if ((specifier != null))
+            {
+                var moduleSymbol = this.resolveExternalModuleName(node, specifier, false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node.Parent.Parent)));
+                if ((moduleSymbol != null))
+                {
+                    return this.getTargetOfModuleDefault(moduleSymbol, node, dontResolveAlias);
+                }
+            }
+        }
+
+        var exportDeclaration = node.Parent.Parent;
+        Symbol resolved = default;
+        switch (true)
+        {
+            case true when (exportDeclaration.ModuleSpecifier() != null):
+            {
+                resolved = this.getExternalModuleMember(exportDeclaration, node, dontResolveAlias);
+                break;
+            }
+
+            case true when Ast.IsStringLiteral(name):
+            {
+                resolved = null;
+                break;
+            }
+
+            default:
+            {
+                resolved = this.resolveEntityName(name, meaning, false, dontResolveAlias, null);
+                break;
+            }
+        }
+
+        this.markSymbolOfAliasDeclarationIfTypeOnly(node, null);
+        return resolved;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getModuleSpecifierForImportOrExport(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.ImportClause:
+            {
+                return getModuleSpecifierFromNode(node.Parent);
+            }
+
+            case Kind.ImportEqualsDeclaration:
+            {
+                if (Ast.IsExternalModuleReference(node.AsImportEqualsDeclaration().ModuleReference))
+                {
+                    return node.AsImportEqualsDeclaration().ModuleReference.Expression();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            case Kind.NamespaceImport:
+            {
+                return getModuleSpecifierFromNode(node.Parent.Parent);
+            }
+
+            case Kind.ImportSpecifier:
+            {
+                return getModuleSpecifierFromNode(node.Parent.Parent.Parent);
+            }
+
+            case Kind.NamespaceExport:
+            {
+                return getModuleSpecifierFromNode(node.Parent);
+            }
+
+            case Kind.ExportSpecifier:
+            {
+                return getModuleSpecifierFromNode(node.Parent.Parent);
+            }
+        }
+
+        throw new InvalidOperationException("Unhandled case in getModuleSpecifierForImportOrExport");
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getModuleSpecifierFromNode(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.ImportDeclaration:
+            case Kind.JSImportDeclaration:
+            {
+                return node.ModuleSpecifier();
+            }
+
+            case Kind.ExportDeclaration:
+            {
+                return node.ModuleSpecifier();
+            }
+        }
+
+        throw new InvalidOperationException(("Unhandled case in getModuleSpecifierFromNode: " + node.Kind.String()));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveExternalModuleSymbol(Symbol moduleSymbol, bool dontResolveAlias)
+    {
+        if ((moduleSymbol != null))
+        {
+            var exportEquals = this.resolveSymbolEx(moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals], dontResolveAlias);
+            if ((exportEquals != null))
+            {
+                return this.getMergedSymbol(exportEquals);
+            }
+        }
+
+        return moduleSymbol;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveESModuleSymbol(Symbol moduleSymbol, Node node, Node moduleSpecifier)
+    {
+        var symbol = this.resolveExternalModuleSymbol(moduleSymbol, true);
+        if (Ast.IsNonLocalAlias(symbol, ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace)))
+        {
+            symbol = this.getMergedSymbol(this.resolveIndirectionAlias(this.getSymbolOfDeclaration(node), symbol));
+        }
+
+        if ((symbol != null))
+        {
+            var referenceParent = moduleSpecifier.Parent;
+            Node namespaceImport = default;
+            if (Ast.IsImportDeclaration(referenceParent))
+            {
+                namespaceImport = Ast.GetNamespaceDeclarationNode(referenceParent);
+            }
+
+            if (((namespaceImport != null) || Ast.IsImportCall(referenceParent)))
+            {
+                Node reference = default;
+                if (Ast.IsImportCall(referenceParent))
+                {
+                    reference = referenceParent.Arguments()[0];
+                }
+                else
+                {
+                    reference = referenceParent.ModuleSpecifier();
+                }
+
+                var typ = this.getTypeOfSymbol(symbol);
+                var defaultOnlyType = this.getTypeWithSyntheticDefaultOnly(typ, symbol, moduleSymbol, reference, this.getImportAttributesTypeForModuleSpecifier(reference));
+                if ((defaultOnlyType != null))
+                {
+                    return this.cloneTypeAsModuleType(symbol, defaultOnlyType, referenceParent);
+                }
+
+                var targetFile = Core.Find(moduleSymbol.Declarations, Ast.IsSourceFile);
+                var usageMode = this.getEmitSyntaxForModuleSpecifierExpression(reference);
+                Symbol exportModuleDotExportsSymbol = default;
+                if (((((((namespaceImport != null) && (targetFile != null)) && ((int)ModuleKind.Node20 <= (int)this.moduleKind)) && ((int)this.moduleKind <= (int)ModuleKind.NodeNext)) && (usageMode == ResolutionMode.CommonJS)) && (this.program.GetImpliedNodeFormatForEmit(targetFile.AsSourceFile()) == ResolutionMode.ESNext)))
+                {
+                    exportModuleDotExportsSymbol = this.getExportOfModule(symbol, Ast.InternalSymbolNameModuleExports, namespaceImport, true);
+                }
+
+                if ((exportModuleDotExportsSymbol != null))
+                {
+                    if (this.hasSignatures(typ))
+                    {
+                        return this.cloneTypeAsModuleType(exportModuleDotExportsSymbol, typ, referenceParent);
+                    }
+
+                    return exportModuleDotExportsSymbol;
+                }
+
+                var isEsmCjsRef = ((targetFile != null) && isESMFormatImportImportingCommonjsFormatFile(usageMode, this.program.GetImpliedNodeFormatForEmit(targetFile.AsSourceFile())));
+                if (((this.hasSignatures(typ) || (this.getPropertyOfTypeEx(typ, Ast.InternalSymbolNameDefault, true, false) != null)) || isEsmCjsRef))
+                {
+                    Type moduleType = default;
+                    if (((typ.Flags() & TypeFlags.StructuredType) != 0))
+                    {
+                        moduleType = this.getTypeWithSyntheticDefaultImportType(typ, symbol, moduleSymbol, reference);
+                    }
+                    else
+                    {
+                        moduleType = this.createDefaultPropertyWrapperForModule(symbol, symbol.Parent, null);
+                    }
+
+                    return this.cloneTypeAsModuleType(symbol, moduleType, referenceParent);
+                }
+            }
+        }
+
+        return symbol;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeWithSyntheticDefaultOnly(Type t, Symbol symbol, Symbol originalSymbol, Node moduleSpecifier, Type importAttributesType)
+    {
+        var hasDefaultOnly = this.isOnlyImportableAsDefault(moduleSpecifier, null, importAttributesType);
+        if (((hasDefaultOnly && (t != null)) && !this.isErrorType(t)))
+        {
+            var key = new CachedTypeKey
+            {
+                kind = CachedTypeKind.DefaultOnlyType,
+                typeId = t.id
+            };
+            {
+                var cached = this.cachedTypes.GetValueOrDefault(key);
+                if ((cached != null))
+                {
+                    return cached;
+                }
+            }
+
+            var result = this.createDefaultPropertyWrapperForModule(symbol, originalSymbol, null);
+            this.cachedTypes[key] = result;
+            return result;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeWithSyntheticDefaultImportType(Type t, Symbol symbol, Symbol originalSymbol, Node moduleSpecifier)
+    {
+        if (((t != null) && !this.isErrorType(t)))
+        {
+            var key = new CachedTypeKey
+            {
+                kind = CachedTypeKind.SyntheticType,
+                typeId = t.id
+            };
+            {
+                var cached = this.cachedTypes.GetValueOrDefault(key);
+                if ((cached != null))
+                {
+                    return cached;
+                }
+            }
+
+            var file = Core.Find(originalSymbol.Declarations, Ast.IsSourceFile);
+            var hasSyntheticDefault = this.canHaveSyntheticDefault(file, originalSymbol, false, moduleSpecifier);
+            Type syntheticType = default;
+            if (hasSyntheticDefault)
+            {
+                var anonymousSymbol = this.newSymbol(SymbolFlags.TypeLiteral, Ast.InternalSymbolNameType);
+                anonymousSymbol.Declarations = originalSymbol.Declarations;
+                var defaultContainingObject = this.createDefaultPropertyWrapperForModule(symbol, originalSymbol, anonymousSymbol);
+                this.valueSymbolLinks.Get(anonymousSymbol).resolvedType = defaultContainingObject;
+                throw unsupported("getTypeWithSyntheticDefaultImportType: CommonJS synthetic default spread");
+            }
+            else
+            {
+                syntheticType = t;
+            }
+
+            this.cachedTypes[key] = syntheticType;
+            return syntheticType;
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createDefaultPropertyWrapperForModule(Symbol symbol, Symbol originalSymbol, Symbol anonymousSymbol)
+    {
+        var memberTable = new SymbolTable();
+        var newSymbol = this.newSymbol(SymbolFlags.Alias, Ast.InternalSymbolNameDefault);
+        newSymbol.Parent = originalSymbol;
+        this.valueSymbolLinks.Get(newSymbol).nameType = this.getStringLiteralType("default");
+        this.aliasSymbolLinks.Get(newSymbol).aliasTarget = this.resolveSymbol(symbol);
+        memberTable[Ast.InternalSymbolNameDefault] = newSymbol;
+        if (((anonymousSymbol == null) && (originalSymbol != null)))
+        {
+            anonymousSymbol = this.newSymbol(SymbolFlags.ObjectLiteral, Ast.InternalSymbolNameObject);
+            anonymousSymbol.Declarations = originalSymbol.Declarations;
+        }
+
+        return this.newAnonymousType(anonymousSymbol, memberTable, null, null, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol cloneTypeAsModuleType(Symbol symbol, Type moduleType, Node referenceParent)
+    {
+        var result = this.newSymbol(symbol.Flags, symbol.Name);
+        result.Declarations = GoSlices.Clone(symbol.Declarations);
+        result.ValueDeclaration = symbol.ValueDeclaration;
+        result.Members = cloneMergeSymbolTable(symbol.Members);
+        result.Exports = cloneMergeSymbolTable(symbol.Exports);
+        result.Parent = symbol.Parent;
+        var links = this.exportTypeLinks.Get(result);
+        links.target = symbol;
+        links.originatingImport = referenceParent;
+        var resolvedModuleType = this.resolveStructuredTypeMembers(moduleType);
+        this.valueSymbolLinks.Get(result).resolvedType = this.newAnonymousType(result, resolvedModuleType.members, null, null, resolvedModuleType.indexInfos);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfAliasDeclaration(Node node)
+    {
+        if ((node == null))
+        {
+            return null;
+        }
+
+        switch (node.Kind)
+        {
+            case Kind.ImportEqualsDeclaration:
+            case Kind.VariableDeclaration:
+            case Kind.BindingElement:
+            case Kind.BinaryExpression:
+            case Kind.NamespaceExportDeclaration:
+                throw unsupported("getTargetOfAliasDeclaration: import-equals/CommonJS/UMD alias");
+            case Kind.ImportClause:
+            {
+                return this.getTargetOfImportClause(node);
+            }
+
+            case Kind.NamespaceImport:
+            {
+                return this.getTargetOfNamespaceImport(node);
+            }
+
+            case Kind.NamespaceExport:
+            {
+                return this.getTargetOfNamespaceExport(node);
+            }
+
+            case Kind.ImportSpecifier:
+            {
+                return this.getTargetOfImportSpecifier(node);
+            }
+
+            case Kind.ExportSpecifier:
+            {
+                return this.getTargetOfExportSpecifier(node, ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace), true);
+            }
+
+            case Kind.ExportAssignment:
+            {
+                return this.getTargetOfExportAssignment(node);
+            }
+
+            case Kind.ShorthandPropertyAssignment:
+            {
+                return this.resolveEntityName(node.AsShorthandPropertyAssignment().Name(), ((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace), true, true, null);
+            }
+
+            case Kind.PropertyAssignment:
+            {
+                return this.getTargetOfAliasLikeExpression(node.Initializer());
+            }
+
+            case Kind.ElementAccessExpression:
+            case Kind.PropertyAccessExpression:
+            {
+                return this.getTargetOfAccessExpression(node);
+            }
+        }
+
+        throw new InvalidOperationException(("Unhandled case in getTargetOfAliasDeclaration: " + node.Kind.String()));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getPropertyOfVariable(Symbol symbol, string name)
+    {
+        if (((symbol.Flags & SymbolFlags.Variable) != 0))
+        {
+            var typeAnnotation = symbol.ValueDeclaration.Type();
+            if ((typeAnnotation != null))
+            {
+                return this.resolveSymbol(this.getPropertyOfType(this.getTypeFromTypeNode(typeAnnotation), name));
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol combineValueAndTypeSymbols(Symbol valueSymbol, Symbol typeSymbol)
+    {
+        if (((valueSymbol == this.unknownSymbol) && (typeSymbol == this.unknownSymbol)))
+        {
+            return this.unknownSymbol;
+        }
+
+        if (((typeSymbol.Flags & SymbolFlags.Value) != 0))
+        {
+            return typeSymbol;
+        }
+
+        if (((valueSymbol.Flags & ((SymbolFlags.Type | SymbolFlags.Namespace))) != 0))
+        {
+            return valueSymbol;
+        }
+
+        var result = this.newSymbol((valueSymbol.Flags | typeSymbol.Flags), valueSymbol.Name);
+        Debug.Assert(((GoRuntime.Len(valueSymbol.Declarations) > 0) || (GoRuntime.Len(typeSymbol.Declarations) > 0)));
+        result.Declarations = compactSymbolDeclarations(Core.Concatenate(valueSymbol.Declarations, typeSymbol.Declarations));
+        result.Parent = valueSymbol.Parent;
+        if ((result.Parent == null))
+        {
+            result.Parent = typeSymbol.Parent;
+        }
+
+        result.ValueDeclaration = valueSymbol.ValueDeclaration;
+        result.Members = cloneMergeSymbolTable(typeSymbol.Members);
+        result.Exports = cloneMergeSymbolTable(valueSymbol.Exports);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getTargetOfAccessExpression(Node node)
+    {
+        if (Ast.IsBinaryExpression(node.Parent))
+        {
+            var expr = node.Parent.AsBinaryExpression();
+            if (((expr.Left == node) && (expr.OperatorToken.Kind == Kind.EqualsToken)))
+            {
+                return this.getTargetOfAliasLikeExpression(expr.Right);
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasSignatures(Type t)
+    {
+        return ((GoRuntime.Len(this.getSignaturesOfStructuredType(t, SignatureKind.Call)) > 0) || (GoRuntime.Len(this.getSignaturesOfStructuredType(t, SignatureKind.Construct)) > 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isESMFormatImportImportingCommonjsFormatFile(ResolutionMode usageMode, ResolutionMode targetMode)
+    {
+        return ((usageMode == ResolutionMode.ESNext) && (targetMode == ResolutionMode.CommonJS));
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:15220. Go map range returns the first matching value.
+    private static Symbol findInSymbolTable(SymbolTable table, Func<Symbol, bool> predicate)
+    {
+        if (table != null)
+            foreach (var symbol in table.Values)
+                if (predicate(symbol))
+                    return symbol;
+        return null;
+    }
+
+    // slices.Compact after slices.Concat in checker.go:15072. Consecutive identity duplicates only.
+    private static List<Node> compactSymbolDeclarations(List<Node> declarations)
+    {
+        if (declarations == null || declarations.Count < 2)
+            return declarations;
+        int write = 1;
+        for (int i = 1; i < declarations.Count; i++)
+            if (declarations[i] != declarations[write - 1])
+                declarations[write++] = declarations[i];
+        declarations.RemoveRange(write, declarations.Count - write);
+        return declarations;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkImportDeclaration(Node node)
+    {
+        Message diagnostic = default;
+        if (Ast.IsInJSFile(node))
+        {
+            diagnostic = Diagnostics.An_import_declaration_can_only_be_used_at_the_top_level_of_a_module;
+        }
+        else
+        {
+            diagnostic = Diagnostics.An_import_declaration_can_only_be_used_at_the_top_level_of_a_namespace_or_module;
+        }
+
+        if (this.checkGrammarModuleElementContext(node, diagnostic))
+        {
+            this.checkExternalModuleNameInGlobalScope(node);
+            return;
+        }
+
+        if ((!this.checkGrammarModifiers(node) && (node.Modifiers() != null)))
+        {
+            this.grammarErrorOnFirstToken(node, Diagnostics.An_import_declaration_cannot_have_modifiers);
+        }
+
+        if (this.checkExternalImportOrExportDeclaration(node))
+        {
+            var attributes = Ast.GetImportAttributes(node);
+            Symbol resolvedModule = default;
+            var importClause = node.ImportClause();
+            var moduleSpecifier = node.ModuleSpecifier();
+            if (((importClause != null) && !this.checkGrammarImportClause(importClause.AsImportClause())))
+            {
+                if ((importClause.Name() != null))
+                {
+                    this.checkImportBinding(importClause);
+                }
+
+                bool needsImportStar = default;
+                var namedBindings = importClause.AsImportClause().NamedBindings;
+                if ((namedBindings != null))
+                {
+                    if (Ast.IsNamespaceImport(namedBindings))
+                    {
+                        this.checkImportBinding(namedBindings);
+                        if ((this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS))
+                        {
+                            needsImportStar = true;
+                            throw unsupported("checkImportDeclaration: CommonJS emit helpers");
+                        }
+                    }
+                    else
+                    {
+                        resolvedModule = this.resolveExternalModuleName(node, node.ModuleSpecifier(), false, this.getTypeFromImportAttributes(attributes));
+                        if ((resolvedModule != null))
+                        {
+                            {
+                                foreach (var binding in GoRuntime.RangeValues(namedBindings.Elements()))
+                                {
+                                    this.checkImportBinding(binding);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ((((importClause.Name() != null) && !needsImportStar) && (this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS)))
+                {
+                    throw unsupported("import/export: CommonJS emit helpers");
+                }
+
+                if (((((!importClause.IsTypeOnly() && ((int)ModuleKind.Node18 <= (int)this.moduleKind)) && ((int)this.moduleKind <= (int)ModuleKind.NodeNext)) && this.isOnlyImportableAsDefault(moduleSpecifier, resolvedModule, this.getTypeFromImportAttributes(attributes))) && !hasTypeJsonImportAttribute(node)))
+                {
+                    this.error(moduleSpecifier, Diagnostics.Importing_a_JSON_file_into_an_ECMAScript_module_requires_a_type_Colon_json_import_attribute_when_module_is_set_to_0, this.moduleKind.ToString());
+                }
+            }
+            else
+            {
+                if (((this.compilerOptions.NoUncheckedSideEffectImports != Tristate.False) && (importClause == null)))
+                {
+                    var ignoreErrors = false /* fixed NoCheck=false */;
+                    Message errorMessage = default;
+                    if (!ignoreErrors)
+                    {
+                        errorMessage = Diagnostics.Cannot_find_module_or_type_declarations_for_side_effect_import_of_0;
+                    }
+
+                    this.resolveExternalModuleNameWorker(node, moduleSpecifier, errorMessage, ignoreErrors, false, this.getTypeFromImportAttributes(attributes));
+                }
+            }
+        }
+
+        checkUnsupportedImportAttributes(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkExternalImportOrExportDeclaration(Node node)
+    {
+        var moduleName = Ast.GetExternalModuleName(node);
+        if (((moduleName == null) || Ast.NodeIsMissing(moduleName)))
+        {
+            return false;
+        }
+
+        if (!Ast.IsStringLiteral(moduleName))
+        {
+            this.error(moduleName, Diagnostics.String_literal_expected);
+            return false;
+        }
+
+        var inAmbientExternalModule = (Ast.IsModuleBlock(node.Parent) && Ast.IsAmbientModule(node.Parent.Parent));
+        if ((!Ast.IsSourceFile(node.Parent) && !inAmbientExternalModule))
+        {
+            this.error(moduleName, Core.IfElse(Ast.IsExportDeclaration(node), Diagnostics.Export_declarations_are_not_permitted_in_a_namespace, Diagnostics.Import_declarations_in_a_namespace_cannot_reference_a_module));
+            return false;
+        }
+
+        if ((inAmbientExternalModule && moduleName.Text().StartsWith(".", StringComparison.Ordinal)))
+        {
+            if (!isTopLevelInExternalModuleAugmentation(node))
+            {
+                this.error(node, Diagnostics.Import_or_export_declaration_in_an_ambient_module_declaration_cannot_reference_module_through_relative_module_name);
+                return false;
+            }
+        }
+
+        if (!Ast.IsImportEqualsDeclaration(node))
+        {
+            var attributes = Ast.GetImportAttributes(node);
+            if ((attributes != null))
+            {
+                if (throwUnsupportedImportAttributes())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkImportBinding(Node node)
+    {
+        this.checkCollisionsForDeclarationName(node, node.Name());
+        this.checkAliasSymbol(node);
+        if (Ast.IsImportSpecifier(node))
+        {
+            this.checkModuleExportName(node.PropertyName(), true);
+            if ((Ast.ModuleExportNameIsDefault(node.PropertyNameOrName()) && (this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS)))
+            {
+                throw unsupported("import/export: CommonJS emit helpers");
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkModuleExportName(Node name, bool allowStringLiteral)
+    {
+        if (((name == null) || (name.Kind != Kind.StringLiteral)))
+        {
+            return;
+        }
+
+        if (!allowStringLiteral)
+        {
+            this.grammarErrorOnNode(name, Diagnostics.Identifier_expected);
+        }
+        else
+        {
+            if (((this.moduleKind == ModuleKind.ES2015) || (this.moduleKind == ModuleKind.ES2020)))
+            {
+                if (!Ast.GetSourceFileOfNode(name).IsDeclarationFile)
+                {
+                    this.grammarErrorOnNode(name, Diagnostics.String_literal_import_and_export_names_are_not_supported_when_the_module_flag_is_set_to_es2015_or_es2020);
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromImportAttributes(Node node)
+    {
+        if ((node == null))
+        {
+            return null;
+        }
+
+        throw unsupported("getTypeFromImportAttributes: source import attributes");
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkExportDeclaration(Node node)
+    {
+        var diagnostic = Core.IfElse(Ast.IsInJSFile(node), Diagnostics.An_export_declaration_can_only_be_used_at_the_top_level_of_a_module, Diagnostics.An_export_declaration_can_only_be_used_at_the_top_level_of_a_namespace_or_module);
+        if (this.checkGrammarModuleElementContext(node, diagnostic))
+        {
+            this.checkExternalModuleNameInGlobalScope(node);
+            return;
+        }
+
+        var exportDecl = node.AsExportDeclaration();
+        if ((!this.checkGrammarModifiers(node) && (exportDecl.Modifiers() != null)))
+        {
+            this.grammarErrorOnFirstToken(node, Diagnostics.An_export_declaration_cannot_have_modifiers);
+        }
+
+        this.checkGrammarExportDeclaration(exportDecl);
+        if (((exportDecl.ModuleSpecifier == null) || this.checkExternalImportOrExportDeclaration(node)))
+        {
+            if (((exportDecl.ExportClause != null) && !Ast.IsNamespaceExport(exportDecl.ExportClause)))
+            {
+                {
+                    foreach (var binding in GoRuntime.RangeValues(exportDecl.ExportClause.Elements()))
+                    {
+                        this.checkExportSpecifier(binding);
+                    }
+                }
+
+                var inAmbientExternalModule = (Ast.IsModuleBlock(node.Parent) && Ast.IsAmbientModule(node.Parent.Parent));
+                var inAmbientNamespaceDeclaration = (((!inAmbientExternalModule && Ast.IsModuleBlock(node.Parent)) && (exportDecl.ModuleSpecifier == null)) && ((node.Flags & NodeFlags.Ambient) != 0));
+                if (((!Ast.IsSourceFile(node.Parent) && !inAmbientExternalModule) && !inAmbientNamespaceDeclaration))
+                {
+                    this.error(node, Diagnostics.Export_declarations_are_not_permitted_in_a_namespace);
+                }
+            }
+            else
+            {
+                var moduleSymbol = this.resolveExternalModuleName(node, exportDecl.ModuleSpecifier, false, this.getTypeFromImportAttributes(Ast.GetImportAttributes(node)));
+                if (((moduleSymbol != null) && hasExportAssignmentSymbol(moduleSymbol)))
+                {
+                    this.error(exportDecl.ModuleSpecifier, Diagnostics.Module_0_uses_export_and_cannot_be_used_with_export_Asterisk, this.symbolToString(moduleSymbol));
+                }
+                else
+                {
+                    if ((exportDecl.ExportClause != null))
+                    {
+                        this.checkAliasSymbol(exportDecl.ExportClause);
+                        this.checkModuleExportName(exportDecl.ExportClause.Name(), true);
+                    }
+                }
+
+                if ((this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS))
+                {
+                    if ((node.AsExportDeclaration().ExportClause != null))
+                    {
+                        throw unsupported("checkImportDeclaration: CommonJS emit helpers");
+                    }
+                    else
+                    {
+                        throw unsupported("checkExportDeclaration: CommonJS emit helpers");
+                    }
+                }
+            }
+        }
+
+        checkUnsupportedImportAttributes(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkExternalModuleNameInGlobalScope(Node node)
+    {
+        if (((getEnclosingContainer(node).Kind != Kind.SourceFile) || ((Ast.IsImportDeclarationOrJSImportDeclaration(node) && (node.ImportClause() == null)))))
+        {
+            return;
+        }
+
+        {
+            var moduleName = Ast.GetExternalModuleName(node);
+            if ((moduleName != null))
+            {
+                Node attributes = default;
+                if (Ast.HasImportAttributes(node))
+                {
+                    attributes = Ast.GetImportAttributes(node);
+                }
+
+                var importAttributesType = this.getTypeFromImportAttributes(attributes);
+                this.resolveExternalModuleName(node, moduleName, false, importAttributesType);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkExportSpecifier(Node node)
+    {
+        this.checkAliasSymbol(node);
+        var hasModuleSpecifier = (node.Parent.Parent.ModuleSpecifier() != null);
+        this.checkModuleExportName(node.PropertyName(), hasModuleSpecifier);
+        this.checkModuleExportName(node.Name(), true);
+        if (!hasModuleSpecifier)
+        {
+            var exportedName = node.PropertyNameOrName();
+            if ((exportedName.Kind == Kind.StringLiteral))
+            {
+                return;
+            }
+
+            var symbol = this.nameResolver.Resolve(exportedName, exportedName.Text(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
+            if (((symbol != null) && ((((symbol == this.undefinedSymbol) || (symbol == this.globalThisSymbol)) || ((symbol.Declarations != null) && Ast.IsGlobalSourceFile(Ast.GetDeclarationContainer(symbol.Declarations[0])))))))
+            {
+                this.error(exportedName, Diagnostics.Cannot_export_0_Only_local_declarations_can_be_exported_from_a_module, exportedName.Text());
+            }
+            else
+            {
+                this.markLinkedReferences(node, ReferenceHint.ExportSpecifier, null, null);
+            }
+        }
+        else
+        {
+            if (((this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS) && Ast.ModuleExportNameIsDefault(node.PropertyNameOrName())))
+            {
+                throw unsupported("import/export: CommonJS emit helpers");
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkExportAssignment(Node node)
+    {
+        var isExportEquals = node.AsExportAssignment().IsExportEquals;
+        var exprType = this.checkExpressionCached(node.Expression());
+        var illegalContextMessage = Core.IfElse(isExportEquals, Diagnostics.An_export_assignment_must_be_at_the_top_level_of_a_file_or_module_declaration, Diagnostics.A_default_export_must_be_at_the_top_level_of_a_file_or_module_declaration);
+        if (this.checkGrammarModuleElementContext(node, illegalContextMessage))
+        {
+            return;
+        }
+
+        if (((false /* fixed ErasableSyntaxOnly=false */ && node.AsExportAssignment().IsExportEquals) && ((node.Flags & NodeFlags.Ambient) == 0)))
+        {
+            this.error(node, Diagnostics.This_syntax_is_not_allowed_when_erasableSyntaxOnly_is_enabled);
+        }
+
+        if (isContainedByNamespace(node))
+        {
+            if (isExportEquals)
+            {
+                this.error(node, Diagnostics.An_export_assignment_cannot_be_used_in_a_namespace);
+            }
+            else
+            {
+                this.error(node, Diagnostics.A_default_export_can_only_be_used_in_an_ECMAScript_style_module);
+            }
+
+            return;
+        }
+
+        if (((!this.checkGrammarModifiers(node) && Ast.IsExportAssignment(node)) && (node.AsExportAssignment().Modifiers() != null)))
+        {
+            this.grammarErrorOnFirstToken(node, Diagnostics.An_export_assignment_cannot_have_modifiers);
+        }
+
+        var isIllegalExportDefaultInCJS = (((!isExportEquals && ((node.Flags & NodeFlags.Ambient) == 0)) && (this.compilerOptions.VerbatimModuleSyntax == Tristate.True)) && (this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) == ModuleKind.CommonJS));
+        if (Ast.IsIdentifier(node.Expression()))
+        {
+            var id = node.Expression();
+            var sym = this.getExportSymbolOfValueSymbolIfExported(this.resolveEntityName(id, SymbolFlags.All, true, true, node));
+            if ((sym != null))
+            {
+                this.markLinkedReferences(node, ReferenceHint.ExportAssignment, null, null);
+                var typeOnlyDeclaration = this.getTypeOnlyAliasDeclarationEx(sym, SymbolFlags.Value);
+                if (((this.getSymbolFlags(sym) & SymbolFlags.Value) != 0))
+                {
+                    if ((((!isIllegalExportDefaultInCJS && ((node.Flags & NodeFlags.Ambient) == 0)) && (this.compilerOptions.VerbatimModuleSyntax == Tristate.True)) && (typeOnlyDeclaration != null)))
+                    {
+                        var message = Core.IfElse(isExportEquals, Diagnostics.An_export_declaration_must_reference_a_real_value_when_verbatimModuleSyntax_is_enabled_but_0_resolves_to_a_type_only_declaration, Diagnostics.An_export_default_must_reference_a_real_value_when_verbatimModuleSyntax_is_enabled_but_0_resolves_to_a_type_only_declaration);
+                        this.error(id, message, id.Text());
+                    }
+                }
+                else
+                {
+                    if (((!isIllegalExportDefaultInCJS && ((node.Flags & NodeFlags.Ambient) == 0)) && (this.compilerOptions.VerbatimModuleSyntax == Tristate.True)))
+                    {
+                        var message2 = Core.IfElse(isExportEquals, Diagnostics.An_export_declaration_must_reference_a_value_when_verbatimModuleSyntax_is_enabled_but_0_only_refers_to_a_type, Diagnostics.An_export_default_must_reference_a_value_when_verbatimModuleSyntax_is_enabled_but_0_only_refers_to_a_type);
+                        this.error(id, message2, id.Text());
+                    }
+                }
+
+                if ((((!isIllegalExportDefaultInCJS && ((node.Flags & NodeFlags.Ambient) == 0)) && this.compilerOptions.GetIsolatedModules()) && ((sym.Flags & SymbolFlags.Value) == 0)))
+                {
+                    throw unsupported("checkExportAssignment: isolated-module options");
+                }
+            }
+        }
+
+        if (isIllegalExportDefaultInCJS)
+        {
+            this.error(node, getVerbatimModuleSyntaxErrorMessage(node));
+        }
+
+        var container = node.Parent;
+        if (!Ast.IsSourceFile(container))
+        {
+            container = container.Parent;
+        }
+
+        this.checkExternalModuleExports(container);
+        {
+            var typeNode = node.Type();
+            if (((typeNode != null) && (node.Kind == Kind.ExportAssignment)))
+            {
+                var t = this.getTypeFromTypeNode(typeNode);
+                this.checkTypeAssignableToAndOptionallyElaborate(exprType, t, node.Expression(), node.Expression(), null, null);
+            }
+        }
+
+        if (((((node.Flags & NodeFlags.Ambient) != 0)) && !Ast.IsEntityNameExpression(node.Expression())))
+        {
+            this.grammarErrorOnNode(node.Expression(), Diagnostics.The_expression_of_an_export_assignment_must_be_an_identifier_or_qualified_name_in_an_ambient_context);
+        }
+
+        if (isExportEquals)
+        {
+            if ((((this.moduleKind >= ModuleKind.ES2015) && (this.moduleKind != ModuleKind.Preserve)) && ((((((node.Flags & NodeFlags.Ambient) != 0) && (this.program.GetImpliedNodeFormatForEmit(Ast.GetSourceFileOfNode(node)) == ResolutionMode.ESNext))) || ((((node.Flags & NodeFlags.Ambient) == 0) && (this.program.GetImpliedNodeFormatForEmit(Ast.GetSourceFileOfNode(node)) != ResolutionMode.CommonJS)))))))
+            {
+                this.grammarErrorOnNode(node, Diagnostics.Export_assignment_cannot_be_used_when_targeting_ECMAScript_modules_Consider_using_export_default_or_another_module_format_instead);
+            }
+            else
+            {
+                if (((this.moduleKind == ModuleKind.System) && ((node.Flags & NodeFlags.Ambient) == 0)))
+                {
+                    this.grammarErrorOnNode(node, Diagnostics.Export_assignment_is_not_supported_when_module_flag_is_system);
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkExternalModuleExports(Node node)
+    {
+        var moduleSymbol = this.getSymbolOfDeclaration(node);
+        var links = this.moduleSymbolLinks.Get(moduleSymbol);
+        if (!links.exportsChecked)
+        {
+            var exportEqualsSymbol = moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals];
+            if (((exportEqualsSymbol != null) && ((this.hasExportedMembersOfKind(moduleSymbol, SymbolFlags.Value) || this.hasShadowedNamespace(exportEqualsSymbol)))))
+            {
+                throw unsupported("checkExternalModuleExports: export-equals");
+            }
+
+            {
+                foreach (var range3 in GoRuntime.Range(this.getExportsOfModule(moduleSymbol)))
+                {
+                    var id = range3.Key;
+                    var symbol = range3.Value;
+                    if ((id == Ast.InternalSymbolNameExportStar))
+                    {
+                        continue;
+                    }
+
+                    if (((symbol.Flags & ((SymbolFlags.Namespace | SymbolFlags.Enum))) != 0))
+                    {
+                        continue;
+                    }
+
+                    var exportedDeclarationsCount = Core.CountWhere(symbol.Declarations, (d) =>
+                    {
+                        return ((isNotOverload(d) && !Ast.IsAccessor(d)) && !Ast.IsInterfaceDeclaration(d));
+                    });
+                    if ((((symbol.Flags & SymbolFlags.TypeAlias) != 0) && (exportedDeclarationsCount <= 2)))
+                    {
+                        continue;
+                    }
+
+                    if (((exportedDeclarationsCount > 1) && !Core.Every(symbol.Declarations, (node2) =>
+                    {
+                        return (Ast.GetAssignmentDeclarationKind(node2) == JSDeclarationKind.ExportsProperty);
+                    })))
+                    {
+                        {
+                            foreach (var declaration2 in GoRuntime.RangeValues(symbol.Declarations))
+                            {
+                                if (isNotOverload(declaration2))
+                                {
+                                    this.error(declaration2, Diagnostics.Cannot_redeclare_exported_variable_0, id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            links.exportsChecked = true;
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasExportedMembersOfKind(Symbol moduleSymbol, SymbolFlags kind)
+    {
+        {
+            foreach (var symbol in GoRuntime.RangeValues(moduleSymbol.Exports))
+            {
+                if (((symbol.Name != Ast.InternalSymbolNameExportEquals) && ((this.getSymbolFlags(symbol) & kind) != 0)))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkAliasSymbol(Node node)
+    {
+        var symbol = this.getSymbolOfDeclaration(node);
+        var target = this.resolveAlias(symbol);
+        if ((target == this.unknownSymbol))
+        {
+            return;
+        }
+
+        symbol = this.getMergedSymbol(Core.OrElse(symbol.ExportSymbol, symbol));
+        var targetFlags = this.getSymbolFlags(target);
+        if (((Ast.IsInJSFile(node) && ((targetFlags & SymbolFlags.Value) == 0)) && !Ast.IsTypeOnlyImportOrExportDeclaration(node)))
+        {
+            throw unsupported("checkAliasSymbol: JavaScript import/export");
+        }
+
+        var excludedMeanings = ((Core.IfElse(((symbol.Flags & ((SymbolFlags.Value | SymbolFlags.ExportValue))) != 0), SymbolFlags.Value, SymbolFlags.None) | Core.IfElse(((symbol.Flags & SymbolFlags.Type) != 0), SymbolFlags.Type, SymbolFlags.None)) | Core.IfElse(((symbol.Flags & SymbolFlags.Namespace) != 0), SymbolFlags.Namespace, SymbolFlags.None));
+        if (((targetFlags & excludedMeanings) != 0))
+        {
+            var message = Core.IfElse(Ast.IsExportSpecifier(node), Diagnostics.Export_declaration_conflicts_with_exported_declaration_of_0, Diagnostics.Import_declaration_conflicts_with_local_declaration_of_0);
+            this.error(node, message, this.symbolToString(symbol));
+        }
+        else
+        {
+            if (!Ast.IsExportSpecifier(node))
+            {
+                var appearsValueyToTranspiler = ((this.compilerOptions.IsolatedModules == Tristate.True) && (Ast.FindAncestor(node, Ast.IsTypeOnlyImportOrExportDeclaration) == null));
+                if ((appearsValueyToTranspiler && ((symbol.Flags & ((SymbolFlags.Value | SymbolFlags.ExportValue))) != 0)))
+                {
+                    this.error(node, Diagnostics.Import_0_conflicts_with_local_value_so_must_be_declared_with_a_type_only_import_when_isolatedModules_is_enabled, this.symbolToString(symbol), this.getIsolatedModulesLikeFlagName());
+                }
+            }
+        }
+
+        if (((this.compilerOptions.GetIsolatedModules() && !Ast.IsTypeOnlyImportOrExportDeclaration(node)) && ((node.Flags & NodeFlags.Ambient) == 0)))
+        {
+            throw unsupported("checkAliasSymbol: isolated/verbatim module options");
+        }
+
+        if (Ast.IsImportSpecifier(node))
+        {
+            var targetSymbol = this.resolveAliasWithDeprecationCheck(symbol, node);
+            if ((this.isDeprecatedSymbol(targetSymbol) && (targetSymbol.Declarations != null)))
+            {
+                this.addDeprecatedSuggestion(node, targetSymbol.Declarations, targetSymbol.Name);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private DeclarationSpaces getDeclarationSpaces(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.InterfaceDeclaration:
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.JSDocTypedefTag:
+            case Kind.JSDocCallbackTag:
+            {
+                return DeclarationSpaces.ExportType;
+            }
+
+            case Kind.ModuleDeclaration:
+            {
+                if ((Ast.IsAmbientModule(node) || (Ast.GetModuleInstanceState(node) != ModuleInstanceState.NonInstantiated)))
+                {
+                    return (DeclarationSpaces.ExportNamespace | DeclarationSpaces.ExportValue);
+                }
+
+                return DeclarationSpaces.ExportNamespace;
+            }
+
+            case Kind.ClassDeclaration:
+            case Kind.EnumDeclaration:
+            case Kind.EnumMember:
+            {
+                return (DeclarationSpaces.ExportType | DeclarationSpaces.ExportValue);
+            }
+
+            case Kind.SourceFile:
+            {
+                return ((DeclarationSpaces.ExportType | DeclarationSpaces.ExportValue) | DeclarationSpaces.ExportNamespace);
+            }
+
+            case Kind.ExportAssignment:
+            case Kind.BinaryExpression:
+            {
+                Node expression = default;
+                if (Ast.IsExportAssignment(node))
+                {
+                    expression = node.Expression();
+                }
+                else
+                {
+                    expression = node.AsBinaryExpression().Right;
+                }
+
+                if ((!Ast.IsEntityNameExpression(expression) || ((this.getSymbolOfDeclaration(node).Flags & SymbolFlags.Alias) == 0)))
+                {
+                    return DeclarationSpaces.ExportValue;
+                }
+
+                goto case Kind.ImportEqualsDeclaration;
+            }
+
+            case Kind.ImportEqualsDeclaration:
+            case Kind.NamespaceImport:
+            case Kind.ImportClause:
+            {
+                var result = DeclarationSpaces.None;
+                var target = this.resolveAlias(this.getSymbolOfDeclaration(node));
+                {
+                    foreach (var d in GoRuntime.RangeValues(target.Declarations))
+                    {
+                        result |= this.getDeclarationSpaces(d);
+                    }
+                }
+
+                return result;
+            }
+
+            case Kind.VariableDeclaration:
+            case Kind.BindingElement:
+            case Kind.FunctionDeclaration:
+            case Kind.ImportSpecifier:
+            {
+                return DeclarationSpaces.ExportValue;
+            }
+
+            case Kind.MethodSignature:
+            case Kind.PropertySignature:
+            {
+                return DeclarationSpaces.ExportType;
+            }
+        }
+
+        throw new InvalidOperationException(("Unhandled case in getDeclarationSpaces: " + node.Kind.String()));
+    }
+}
+
+public sealed partial class Checker
+{
+    private void markExportAssignmentAliasReferenced(Node location)
+    {
+        var id = location.Expression();
+        if (Ast.IsIdentifier(id))
+        {
+            var sym = this.getExportSymbolOfValueSymbolIfExported(this.resolveEntityName(id, SymbolFlags.All, true, true, location));
+            if ((sym != null))
+            {
+                this.markAliasReferenced(sym, id);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void markExportSpecifierAliasReferenced(Node location)
+    {
+        if ((((location.Parent.Parent.ModuleSpecifier() == null) && !location.IsTypeOnly()) && !location.Parent.Parent.IsTypeOnly()))
+        {
+            var exportedName = location.PropertyNameOrName();
+            if ((exportedName.Kind == Kind.StringLiteral))
+            {
+                return;
+            }
+
+            var symbol = this.nameResolver.Resolve(exportedName, exportedName.Text(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
+            if (((symbol != null) && ((((symbol == this.undefinedSymbol) || (symbol == this.globalThisSymbol)) || ((symbol.Declarations != null) && Ast.IsGlobalSourceFile(Ast.GetDeclarationContainer(symbol.Declarations[0])))))))
+            {
+            }
+            else
+            {
+                var target = symbol;
+                if (((target != null) && ((target.Flags & SymbolFlags.Alias) != 0)))
+                {
+                    target = this.resolveAlias(target);
+                }
+
+                if (((target == null) || ((this.getSymbolFlags(target) & SymbolFlags.Value) != 0)))
+                {
+                    this.markExportAsReferenced(location);
+                    this.markIdentifierAliasReferenced(exportedName);
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Diagnostic addTypeOnlyDeclarationRelatedInfo(Diagnostic diagnostic, Node typeOnlyDeclaration, string name)
+    {
+        if ((typeOnlyDeclaration == null))
+        {
+            return diagnostic;
+        }
+
+        var isExport = ((Ast.IsExportSpecifier(typeOnlyDeclaration) || Ast.IsExportDeclaration(typeOnlyDeclaration)) || Ast.IsNamespaceExport(typeOnlyDeclaration));
+        return diagnostic.AddRelatedInfo(NewDiagnosticForNode(typeOnlyDeclaration, Core.IfElse(isExport, Diagnostics.X_0_was_exported_here, Diagnostics.X_0_was_imported_here), name));
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getImportAttributesTypeForModuleSpecifier(Node moduleSpecifier)
+    {
+        var parent = moduleSpecifier.Parent;
+        switch (true)
+        {
+            case true when (Ast.IsImportDeclarationOrJSImportDeclaration(parent) || Ast.IsExportDeclaration(parent)):
+            {
+                return this.getTypeFromImportAttributes(Ast.GetImportAttributes(parent));
+            }
+
+            case true when (Ast.IsLiteralTypeNode(parent) && Ast.IsLiteralImportTypeNode(parent.Parent)):
+            {
+                return this.getTypeFromImportAttributes(Ast.GetImportAttributes(parent.Parent));
+            }
+
+            case true when (Ast.IsImportCall(parent) && (GoRuntime.Len(parent.Arguments()) > 1)):
+            {
+                var options = parent.Arguments()[1];
+                return this.getTypeOfPropertyOfType(this.checkExpressionCached(options), "with");
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isNotOverload(Node node)
+    {
+        return ((!Ast.IsFunctionDeclaration(node) && !Ast.IsMethodDeclaration(node)) || (node.Body() != null));
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:339/386/619. Actual declaration-space and alias-reference state.
+    [Flags]
+    private enum DeclarationSpaces
+    {
+        None = 0,
+        ExportValue = 1,
+        ExportType = 2,
+        ExportNamespace = 4
+    }
+
+    private enum ReferenceHint
+    {
+        Unspecified,
+        Identifier,
+        Property,
+        ExportAssignment,
+        Jsx,
+        ExportImportEquals,
+        ExportSpecifier,
+        Decorator
+    }
+
+    private readonly HashSet<Symbol> mergedExportsChecked = new();
+    private bool canCollectSymbolAliasAccessibilityData;
+    private static bool throwUnsupportedImportAttributes() => throw unsupported("source import attributes");
+    private static void checkUnsupportedImportAttributes(Node node)
+    {
+        if (Ast.GetImportAttributes(node) != null)
+            throw unsupported("source import attributes");
+    }
+
+    // checker.go:5482. No source JSON/attributes producer is admitted.
+    private static bool hasTypeJsonImportAttribute(Node node)
+    {
+        if (Ast.GetImportAttributes(node) != null)
+            throw unsupported("JSON import attributes");
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void extendExportSymbols(SymbolTable target, SymbolTable source, Dictionary<string, ExportCollision> lookupTable, Node exportNode)
+    {
+        {
+            foreach (var range8 in GoRuntime.Range(source))
+            {
+                var id = range8.Key;
+                var sourceSymbol = range8.Value;
+                if ((id == Ast.InternalSymbolNameDefault))
+                {
+                    continue;
+                }
+
+                var targetSymbol = target[id];
+                if ((targetSymbol == null))
+                {
+                    target[id] = sourceSymbol;
+                    if (((lookupTable != null) && (exportNode != null)))
+                    {
+                        lookupTable[id] = new ExportCollision
+                        {
+                            specifierText = TypeScript.Scanner.Scanner.GetTextOfNodeByteString(exportNode.ModuleSpecifier())
+                        };
+                    }
+                }
+                else
+                {
+                    if ((((lookupTable != null) && (exportNode != null)) && (this.resolveSymbol(targetSymbol) != this.resolveSymbol(sourceSymbol))))
+                    {
+                        var s = lookupTable[id];
+                        s.exportsWithDuplicate = GoRuntime.Append(s.exportsWithDuplicate, exportNode);
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:28723. Original reference-hint dispatch and ambient gate.
+    private void markLinkedReferences(Node location, ReferenceHint hint, Symbol propSymbol, Type parentType)
+    {
+        if (!canCollectSymbolAliasAccessibilityData)
+            return;
+        if ((location.Flags & NodeFlags.Ambient) != 0 && !Ast.IsPropertySignatureDeclaration(location) && !Ast.IsPropertyDeclaration(location))
+            return;
+        switch (hint)
+        {
+            case ReferenceHint.Identifier:
+                markIdentifierAliasReferenced(location);
+                break;
+            case ReferenceHint.Property:
+                markPropertyAliasReferenced(location, propSymbol, parentType);
+                break;
+            case ReferenceHint.ExportAssignment:
+                markExportAssignmentAliasReferenced(location);
+                break;
+            case ReferenceHint.ExportSpecifier:
+                markExportSpecifierAliasReferenced(location);
+                break;
+            case ReferenceHint.Jsx:
+            case ReferenceHint.ExportImportEquals:
+            case ReferenceHint.Decorator:
+            case ReferenceHint.Unspecified:
+                throw unsupported("markLinkedReferences: JSX/import-equals/decorators/speculative emit walk");
+            default:
+                throw new InvalidOperationException("Unhandled reference hint");
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:16527. Per-star duplicate bookkeeping; symbols retain binder identity.
+    private sealed class ExportCollision
+    {
+        internal string specifierText;
+        internal List<Node> exportsWithDuplicate;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveExternalModuleName(Node location, Node moduleReferenceExpression, bool ignoreErrors, Type importAttributesType)
+    {
+        var errorMessage = getCannotResolveModuleNameErrorForSpecificModule(moduleReferenceExpression) ?? Diagnostics.Cannot_find_module_0_or_its_corresponding_type_declarations;
+        // NoCheck is false for all accepted fixed profiles.
+        return resolveExternalModuleNameWorker(location, moduleReferenceExpression, ignoreErrors ? null : errorMessage, ignoreErrors, false, importAttributesType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Message getCannotResolveModuleNameErrorForSpecificModule(Node moduleName)
+    {
+        if (Ast.IsStringLiteral(moduleName) && !moduleName.Text().StartsWith(".", StringComparison.Ordinal))
+            throw unsupported("resolveExternalModuleName: non-relative module reference");
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol resolveExternalModuleNameWorker(Node location, Node moduleReferenceExpression, Message moduleNotFoundError, bool ignoreErrors, bool isForAugmentation, Type importAttributesType)
+    {
+        if (Ast.IsStringLiteralLike(moduleReferenceExpression))
+        {
+            if (Ast.IsSourcePhaseImport(moduleReferenceExpression.Parent))
+                return null;
+            return resolveExternalModule(location, moduleReferenceExpression.Text(), moduleNotFoundError, !ignoreErrors ? moduleReferenceExpression : null, isForAugmentation, importAttributesType);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private SourceFile getExternalModuleFileFromDeclaration(Node declaration)
+    {
+        Node specifier = declaration.Kind == Kind.ModuleDeclaration ? (Ast.IsStringLiteral(declaration.Name()) ? declaration.Name() : null) : Ast.GetExternalModuleName(declaration);
+        Type importAttributesType = Ast.HasImportAttributes(declaration) ? getTypeFromImportAttributes(Ast.GetImportAttributes(declaration)) : null;
+        var moduleSymbol = resolveExternalModuleNameWorker(specifier, specifier, null, true, false, importAttributesType);
+        if (moduleSymbol == null)
+            return null;
+        return Ast.GetDeclarationOfKind(moduleSymbol, Kind.SourceFile)?.AsSourceFile();
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Symbol resolveExternalModule(Node location, string moduleReference, Message moduleNotFoundError, Node errorNode, bool isForAugmentation, Type importAttributesType)
+    {
+        if (program == null)
+            throw unsupported("resolveExternalModule: project host required");
+        if (isForAugmentation)
+            throw unsupported("resolveExternalModule: module augmentation");
+        if (importAttributesType == null)
+            importAttributesType = emptyObjectType;
+        var importingSourceFile = Ast.GetSourceFileOfNode(location);
+        Node contextSpecifier = null;
+        if (Ast.IsStringLiteralLike(location) || location.Parent != null && Ast.IsModuleDeclaration(location.Parent) && location.Parent.Name() == location)
+            contextSpecifier = location;
+        else if (Ast.IsModuleDeclaration(location))
+            contextSpecifier = location.Name();
+        else if (Ast.IsLiteralImportTypeNode(location))
+            contextSpecifier = location.AsImportTypeNode().Argument.AsLiteralTypeNode().Literal;
+        else if (Ast.IsVariableDeclarationInitializedToBareOrAccessedRequire(location))
+            throw unsupported("resolveExternalModule: require reference");
+        else
+        {
+            var ancestor = Ast.FindAncestor(location, Ast.IsImportCall);
+            if (ancestor != null)
+                contextSpecifier = ancestor.Arguments()[0];
+            if (ancestor == null)
+            {
+                ancestor = Ast.FindAncestor(location, Ast.IsImportDeclarationOrJSImportDeclaration);
+                if (ancestor != null)
+                    contextSpecifier = ancestor.ModuleSpecifier();
+            }
+
+            if (ancestor == null)
+            {
+                ancestor = Ast.FindAncestor(location, Ast.IsExportDeclaration);
+                if (ancestor != null)
+                    contextSpecifier = ancestor.ModuleSpecifier();
+            }
+
+            if (ancestor == null)
+            {
+                ancestor = Ast.FindAncestor(location, Ast.IsImportEqualsDeclaration);
+                if (ancestor != null)
+                    throw unsupported("resolveExternalModule: import-equals reference");
+            }
+        }
+
+        // checker.go:15517. A real context specifier supplies usage mode; otherwise
+        // retain the Program default (None for fixed .ts files under Bundler).
+        var mode = contextSpecifier != null && Ast.IsStringLiteralLike(contextSpecifier) ? program.GetModeForUsageLocation(importingSourceFile, contextSpecifier) : program.GetDefaultResolutionModeForFile(importingSourceFile);
+        var resolvedModule = program.GetResolvedModule(importingSourceFile, moduleReference, mode);
+        Message resolutionDiagnostic = null;
+        if (errorNode != null && resolvedModule?.IsResolved() == true)
+            resolutionDiagnostic = ModuleUtilities.GetResolutionDiagnostic(compilerOptions, resolvedModule, importingSourceFile);
+        SourceFile file = null;
+        if (resolvedModule?.IsResolved() == true && resolutionDiagnostic == null)
+        {
+            if (resolvedModule.Extension != ".ts" || resolvedModule.IsExternalLibraryImport)
+                throw unsupported("resolveExternalModule: package/non-TypeScript implementation resolution");
+            file = program.GetSourceFileForResolvedModule(resolvedModule);
+        }
+
+        if (file != null)
+        {
+            if (errorNode != null && !resolvedModule.IsCustomResolution)
+            {
+                if (resolvedModule.ResolvedUsingTsExtension && !compilerOptions.AllowImportingTsExtensionsFrom(importingSourceFile.FileName()))
+                    throw unsupported("resolveExternalModule: fixed AllowImportingTsExtensions option changed");
+                if (compilerOptions.RewriteRelativeImportExtensions == Tristate.True)
+                    throw unsupported("resolveExternalModule: emit extension rewriting");
+            }
+
+            if (file.Symbol != null)
+                return getMergedSymbol(file.Symbol);
+            if (errorNode != null && moduleNotFoundError != null && !isSideEffectImport(errorNode))
+                error(errorNode, Diagnostics.File_0_is_not_a_module, GoString.ToUtf8(resolvedModule.ResolvedFileName));
+            return null;
+        }
+
+        if (errorNode == null)
+            return null;
+        if (moduleNotFoundError != null)
+        {
+            if (resolutionDiagnostic != null)
+                error(errorNode, resolutionDiagnostic, moduleReference, GoString.ToUtf8(resolvedModule.ResolvedFileName));
+            else if (!compilerOptions.GetResolveJsonModule() && moduleReference.EndsWith(".json", StringComparison.Ordinal))
+                error(errorNode, Diagnostics.Cannot_find_module_0_Consider_using_resolveJsonModule_to_import_module_with_json_extension, moduleReference);
+            else
+                error(errorNode, moduleNotFoundError, moduleReference);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private string getIsolatedModulesLikeFlagName()
+    {
+        return Core.IfElse((this.compilerOptions.VerbatimModuleSyntax == Tristate.True), "verbatimModuleSyntax", "isolatedModules");
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Message getVerbatimModuleSyntaxErrorMessage(Node node)
+    {
+        var sourceFile = Ast.GetSourceFileOfNode(node);
+        var fileName = sourceFile.FileName();
+        if ((fileName.EndsWith(".cts", StringComparison.Ordinal) || fileName.EndsWith(".cjs", StringComparison.Ordinal)))
+        {
+            return Diagnostics.ECMAScript_imports_and_exports_cannot_be_written_in_a_CommonJS_file_under_verbatimModuleSyntax;
+        }
+
+        return Diagnostics.ECMAScript_imports_and_exports_cannot_be_written_in_a_CommonJS_file_under_verbatimModuleSyntax_Adjust_the_type_field_in_the_nearest_package_json_to_make_this_file_an_ECMAScript_module_or_adjust_your_verbatimModuleSyntax_module_and_moduleResolution_settings_in_TypeScript;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasShadowedNamespace(Symbol symbol)
+    {
+        if ((((symbol.Flags & SymbolFlags.NamespaceModule) != 0) && ((symbol.Flags & SymbolFlags.Alias) != 0)))
+        {
+            {
+                var target = this.resolveAlias(symbol);
+                if ((((target.Flags & SymbolFlags.Namespace) != 0) && this.hasExportedMembersOfKind(target, (SymbolFlags.Type | SymbolFlags.Namespace))))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkCollisionWithRequireExportsInGeneratedCode(Node node, Node name)
+    {
+        if (((this.program?.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) ?? this.moduleKind) >= ModuleKind.ES2015))
+        {
+            return;
+        }
+
+        if (((name == null) || (!this.needCollisionCheckForIdentifier(node, name, "require") && !this.needCollisionCheckForIdentifier(node, name, "exports"))))
+        {
+            return;
+        }
+
+        if ((Ast.IsModuleDeclaration(node) && (Ast.GetModuleInstanceState(node) != ModuleInstanceState.Instantiated)))
+        {
+            return;
+        }
+
+        var parent = Ast.GetDeclarationContainer(node);
+        if ((Ast.IsSourceFile(parent) && Ast.IsExternalOrCommonJSModule(parent.AsSourceFile())))
+        {
+            this.errorSkippedOnNoEmit(name, Diagnostics.Duplicate_identifier_0_Compiler_reserves_name_1_in_top_level_scope_of_a_module, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name), TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkCollisionWithGlobalObjectInGeneratedCode(Node node, Node name)
+    {
+        if ((((name == null) || Ast.IsClassLike(node)) || !this.needCollisionCheckForIdentifier(node, name, "Object")))
+        {
+            return;
+        }
+
+        if ((Ast.IsModuleDeclaration(node) && (Ast.GetModuleInstanceState(node) != ModuleInstanceState.Instantiated)))
+        {
+            return;
+        }
+
+        var parent = Ast.GetDeclarationContainer(node);
+        if (((Ast.IsSourceFile(parent) && Ast.IsExternalOrCommonJSModule(parent.AsSourceFile())) && ((this.program?.GetEmitModuleFormatOfFile(parent.AsSourceFile()) ?? this.moduleKind) == ModuleKind.CommonJS)))
+        {
+            this.errorSkippedOnNoEmit(name, Diagnostics.Duplicate_identifier_0_Compiler_reserves_name_1_in_top_level_scope_of_a_module, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name), TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool needCollisionCheckForIdentifier(Node node, Node identifier, string name)
+    {
+        if (((identifier != null) && (identifier.Text() != name)))
+        {
+            return false;
+        }
+
+        switch (node.Kind)
+        {
+            case Kind.PropertyDeclaration:
+            case Kind.PropertySignature:
+            case Kind.MethodDeclaration:
+            case Kind.MethodSignature:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.PropertyAssignment:
+            {
+                return false;
+            }
+        }
+
+        if (((node.Flags & NodeFlags.Ambient) != 0))
+        {
+            return false;
+        }
+
+        if (((Ast.IsImportClause(node) || Ast.IsImportEqualsDeclaration(node)) || Ast.IsImportSpecifier(node)))
+        {
+            if (Ast.IsTypeOnlyImportOrExportDeclaration(node))
+            {
+                return false;
+            }
+        }
+
+        var root = Ast.GetRootDeclaration(node);
+        if ((Ast.IsParameterDeclaration(root) && Ast.NodeIsMissing(root.Parent.Body())))
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void recordPotentialCollisionWithWeakMapSetInGeneratedCode(Node node, Node name)
+    {
+        if (((this.compilerOptions.GetEmitScriptTarget() <= ScriptTarget.ES2021) && ((this.needCollisionCheckForIdentifier(node, name, "WeakMap") || this.needCollisionCheckForIdentifier(node, name, "WeakSet")))))
+        {
+            throw unsupported("checkCollisionsForDeclarationName: downlevel private/super emit");
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkCollisionWithGlobalPromiseInGeneratedCode(Node node, Node name)
+    {
+        if ((((name == null) || (this.compilerOptions.GetEmitScriptTarget() >= ScriptTarget.ES2017)) || !this.needCollisionCheckForIdentifier(node, name, "Promise")))
+        {
+            return;
+        }
+
+        if ((Ast.IsModuleDeclaration(node) && (Ast.GetModuleInstanceState(node) != ModuleInstanceState.Instantiated)))
+        {
+            return;
+        }
+
+        var parent = Ast.GetDeclarationContainer(node);
+        if (((Ast.IsSourceFile(parent) && Ast.IsExternalOrCommonJSModule(parent.AsSourceFile())) && ((parent.Flags & NodeFlags.HasAsyncFunctions) != 0)))
+        {
+            this.errorSkippedOnNoEmit(name, Diagnostics.Duplicate_identifier_0_Compiler_reserves_name_1_in_top_level_scope_of_a_module_containing_async_functions, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name), TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void recordPotentialCollisionWithReflectInGeneratedCode(Node node, Node name)
+    {
+        if ((((name != null) && (this.compilerOptions.GetEmitScriptTarget() <= ScriptTarget.ES2021)) && this.needCollisionCheckForIdentifier(node, name, "Reflect")))
+        {
+            throw unsupported("checkCollisionsForDeclarationName: downlevel private/super emit");
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Diagnostic errorSkippedOnNoEmit(Node location, Message message, params object[] args)
+    {
+        var diagnostic = this.error(location, message, args);
+        diagnostic.SetSkippedOnNoEmit();
+        return diagnostic;
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:32720. Alias resolution differs from instantiated-symbol target lookup.
+    public Symbol GetAliasedSymbol(Symbol symbol)
+    {
+        validateOwnedProjectSymbol(symbol);
+        return resolveAlias(symbol);
+    }
+}
+
+public sealed partial class Checker
+{
+    private readonly Dictionary<Symbol, Type> moduleImportAttributesTypes = new();
+    // checker.go:5359. Loaded source modules have no attributes declaration;
+    // preserve the actual emptyObjectType result and cache publication.
+    internal Type getTypeOfModuleImportAttributes(Symbol symbol)
+    {
+        if (moduleImportAttributesTypes.TryGetValue(symbol, out var cached))
+            return cached;
+        var declaration = Core.Find(symbol.Declarations, Ast.IsModuleWithStringLiteralName);
+        var attributes = declaration?.AsModuleDeclaration().Attributes;
+        var result = attributes == null ? emptyObjectType : getTypeFromTypeNode(attributes);
+        moduleImportAttributesTypes[symbol] = result;
+        return result;
+    }
+
+    // checker.go:24284.
+    internal bool canGetTypeParametersOfClassOrInterface(Symbol symbol) => getClassOrInterfaceLikeDeclaration(symbol) != null;
 }

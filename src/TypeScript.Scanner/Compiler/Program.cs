@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/compiler/program.go at
 // fed0bf24149fb1ed36039212648bafdafc1ea10e. Fixed-host diagnostic policy only.
-// No project loader or complete Program is provided. The Collections host fixes
+// A separate bounded Project adapter supplies multi-file host/loading; this is not complete Program. The Collections host fixes
 // NoCheck, SkipDefaultLibCheck and project-reference membership to false; its
 // source set is TS only. Demanded library type resolution is never skipped here.
 using TypeScript.Scanner;
@@ -10,9 +10,10 @@ using TypeScript.Scanner;
 namespace TypeScript.Compiler;
 internal static class Program
 {
-    // program.go:1505,1514,1675. Fixed TS host counterpart: noEmit is false,
-    // no references/modules/content mapper or checking directives are admitted.
-    // Include-processor diagnostics are empty because all explicit roots exist.
+    // program.go:1505,1514,1675. Fixed TS host counterpart: noEmit follows options,
+    // no project references/content mapper or checking directives are admitted.
+    // Project aggregates actual include-processor diagnostics separately; the
+    // historical Collections host has none. Module checks use this same checker.
     internal static List<Diagnostic>? GetSemanticDiagnosticsWithChecker(SourceFile sourceFile, CompilerOptions options, TypeScript.Checking.Checker checker)
     {
         if (SkipTypeChecking(sourceFile, options))
@@ -20,16 +21,18 @@ internal static class Program
         if (sourceFile.ScriptKind != ScriptKind.TS || sourceFile.CommentDirectives is { Count: > 0 } || sourceFile.CheckJsDirective is not null)
             throw new TypeScript.Checking.UnsupportedSemanticFeatureException("Program.getSemanticDiagnosticsWithChecker: fixed TS host policy");
         var diags = sourceFile.BindDiagnostics()?.ToList();
-        var checkedDiags = checker.GetDiagnostics();
+        var checkedDiags = checker.GetDiagnostics(sourceFile);
         if (checkedDiags is { Count: > 0 })
         {
             diags ??= [];
             diags.AddRange(checkedDiags);
         }
 
-        return SortAndDeduplicateDiagnostics(diags);
+        return SortAndDeduplicateDiagnostics(FilterNoEmitSemanticDiagnostics(diags, options));
     }
 
+    // program.go:1495. Retain the original marker, rather than filter diagnostic codes.
+    internal static List<Diagnostic>? FilterNoEmitSemanticDiagnostics(List<Diagnostic>? diagnostics, CompilerOptions options) => options.NoEmit == Tristate.True ? Core.Filter(diagnostics, d => !d.SkippedOnNoEmit()) : diagnostics;
     internal static List<Diagnostic>? SortAndDeduplicateDiagnostics(List<Diagnostic>? diagnostics)
     {
         if (diagnostics is null)

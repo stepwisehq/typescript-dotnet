@@ -35,7 +35,8 @@ public enum CheckerProfile
 {
     Legacy,
     Callable,
-    Collections
+    Collections,
+    Projects
 }
 
 public sealed partial class Checker
@@ -44,8 +45,10 @@ public sealed partial class Checker
     public static Checker Create(SourceFile file, CheckerProfile profile)
     {
         ArgumentNullException.ThrowIfNull(file);
-        if (profile is not (CheckerProfile.Legacy or CheckerProfile.Callable or CheckerProfile.Collections))
+        if (profile is not (CheckerProfile.Legacy or CheckerProfile.Callable or CheckerProfile.Collections or CheckerProfile.Projects))
             throw new ArgumentOutOfRangeException(nameof(profile));
+        if (profile == CheckerProfile.Projects)
+            throw new UnsupportedSemanticFeatureException("projectHost; load a project through TypeScript.Compiler.Project.Load");
         if (profile == CheckerProfile.Collections)
         {
             CollectionAdmission.Validate(file);

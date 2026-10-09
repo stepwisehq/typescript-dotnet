@@ -1,0 +1,17 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "api": "original modulespecifiers.GetModuleSpecifiers",
+  "policy": "Direct source API adapted fixed host/options; no/type-only package Relative4/./a compared, imports mapping rejected by authored bounded host policy rather than claimed original parity; genuine root-index shadow FileExists probe with outside metadata source never loaded is additionally observed",
+  "groups": 5,
+  "expected": "validation/projects-corpus/specifier-helper-expected.jsonl",
+  "requests": "validation/projects-corpus/specifier-helper-requests.jsonl",
+  "sha256": {
+    "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers.go": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
+    "upstream/TypeScript/tsc/internal/modulespecifiers/preferences.go": "2d4a84dba06a5daf58aae83a05ad65decae7a49bc4394cc3eeb7dc91cfbbb8fb",
+    "validation/projects-corpus/specifier-helper-expected.jsonl": "07bba7cd41d73cbeee4233ee8496d22024285594d97fd294806a74c2308fecac",
+    "validation/projects-corpus/specifier-helper-requests.jsonl": "ec3327cbc685e6ead1a63c34336df52d668e92d69ae3712a4d9b3bc98a0fcb86",
+    "tools/projects-oracle/main.go": "6b825aabe3dadd1e16c455b347bc4ce90b728ebc552ee71c0d75724b35fc245a",
+    "tools/projects-oracle/module_specifier_projection.go": "b77937cdea6c7c9cf4e9a39325d00ddb9ac41efc97e28df8fc2f6fc55110631c"
+  },
+  "reproduction": "tools/.cache/projects-oracle --specifier-projection < validation/projects-corpus/specifier-helper-requests.jsonl"
+}

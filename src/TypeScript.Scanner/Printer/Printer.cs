@@ -28,8 +28,10 @@ internal sealed partial class Printer
         currentSourceFile = sourceFile;
         writer = omitTrailingSemicolon ? trailingSemicolonDeferringWriter.getTrailingSemicolonDeferringWriter(output) : output;
         writer.Clear();
-        if (node?.Kind == Kind.Identifier)
-            emitIdentifierReference(node.AsIdentifier());
+        if (node != null && Ast.IsEntityName(node))
+            emitEntityName(node);
+        else if (node != null && Ast.IsExpression(node))
+            emitExpression(node);
         else
             emitTypeNode(node);
         writer = savedWriter;
@@ -70,6 +72,27 @@ internal sealed partial class Printer
                 return;
             case Kind.Identifier:
                 emitIdentifierReference(node.AsIdentifier());
+                return;
+            case Kind.PropertyAccessExpression:
+                var property = node.AsPropertyAccessExpression();
+                if (property.QuestionDotToken != null)
+                    throw TypeScript.Checking.Checker.unsupported("Printer.emitPropertyAccessExpression: optional chain");
+                emitExpression(property.Expression);
+                writePunctuation(".");
+                emitIdentifierReference(property.Name().AsIdentifier());
+                return;
+            case Kind.ElementAccessExpression:
+                var element = node.AsElementAccessExpression();
+                if (element.QuestionDotToken != null)
+                    throw TypeScript.Checking.Checker.unsupported("Printer.emitElementAccessExpression: optional chain");
+                emitExpression(element.Expression);
+                writePunctuation("[");
+                emitExpression(element.ArgumentExpression);
+                writePunctuation("]");
+                return;
+            case Kind.ExpressionWithTypeArguments:
+                emitExpression(node.Expression());
+                emitTypeArguments(node, node.AsExpressionWithTypeArguments().TypeArguments);
                 return;
             case Kind.PrefixUnaryExpression:
                 var unary = node.AsPrefixUnaryExpression();
@@ -246,6 +269,18 @@ internal sealed partial class Printer
             case Kind.MethodSignature:
                 emitMethodSignature(node.AsMethodSignatureDeclaration());
                 return;
+            case Kind.ImportType:
+                emitImportTypeNode(node.AsImportTypeNode());
+                return;
+            case Kind.PropertyAccessExpression:
+            case Kind.ElementAccessExpression:
+            case Kind.ExpressionWithTypeArguments:
+            case Kind.StringLiteral:
+                emitExpression(node);
+                return;
+            case Kind.QualifiedName:
+                emitEntityName(node);
+                return;
             case Kind.TypeQuery:
                 emitTypeQuery(node.AsTypeQueryNode());
                 return;
@@ -255,6 +290,31 @@ internal sealed partial class Printer
             default:
                 throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeNode: unselected synthesized type");
         }
+    }
+
+    // printer.go:2247. Generated diagnostic import types; source import-type
+    // admission and attribute emission remain separate boundaries.
+    private void emitImportTypeNode(ImportTypeNode node)
+    {
+        if (node.IsTypeOf)
+        {
+            writer.WriteKeyword("typeof");
+            writeSpace();
+        }
+
+        writer.WriteKeyword("import");
+        writePunctuation("(");
+        emitTypeNodeOutsideExtends(node.Argument);
+        if (node.Attributes != null)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitImportTypeNode: attributes");
+        writePunctuation(")");
+        if (node.Qualifier != null)
+        {
+            writePunctuation(".");
+            emitEntityName(node.Qualifier);
+        }
+
+        emitTypeArguments(node.AsNode(), node.TypeArguments);
     }
 
     // printer.go:1970. Internal globalThis formatting uses no type arguments.

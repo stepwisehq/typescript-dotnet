@@ -9,15 +9,17 @@ public sealed class PassiveGraph
 {
     private readonly Encoder syntax;
     private readonly bool lexicalPrivateOwner;
+    private readonly Func<string, Symbol, BoundName?>? nameProjection;
     private readonly Dictionary<Symbol, int> symbolIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<SymbolTable, int> tableIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<FlowNode, int> flowIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<FlowList, int> listIds = new(ReferenceEqualityComparer.Instance);
     private readonly Binding output = new();
-    public PassiveGraph(Encoder syntax, bool lexicalPrivateOwner = false)
+    public PassiveGraph(Encoder syntax, bool lexicalPrivateOwner = false, Func<string, Symbol, BoundName?>? nameProjection = null)
     {
         this.syntax = syntax;
         this.lexicalPrivateOwner = lexicalPrivateOwner;
+        this.nameProjection = nameProjection;
     }
 
     public IReadOnlyList<Symbol> RawSymbols => symbolIds.OrderBy(pair => pair.Value).Select(pair => pair.Key).ToList();
@@ -30,6 +32,8 @@ public sealed class PassiveGraph
     public int? AddNode(Node? node) => node is null ? null : syntax.Add(node);
     private BoundName Name(string name, Symbol symbol)
     {
+        if (nameProjection?.Invoke(name, symbol) is { } projected)
+            return projected;
         foreach (var declaration in symbol.Declarations ?? [])
         {
             if (declaration.Name()is { Kind: Kind.PrivateIdentifier } identifier && name.StartsWith("\u00fe#", StringComparison.Ordinal))

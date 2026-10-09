@@ -1,0 +1,2209 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "subsystem": "project-host-resolution-path",
+  "status": "bounded-native-verified",
+  "files": [
+    {
+      "path": "tsc/internal/tspath/path_test.go",
+      "testFunctions": [
+        {
+          "name": "TestGetDirectoryPath",
+          "line": 130,
+          "kind": "test",
+          "tableCases": 37,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestGetDirectoryPath",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestGetPathComponents",
+          "line": 191,
+          "kind": "test",
+          "tableCases": 25,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestGetPathComponents",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestReducePathComponents",
+          "line": 220,
+          "kind": "test",
+          "tableCases": 13,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestReducePathComponents",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestCombinePaths",
+          "line": 237,
+          "kind": "test",
+          "tableCases": 14,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestCombinePaths",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestResolvePath",
+          "line": 282,
+          "kind": "test",
+          "tableCases": 28,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestResolvePath",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestResolvePathWithoutTrailingDirectorySeparator",
+          "line": 314,
+          "kind": "test",
+          "tableCases": 4,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestResolvePathWithoutTrailingDirectorySeparator",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestNormalizePathDriveRoot",
+          "line": 323,
+          "kind": "test",
+          "tableCases": 1,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestNormalizePathDriveRoot",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestGetNormalizedAbsolutePath",
+          "line": 329,
+          "kind": "test",
+          "tableCases": 98,
+          "assertionSummary": [
+            "All original literal scalar/list assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectPathChecks.Generated.cs",
+              "name": "TestGetNormalizedAbsolutePath",
+              "notes": "Go typed-path parameters and slice values use managed string/list representations; assertion values unchanged."
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestNormalizeSlashes",
+          "line": 12,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestNormalizeSlashes",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "TestGetRootLength",
+          "line": 20,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestGetRootLength",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "TestPathIsAbsolute",
+          "line": 72,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestPathIsAbsolute",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "TestIsUrl",
+          "line": 85,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestIsUrl",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "TestIsRootedDiskPath",
+          "line": 108,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestIsRootedDiskPath",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "TestGetLongestExtensionFromPath",
+          "line": 171,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRemoveAnyFileExtension",
+          "line": 180,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "BenchmarkCombinePaths",
+          "line": 260,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "BenchmarkGetNormalizedAbsolutePath",
+          "line": 494,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "FuzzGetNormalizedAbsolutePath",
+          "line": 517,
+          "kind": "fuzz",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestGetRelativePathToDirectoryOrUrl",
+          "line": 530,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestToFileNameLowerCase",
+          "line": 557,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [
+            "All four original literal assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "FileNameLowerCase"
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "BenchmarkToFileNameLowerCase",
+          "line": 586,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "FuzzToFileNameLowerCase",
+          "line": 598,
+          "kind": "fuzz",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestCaseSensitivityTrimPrefix",
+          "line": 608,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "BenchmarkHasRelativePathSegment",
+          "line": 682,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "FuzzHasRelativePathSegment",
+          "line": 697,
+          "kind": "fuzz",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestPathIsRelative",
+          "line": 737,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "retained-foundation-cascade-xunit-and-native-passed-current-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Foundation.Checks/PathChecks.cs",
+              "name": "TestPathIsRelative",
+              "notes": "Retained unchanged comprehensive cascade coverage; historical evidence validation/results/foundation-verified.json."
+            }
+          ],
+          "reason": "Original assertions already retained in accepted Foundation path checks; not newly implemented or newly counted in the project shared groups.",
+          "executionScope": "retained-foundation-cascade"
+        },
+        {
+          "name": "BenchmarkPathIsRelative",
+          "line": 748,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "TestGetCommonParents",
+          "line": 795,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        }
+      ],
+      "notes": "Performance/fuzz campaigns and unneeded helper APIs are not claimed. Previously accepted path checks remain separate unchanged regression."
+    },
+    {
+      "path": "tsc/internal/tspath/typed_paths_test.go",
+      "testFunctions": [
+        {
+          "name": "TestToRootedFilePath",
+          "line": 10,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestEncodedDynamicPathsPreserveOpaqueIdentity",
+          "line": 72,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestPathKeyFromCanonicalRejectsURLSuffix",
+          "line": 100,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestDynamicPathKeyCaseInsensitiveKeyPreservesIdentity",
+          "line": 108,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestExtensionMutationsPreserveNormalizedInvariant",
+          "line": 119,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestFileNameStemsPreserveFilenamePrefixes",
+          "line": 178,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestCompareFileNameStemsKeepsLiteralDotComponentsAndCasingPolicy",
+          "line": 227,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestSplitAtRootLevelComponentKeepsRoot",
+          "line": 249,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestToRootedFilePathRequiresRoot",
+          "line": 275,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathFromAbsolute",
+          "line": 286,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathFromNormalized",
+          "line": 307,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestTypedPathConstructorsAndDecoders",
+          "line": 368,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRelativePath",
+          "line": 411,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestTypedPathComponents",
+          "line": 446,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestTryRelativePathBetweenFilePaths",
+          "line": 459,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathDirectory",
+          "line": 475,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathWithoutRoot",
+          "line": 484,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathRootAndRelativePath",
+          "line": 492,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestCommonDirectoryOfFiles",
+          "line": 508,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRelativePathsFromTypedPaths",
+          "line": 524,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestContainsFilePath",
+          "line": 551,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestSourceMapLocation",
+          "line": 606,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedPath",
+          "line": 634,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedPathCompare",
+          "line": 648,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestPathOperationsSeparateRooting",
+          "line": 656,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathExtensionOperationsPreserveInvariants",
+          "line": 667,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestForEachAncestorDirectoryPath",
+          "line": 679,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedFilePathComponents",
+          "line": 695,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestCaseSensitivityKey",
+          "line": 724,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestPathKeyConstructionMethods",
+          "line": 737,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "TestRootedDirectoryPathResolutionMatchesGeneralRooting",
+          "line": 781,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Not a dependency of the selected bounded source-path APIs; no execution parity claim."
+        },
+        {
+          "name": "BenchmarkRootedDirectoryPathResolveFile",
+          "line": 805,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        },
+        {
+          "name": "BenchmarkRootedFilePathToPathKey",
+          "line": 819,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/module/resolver_internal_test.go",
+      "testFunctions": [
+        {
+          "name": "TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+          "line": 11,
+          "kind": "test",
+          "tableCases": 16,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [
+            "Candidate path",
+            "DirectoryOnly",
+            "AsString text",
+            "HasTrailingDirectorySeparator"
+          ],
+          "disposition": "adapted-assertions",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "DirectoryIntent",
+              "notes": "12 of 16 table inputs, all four assertions each; final project gate xUnit and Linux x64 Native AOT shared assertions passed; durable evidence: validation/results/projects-verified.json."
+            }
+          ],
+          "reason": "Retains all four original assertions for12 ordinary path rows;4 dynamic-URI escaping rows require an excluded path model.",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ]
+        },
+        {
+          "name": "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+          "line": 85,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestExtensionReplacementPreservesEmptyAndDotStems",
+          "line": 102,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestOutputDirectoriesRemoveTrailingSeparators",
+          "line": 132,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/module/resolver_test.go",
+      "testFunctions": [
+        {
+          "name": "TestResolverSharedData",
+          "line": 42,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveModuleNameTrailingSlash",
+          "line": 54,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolutionDataCaches",
+          "line": 83,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveDynamicModuleNameUsingRootDirs",
+          "line": 128,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestRootDirsPreservesExceptionalDynamicSegments",
+          "line": 183,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestRootDirsRejectsUnrepresentableDiskSegments",
+          "line": 218,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestRootDirsEscapesRootLikeDynamicSegments",
+          "line": 258,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestRootDirsPreservesRelativeDiskSuffixes",
+          "line": 303,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestRootDirsPreservesRelativeDirectoryIntent",
+          "line": 351,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveDynamicPackageJSONPath",
+          "line": 427,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveDynamicPackageSubpathFile",
+          "line": 465,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+          "line": 496,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveDynamicDottedDirectory",
+          "line": 529,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolvedModuleCarriesCaseInsensitivePath",
+          "line": 562,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolvedTypeReferenceDirectiveCarriesPath",
+          "line": 588,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolvedEntrypointCarriesPath",
+          "line": 619,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicExportPatternEntrypointUsesLogicalName",
+          "line": 661,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+          "line": 742,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+          "line": 796,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicExportPatternPreservesStaticSourcePrefix",
+          "line": 852,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+          "line": 900,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+          "line": 948,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDiskExportPatternKeepsReservedPrefixLiteral",
+          "line": 992,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicExportPatternUnderExceptionalParent",
+          "line": 1032,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestDynamicExportPatternWithEmptyMatch",
+          "line": 1081,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+          "line": 1138,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity",
+          "line": 1181,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveModuleNameBlockedByNullExport",
+          "line": 1200,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+          "line": 1224,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveModuleNameTrailingSlashRace",
+          "line": 1335,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolveSubpathNilContentsRace",
+          "line": 1410,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestNodeModulePackageRoot",
+          "line": 1495,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        },
+        {
+          "name": "TestResolvePeerDependencyNilContentsRace",
+          "line": 1541,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/module/staticresolver_test.go",
+      "testFunctions": [
+        {
+          "name": "TestStaticResolver",
+          "line": 12,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "PackageJSON/node_modules/type-directive/rootDirs/dynamicURI or injected resolver host behavior outside relative-only contract; no original full-test assertion claim."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/compiler/program_test.go",
+      "testFunctions": [
+        {
+          "name": "TestProgramSharedData",
+          "line": 29,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "General Program data/reflection/tracing/custom factories/incremental reuse/project refs/source-phase import outside fixed snapshot host."
+        },
+        {
+          "name": "TestIncludeReasonDiagnosticsAreProgramLocal",
+          "line": 80,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [
+            "Original three per-program diagnostic identity assertions retained for both relative-path flag values (six checks)."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "TestIncludeReasonDiagnosticsAreProgramLocal",
+              "notes": "API/storage translation uses the actual mapped per-Program include diagnostic cache; original identity invariants retained."
+            }
+          ],
+          "reason": "Selected root include-reason cache and full original assertions implemented; final project gate xUnit and Linux x64 Native AOT shared assertions passed; durable evidence: validation/results/projects-verified.json.",
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestProgramHostsAndFactories",
+          "line": 95,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "General Program data/reflection/tracing/custom factories/incremental reuse/project refs/source-phase import outside fixed snapshot host."
+        },
+        {
+          "name": "TestClonedProgramProjectReferenceResolution",
+          "line": 195,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "General Program data/reflection/tracing/custom factories/incremental reuse/project refs/source-phase import outside fixed snapshot host."
+        },
+        {
+          "name": "TestProgram",
+          "line": 445,
+          "kind": "test",
+          "tableCases": 3,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [
+            "Dependency-first source file order",
+            "Shared cyclic source identity"
+          ],
+          "disposition": "adapted-assertions",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "CycleAndIdentity",
+              "notes": "Adapted POSIX/bounded/fixed three-library input, authored added normalization assertions; final project gate xUnit and Linux x64 Native AOT shared assertions passed; durable evidence: validation/results/projects-verified.json."
+            }
+          ],
+          "reason": "Original3 rows require triple-slash refs, absolute/outside-root Windows paths and fullESNext environment; selected adapted cycle fixture preserves dependency-postorder and shared source identity.",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ]
+        },
+        {
+          "name": "TestImportSourceProgram",
+          "line": 482,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "General Program data/reflection/tracing/custom factories/incremental reuse/project refs/source-phase import outside fixed snapshot host."
+        },
+        {
+          "name": "TestIncludeProcessorDiagnosticsWithMissingFileCasing",
+          "line": 539,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [
+            "Original Program diagnostic query must not panic for missing first-cased root followed by existing differently-cased root."
+          ],
+          "disposition": "adapted-assertions",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "IncludeProcessorDiagnosticsWithMissingFileCasing",
+              "notes": "Fixed3 libs/config/disk setup replaces original default-lib Program host; no-panic assertion preserved."
+            }
+          ],
+          "reason": "Original default-library/options/root host adapted to bounded profile. Stronger authored complete diagnostic comparisons are separate evidence.",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ]
+        },
+        {
+          "name": "BenchmarkNewProgram",
+          "line": 579,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Performance/allocation benchmarking is not a behavioral completion obligation."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/tsoptions/tsconfigparsing_test.go",
+      "testFunctions": [
+        {
+          "name": "TestParseConfigFileTextToJson",
+          "line": 129,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonConfigFileContent",
+          "line": 829,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonConfigFileContentAcceptsJsonRepresentations",
+          "line": 839,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonConfigFileContentPreservesRaw",
+          "line": 888,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonConfigFileContentHandlesNullArrayElements",
+          "line": 917,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonConfigFileContentDefaultsCompileOnSaveToFalse",
+          "line": 941,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonSourceFileConfigFileContent",
+          "line": 975,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonSourceFileConfigFileContentReportsInvalidExtendedConfig",
+          "line": 985,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonSourceFileConfigFileContentWithEmptyExtendedConfig",
+          "line": 1029,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonSourceFileConfigFileContentDoesNotDuplicateUnquotedKeyDiagnostics",
+          "line": 1060,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseJsonSourceFileConfigFileContentReportsQuestionTokenDiagnostics",
+          "line": 1085,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseNullEnumCompilerOptions",
+          "line": 1114,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMappers",
+          "line": 1145,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMapperOptionDiagnosticLocation",
+          "line": 1200,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMappersAreInheritedFromExtendedConfig",
+          "line": 1228,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMappersRequireFlag",
+          "line": 1259,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestUnresolvedContentMapperDoesNotRegisterExtensions",
+          "line": 1288,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMappersValidation",
+          "line": 1315,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestContentMapperExtensionValidationUsesHostCaseSensitivity",
+          "line": 1422,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseTypeAcquisition",
+          "line": 1566,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestParseSrcCompiler",
+          "line": 1704,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "BenchmarkParseSrcCompiler",
+          "line": 1720,
+          "kind": "benchmark",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestExtendedConfigErrorsAppearOnCacheHit",
+          "line": 1768,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        },
+        {
+          "name": "TestExtendedConfigConfigDirPathsAreNotCached",
+          "line": 1855,
+          "kind": "test",
+          "tableCases": null,
+          "tableCaseCountBasis": "Original source table where counted; otherwise not counted.",
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full JSONC/config/glob/extends/option parser outside authored strict tscheck.json subset; no tsconfig parity claim."
+        }
+      ],
+      "notes": "No execution claimed for excluded rows."
+    },
+    {
+      "path": "tsc/internal/modulespecifiers/specifiers_test.go",
+      "testFunctions": [
+        {
+          "name": "TestGetNodeModulePathParts",
+          "line": 16,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestGetEachFileNameOfModule",
+          "line": 175,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Full test includes ignored node_modules and symlink-preference paths outside this fixed host. Selected single-target behavior is exercised through supplemental source-API control; no full named-test execution claim."
+        },
+        {
+          "name": "TestGetEachFileNameOfModuleWithSymlinks",
+          "line": 257,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestModuleSpecifierContainsNodeModules",
+          "line": 288,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestIsPackageMainFilePreservesDirectoryIntent",
+          "line": 328,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestContainsIgnoredPath",
+          "line": 343,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestTryGetRealFileNameForNonJSDeclarationFileName",
+          "line": 373,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestProcessEndingChecksRootedFilePath",
+          "line": 407,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [
+            "Both original result and rooted FileExists probe assertions retained."
+          ],
+          "disposition": "assertion-preserving-port",
+          "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+          "evidence": [
+            {
+              "path": "validation/Projects.Checks/ProjectSupportChecks.cs",
+              "name": "ProcessEndingChecksRootedFilePath"
+            }
+          ],
+          "executionScope": "project-shared",
+          "executionEvidence": [
+            "artifacts/projects-validation/build6/shared-controls.stdout",
+            "artifacts/projects-validation/build7/shared-controls.stdout",
+            "artifacts/data-types-validation/checker.trx",
+            "artifacts/projects-validation/native-controls.txt"
+          ],
+          "originalGoReplay": "artifacts/projects-validation/original-tests.json"
+        },
+        {
+          "name": "TestIsPathRelativeToParent",
+          "line": 432,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        },
+        {
+          "name": "TestTryGetModuleNameFromExportsOrImports",
+          "line": 451,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Node_modules/package mapping/ignored service paths or non-JS declaration/source alternatives are excluded producers; this full original test is not claimed."
+        }
+      ],
+      "notes": "Late demanded formatter/parser dependency applicability audited explicitly; excluded full tests are not reported executed."
+    },
+    {
+      "path": "tsc/internal/packagejson/packagejson_test.go",
+      "testFunctions": [
+        {
+          "name": "TestPackageDirectory",
+          "line": 24,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        },
+        {
+          "name": "TestPackageDirectoryCacheIdentityPreservesPresentation",
+          "line": 36,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        },
+        {
+          "name": "TestForEachAncestorDirectoryStoppingAtGlobalCache",
+          "line": 58,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        },
+        {
+          "name": "TestParse",
+          "line": 118,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        }
+      ],
+      "notes": "Late demanded formatter/parser dependency applicability audited explicitly; excluded full tests are not reported executed."
+    },
+    {
+      "path": "tsc/internal/packagejson/jsonvalue_test.go",
+      "testFunctions": [
+        {
+          "name": "TestJSONValue",
+          "line": 11,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        }
+      ],
+      "notes": "Late demanded formatter/parser dependency applicability audited explicitly; excluded full tests are not reported executed."
+    },
+    {
+      "path": "tsc/internal/packagejson/exportsorimports_test.go",
+      "testFunctions": [
+        {
+          "name": "TestExports",
+          "line": 11,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        }
+      ],
+      "notes": "Late demanded formatter/parser dependency applicability audited explicitly; excluded full tests are not reported executed."
+    },
+    {
+      "path": "tsc/internal/packagejson/expected_test.go",
+      "testFunctions": [
+        {
+          "name": "TestExpected",
+          "line": 11,
+          "kind": "test",
+          "tableCases": null,
+          "assertionSummary": [],
+          "disposition": "excluded",
+          "executionStatus": "not-selected",
+          "evidence": [],
+          "reason": "Original assertions require complete package JSON/exports/dependencies/cache surfaces, beyond selected imports-kind parsing and ancestor metadata. Supplemental source-API controls exercise demanded no/type/imports metadata; no full package parser or resolver assertion claim."
+        }
+      ],
+      "notes": "Late demanded formatter/parser dependency applicability audited explicitly; excluded full tests are not reported executed."
+    }
+  ],
+  "newCompilerInputReuse": 0,
+  "shared": {
+    "groups": 21,
+    "originalFullTestFunctions": 11,
+    "originalLiteralAssertions": 224,
+    "adaptedGroups": 3,
+    "authoredGroups": 7,
+    "executionStatus": "xunit-and-linux-x64-native-passed-final-project-gate",
+    "originalIdentityAssertions": 6,
+    "evidence": "artifacts/projects-validation/native-controls.txt",
+    "originalSourceProbeAssertions": 2,
+    "managedExitCode": 0,
+    "nativeGroups": 27,
+    "xUnitProjectSupportCases": 21
+  },
+  "directNotes": "Nine new full original path functions retain 224 literal assertions; the full include-reason test retains six identity checks, and the full rooted process-ending test retains two source/probe assertions. Three adapted groups and seven authored groups remain distinct. All 21 support plus six verifier/observation groups (27 total) pass current xUnit and actual Linux x64 Native AOT execution, including malformed-config, strict scalar module-path and lexical normalization assertions. The gate freshly reruns exactly 11 new original-Go full functions; six retained Foundation.Checks originals run unchanged in the retained cascade. Whole-package assertions excluded below are not claimed executed. The stopped first gate is historical, unaccepted evidence.",
+  "sourceSupport": {
+    "mappedFiles": [
+      "src/TypeScript.Scanner/Compiler/Program.cs",
+      "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "src/TypeScript.Scanner/Module/Types.cs",
+      "src/TypeScript.Scanner/Module/Resolver.cs",
+      "src/TypeScript.Scanner/Module/Util.cs",
+      "src/TypeScript.Scanner/TsPath/Path.cs",
+      "src/TypeScript.Scanner/Core/CompilerOptions.cs",
+      "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
+      "src/TypeScript.Scanner/Checker/SymbolAccessibility.cs",
+      "src/TypeScript.Scanner/ModuleSpecifiers/Types.cs",
+      "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
+      "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
+      "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "src/TypeScript.Scanner/ModuleSpecifiers/Compare.cs",
+      "src/TypeScript.Scanner/PackageJson/PackageJson.cs",
+      "src/TypeScript.Scanner/PackageJson/Cache.cs"
+    ],
+    "authoredFiles": [
+      "src/TypeScript.Scanner/Compiler/CheckerHost.cs",
+      "src/TypeScript.Scanner/Projects/Project.cs",
+      "src/TypeScript.Scanner/Projects/ProjectConfiguration.cs",
+      "src/TypeScript.Scanner/Projects/DiskHost.cs",
+      "src/TypeScript.Scanner/Projects/ProjectException.cs",
+      "src/TypeScript.Check/Program.cs"
+    ],
+    "status": "bounded-project-contract-verified-final-gate-no-drift"
+  },
+  "supplementalOriginalGo": [
+    {
+      "name": "Core.FindCapturedRange",
+      "expected": "validation/projects-corpus/support-projection-expected.json",
+      "provenance": "validation/projects-corpus/support-projection-provenance.json",
+      "executionStatus": "fresh-original-go-replay-passed-final-project-gate"
+    },
+    {
+      "name": "ModuleSpecifiers.SourceApi",
+      "expected": "validation/projects-corpus/specifier-helper-expected.jsonl",
+      "source": "tools/projects-oracle/module_specifier_projection.go",
+      "disposition": "authored-source-api-control",
+      "notes": "No/type-only variants preserve source output. Imports-map is explicitly unsupported despite this original sample also returning relative spelling; it is not claimed equivalent checking.",
+      "executionStatus": "fresh-original-go-replay-passed-final-project-gate",
+      "provenance": "validation/projects-corpus/specifier-helper-provenance.json",
+      "additionalIndexEvidence": {
+        "requests": "artifacts/projects-investigation/specifier-index-requests.jsonl",
+        "expected": "artifacts/projects-investigation/specifier-index-go.jsonl",
+        "notes": "Original root-index spelling changes only with read-only sibling presence. Managed symlink/dependency rejection controls are authored policy; no outside source loading claim."
+      }
+    }
+  ],
+  "selectedFullOriginalFunctions": {
+    "newProjectShared": 11,
+    "retainedFoundationShared": 6,
+    "totalInventory": 17,
+    "notes": "The 11 new project full-original bodies are distinct from six retained Foundation.Checks originals. Current retained cascade repeats their shared checks; originalTests manifest selects project-shared scope only."
+  },
+  "currentDifferential": {
+    "cases": 48,
+    "disposition": "authored-source-derived-differential-inputs",
+    "newWholeUpstreamCompilerInputs": 0,
+    "managed": "48/48 exact central6 final corpus",
+    "report": "artifacts/projects-validation/build6/canonical-final/report.json",
+    "native": "48/48 actual Linux x64 Native AOT exact",
+    "notes": "No new whole upstream compiler input reuse is claimed. Retained historical compiler corpus runs unchanged in the cascade. Current query/order and ordinary CLI controls remain separately labelled.",
+    "order": {
+      "cases": 14,
+      "originalGoExact": 30,
+      "targetExact": 30,
+      "report": "artifacts/projects-validation/native-order/report.json"
+    },
+    "nativeReport": "artifacts/projects-validation/native/canonical/report.json",
+    "freshOriginalReport": "artifacts/projects-validation/original-go/canonical/report.json"
+  },
+  "hostEncodingBoundary": {
+    "disposition": "authored-filesystem-representability-rejection",
+    "source": "src/TypeScript.Scanner/Projects/DiskHost.cs",
+    "originalMismatch": "artifacts/projects-investigation/surrogate-specifier/report.json",
+    "independentReview": "artifacts/projects-investigation/surrogate-specifier/independent-repair-review.json",
+    "managedShared": "artifacts/projects-validation/build8/shared-controls.json",
+    "managedCLI": "artifacts/projects-validation/build8/managed-cli/report.json",
+    "notes": "Lone-surrogate Go/WTF8 module names originally report2307 without a target; this bounded Unicode-scalar filesystem rejects them explicitly with ProjectException(pathEncoding)/exit2 before substitution. It does not claim original diagnostic parity for raw-byte filesystem paths. Valid supplementary/U+FFFD paths and non-path lone-surrogate strings remain supported.",
+    "nativeShared": "artifacts/projects-validation/native-controls.txt",
+    "nativeCLI": "artifacts/projects-validation/native-cli/report.json",
+    "nativeStatus": "high/low rejected before substitution; scalar paths and non-path strings passed shared tests; ordinary native high-surrogate case structured exit2"
+  },
+  "acceptanceExecution": {
+    "gate": "artifacts/projects-validation/final-gate.json",
+    "elapsedSeconds": 780.934,
+    "exitCode": 0,
+    "sourceDrift": false,
+    "assetDrift": false,
+    "historicalAssetDrift": false,
+    "upstreamDrift": false,
+    "protectedHistoricalFiles": 115,
+    "nativeBinaries": 9,
+    "xUnitCases": 23542,
+    "checkerCases": 832,
+    "projectCorpusXUnitCases": 48,
+    "projectSharedXUnitCases": 27,
+    "skipped": 0,
+    "cliCases": 10,
+    "lexicalControls": 14,
+    "directOriginalGoFunctions": 11,
+    "notes": "Independent read-only review recalculated guards and read actual current reports/ELF/TRX. Durable proof recorded after bounded P1\u2013P5 approval. No full Program/config/package/module-service/emit parity claim.",
+    "durableProof": "validation/results/projects-verified.json"
+  }
+}

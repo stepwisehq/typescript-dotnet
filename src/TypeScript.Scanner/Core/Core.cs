@@ -82,7 +82,16 @@ internal static partial class Core
 {
     public static T? FirstOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[0];
     public static int FindIndex<T>(List<T>? values, Func<T, bool> predicate) => values?.FindIndex(x => predicate(x)) ?? -1;
-    public static T? Find<T>(List<T>? values, Func<T, bool> predicate) => values is null ? default : values.FirstOrDefault(predicate);
+    // core.go:218. Original range captures slice-header length and returns Go zero.
+    public static T? Find<T>(List<T>? values, Func<T, bool> predicate)
+    {
+        int count = values?.Count ?? 0;
+        for (int i = 0; i < count; i++)
+            if (predicate(values![i]))
+                return values[i];
+        return typeof(T) == typeof(string) ? (T)(object)"" : default;
+    }
+
     public static bool Some<T>(List<T>? values, Func<T, bool> predicate) => values?.Any(predicate) ?? false;
     public static bool Every<T>(List<T>? values, Func<T, bool> predicate) => values?.All(predicate) ?? true;
     public static T? LastOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[^1];
@@ -379,5 +388,17 @@ internal static partial class Core
         if (index < (source?.Count ?? 0))
             return source![index];
         return typeof(T) == typeof(string) ? (T)(object)string.Empty : default;
+    }
+}
+
+internal static partial class Core
+{
+    // core.go:228. slices.Backward captures the original slice-header length.
+    internal static T? FindLast<T>(List<T>? values, Func<T, bool> predicate)
+    {
+        for (int i = (values?.Count ?? 0) - 1; i >= 0; i--)
+            if (predicate(values![i]))
+                return values[i];
+        return typeof(T) == typeof(string) ? (T)(object)"" : default;
     }
 }

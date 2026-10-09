@@ -1,0 +1,30 @@
+"""Reuse immutable parser/binding serializers for the independent project Program.
+No upstream checker/module algorithms or accepted oracle assets are modified.
+"""
+from pathlib import Path
+root = Path(__file__).resolve().parents[2]
+out = root / 'upstream/TypeScript/tsc/cmd/projects-oracle'
+out.mkdir(parents=True, exist_ok=True)
+source = (root/'tools/parser-oracle/main.go').read_text()
+source = source[:source.index('func run(r Request) Response {')]
+for name in ['bufio','encoding/json','os','github.com/microsoft/TypeScript/tsc/internal/tspath','github.com/microsoft/TypeScript/tsc/internal/scanner']:
+    source=source.replace('\t"'+name+'"\n','')
+source=source.replace('\t\tname := strings.ToUpper(sf.Name[:1]) + sf.Name[1:]','\t\tif t.Name()=="SyntheticExpression" && sf.Name=="Type" { continue }\n\t\tname := strings.ToUpper(sf.Name[:1]) + sf.Name[1:]')
+(out/'parser_graph.go').write_text(source)
+source=(root/'tools/binder-oracle/main.go').read_text()
+source=source[:source.index('func parseFile(r Request) *ast.SourceFile {')]
+for name in ['bufio','encoding/base64','encoding/json','github.com/microsoft/TypeScript/tsc/internal/binder','github.com/microsoft/TypeScript/tsc/internal/core','github.com/microsoft/TypeScript/tsc/internal/parser','github.com/microsoft/TypeScript/tsc/internal/tspath','os','sync','sync/atomic']:
+    source=source.replace('\t"'+name+'"\n','')
+source=source.replace('"fmt"','"fmt"\n"github.com/microsoft/TypeScript/tsc/internal/core"')
+source=source.replace('var lastSyntaxEncoder *encoder\n','')
+source=source.replace('Flags            uint32 `json:"flags"`','Flags            uint32 `json:"flags"`\nCheckFlags uint32 `json:"checkFlags"`')
+source=source.replace('\tif s.CheckFlags != 0 {\n\t\tpanic("Unexpected checker-owned symbol flags")\n\t}\n','')
+source=source.replace('Flags: uint32(s.Flags),','Flags: uint32(s.Flags), CheckFlags: uint32(s.CheckFlags),')
+source=source.replace('type graph struct {','type graph struct {\nprojectNames func(string,*ast.Symbol)*Name')
+source=source.replace('func (g *graph) name(name string, s *ast.Symbol) Name {','func (g *graph) name(name string, s *ast.Symbol) Name {\nif g.projectNames!=nil { if name:=g.projectNames(name,s);name!=nil {return *name} }')
+(out/'binding_graph.go').write_text(source)
+(out/'foundation.go').write_bytes((root/'tools/parser-oracle/foundation.go').read_bytes())
+for file in (root/'tools/projects-oracle').glob('*.go'):
+    (out/file.name).write_bytes(file.read_bytes())
+for file in (root/'tools/projects-oracle').glob('*.go.inc'):
+    (root/'upstream/TypeScript/tsc/internal/checker'/('oracle_projects_'+file.name.removesuffix('.inc'))).write_bytes(file.read_bytes())

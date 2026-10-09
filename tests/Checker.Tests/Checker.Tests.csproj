@@ -6,10 +6,12 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1"><PrivateAssets>all</PrivateAssets></PackageReference>
     <ProjectReference Include="../../validation/Checker.Validation/Checker.Validation.csproj" />
     <ProjectReference Include="../../validation/Collections.Validation/Collections.Validation.csproj" />
+    <ProjectReference Include="../../validation/Projects.Validation/Projects.Validation.csproj" />
     <None Include="../../validation/checker-corpus/*.json*" Link="corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/object-checker-corpus/*.json*" Link="object-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/data-types-corpus/*.json*" Link="data-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/callables-corpus/*.json*" Link="callable-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/collections-corpus/*.json*" Link="collections-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../validation/projects-corpus/*.json*" Link="projects-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

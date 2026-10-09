@@ -587,7 +587,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsWorker);
+    internal void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsWorker);
     private static bool isReservedMemberName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] != '@' && name[1] != '#';
 }
 
@@ -705,7 +705,7 @@ public sealed partial class Checker
 {
     // checker/utilities.go:1018/1029.
     private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.Name);
-    private static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
+    internal static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
 }
 
 public sealed partial class Checker
@@ -1452,4 +1452,115 @@ public sealed partial class Checker
 
         return GoRuntime.Len(left) - GoRuntime.Len(right);
     }
+}
+
+public sealed partial class Checker
+{
+    private static bool isShorthandAmbientModuleSymbol(Symbol moduleSymbol)
+    {
+        return isShorthandAmbientModule(moduleSymbol.ValueDeclaration);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isSyntacticDefault(Node node)
+    {
+        return (((((Ast.IsExportAssignment(node) && !node.AsExportAssignment().IsExportEquals)) || Ast.HasSyntacticModifier(node, ModifierFlags.Default)) || Ast.IsExportSpecifier(node)) || Ast.IsNamespaceExport(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool hasExportAssignmentSymbol(Symbol moduleSymbol)
+    {
+        return (moduleSymbol.Exports?[Ast.InternalSymbolNameExportEquals] != null);
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:201.
+    private static bool isShorthandAmbientModule(Node node) => node != null && node.Kind == Kind.ModuleDeclaration && node.Body() == null;
+    // utilities.go:206.
+    private static Node getAliasDeclarationFromName(Node node)
+    {
+        switch (node.Parent.Kind)
+        {
+            case Kind.ImportClause:
+            case Kind.ImportSpecifier:
+            case Kind.NamespaceImport:
+            case Kind.ExportSpecifier:
+            case Kind.ExportAssignment:
+            case Kind.ImportEqualsDeclaration:
+            case Kind.NamespaceExport:
+                return node.Parent;
+            case Kind.QualifiedName:
+                return getAliasDeclarationFromName(node.Parent);
+        }
+
+        return null;
+    }
+
+    // utilities.go:230.
+    private static bool isSideEffectImport(Node node)
+    {
+        var ancestor = Ast.FindAncestor(node, Ast.IsImportDeclaration);
+        return ancestor != null && ancestor.ImportClause() == null;
+    }
+
+    // utilities.go:235. CommonJS source is outside the fixed project boundary.
+    private static Node getExternalModuleRequireArgument(Node node)
+    {
+        if (Ast.IsVariableDeclarationInitializedToRequire(node))
+            return node.Initializer().Arguments()[0];
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isTopLevelInExternalModuleAugmentation(Node node)
+    {
+        return ((((node != null) && (node.Parent != null)) && Ast.IsModuleBlock(node.Parent)) && Ast.IsExternalModuleAugmentation(node.Parent.Parent));
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1690. Go map range + append preserve absent empty result.
+    private static List<Symbol> symbolsToArray(SymbolTable symbols)
+    {
+        List<Symbol> result = null;
+        if (symbols != null)
+            foreach (var pair in symbols)
+                if (!isReservedMemberName(pair.Key))
+                    result = GoRuntime.Append(result, pair.Value);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1749; printer.go:249 forwards to this same value formatter.
+    internal static string ValueToString(object value) => value switch
+    {
+        string text => "\"" + TypeScript.DiagnosticPrinting.Printer.EscapeString(text, '\"') + "\"",
+        JsNum.Number number => number.String(),
+        bool boolean => boolean ? "true" : "false",
+        JsNum.PseudoBigInt bigint => bigint.String() + "n",
+        _ => throw new InvalidOperationException("unhandled value type in valueToString")};
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1657. Exact containing import statement selection.
+    private static Node getAnyImportSyntax(Node node) => node.Kind switch
+    {
+        Kind.ImportEqualsDeclaration => node,
+        Kind.ImportClause => node.Parent,
+        Kind.NamespaceImport => node.Parent.Parent,
+        Kind.ImportSpecifier => node.Parent.Parent.Parent,
+        _ => null
+    };
 }

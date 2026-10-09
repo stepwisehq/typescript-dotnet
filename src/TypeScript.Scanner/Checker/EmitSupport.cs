@@ -58,6 +58,13 @@ public sealed partial class Checker
             case Kind.TypeParameter:
             case Kind.SourceFile:
                 return true;
+            case Kind.ExportSpecifier:
+                var exportDeclaration = node.Parent.Parent;
+                return Ast.IsExportDeclaration(exportDeclaration) && exportDeclaration.ModuleSpecifier() == null && isDeclarationVisible(exportDeclaration.Parent);
+            case Kind.ImportClause:
+            case Kind.NamespaceImport:
+            case Kind.ImportSpecifier:
+            case Kind.ExportAssignment:
             case Kind.Block:
             case Kind.VariableStatement:
             case Kind.VariableDeclarationList:
@@ -65,8 +72,12 @@ public sealed partial class Checker
             case Kind.ArrowFunction:
             case Kind.TypePredicate:
                 return false; // Original switch default, not a manufactured visibility.
+            case Kind.ClassDeclaration:
+            case Kind.ModuleDeclaration:
+            case Kind.EnumDeclaration:
+                throw unsupported("determineIfDeclarationIsVisible: excluded class/namespace/enum producer");
             default:
-                throw unsupported("determineIfDeclarationIsVisible: unselected declaration syntax");
+                return false; // Original default (including import/export declarations).
         }
     }
 
@@ -78,8 +89,18 @@ public sealed partial class Checker
         {
             if (Ast.IsIdentifier(declaration))
                 continue;
-            if (!isDeclarationVisible(declaration))
-                return null;
+            if (isDeclarationVisible(declaration))
+                continue;
+            var importSyntax = getAnyImportSyntax(declaration);
+            if (importSyntax != null && !Ast.HasSyntacticModifier(importSyntax, ModifierFlags.Export) && isDeclarationVisible(importSyntax.Parent))
+                continue; // Original noopAddVisibleAlias when shouldComputeAlias=false.
+            if (Ast.IsVariableDeclaration(declaration) && Ast.IsVariableStatement(declaration.Parent.Parent) && !Ast.HasSyntacticModifier(declaration.Parent.Parent, ModifierFlags.Export) && isDeclarationVisible(declaration.Parent.Parent.Parent))
+                continue;
+            if (Ast.IsLateVisibilityPaintedStatement(declaration) && !Ast.HasSyntacticModifier(declaration, ModifierFlags.Export) && isDeclarationVisible(declaration.Parent))
+                continue;
+            if (Ast.IsBindingElement(declaration))
+                throw unsupported("hasVisibleDeclarations: binding declaration visibility");
+            return null;
         }
 
         // Original slices.Collect(maps.Values(nil)) is an allocated empty slice.

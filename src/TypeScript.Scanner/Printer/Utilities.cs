@@ -50,6 +50,14 @@ internal sealed partial class Printer
         return node.Kind != Kind.BigIntLiteral;
     }
 
+    // utilities.go:178. Escape without quote delimiters; preserve non-ASCII bytes.
+    internal static string EscapeString(string text, char quote)
+    {
+        var builder = new StringBuilder(text.Length + 2);
+        escapeStringWorker(text, quote, builder, true);
+        return builder.ToString();
+    }
+
     // escapeStringWorker (77), selected node-specific NoAsciiEscaping; JSX excluded.
     private static void escapeStringWorker(string s, char quote, StringBuilder b, bool neverAsciiEscape)
     {

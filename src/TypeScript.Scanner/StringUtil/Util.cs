@@ -53,3 +53,25 @@ internal static partial class StringUtil
         return b.String();
     }
 }
+
+internal static partial class StringUtil
+{
+    // stringutil/util.go:240. Original strips quote delimiters and removes a
+    // backslash before any non-newline rune; it is not a JS escape decoder.
+    internal static string UnquoteString(string text)
+    {
+        if (text.Length >= 2 && ((text[0] == '\"' && text[^1] == '\"') || (text[0] == '\'' && text[^1] == '\'') || (text[0] == '`' && text[^1] == '`')))
+            text = text[1..^1];
+        var result = new GoBuilder();
+        for (var index = 0; index < text.Length;)
+        {
+            if (text[index] == '\\' && index + 1 < text.Length && text[index + 1] != '\n')
+                index++;
+            var(_, size) = Utf8.DecodeRuneInString(text.AsSpan(index));
+            result.WriteString(text[index..(index + size)]);
+            index += size;
+        }
+
+        return result.String();
+    }
+}

@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded. Fixed generic-collection contract G1\u2013G6 accepted with genuine bounded libraries under actual Linux x64 Native AOT; not whole checker/library/project parity.",
+  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded. Fixed generic-collection contract G1–G6 accepted with genuine bounded libraries under actual Linux x64 Native AOT; not whole checker/library/project parity. Fixed bounded ES-module project contract P1–P5 accepted on Linux x64 Native AOT; not full Program, module-resolution, checker or configuration parity.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -73,7 +73,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -87,7 +87,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "ScriptTarget, ModuleKind and NewLineKind enums plus actual selected CompilerOptions fields for fixed noLib scalar checking; general option records, configuration parsing and serialization excluded.",
       "collectionsCampaignScope": "Selected SkipLibCheck/CheckJs declarations required by the fixed genuine-library diagnostic policy; no project/options-loader claim.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Exact required module-resolution enums and project/noEmit/allowImportingTsExtensions/noUncheckedSideEffectImports option fields.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/core/languagevariant.go",
@@ -122,7 +127,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded. Foundation adds UTF16Len, PositionToLineAndByteOffset and nil/identity-preserving Filter for actual syntax dependencies.",
       "collectionsCampaignScope": "Selected generic-collection checker helper dependencies using compatible .NET facilities; original upstream algorithms/ordering preserved where required. Verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Required original Find/FindLast captured-range and Go zero-value behavior; surrounding generic support retained.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -180,7 +190,11 @@
       "destination": "src/TypeScript.Scanner/StringUtil/Util.cs",
       "status": "partial",
       "scope": "Scanner character classification and JavaScript string surrogate encoding.",
-      "upstreamSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e"
+      "upstreamSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e",
+      "projectsCampaignScope": "Selected original string helpers demanded by module/type diagnostic formatting.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/jsnum/string.go",
@@ -333,7 +347,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -388,7 +402,8 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "collectionsCampaignScope": "Authored Go-semantics collection/slice compatibility needed by selected checker families; assertion applicability and runtime verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": null,
@@ -454,7 +469,11 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "projectsCampaignScope": "Selected original import/export/declaration helpers demanded by project checker paths; no broad foundation reopening.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -471,7 +490,11 @@
       "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328",
       "dataTypesCheckpointScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "projectsCampaignScope": "Original path directory/components/reduction/combination/normalization helpers required by disk resolution. General normalization retained; optimization omitted. Direct upstream assertion provenance in projects-support-tests.json.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": null,
@@ -517,7 +540,11 @@
       "status": "partial",
       "scope": "ResolutionMode bounded enum plus selected target/module/strict-option/wildcard-types/isolated-module/standard-class-field accessors; general compiler-option evaluation, config merging and module-resolution options excluded.",
       "upstreamSha256": "fef841f3f06b3ef5f68124672e56996983795c43d3c1c10fa46d978820dc3564",
-      "binderCheckpointScope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation."
+      "binderCheckpointScope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation.",
+      "projectsCampaignScope": "Selected Bundler/module/usage option accessors for the fixed project configuration; no full option infrastructure.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/subtreefacts.go",
@@ -555,7 +582,7 @@
       "upstreamSha256": "6c7acb7a20064075577af2412f6daf0a7d4eba023a0030fe2f4b060ded336dee",
       "bindingCompletionInventory": "docs/binding-completion-functions.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -567,7 +594,7 @@
       "bindingCompletionPreviousStatus": "partial",
       "bindingCompletionInventory": "docs/binding-completion-support-inventory.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -583,7 +610,7 @@
       "scope": "Complete flow.go flags, FlowNode/FlowList model and FlowLabel alias adaptation; both KindUnknown synthetic switch-clause/reduce-label payloads, factories and IsEmpty. Shared identity, cyclic graphs, ordered linked antecedents and undefined spans retained; static syntax/bound metadata authored for verification.",
       "upstreamSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/functionflags.go",
@@ -662,7 +689,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected fixed noLib/noResolve single-file data checking: original alias/name/type resolution, interface hidden-this/base/member/merge checks, recursive resolution and instantiation, union/intersection construction/reduction/member caches, contextual object checking, dot reads, widening and deferred diagnostics. Genuine internal synthetic any-base indexes and finite-key IndexType origins are included; written generics/signatures/indexes/classes/modules/libraries/general emit remain guarded. Complete original key-preimage bytes replace opaque XXH3 storage; actual node/type-node fields use core.LinkStore rather than paged nodeLinkStore. Actual empty inference-context stack lookup returns unchanged contextual types for internal hidden-this state; nonnil inference contexts remain guarded. Original per-node currentNode and instantiation budget save/reset/restore boundaries retained.",
       "collectionsCampaignScope": "Fixed genuine-library file set and global merging; selected generic declarations, references, inference contexts, instantiation, arrays/tuples/indexed/mapped/conditional helpers. Integration and runtime closure in progress; no extension acceptance.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "One shared program checker; per-file diagnostics/query ownership, module-local scopes, alias/type-only/target resolution and import/export/star-cycle families. Actual original algorithms; later checker branches remain explicit.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -682,7 +714,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Complete selected enums and stable wrappers for intrinsic/literal/anonymous/union/intersection/interface/reference/hidden-this TypeParameter/finite-key IndexType payloads; real alias/origin/target/mapper/instantiation/base/declared/member/property/module/deferred/variance/accessibility/cache links. Managed inheritance flattens embedded structs and static DataType supports AOT observations. Real synthetic any-base IndexInfo allocated; callable Signature slots remain genuinely empty and their nonempty behavior guarded. Source generic/conditional/mapped/enum/signature models not implied.",
       "collectionsCampaignScope": "Original tuple, evolving-array, mapped/reverse-mapped, indexed/substitution and conditional payloads and links. Integration and model-observation verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Original AliasSymbolLinks fields and selected module/alias logical state required by project semantics.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -709,7 +746,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected named/recursive/composite data relationships retaining original ternary relation/maybe caches, recursive source-target stacks, reference/hidden-this constraint and zero-declared-parameter variance paths, identity/missing/optional/readonly/excess/weak properties, union/intersection reductions/discrimination including Cartesian fallback, synthetic internal index relations, diagnostic chains/error snapshots and elaboration. Written generic/callable/class/array/mapped/operator paths remain guarded; no replacement property-only checker.",
       "collectionsCampaignScope": "Selected generic, array/tuple, mapped/indexed/conditional relationships. Integration and valid/invalid differential coverage pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -725,7 +763,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
       "collectionsCampaignScope": "Selected original loop/array evolution and assignment flow families for the Collections contract. Independent review and runtime verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -744,7 +783,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected actual data/scalar semantic predicates, literal/static-name/optionality helpers, source aliases/interface/composite query dependencies and original missing-name/library/property suggestions; broad cross-file/generic/class utilities excluded.",
       "collectionsCampaignScope": "Selected generic/collection upstream checker utility dependencies; acceptance pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Selected original external module/alias declaration helper closure.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -763,7 +807,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected scalar/object/type-literal plus non-generic alias/interface/heritage/merge grammar checks and duplicate/modifier diagnostics. Written callable/index/computed/generic/class/module syntax excluded by admission.",
       "collectionsCampaignScope": "Selected original generic/collection/type-node/loop/rest grammar checking under fixed Collections profile; source review and complete invalid-input/native verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Per-source grammar entry and selected original module import/export grammar; excluded source forms remain admission failures.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -784,7 +833,8 @@
       "scope": "All LinkStore/PagedLinkStore methods and constants; managed stable cells/classes replace Go addresses/arenas for selected payloads, retaining 256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Generic payloads are class representations of upstream structs/pointers, not a full arbitrary Go-value runtime.",
       "upstreamSha256": "e63a7687c7145979ad689546f3f4b07f22e2a85791222fc190814fb64016ae33",
       "collectionsCampaignScope": "Existing logical-store semantics retained. Authored read-only VerificationKeys snapshot exposes actual logical owner keys and nil/empty state without allocating entity IDs; full backing allocator topology is not claimed.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": null,
@@ -802,7 +852,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Authored fixed-option single-file scalar/anonymous/named/recursive/union/intersection data-type admission and public creation/ownership adapter; supported invalid semantic input reaches original diagnostics. Syntax/environment outside contract rejects explicitly; no ported semantic logic or general compiler host.",
       "collectionsCampaignScope": "Authored explicit Collections profile dispatch with fixed library environment; prior profiles retained.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Authored Projects profile selection; preserves accepted earlier profiles.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": null,
@@ -844,7 +899,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Actual selected scalar/named/recursive/composite/hidden-this/reference/alias/internal IndexType and synthetic any-base index diagnostic nodes; scoped symbol accessibility, alias/reference reuse, property source-context pseudochecker fallback and recovery, tracker replay, original/text links and truncation/cycle/depth/cache semantics. Flags/internal flags participate in managed cache identity; inference/verbosity/general emit state excluded. Bare unresolved types retain the real synthesized diagnostic comment.",
       "collectionsCampaignScope": "Original diagnostic type formatting for selected generic, array/tuple, mapped/indexed/conditional types. This is diagnostic support, not general emit; verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Original nameless/default source-module names, accessible symbol chains, internal import-type formatting and per-symbol specifier cache required by cross-file diagnostic display.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -880,7 +940,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Diagnostic-only actual scalar/static-data/named reference/hidden-this/union/intersection/type-query/internal keyof/synthetic any-base index output and type-precedence parentheses, per-node ASCII flags and source-text reuse. Selected synthesized unresolved leading block-comment emission included; source comments/statements/declarations/maps/general emit excluded.",
       "collectionsCampaignScope": "Selected original syntax printing for generic/collection diagnostic type nodes only; no source emit campaign.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Original internal import-type/qualified/name printing demanded by cross-file diagnostics; no source emit claim.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
@@ -899,7 +964,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected single-line diagnostic writer construction/clear/string/token/category forwarding plus actual WriteComment state. Managed byte-backed builder; broad writer positions/newlines/source emit options excluded.",
       "collectionsCampaignScope": "Selected type-diagnostic formatting support; verification pending, not general code emission.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/printer/utilities.go",
@@ -915,7 +981,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
       "collectionsCampaignScope": "Selected type-diagnostic formatting support; verification pending, not general code emission.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Required original diagnostic-printer helper closure.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": null,
@@ -982,7 +1053,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected actual type/symbol/property/widening/declared-type/base and directed-relation query forwarding with authored ownership guards; broader checker API excluded.",
       "collectionsCampaignScope": "Owned-file validation expanded to the fixed genuine library source set; foreign checker/source rejection must remain verified.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Project-aware public diagnostics/alias/module query closure; prior scalar/object/callable/collection APIs retained.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/pseudotypenodebuilder.go",
@@ -997,7 +1073,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
       "collectionsCampaignScope": "Selected generic and collection diagnostic reuse with the real pseudochecker; verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/nodecopy.go",
@@ -1015,8 +1092,9 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected diagnostic scalar/static-data/named reference/union/intersection/hidden-this syntax visitor and original recovery scope rollback; existing entity-name symbol resolution/accessibility, mapper-aware type reuse, context/tracker/original/flag copying. JS/callable/mapped/conditional/general declaration emit remain guarded.",
       "collectionsCampaignScope": "Selected generic/mapped/conditional syntax-node reuse for diagnostics; no transformation/emit parity claim.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md",
-      "collectionsParameterTrackingRepair": "Restore actual nodecopy.go function-scoped parameter short-circuit before symbol accessibility/tracker work. Invalid predicate callback rich comparison exposed extra accessibility cache state; unchanged original expected output remains the reference. Runtime/native confirmation pending."
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsParameterTrackingRepair": "Restore actual nodecopy.go function-scoped parameter short-circuit before symbol accessibility/tracker work. Invalid predicate callback rich comparison exposed extra accessibility cache state; unchanged original expected output remains the reference. Runtime/native confirmation pending.",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderscopes.go",
@@ -1031,7 +1109,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
       "collectionsCampaignScope": "Selected mapped/conditional/generic diagnostic scope support; source fidelity and runtime verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/symboltracker.go",
@@ -1065,7 +1144,11 @@
       "scopeBeforeCallables": "Selected declaration visibility links/Tristate cache and real hasVisibleDeclarations/accessibility dependencies plus requiresAddingImplicitUndefined for diagnostic reuse. General declaration emit, cross-file/export alias visibility and mapped/accessor/parameter/JS consumers excluded.",
       "collectionsCampaignState": "accepted-collections-contract",
       "collectionsCampaignScope": "Selected actual declaration visibility for array/tuple/named-tuple/construct-signature/index-signature parents and original default-false ArrowFunction/FunctionExpression/TypePredicate cases, required by incompatible predicate callback diagnostic formatting. No declaration emit, output generation or cross-file visibility campaign. Current original/managed/native selected corpus passes.",
-      "collectionsCampaignEvidence": "validation/results/collections-verified.json"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Only demanded diagnostic type-node/display support; no JavaScript or declaration emit milestone.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitcontext.go",
@@ -1089,7 +1172,11 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected actual None/SingleLine/NoAsciiEscaping/NoLeadingComments values needed by diagnostic output; general emitter flags excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "projectsCampaignScope": "Original NoIndentation flag required by selected diagnostic module/type printing; no JavaScript/declaration emit claim.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/pseudochecker/checker.go",
@@ -1113,7 +1200,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
       "collectionsCampaignScope": "Selected generic signatures and array/tuple diagnostic-node reuse; not a substitute semantic checker.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/pseudochecker/lookup.go",
@@ -1128,7 +1216,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
       "collectionsCampaignScope": "Selected generic type-parameter lookup/reuse for diagnostics; not a substitute semantic checker.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": null,
@@ -1226,7 +1315,8 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Original selected mapper wrappers/data/factories and simple/array/array-to-single/deferred/function/merged/composite Map operations required by internal hidden-this instantiation and literal-key reduction. Managed class union and authored AOT kind discriminator adapt Go interfaces; source generic/inference-context mapper behavior excluded.",
       "collectionsCampaignScope": "Original inference fixing/nonfixing/backreference mapper behavior and selected generic mapper support. Cache/context/provenance verification pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/checker/symbolaccessibility.go",
@@ -1241,7 +1331,12 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected actual single-file data-symbol meanings, lexical scope/qualification, nullable accessible-chain caches, table-origin IDs, alias-cache filtering and accessibility results. Pinned surprising stKindMask value retained. Source modules/external aliases/class/property containing chains excluded where not required by contract.",
       "collectionsCampaignScope": "Restore original checker.go logical symbolContainerLinks store rather than an arena, preventing lookup-induced SymbolId allocation. Other symbol accessibility scope unchanged.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Original demanded imported alias-chain search, cycle/cache/container indexing, qualification and stable candidate ordering. Function inventory docs/projects-accessibility-functions.json; classes/emit workflows remain excluded.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "collectionsCampaignState": "accepted-collections-contract",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/emitresolver.go",
@@ -1690,7 +1785,11 @@
       "status": "new",
       "scope": "Authored Collections profile source boundary, separate from authentic library declarations and actual checker algorithms.",
       "collectionsCampaignState": "accepted-collections-contract",
-      "collectionsCampaignEvidence": "validation/results/collections-verified.json"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Authored reuse of accepted collection boundary with explicit selected ES-module forms; ordinary unsupported source remains distinct.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": null,
@@ -1731,7 +1830,11 @@
       "scope": "Partial fixed-host Program diagnostic policy: SkipTypeChecking/canIncludeBindAndCheckDiagnostics, selected getSemanticDiagnosticsWithChecker bind+check composition, original sorting/deduplication/related-information merging. Explicit fixed TS/no directives/no project-reference/span-map/include-processing host assumptions. No full Program or project loader. Original/managed/native differential verification passes for the selected fixed host.",
       "collectionsCampaignState": "accepted-collections-contract",
       "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
-      "collectionsCampaignEvidence": "validation/results/collections-verified.json"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "projectsCampaignScope": "Per-file shared-checker semantic diagnostics and actual noEmit marker filtering; broader Program infrastructure remains partial.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     },
     {
       "upstream": null,
@@ -1746,7 +1849,8 @@
       "destination": "src/TypeScript.Scanner/Checker/CollectionsStoredAccess.cs",
       "status": "new",
       "scope": "Authored Native AOT static observer of stored checker/model/cache fields. Reads actual slots without reflection or semantic resolution; preserves null kinds and validates ownership. Independent oracle/reached payload coverage and acceptance pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": "tsc/internal/ast/ast_generated.go",
@@ -1755,14 +1859,16 @@
       "upstreamSha256": "b6fc40ffc5f43adbe9e0f6e1a53bd90e5c20c86ae1c738bb0ae5716bc540bb5a",
       "scope": "Selected original SyntheticExpression checker-created payload, factory/update/clone/child traversal and node accessor. Type/IsSpread/TupleNameSource retained for generic rest/spread checking. Source admission remains excluded; runtime and observation verification pending.",
       "mappingException": "Small handwritten supplement to the existing ast_generated.go counterpart. Accepted syntax generator deliberately excludes checker-owned SyntheticExpression; keeping the supplement avoids regeneration of unrelated accepted syntax nodes. No general transformation or emit surface.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/CollectionsCacheAccess.cs",
       "status": "new",
       "scope": "Authored Native AOT static observation of actual reference/interface instantiation caches. Verifies complete stored key/value/ordered-argument/target/self associations without resolution or entity ID allocation; preserves nil/allocated empty and rejects unknown nonempty families. Independent oracle comparison and acceptance pending.",
-      "collectionsCampaignEvidence": "in-progress; docs/COLLECTIONS-STATUS.md"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "collectionsCampaignState": "accepted-collections-contract"
     },
     {
       "upstream": null,
@@ -1851,22 +1957,252 @@
       "scope": "Authored strict canonical collection comparison under two fresh forward/reverse processes per runtime, repeating a request after intervening requests. Checks complete unchanged expectations, request names/raw bytes/counts, null/empty/scalar distinctions and before-after binary/corpus fingerprints. Same-checker repeated public queries are separately observed in each case. Actual frozen original-Go and Linux x64 native execution pass.",
       "collectionsCampaignState": "accepted-collections-contract",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/fileloader.go",
+      "destination": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "status": "partial",
+      "scope": "Selected processAllProgramFiles/root task/parse/import-discovery and usage-mode functions for fixed relative Bundler .ts projects and exact explicit libraries. Excludes package/project references, content mapping, implicit default libraries, automatic types, tracing and general hosts.",
+      "upstreamSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/filesparser.go",
+      "destination": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "status": "partial",
+      "scope": "Selected parseTask load/subtasks, filesParser start/task dedup and final collection with original single-threaded LIFO scheduling. Preserve cyclic file identity/order and selected include diagnostics. Parallelism, pooling, redirects, JS depth and incremental behavior excluded.",
+      "upstreamSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/fileInclude.go",
+      "destination": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "status": "partial",
+      "scope": "Root/import include reasons and original diagnostic/reference-location helpers required by bounded project loading; other references and redirects excluded.",
+      "upstreamSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/processingDiagnostic.go",
+      "destination": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "status": "partial",
+      "scope": "Selected original loading/casing diagnostic composition and include-reason chains for root/import failures; project/package/redirect paths excluded.",
+      "upstreamSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/includeprocessor.go",
+      "destination": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "status": "partial",
+      "scope": "Selected include-reason processing, configuration reference locations, file casing diagnostics and related information for bounded projects; package-format/redirect explanations excluded.",
+      "upstreamSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/module/resolver.go",
+      "destination": "src/TypeScript.Scanner/Module/Resolver.cs",
+      "status": "partial",
+      "scope": "Selected genuine Bundler relative resolution, directory intent, candidate/extension precedence and .ts winning records; authored explicit unsupported boundary and cache adapter. Package/Node/JSON/JS/custom extension environments excluded; see project contract.",
+      "upstreamSha256": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/module/types.go",
+      "destination": "src/TypeScript.Scanner/Module/Types.cs",
+      "status": "partial",
+      "scope": "ResolvedModule/PackageId and mode-aware key records required by relative project checking; canonical managed path strings replace typed Go path wrappers. Full resolution/type-directive data structures excluded.",
+      "upstreamSha256": "9edc252a17ac658642948add1c5fff9ca03cb3bc0081c7a610dc58c26f2b39f7",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/ProjectAdmission.cs",
+      "status": "new",
+      "scope": "Authored project source boundary layered on accepted collection syntax; permitted module forms and relative specifier admission are explicit, not checker semantics.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/ProjectsVerificationAccess.cs",
+      "status": "new",
+      "scope": "Authored static AOT-safe selected module/alias state observations; not an upstream checker source counterpart.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Compiler/CheckerHost.cs",
+      "status": "new",
+      "scope": "Authored bounded interface implementing the selected original checker Program dependencies with real resolved records and file ownership.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Check/Program.cs",
+      "status": "new",
+      "scope": "Authored ordinary disk project CLI, diagnostic rendering and static JSON serialization; success/diagnostic/unsupported exit statuses.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/Project.cs",
+      "status": "new",
+      "scope": "Authored public composition over mapped loader/resolver/Program diagnostics and shared original checker; no substitute semantic algorithms.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ProjectConfiguration.cs",
+      "status": "new",
+      "scope": "Authored strict JSON fixed-option/files configuration subset, explicitly rejecting unsupported properties and values; not full tsconfig.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/DiskHost.cs",
+      "status": "new",
+      "scope": "Authored .NET disk access and explicit Linux root/symlink/source-form boundary; upstream path/search semantics remain mapped separately.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ProjectException.cs",
+      "status": "new",
+      "scope": "Authored distinct unsupported/configuration/host failure representation.",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/services.go",
+      "destination": "src/TypeScript.Scanner/Checker/Services.cs",
+      "status": "partial",
+      "scope": "Original GetExportsOfModule public query wrapper required to observe actual project export closure; authored ownership guard. Other checker services and language-service infrastructure remain excluded.",
+      "upstreamSha256": "81d269e01aab93a981ee170af2a675a79756e326f39fa617db4a62c05da7d547",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/modulespecifiers/types.go",
+      "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Types.cs",
+      "status": "partial",
+      "scope": "Selected original diagnostic-generation host, preferences and module path/result models; general project/package infrastructure omitted.",
+      "upstreamSha256": "130a2aa65926dbca2a2fe449e77844de979073252cc4de5620396e872c2e075d",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/modulespecifiers/preferences.go",
+      "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
+      "status": "partial",
+      "scope": "Selected original Bundler relative diagnostic specifier preferences/ending decisions; other resolution/platform modes explicitly excluded.",
+      "upstreamSha256": "2d4a84dba06a5daf58aae83a05ad65decae7a49bc4394cc3eeb7dc91cfbbb8fb",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/modulespecifiers/specifiers.go",
+      "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
+      "status": "partial",
+      "scope": "Required original GetModuleSpecifiers, existing-import spelling, relative/local path and selected ancestor lookup for diagnostic type names. Genuine demanded package mapping fails explicitly; broad package resolution excluded.",
+      "upstreamSha256": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/modulespecifiers/util.go",
+      "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "status": "partial",
+      "scope": "Selected original module specifier path/extension helpers required by diagnostic generation.",
+      "upstreamSha256": "a3a4cdda2a8c5ff60aa39098528c690e12743f69f864e1b9cf75128f5ac035d7",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/packagejson.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/PackageJson.cs",
+      "status": "partial",
+      "scope": "Selected genuine package contents/imports parsing for reached diagnostic-specifier lookup; .NET JSON facilities with matching selected semantics, other package/dependency/version APIs excluded.",
+      "upstreamSha256": "858537735303a60c23edf6e153534934a06f751b77be900662d651d06c3f3b7b",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/cache.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/Cache.cs",
+      "status": "partial",
+      "scope": "Selected original ancestor package info/cache/read behavior demanded by diagnostic formatting; package resolution and project infrastructure remain excluded.",
+      "upstreamSha256": "03e64da3205d159a26249bff73e376139bc1461e7afc70f8aae08dc648d0a0e8",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/module/util.go",
+      "destination": "src/TypeScript.Scanner/Module/Util.cs",
+      "status": "partial",
+      "scope": "Selected GetResolutionDiagnostic for admitted TypeScript resolution forms; unsupported file forms and custom extensions reject explicitly.",
+      "upstreamSha256": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/modulespecifiers/compare.go",
+      "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Compare.cs",
+      "status": "partial",
+      "scope": "CountPathComponents used by original diagnostic-specifier preference comparison; other comparison APIs outside selected dependency.",
+      "upstreamSha256": "ade34c0d4cfd3dd13e62d2a20817080d7d3f785df35165e66e8f6873a32b789f",
+      "projectsCampaignState": "accepted-projects-contract",
+      "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
+      "projectsCampaignEvidence": "validation/results/projects-verified.json"
     }
   ],
   "activePhase": {
-    "name": "generic-collection-checking",
-    "status": "complete",
-    "acceptance": "accepted-contract",
-    "baselineCommit": "cfa6d2f",
-    "contract": "docs/COLLECTIONS-CONTRACT.md",
-    "mandate": "docs/COLLECTIONS-PROMPT.md",
+    "name": "bounded-es-module-project-checking",
+    "status": "accepted-contract",
+    "acceptance": "P1–P5 accepted on Linux x64; delivery commit contains this manifest",
+    "baselineCommit": "2598ceb",
+    "contract": "docs/PROJECTS-CONTRACT.md",
+    "mandate": "docs/PROJECTS-PROMPT.md",
     "state": "docs/STATE.md",
-    "note": "Fixed genuine ES5/decorators library files with explicit skipLibCheck; selected generic/inference/array/tuple/mapped/conditional/loop surface. No project/module/class/custom-iterator/emit expansion. No subsequent campaign is automatically authorized.",
-    "statusInventory": "docs/COLLECTIONS-STATUS.md",
-    "testInventory": "docs/collections-tests.json",
-    "coverageInventory": "docs/collections-coverage.json",
-    "assessment": "docs/COLLECTIONS-ASSESSMENT.md",
-    "evidence": "validation/results/collections-verified.json"
+    "note": "Bounded disk/config/Bundler-relative ES-module program over accepted collection semantics and exact libraries. P1-P5 require meaningful Go comparison, independent review, Linux x64 Native AOT and retained regressions. No packages, broad Node behavior, emit or services.",
+    "statusInventory": "docs/PROJECTS-STATUS.md",
+    "evidence": "validation/results/projects-verified.json",
+    "assessment": "docs/PROJECTS-ASSESSMENT.md"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -1957,10 +2293,11 @@
     "xUnitCases": 23411,
     "nativeCallableCases": 89,
     "platform": "Linux x64",
-    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1\u2013C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
+    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1–C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
     "commit": "cfa6d2f"
   },
   "acceptedCollectionsCheckpoint": {
+    "commit": "2598ceb",
     "status": "accepted-contract",
     "baselineCommit": "cfa6d2f",
     "contract": "docs/COLLECTIONS-CONTRACT.md",
@@ -1974,5 +2311,21 @@
     "nativeOrderExecutions": 18,
     "platform": "Linux x64",
     "scope": "Fixed single-user-script Collections profile, complete genuine ES5/decorators/decorators.legacy bytes with skipLibCheck and selected API/generic/collection behavior. Delivery commit contains this manifest; no full library/checker/project or other-platform parity."
+  },
+  "acceptedProjectsCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "2598ceb",
+    "contract": "docs/PROJECTS-CONTRACT.md",
+    "assessment": "docs/PROJECTS-ASSESSMENT.md",
+    "evidence": "validation/results/projects-verified.json",
+    "sourceSha256": "355b4842fa619586687a2de72293e259e9d993b35609f4cd2ae367b9cf83f953",
+    "verificationAssetsSha256": "117226e06b6ef7181042b90512420614c07198d480c9dea705e7109d149cbcd7",
+    "xUnitCases": 23542,
+    "nativeProjectCases": 48,
+    "nativeSharedChecks": 27,
+    "orderExecutionsPerRuntime": 30,
+    "ordinaryNativeCliCases": 10,
+    "platform": "Linux x64",
+    "scope": "Fixed authored explicit-files config, Bundler/ESNext relative TS modules, genuine three-library environment with skipLibCheck, selected cross-file semantic behavior and complete diagnostics. Unicode-scalar disk paths only. Packages, general tsconfig, broad language/library parity and emit excluded; delivery commit contains this manifest."
   }
 }

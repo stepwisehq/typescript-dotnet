@@ -1,0 +1,12 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "policy": "Authored projection of original core.Find; no source changes or retained collection provenance claim",
+  "expected": "validation/projects-corpus/support-projection-expected.json",
+  "expectedSha256": "f4cee8beb9e34593454e6f5ecb0d4ae835d1bda2371e903115dec5de9c58884a",
+  "sourceSha256": {
+    "upstream/TypeScript/tsc/internal/core/core.go": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+    "tools/projects-oracle/support_projection.go": "0af3c0dc4844821879b8b0a135cc7f4a47bb7e7a31e130de82aa200683e63ee2"
+  },
+  "groups": 6,
+  "groupMeaning": "Six named original core.Find output observations in one projection object; not six shared test bodies."
+}

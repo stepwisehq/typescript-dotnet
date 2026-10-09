@@ -1,0 +1,938 @@
+{
+  "stage": "bounded-relative-es-module-projects",
+  "baseline": "2598ceb",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "recordedAtUTC": "2026-10-09T10:01:16.183044+00:00",
+  "command": [
+    "bash",
+    "tools/verify-projects.sh"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 780.934,
+  "sourceSha256": "355b4842fa619586687a2de72293e259e9d993b35609f4cd2ae367b9cf83f953",
+  "verificationAssetsSha256": "117226e06b6ef7181042b90512420614c07198d480c9dea705e7109d149cbcd7",
+  "sourceDrift": false,
+  "assetDrift": false,
+  "historicalAssetDrift": false,
+  "upstreamDrift": false,
+  "log": "artifacts/projects-validation/final-gate.log",
+  "logSha256": "d7a81f9a7e343e1187168a6499242efde000ca6ac94541c62a08991b294ba935",
+  "nativeBinaries": {
+    "artifacts/data-types-validation/native/Checker.Validation": {
+      "sha256": "727dc12b6bc48535c3fc0eebc56c7cbd4fe5ff77ebde875f2f3933032d9239a7",
+      "sizeBytes": 9750088,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/data-types-validation/native/Checker.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=fc33fafcccc1d86ecb36e531ff96bebc07fc13e4, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x0000720574e41000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x0000720574d0d000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000720573c00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x0000720574e43000)"
+    },
+    "artifacts/binding-completion-validation/native/BindingCompletion.Validation": {
+      "sha256": "98d9a9a6cacc872da5de774944bd7c064ad8f9c1ea41db62f9f6f9d3ba9b2611",
+      "sizeBytes": 6872528,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/binding-completion-validation/native/BindingCompletion.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=8ee8ab9d1a20453970f61fec2a02943a09d866ab, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x00007d4746b9e000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007d47460da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007d4745e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007d4746ba0000)"
+    },
+    "artifacts/foundation-validation/native/Foundation.Validation": {
+      "sha256": "97870c84cb3d9cd73a89eb33c2a29fbc10a2c0fa7b03dfaa3e22cefde6fa87c4",
+      "sizeBytes": 16193488,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/foundation-validation/native/Foundation.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=975300f058534b459c7fa33a23a21d571b27ded9, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x000075179bee7000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x000075179bdb3000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x000075179a800000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000075179bee9000)"
+    },
+    "artifacts/binder-validation/native/Binder.Validation": {
+      "sha256": "a5245684367d585ddd39b86f2b097ed4c6f7ae94294a0580601d4b7324465c15",
+      "sizeBytes": 6155288,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/binder-validation/native/Binder.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=4f1f6e15cc9a53ce5adf97b01ce8b63296383c44, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x00007c98e15b7000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007c98e1483000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007c98e0800000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007c98e15b9000)"
+    },
+    "artifacts/parser-validation/native/Parser.Validation": {
+      "sha256": "88bfb0ac6cbe2aa71cacd65fb2b650074d6ed1e7e6fc77e1541353978b6815c1",
+      "sizeBytes": 5303496,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/parser-validation/native/Parser.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=019b00a3634c6d33e836833d8094dbe8c52f99b9, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x000070f980c00000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x000070f980acc000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x000070f980000000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000070f980c02000)"
+    },
+    "artifacts/validation/native/Scanner.Validation": {
+      "sha256": "89976e2443d94ed5b9cd13fd6ac54bf935a868007978a897f319e2e40626d1bf",
+      "sizeBytes": 4111896,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/validation/native/Scanner.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=cc620186e021fe2e2e23e91288f76e466fa2aeff, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x00007fc04991b000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007fc0497e7000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007fc048e00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fc04991d000)"
+    },
+    "artifacts/collections-validation/native/Collections.Validation": {
+      "sha256": "de5affa1f6b93e3bfe0d6b4c3ef5ad2af55a0bc7186acdb534873c1be2d65451",
+      "sizeBytes": 9359112,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native/Collections.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=6d763898572a4fcc937f0b5557a53aced846e9b8, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x00007c9deeda1000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007c9deec6d000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007c9dedc00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007c9deeda3000)"
+    },
+    "artifacts/projects-validation/native/Projects.Validation": {
+      "sha256": "0463fa7009abedaae8bceb58f406e7eb5a5e3c4daaf9e77005978194adb3fd4f",
+      "sizeBytes": 10332664,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native/Projects.Validation: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=f9931e0850075fe6bc62f6c0a8aac869ed5497cd, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x000072924aebf000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x000072924ad8b000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000729249c00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000072924aec1000)"
+    },
+    "artifacts/projects-validation/cli-native/tscheck": {
+      "sha256": "b2fd5f2ffeeb69ecd56199ae9af882c50280f1aa53d517eef783d3e0df14a44c",
+      "sizeBytes": 7189480,
+      "file": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/cli-native/tscheck: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=a4bcd3880fcf1c4c020972ee0abaa2b410c84abd, for GNU/Linux 3.2.0, stripped",
+      "dependencies": "linux-vdso.so.1 (0x00007f73c13b0000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007f73c08da000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007f73c0600000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f73c13b2000)"
+    }
+  },
+  "nativeFingerprintScope": "Nine freshly published native binaries: one retained collection/regression cascade, project validation and ordinary disk CLI; captured before project execution and checked afterward.",
+  "xUnit": {
+    "scanner": {
+      "counts": {
+        "total": 3838,
+        "executed": 3838,
+        "passed": 3838,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "classCaseCounts": {
+        "FoundationScannerTests": 2550,
+        "OracleTests": 1279,
+        "UtilityTests": 9
+      },
+      "trx": "artifacts/validation/scanner.trx",
+      "trxSha256": "1663d2d86915dff63dbef3c52cd3cbb059568e5d8e655228b7936ac3ee1ef63c"
+    },
+    "parser": {
+      "counts": {
+        "total": 18709,
+        "executed": 18709,
+        "passed": 18709,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "classCaseCounts": {
+        "FoundationFuzzTests": 17633,
+        "OracleTests": 471,
+        "FoundationDirectTests": 563,
+        "FoundationSyntaxServiceTests": 14,
+        "FoundationCloneGraphTests": 21,
+        "JSDocSourceTests": 3,
+        "LazyJSDocTests": 1,
+        "FoundationDiagnosticGapTests": 3
+      },
+      "trx": "artifacts/parser-validation/parser.trx",
+      "trxSha256": "8f3d1291b6003d7933ff678bd352ea8786cabdeca5425a07fcf99bc5417414d9"
+    },
+    "binder": {
+      "counts": {
+        "total": 163,
+        "executed": 163,
+        "passed": 163,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "classCaseCounts": {
+        "CompletionOracleTests": 26,
+        "OracleTests": 118,
+        "BindingHelperTests": 7,
+        "BindOnceTests": 4,
+        "BindingSupportTests": 8
+      },
+      "trx": "artifacts/binder-validation/binder.trx",
+      "trxSha256": "aafb6793aff1b9bb9bcc58e89d682e883cd082548269309932f8bb81d7a66793"
+    },
+    "checker": {
+      "counts": {
+        "total": 832,
+        "executed": 832,
+        "passed": 832,
+        "failed": 0,
+        "error": 0,
+        "timeout": 0,
+        "aborted": 0,
+        "inconclusive": 0,
+        "passedButRunAborted": 0,
+        "notRunnable": 0,
+        "notExecuted": 0,
+        "disconnected": 0,
+        "warning": 0,
+        "completed": 0,
+        "inProgress": 0,
+        "pending": 0
+      },
+      "classCaseCounts": {
+        "ProjectSupportTests": 21,
+        "ObjectOracleTests": 44,
+        "CallableBoundaryTests": 46,
+        "CallableNumericTests": 304,
+        "DataTypesOracleTests": 93,
+        "CallableOracleTests": 89,
+        "CollectionsControlsTests": 4,
+        "OracleTests": 45,
+        "BoundaryTests": 80,
+        "ProjectsOracleTests": 48,
+        "ProjectControlsTests": 5,
+        "CollectionsOracleTests": 44,
+        "CollectionsSupportTests": 8,
+        "ProjectProjectionTests": 1
+      },
+      "trx": "artifacts/data-types-validation/checker.trx",
+      "trxSha256": "8613b18135d7c58a8918c97872eacb62c0bc6646a0a7a4d5a760d094f5ef2d76"
+    }
+  },
+  "xUnitCases": 23542,
+  "projectNative": {
+    "canonical": {
+      "report": "artifacts/projects-validation/native/canonical/report.json",
+      "reportSha256": "a35ed3c260e1366d6b608e09f1cb40bbe473d41e4d4fea170a108645d6f18de3",
+      "command": [
+        "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native/Projects.Validation"
+      ],
+      "requestsSha256": "3d77f086d6560adde3c48df2f8e04c14ea7c59cb869fd0c046b628bbc55994ff",
+      "expectedSha256": "8c7499397e4d9aec1cc9cba04b25988ffd19399abcbdcf3c363b9f6de9820271",
+      "total": 48,
+      "exact": 48,
+      "failures": [],
+      "elapsedSeconds": 41.528
+    }
+  },
+  "originalGoProjects": {
+    "canonical": {
+      "report": "artifacts/projects-validation/original-go/canonical/report.json",
+      "reportSha256": "971ed86fa09a60bdd2a2092a26d284238c2e7323cfbabaa3f73484c9caa64641",
+      "command": [
+        "/home/greg/projects/typescript-dotnet/tools/.cache/projects-oracle"
+      ],
+      "requestsSha256": "3d77f086d6560adde3c48df2f8e04c14ea7c59cb869fd0c046b628bbc55994ff",
+      "expectedSha256": "8c7499397e4d9aec1cc9cba04b25988ffd19399abcbdcf3c363b9f6de9820271",
+      "total": 48,
+      "exact": 48,
+      "failures": [],
+      "elapsedSeconds": 12.133
+    }
+  },
+  "projectOrderControls": {
+    "cases": 14,
+    "sequencesPerRuntime": 2,
+    "originalGoExact": 30,
+    "targetExact": 30,
+    "requestsSha256": "7924be244b59a0e857da587698e8021402558ded6ad5f2a7479c0db240147684",
+    "failures": [],
+    "records": [
+      {
+        "runtime": "originalGo",
+        "sequence": "forward-repeat-first",
+        "names": [
+          "P4-grouped-records",
+          "P4-grouped-records-invalid",
+          "P3-alias-export-cycle",
+          "recursive-type-star-cycle",
+          "P3-type-star-ordinary-override",
+          "P1-missing-root-and-semantic-error",
+          "unicode-paths",
+          "P2-nonexported-hidden-nil-table",
+          "P4-demo-query-forward-repeat",
+          "P4-demo-query-reverse-repeat",
+          "P3-mutual-functions-valid-forward-roots",
+          "P3-mutual-functions-valid-reversed-roots",
+          "P3-mutual-functions-invalid-forward-roots",
+          "P3-mutual-functions-invalid-reversed-roots",
+          "P4-grouped-records"
+        ],
+        "exact": 15,
+        "exitCode": 0,
+        "output": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/originalGo-forward-repeat-first.jsonl",
+        "outputSha256": "841c8ed71a8f8acf09afd91f58a7be89b655daf94d70dc25ea8160c6e96827fe",
+        "stderr": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/originalGo-forward-repeat-first.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "runtime": "originalGo",
+        "sequence": "reverse-repeat-last",
+        "names": [
+          "P3-mutual-functions-invalid-reversed-roots",
+          "P3-mutual-functions-invalid-forward-roots",
+          "P3-mutual-functions-valid-reversed-roots",
+          "P3-mutual-functions-valid-forward-roots",
+          "P4-demo-query-reverse-repeat",
+          "P4-demo-query-forward-repeat",
+          "P2-nonexported-hidden-nil-table",
+          "unicode-paths",
+          "P1-missing-root-and-semantic-error",
+          "P3-type-star-ordinary-override",
+          "recursive-type-star-cycle",
+          "P3-alias-export-cycle",
+          "P4-grouped-records-invalid",
+          "P4-grouped-records",
+          "P3-mutual-functions-invalid-reversed-roots"
+        ],
+        "exact": 15,
+        "exitCode": 0,
+        "output": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/originalGo-reverse-repeat-last.jsonl",
+        "outputSha256": "9d8d06569ba094fa327e7eb222a3bc50b750467061cd14c42b05005b75e0e141",
+        "stderr": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/originalGo-reverse-repeat-last.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "runtime": "target",
+        "sequence": "forward-repeat-first",
+        "names": [
+          "P4-grouped-records",
+          "P4-grouped-records-invalid",
+          "P3-alias-export-cycle",
+          "recursive-type-star-cycle",
+          "P3-type-star-ordinary-override",
+          "P1-missing-root-and-semantic-error",
+          "unicode-paths",
+          "P2-nonexported-hidden-nil-table",
+          "P4-demo-query-forward-repeat",
+          "P4-demo-query-reverse-repeat",
+          "P3-mutual-functions-valid-forward-roots",
+          "P3-mutual-functions-valid-reversed-roots",
+          "P3-mutual-functions-invalid-forward-roots",
+          "P3-mutual-functions-invalid-reversed-roots",
+          "P4-grouped-records"
+        ],
+        "exact": 15,
+        "exitCode": 0,
+        "output": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/target-forward-repeat-first.jsonl",
+        "outputSha256": "94f97121dc4d60bae7145575a5f3a3e36ccbbe96a86851e412e2564a9e2d8652",
+        "stderr": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/target-forward-repeat-first.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "runtime": "target",
+        "sequence": "reverse-repeat-last",
+        "names": [
+          "P3-mutual-functions-invalid-reversed-roots",
+          "P3-mutual-functions-invalid-forward-roots",
+          "P3-mutual-functions-valid-reversed-roots",
+          "P3-mutual-functions-valid-forward-roots",
+          "P4-demo-query-reverse-repeat",
+          "P4-demo-query-forward-repeat",
+          "P2-nonexported-hidden-nil-table",
+          "unicode-paths",
+          "P1-missing-root-and-semantic-error",
+          "P3-type-star-ordinary-override",
+          "recursive-type-star-cycle",
+          "P3-alias-export-cycle",
+          "P4-grouped-records-invalid",
+          "P4-grouped-records",
+          "P3-mutual-functions-invalid-reversed-roots"
+        ],
+        "exact": 15,
+        "exitCode": 0,
+        "output": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/target-reverse-repeat-last.jsonl",
+        "outputSha256": "0ff33fbc6512717a554d56746b96c807728d628ff5d1993992eca813b38e6272",
+        "stderr": "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native-order/target-reverse-repeat-last.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "commands": {
+      "originalGo": [
+        "/home/greg/projects/typescript-dotnet/tools/.cache/projects-oracle"
+      ],
+      "target": [
+        "/home/greg/projects/typescript-dotnet/artifacts/projects-validation/native/Projects.Validation"
+      ]
+    },
+    "binarySha256Before": {
+      "originalGo": "37081cd4bac17a7447cb954d47d158b9cde049b6717c6d0cbdb4a5e830e8af52",
+      "target": "0463fa7009abedaae8bceb58f406e7eb5a5e3c4daaf9e77005978194adb3fd4f"
+    },
+    "assetSha256": {
+      "/home/greg/projects/typescript-dotnet/validation/projects-corpus/manifest.json": "33ff72e4f303e64ebd0fa47efe5c4f6edc18ad0381c8ff32b7976b92500c1c2d",
+      "/home/greg/projects/typescript-dotnet/validation/projects-corpus/canonical-requests.jsonl": "3d77f086d6560adde3c48df2f8e04c14ea7c59cb869fd0c046b628bbc55994ff",
+      "/home/greg/projects/typescript-dotnet/validation/projects-corpus/canonical-expected.jsonl.gz": "8c7499397e4d9aec1cc9cba04b25988ffd19399abcbdcf3c363b9f6de9820271",
+      "/home/greg/projects/typescript-dotnet/validation/projects-corpus/order-requests.jsonl": "7924be244b59a0e857da587698e8021402558ded6ad5f2a7479c0db240147684"
+    },
+    "binarySha256After": {
+      "originalGo": "37081cd4bac17a7447cb954d47d158b9cde049b6717c6d0cbdb4a5e830e8af52",
+      "target": "0463fa7009abedaae8bceb58f406e7eb5a5e3c4daaf9e77005978194adb3fd4f"
+    },
+    "elapsedSeconds": 33.961,
+    "comparison": "Each original Go and target reply matches unchanged canonical expectation; exact scalar types, fields, arrays and null/empty. Two fresh repeated forward/reverse processes per runtime."
+  },
+  "ordinaryNativeCLI": {
+    "cases": 10,
+    "exact": 10,
+    "failures": [],
+    "managed": false,
+    "canonicalDemoDiagnostics": true,
+    "manifestSha256": "33ff72e4f303e64ebd0fa47efe5c4f6edc18ad0381c8ff32b7976b92500c1c2d",
+    "lexicalProjectionControls": 14,
+    "executableSha256": "b2fd5f2ffeeb69ecd56199ae9af882c50280f1aa53d517eef783d3e0df14a44c",
+    "results": [
+      {
+        "name": "grouped-records",
+        "exitCode": 0,
+        "diagnosticCodes": [],
+        "stdoutSha256": "f0dbba12813777955079172302d868857621e62f4a83500ef2846f18ed9230e1"
+      },
+      {
+        "name": "grouped-records-invalid",
+        "exitCode": 1,
+        "diagnosticCodes": [
+          2614,
+          2307,
+          2322,
+          2345,
+          2322,
+          2322,
+          2339,
+          2693
+        ],
+        "stdoutSha256": "5620b780d0705974bf0ccbafb616c41cfc34ef88b44ee6e918204528909c64d2"
+      },
+      {
+        "name": "missing-root",
+        "exitCode": 1,
+        "diagnosticCodes": [
+          6053
+        ],
+        "stdoutSha256": "1899bbba5e1cddfe9ee756e68704ee23371ab409fd6a6742a875bbf5d5dc8571"
+      },
+      {
+        "name": "malformed-source",
+        "exitCode": 1,
+        "diagnosticCodes": [
+          1109
+        ],
+        "stdoutSha256": "3531e9ffb2a14bc74c05028f85ff33e772ea4088c33644969702cc6eee7d8c96"
+      },
+      {
+        "name": "unknown-config-option",
+        "exitCode": 2,
+        "diagnosticCodes": [],
+        "stdoutSha256": "c33a7056a29dc9df9cf36f87b762f41021f6d4bbe89df4d366489df0f31acf75"
+      },
+      {
+        "name": "malformed-unicode-config",
+        "exitCode": 2,
+        "diagnosticCodes": [],
+        "stdoutSha256": "d844e3bb75e05a48ccbe02fb368493971a044e6d7012e47601627031e866ca63"
+      },
+      {
+        "name": "outside-root",
+        "exitCode": 2,
+        "diagnosticCodes": [],
+        "stdoutSha256": "429f079f66cbde7fe871efd45f7e55ba86d1fc2b940f84de77f58f0963c599b7"
+      },
+      {
+        "name": "excluded-class",
+        "exitCode": 2,
+        "diagnosticCodes": [],
+        "stdoutSha256": "567e7293c28bba5dddb45bab8bda0321c3f4895fc7a7d2e61fe51d661606c020"
+      },
+      {
+        "name": "non-scalar-module-path",
+        "exitCode": 2,
+        "diagnosticCodes": [],
+        "stdoutSha256": "5726a8ee7021c83d5e40798827a488620c0aaf89a1a86a86ab480075faab4242"
+      },
+      {
+        "name": "unicode-location",
+        "exitCode": 1,
+        "diagnosticCodes": [
+          2322
+        ],
+        "stdoutSha256": "f6f1f79653e30c62a3b170d8b400a278263c3d05a301eed73b557040723128ae"
+      }
+    ],
+    "elapsedSeconds": 2.197
+  },
+  "originalOracleBinaries": {
+    "tools/.cache/collections-oracle-uninstrumented": {
+      "sha256": "638ac10df4ffd5f502a02536827c4d8167355801430404699e2dfd8ddcb1cd10",
+      "sizeBytes": 23144498
+    },
+    "tools/.cache/collections-oracle": {
+      "sha256": "9810f5f16197a621743e4db2c09a22290746a3b83af9b61335e6ceee80efb313",
+      "sizeBytes": 23171073
+    },
+    "tools/.cache/projects-oracle": {
+      "sha256": "37081cd4bac17a7447cb954d47d158b9cde049b6717c6d0cbdb4a5e830e8af52",
+      "sizeBytes": 22779049
+    },
+    "tools/.cache/go/bin/go": {
+      "sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+      "sizeBytes": 17142188
+    }
+  },
+  "originalHelperProjections": {
+    "supportProjections": {
+      "expected": "validation/projects-corpus/support-projection-expected.json",
+      "provenance": "validation/projects-corpus/support-projection-provenance.json",
+      "expectedSha256": "f4cee8beb9e34593454e6f5ecb0d4ae835d1bda2371e903115dec5de9c58884a",
+      "provenanceSha256": "81e3c9ec1596d3e14aa1b9658458e037078b0db1c0145cbdeae1588a32644741",
+      "groups": 6,
+      "currentOutput": "artifacts/projects-validation/original-go-supportProjections.json",
+      "currentOutputSha256": "f4cee8beb9e34593454e6f5ecb0d4ae835d1bda2371e903115dec5de9c58884a"
+    },
+    "specifierHelper": {
+      "expected": "validation/projects-corpus/specifier-helper-expected.jsonl",
+      "provenance": "validation/projects-corpus/specifier-helper-provenance.json",
+      "expectedSha256": "07bba7cd41d73cbeee4233ee8496d22024285594d97fd294806a74c2308fecac",
+      "provenanceSha256": "3bd1308fba68dabf16866f3e40ca3d6ff40232a2d87f62d3c74f92094ac110e1",
+      "cases": 5,
+      "requests": "validation/projects-corpus/specifier-helper-requests.jsonl",
+      "requestsSha256": "ec3327cbc685e6ead1a63c34336df52d668e92d69ae3712a4d9b3bc98a0fcb86",
+      "currentOutput": "artifacts/projects-validation/original-go-specifierHelper.json",
+      "currentOutputSha256": "07bba7cd41d73cbeee4233ee8496d22024285594d97fd294806a74c2308fecac"
+    }
+  },
+  "originalDirectTests": [
+    {
+      "command": [
+        "/home/greg/projects/typescript-dotnet/tools/.cache/go/bin/go",
+        "test",
+        "-json",
+        "./internal/tspath",
+        "-run",
+        "^(TestGetDirectoryPath|TestGetPathComponents|TestReducePathComponents|TestCombinePaths|TestResolvePath|TestResolvePathWithoutTrailingDirectorySeparator|TestNormalizePathDriveRoot|TestGetNormalizedAbsolutePath|TestToFileNameLowerCase)$",
+        "-count=1"
+      ],
+      "functions": [
+        "TestGetDirectoryPath",
+        "TestResolvePath",
+        "TestResolvePathWithoutTrailingDirectorySeparator",
+        "TestGetPathComponents",
+        "TestToFileNameLowerCase",
+        "TestCombinePaths",
+        "TestReducePathComponents",
+        "TestGetNormalizedAbsolutePath",
+        "TestNormalizePathDriveRoot"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/tspath/path_test.go": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a"
+      },
+      "elapsedSeconds": 0.144,
+      "exitCode": 0,
+      "log": "artifacts/projects-validation/original-tests-0.jsonl",
+      "logSha256": "6838bfc41bcf6173bd625e05fe1a515f43a8c9066553d22e4170c3aac5300b12"
+    },
+    {
+      "command": [
+        "/home/greg/projects/typescript-dotnet/tools/.cache/go/bin/go",
+        "test",
+        "-json",
+        "./internal/compiler",
+        "-run",
+        "^(TestIncludeReasonDiagnosticsAreProgramLocal)$",
+        "-count=1"
+      ],
+      "functions": [
+        "TestIncludeReasonDiagnosticsAreProgramLocal"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/program_test.go": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d"
+      },
+      "elapsedSeconds": 3.733,
+      "exitCode": 0,
+      "log": "artifacts/projects-validation/original-tests-1.jsonl",
+      "logSha256": "de352123b870b1af7e91071ad3818fd565a8d13689e947a3981d4e871d245ed4"
+    },
+    {
+      "command": [
+        "/home/greg/projects/typescript-dotnet/tools/.cache/go/bin/go",
+        "test",
+        "-json",
+        "./internal/modulespecifiers",
+        "-run",
+        "^(TestProcessEndingChecksRootedFilePath)$",
+        "-count=1"
+      ],
+      "functions": [
+        "TestProcessEndingChecksRootedFilePath"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers_test.go": "57a883bb76e85d7daca35c4f4900f40270a60d8030b403dd0d101e0d2bd85356"
+      },
+      "elapsedSeconds": 1.487,
+      "exitCode": 0,
+      "log": "artifacts/projects-validation/original-tests-2.jsonl",
+      "logSha256": "1e10ae25e4fff09ee4a9ac1d0170172cb1b139db6c29c8c19de26e12ab93764a"
+    }
+  ],
+  "originalGoToolchain": {
+    "executable": "tools/.cache/go/bin/go",
+    "sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+    "version": "go version go1.27.1 linux/amd64"
+  },
+  "projectSharedChecks": {
+    "count": 27,
+    "output": "artifacts/projects-validation/native-controls.txt",
+    "outputSha256": "932ab0a0e4191d32c0af7b3f565b7b180dbe9869378abc5816f9add54b806e7f"
+  },
+  "retainedCollectionExecution": {
+    "binaryGuard": "artifacts/collections-validation/native-after-collections.json",
+    "sha256": "eaea15d40418207f27b116cc2dc008151c1e061eadd2ddbd459254f68d03f239",
+    "result": {
+      "native": {
+        "canonical": {
+          "report": "artifacts/collections-validation/native/canonical/report.json",
+          "reportSha256": "debfefe89847611fb1348b248437aa28e41f65c745a04679c97001bcb90d1e9f",
+          "command": [
+            "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native/Collections.Validation"
+          ],
+          "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+          "expectedSha256": "a5257a178167ec20a85c07a5ddfe6821873879e77bda090f6cf16d1da8fdb849",
+          "total": 44,
+          "exact": 44,
+          "failures": [],
+          "elapsedSeconds": 11.59
+        }
+      },
+      "originalGo": {
+        "canonical": {
+          "report": "artifacts/collections-validation/original-go/canonical/report.json",
+          "reportSha256": "1ab5c2184dac203d19cedcdb22b3af5b365add333952fb6b9ad98cff55447b24",
+          "command": [
+            "/home/greg/projects/typescript-dotnet/tools/.cache/collections-oracle"
+          ],
+          "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+          "expectedSha256": "a5257a178167ec20a85c07a5ddfe6821873879e77bda090f6cf16d1da8fdb849",
+          "total": 44,
+          "exact": 44,
+          "failures": [],
+          "elapsedSeconds": 13.947
+        }
+      },
+      "xUnit": {
+        "scanner": {
+          "counts": {
+            "total": 3838,
+            "executed": 3838,
+            "passed": 3838,
+            "failed": 0,
+            "error": 0,
+            "timeout": 0,
+            "aborted": 0,
+            "inconclusive": 0,
+            "passedButRunAborted": 0,
+            "notRunnable": 0,
+            "notExecuted": 0,
+            "disconnected": 0,
+            "warning": 0,
+            "completed": 0,
+            "inProgress": 0,
+            "pending": 0
+          },
+          "classCaseCounts": {
+            "FoundationScannerTests": 2550,
+            "OracleTests": 1279,
+            "UtilityTests": 9
+          },
+          "trx": "artifacts/validation/scanner.trx",
+          "trxSha256": "1663d2d86915dff63dbef3c52cd3cbb059568e5d8e655228b7936ac3ee1ef63c"
+        },
+        "parser": {
+          "counts": {
+            "total": 18709,
+            "executed": 18709,
+            "passed": 18709,
+            "failed": 0,
+            "error": 0,
+            "timeout": 0,
+            "aborted": 0,
+            "inconclusive": 0,
+            "passedButRunAborted": 0,
+            "notRunnable": 0,
+            "notExecuted": 0,
+            "disconnected": 0,
+            "warning": 0,
+            "completed": 0,
+            "inProgress": 0,
+            "pending": 0
+          },
+          "classCaseCounts": {
+            "FoundationFuzzTests": 17633,
+            "OracleTests": 471,
+            "FoundationDirectTests": 563,
+            "FoundationSyntaxServiceTests": 14,
+            "FoundationCloneGraphTests": 21,
+            "JSDocSourceTests": 3,
+            "LazyJSDocTests": 1,
+            "FoundationDiagnosticGapTests": 3
+          },
+          "trx": "artifacts/parser-validation/parser.trx",
+          "trxSha256": "8f3d1291b6003d7933ff678bd352ea8786cabdeca5425a07fcf99bc5417414d9"
+        },
+        "binder": {
+          "counts": {
+            "total": 163,
+            "executed": 163,
+            "passed": 163,
+            "failed": 0,
+            "error": 0,
+            "timeout": 0,
+            "aborted": 0,
+            "inconclusive": 0,
+            "passedButRunAborted": 0,
+            "notRunnable": 0,
+            "notExecuted": 0,
+            "disconnected": 0,
+            "warning": 0,
+            "completed": 0,
+            "inProgress": 0,
+            "pending": 0
+          },
+          "classCaseCounts": {
+            "CompletionOracleTests": 26,
+            "OracleTests": 118,
+            "BindingHelperTests": 7,
+            "BindOnceTests": 4,
+            "BindingSupportTests": 8
+          },
+          "trx": "artifacts/binder-validation/binder.trx",
+          "trxSha256": "aafb6793aff1b9bb9bcc58e89d682e883cd082548269309932f8bb81d7a66793"
+        },
+        "checker": {
+          "counts": {
+            "total": 832,
+            "executed": 832,
+            "passed": 832,
+            "failed": 0,
+            "error": 0,
+            "timeout": 0,
+            "aborted": 0,
+            "inconclusive": 0,
+            "passedButRunAborted": 0,
+            "notRunnable": 0,
+            "notExecuted": 0,
+            "disconnected": 0,
+            "warning": 0,
+            "completed": 0,
+            "inProgress": 0,
+            "pending": 0
+          },
+          "classCaseCounts": {
+            "ProjectSupportTests": 21,
+            "ObjectOracleTests": 44,
+            "CallableBoundaryTests": 46,
+            "CallableNumericTests": 304,
+            "DataTypesOracleTests": 93,
+            "CallableOracleTests": 89,
+            "CollectionsControlsTests": 4,
+            "OracleTests": 45,
+            "BoundaryTests": 80,
+            "ProjectsOracleTests": 48,
+            "ProjectControlsTests": 5,
+            "CollectionsOracleTests": 44,
+            "CollectionsSupportTests": 8,
+            "ProjectProjectionTests": 1
+          },
+          "trx": "artifacts/data-types-validation/checker.trx",
+          "trxSha256": "8613b18135d7c58a8918c97872eacb62c0bc6646a0a7a4d5a760d094f5ef2d76"
+        }
+      },
+      "order": {
+        "cases": 8,
+        "sequencesPerRuntime": 2,
+        "originalGoExact": 18,
+        "targetExact": 18,
+        "requestsSha256": "115872cef511fbfe4a1340a630774af76a90ec3b185ff3132f2027ae08ff0e89",
+        "failures": [],
+        "records": [
+          {
+            "runtime": "originalGo",
+            "sequence": "forward-repeat-first",
+            "names": [
+              "G5-grouped-records",
+              "G5-grouped-records-invalid",
+              "G2-default-and-constraint-errors",
+              "G2-overload-inference-failure-retry",
+              "G2-noinfer-callback-default",
+              "G4-reverse-mapped-utilities",
+              "G3-tuple-optional-rest-and-readonly",
+              "G5-loop-evolving-array-and-capture",
+              "G5-grouped-records"
+            ],
+            "exact": 9,
+            "exitCode": 0,
+            "output": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/originalGo-forward-repeat-first.jsonl",
+            "outputSha256": "bb6ba3f3b535713f83095e7582ef28bb6642f55e900f2bf082b8344c1c81f21c",
+            "stderr": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/originalGo-forward-repeat-first.stderr",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "runtime": "originalGo",
+            "sequence": "reverse-repeat-last",
+            "names": [
+              "G5-loop-evolving-array-and-capture",
+              "G3-tuple-optional-rest-and-readonly",
+              "G4-reverse-mapped-utilities",
+              "G2-noinfer-callback-default",
+              "G2-overload-inference-failure-retry",
+              "G2-default-and-constraint-errors",
+              "G5-grouped-records-invalid",
+              "G5-grouped-records",
+              "G5-loop-evolving-array-and-capture"
+            ],
+            "exact": 9,
+            "exitCode": 0,
+            "output": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/originalGo-reverse-repeat-last.jsonl",
+            "outputSha256": "4b026a11343f7a2267473c1932cb7dee9795e239cb6635433f2143c7675a12b3",
+            "stderr": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/originalGo-reverse-repeat-last.stderr",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "runtime": "target",
+            "sequence": "forward-repeat-first",
+            "names": [
+              "G5-grouped-records",
+              "G5-grouped-records-invalid",
+              "G2-default-and-constraint-errors",
+              "G2-overload-inference-failure-retry",
+              "G2-noinfer-callback-default",
+              "G4-reverse-mapped-utilities",
+              "G3-tuple-optional-rest-and-readonly",
+              "G5-loop-evolving-array-and-capture",
+              "G5-grouped-records"
+            ],
+            "exact": 9,
+            "exitCode": 0,
+            "output": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/target-forward-repeat-first.jsonl",
+            "outputSha256": "2dd50a201cb48a37854f33abffff07d0b6921d24192529426662d9ea06547ee1",
+            "stderr": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/target-forward-repeat-first.stderr",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "runtime": "target",
+            "sequence": "reverse-repeat-last",
+            "names": [
+              "G5-loop-evolving-array-and-capture",
+              "G3-tuple-optional-rest-and-readonly",
+              "G4-reverse-mapped-utilities",
+              "G2-noinfer-callback-default",
+              "G2-overload-inference-failure-retry",
+              "G2-default-and-constraint-errors",
+              "G5-grouped-records-invalid",
+              "G5-grouped-records",
+              "G5-loop-evolving-array-and-capture"
+            ],
+            "exact": 9,
+            "exitCode": 0,
+            "output": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/target-reverse-repeat-last.jsonl",
+            "outputSha256": "d22086e348aa15d3fff740a85e416681083f99b68a5b41c16dc7d9a6b5e5d478",
+            "stderr": "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native-order/target-reverse-repeat-last.stderr",
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "commands": {
+          "originalGo": [
+            "/home/greg/projects/typescript-dotnet/tools/.cache/collections-oracle"
+          ],
+          "target": [
+            "/home/greg/projects/typescript-dotnet/artifacts/collections-validation/native/Collections.Validation"
+          ]
+        },
+        "binarySha256Before": {
+          "originalGo": "9810f5f16197a621743e4db2c09a22290746a3b83af9b61335e6ceee80efb313",
+          "target": "de5affa1f6b93e3bfe0d6b4c3ef5ad2af55a0bc7186acdb534873c1be2d65451"
+        },
+        "assetSha256": {
+          "/home/greg/projects/typescript-dotnet/validation/collections-corpus/manifest.json": "ac9792b1231b51e574afff92064874e45954b19416ed5b8d37ed927bbd476d80",
+          "/home/greg/projects/typescript-dotnet/validation/collections-corpus/canonical-requests.jsonl": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+          "/home/greg/projects/typescript-dotnet/validation/collections-corpus/canonical-expected.jsonl.gz": "a5257a178167ec20a85c07a5ddfe6821873879e77bda090f6cf16d1da8fdb849",
+          "/home/greg/projects/typescript-dotnet/validation/collections-corpus/order-requests.jsonl": "115872cef511fbfe4a1340a630774af76a90ec3b185ff3132f2027ae08ff0e89"
+        },
+        "binarySha256After": {
+          "originalGo": "9810f5f16197a621743e4db2c09a22290746a3b83af9b61335e6ceee80efb313",
+          "target": "de5affa1f6b93e3bfe0d6b4c3ef5ad2af55a0bc7186acdb534873c1be2d65451"
+        },
+        "elapsedSeconds": 12.779,
+        "comparison": "Each original Go and target reply matches unchanged canonical expectation; exact scalar types, fields, arrays and null/empty. Two fresh repeated forward/reverse processes per runtime."
+      },
+      "instrumentationParity": {
+        "cases": 44,
+        "exact": 44,
+        "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+        "failures": [],
+        "elapsedSeconds": 15.948,
+        "comparison": "Complete uninstrumented/instrumented behavior bytes; storedObservations=false",
+        "binarySha256": {
+          "uninstrumented": "638ac10df4ffd5f502a02536827c4d8167355801430404699e2dfd8ddcb1cd10",
+          "instrumented": "9810f5f16197a621743e4db2c09a22290746a3b83af9b61335e6ceee80efb313"
+        }
+      },
+      "originalOracleBinaries": {
+        "tools/.cache/collections-oracle-uninstrumented": {
+          "sha256": "638ac10df4ffd5f502a02536827c4d8167355801430404699e2dfd8ddcb1cd10",
+          "sizeBytes": 23144498
+        },
+        "tools/.cache/collections-oracle": {
+          "sha256": "9810f5f16197a621743e4db2c09a22290746a3b83af9b61335e6ceee80efb313",
+          "sizeBytes": 23171073
+        }
+      },
+      "originalSupport": {
+        "expected": "validation/collections-corpus/support-projections-actual-go.json",
+        "provenance": "validation/collections-corpus/support-projections-provenance.json",
+        "expectedSha256": "cce29a500694f9e21782639ea28dfe2fc8bde421eb1003b45353dd63f1b9bce3",
+        "provenanceSha256": "e102cea1ed6eda8192ff6db97a239b1512d605ad3554f98be93796a5c5afc70c",
+        "groups": 7,
+        "sharedCases": 8,
+        "current": "artifacts/collections-validation/original-go-support.json",
+        "currentSha256": "cce29a500694f9e21782639ea28dfe2fc8bde421eb1003b45353dd63f1b9bce3"
+      }
+    }
+  },
+  "fixedLibraryManifest": {
+    "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "fileOrder": "These library roots in this order, then the user script.",
+    "files": [
+      {
+        "fileName": "/lib/lib.es5.d.ts",
+        "resourceName": "TypeScript.Checking.Libraries.lib.es5.d.ts",
+        "sha256": "45cc92f8dd3df7cb07b7d19e2b2ca34e78bc005c910c1e53ee1cf9bf37910215",
+        "bytes": 218855
+      },
+      {
+        "fileName": "/lib/lib.decorators.d.ts",
+        "resourceName": "TypeScript.Checking.Libraries.lib.decorators.d.ts",
+        "sha256": "1ce14b81c5cc821994aa8ec1d42b220dd41b27fcc06373bce3958af7421b77d4",
+        "bytes": 13153
+      },
+      {
+        "fileName": "/lib/lib.decorators.legacy.d.ts",
+        "resourceName": "TypeScript.Checking.Libraries.lib.decorators.legacy.d.ts",
+        "sha256": "b3a048b3e9302ef9a34ef4ebb9aecfb28b66abb3bce577206a79fee559c230da",
+        "bytes": 1287
+      }
+    ]
+  },
+  "fixedLibraryManifestSha256": "a84e49a8f7849ed408727c4ebc7dbe062b54c420a2220076d24a75df1b2c2edb",
+  "corpusManifest": "validation/projects-corpus/manifest.json",
+  "corpusManifestSha256": "33ff72e4f303e64ebd0fa47efe5c4f6edc18ad0381c8ff32b7976b92500c1c2d",
+  "contract": "docs/PROJECTS-CONTRACT.md",
+  "limits": [
+    "Bounded Linux case-sensitive relative .ts ES-module projects under authored strict tscheck.json; not general tsconfig/Program/package/project-reference/emit/service parity.",
+    "One shared checker over discovered users plus three authentic declaration roots; demanded library declarations resolve normally, skipLibCheck skips library bodies.",
+    "Admitted imports/exports and accepted collection language compose across files; prior unsupported language and broader-library boundaries remain explicit.",
+    "Original Program/default resolver differentials, source-derived helper projections and shared authored/API controls retain their individual provenance.",
+    "Malformed source reports parse failures without claiming complete semantic checking. Ordinary CLI execution requires neither Go nor an upstream checkout."
+  ]
+}

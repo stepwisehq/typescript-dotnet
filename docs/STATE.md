@@ -1,12 +1,66 @@
 # Current project state
 
-**Generic-collection contract accepted in the delivery commit containing this file.**
-Baseline `cfa6d2f`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
-No subsequent campaign is authorized automatically. If recovering before the delivery
-commit, inspect the saved uncommitted work, finish documentation review and commit it;
-do not discard it or regenerate the hand-reviewed port from historical scaffolding.
+**Accepted: bounded multi-file ES-module project checking, P1–P5.**
+Baseline `2598ceb`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
+The delivery commit containing this entry records the completed campaign.
+Read the [mandate](./PROJECTS-PROMPT.md), fixed [contract](./PROJECTS-CONTRACT.md),
+[assessment](./PROJECTS-ASSESSMENT.md), [practical guide](./PROJECTS.md), and
+[durable proof](../validation/results/projects-verified.json).
+No next campaign is authorized. Do not restart completed investigations or benchmarks.
 
-## Accepted capability and evidence
+## Current acceptance and resumption
+
+The repaired-source full gate passed in **780.934 seconds**, with independent Sol
+acceptance review and no source, asset, historical-asset or upstream drift:
+
+- **23,542 xUnit cases**, zero failures/skips: scanner 3,838, parser 18,709,
+  binder 163, checker 832.
+- Actual **Linux x64 Native AOT**: 48 exact project comparisons, 27 shared groups,
+  30 order executions per runtime, and 10 ordinary CLI cases with 14 lexical controls.
+- Eleven new full original Go test functions replayed successfully; all retained
+  foundation, binding and semantic native gates passed. Nine native binaries and
+  115 protected historical fixture/proof files were verified.
+- Source SHA: `355b4842fa619586687a2de72293e259e9d993b35609f4cd2ae367b9cf83f953`.
+  Asset SHA: `117226e06b6ef7181042b90512420614c07198d480c9dea705e7109d149cbcd7`.
+
+The user command is `tscheck --project <tscheck.json> [--json]`. The fixed environment
+uses Bundler/ESNext, a strict authored JSON subset with explicit files, relative
+ES modules, and genuine ES5/decorators/decorators.legacy declarations with skipLibCheck.
+It retains accepted collection-language restrictions. Packages, general tsconfig,
+classes/new, destructuring, broader libraries, emit and services are not accepted.
+See the contract for exact boundaries and observation omissions.
+
+The first gate was stopped (exit 143, not accepted) after a lone-surrogate module
+specifier was replacement-decoded to a different existing filename. Strict decoding
+at three disk lookup boundaries now rejects such non-scalar paths with host exit 2;
+original Go reports 2307 for these witnesses, so this is explicit unsupported behavior,
+not diagnostic parity. Ordinary escaped Unicode paths remain supported. The fresh
+complete gate above verifies the repair; canonical 48 expectations were unchanged.
+
+All three explicit GPT-6.1 Sol owners were reused: [core](./progress/projects-core.md),
+[support](./progress/projects-support.md), [verification](./progress/projects-verification.md).
+Independent reviews and test provenance remain linked in the assessment. Root owns
+contract, source mapping, acceptance and delivery. Eleven central Debug library builds
+reported 59.76 seconds in aggregate (three failed); this is not total effort or a
+performance benchmark. No installation or user unblock was required; token/cost
+telemetry is unavailable.
+
+The [source map](../source-map.json) records selected ports as partial and authored
+host/harness code separately. Source or verification-asset changes require affected
+verification and fresh native evidence; never overwrite earlier campaign proofs.
+Current executable/assets were frozen before the successful gate; final documentation
+and proof recording do not alter those fingerprints. Check git status on re-entry;
+if delivery was interrupted before commit, finish the authorized commit, preserving
+all reviewed work. Otherwise await a new bounded mandate.
+
+Recommended next project-workflow campaign: genuine upstream tsconfig files/include/
+exclude discovery and configuration diagnostics. Classes/new and destructuring remain
+separate important language barriers. No package/Node or emit expansion is implied.
+
+The following collection records are historical evidence; their project exclusions
+and next-step recommendation are superseded only by the accepted project contract above.
+
+## Historical collection baseline (2598ceb)
 
 Read the [exact mandate](./COLLECTIONS-PROMPT.md), fixed
 [contract](./COLLECTIONS-CONTRACT.md), [assessment](./COLLECTIONS-ASSESSMENT.md),
@@ -40,7 +94,7 @@ and exclusions are in [collections-tests.json](./collections-tests.json); API wi
 and observation limits are in [collections-coverage.json](./collections-coverage.json)
 and the [cache ledger](./progress/collections-retained-caches.md).
 
-## Resumption, limitations and working lessons
+## Historical collection limitations and working lessons
 
 Three explicit GPT-6.1 Sol owners were reused: [core](./progress/collections-core.md),
 [support](./progress/collections-support.md), [verification](./progress/collections-verification.md).

@@ -8,6 +8,7 @@ internal enum EmitFlags : uint
 {
     None = 0,
     SingleLine = 1,
+    NoIndentation = 1u << 14,
     NoLeadingComments = 1u << 7,
     NoAsciiEscaping = 1u << 17
 }

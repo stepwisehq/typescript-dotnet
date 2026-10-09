@@ -168,6 +168,18 @@ Later user directions, in chronological order:
     [durable proof](./validation/results/collections-verified.json). No subsequent
     module/project campaign is automatically authorized.
 
+20. The user authorized **bounded multi-file ES-module project checking** atop
+    `2598ceb`. Read the [exact mandate](./docs/PROJECTS-PROMPT.md) and
+    [current state](./docs/STATE.md). Define and complete a useful relative-module
+    disk/config/program/checker workflow, preserving genuine pinned libraries,
+    complete cross-file diagnostics and meaningful semantic relationships, cycles,
+    independent Sol review and Linux x64 Native AOT. Packages, broad platform module
+    behavior, references, incremental builds, emit and services remain outside scope.
+    Direction 19 is fulfilled. This project contract is also accepted; see the
+    [assessment](./docs/PROJECTS-ASSESSMENT.md) and
+    [durable proof](./validation/results/projects-verified.json). The delivery commit
+    containing this entry fulfills the mandate; no next campaign is authorized.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -179,13 +191,14 @@ Later user directions, in chronological order:
 4. Follow the next unresolved action in the checkpoints. Reuse active agents if
    available; after session loss, delegate using those checkpoint files instead
    of reconstructing the old chat.
-5. Use [README.md](./README.md) for reproducible verification. Required acceptance
+5. Use the [project guide](./docs/PROJECTS.md) and [README.md](./README.md) for
+   reproducible invocation and verification. Required acceptance
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
 Source-file binding completion is accepted at `de855ca`; the callable contract is also accepted
-at `cfa6d2f`. The generic-collection contract is accepted in the delivery commit
-containing this entry. A checkpoint can
+at `cfa6d2f`. The generic-collection contract is accepted at `2598ceb`; the bounded
+project contract is accepted in the delivery commit containing this entry. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

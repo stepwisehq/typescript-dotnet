@@ -1,0 +1,60 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
+// Partial port of tsc/internal/compiler/fileInclude.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Root-file and ordinary import reasons; other reference families are excluded.
+using TypeScript.Scanner;
+using TsScanner = TypeScript.Scanner.Scanner;
+
+namespace TypeScript.Compiler;
+internal sealed class FileIncludeReason
+{
+    internal SourceFile? importingFile;
+    internal Node? specifier;
+    internal int rootIndex = -1;
+    internal bool IsReferencedFile() => importingFile is not null;
+    internal Diagnostic ToDiagnostic(IncludeProcessor processor, bool relativeFileName = false, string relativeTo = "")
+    {
+        if (processor.reasonDiagnostics.TryGetValue((this, relativeFileName, relativeTo), out Diagnostic? value))
+            return value;
+        value = ComputeDiagnostic(processor, relativeFileName, relativeTo);
+        processor.reasonDiagnostics.Add((this, relativeFileName, relativeTo), value);
+        return value;
+    }
+
+    private Diagnostic ComputeDiagnostic(IncludeProcessor processor, bool relativeFileName, string relativeTo)
+    {
+        if (IsReferencedFile())
+        {
+            if (relativeFileName)
+                throw new ProjectException("relativeIncludeExplanation", "Relative diagnostic path formatting is outside the selected Program query.");
+            SourceFile file = importingFile!;
+            string text = file.Text()[TsScanner.SkipTriviaByteString(file.Text(), specifier!.Pos())..specifier.End()];
+            return Ast.NewCompilerDiagnostic(Diagnostics.Imported_via_0_from_file_1, text, GoString.ToUtf8(file.FileName()));
+        }
+
+        if (rootIndex >= 0)
+        {
+            // fileInclude.go:170–175. Diagnostic arguments remain stored even
+            // when the localized explanation contains no placeholders.
+            string matchedFileSpec = processor.configuration.Files[rootIndex];
+            string fileName = TsPath.GetNormalizedAbsolutePath(matchedFileSpec, processor.configuration.Root);
+            if (relativeFileName)
+                fileName = TsPath.GetRelativePathFromDirectory(relativeTo, fileName);
+            return Ast.NewCompilerDiagnostic(Diagnostics.Part_of_files_list_in_tsconfig_json, GoString.ToUtf8(matchedFileSpec), GoString.ToUtf8(fileName));
+        }
+
+        return Ast.NewCompilerDiagnostic(Diagnostics.Root_file_specified_for_compilation);
+    }
+
+    internal Diagnostic? ToRelatedInfo(IncludeProcessor processor)
+    {
+        if (importingFile is not null)
+            return DiagnosticAt(Diagnostics.File_is_included_via_import_here);
+        if (rootIndex < 0)
+            return null;
+        Node? literal = processor.configuration.GetFileLiteral(rootIndex);
+        return literal is null ? null : Ast.NewDiagnostic(processor.configuration.SourceFile, TsScanner.GetErrorRangeForNode(processor.configuration.SourceFile, literal), Diagnostics.File_is_matched_by_files_list_specified_here);
+    }
+
+    internal Diagnostic DiagnosticAt(Message message, params object[] args) => Ast.NewDiagnostic(importingFile!, TsScanner.GetErrorRangeForNode(importingFile!, specifier!), message, args);
+}

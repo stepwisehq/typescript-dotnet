@@ -1,0 +1,341 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "tsc/internal/checker/symbolaccessibility.go",
+  "managed": "src/TypeScript.Scanner/Checker/SymbolAccessibility.cs",
+  "scope": "Projects demanded alias-chain/qualification/module-container closure; no class or CommonJS class-assignment producers.",
+  "functions": [
+    {
+      "name": "IsTypeSymbolAccessible",
+      "line": 13,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "IsTypeSymbolAccessible"
+    },
+    {
+      "name": "IsValueSymbolAccessible",
+      "line": 18,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "IsValueSymbolAccessible"
+    },
+    {
+      "name": "IsSymbolAccessibleByFlags",
+      "line": 23,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "IsSymbolAccessibleByFlags"
+    },
+    {
+      "name": "IsAnySymbolAccessible",
+      "line": 28,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "IsAnySymbolAccessible"
+    },
+    {
+      "name": "hasNonGlobalAugmentationExternalModuleSymbol",
+      "line": 106,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "hasNonGlobalAugmentationExternalModuleSymbol"
+    },
+    {
+      "name": "getQualifiedLeftMeaning",
+      "line": 110,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getQualifiedLeftMeaning"
+    },
+    {
+      "name": "getWithAlternativeContainers",
+      "line": 118,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getWithAlternativeContainers"
+    },
+    {
+      "name": "getAlternativeContainingModules",
+      "line": 169,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAlternativeContainingModules"
+    },
+    {
+      "name": "add",
+      "line": 222,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "add"
+    },
+    {
+      "name": "getExternalModuleContainers",
+      "line": 229,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getExternalModuleContainers"
+    },
+    {
+      "name": "buildExternalModuleContainerIndex",
+      "line": 253,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "buildExternalModuleContainerIndex"
+    },
+    {
+      "name": "scanExternalModuleContainers",
+      "line": 275,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "scanExternalModuleContainers"
+    },
+    {
+      "name": "getVariableDeclarationOfObjectLiteral",
+      "line": 288,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getVariableDeclarationOfObjectLiteral"
+    },
+    {
+      "name": "hasExternalModuleSymbol",
+      "line": 311,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "hasExternalModuleSymbol"
+    },
+    {
+      "name": "getExternalModuleContainer",
+      "line": 315,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getExternalModuleContainer"
+    },
+    {
+      "name": "getFileSymbolIfFileSymbolExportEqualsContainer",
+      "line": 323,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getFileSymbolIfFileSymbolExportEqualsContainer"
+    },
+    {
+      "name": "getContainersOfSymbol",
+      "line": 342,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getContainersOfSymbol"
+    },
+    {
+      "name": "getAliasForSymbolInContainer",
+      "line": 404,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAliasForSymbolInContainer"
+    },
+    {
+      "name": "getAccessibleSymbolChain",
+      "line": 435,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAccessibleSymbolChain"
+    },
+    {
+      "name": "GetAccessibleSymbolChain",
+      "line": 444,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAccessibleSymbolChain"
+    },
+    {
+      "name": "symbolTableIDFromLocals",
+      "line": 479,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "symbolTableIDFromLocals"
+    },
+    {
+      "name": "symbolTableIDFromExports",
+      "line": 483,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "symbolTableIDFromExports"
+    },
+    {
+      "name": "symbolTableIDFromResolvedExports",
+      "line": 491,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "symbolTableIDFromResolvedExports"
+    },
+    {
+      "name": "symbolTableIDFromMembers",
+      "line": 495,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "symbolTableIDFromMembers"
+    },
+    {
+      "name": "symbolTableIDFromGlobals",
+      "line": 499,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "symbolTableIDFromGlobals"
+    },
+    {
+      "name": "getAccessibleSymbolChainEx",
+      "line": 503,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAccessibleSymbolChainEx"
+    },
+    {
+      "name": "getAccessibleSymbolChainFromSymbolTable",
+      "line": 543,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getAccessibleSymbolChainFromSymbolTable"
+    },
+    {
+      "name": "getSymbolTableAliases",
+      "line": 567,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getSymbolTableAliases"
+    },
+    {
+      "name": "trySymbolTable",
+      "line": 597,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "trySymbolTable"
+    },
+    {
+      "name": "compareSymbolChainsWorker",
+      "line": 657,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "compareSymbolChainsWorker"
+    },
+    {
+      "name": "isUMDExportSymbol",
+      "line": 674,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "isUMDExportSymbol"
+    },
+    {
+      "name": "isNamespaceReexportDeclaration",
+      "line": 678,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "isNamespaceReexportDeclaration"
+    },
+    {
+      "name": "getCandidateListForSymbol",
+      "line": 682,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "getCandidateListForSymbol"
+    },
+    {
+      "name": "isAccessible",
+      "line": 709,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "isAccessible"
+    },
+    {
+      "name": "canQualifySymbol",
+      "line": 750,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "canQualifySymbol"
+    },
+    {
+      "name": "needsQualification",
+      "line": 761,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "needsQualification"
+    },
+    {
+      "name": "isPropertyOrMethodDeclarationSymbol",
+      "line": 801,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "isPropertyOrMethodDeclarationSymbol"
+    },
+    {
+      "name": "someSymbolTableInScope",
+      "line": 819,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "someSymbolTableInScope"
+    },
+    {
+      "name": "getClassExpressionNameTable",
+      "line": 883,
+      "disposition": "excluded-producer",
+      "reason": "Class source syntax remains excluded; someSymbolTableInScope explicitly guards the class branch.",
+      "executionStatus": "pending",
+      "managed": null
+    },
+    {
+      "name": "IsSymbolAccessible",
+      "line": 912,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "IsSymbolAccessible"
+    },
+    {
+      "name": "isSymbolAccessibleWorker",
+      "line": 916,
+      "disposition": "implemented-selected",
+      "reason": "Original selected algorithm retained; managed lists/dictionaries/cells translate slice, map and pointer storage.",
+      "executionStatus": "pending",
+      "managed": "isSymbolAccessibleWorker"
+    }
+  ],
+  "limitations": [
+    "Private accessibility cache topology is not currently part of Projects differential schema. Demanded diagnostic/type-formatting behavior remains compared.",
+    "Generic emit/declaration alias visibility workflows are not claimed by checking-only Program.",
+    "Managed stable OrderBy preserves original candidate stable-sort ordering; no source getExports/alias resolver algorithm duplicated."
+  ]
+}

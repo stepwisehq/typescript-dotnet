@@ -580,6 +580,15 @@ internal sealed class ComputedNameNodeLinks
     internal string name;
 }
 
+// types.go:209. Actual import/export alias links, including pure alias cycles.
+internal sealed class AliasSymbolLinks
+{
+    internal Symbol immediateTarget;
+    internal Symbol aliasTarget;
+    internal bool referenced;
+    internal Node typeOnlyDeclaration;
+}
+
 // types.go:218. The internal globalThis module uses the real export cache;
 // written module/type-only export declarations remain outside admission.
 internal sealed class ModuleSymbolLinks
@@ -760,7 +769,6 @@ internal sealed class GoOrderedNodeSet
     // ordered identity set, without exposing managed backing topology.
     internal bool Has(Node node) => set.Contains(node);
     internal int Size() => values.Count;
-
     internal IEnumerable<Node> Values()
     {
         // Go's iterator walks the live ordered slice, including later additions.
@@ -827,8 +835,10 @@ internal enum VarianceFlags : uint
 internal readonly record struct accessibleChainCacheKey(bool useOnlyExternalAliasing, Node location, SymbolFlags meaning);
 internal sealed class ContainingSymbolLinks
 {
+    internal Dictionary<ulong, List<Symbol>> extendedContainersByFile;
+    // A nonnull cell whose Value is null preserves Go pointer-to-nil-slice state.
+    internal LinkCell<List<Symbol>> extendedContainers;
     internal Dictionary<accessibleChainCacheKey, List<Symbol>> accessibleChainCache;
-// Cross-file/alternative-module container caches are excluded with modules.
 }
 
 // types.go:1444. Actual relation callback; reportErrors controls diagnostic elaboration.

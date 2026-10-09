@@ -790,7 +790,7 @@ public sealed partial class Checker
         return false;
     }
 
-    private bool checkGrammarSourceFile()
+    private bool checkGrammarSourceFile(SourceFile sourceFile)
     {
         if ((sourceFile.Flags & NodeFlags.Ambient) != 0)
             throw unsupported("checkGrammarSourceFile: ambient script");
@@ -2024,6 +2024,95 @@ public sealed partial class Checker
             var innerType = node.Type;
             if (innerType.Kind != Kind.ArrayType && innerType.Kind != Kind.TupleType)
                 return grammarErrorOnFirstToken(node.AsNode(), Diagnostics.X_readonly_type_modifier_is_only_permitted_on_array_and_tuple_literal_types, TypeScript.Scanner.Scanner.TokenToString(Kind.SymbolKeyword));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarExportDeclaration(ExportDeclaration node)
+    {
+        if (((node.IsTypeOnly && (node.ExportClause != null)) && (node.ExportClause.Kind == Kind.NamedExports)))
+        {
+            return this.checkGrammarTypeOnlyNamedImportsOrExports(node.ExportClause);
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarModuleElementContext(Node node, Message errorMessage)
+    {
+        var isInAppropriateContext = (((node.Parent.Kind == Kind.SourceFile) || (node.Parent.Kind == Kind.ModuleBlock)) || (node.Parent.Kind == Kind.ModuleDeclaration));
+        if (!isInAppropriateContext)
+        {
+            this.grammarErrorOnFirstToken(node, errorMessage);
+        }
+
+        return !isInAppropriateContext;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarImportClause(ImportClause node)
+    {
+        switch (node.PhaseModifier)
+        {
+            case Kind.TypeKeyword:
+            {
+                if (((((node.Flags & NodeFlags.JSDoc) == 0) && (node.Name() != null)) && (node.NamedBindings != null)))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.A_type_only_import_can_specify_a_default_import_or_named_bindings_but_not_both);
+                }
+
+                if (((node.NamedBindings != null) && (node.NamedBindings.Kind == Kind.NamedImports)))
+                {
+                    return this.checkGrammarTypeOnlyNamedImportsOrExports(node.NamedBindings);
+                }
+
+                break;
+            }
+
+            case Kind.DeferKeyword:
+            case Kind.SourceKeyword:
+                throw unsupported("checkGrammarImportClause: defer/source-phase import");
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarTypeOnlyNamedImportsOrExports(Node namedBindings)
+    {
+        var nodeList = namedBindings.ElementList();
+        {
+            foreach (var specifier in GoRuntime.RangeValues(nodeList.Nodes))
+            {
+                bool specifierIsTypeOnly = default;
+                Message message = default;
+                if ((specifier.Kind == Kind.ImportSpecifier))
+                {
+                    specifierIsTypeOnly = specifier.IsTypeOnly();
+                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_import_when_import_type_is_used_on_its_import_statement;
+                }
+                else
+                {
+                    specifierIsTypeOnly = specifier.IsTypeOnly();
+                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_export_when_export_type_is_used_on_its_export_statement;
+                }
+
+                if (specifierIsTypeOnly)
+                {
+                    return this.grammarErrorOnFirstToken(specifier, message);
+                }
+            }
         }
 
         return false;
