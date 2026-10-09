@@ -1,0 +1,368 @@
+{
+  "kind": "authored-default-resolver-api-witnesses",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "expectedPolicy": "Only independently executed pinned Go produces expectations; this generator writes requests only.",
+  "cases": 69,
+  "queries": 310,
+  "requestsSha256": "83fc2b26ccd3bc129bbecbdf690dc48d6e66ef5db41c0da7d82ba0d5cf482628",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/module/resolver.go": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
+    "upstream/TypeScript/tsc/internal/module/types.go": "9edc252a17ac658642948add1c5fff9ca03cb3bc0081c7a610dc58c26f2b39f7",
+    "upstream/TypeScript/tsc/internal/module/cache.go": "25373957c5793ea28d9607da2b2bf380d0910e13fe6dfce960c328e136e541c0",
+    "upstream/TypeScript/tsc/internal/module/staticresolver.go": "073aac87b458fdd8838b2df553a530110b83f89587b65371a6b57fe10f75d286",
+    "upstream/TypeScript/tsc/internal/module/util.go": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969"
+  },
+  "coverage": [
+    {
+      "name": "core-conditions-node16-0",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-node16-1",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-node16-99",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-nodenext-0",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-nodenext-1",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-nodenext-99",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-bundler-0",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-bundler-1",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-conditions-bundler-99",
+      "family": "modes-and-exports",
+      "queries": 7
+    },
+    {
+      "name": "core-cache-trace-false",
+      "family": "positive-negative-cache-identity",
+      "queries": 7
+    },
+    {
+      "name": "core-cache-trace-true",
+      "family": "positive-negative-cache-identity",
+      "queries": 7
+    },
+    {
+      "name": "core-extension-precedence-bundler-1",
+      "family": "extension-substitution",
+      "queries": 9
+    },
+    {
+      "name": "core-extension-precedence-bundler-99",
+      "family": "extension-substitution",
+      "queries": 9
+    },
+    {
+      "name": "core-extension-precedence-nodenext-1",
+      "family": "extension-substitution",
+      "queries": 9
+    },
+    {
+      "name": "core-extension-precedence-nodenext-99",
+      "family": "extension-substitution",
+      "queries": 9
+    },
+    {
+      "name": "core-suffixes-native-and-default",
+      "family": "module-suffixes",
+      "queries": 4
+    },
+    {
+      "name": "core-suffixes-default-only",
+      "family": "module-suffixes",
+      "queries": 4
+    },
+    {
+      "name": "core-suffixes-native-only",
+      "family": "module-suffixes",
+      "queries": 4
+    },
+    {
+      "name": "core-directory-intent",
+      "family": "directory-intent",
+      "queries": 6
+    },
+    {
+      "name": "core-paths-exact-pattern-fallback",
+      "family": "baseurl-paths",
+      "queries": 6
+    },
+    {
+      "name": "core-paths-without-baseurl",
+      "family": "paths-config-directory",
+      "queries": 2
+    },
+    {
+      "name": "core-baseurl-precedes-package",
+      "family": "baseurl-precedence",
+      "queries": 2
+    },
+    {
+      "name": "core-rootdirs-longest-and-fallback",
+      "family": "rootdirs",
+      "queries": 3
+    },
+    {
+      "name": "core-custom-condition-custom-first",
+      "family": "custom-condition-order",
+      "queries": 2
+    },
+    {
+      "name": "core-custom-condition-types-first",
+      "family": "custom-condition-order",
+      "queries": 2
+    },
+    {
+      "name": "core-exports-enabled-true",
+      "family": "exports-fallback-control",
+      "queries": 1
+    },
+    {
+      "name": "core-exports-enabled-false",
+      "family": "exports-fallback-control",
+      "queries": 1
+    },
+    {
+      "name": "core-package-metadata-malformed",
+      "family": "package-fields-errors",
+      "queries": 2
+    },
+    {
+      "name": "core-package-metadata-wrong-type",
+      "family": "package-fields-errors",
+      "queries": 2
+    },
+    {
+      "name": "core-package-metadata-missing-types",
+      "family": "package-fields-errors",
+      "queries": 2
+    },
+    {
+      "name": "core-self-and-imports",
+      "family": "self-package-imports",
+      "queries": 7
+    },
+    {
+      "name": "core-versioned-types-conditions",
+      "family": "versioned-types",
+      "queries": 1
+    },
+    {
+      "name": "core-typesversions-package-and-subpath",
+      "family": "typesversions",
+      "queries": 3
+    },
+    {
+      "name": "core-peer-package-identity",
+      "family": "peer-package-id",
+      "queries": 2
+    },
+    {
+      "name": "core-scoped-package-types-fallback",
+      "family": "types-fallback-scoped",
+      "queries": 2
+    },
+    {
+      "name": "core-alternate-result",
+      "family": "alternate-resolution",
+      "queries": 1
+    },
+    {
+      "name": "core-type-roots-default",
+      "family": "type-directives-roots",
+      "queries": 12
+    },
+    {
+      "name": "core-type-roots-explicit",
+      "family": "type-directives-roots",
+      "queries": 12
+    },
+    {
+      "name": "core-type-roots-empty",
+      "family": "type-directives-roots",
+      "queries": 12
+    },
+    {
+      "name": "core-typing-location",
+      "family": "typings-location",
+      "queries": 4
+    },
+    {
+      "name": "core-automatic-explicit-names",
+      "family": "automatic-names",
+      "queries": 1
+    },
+    {
+      "name": "core-config-package-resolution",
+      "family": "config-api",
+      "queries": 5
+    },
+    {
+      "name": "core-package-directory-api",
+      "family": "package-directory-api",
+      "queries": 8
+    },
+    {
+      "name": "core-symlink-preserve-false",
+      "family": "symlinks",
+      "queries": 2
+    },
+    {
+      "name": "core-symlink-preserve-true",
+      "family": "symlinks",
+      "queries": 2
+    },
+    {
+      "name": "core-case-insensitive-canonical-path",
+      "family": "case-keys",
+      "queries": 2
+    },
+    {
+      "name": "core-unicode-and-raw-virtual-paths",
+      "family": "raw-byte-identity",
+      "queries": 3
+    },
+    {
+      "name": "core-extra-file-extensions",
+      "family": "extra-extensions",
+      "queries": 2
+    },
+    {
+      "name": "core-redirect-options-cache-keys",
+      "family": "redirect-reference",
+      "queries": 4
+    },
+    {
+      "name": "core-redirect-resolution-kind-and-type-roots",
+      "family": "redirect-mode-type-roots",
+      "queries": 6
+    },
+    {
+      "name": "core-static-fallback-true",
+      "family": "static-precedence-identity",
+      "queries": 7
+    },
+    {
+      "name": "core-static-fallback-false",
+      "family": "static-precedence-identity",
+      "queries": 7
+    },
+    {
+      "name": "core-entrypoint-directory-search-false",
+      "family": "entrypoints",
+      "queries": 2
+    },
+    {
+      "name": "core-entrypoint-directory-search-true",
+      "family": "entrypoints",
+      "queries": 2
+    },
+    {
+      "name": "core-self-output-to-input-rootdir",
+      "family": "output-to-input-remapping",
+      "queries": 4
+    },
+    {
+      "name": "core-self-output-to-input-config-directory",
+      "family": "output-to-input-remapping",
+      "queries": 4
+    },
+    {
+      "name": "core-raw-options-ambiguous-output-root",
+      "family": "resolution-diagnostics",
+      "queries": 2
+    },
+    {
+      "name": "core-raw-options-no-dts-false",
+      "family": "raw-factory-options",
+      "queries": 2
+    },
+    {
+      "name": "core-raw-options-no-dts-true",
+      "family": "raw-factory-options",
+      "queries": 2
+    },
+    {
+      "name": "core-static-constructor-error-empty-name",
+      "family": "static-constructor-errors",
+      "queries": 0
+    },
+    {
+      "name": "core-static-constructor-error-duplicate-global",
+      "family": "static-constructor-errors",
+      "queries": 0
+    },
+    {
+      "name": "core-static-constructor-error-duplicate-case-directory",
+      "family": "static-constructor-errors",
+      "queries": 0
+    },
+    {
+      "name": "core-type-conditional-nodenext",
+      "family": "type-directive-conditional-modes",
+      "queries": 5
+    },
+    {
+      "name": "core-type-conditional-bundler",
+      "family": "type-directive-conditional-modes",
+      "queries": 5
+    },
+    {
+      "name": "core-imports-root-feature-node16",
+      "family": "imports-root-feature-defaults",
+      "queries": 4
+    },
+    {
+      "name": "core-imports-root-feature-nodenext",
+      "family": "imports-root-feature-defaults",
+      "queries": 4
+    },
+    {
+      "name": "core-imports-root-feature-bundler",
+      "family": "imports-root-feature-defaults",
+      "queries": 4
+    },
+    {
+      "name": "core-imports-disabled",
+      "family": "imports-disabled-control",
+      "queries": 4
+    },
+    {
+      "name": "core-static-type-delegation-without-module-fallback",
+      "family": "static-type-directive-delegation",
+      "queries": 5
+    }
+  ],
+  "limits": [
+    "Finite API/input witnesses, not exhaustive branches or compiler fixture successes.",
+    "Default repeated-result identities supplement complete original clone/cache/race assertions; no private runtime topology census.",
+    "All file names are virtual host inputs, including one raw non-scalar byte path; no OS arbitrary-byte support claim.",
+    "RawCompilerOptions is the source stored-option domain: numeric ModuleKind.ESNext=99 and ModuleResolutionKind.Bundler=100, unlike configuration-text enum names. Initial string-enum raw factory failure is preserved as investigation evidence, not a compiler discrepancy."
+  ]
+}

@@ -1,0 +1,11 @@
+import { groupRecords } from "record-kit";
+import { label } from "#local";
+import type { RecordValue } from "@models/record";
+import { cycleA } from "./cycle/a";
+import { extra } from "./extra.js";
+import data from "./data.json";
+import { view } from "./view";
+export { groupRecords } from "record-kit";
+export type ImportedRecord = import("record-kit").RecordValue;
+export const summary = { groupRecords, label, cycleA, extra, data, view };
+export const sample: RecordValue = { key: "demo", value: 1 };

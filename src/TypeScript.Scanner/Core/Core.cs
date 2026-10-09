@@ -5,6 +5,23 @@
 namespace TypeScript.Scanner;
 internal static partial class Core
 {
+    // core.go:828. Preserve the source list unless a duplicate requires a copy.
+    public static List<T>? Deduplicate<T>(List<T>? values)
+    {
+        if (values is { Count: > 1 })
+            for (int i = 0; i < values.Count; i++)
+                if (values.Take(i).Contains(values[i]))
+                {
+                    var result = values.GetRange(0, i);
+                    for (i++; i < values.Count; i++)
+                        if (!result.Contains(values[i]))
+                            result.Add(values[i]);
+                    return result;
+                }
+
+        return values;
+    }
+
     public static T IfElse<T>(bool condition, T a, T b) => condition ? a : b;
     public static string GetSpellingSuggestionForStrings(string name, IEnumerable<string> candidates)
     {

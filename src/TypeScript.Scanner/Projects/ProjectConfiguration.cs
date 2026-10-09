@@ -120,6 +120,18 @@ internal sealed class ProjectConfiguration
         }
     }
 
+    // Graph-loader metadata uses the same parsed source and root reasons, with
+    // original byte paths. Only the named legacy/disk checking adapters decode.
+    internal ProjectConfiguration(TypeScript.TsOptions.ParsedCommandLine parsed)
+    {
+        Parsed = parsed;
+        FileName = parsed.ConfigName().AsString();
+        Root = parsed.BaseDirectory().AsString();
+        SourceFile = parsed.ConfigFile!.SourceFile;
+        Options = parsed.CompilerOptions();
+        Files = (parsed.FileNames() ?? []).Select(path => path.AsString()).ToArray();
+    }
+
     internal Node? GetFileLiteral(int index)
     {
         Node? result = null;

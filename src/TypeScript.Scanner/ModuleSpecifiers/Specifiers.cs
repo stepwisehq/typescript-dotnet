@@ -2,8 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/modulespecifiers/specifiers.go at
 // fed0bf24149fb1ed36039212648bafdafc1ea10e. Genuine fixed relative diagnostic
-// branch; packages/project redirects/symlinks/paths/rootDirs/auto-imports excluded.
+// branch and original existing-import reuse/actual package-dedup target paths;
+// broad generated package/path names, project references and symlink cache excluded.
 using TypeScript.PackageJson;
+using TypeScript.Modules;
 using TypeScript.Checking;
 using TypeScript.Compiler;
 using TypeScript.Scanner;
@@ -40,6 +42,8 @@ internal static partial class ModuleSpecifiers
 
     private sealed record Info(string ImportingSourceFileName, string SourceDirectory);
     private static Info getInfo(string name) => new(name, TsPath.GetDirectoryPath(name));
+    private static RootedPath getPath(string fileName, IModuleSpecifierGenerationHost host) =>
+        host.FileNamesAreGoBytes ? RootedPath.FromGoString(fileName) : RootedPath.FromUnicode(fileName);
     private static (List<string>? Specifiers, ResultKind Kind) GetModuleSpecifiersForFileWithInfo(SourceFile importingFile, string moduleName, CompilerOptions options, IModuleSpecifierGenerationHost host, UserPreferences preferences, ModuleSpecifierOptions specifierOptions)
     {
         var paths = getAllModulePathsWorker(getInfo(host.GetSourceOfProjectReferenceIfOutputIncluded(importingFile)), moduleName, host);
@@ -56,13 +60,15 @@ internal static partial class ModuleSpecifiers
         {
             List<ModulePath> local = [];
             foreach (var pair in names.ToList())
-                if (pair.Key.StartsWith(TsPath.EnsureTrailingDirectorySeparator(directory), StringComparison.Ordinal))
+                if (host.CaseSensitivity().StartsWithDirectory(
+                    TsPath.RootedFilePathFromPath(getPath(pair.Key, host)),
+                    TsPath.RootedDirectoryPathFromPath(getPath(directory, host))))
                 {
                     local.Add(pair.Value);
                     names.Remove(pair.Key);
                 }
 
-            local.Sort(comparePathsByRedirect);
+            local.Sort((first, second) => comparePathsByRedirect(first, second, host));
             sorted.AddRange(local);
             string parent = TsPath.GetDirectoryPath(directory);
             if (parent == directory)
@@ -73,7 +79,7 @@ internal static partial class ModuleSpecifiers
         if (names.Count != 0)
         {
             var remaining = names.Values.ToList();
-            remaining.Sort(comparePathsByRedirect);
+            remaining.Sort((first, second) => comparePathsByRedirect(first, second, host));
             sorted.AddRange(remaining);
         }
 
@@ -82,26 +88,41 @@ internal static partial class ModuleSpecifiers
 
     internal static List<ModulePath> GetEachFileNameOfModule(string importingFileName, string importedFileName, IModuleSpecifierGenerationHost host, bool preferSymlinks)
     {
-        // specifiers.go:262. The fixed host has neither project redirects nor
-        // symlink cache; the sole original target survives ignored-path filtering
-        // because all targets are then ignored together.
-        bool inNodeModules = importedFileName.Contains("/node_modules/", StringComparison.Ordinal);
-        if (inNodeModules)
-            throw new NotSupportedException("node_modules specifier generation is unsupported.");
-        return[new(importedFileName, false, false)];
+        // specifiers.go:262–354. Graph construction does not build reference
+        // projects or a Program symlink cache. Actual package-dedup redirects
+        // remain required targets even with those external stages absent.
+        var importedPath = host.CaseSensitivity().PathKey(getPath(importedFileName, host));
+        List<string> targets = [importedFileName];
+        targets.AddRange(host.GetRedirectTargets(importedPath));
+        bool shouldFilterIgnoredPaths = !targets.All(containsIgnoredPath);
+        List<ModulePath> results = [];
+        foreach (string target in targets)
+        {
+            if (shouldFilterIgnoredPaths && containsIgnoredPath(target))
+                continue;
+            results.Add(new(target, target.Contains("/node_modules/", StringComparison.Ordinal), false));
+        }
+        // Without the external symlink cache the original preferSymlinks branches
+        // produce this same target order; no alternative spelling is fabricated.
+        return results;
     }
+
+    private static bool containsIgnoredPath(string fileName) =>
+        fileName.Contains("/node_modules/.", StringComparison.Ordinal) ||
+        fileName.Contains("/.git", StringComparison.Ordinal) || fileName.Contains(".#", StringComparison.Ordinal);
 
     private static (List<string>? Specifiers, ResultKind Kind) computeModuleSpecifiers(List<ModulePath> paths, CompilerOptions options, SourceFile importingFile, IModuleSpecifierGenerationHost host, UserPreferences userPreferences, ModuleSpecifierOptions specifierOptions)
     {
-        var info = getInfo(importingFile.FileName());
+        var info = getInfo(host.FileNamesAreGoBytes ? importingFile.FileNameGoBytes() : importingFile.FileName());
         var preferences = getModuleSpecifierPreferences(userPreferences, host, options, importingFile, "");
         foreach (var path in paths)
         {
+            var targetPath = host.CaseSensitivity().PathKey(getPath(path.FileName, host));
             Node? existingImport = null;
             foreach (var reference in importingFile.Imports() ?? [])
             {
                 var resolved = host.GetResolvedModuleFromModuleSpecifier(importingFile, reference);
-                if (resolved?.IsResolved() == true && resolved.ResolvedPath == path.FileName)
+                if (resolved.IsResolved() && resolved!.ResolvedPath == targetPath)
                 {
                     existingImport = reference;
                     break;
@@ -125,7 +146,7 @@ internal static partial class ModuleSpecifiers
         foreach (var path in paths)
         {
             if (path.IsInNodeModules || path.IsRedirect)
-                throw new NotSupportedException("Package/redirect specifier generation is unsupported.");
+                throw new ProjectException("semanticUnsupported", "Diagnostic formatting requires package/redirect specifier generation outside the current checker. Use --inspect-project to inspect the resolved graph.");
             var importMode = specifierOptions.OverrideImportMode;
             if (importMode == ResolutionMode.None)
                 importMode = host.GetDefaultResolutionModeForFile(importingFile);
@@ -133,8 +154,8 @@ internal static partial class ModuleSpecifiers
             if (local.Length == 0)
                 continue;
             if (PathIsBareSpecifier(local))
-                throw new NotSupportedException("Non-relative generated specifiers require unsupported package/path mappings.");
-            (relativeSpecifiers ??= new()).Add(GoString.ToUtf8(local));
+                throw new ProjectException("semanticUnsupported", "Diagnostic formatting requires non-relative generated specifiers outside the current checker. Use --inspect-project to inspect the resolved graph.");
+            (relativeSpecifiers ??= new()).Add(host.FileNamesAreGoBytes ? local : GoString.ToUtf8(local));
         }
 
         return (relativeSpecifiers, ResultKind.Relative);
@@ -142,13 +163,25 @@ internal static partial class ModuleSpecifiers
 
     private static string getLocalModuleSpecifier(string moduleFileName, Info info, CompilerOptions options, IModuleSpecifierGenerationHost host, ResolutionMode importMode, ModuleSpecifierPreferences preferences, bool pathsOnly)
     {
-        // specifiers.go:479. The fixed compiler configuration has no paths/rootDirs.
+        // specifiers.go:479. Existing imports were reused before reaching this
+        // selected relative generator. Never silently ignore a newly admitted
+        // resolver setting whose reverse-formatting producer is still external.
+        if (options.GetEffectiveRootDirs() is { Count: > 0 })
+            throw new ProjectException("semanticUnsupported", "Diagnostic formatting requires rootDirs reverse mapping outside the current checker. Use --inspect-project to inspect the resolved graph.");
+        if (options.Paths is not null && preferences.relativePreference != RelativePreferenceKind.Relative)
+            throw new ProjectException("semanticUnsupported", "Diagnostic formatting requires paths reverse mapping outside the current checker. Use --inspect-project to inspect the resolved graph.");
         if (pathsOnly)
             return "";
         var endings = preferences.getAllowedEndingsInPreferredOrder(importMode);
-        string path = TsPath.GetRelativePathFromDirectory(info.SourceDirectory, moduleFileName);
-        if (TsPath.GetRootLength(path) == 0)
-            path = TsPath.EnsurePathIsNonModuleName(path);
+        var (relativePath, inSameRoot) = host.CaseSensitivity().RelativePathFromDirectory(
+            TsPath.RootedDirectoryPathFromPath(getPath(info.SourceDirectory, host)),
+            TsPath.RootedFilePathFromPath(getPath(moduleFileName, host)));
+        string path = moduleFileName;
+        if (inSameRoot)
+        {
+            string bytes = relativePath.AsModuleSpecifier().AsString();
+            path = host.FileNamesAreGoBytes ? bytes : GoString.ToString(bytes);
+        }
         string relative = processEnding(path, moduleFileName, endings, options, host);
         if (!options.GetResolvePackageJsonImports() || preferences.relativePreference == RelativePreferenceKind.Relative)
             return relative;
@@ -160,7 +193,7 @@ internal static partial class ModuleSpecifiers
         string fromImports = tryGetModuleNameFromPackageJsonImports(moduleFileName, info.SourceDirectory, options, host, importMode, endings.Contains(ModuleSpecifierEnding.TsExtension));
         if (fromImports.Length == 0)
             return relative;
-        throw new NotSupportedException("Generated package imports specifiers are unsupported.");
+        throw new ProjectException("semanticUnsupported", "Diagnostic formatting requires generated package imports specifiers outside the current checker. Use --inspect-project to inspect the resolved graph.");
     }
 
     private static string tryGetModuleNameFromPackageJsonImports(string moduleFileName, string directory, CompilerOptions options, IModuleSpecifierGenerationHost host, ResolutionMode mode, bool preferTs)

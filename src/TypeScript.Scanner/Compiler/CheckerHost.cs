@@ -9,6 +9,12 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
 
     CompilerOptions Options { get; }
 
+    // Authored semantic admission: full graph resolution versus named legacy policy.
+    bool AllowsNonRelativeModuleSpecifiers { get; }
+
+    // Authored byte/scalar adapter boundary; not a resolver operation.
+    string GetSourceFileNameGoBytes(SourceFile sourceFile);
+
     ResolvedModule? GetResolvedModule(SourceFile importingFile, string moduleReference, ResolutionMode mode);
     SourceFile? GetSourceFileForResolvedModule(ResolvedModule module);
     ModuleKind GetEmitModuleFormatOfFile(SourceFile sourceFile);

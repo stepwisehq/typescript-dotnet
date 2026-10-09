@@ -1,0 +1,1746 @@
+{
+  "schemaVersion": 1,
+  "campaign": "complete-source-import-module-resolution",
+  "baseline": "37bd57d",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selection": {
+    "productionFiles": 5,
+    "productionLines": 3272,
+    "productionFunctions": 149,
+    "originalTestFiles": 3,
+    "originalTestBodies": 38
+  },
+  "rules": {
+    "assertions": "Retain every applicable original assertion and input domain; top-level scheduling adaptations and host substitutions recorded independently.",
+    "counts": "Original body counts are not corpus cases, assertions, branches or dependency completions.",
+    "concurrency": "Use real parallel workers with original phase gates and identity/cache assertions.",
+    "historical": "Accepted baseline proofs, corpora and expectations remain immutable."
+  },
+  "functions": [
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+      "name": "TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 11,
+      "bodySha256": "5173312c9b0552f0af4e43689b87fd3c3155589a4538e3d8d0c4d53a6998e525",
+      "family": "private-helper",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+      "name": "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 85,
+      "bodySha256": "73c0206c78c9114e7e0ba9d9060745cb377828f13381bae6419287ad17428822",
+      "family": "private-helper",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestExtensionReplacementPreservesEmptyAndDotStems",
+      "name": "TestExtensionReplacementPreservesEmptyAndDotStems",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 102,
+      "bodySha256": "4c09caa1e5e9419504cdd3072eb1349bff70f8a3d78ae2787ab5f64e8d4fb9f3",
+      "family": "private-helper",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestOutputDirectoriesRemoveTrailingSeparators",
+      "name": "TestOutputDirectoriesRemoveTrailingSeparators",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 132,
+      "bodySha256": "9af0b174f93b42dfe4deb6c7781e4ddf70aaaacf18913269d686a0572e5c401c",
+      "family": "private-helper",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolverSharedData",
+      "name": "TestResolverSharedData",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 42,
+      "bodySha256": "256ceff3396ee9c480e4d67136f84b217bfa504eaf7bbb58b596fd20a2dea5b1",
+      "family": "shared-data-cache",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveModuleNameTrailingSlash",
+      "name": "TestResolveModuleNameTrailingSlash",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 54,
+      "bodySha256": "20765e8abcbfe80637ab5b0708a157b7e7e74b2a0b764d6ae8fc6a2a7cedd954",
+      "family": "resolution",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolutionDataCaches",
+      "name": "TestResolutionDataCaches",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 83,
+      "bodySha256": "a696136bcd8be58eb690fc93ea8d42c63f294df5cb57b2c0d5bc8c79f4fc50ab",
+      "family": "shared-data-cache",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveDynamicModuleNameUsingRootDirs",
+      "name": "TestResolveDynamicModuleNameUsingRootDirs",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 128,
+      "bodySha256": "7d42f5f5dd9a13bf197a4d6a2b2e4f0fddc7fd42c7aa3554e4406a46cac51b55",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestRootDirsPreservesExceptionalDynamicSegments",
+      "name": "TestRootDirsPreservesExceptionalDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 183,
+      "bodySha256": "6d9a299f3009aabd590441ab13c3941beadb0a102c49db3cf57342058c0c69fd",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestRootDirsRejectsUnrepresentableDiskSegments",
+      "name": "TestRootDirsRejectsUnrepresentableDiskSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 218,
+      "bodySha256": "5a328844b57ba5bac4d2639b581ff362c15b8147a2cb19d4bbbe4fecac803f0b",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestRootDirsEscapesRootLikeDynamicSegments",
+      "name": "TestRootDirsEscapesRootLikeDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 258,
+      "bodySha256": "75fab23c55d95832be3ffdb2a6f3e6e77fd915e7a54f75ce82af22e678e5e4e2",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestRootDirsPreservesRelativeDiskSuffixes",
+      "name": "TestRootDirsPreservesRelativeDiskSuffixes",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 303,
+      "bodySha256": "20aab024bf4fc3514e02c40c82e5d76f792997f7bca4c818b7fddda94c2b885f",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestRootDirsPreservesRelativeDirectoryIntent",
+      "name": "TestRootDirsPreservesRelativeDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 351,
+      "bodySha256": "84249aa737b291e8e9dbc5ff7082ad4c34a6aaea7cd546f862a666609c81c358",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveDynamicPackageJSONPath",
+      "name": "TestResolveDynamicPackageJSONPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 427,
+      "bodySha256": "377f8678139470b2ed50d6ceb157a508b133dbcc350b29a997198b075f69449b",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveDynamicPackageSubpathFile",
+      "name": "TestResolveDynamicPackageSubpathFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 465,
+      "bodySha256": "dd88c2a748b17c1435077cde040bbe984bf894a74ffe25f64c9c1fa278dfc202",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveDynamicESMPackageIndexFromReservedDirectory",
+      "name": "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 496,
+      "bodySha256": "ce7a633803682ee90353c0a051d3856d8181aea0eae8a4f9b2dafe7f7ab53f8a",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveDynamicDottedDirectory",
+      "name": "TestResolveDynamicDottedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 529,
+      "bodySha256": "92623a6d0893e4be9469265287d05333a75c1760895067eae5aa6fd83a183318",
+      "family": "dynamic-paths",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolvedModuleCarriesCaseInsensitivePath",
+      "name": "TestResolvedModuleCarriesCaseInsensitivePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 562,
+      "bodySha256": "08d75206e4ba0b9d4f3593f173954136ded483980625c6181f4bac9f18273bf9",
+      "family": "typed-result",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolvedTypeReferenceDirectiveCarriesPath",
+      "name": "TestResolvedTypeReferenceDirectiveCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 588,
+      "bodySha256": "e4edb0275abaac7ea9831d6328512f1d3c153c4136f0a0cc12df9b44156a2493",
+      "family": "typed-result",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolvedEntrypointCarriesPath",
+      "name": "TestResolvedEntrypointCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 619,
+      "bodySha256": "0540f318180c41922f7dac1f5157806275cfd24603eaa37ec0b0ccd5fdb60828",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicExportPatternEntrypointUsesLogicalName",
+      "name": "TestDynamicExportPatternEntrypointUsesLogicalName",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 661,
+      "bodySha256": "bba74b5267c8adfc57e8aed61dce217a5c8d4df2a565c0f18ed4be0b130b192c",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+      "name": "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 742,
+      "bodySha256": "8e243d3a8980624d93d9344072ff8585c07824519964fbeded1e5a89ffce8594",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+      "name": "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 796,
+      "bodySha256": "cb75310bd105e8dd2d457909b83bfeee0e0ab82d9371c46989c1fe721b8be53b",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicExportPatternPreservesStaticSourcePrefix",
+      "name": "TestDynamicExportPatternPreservesStaticSourcePrefix",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 852,
+      "bodySha256": "ed74b3e1a14a1b198bf4bdd9018ed37b1ea04fcde85b0190038db1376bd0289c",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+      "name": "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 900,
+      "bodySha256": "6f8918b8388eb2d43d8f0a1904485d24ac95787904c38b51a6a01d27ae0c6743",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicEntrypointsPreserveCaseDistinctFiles",
+      "name": "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 948,
+      "bodySha256": "cf271093460e0ec496389066e852517527957a3a69c26cca6a5d7405670893c1",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDiskExportPatternKeepsReservedPrefixLiteral",
+      "name": "TestDiskExportPatternKeepsReservedPrefixLiteral",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 992,
+      "bodySha256": "64362dee891e3d6a5a2f1ac5d78a1690183bf9a8f336364d66dda1d2a683fcb9",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicExportPatternUnderExceptionalParent",
+      "name": "TestDynamicExportPatternUnderExceptionalParent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1032,
+      "bodySha256": "50a24a84fba883943c0b29624e6862edfcda652c1535aa673d140f809b57308e",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestDynamicExportPatternWithEmptyMatch",
+      "name": "TestDynamicExportPatternWithEmptyMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1081,
+      "bodySha256": "45a2166d2fd100c85c7c774647d87fcaea2a0e851ee87b6af92653c617af4a3b",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+      "name": "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1138,
+      "bodySha256": "aae9680eb09d770a15c2b79bca1faf4a63448d89f66dabeeee904f6c30b39686",
+      "family": "entrypoints",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity",
+      "name": "TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1181,
+      "bodySha256": "6b01c820839317d594f9897492bc25b65e366dd82182e0a16bb7801281f5afce",
+      "family": "shared-data-cache",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveModuleNameBlockedByNullExport",
+      "name": "TestResolveModuleNameBlockedByNullExport",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1200,
+      "bodySha256": "a1c1c81bfdf2e246535ff3dace47f383930b51b891020634d908bf4d866a2175",
+      "family": "resolution",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+      "name": "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1224,
+      "bodySha256": "2ab71ffc1f13de696b2bbe1be875de37cb4132fa6f4873275c2f28fd5e794d4d",
+      "family": "resolution",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveModuleNameTrailingSlashRace",
+      "name": "TestResolveModuleNameTrailingSlashRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1335,
+      "bodySha256": "f8d9c2053e419c67d70dfce937bd87773ae9221be91e113be64eb772ef41d0cb",
+      "family": "concurrency",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolveSubpathNilContentsRace",
+      "name": "TestResolveSubpathNilContentsRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1410,
+      "bodySha256": "8eab40bedc59c761227cc681d3e7512d2d202d03b54cd34e67085616fbd99b1b",
+      "family": "concurrency",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestNodeModulePackageRoot",
+      "name": "TestNodeModulePackageRoot",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1495,
+      "bodySha256": "0406babb363e01a656dd06ff86c5fab77c82078ab3ec86700e9373de2f869bff",
+      "family": "private-helper",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestResolvePeerDependencyNilContentsRace",
+      "name": "TestResolvePeerDependencyNilContentsRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1541,
+      "bodySha256": "37acca91d1282f684b6cf19b1a862ae9d07d2d3f0db240ac9fb63ad074a097a5",
+      "family": "concurrency",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-core.md",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "id": "github.com/microsoft/TypeScript/tsc/internal/module.TestStaticResolver",
+      "name": "TestStaticResolver",
+      "source": "upstream/TypeScript/tsc/internal/module/staticresolver_test.go",
+      "sourceSha256": "4d0841fb322ff010922760cccdcbcb2094b96ec538bbb5877772cd4ef9ea642c",
+      "line": 12,
+      "bodySha256": "f8a497467d3f44b8f1af6b7654779218b478f8c6244ce10f9a90fe4cb4b11907",
+      "family": "static",
+      "disposition": "complete-original-assertion-body-required",
+      "implementation": "translated-shared-body",
+      "review": {
+        "status": "independent-assertion-review-passed",
+        "report": "docs/progress/review-resolution-assertions.json",
+        "scope": "Complete original assertion/domain preservation; runtime acceptance separately recorded"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "originalDirectTests",
+          "bodies": 38
+        },
+        "managed": {
+          "status": "passed",
+          "snapshot": "final-source10",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit",
+          "mode": "same shared bodies via xUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    }
+  ],
+  "dependencyInventory": {
+    "status": "applicability-review-closed",
+    "retained": "Accepted options/packagejson/semver/typed-path/read-FS bodies rerun unchanged in the retained cascade; not newly ported originals.",
+    "selected": [
+      "Core.Deduplicate has no direct original unit; one authored shared body preserves nil/no-copy/copy/mutation invariants.",
+      "Core.NodeCoreModules and NonRelativeModuleNameForTypingCache have no direct pinned unit tests; source review plus genuine Program ordinary CLI node:fs/implicit-types (2591) and direct @types (6137) witnesses.",
+      "Selected AST module/emit/JSX/parse-options and compiler usage-mode helpers have no dedicated direct assertions in pinned unit files; transformer fake-program declarations and fourslash comments are not those original assertions. Actual source graph requests cover mode, synthetic imports, JS depth, noResolve, package format and source parse diagnostics.",
+      "Required parser/binder/include diagnostic producers reuse retained assertions where applicable and receive actual original graph/ordinary semantic examples; no whole AST/Binder/Compiler completion claim."
+    ],
+    "newPreservedOriginalBodiesBeyondModule38": 0
+  },
+  "compilerFixtureInventory": {
+    "status": "all76-dispositioned",
+    "catalog": "docs/resolution-compiler-inputs.json",
+    "fixtures": 76,
+    "adaptedSourceInputs": 72,
+    "removedModeOnlyExclusions": 4,
+    "requests": 105,
+    "policy": "Original extracted source bytes preserved. Authored config and explicit embedded-config overlay omissions are recorded per fixture. No original checker/emit assertion success claim.",
+    "execution": {
+      "originalGo": "passed",
+      "managed": "passed",
+      "native": "passed",
+      "requests": 105,
+      "report": "validation/results/resolution-verified.json",
+      "section": "resolutionNative.compiler-inputs"
+    }
+  },
+  "sharedRegistry": {
+    "originalBodies": 38,
+    "classes": {
+      "ModuleCandidateChecks": 1,
+      "ModulePackageRootChecks": 1,
+      "ResolutionDataChecks": 3,
+      "ResolverBasicChecks": 3,
+      "ResolverConcurrencyChecks": 3,
+      "ResolverDynamicChecks": 10,
+      "ResolverEntrypointChecks": 13,
+      "ResolverInternalChecks": 3,
+      "StaticResolverChecks": 1
+    },
+    "execution": "accepted-source10-native40-xunit40-original38",
+    "managed": {
+      "status": "passed",
+      "count": 40,
+      "originalBodies": 38,
+      "authoredBodies": 2,
+      "snapshot": "final-source10",
+      "mode": "same shared bodies via xUnit",
+      "report": "validation/results/resolution-verified.json"
+    },
+    "earlyNative": {
+      "status": "risk-evidence-only",
+      "snapshot": "build3",
+      "completedPassingFamiliesOriginalBodies": 35,
+      "authoredBodies": 2,
+      "dataOnlyCompletedBeforeKnownFailure": true,
+      "cacheBodyPartial": "nil InfoCacheEntry.Exists source repair subsequently closed in build4",
+      "mismatchedCaseBody": "not reached in failed data family",
+      "report": "artifacts/resolution-validation/build3/early-native/runtime/report.json"
+    },
+    "native": {
+      "status": "passed",
+      "count": 40,
+      "originalBodies": 38,
+      "authoredBodies": 2,
+      "report": "validation/results/resolution-verified.json",
+      "platform": "Linux x64 NativeAOT"
+    },
+    "xUnit": {
+      "status": "passed",
+      "count": 40,
+      "report": "validation/results/resolution-verified.json",
+      "section": "resolutionXUnit"
+    }
+  },
+  "authoredSharedControls": [
+    {
+      "name": "Core.Deduplicate.NilAliasAndMutation",
+      "class": "Resolution.Tests.ResolutionDependencyTests",
+      "source": "upstream/TypeScript/tsc/internal/core/core.go",
+      "sourceFunction": "Deduplicate",
+      "originalUnitApplicability": "No direct original unit invokes Deduplicate; both original core test functions are unrelated.",
+      "assertions": "nil/no-copy unique/copy-on-first-duplicate/stable order/source retained/result mutation isolation",
+      "execution": {
+        "managed": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    },
+    {
+      "name": "Graph.UnicodeFileNameBinderAndDiagnosticRoles",
+      "class": "Resolution.Tests.GraphByteRoleTests",
+      "source": "upstream/TypeScript/tsc/internal/binder/binder.go",
+      "sourceFunction": "bindSourceFileIfExternalModule",
+      "assertions": "Actual graph raw Unicode filename/path/module-symbol and parse diagnostic owner; default legacy scalar-role producer retains filename and emits same byte symbol; default/null and empty scalar/raw filename roles preserve public representation and bind quoted-empty module symbol with actual export.",
+      "execution": {
+        "managed": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        },
+        "native": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionSharedChecks",
+          "platform": "Linux x64 NativeAOT"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "validation/results/resolution-verified.json",
+          "section": "resolutionXUnit"
+        }
+      }
+    }
+  ]
+}

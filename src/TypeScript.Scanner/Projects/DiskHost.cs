@@ -167,3 +167,89 @@ internal sealed class ProjectDiskHost
         }
     }
 }
+
+// The legacy entry keeps its named admission policy; the Module algorithm is
+// shared with full resolution. Metadata reads retain their ancestor exception.
+internal interface ILegacyResolutionAdmissionHost
+{
+    void ValidateDirectoryPackageJson(RootedDirectoryPath directory);
+}
+
+internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Modules.IResolutionHost, TypeScript.Vfs.IFS, ILegacyResolutionAdmissionHost
+{
+    private bool resolvingModule;
+
+    // Authored named legacy admission surrounds the actual shared resolver.
+    // Candidate search and publication remain exclusively Module responsibilities.
+    internal TypeScript.Modules.ResolvedModule? ResolveModuleName(TypeScript.Modules.DefaultResolver resolver,
+        string moduleName, RootedFilePath containingFile, ResolutionMode mode)
+    {
+        string name = ProjectDiskHost.DecodeModuleReference(moduleName);
+        if (!TsPath.PathIsRelative(name))
+            throw new ProjectException("moduleSpecifier", "Only relative module specifiers are supported: " + name, containingFile.ToUnicode());
+        if (mode is not (ResolutionMode.None or ResolutionMode.ESNext))
+            throw new ProjectException("resolutionMode", "Only Bundler ES-module resolution is supported.", containingFile.ToUnicode());
+        string candidate = TsPath.ResolvePath(containingFile.Directory().ToUnicode(), name);
+        disk.EnsureBounded(candidate, inspectSymlinks: false);
+        bool previous = resolvingModule;
+        resolvingModule = true;
+        try
+        {
+            var(result, _, error) = resolver.ResolveModuleName(moduleName, containingFile, mode);
+            if (error is not null) throw error;
+            return result;
+        }
+        finally
+        {
+            resolvingModule = previous;
+        }
+    }
+
+    public void ValidateDirectoryPackageJson(RootedDirectoryPath directory)
+    {
+        if (!resolvingModule) return;
+        string packageJson = TsPath.CombinePaths(directory.ToUnicode(), "package.json");
+        if (disk.FileExists(packageJson))
+            throw new ProjectException("packageJsonResolution", "Resolution requires unsupported package metadata: " + packageJson, packageJson);
+    }
+
+    public TypeScript.Vfs.IFS FS() => this;
+    public RootedDirectoryPath GetCurrentDirectory() => RootedDirectoryPath.FromUnicode(disk.Root);
+    public CaseSensitivity CaseSensitivity() => TypeScript.Scanner.CaseSensitivity.CaseSensitive;
+    public bool FileExists(RootedFilePath path)
+    {
+        string text = path.ToUnicode();
+        if (path.BaseName() == "package.json") return disk.MetadataFileExists(text);
+        bool exists = disk.FileExists(text);
+        if (exists && resolvingModule && (!text.EndsWith(".ts", StringComparison.Ordinal) || TsPath.IsDeclarationFileName(text)))
+            throw new ProjectException("resolvedFileForm", "Upstream resolution selects an unsupported user file: " + text, text);
+        return exists;
+    }
+    public (string Contents, bool Ok) ReadFile(RootedFilePath path)
+    {
+        string text = path.ToUnicode();
+        if (path.BaseName() == "package.json")
+        {
+            byte[] bytes = disk.ReadMetadata(text);
+            return (GoString.FromBytes(bytes), bytes.Length != 0);
+        }
+        if (!disk.FileExists(text)) return ("", false);
+        return (GoString.FromBytes(disk.Read(text)), true);
+    }
+    public bool DirectoryExists(RootedDirectoryPath path) => disk.MetadataDirectoryExists(path.ToUnicode());
+    public TypeScript.Vfs.Entries GetAccessibleEntries(RootedDirectoryPath path)
+    {
+        disk.EnsureBounded(path.ToUnicode());
+        return TypeScript.Vfs.OsVfs.OsVfs.FS().GetAccessibleEntries(path);
+    }
+    public TypeScript.Vfs.FileInfo? Stat(RootedPath path)
+    {
+        disk.EnsureBounded(path.ToUnicode());
+        return TypeScript.Vfs.OsVfs.OsVfs.FS().Stat(path);
+    }
+    public RootedPath Realpath(RootedPath path)
+    {
+        disk.EnsureBounded(path.ToUnicode());
+        return TypeScript.Vfs.OsVfs.OsVfs.FS().Realpath(path);
+    }
+}

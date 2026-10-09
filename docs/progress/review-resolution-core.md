@@ -1,0 +1,50 @@
+# Independent Module source review
+
+Review checkpoint 2026-10-09, upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e`, campaign baseline `37bd57d`, current copied9. Support independently reviewed the four core-owned Module counterparts below; support-owned Util is excluded from this verdict and independently reviewed by core. No new core algorithm discrepancy was found in the reviewed source packet. First gate passed new native216/shared40/order30/CLI11 but stopped on support's public checking filename role regression. The narrow source repair was independently reviewed by core; copied9 configuration integration1, retained Projects27 and Go-referenced CLI11 all pass. R5 outside-root capability expansion is explicitly recorded in the [support checkpoint](resolution-support.md). Fresh full cascade/NativeAOT acceptance remains open. This is **not acceptance approval**.
+
+## Source responsibilities reviewed
+
+[Resolver](../../src/TypeScript.Scanner/Module/Resolver.cs): candidate construction and dynamic directory/file identity; normalized directory intent; state initialization and redirected options; request caches and trace bypass; config/package/type-root/typings lookups; conditional exports/imports, self references, ordered patterns, arrays and explicit null blocking; scoped package/subpath/typesVersions; output-to-input mapping; paths/rootDirs; extension substitution and module suffixes; package field validation/partial parsed metadata; peer identities and symlinks; conditions, automatic type names, and entrypoint discovery/condition sets. Review compared the corresponding original functions, not only the existing fixture outputs. String prefix/suffix and peer-name ordering use ordinal byte-string comparisons; entrypoint insensitive matching uses the pinned Go simple-fold implementation rather than culture rules. The resolver retains the source's Node16/NodeNext/Bundler-only switch and original invalid-value failure.
+
+[Types](../../src/TypeScript.Scanner/Module/Types.cs): actual interfaces, fields/flags, extension text/array order and normalized Go-zero PackageId value semantics. ResolvedModule.IsResolved accepts nil exactly as source; ResolvedTypeReferenceDirective.IsResolved retains its strict receiver. Public typed path fields preserve Go-byte identity. Added convenience constructors and test visibility are authored seams, not extra source responsibilities.
+
+[Cache](../../src/TypeScript.Scanner/Module/Cache.cs): mode/directory/redirect-sensitive keys; module first-published value including null versus type-directive overwrite; parsed-pattern cache keyed by the actual map object including the nil map; computation outside publication and winner return; shared options/extra-extension references; ResolutionData.Clone's copied package table/shared entry pointers; fresh per-resolver request caches. Locks and managed collections replace SyncMap storage, without claiming runtime map topology or allocation parity.
+
+[StaticResolver](../../src/TypeScript.Scanner/Module/StaticResolver.cs): separate unset mode/directory bits, canonical path keys, exact lookup precedence, duplicate/empty-name errors, null result as a found entry, fallback suppression/forwarding, and untouched type-directive/data forwarding. Duplicate-name quoting uses the accepted pinned Go quote helper.
+
+The C# function flow remains recoverable against the source boundaries. Some mechanical expression-bodied leaf methods and extension-mask short-circuit chains are compact, but their branch/priority order was checked explicitly; the review does not treat compactness as proof of completeness.
+
+## Original assertion review
+
+[ResolutionDataChecks](../../validation/Resolution.Checks/ResolutionDataChecks.cs) preserves all three original functions' assertions. The shared-data closure follows actual managed fields and rejects unknown host/interface/delegate/object payloads. Only the exact InfoCache gate representing the source mutex and the original Diagnostic/PackageJson leaves are exempt; BCL collection representation is explicitly separate from source container topology. Cache sizes, result and cloned-entry pointer identity, fresh rebound caches, and negative/source-versus-new-host behavior remain asserted.
+
+[ResolverConcurrencyChecks](../../validation/Resolution.Checks/ResolverConcurrencyChecks.cs) preserves all three race bodies' target filesystem gates, distinct containing-file cache keys, false-then-true lookup and separately gated ReadFile phases, peer first-result wait, complete worker outcomes and no-panic requirement. Real Tasks and bounded signals replace goroutines/context cancellation; no sequential substitute or removed assertion was accepted. The scope is these specified interleavings, not all concurrent executions.
+
+## Findings and remaining integration work
+
+Copied build 3 reached a genuine adjacent cache receiver adaptation defect: upstream InfoCacheEntry.Exists and GetContents explicitly accept nil, while the prior C# instance calls could dereference null. Both are source-repaired as nullable extension operations; WithPackageDirectory remains strict. The unchanged original data assertions passed in coherent build 4, whose dispatcher completed all 38 original Module bodies and two authored controls. This is a concrete runtime finding, not a resolver algorithm exclusion.
+
+The authored CLI trace projection previously did not recognize actual typed path arguments retained by the resolver; static typed descriptors compile in snapshot5. A subsequently reached PackageDirectory argument now has its own explicit byte/display descriptor through AsDirectoryPath. The resolver trace objects themselves were not rewritten; its ordinary CLI witness passes on copied7 as part of [CLI11](../../artifacts/resolution-validation/build7/ordinary-cli11/report.json).
+
+Existing partial ModuleSpecifiers previously rejected package targets before source existing-import reuse and mixed graph byte versus legacy Unicode path roles. Parent approved the now-staged finite original target/canonicalization/reuse repair, including actual package-dedup redirect relationships; core independently reviewed this source packet without a finding. Broad package/path reverse generation remains external and must produce explicit semanticUnsupported after truthful graph resolution, rather than an unhandled formatter crash or altered graph.
+
+The original graph observer may omit exactly contract-external root/default-library/automatic/reference stages and lib-reference scheduling/owned diagnostics, with options and actual AST metadata unchanged. Reproducible scoped overlay and explicit unscheduled library observations are required. No custom graph traversal replaces original loader tasks.
+
+## Reviewed packet hashes
+
+| Counterpart/assertions | SHA-256 |
+| --- | --- |
+| [Resolver.cs](../../src/TypeScript.Scanner/Module/Resolver.cs) | `41b1de818f95de0e444c1dc515eb06f860e2bad2cd7d7763b6f300b3c44d9770` |
+| [Types.cs](../../src/TypeScript.Scanner/Module/Types.cs) | `83aeaa3bd9afb1c48b4c2668ddbc40e6d5ea4111489e60d2a934efe61e5ff618` |
+| [Cache.cs](../../src/TypeScript.Scanner/Module/Cache.cs) | `5a7fb6505d7c9608de66629103367180f69e9727047b8b3644ef4e2973925d0b` |
+| [StaticResolver.cs](../../src/TypeScript.Scanner/Module/StaticResolver.cs) | `6ecebf881527d3157988f1ba96389ea91e90bec8bebd1d7cb02b6cee2b9dd21c` |
+| [ResolutionDataChecks.cs](../../validation/Resolution.Checks/ResolutionDataChecks.cs) | `a1a431b7e858c2b34d0931ebd14cd967052ed8db694fb694f60c79ad420763b6` |
+| [ResolverConcurrencyChecks.cs](../../validation/Resolution.Checks/ResolverConcurrencyChecks.cs) | `58353f8de79cd0dbdb2f27c66d1aa9c5ee76620c8d4d6fd23da4ef15764dab3c` |
+
+The genuine graph observer prompted a concrete additional selected Compiler omission finding: old inclusion diagnostics assumed no package/redirect metadata. Snapshot5 now compiles source explainRedirectAndImpliedFormat, final stored module/type ResolutionDiagnostics, synthetic preferred-location exclusion and direct unknown-type reference behavior, independently source-reviewed by core. This is separate from the complete Module source verdict; targeted original graph witnesses must still validate it. The observer NoResolve type rows now use unspecified mode directly from the skipped-stage observation, with no mode-helper replay.
+
+## Copied7–8 integration review
+
+The core-owned checker builtin diagnostic selector and direct `@types/` diagnostic were independently compared with their actual original branches. The combined [NodeCoreModules table and typing-cache leaf](../../src/TypeScript.Scanner/Core/NodeModules.cs) retain all original names, ordinal membership, prefix construction and shared once-initialized table identity. Lazy storage is an authored adaptation; no allocation/map topology claim is made. No dedicated original core test was found. Genuine Program ordinary CLI witnesses under the unchanged three-library environment match builtin2591 and direct-import6137 completely, including locations/owners/text/chains/related information; [copied8 CLI11](../../artifacts/resolution-validation/build8/ordinary-cli11/report.json) passes all11.
+
+The core-owned optional legacy directory callback in [Resolver](../../src/TypeScript.Scanner/Module/Resolver.cs) was independently reviewed. It is an authored compatibility departure: after file probes fail, the directory exists, ESM mode is false and package metadata is eligible, the existing FS object may implement the named legacy admission interface. No new resolver/cache field exists. Default and graph hosts do not implement it, so their actual source search flow is unchanged. The callback receives the real candidate directory and cannot reject an earlier file winner. Support's host/loader and historical typed test adaptations were independently reviewed by core. [Actual retained dispatcher27](../../artifacts/resolution-validation/build8/projects-controls/report.json) now passes, including two additional authored winner/ancestor metadata controls.

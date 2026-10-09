@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "noEmit": true,
+        "noLib": true,
+        "types": [],
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "jsx": "react-jsx",
+        "baseUrl": ".",
+        "paths": {
+            "@models/*": [
+                "src/model/*"
+            ]
+        },
+        "maxNodeModuleJsDepth": 0
+    },
+    "files": [
+        "src/main.ts",
+        "src/common.cts"
+    ]
+}

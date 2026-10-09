@@ -7,13 +7,15 @@ using TypeScript.Scanner;
 namespace TypeScript.ModuleSpecifiers;
 internal static partial class ModuleSpecifiers
 {
-    private static int comparePathsByRedirect(ModulePath first, ModulePath second)
+    private static int comparePathsByRedirect(ModulePath first, ModulePath second, IModuleSpecifierGenerationHost host)
     {
         int redirect = second.IsRedirect.CompareTo(first.IsRedirect);
         if (redirect != 0)
             return redirect;
         int count = first.FileName.Count(ch => ch == '/').CompareTo(second.FileName.Count(ch => ch == '/'));
-        return count != 0 ? count : string.CompareOrdinal(GoString.ToUtf8(first.FileName), GoString.ToUtf8(second.FileName));
+        return count != 0 ? count : host.CaseSensitivity().CompareFilePaths(
+            TsPath.RootedFilePathFromPath(getPath(first.FileName, host)),
+            TsPath.RootedFilePathFromPath(getPath(second.FileName, host)));
     }
 
     internal static bool PathIsBareSpecifier(string path) => TsPath.GetRootLength(path) == 0 && !TsPath.PathIsRelative(path);

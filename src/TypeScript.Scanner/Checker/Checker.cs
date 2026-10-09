@@ -126,7 +126,7 @@ public sealed partial class Checker
         if (userFiles.Count == 0)
             throw new ArgumentException("Project has no user source files", nameof(host));
         foreach (var user in userFiles)
-            ProjectAdmission.Validate(user);
+            ProjectAdmission.Validate(user, host.AllowsNonRelativeModuleSpecifiers);
         return CreateCore(userFiles[0], CheckerProfile.Projects, null, host);
     }
 
@@ -28877,8 +28877,14 @@ public sealed partial class Checker
 {
     private Message getCannotResolveModuleNameErrorForSpecificModule(Node moduleName)
     {
-        if (Ast.IsStringLiteral(moduleName) && !moduleName.Text().StartsWith(".", StringComparison.Ordinal))
-            throw unsupported("resolveExternalModuleName: non-relative module reference");
+        // checker.go:15404. Module spelling is resolved by the real host;
+        // builtin names choose their original missing-types diagnostic.
+        if (Ast.IsStringLiteral(moduleName) && Core.NodeCoreModules().Contains(moduleName.Text()))
+        {
+            if (compilerOptions.UsesWildcardTypes())
+                return Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_node_Try_npm_i_save_dev_types_Slashnode;
+            return Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_node_Try_npm_i_save_dev_types_Slashnode_and_then_add_node_to_the_types_field_in_your_tsconfig;
+        }
         return null;
     }
 }
@@ -28919,6 +28925,12 @@ public sealed partial class Checker
             throw unsupported("resolveExternalModule: project host required");
         if (isForAugmentation)
             throw unsupported("resolveExternalModule: module augmentation");
+        // checker.go:15459. Full resolution can now reach direct @types names.
+        if (errorNode != null && moduleReference.StartsWith("@types/", StringComparison.Ordinal))
+        {
+            var withoutAtTypePrefix = moduleReference["@types/".Length..];
+            error(errorNode, Diagnostics.Cannot_import_type_declaration_files_Consider_importing_0_instead_of_1, withoutAtTypePrefix, moduleReference);
+        }
         if (importAttributesType == null)
             importAttributesType = emptyObjectType;
         var importingSourceFile = Ast.GetSourceFileOfNode(location);
@@ -28968,8 +28980,8 @@ public sealed partial class Checker
         SourceFile file = null;
         if (resolvedModule?.IsResolved() == true && resolutionDiagnostic == null)
         {
-            if (resolvedModule.Extension != ".ts" || resolvedModule.IsExternalLibraryImport)
-                throw unsupported("resolveExternalModule: package/non-TypeScript implementation resolution");
+            if (resolvedModule.Extension != ".ts")
+                throw unsupported("resolveExternalModule: non-TypeScript implementation resolution");
             file = program.GetSourceFileForResolvedModule(resolvedModule);
         }
 
@@ -28986,7 +28998,7 @@ public sealed partial class Checker
             if (file.Symbol != null)
                 return getMergedSymbol(file.Symbol);
             if (errorNode != null && moduleNotFoundError != null && !isSideEffectImport(errorNode))
-                error(errorNode, Diagnostics.File_0_is_not_a_module, GoString.ToUtf8(resolvedModule.ResolvedFileName));
+                error(errorNode, Diagnostics.File_0_is_not_a_module, resolvedModule.ResolvedFileName.AsString());
             return null;
         }
 
@@ -28995,7 +29007,7 @@ public sealed partial class Checker
         if (moduleNotFoundError != null)
         {
             if (resolutionDiagnostic != null)
-                error(errorNode, resolutionDiagnostic, moduleReference, GoString.ToUtf8(resolvedModule.ResolvedFileName));
+                error(errorNode, resolutionDiagnostic, moduleReference, resolvedModule.ResolvedFileName.AsString());
             else if (!compilerOptions.GetResolveJsonModule() && moduleReference.EndsWith(".json", StringComparison.Ordinal))
                 error(errorNode, Diagnostics.Cannot_find_module_0_Consider_using_resolveJsonModule_to_import_module_with_json_extension, moduleReference);
             else

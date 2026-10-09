@@ -1,6 +1,7 @@
 // Authored shared xUnit/Native AOT assertions, including explicitly adapted originals.
 using TypeScript.Compiler;
 using TypeScript.Modules;
+using TypeScript.PackageJson;
 using TypeScript.Scanner;
 
 namespace TypeScript.Projects;
@@ -119,11 +120,11 @@ public static partial class ProjectSupportChecks
         (string Directory, string Module, string Path, string Text, bool DirectoryOnly)[] rows = [("/project", "file", "/project/file", "/project/file", false), ("/project", "directory/", "/project/directory", "/project/directory/", true), ("/project", ".", "/project", "/project/", true), ("/project", ".\\", "/project", "/project/", true), ("/project/src", "../lib/", "/project/lib", "/project/lib/", true), ("/project/src", "..\\lib\\", "/project/lib", "/project/lib/", true), ("/project", "..", "/", "/", true), ("c:/project", "..", "c:/", "c:/", true), ("/project", "c:", "c:/", "c:/", true), ("/project", "//server", "//server/", "//server/", true), ("file:///project", "..", "file:///", "file:///", true), ("/project", "file://server", "file://server/", "file://server/", true)];
         foreach (var row in rows)
         {
-            var candidate = DefaultResolver.NormalizePathForCJSResolution(row.Directory, row.Module);
-            Equal(candidate.Path, row.Path);
+            var candidate = DefaultResolver.VerificationNormalizePathForCJSResolution(RootedDirectoryPath.FromUnicode(row.Directory), GoString.ToUtf8(row.Module));
+            Equal(candidate.Path.ToUnicode(), row.Path);
             Equal(candidate.DirectoryOnly, row.DirectoryOnly);
-            Equal(candidate.AsString(), row.Text);
-            Equal(candidate.HasTrailingDirectorySeparator(), row.DirectoryOnly);
+            Equal(GoString.ToString(candidate.Text), row.Text);
+            Equal(candidate.HasTrailingDirectorySeparator, row.DirectoryOnly);
         }
     }
 
@@ -177,21 +178,32 @@ public static partial class ProjectSupportChecks
         disk.Write("dep.js", "");
         disk.Write("models.types.ts", "export const n=3;");
         disk.Write("dir/index.ts", "export const n=2;");
-        var resolver = new DefaultResolver(new ProjectDiskHost(disk.Root));
+        disk.Write("package.json", "{\"type\":\"module\"}");
+        var host = new LegacyResolutionHost(new ProjectDiskHost(disk.Root));
+        var resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = host, CompilerOptions = ProjectConfiguration.CreateOptions() });
+        ResolvedModule? Resolve(string name) => host.ResolveModuleName(resolver, GoString.ToUtf8(name), RootedFilePath.FromUnicode(disk.Path("entry.ts")), ResolutionMode.ESNext);
         File.CreateSymbolicLink(disk.Path("shadow.js"), disk.Path("entry.ts"));
         disk.Write("shadow.ts", "export const x=1;");
-        Equal(resolver.ResolveModuleName("./shadow.js", disk.Path("entry.ts"), ResolutionMode.ESNext).ResolvedFileName, disk.Path("shadow.ts"));
-        ResolvedModule js = resolver.ResolveModuleName("./dep.js", disk.Path("entry.ts"), ResolutionMode.ESNext);
-        Equal(js.ResolvedFileName, disk.Path("dep.ts"));
+        Equal(Resolve("./shadow.js")!.ResolvedFileName.ToUnicode(), disk.Path("shadow.ts"));
+        ResolvedModule js = Resolve("./dep.js")!;
+        Equal(js.ResolvedFileName.ToUnicode(), disk.Path("dep.ts"));
         Equal(js.ResolvedUsingTsExtension, false);
-        ResolvedModule ts = resolver.ResolveModuleName("./dep.ts", disk.Path("entry.ts"), ResolutionMode.ESNext);
+        ResolvedModule ts = Resolve("./dep.ts")!;
         Equal(ts.ResolvedFileName, js.ResolvedFileName);
         Equal(ts.ResolvedUsingTsExtension, true);
-        Equal(resolver.ResolveModuleName("./models.types", disk.Path("entry.ts"), ResolutionMode.ESNext).ResolvedFileName, disk.Path("models.types.ts"));
-        Equal(resolver.ResolveModuleName("./dir", disk.Path("entry.ts"), ResolutionMode.ESNext).ResolvedFileName, disk.Path("dir/index.ts"));
-        Require(ReferenceEquals(js, resolver.ResolveModuleName("./dep.js", disk.Path("entry.ts"), ResolutionMode.ESNext)), "Positive resolution cache identity.");
-        var missing = resolver.ResolveModuleName("./missing", disk.Path("entry.ts"), ResolutionMode.ESNext);
-        Require(!missing.IsResolved() && ReferenceEquals(missing, resolver.ResolveModuleName("./missing", disk.Path("entry.ts"), ResolutionMode.ESNext)), "Negative resolution cache identity.");
+        Equal(Resolve("./models.types")!.ResolvedFileName.ToUnicode(), disk.Path("models.types.ts"));
+        Equal(Resolve("./dir")!.ResolvedFileName.ToUnicode(), disk.Path("dir/index.ts"));
+        Require(ReferenceEquals(js, Resolve("./dep.js")), "Positive resolution cache identity.");
+        var missing = Resolve("./missing");
+        Require(!missing.IsResolved() && ReferenceEquals(missing, Resolve("./missing")), "Negative resolution cache identity.");
+        // Authored legacy-admission controls: only reached directory metadata
+        // is rejected; a source winner and ancestor format metadata stay legal.
+        disk.Write("folder.ts", "export const value=1;");
+        disk.Write("folder/package.json", "{}");
+        Equal(Resolve("./folder")!.ResolvedFileName.ToUnicode(), disk.Path("folder.ts"));
+        var scope = resolver.GetResolutionData().NewResolver(host).GetPackageScopeForPath(RootedDirectoryPath.FromUnicode(disk.Root));
+        Require(scope.Exists(), "Ancestor package format metadata remains readable.");
+        Equal(scope!.Contents!.Fields.Type.GetValue(), ("module", true));
         ScalarModuleEncoding();
     }
 
@@ -232,7 +244,7 @@ public static partial class ProjectSupportChecks
             Equal(project.Check().Count, 0);
             var edge = project.ResolutionEdges.Single();
             Equal(edge.ModuleReference, "./" + name);
-            Equal(edge.Resolution.ResolvedFileName, disk.Path(name + ".ts"));
+            Equal(edge.Resolution.ResolvedFileName.ToUnicode(), disk.Path(name + ".ts"));
             var host = (ICheckerProgramHost)project;
             var formatter = (TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost)project;
             string validBytes = GoString.ToUtf8("./" + name);
@@ -261,18 +273,20 @@ public static partial class ProjectSupportChecks
         disk.Write("entry.ts", "");
         disk.Write("dep.d.ts", "");
         disk.Write("dep/index.ts", "");
-        var resolver = new DefaultResolver(new ProjectDiskHost(disk.Root));
-        Reject(() => resolver.ResolveModuleName("./dep", disk.Path("entry.ts"), ResolutionMode.ESNext), "resolvedFileForm");
+        var host = new LegacyResolutionHost(new ProjectDiskHost(disk.Root));
+        var resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = host, CompilerOptions = ProjectConfiguration.CreateOptions() });
+        ResolvedModule? Resolve(string name) => host.ResolveModuleName(resolver, GoString.ToUtf8(name), RootedFilePath.FromUnicode(disk.Path("entry.ts")), ResolutionMode.ESNext);
+        Reject(() => Resolve("./dep"), "resolvedFileForm");
         disk.Write("dotted.types.ts", "");
         disk.Write("dotted.d.types.ts", "");
-        Reject(() => resolver.ResolveModuleName("./dotted.types", disk.Path("entry.ts"), ResolutionMode.ESNext), "resolvedFileForm");
+        Reject(() => Resolve("./dotted.types"), "resolvedFileForm");
         disk.Write("folder/package.json", "{}");
         disk.Write("folder/index.ts", "");
-        Reject(() => resolver.ResolveModuleName("./folder", disk.Path("entry.ts"), ResolutionMode.ESNext), "packageJsonResolution");
-        Reject(() => resolver.ResolveModuleName("package", disk.Path("entry.ts"), ResolutionMode.ESNext), "moduleSpecifier");
+        Reject(() => Resolve("./folder"), "packageJsonResolution");
+        Reject(() => Resolve("package"), "moduleSpecifier");
         File.CreateSymbolicLink(disk.Path("link.ts"), disk.Path("entry.ts"));
-        Reject(() => resolver.ResolveModuleName("./link", disk.Path("entry.ts"), ResolutionMode.ESNext), "symlink");
-        Reject(() => resolver.ResolveModuleName("./node_modules/pkg", disk.Path("entry.ts"), ResolutionMode.ESNext), "nodeModules");
+        Reject(() => Resolve("./link"), "symlink");
+        Reject(() => Resolve("./node_modules/pkg"), "nodeModules");
     }
 
     // Adapted from TestProgram import/cycle order invariants: bounded POSIX paths,
@@ -289,7 +303,7 @@ public static partial class ProjectSupportChecks
         Sequence(project.UserFiles.Select(f => System.IO.Path.GetFileName(f.FileName())), new[] { "b.ts", "a.ts", "main.ts" });
         Equal(project.RootFiles.Count, 1);
         var a = project.UserFiles.Single(f => f.FileName().EndsWith("/a.ts", StringComparison.Ordinal));
-        Require(project.ResolutionEdges.Where(e => e.Resolution.ResolvedFileName == a.FileName()).All(e => ReferenceEquals(e.TargetFile, a)), "Normalized/cyclic paths must share actual SourceFile identity.");
+        Require(project.ResolutionEdges.Where(e => e.Resolution.ResolvedFileName.ToUnicode() == a.FileName()).All(e => ReferenceEquals(e.TargetFile, a)), "Normalized/cyclic paths must share actual SourceFile identity.");
     }
 
     private static void NoEmitFilter()

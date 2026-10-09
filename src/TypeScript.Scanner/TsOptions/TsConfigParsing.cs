@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of tsc/internal/tsoptions/tsconfigparsing.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using TypeScript.Scanner;
+using TypeScript.Modules;
 using TypeScript.Collections;
 using TypeScript.Vfs;
 using TypeScript.Vfs.VfsMatch;
@@ -942,7 +943,7 @@ public static partial class TsOptions
 
         var resolved = TypeScript.Modules.DefaultResolver.ResolveConfig(extendedConfig, basePath.ResolveFile("tsconfig.json"), fs);
         if (resolved.IsResolved())
-            return (RootedFilePath.FromGoString(resolved.ResolvedFileName), null);
+            return (resolved.ResolvedFileName, null);
         return (default, new() { CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, extendedConfig == "" ? Diagnostics.Compiler_option_0_cannot_be_given_an_empty_string : Diagnostics.File_0_not_found, extendedConfig == "" ? "extends" : extendedConfig) });
     }
 

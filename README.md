@@ -1,13 +1,20 @@
 # TypeScript port feasibility study
 
-The upstream configuration interpretation and file-discovery contract is now complete
-and verified under **Linux x64 Native AOT**. Use `tscheck --inspect-config <tsconfig>`
-for genuine interpretation/discovery and `tscheck --config <tsconfig>` for supported
-checking. See the [guide](./docs/CONFIGURATION.md),
-[assessment](./docs/CONFIGURATION-ASSESSMENT.md) and
-[proof](./validation/results/configuration-verified.json). Configuration support is
-broader than the current checker's language/project capabilities; unsupported checking
-is rejected explicitly.
+The upstream **source-import module-resolution contract is complete**, with actual
+**Linux x64 Native AOT** verification. Use `tscheck --inspect-project <tsconfig>` to
+inspect genuine config-driven dependency graphs, and `tscheck --config <tsconfig>`
+to check supported TS package projects. Resolution supports Node16, NodeNext and
+Bundler beyond the current checker's semantic capabilities; unsupported checking
+remains explicit. See the [guide](./docs/RESOLUTION.md),
+[assessment](./docs/RESOLUTION-ASSESSMENT.md),
+[source mapping](./source-map.json) and [proof](./validation/results/resolution-verified.json).
+
+All five upstream Module files /149 functions are translated and independently
+reviewed. The final gate passes 24,334 xUnit cases and all retained native regressions;
+new evidence includes 38 original test bodies and 216 compound Go comparisons.
+This is not full Program construction, arbitrary library/checker support or emit.
+Configuration interpretation/discovery remains available independently through
+`--inspect-config`; see its [guide](./docs/CONFIGURATION.md).
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained

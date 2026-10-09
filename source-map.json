@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded. Fixed generic-collection contract G1–G6 accepted with genuine bounded libraries under actual Linux x64 Native AOT; not whole checker/library/project parity. Fixed bounded ES-module project contract P1–P5 accepted on Linux x64 Native AOT; not full Program, module-resolution, checker or configuration parity. Fixed configuration interpretation/discovery contract S1–S6 accepted on Linux x64 Native AOT; all17 TsOptions files/210functions implemented and reviewed. Full Program, source resolver, checker and external-library parity remain separate.",
+  "checkpoint": "Accepted scanner/parser/syntax-AST foundation and fresh source-file binding completion contracts; accepted bounded scalar/object/named-data, non-generic callable, generic-collection and ES-module project capabilities; complete configuration interpretation/discovery (17 files/210 functions) and Module source-import resolution (5 files/149 functions). All accepted contracts have actual Linux x64 Native AOT evidence. Complete Program/environment construction, broader checker/library parity, emit and services remain separate. Historical checkpoint scopes and hashes are retained below.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -65,7 +65,7 @@
       "upstream": "tsc/internal/ast/ast.go",
       "destination": "src/TypeScript.Scanner/Ast/Ast.cs",
       "status": "partial",
-      "scope": "Accepted foundation extension: full syntax subtree-fact computations/caches and source position, identifier/name/token/declaration services, ordinary node/factory accessors. Bound Symbol identity is read only where original declaration maps require existing binding; no new binding/checking. Explicit function-by-function scope and review dispositions are in the foundation syntax inventory.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Original SourceFileMetaData fields. Authored explicit FileNameGoBytes accessor distinguishes legacy Unicode filename callers from raw-byte graph paths. Local accessor maps a null managed default filename to the original Go empty string; public checking filenames retain Unicode while standalone graph filenames remain raw.",
       "upstreamSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f",
       "scannerCheckpointScope": "Comment directive records only; no compiler AST.",
       "parserCheckpointScope": "Tagged syntax nodes, source-file parse metadata/diagnostics, node lists, parser factory support/accessors and JSDoc registration/cache. Compiler symbols, flow/service state, position-map API and general public transform facts excluded. Private JSX fact projection preserves module-detection pruning.",
@@ -73,7 +73,12 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "resolutionCampaignBaselineScope": "Accepted foundation extension: full syntax subtree-fact computations/caches and source position, identifier/name/token/declaration services, ordinary node/factory accessors. Bound Symbol identity is read only where original declaration maps require existing binding; no new binding/checking. Explicit function-by-function scope and review dispositions are in the foundation syntax inventory.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Original SourceFileMetaData fields. Authored explicit FileNameGoBytes accessor distinguishes legacy Unicode filename callers from raw-byte graph paths. Local accessor maps a null managed default filename to the original Go empty string; public checking filenames retain Unicode while standalone graph filenames remain raw.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -119,7 +124,7 @@
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Original Deduplicate helper required by automatic type-directive-name discovery; preserves nil, no-copy unique input, and copy-on-first-duplicate behavior.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
       "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
       "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded.",
@@ -136,7 +141,12 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Original Deduplicate helper required by automatic type-directive-name discovery; preserves nil, no-copy unique input, and copy-on-first-duplicate behavior.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -351,7 +361,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -383,8 +393,13 @@
       "upstream": "tsc/internal/ast/parseoptions.go",
       "destination": "src/TypeScript.Scanner/Ast/ParseOptions.cs",
       "status": "partial",
-      "scope": "Explicit source-file parse options and SetExternalModuleIndicator with all downstream syntax detection. Compiler-option selection GetExternalModuleIndicatorOptions/isFileForcedToBeModuleByFormat excluded; callers supply options. Path wrapper represented as string.",
-      "upstreamSha256": "d39e2cf56e0e9c0a69ca401d5f9db4a4c12fdefef4d012df0aed2782dbad1dd3"
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Original GetExternalModuleIndicatorOptions and format-forced module condition. Authored FileNameIsGoBytes option defaults false for legacy callers.",
+      "upstreamSha256": "d39e2cf56e0e9c0a69ca401d5f9db4a4c12fdefef4d012df0aed2782dbad1dd3",
+      "resolutionCampaignBaselineScope": "Explicit source-file parse options and SetExternalModuleIndicator with all downstream syntax detection. Compiler-option selection GetExternalModuleIndicatorOptions/isFileForcedToBeModuleByFormat excluded; callers supply options. Path wrapper represented as string.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Original GetExternalModuleIndicatorOptions and format-forced module condition. Authored FileNameIsGoBytes option defaults false for legacy callers.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/visitor.go",
@@ -448,7 +463,7 @@
       "upstream": "tsc/internal/ast/utilities.go",
       "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
       "status": "partial",
-      "scope": "Foundation syntax predicates, accessors, ancestors, names, declarations, modifiers and construction support; 424 upstream functions dispositioned in docs/foundation-utilities-source-inventory.json. Eleven later-state/configuration/emit exclusions remain explicit. Managed adaptations preserve upstream algorithms; independent body review and native campaign gate passed.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original GetImpliedNodeFormatForFile, GetEmitModuleFormatOfFileWorker, GetImpliedNodeFormatForEmitWorker, GetJSXImplicitImportBase, GetJSXRuntimeImport and ShouldTransformImportCall.",
       "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
       "parserCheckpointScope": "Parser-required syntax predicate and accessor dependency closure; semantic utilities excluded.",
       "binderCheckpointScope": "Parser syntax predicate/accessor closure plus 73 generated binder dependency functions and handwritten atomic node/symbol IDs, lazy symbol-table and raw ambient/private-name helpers. Includes source-local ModuleInstanceState/ancestor/export analysis, assignment/name/strictness predicates. Unneeded utilities, checker/cross-file name or reference resolution and general transform facts excluded.",
@@ -473,18 +488,28 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "projectsCampaignScope": "Selected original import/export/declaration helpers demanded by project checker paths; no broad foundation reopening.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Foundation syntax predicates, accessors, ancestors, names, declarations, modifiers and construction support; 424 upstream functions dispositioned in docs/foundation-utilities-source-inventory.json. Eleven later-state/configuration/emit exclusions remain explicit. Managed adaptations preserve upstream algorithms; independent body review and native campaign gate passed.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Selected original GetImpliedNodeFormatForFile, GetEmitModuleFormatOfFileWorker, GetImpliedNodeFormatForEmitWorker, GetJSXImplicitImportBase, GetJSXRuntimeImport and ShouldTransformImportCall.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
       "destination": "src/TypeScript.Scanner/Core/NodeModules.cs",
-      "status": "partial",
-      "scope": "Two fixed built-in module name tables used for syntax reference metadata; no resolution.",
-      "upstreamSha256": "48f2b6c2cade9277da82ea9cb8153cd5a7a6b42cc819500029106d9430739879"
+      "status": "ported",
+      "scope": "Complete original builtin name tables, once-initialized NodeCoreModules membership union and NonRelativeModuleNameForTypingCache. Ordinal HashSet/Lazy adapts source collections/once initialization.",
+      "upstreamSha256": "48f2b6c2cade9277da82ea9cb8153cd5a7a6b42cc819500029106d9430739879",
+      "resolutionCampaignBaselineScope": "Two fixed built-in module name tables used for syntax reference metadata; no resolution.",
+      "resolutionCampaignExtension": "Complete pinned NodeCoreModules once-initialized membership union and NonRelativeModuleNameForTypingCache dependency added to the retained original tables for source-faithful missing-module diagnostics. Standard Lazy<HashSet<string>> preserves once initialization and shared membership identity.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/tspath/path.go",
@@ -590,11 +615,16 @@
       "upstream": "tsc/internal/binder/binder.go",
       "destination": "src/TypeScript.Scanner/Binder/Binder.cs",
       "status": "ported",
-      "scope": "Complete source-file binder.go algorithms: 163 emitted functions plus manually adapted getBinder/two ActiveLabel accessors; putBinder/pool-return defer omitted in favor of fresh isolated managed binders. Symbols/scopes/declaration merges, CommonJS/expando/module patterns, ordered diagnostics and cyclic/shared flow graphs retained. Public raw-name wrappers and pinned 64-bit identity formatting explicit. Resolver siblings, checker, cross-file/module resolution, incremental rebinding and emit stages excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Narrow external-module symbol filename producer uses explicit source filename byte role; binder algorithms otherwise unchanged.",
       "upstreamSha256": "6c7acb7a20064075577af2412f6daf0a7d4eba023a0030fe2f4b060ded336dee",
       "bindingCompletionInventory": "docs/binding-completion-functions.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "resolutionCampaignBaselineScope": "Complete source-file binder.go algorithms: 163 emitted functions plus manually adapted getBinder/two ActiveLabel accessors; putBinder/pool-return defer omitted in favor of fresh isolated managed binders. Symbols/scopes/declaration merges, CommonJS/expando/module patterns, ordered diagnostics and cyclic/shared flow graphs retained. Public raw-name wrappers and pinned 64-bit identity formatting explicit. Resolver siblings, checker, cross-file/module resolution, incremental rebinding and emit stages excluded.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Narrow external-module symbol filename producer uses explicit source filename byte role; binder algorithms otherwise unchanged.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -606,7 +636,7 @@
       "bindingCompletionPreviousStatus": "partial",
       "bindingCompletionInventory": "docs/binding-completion-support-inventory.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -622,7 +652,7 @@
       "scope": "Complete flow.go flags, FlowNode/FlowList model and FlowLabel alias adaptation; both KindUnknown synthetic switch-clause/reduce-label payloads, factories and IsEmpty. Shared identity, cyclic graphs, ordered linked antecedents and undefined spans retained; static syntax/bound metadata authored for verification.",
       "upstreamSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/functionflags.go",
@@ -696,7 +726,7 @@
       "upstream": "tsc/internal/checker/checker.go",
       "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature construction, return resolution/cycles, contextual functions, call/overload selection, selected function-body/flow algorithms, local interfaces, merged anonymous instantiation caches and internal unique-symbol inference from caller declarations. Shared actual checker under explicit authored profile; selected contract only.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
       "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
       "scalarCheckerCheckpointScope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
       "objectCheckerCheckpointScope": "Selected scalar and finite anonymous object construction/context/member resolution/property reads/widening/cache/deferred diagnostics/type cycles; actual finite property-key extraction and primitive literal-key intersection reduction for diagnostic best matching. Scoped noLib initialization; named/generic/signature/index/retained intersection paths reject. Complete selected relation-key preimage replaces opaque XXH3 representation, preserving identity-order normalization.",
@@ -714,7 +744,12 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature construction, return resolution/cycles, contextual functions, call/overload selection, selected function-body/flow algorithms, local interfaces, merged anonymous instantiation caches and internal unique-symbol inference from caller declarations. Shared actual checker under explicit authored profile; selected contract only.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -906,7 +941,7 @@
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature/parameter/return/predicate and internal unique-symbol diagnostic serialization; general declaration emit remains excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Narrow diagnostic filename fallback uses explicit source filename byte role.",
       "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302",
       "scalarCheckerCheckpointScope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/literal/internal-union/anonymous object diagnostic nodes and static data-property serialization; actual pseudochecker reuse, enclosing symbol types, text-range/original links, cache reads/writes, truncation and cycle/symbol-depth states. Fixed default flag projection retains varying fully-qualified/InObjectTypeLiteral keys and actual reportedDiagnostic. Named/generic/mapped/accessor/signature/index/general emit branches reject.",
@@ -924,7 +959,12 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature/parameter/return/predicate and internal unique-symbol diagnostic serialization; general declaration emit remains excluded.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Narrow diagnostic filename fallback uses explicit source filename byte role.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -1803,13 +1843,18 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/CollectionAdmission.cs",
       "status": "new",
-      "scope": "Authored Collections profile source boundary, separate from authentic library declarations and actual checker algorithms.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Propagates explicit authored project resolution capability through validation; other semantic syntax boundaries remain unchanged.",
       "collectionsCampaignState": "accepted-collections-contract",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "projectsCampaignScope": "Authored reuse of accepted collection boundary with explicit selected ES-module forms; ordinary unsupported source remains distinct.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Authored Collections profile source boundary, separate from authentic library declarations and actual checker algorithms.",
+      "resolutionCampaignExtension": "Propagates explicit authored project resolution capability through validation; other semantic syntax boundaries remain unchanged.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
@@ -1982,7 +2027,7 @@
       "upstream": "tsc/internal/compiler/fileloader.go",
       "destination": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
       "status": "partial",
-      "scope": "Selected original source task/discovery/loading algorithms for bounded relative Bundler TypeScript checking, now consuming actual parsed absolute roots. Full Program/reference/content-mapped/default-library loading remains external.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original root/reference lookup, metadata, parse, explicit path/type directives, synthetic imports, import/augmentation resolution and usage/default/emit-mode functions. General Program environments/reference builds/content-mapper execution remain external.",
       "upstreamSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -1990,23 +2035,33 @@
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
       "configurationCampaignBaselineScope": "Selected processAllProgramFiles/root task/parse/import-discovery and usage-mode functions for fixed relative Bundler .ts projects and exact explicit libraries. Excludes package/project references, content mapping, implicit default libraries, automatic types, tracing and general hosts.",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Selected original source task/discovery/loading algorithms for bounded relative Bundler TypeScript checking, now consuming actual parsed absolute roots. Full Program/reference/content-mapped/default-library loading remains external.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Selected original root/reference lookup, metadata, parse, explicit path/type directives, synthetic imports, import/augmentation resolution and usage/default/emit-mode functions. General Program environments/reference builds/content-mapper execution remain external.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/filesparser.go",
       "destination": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
       "status": "partial",
-      "scope": "Selected parseTask load/subtasks, filesParser start/task dedup and final collection with original single-threaded LIFO scheduling. Preserve cyclic file identity/order and selected include diagnostics. Parallelism, pooling, redirects, JS depth and incremental behavior excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Original task publication, LIFO scheduling, path/casing identities, external JS depth, package deduplication and dependency postorder, with fresh managed task storage.",
       "upstreamSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Selected parseTask load/subtasks, filesParser start/task dedup and final collection with original single-threaded LIFO scheduling. Preserve cyclic file identity/order and selected include diagnostics. Parallelism, pooling, redirects, JS depth and incremental behavior excluded.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Original task publication, LIFO scheduling, path/casing identities, external JS depth, package deduplication and dependency postorder, with fresh managed task storage.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/fileInclude.go",
       "destination": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
       "status": "partial",
-      "scope": "Selected root/import include reasons plus genuine parsed configuration files/include matched-spec explanations, locations and arguments. Other reference/default/type-library include reasons remain outside.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original root/import/explicit path/type include reasons and source-backed reference locations; type include-location PackageId remains upstream zero. Default/automatic library and project-reference environments remain external.",
       "upstreamSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2014,36 +2069,51 @@
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
       "configurationCampaignBaselineScope": "Root/import include reasons and original diagnostic/reference-location helpers required by bounded project loading; other references and redirects excluded.",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Selected root/import include reasons plus genuine parsed configuration files/include matched-spec explanations, locations and arguments. Other reference/default/type-library include reasons remain outside.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Selected original root/import/explicit path/type include reasons and source-backed reference locations; type include-location PackageId remains upstream zero. Default/automatic library and project-reference environments remain external.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/processingDiagnostic.go",
       "destination": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
       "status": "partial",
-      "scope": "Selected original loading/casing diagnostic composition and include-reason chains for root/import failures; project/package/redirect paths excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original explaining-file processing and direct UnknownReference type diagnostic branch; unknown-lib behavior belongs to the explicitly external lib-reference stage.",
       "upstreamSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Selected original loading/casing diagnostic composition and include-reason chains for root/import failures; project/package/redirect paths excluded.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Selected original explaining-file processing and direct UnknownReference type diagnostic branch; unknown-lib behavior belongs to the explicitly external lib-reference stage.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/includeprocessor.go",
       "destination": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
       "status": "partial",
-      "scope": "Selected include-reason processing, configuration reference locations, file casing diagnostics and related information for bounded projects; package-format/redirect explanations excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original final stored module/type ResolutionDiagnostics publication, actual package-dedup redirect and implied-format explanation, synthetic preferred-location exclusion and source chain assembly. Project-reference/environment explanation families remain external.",
       "upstreamSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Selected include-reason processing, configuration reference locations, file casing diagnostics and related information for bounded projects; package-format/redirect explanations excluded.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Selected original final stored module/type ResolutionDiagnostics publication, actual package-dedup redirect and implied-format explanation, synthetic preferred-location exclusion and source chain assembly. Project-reference/environment explanation families remain external.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/module/resolver.go",
       "destination": "src/TypeScript.Scanner/Module/Resolver.cs",
-      "status": "partial",
-      "scope": "Selected prior relative Bundler TypeScript project resolution plus genuine ResolveConfig (fresh NodeNext/JSON lookup) and ResolvePackageDirectory reachable package/node/conditional/types-version/symlink algorithms and caches. Source-import paths/baseUrl/rootDirs/type-root/project redirect modes remain outside; config lookup does not admit source package imports.",
+      "status": "ported",
+      "scope": "Complete pinned source-import resolver: source/config/package/type APIs, Node16/NodeNext/Bundler modes, original candidates/search priority, metadata/maps/conditions, configuration-driven paths, redirected inputs, entrypoints, automatic type names, symlinks, caches and diagnostics/traces. Named legacy-host directory admission is an explicit authored compatibility hook; default/full hosts are unaffected. Full Program construction remains external.",
       "upstreamSha256": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2051,26 +2121,41 @@
       "configurationCampaignBaselineScope": "Selected genuine Bundler relative resolution, directory intent, candidate/extension precedence and .ts winning records; authored explicit unsupported boundary and cache adapter. Package/Node/JSON/JS/custom extension environments excluded; see project contract.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Selected prior relative Bundler TypeScript project resolution plus genuine ResolveConfig (fresh NodeNext/JSON lookup) and ResolvePackageDirectory reachable package/node/conditional/types-version/symlink algorithms and caches. Source-import paths/baseUrl/rootDirs/type-root/project redirect modes remain outside; config lookup does not admit source package imports.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted-resolution-contract",
+      "resolutionCampaignInventory": "docs/resolution-functions.json",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/module/types.go",
       "destination": "src/TypeScript.Scanner/Module/Types.cs",
-      "status": "partial",
-      "scope": "ResolvedModule/PackageId and mode-aware key records required by relative project checking; canonical managed path strings replace typed Go path wrappers. Full resolution/type-directive data structures excluded.",
+      "status": "ported",
+      "scope": "Complete pinned Module interfaces, options, extension tables, typed result records, package IDs, resolution modes and nil semantics. Explicit typed Go-byte path values replace the former project-only plain-string records.",
       "upstreamSha256": "9edc252a17ac658642948add1c5fff9ca03cb3bc0081c7a610dc58c26f2b39f7",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "ResolvedModule/PackageId and mode-aware key records required by relative project checking; canonical managed path strings replace typed Go path wrappers. Full resolution/type-directive data structures excluded.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted-resolution-contract",
+      "resolutionCampaignInventory": "docs/resolution-functions.json",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/ProjectAdmission.cs",
       "status": "new",
-      "scope": "Authored project source boundary layered on accepted collection syntax; permitted module forms and relative specifier admission are explicit, not checker semantics.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Authored explicit non-relative-module admission capability for genuine resolved graph checking; named legacy adapter retains relative-only default. Actual supported module syntax and string-literal checks remain.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Authored project source boundary layered on accepted collection syntax; permitted module forms and relative specifier admission are explicit, not checker semantics.",
+      "resolutionCampaignExtension": "Authored explicit non-relative-module admission capability for genuine resolved graph checking; named legacy adapter retains relative-only default. Actual supported module syntax and string-literal checks remain.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
@@ -2085,55 +2170,80 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Compiler/CheckerHost.cs",
       "status": "new",
-      "scope": "Authored bounded interface implementing the selected original checker Program dependencies with real resolved records and file ownership.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Authored bounded interface implementing the selected original checker Program dependencies with real resolved records and file ownership.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Check/Program.cs",
       "status": "new",
-      "scope": "Authored ordinary disk project CLI, diagnostic rendering and static JSON serialization; success/diagnostic/unsupported exit statuses.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Adds ordinary --inspect-project JSON graph/results/diagnostic display with authoritative byte fields and 0/1/2 exits; --config checks supported genuine graphs; named --project legacy policy remains.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Authored ordinary disk project CLI, diagnostic rendering and static JSON serialization; success/diagnostic/unsupported exit statuses.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Adds ordinary --inspect-project JSON graph/results/diagnostic display with authoritative byte fields and 0/1/2 exits; --config checks supported genuine graphs; named --project legacy policy remains.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/Project.cs",
       "status": "new",
-      "scope": "Authored public composition over mapped loader/resolver/Program diagnostics and actual checker, now consuming genuine interpreted options/discovered roots with explicit capability admission; no substitute semantic algorithms.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Authored public composition over mapped loader/resolver/Program diagnostics and actual checker, now consuming genuine interpreted options/discovered roots with explicit capability admission; no substitute semantic algorithms.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/ProjectConfiguration.cs",
       "status": "new",
-      "scope": "Named legacy strict configuration compatibility adapter using the shared raw decoder; preserves accepted fixed-option/files policy. Genuine tsconfig interpretation resides in TsOptions and Project.LoadConfiguration.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Existing legacy configuration plus original parsed graph options/roots/reasons, preserving explicit raw graph versus Unicode disk roles.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Named legacy strict configuration compatibility adapter using the shared raw decoder; preserves accepted fixed-option/files policy. Genuine tsconfig interpretation resides in TsOptions and Project.LoadConfiguration.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Existing legacy configuration plus original parsed graph options/roots/reasons, preserving explicit raw graph versus Unicode disk roles.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/DiskHost.cs",
       "status": "new",
-      "scope": "Authored .NET disk access and explicit Linux root/symlink/source-form boundary; upstream path/search semantics remain mapped separately.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Named legacy policy scopes actual full resolver calls, including existing winning-file/eligible-directory admission; full graph host is separate.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Authored .NET disk access and explicit Linux root/symlink/source-form boundary; upstream path/search semantics remain mapped separately.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Named legacy policy scopes actual full resolver calls, including existing winning-file/eligible-directory admission; full graph host is separate.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
@@ -2158,27 +2268,37 @@
       "upstream": "tsc/internal/modulespecifiers/types.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Types.cs",
       "status": "partial",
-      "scope": "Selected original diagnostic-generation host, preferences and module path/result models; general project/package infrastructure omitted.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored byte/scalar filename role and original host case-sensitivity/package-redirect target inputs required by selected module-name generation. Does not complete broad reverse package/path generation.",
       "upstreamSha256": "130a2aa65926dbca2a2fe449e77844de979073252cc4de5620396e872c2e075d",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Selected original diagnostic-generation host, preferences and module path/result models; general project/package infrastructure omitted.",
+      "resolutionCampaignExtension": "Explicit authored byte/scalar filename role and original host case-sensitivity/package-redirect target inputs required by selected module-name generation. Does not complete broad reverse package/path generation.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/preferences.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
       "status": "partial",
-      "scope": "Selected original Bundler relative diagnostic specifier preferences/ending decisions; other resolution/platform modes explicitly excluded.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected extension-preference filename consumer uses explicit host byte/scalar role; preserves Unicode public Project filenames while retaining original byte strings for graph-backed formatter algorithms.",
       "upstreamSha256": "2d4a84dba06a5daf58aae83a05ad65decae7a49bc4394cc3eeb7dc91cfbbb8fb",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Selected original Bundler relative diagnostic specifier preferences/ending decisions; other resolution/platform modes explicitly excluded.",
+      "resolutionCampaignExtension": "Selected extension-preference filename consumer uses explicit host byte/scalar role; preserves Unicode public Project filenames while retaining original byte strings for graph-backed formatter algorithms.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/specifiers.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
       "status": "partial",
-      "scope": "Selected admitted relative diagnostic module-specifier generation with required ancestor typed package-JSON metadata adaptation. Package/source mapping and auto-import expansion remain outside.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Finite selected original GetEachFileNameOfModule imported path/actual package-dedup redirect/ignored-target handling, GetAllModulePaths case ordering, canonical existing-import reuse and relative spelling producer. Broad package/path/rootDirs reverse generation, project-reference and Program symlink-cache branches remain explicit semanticUnsupported.",
       "upstreamSha256": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2186,17 +2306,27 @@
       "configurationCampaignBaselineScope": "Required original GetModuleSpecifiers, existing-import spelling, relative/local path and selected ancestor lookup for diagnostic type names. Genuine demanded package mapping fails explicitly; broad package resolution excluded.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Selected admitted relative diagnostic module-specifier generation with required ancestor typed package-JSON metadata adaptation. Package/source mapping and auto-import expansion remain outside.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Finite selected original GetEachFileNameOfModule imported path/actual package-dedup redirect/ignored-target handling, GetAllModulePaths case ordering, canonical existing-import reuse and relative spelling producer. Broad package/path/rootDirs reverse generation, project-reference and Program symlink-cache branches remain explicit semanticUnsupported.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/util.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
       "status": "partial",
-      "scope": "Selected original module specifier path/extension helpers required by diagnostic generation.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected original module-path comparator now uses actual host case sensitivity and explicit Go-byte versus legacy Unicode filename roles.",
       "upstreamSha256": "a3a4cdda2a8c5ff60aa39098528c690e12743f69f864e1b9cf75128f5ac035d7",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "resolutionCampaignBaselineScope": "Selected original module specifier path/extension helpers required by diagnostic generation.",
+      "resolutionCampaignExtension": "Selected original module-path comparator now uses actual host case sensitivity and explicit Go-byte versus legacy Unicode filename roles.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/packagejson/packagejson.go",
@@ -2216,7 +2346,7 @@
       "upstream": "tsc/internal/packagejson/cache.go",
       "destination": "src/TypeScript.Scanner/PackageJson/Cache.cs",
       "status": "ported",
-      "scope": "Complete original package JSON cache counterpart, preserving typed canonical directory, first-writer/reused state, presentation-corrected shallow copy and version selection. Managed locks replace original synchronization machinery; private synchronization topology not claimed.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Nullable path-list generic alignment and source-faithful nil-receiver Exists/GetContents behavior through nullable extension methods; preserves source cache semantics. The original resolution-data test exposed this missing receiver case in the accepted dependency. Independent review and full retained/native rerun passed.",
       "upstreamSha256": "03e64da3205d159a26249bff73e376139bc1461e7afc70f8aae08dc648d0a0e8",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2224,13 +2354,18 @@
       "configurationCampaignBaselineScope": "Selected original ancestor package info/cache/read behavior demanded by diagnostic formatting; package resolution and project infrastructure remain excluded.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Complete original package JSON cache counterpart, preserving typed canonical directory, first-writer/reused state, presentation-corrected shallow copy and version selection. Managed locks replace original synchronization machinery; private synchronization topology not claimed.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Nullable path-list generic alignment and source-faithful nil-receiver Exists/GetContents behavior through nullable extension methods; preserves source cache semantics. The original resolution-data test exposed this missing receiver case in the accepted dependency. Independent review and full retained/native rerun passed.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/module/util.go",
       "destination": "src/TypeScript.Scanner/Module/Util.cs",
-      "status": "partial",
-      "scope": "Prior fixed-TypeScript resolution diagnostics plus required original extension/package-name/versioned-key utilities; broader source-resolution diagnostics remain partial.",
+      "status": "ported",
+      "scope": "Complete pinned Module utility functions and resolution diagnostics for all original file forms, conditions and options. Does not imply downstream semantic support for resolved files.",
       "upstreamSha256": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2238,7 +2373,12 @@
       "configurationCampaignBaselineScope": "Selected GetResolutionDiagnostic for admitted TypeScript resolution forms; unsupported file forms and custom extensions reject explicitly.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Prior fixed-TypeScript resolution diagnostics plus required original extension/package-name/versioned-key utilities; broader source-resolution diagnostics remain partial.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted-resolution-contract",
+      "resolutionCampaignInventory": "docs/resolution-functions.json",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/compare.go",
@@ -2540,11 +2680,16 @@
       "upstream": "tsc/internal/tsoptions/contentmappers.go",
       "destination": "src/TypeScript.Scanner/TsOptions/ContentMappers.cs",
       "status": "ported",
-      "scope": "Complete configuration-owned mapper metadata parsing, manifest resolution and diagnostics; mapper execution belongs to the external host subsystem.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Typed resolver-result consumer adaptation; accepted configuration algorithms unchanged.",
       "upstreamSha256": "fa536fcc44b64f74ff525828e1b08465edf481df79ed1bfe17a1381fba8a8e0c",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Complete configuration-owned mapper metadata parsing, manifest resolution and diagnostics; mapper execution belongs to the external host subsystem.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Typed resolver-result consumer adaptation; accepted configuration algorithms unchanged.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/tsoptions/declarations_generated.go",
@@ -2670,11 +2815,16 @@
       "upstream": "tsc/internal/tsoptions/tsconfigparsing.go",
       "destination": "src/TypeScript.Scanner/TsOptions/TsConfigParsing.cs",
       "status": "ported",
-      "scope": "Complete original config-file/JSONC entry APIs, extends/cache/cycle behavior, discovery, diagnostics and result construction.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Typed resolver-result consumer adaptation; accepted configuration algorithms unchanged.",
       "upstreamSha256": "30022574c3cdfa40db251f115e67a71a55b96d853dbca382381a58840d74f3a3",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Complete original config-file/JSONC entry APIs, extends/cache/cycle behavior, discovery, diagnostics and result construction.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Typed resolver-result consumer adaptation; accepted configuration algorithms unchanged.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": "tsc/internal/tsoptions/wildcarddirectories.go",
@@ -2937,19 +3087,29 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/ConfigurationInspection.cs",
       "status": "new",
-      "scope": "Authored disk adapter invoking genuine TsOptions config interpretation, exposing diagnostics and show-config independently of checker support.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Adds authored independent resolved graph composition over genuine configuration options/roots.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Authored disk adapter invoking genuine TsOptions config interpretation, exposing diagnostics and show-config independently of checker support.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Adds authored independent resolved graph composition over genuine configuration options/roots.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/ProjectCheckingAdmission.cs",
       "status": "new",
-      "scope": "Authored explicit capability admission for the existing bounded checker after genuine configuration interpretation; retains all settings/files or rejects unsupported downstream execution.",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Authored explicit capability admission for the existing bounded checker after genuine configuration interpretation; retains all settings/files or rejects unsupported downstream execution.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
       "repository": "https://go.googlesource.com/go",
@@ -3127,17 +3287,124 @@
       "repository": "https://go.googlesource.com/go",
       "revision": "go1.27.1",
       "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/module/cache.go",
+      "destination": "src/TypeScript.Scanner/Module/Cache.cs",
+      "status": "ported",
+      "scope": "Complete pinned mode/directory/redirect and parsed-pattern caches, ResolutionData sharing/shallow Clone/package enumeration. Managed collections and locks preserve original publication/identity semantics; no private runtime topology parity claim.",
+      "upstreamSha256": "25373957c5793ea28d9607da2b2bf380d0910e13fe6dfce960c328e136e541c0",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted-resolution-contract",
+      "resolutionCampaignInventory": "docs/resolution-functions.json",
+      "resolutionCampaignBaselineScope": "Complete original Module counterpart required by fixed resolution contract; implementation staging, independent review and runtime acceptance pending.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/module/staticresolver.go",
+      "destination": "src/TypeScript.Scanner/Module/StaticResolver.cs",
+      "status": "ported",
+      "scope": "Complete pinned static override construction, validation, canonical mode/directory matching, explicit negative entries, fallback and original API/data forwarding.",
+      "upstreamSha256": "073aac87b458fdd8838b2df553a530110b83f89587b65371a6b57fe10f75d286",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted-resolution-contract",
+      "resolutionCampaignInventory": "docs/resolution-functions.json",
+      "resolutionCampaignBaselineScope": "Complete original Module counterpart required by fixed resolution contract; implementation staging, independent review and runtime acceptance pending.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ResolutionDiskHost.cs",
+      "status": "new",
+      "scope": "Authored read-side disk ResolutionHost over the accepted filesystem/path services. Full resolution is independent of named legacy/checker admission; actual Linux scalar UTF-8 filesystem boundary remains explicit.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignBaselineScope": "Authored read-side disk ResolutionHost adapter, separate from checker-specific legacy admission; implementation and verification in progress.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ResolvedProjectGraph.cs",
+      "status": "new",
+      "scope": "Authored graph result/inspection composition over source-mapped loading/resolution, actual typed identities, dependency observations and parse/inclusion diagnostics. Does not establish full Program/environment or checker completeness.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignBaselineScope": "Authored graph result/inspection composition over actual upstream loading and resolution; does not establish Program or checker completeness. Implementation and verification in progress.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Resolution.Checks",
+      "status": "new",
+      "scope": "Shared original test-body ports plus authored controls. Complete per-body source/assertion provenance for 38 original Module bodies is in docs/resolution-tests.json; two authored groups cover Deduplicate and filename roles/default zero. Family splitting is test organization, not extra upstream production files.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Resolution.Tests",
+      "status": "new",
+      "scope": "Authored xUnit adapters for shared original/assertion controls and 216 pinned-Go differential requests. Data-driven cases are not original compiler-test successes.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Resolution.Validation",
+      "status": "new",
+      "scope": "Authored AOT-safe request/response, shared-check, original-graph and filesystem observation adapters; compiler algorithms remain in the production counterparts. Private topology is not a completion requirement.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/resolution-oracle",
+      "status": "new",
+      "scope": "Authored pinned-Go resolver/graph observer and scoped reproducible overlay over original loader/diagnostic producers. Pristine ordinary companion parity separately checks overlay effects; external Program/environment stages and lib-reference exclusion are documented.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/resolution-cli-oracle",
+      "status": "new",
+      "scope": "Authored ordinary-disk observer invoking genuine pinned Program semantics under the exact supported three-library/options environment; no replacement checker or fabricated declarations.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/resolution-corpus",
+      "status": "new",
+      "scope": "Authored and adapted request/Go-expected corpus with provenance, manifest and order controls. Includes reused upstream compiler inputs, not original full compiler assertions.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "examples/resolution",
+      "status": "new",
+      "scope": "Authored mixed graph and supported package-checking demonstrations, with deliberate failure variants. Small graph-only JSX declaration is a fixture, not genuine third-party-library support.",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     }
   ],
   "activePhase": {
-    "name": "configuration-subsystem-completion",
+    "name": "source-import-resolution-completion",
     "status": "accepted-contract",
-    "baselineCommit": "2c850db",
-    "contract": "docs/CONFIGURATION-CONTRACT.md",
-    "mandate": "docs/CONFIGURATION-PROMPT.md",
-    "state": "docs/STATE.md",
-    "statusInventory": "docs/CONFIGURATION-STATUS.md",
-    "note": "Configuration interpretation/discovery complete within fixed contract. Downstream checking capabilities remain explicitly bounded. Delivery commit contains this manifest; no subsequent campaign authorized."
+    "baselineCommit": "37bd57d",
+    "contract": "docs/RESOLUTION-CONTRACT.md",
+    "assessment": "docs/RESOLUTION-ASSESSMENT.md",
+    "state": "docs/RESOLUTION-STATUS.md",
+    "evidence": "validation/results/resolution-verified.json",
+    "note": "Delivery commit contains this manifest; if interrupted finish authorized clean commit. No next campaign authorized."
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -3228,7 +3495,7 @@
     "xUnitCases": 23411,
     "nativeCallableCases": 89,
     "platform": "Linux x64",
-    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1–C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
+    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1\u2013C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
     "commit": "cfa6d2f"
   },
   "acceptedCollectionsCheckpoint": {
@@ -3279,6 +3546,24 @@
     "ordinaryNativeCliCases": 14,
     "originalDirectFunctions": 152,
     "platform": "Linux x64",
-    "scope": "Complete17-file210-function TsOptions interpretation/discovery and required dependencies. Actual configuration inspection independent of explicit downstream checking admission. Program-owned validation/execution, source package imports, mapper execution, watch/emit/services remain external. Selected GoJSON/xtext/read-OS boundaries documented; delivery commit contains this manifest."
+    "scope": "Complete17-file210-function TsOptions interpretation/discovery and required dependencies. Actual configuration inspection independent of explicit downstream checking admission. Program-owned validation/execution, source package imports, mapper execution, watch/emit/services remain external. Selected GoJSON/xtext/read-OS boundaries documented; delivery commit contains this manifest.",
+    "commit": "37bd57d"
+  },
+  "acceptedResolutionCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "37bd57d",
+    "contract": "docs/RESOLUTION-CONTRACT.md",
+    "assessment": "docs/RESOLUTION-ASSESSMENT.md",
+    "evidence": "validation/results/resolution-verified.json",
+    "sourceSha256": "26523aec2698fd044ce71826b223e7b779ffbd051404d6e60d8fccbc3f291c8b",
+    "verificationAssetsSha256": "56f058a5b1479e5249b8650bbfecb3b946fe0b0c41cc3dcde9618271cb2058f4",
+    "xUnitCases": 24334,
+    "nativeResolutionCases": 216,
+    "nativeSharedChecks": 40,
+    "originalModuleTestBodies": 38,
+    "orderExecutionsPerRuntime": 30,
+    "ordinaryNativeCliCases": 11,
+    "platform": "Linux x64",
+    "scope": "Complete pinned five-file149-function Module subsystem with selected genuine source graph integration. No whole Program/environment, checker/library or emit parity. Delivery commit contains this manifest."
   }
 }

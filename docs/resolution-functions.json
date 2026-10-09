@@ -1,0 +1,1178 @@
+{
+  "subsystem": "module",
+  "baseline": "37bd57d",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "meaning": "Source-function responsibility inventory; translation, compilation, review and runtime evidence are separate. covered-by-file-source-review refers to the named independent file/family source verdict, not a per-function execution or input-coverage claim.",
+  "productionFiles": 5,
+  "functionCount": 149,
+  "files": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/module/cache.go",
+      "sourceSha256": "25373957c5793ea28d9607da2b2bf380d0910e13fe6dfce960c328e136e541c0",
+      "counterpart": "src/TypeScript.Scanner/Module/Cache.cs",
+      "owner": "core",
+      "functionCount": 9,
+      "functions": [
+        {
+          "name": "Get",
+          "receiver": "c *moduleResolutionCache",
+          "line": 23,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Set",
+          "receiver": "c *moduleResolutionCache",
+          "line": 27,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Get",
+          "receiver": "c *typeRefDirectiveResolutionCache",
+          "line": 43,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Set",
+          "receiver": "c *typeRefDirectiveResolutionCache",
+          "line": 47,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Get",
+          "receiver": "c *parsedPatternsCache",
+          "line": 55,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "newResolutionData",
+          "receiver": null,
+          "line": 72,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Clone",
+          "receiver": "c *ResolutionData",
+          "line": 87,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "PackageJsonCacheEntries",
+          "receiver": "c *ResolutionData",
+          "line": 97,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getRedirectConfigName",
+          "receiver": null,
+          "line": 101,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        }
+      ],
+      "implementation": "translated",
+      "compilation": "compiled-snapshot-10",
+      "independentReview": {
+        "status": "source-reviewed-no-remaining-finding",
+        "reviewer": "support",
+        "evidence": "docs/progress/review-resolution-core.md",
+        "counterpartSha256": "5a7fb6505d7c9608de66629103367180f69e9727047b8b3644ef4e2973925d0b",
+        "qualification": "Source/caller correspondence reviewed; bounded campaign execution is recorded separately in validation/results/resolution-verified.json without a per-function execution claim."
+      },
+      "runtimeQualification": {
+        "evidence": "validation/results/resolution-verified.json",
+        "scope": "Included in independently source-reviewed complete package and verified campaign; no individual function input/branch coverage assertion."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/module/resolver.go",
+      "sourceSha256": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
+      "counterpart": "src/TypeScript.Scanner/Module/Resolver.cs",
+      "owner": "core",
+      "functionCount": 112,
+      "functions": [
+        {
+          "name": "shouldContinueSearching",
+          "receiver": "r *resolved",
+          "line": 29,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "isResolved",
+          "receiver": "r *resolved",
+          "line": 33,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "continueSearching",
+          "receiver": null,
+          "line": 37,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "unresolved",
+          "receiver": null,
+          "line": 41,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromNormalized",
+          "receiver": null,
+          "line": 54,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveResolutionCandidate",
+          "receiver": null,
+          "line": 65,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromDirectory",
+          "receiver": null,
+          "line": 69,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromFileName",
+          "receiver": null,
+          "line": 73,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromDirectoryPath",
+          "receiver": null,
+          "line": 77,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromDynamicLogicalPath",
+          "receiver": null,
+          "line": 83,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromDiskLogicalPath",
+          "receiver": null,
+          "line": 100,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromEncodedPaths",
+          "receiver": null,
+          "line": 113,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "pathForDynamicResolution",
+          "receiver": null,
+          "line": 130,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolutionCandidateFromRelativePath",
+          "receiver": null,
+          "line": 140,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "AsString",
+          "receiver": "c resolutionCandidate",
+          "line": 154,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "String",
+          "receiver": "c resolutionCandidate",
+          "line": 161,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "AsDirectoryPath",
+          "receiver": "c resolutionCandidate",
+          "line": 165,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Directory",
+          "receiver": "c resolutionCandidate",
+          "line": 172,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "HasTrailingDirectorySeparator",
+          "receiver": "c resolutionCandidate",
+          "line": 176,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "RemoveFileExtension",
+          "receiver": "c resolutionCandidate",
+          "line": 180,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "RemoveExtension",
+          "receiver": "c resolutionCandidate",
+          "line": 184,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Resolve",
+          "receiver": "c resolutionCandidate",
+          "line": 188,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "HasDirectoryPrefix",
+          "receiver": "c resolutionCandidate",
+          "line": 192,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "RelativeToDirectory",
+          "receiver": "c resolutionCandidate",
+          "line": 197,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "SplitExtension",
+          "receiver": "c resolutionCandidate",
+          "line": 208,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "write",
+          "receiver": "t *tracer",
+          "line": 234,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getTraces",
+          "receiver": "t *tracer",
+          "line": 240,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "newResolutionState",
+          "receiver": null,
+          "line": 273,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "containingDirectoryPath",
+          "receiver": "r *resolutionState",
+          "line": 318,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetCompilerOptionsWithRedirect",
+          "receiver": null,
+          "line": 325,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "BaseDirectory",
+          "receiver": "r *DefaultResolver",
+          "line": 359,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NewResolver",
+          "receiver": null,
+          "line": 363,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetResolutionData",
+          "receiver": "r *DefaultResolver",
+          "line": 367,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NewResolver",
+          "receiver": "d *ResolutionData",
+          "line": 371,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NewResolverWithOptions",
+          "receiver": null,
+          "line": 387,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "newTraceBuilder",
+          "receiver": "r *DefaultResolver",
+          "line": 401,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetPackageScopeForPath",
+          "receiver": "r *DefaultResolver",
+          "line": 408,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "PackageJsonCacheEntries",
+          "receiver": "r *DefaultResolver",
+          "line": 412,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "traceResolutionUsingProjectReference",
+          "receiver": "r *tracer",
+          "line": 416,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveTypeReferenceDirective",
+          "receiver": "r *DefaultResolver",
+          "line": 422,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveModuleName",
+          "receiver": "r *DefaultResolver",
+          "line": 467,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveModuleNameFromDirectory",
+          "receiver": "r *DefaultResolver",
+          "line": 472,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveModuleName",
+          "receiver": "r *DefaultResolver",
+          "line": 477,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolvePackageDirectory",
+          "receiver": "r *DefaultResolver",
+          "line": 537,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryResolveFromTypingsLocation",
+          "receiver": "r *DefaultResolver",
+          "line": 548,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveConfig",
+          "receiver": "r *DefaultResolver",
+          "line": 577,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "traceTypeReferenceDirectiveResult",
+          "receiver": "r *tracer",
+          "line": 585,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveTypeReferenceDirective",
+          "receiver": "r *resolutionState",
+          "line": 606,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getCandidateFromTypeRoot",
+          "receiver": "r *resolutionState",
+          "line": 659,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "mangleScopedPackageName",
+          "receiver": "r *resolutionState",
+          "line": 667,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveFromTypeRoot",
+          "receiver": "r *resolutionState",
+          "line": 678,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getPackageScopeForPath",
+          "receiver": "r *resolutionState",
+          "line": 707,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveNodeLike",
+          "receiver": "r *resolutionState",
+          "line": 719,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveNodeLikeWorker",
+          "receiver": "r *resolutionState",
+          "line": 752,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromSelfNameReference",
+          "receiver": "r *resolutionState",
+          "line": 796,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromImports",
+          "receiver": "r *resolutionState",
+          "line": 842,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromExports",
+          "receiver": "r *resolutionState",
+          "line": 876,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromExportsOrImports",
+          "receiver": "r *resolutionState",
+          "line": 909,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromTargetExportOrImport",
+          "receiver": "r *resolutionState",
+          "line": 950,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryLoadInputFileForPath",
+          "receiver": "r *resolutionState",
+          "line": 1094,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getOutputDirectories",
+          "receiver": "r *resolutionState",
+          "line": 1165,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromNearestNodeModulesDirectory",
+          "receiver": "r *resolutionState",
+          "line": 1176,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromNearestNodeModulesDirectoryWorker",
+          "receiver": "r *resolutionState",
+          "line": 1208,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromImmediateNodeModulesDirectory",
+          "receiver": "r *resolutionState",
+          "line": 1222,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromSpecificNodeModulesDirectory",
+          "receiver": "r *resolutionState",
+          "line": 1251,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "createResolvedModuleHandlingSymlink",
+          "receiver": "r *resolutionState",
+          "line": 1355,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "createResolvedModule",
+          "receiver": "r *resolutionState",
+          "line": 1370,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "createResolvedTypeReferenceDirective",
+          "receiver": "r *resolutionState",
+          "line": 1391,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getOriginalAndResolvedFileName",
+          "receiver": "r *resolutionState",
+          "line": 1416,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryLoadModuleUsingOptionalResolutionSettings",
+          "receiver": "r *resolutionState",
+          "line": 1427,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getParsedPatternsForPaths",
+          "receiver": "r *resolutionState",
+          "line": 1440,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryLoadModuleUsingPathsIfEligible",
+          "receiver": "r *resolutionState",
+          "line": 1444,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryLoadModuleUsingPaths",
+          "receiver": "r *resolutionState",
+          "line": 1466,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryLoadModuleUsingRootDirs",
+          "receiver": "r *resolutionState",
+          "line": 1504,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "nodeLoadModuleByRelativeName",
+          "receiver": "r *resolutionState",
+          "line": 1588,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromFile",
+          "receiver": "r *resolutionState",
+          "line": 1625,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadModuleFromFileNoImplicitExtensions",
+          "receiver": "r *resolutionState",
+          "line": 1640,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryAddingExtensions",
+          "receiver": "r *resolutionState",
+          "line": 1652,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryExtension",
+          "receiver": "r *resolutionState",
+          "line": 1775,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryFile",
+          "receiver": "r *resolutionState",
+          "line": 1787,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "tryFileLookup",
+          "receiver": "r *resolutionState",
+          "line": 1810,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadNodeModuleFromDirectory",
+          "receiver": "r *resolutionState",
+          "line": 1822,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadNodeModuleFromDirectoryWorker",
+          "receiver": "r *resolutionState",
+          "line": 1832,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadFileNameFromPackageJSONField",
+          "receiver": "r *resolutionState",
+          "line": 1928,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getPackageFile",
+          "receiver": "r *resolutionState",
+          "line": 1964,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getPackageJsonInfo",
+          "receiver": "r *resolutionState",
+          "line": 1985,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "packageDirectory",
+          "receiver": "r *resolutionState",
+          "line": 2031,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getPackageId",
+          "receiver": "r *resolutionState",
+          "line": 2035,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "readPackageJsonPeerDependencies",
+          "receiver": "r *resolutionState",
+          "line": 2056,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "realPath",
+          "receiver": "r *resolutionState",
+          "line": 2091,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "validatePackageJSONField",
+          "receiver": "r *resolutionState",
+          "line": 2099,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getPackageJSONPathField",
+          "receiver": "r *resolutionState",
+          "line": 2114,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "conditionMatches",
+          "receiver": "r *resolutionState",
+          "line": 2131,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getTraceFunc",
+          "receiver": "r *resolutionState",
+          "line": 2141,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetConditions",
+          "receiver": null,
+          "line": 2148,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getNodeResolutionFeatures",
+          "receiver": null,
+          "line": 2170,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "moveToNextDirectorySeparatorIfAvailable",
+          "receiver": null,
+          "line": 2194,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getParsedPatternsForPaths",
+          "receiver": "r *DefaultResolver",
+          "line": 2214,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "TryParsePatterns",
+          "receiver": null,
+          "line": 2218,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "MatchPatternOrExact",
+          "receiver": null,
+          "line": 2257,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "normalizePathForCJSResolution",
+          "receiver": null,
+          "line": 2275,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "matchesPatternWithTrailer",
+          "receiver": null,
+          "line": 2288,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "extensionIsOk",
+          "receiver": null,
+          "line": 2300,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "FS",
+          "receiver": "h *fileSystemResolutionHost",
+          "line": 2312,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetCurrentDirectory",
+          "receiver": "h *fileSystemResolutionHost",
+          "line": 2316,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveConfig",
+          "receiver": null,
+          "line": 2320,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetAutomaticTypeDirectiveNames",
+          "receiver": null,
+          "line": 2328,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "SymlinkOrRealpath",
+          "receiver": "e *ResolvedEntrypoint",
+          "line": 2404,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetEntrypointsFromPackageJsonInfo",
+          "receiver": "r *DefaultResolver",
+          "line": 2411,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "createResolvedEntrypointHandlingSymlink",
+          "receiver": "r *DefaultResolver",
+          "line": 2479,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "loadEntrypointsFromExportMap",
+          "receiver": "r *resolutionState",
+          "line": 2497,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "getMatchedStarForPatternEntrypoint",
+          "receiver": "r *resolutionState",
+          "line": 2632,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        }
+      ],
+      "implementation": "translated",
+      "compilation": "compiled-snapshot-10",
+      "independentReview": {
+        "status": "source-reviewed-no-remaining-finding",
+        "reviewer": "support",
+        "evidence": "docs/progress/review-resolution-core.md",
+        "counterpartSha256": "9638b05f04bd6bc6d15c4ce565488203fcc0976b400018b83f9e84a9cd8eef33",
+        "qualification": "Source/caller correspondence reviewed; bounded campaign execution is recorded separately in validation/results/resolution-verified.json without a per-function execution claim."
+      },
+      "compatibilityDeparture": "Optional authored named-legacy IFS directory-metadata admission, inert for default/graph hosts and outside shared ResolutionData; review-resolution-support.md records reached-candidate conditions.",
+      "runtimeQualification": {
+        "evidence": "validation/results/resolution-verified.json",
+        "scope": "Included in independently source-reviewed complete package and verified campaign; no individual function input/branch coverage assertion."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/module/staticresolver.go",
+      "sourceSha256": "073aac87b458fdd8838b2df553a530110b83f89587b65371a6b57fe10f75d286",
+      "counterpart": "src/TypeScript.Scanner/Module/StaticResolver.cs",
+      "owner": "core",
+      "functionCount": 9,
+      "functions": [
+        {
+          "name": "NewStaticResolutions",
+          "receiver": null,
+          "line": 33,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "lookup",
+          "receiver": "r *StaticResolutions",
+          "line": 66,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NewStaticResolver",
+          "receiver": null,
+          "line": 87,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "BaseDirectory",
+          "receiver": "r *StaticResolver",
+          "line": 91,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveModuleName",
+          "receiver": "r *StaticResolver",
+          "line": 95,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveModuleNameFromDirectory",
+          "receiver": "r *StaticResolver",
+          "line": 104,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "resolveModuleName",
+          "receiver": "r *StaticResolver",
+          "line": 118,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ResolveTypeReferenceDirective",
+          "receiver": "r *StaticResolver",
+          "line": 134,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetResolutionData",
+          "receiver": "r *StaticResolver",
+          "line": 143,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        }
+      ],
+      "implementation": "translated",
+      "compilation": "compiled-snapshot-10",
+      "independentReview": {
+        "status": "source-reviewed-no-remaining-finding",
+        "reviewer": "support",
+        "evidence": "docs/progress/review-resolution-core.md",
+        "counterpartSha256": "6ecebf881527d3157988f1ba96389ea91e90bec8bebd1d7cb02b6cee2b9dd21c",
+        "qualification": "Source/caller correspondence reviewed; bounded campaign execution is recorded separately in validation/results/resolution-verified.json without a per-function execution claim."
+      },
+      "compatibilityDeparture": "Optional authored named-legacy IFS directory-metadata admission, inert for default/graph hosts and outside shared ResolutionData; review-resolution-support.md records reached-candidate conditions.",
+      "runtimeQualification": {
+        "evidence": "validation/results/resolution-verified.json",
+        "scope": "Included in independently source-reviewed complete package and verified campaign; no individual function input/branch coverage assertion."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/module/types.go",
+      "sourceSha256": "9edc252a17ac658642948add1c5fff9ca03cb3bc0081c7a610dc58c26f2b39f7",
+      "counterpart": "src/TypeScript.Scanner/Module/Types.cs",
+      "owner": "core",
+      "functionCount": 6,
+      "functions": [
+        {
+          "name": "String",
+          "receiver": "p *PackageId",
+          "line": 76,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "PackageName",
+          "receiver": "p *PackageId",
+          "line": 80,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "IsResolved",
+          "receiver": "r *ResolvedModule",
+          "line": 101,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "IsResolved",
+          "receiver": "r *ResolvedTypeReferenceDirective",
+          "line": 115,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "String",
+          "receiver": "e extensions",
+          "line": 130,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "Array",
+          "receiver": "e extensions",
+          "line": 147,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        }
+      ],
+      "implementation": "translated",
+      "compilation": "compiled-snapshot-10",
+      "independentReview": {
+        "status": "source-reviewed-no-remaining-finding",
+        "reviewer": "support",
+        "evidence": "docs/progress/review-resolution-core.md",
+        "counterpartSha256": "83aeaa3bd9afb1c48b4c2668ddbc40e6d5ea4111489e60d2a934efe61e5ff618",
+        "qualification": "Source/caller correspondence reviewed; bounded campaign execution is recorded separately in validation/results/resolution-verified.json without a per-function execution claim."
+      },
+      "runtimeQualification": {
+        "evidence": "validation/results/resolution-verified.json",
+        "scope": "Included in independently source-reviewed complete package and verified campaign; no individual function input/branch coverage assertion."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/module/util.go",
+      "sourceSha256": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969",
+      "counterpart": "src/TypeScript.Scanner/Module/Util.cs",
+      "owner": "support",
+      "functionCount": 13,
+      "functions": [
+        {
+          "name": "IsApplicableVersionedTypesKey",
+          "receiver": null,
+          "line": 17,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NodeModulePackageRootForFile",
+          "receiver": null,
+          "line": 28,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "NodeModulePackageRootForDirectory",
+          "receiver": null,
+          "line": 32,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "parseNodeModulePackageRoot",
+          "receiver": null,
+          "line": 36,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ParsePackageName",
+          "receiver": null,
+          "line": 50,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "MangleScopedPackageName",
+          "receiver": null,
+          "line": 65,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "UnmangleScopedPackageName",
+          "receiver": null,
+          "line": 76,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetTypesPackageName",
+          "receiver": null,
+          "line": 84,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetPackageNameFromTypesPackageName",
+          "receiver": null,
+          "line": 88,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "ComparePatternKeys",
+          "receiver": null,
+          "line": 96,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "GetResolutionDiagnostic",
+          "receiver": null,
+          "line": 132,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "TryGetJSExtensionForFile",
+          "receiver": null,
+          "line": 189,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        },
+        {
+          "name": "TryGetJSExtensionForFileName",
+          "receiver": null,
+          "line": 210,
+          "implementation": "translated",
+          "independentReview": "covered-by-file-source-review"
+        }
+      ],
+      "implementation": "translated",
+      "compilation": "compiled-snapshot-10",
+      "independentReview": {
+        "status": "source-reviewed-no-remaining-finding",
+        "reviewer": "core",
+        "evidence": "docs/progress/review-resolution-support.md",
+        "counterpartSha256": "80e45933a19d3ed234f7b73644ec49e1f5a297e76f58f06a42f1091d50eaf311",
+        "qualification": "Source/caller correspondence reviewed; bounded campaign execution is recorded separately in validation/results/resolution-verified.json without a per-function execution claim."
+      },
+      "runtimeQualification": {
+        "evidence": "validation/results/resolution-verified.json",
+        "scope": "Included in independently source-reviewed complete package and verified campaign; no individual function input/branch coverage assertion."
+      }
+    }
+  ],
+  "acceptance": "bounded-campaign-verified",
+  "lastCompiledSnapshot": "10",
+  "compiledEvidence": "artifacts/resolution-validation/build10/library-build.log",
+  "runtimeQualification": {
+    "evidence": "validation/results/resolution-verified.json",
+    "sourceSnapshot": "10",
+    "scope": "Current-source complete Module campaign verified by original bodies, differential/native observations and retained cascade. This is not per-function execution or exhaustive branch/private-state coverage.",
+    "originalBodies": 38,
+    "sharedGroups": 40,
+    "canonicalCases": 216,
+    "orderExecutionsPerRuntime": 30,
+    "cliCases": 11
+  }
+}

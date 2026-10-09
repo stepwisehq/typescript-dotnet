@@ -1,5 +1,41 @@
 # Current project state
 
+**Accepted: source-import module-resolution completion, R1–R6.**
+Baseline `37bd57d`; upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
+All five Module files /149 functions are translated and independently reviewed.
+Actual Linux x64 Native AOT passes 216 comparisons, 40 shared checks, 30 order
+executions per runtime and 11 CLI cases. All 24,334 xUnit cases pass with zero
+failures/skips; retained configuration/project/semantic/foundation gates pass.
+The successful final gate took 912.603 seconds with all five drift checks false,
+13 native executable paths and 171 historical fixture/proof files preserved.
+Read the [guide](RESOLUTION.md), [assessment](RESOLUTION-ASSESSMENT.md),
+[resumption checkpoint](RESOLUTION-STATUS.md) and
+[durable proof](../validation/results/resolution-verified.json).
+
+Resolution and graph inspection exceed current checker capabilities. Full Program/
+library-environment construction, reference execution, broader declarations/checker
+support and emit remain separate. No next campaign is authorized. If delivery was
+interrupted, finish the authorized commit without altering proven source/assets;
+otherwise await a new mandate. Recommended next assessment: Program construction
+and environment assembly. The .NET 11/optimization investigation remains deferred.
+
+**Prospective efficiency guidance (current and future campaigns):** prioritize
+implementation and efficient verification. Private cache/identity/closure/storage
+observations are diagnostic aids, added only for concrete correctness risks, required
+upstream invariants or meaningful resource concerns. Distinguish observer limitations
+and incidental representation from consequential defects. Retain existing machinery,
+useful regressions, applicable upstream tests, meaningful Go comparisons, independent
+review and actual Native AOT acceptance. No restart, accepted-work audit, broad cleanup
+or new process framework; simplify only an active bottleneck. Make substantive changes
+to observations explicit, never change expectations to conceal defects, and disable
+observation-only overhead before future performance comparisons. Let an underway final
+acceptance run finish.
+
+## Historical accepted campaigns
+
+The records below retain their original scopes and superseded next-step recommendations.
+The current resolution checkpoint above controls resumption.
+
 **Accepted: configuration interpretation and file discovery, S1–S6.**
 Baseline `2c850db`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
 Read the [mandate](CONFIGURATION-PROMPT.md), [contract](CONFIGURATION-CONTRACT.md),

@@ -1,0 +1,4414 @@
+{
+  "schemaVersion": 1,
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selectionMethod": "All 52 moduleResolution conformance inputs plus named compiler fixtures covering paths inheritance, symlinks, suffixes, noDts, automatic types, package IDs and explicit usage modes.",
+  "conformanceInputs": 52,
+  "compilerInputs": 24,
+  "rules": {
+    "source": "Keep source/config/file bytes unchanged within each selected variant, document environment/API-mode adapters explicitly.",
+    "mode": "Do not silently convert removed Classic/Node10 expectations to Node16/Bundler.",
+    "claim": "A resolver-only adaptation is not a full original compiler test pass.",
+    "order": "Source search/trace sequences exact; unordered table/set rows sorted only by meaningful canonical keys."
+  },
+  "inputs": [
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTsExtensions.ts",
+      "sourceSha256": "5f42c03e7918b6af41a112fbfd07a0ddf80847a72b56e9a7d17ae03da75ef784",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "allowImportingTsExtensions",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "classic,node16,nodenext,bundler"
+        },
+        {
+          "name": "jsx",
+          "value": "preserve"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/ts.ts",
+        "/tsx.tsx",
+        "/dts.d.ts",
+        "/b.ts",
+        "/c.ts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-001-02-allowImportingTsExtensions",
+        "compiler-input-001-03-allowImportingTsExtensions",
+        "compiler-input-001-04-allowImportingTsExtensions"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "allowimportingtsextensions": "true",
+            "jsx": "preserve",
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension.ts",
+      "sourceSha256": "037b00b7f6e8fb3dac8d389359a3e921b0e1b4db4439b4352032ca8704c485d0",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "allowImportingTsExtensions",
+          "value": "true,false"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "classic,node16,nodenext"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/types.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext"
+      ],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 4,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-002-02-allowImportingTypesDtsExtension",
+        "compiler-input-002-03-allowImportingTypesDtsExtension",
+        "compiler-input-002-05-allowImportingTypesDtsExtension",
+        "compiler-input-002-06-allowImportingTypesDtsExtension"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "allowimportingtsextensions": "true",
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        },
+        {
+          "variant": {
+            "allowimportingtsextensions": "false",
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension2.ts",
+      "sourceSha256": "71d4ca160d6080c40dd7aed2556043209a1a7a3ca335e05386e54b6ada72aaa0",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "strict",
+          "value": "true"
+        },
+        {
+          "name": "verbatimModuleSyntax",
+          "value": "true,false"
+        },
+        {
+          "name": "noUncheckedSideEffectImports",
+          "value": "true,false"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/types.d.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 4,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-003-01-allowImportingTypesDtsExtension2",
+        "compiler-input-003-02-allowImportingTypesDtsExtension2",
+        "compiler-input-003-03-allowImportingTypesDtsExtension2",
+        "compiler-input-003-04-allowImportingTypesDtsExtension2"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerCommonJS.ts",
+      "sourceSha256": "8eec14116df76e70d8720b6955ed01502d8e1442e4b5b87dd894634227790097",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "libReplacement",
+          "value": "false"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/pkg/package.json",
+        "/node_modules/pkg/index.d.ts",
+        "/package.json",
+        "/requires.ts",
+        "/imports.ts",
+        "/real-imports.mts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-004-01-bundlerCommonJS"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerConditionsExcludesNode.ts",
+      "sourceSha256": "c3d5c6861129d0c6c4621ae888e017ec26d8aee3837c3154e3d3bd4493a8916f",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext, preserve"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/conditions/package.json",
+        "/node_modules/conditions/index.node.js",
+        "/node_modules/conditions/index.node.d.ts",
+        "/node_modules/conditions/index.web.js",
+        "/node_modules/conditions/index.web.d.ts",
+        "/main.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-005-01-bundlerConditionsExcludesNode",
+        "compiler-input-005-02-bundlerConditionsExcludesNode"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2022"
+        },
+        {
+          "name": "module",
+          "value": "node18,node20,nodenext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "nodenext,bundler"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/lib/package.json",
+        "/lib/cjs/index.js",
+        "/lib/cjs/index.d.ts",
+        "/app/test.ts"
+      ],
+      "supportedExplicitModes": [
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 6,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-006-01-bundlerDirectoryModule",
+        "compiler-input-006-02-bundlerDirectoryModule",
+        "compiler-input-006-03-bundlerDirectoryModule",
+        "compiler-input-006-04-bundlerDirectoryModule",
+        "compiler-input-006-05-bundlerDirectoryModule",
+        "compiler-input-006-06-bundlerDirectoryModule"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true",
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportESM.ts",
+      "sourceSha256": "92d3beb5000f952f901401b1358c904979def02941c3447bfe428a1483043edd",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext, preserve"
+        }
+      ],
+      "virtualFileNames": [
+        "/esm.mts",
+        "/not-actually-cjs.cts",
+        "/package.json",
+        "/still-not-cjs.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-007-01-bundlerImportESM",
+        "compiler-input-007-02-bundlerImportESM"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportTsExtensions.ts",
+      "sourceSha256": "90ec95c90b75d19721101d39621602a19ce3296f35207a770e40fc5b3eaa82d2",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "outDir",
+          "value": "dist"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "checkJs",
+          "value": "true"
+        },
+        {
+          "name": "outDir",
+          "value": "out"
+        },
+        {
+          "name": "noEmit",
+          "value": "true,false"
+        },
+        {
+          "name": "allowImportingTsExtensions",
+          "value": "true,false"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/project/a.ts",
+        "/project/b.ts",
+        "/project/b.js",
+        "/project/b.d.ts",
+        "/project/c.ts",
+        "/project/c.tsx",
+        "/project/d/index.ts",
+        "/project/e",
+        "/project/e.ts",
+        "/project/e.txt",
+        "/project/e.txt.ts",
+        "/project/main.ts",
+        "/project/types.d.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 4,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-008-01-bundlerImportTsExtensions",
+        "compiler-input-008-02-bundlerImportTsExtensions",
+        "compiler-input-008-03-bundlerImportTsExtensions",
+        "compiler-input-008-04-bundlerImportTsExtensions"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerNodeModules1.ts",
+      "sourceSha256": "4d3dcf006d3dc84cb42340edcd1624c7e928cac35ce320711ec9a6d1bdec81a2",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext, preserve"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/dual/package.json",
+        "/node_modules/dual/index.js",
+        "/node_modules/dual/index.d.ts",
+        "/node_modules/dual/index.cjs",
+        "/node_modules/dual/index.d.cts",
+        "/main.ts",
+        "/main.mts",
+        "/main.cts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-009-01-bundlerNodeModules1",
+        "compiler-input-009-02-bundlerNodeModules1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerOptionsCompat.ts",
+      "sourceSha256": "4e772121bc125569ac5e015654e0fd727a18f9fc9680331fb086e9a141053547",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-010-01-bundlerOptionsCompat"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerRelative1.ts",
+      "sourceSha256": "6640c46a8571b74da8d7f3da500f2ec7a89e7fa874cf023c4c6e281f8c37f79e",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext, preserve"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/dir/index.ts",
+        "/redirect/package.json",
+        "/foo/index.ts",
+        "/types/esm.d.ts",
+        "/types/cjs.d.ts",
+        "/main.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-011-01-bundlerRelative1",
+        "compiler-input-011-02-bundlerRelative1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerSyntaxRestrictions.ts",
+      "sourceSha256": "f9283f854b53b7d71ee11bedb0d65cdaed27c053abb81aae7b5c2329cb32597f",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext, preserve"
+        },
+        {
+          "name": "checkJs",
+          "value": "true"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "outDir",
+          "value": "out"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/node/index.d.ts",
+        "/ambient.d.ts",
+        "/mainJs.js",
+        "/main.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-012-01-bundlerSyntaxRestrictions",
+        "compiler-input-012-02-bundlerSyntaxRestrictions"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallback.ts",
+      "sourceSha256": "994c5e25fdd546de731999380d8ef5c6508f0272386af5b88c69594b25ef8b4e",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node16,nodenext,bundler"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/dep/package.json",
+        "/node_modules/dep/dist/index.d.ts",
+        "/node_modules/dep/dist/index.mjs",
+        "/index.mts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-013-01-conditionalExportsResolutionFallback",
+        "compiler-input-013-02-conditionalExportsResolutionFallback",
+        "compiler-input-013-03-conditionalExportsResolutionFallback"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallbackNull.ts",
+      "sourceSha256": "dc4117eb9fff8a3b9b03ab66f843a20c3b0f4a1c293df30eeb00a1afd4c513bc",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node16,nodenext,bundler"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/dep/package.json",
+        "/node_modules/dep/dist/index.d.ts",
+        "/index.mts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-014-01-conditionalExportsResolutionFallbackNull",
+        "compiler-input-014-02-conditionalExportsResolutionFallbackNull",
+        "compiler-input-014-03-conditionalExportsResolutionFallbackNull"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/customConditions.ts",
+      "sourceSha256": "dc1786f6c17ed4775a4848943cc9a2384d34c45974bf468ee7d38b24741ab529",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "preserve"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "customConditions",
+          "value": "webpack,browser"
+        },
+        {
+          "name": "resolvePackageJsonExports",
+          "value": "true, false"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/lodash/package.json",
+        "/node_modules/lodash/index.d.ts",
+        "/node_modules/lodash/browser.d.ts",
+        "/node_modules/lodash/webpack.d.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-015-01-customConditions",
+        "compiler-input-015-02-customConditions"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/declarationNotFoundPackageBundlesTypes.ts",
+      "sourceSha256": "c2457af2031be82d9ec663f67f717e0337da7618ac7ad38824a02103ac9a7cdc",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "node_modules/foo/package.json",
+        "node_modules/foo/index.js",
+        "node_modules/foo/index.d.ts",
+        "node_modules/foo/other.js",
+        "index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-016-01-declarationNotFoundPackageBundlesTypes"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/extensionLoadingPriority.ts",
+      "sourceSha256": "0dd1120d5353544cf1af63f85a958a56df11cfd7476e063233d21fafcb6723f7",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "classic,node16,nodenext,bundler"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "checkJs",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/project/a.js",
+        "/project/a.js.js",
+        "/project/dir/index.ts",
+        "/project/dir.js",
+        "/project/b.ts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-017-02-extensionLoadingPriority",
+        "compiler-input-017-03-extensionLoadingPriority",
+        "compiler-input-017-04-extensionLoadingPriority"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "allowjs": "true",
+            "checkjs": "true",
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "strict": "false",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/importFromDot.ts",
+      "sourceSha256": "eb4da86a6e84e1f7b41c3ba2a0d4a437cf993459baf9e428c654ad3ce6c846c0",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        }
+      ],
+      "virtualFileNames": [
+        "a.ts",
+        "a/index.ts",
+        "a/b.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-018-01-importFromDot"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nestedPackageJsonRedirect.ts",
+      "sourceSha256": "7514da40f54c0a39897fe97df1ec7fb113484fe71b78fa617031097362158d16",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node16,nodenext,bundler"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "strict",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@restart/hooks/package.json",
+        "/node_modules/@restart/hooks/useMergedRefs/package.json",
+        "/node_modules/@restart/hooks/esm/useMergedRefs.d.ts",
+        "/main.ts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-019-01-nestedPackageJsonRedirect",
+        "compiler-input-019-02-nestedPackageJsonRedirect",
+        "compiler-input-019-03-nestedPackageJsonRedirect"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/node10AlternateResult_noResolution.ts",
+      "sourceSha256": "cfb250394ddeeff3cde75d1cd7b3f7c7562711b70d9b35f34871b7ed306d571b",
+      "disposition": "excluded-removed-mode-only-fixture",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node10"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/pkg/package.json",
+        "/node_modules/pkg/definitely-not-index.d.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [
+        "node10"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "excluded-not-executed"
+      },
+      "requestNames": [],
+      "excludedVariants": [
+        {
+          "variant": {
+            "moduleresolution": "node10",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "es2015",
+            "traceresolution": "true"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/node10Alternateresult_noTypes.ts",
+      "sourceSha256": "b545be76497b6e6821b36f1d17be3e7e1d3e25dce011b761d7b2c60f5ed1374a",
+      "disposition": "excluded-removed-mode-only-fixture",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node10"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/pkg/package.json",
+        "/node_modules/pkg/untyped.js",
+        "/node_modules/pkg/definitely-not-index.d.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [
+        "node10"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "excluded-not-executed"
+      },
+      "requestNames": [],
+      "excludedVariants": [
+        {
+          "variant": {
+            "moduleresolution": "node10",
+            "noemit": "true",
+            "noimplicitany": "true",
+            "notypesandsymbols": "true",
+            "target": "es2015",
+            "traceresolution": "true"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/node10IsNode_node.ts",
+      "sourceSha256": "8562f5eda83d12cecbfdbfbe29bd7a4dca9cc4a2a781714fbdb77a73ed243e61",
+      "disposition": "excluded-removed-mode-only-fixture",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "node"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/fancy-lib/package.json",
+        "/node_modules/fancy-lib/index.d.ts",
+        "/node_modules/fancy-lib/definitely-not-index.d.ts",
+        "/main.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [
+        "node"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "excluded-not-executed"
+      },
+      "requestNames": [],
+      "excludedVariants": [
+        {
+          "variant": {
+            "module": "commonjs",
+            "moduleresolution": "node",
+            "noemit": "true",
+            "target": "es2015",
+            "traceresolution": "true"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/node10IsNode_node10.ts",
+      "sourceSha256": "ecaa9d80dec279689d6222fb59ac47a866a5d1e44eca700d07103b8cf96c7350",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/fancy-lib/package.json",
+        "/node_modules/fancy-lib/index.d.ts",
+        "/node_modules/fancy-lib/definitely-not-index.d.ts",
+        "/main.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-023-01-node10IsNode_node10"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nodeModulesAtTypesPriority.ts",
+      "sourceSha256": "cf31345da628a88679e4722a501611eddabe55896d10e4874ab11c8b41f067ee",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2022"
+        },
+        {
+          "name": "module",
+          "value": "node16"
+        },
+        {
+          "name": "strict",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/react/index.d.ts",
+        "/node_modules/@types/redux/index.d.ts",
+        "/packages/a/node_modules/react/index.js",
+        "/packages/a/node_modules/redux/index.d.ts",
+        "/packages/a/node_modules/redux/index.js",
+        "/packages/a/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-024-01-nodeModulesAtTypesPriority"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonExportsOptionsCompat.ts",
+      "sourceSha256": "6b5b4a33307be645317ad3687b9977a8f8abfa484dffa3f4dacb97aedb754592",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-025-01-packageJsonExportsOptionsCompat"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonImportsExportsOptionCompat.ts",
+      "sourceSha256": "353a824688c85b834f7a450bedc1e3d78babd9cb03de1b44ee35a78aa79dcd8a",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "classic, node, node16, nodenext, bundler"
+        },
+        {
+          "name": "resolvePackageJsonImports",
+          "value": "true"
+        },
+        {
+          "name": "resolvePackageJsonExports",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "index.ts"
+      ],
+      "supportedExplicitModes": [
+        "node16",
+        "nodenext",
+        "bundler"
+      ],
+      "excludedExplicitModes": [
+        "classic",
+        "node"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 3,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-026-03-packageJsonImportsExportsOptionCompat",
+        "compiler-input-026-04-packageJsonImportsExportsOptionCompat",
+        "compiler-input-026-05-packageJsonImportsExportsOptionCompat"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "resolvepackagejsonexports": "true",
+            "resolvepackagejsonimports": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        },
+        {
+          "variant": {
+            "moduleresolution": "node",
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "resolvepackagejsonexports": "true",
+            "resolvepackagejsonimports": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonMain.ts",
+      "sourceSha256": "e50b6bdf527065b2a6a34fcdc0fa753e22ba6c23159d39b693bba1a49e32aaad",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/oof.js",
+        "/node_modules/bar/package.json",
+        "/node_modules/bar/rab.js",
+        "/node_modules/baz/package.json",
+        "/node_modules/baz/zab/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-027-01-packageJsonMain"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonMain_isNonRecursive.ts",
+      "sourceSha256": "2cf0192003ae827d7ffc53ef82cd0d7f1eaba8854c3c0addf5f3c75cee14f263",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/oof/package.json",
+        "/node_modules/foo/oof/ofo.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-028-01-packageJsonMain_isNonRecursive"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeCache.ts",
+      "sourceSha256": "52ae587ec16aaf4d5841c77409d1e9fad1cc329a6f079da495dd3393c11d2ebf",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "preserve"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/pkg/package.json",
+        "/node_modules/pkg/index.d.mts",
+        "/node_modules/pkg/index.d.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-029-01-resolutionModeCache"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeImportType1.ts",
+      "sourceSha256": "326978a28c7453712722e3ec96ce0a07cbdd643e3001a8166dc026b4d4f5f27d",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler, classic"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/app.ts",
+        "/other.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-030-01-resolutionModeImportType1"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "module": "esnext",
+            "moduleresolution": "classic",
+            "noemit": "true",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash1.ts",
+      "sourceSha256": "b00255fd754f25cd90164bc231c3e7900ae6c4de986a917ba75a6ac284bf53ce",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/tsconfig.json",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-031-01-resolutionModeTripleSlash1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash2.ts",
+      "sourceSha256": "c22ee3c553c48dd86662e86d590700109db69a7684a6fd12a759a6bc9cfea107",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/tsconfig.json",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-032-01-resolutionModeTripleSlash2"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash3.ts",
+      "sourceSha256": "2a73f262b8a53053bde15ed9146c1fc8577b1cf0b4d7cea1e19ebb8bdf6bf048",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/tsconfig.json",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-033-01-resolutionModeTripleSlash3"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash4.ts",
+      "sourceSha256": "97a751dcda3d2a3e67a26069c0d59486309e4b47979c7526d51b218b0786dcfc",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/tsconfig.json",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-034-01-resolutionModeTripleSlash4"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash5.ts",
+      "sourceSha256": "cf7166ed8c3a7d5d0b868bbd1e09cff8fb37bf986e0473d959a385ac2118601b",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/tsconfig.json",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-035-01-resolutionModeTripleSlash5"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTypeOnlyImport1.ts",
+      "sourceSha256": "3037d4c2530aa715faf5b575a6daaee1977c87bb1416e8e6350904be1fa49b47",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler, classic"
+        },
+        {
+          "name": "declaration",
+          "value": "true"
+        },
+        {
+          "name": "emitDeclarationOnly",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/@types/foo/index.d.mts",
+        "/node_modules/@types/foo/index.d.cts",
+        "/app.ts",
+        "/other.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-036-01-resolutionModeTypeOnlyImport1"
+      ],
+      "excludedVariants": [
+        {
+          "variant": {
+            "declaration": "true",
+            "emitdeclarationonly": "true",
+            "module": "esnext",
+            "moduleresolution": "classic",
+            "target": "es2015"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolvesWithoutExportsDiagnostic1.ts",
+      "sourceSha256": "71d758fde9ccc1c9e28ed1659fbca631d40adca7b8ee5f7afddce1161b9ec119",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "preserve"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler,node16"
+        },
+        {
+          "name": "strict",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/index.js",
+        "/node_modules/foo/index.mjs",
+        "/node_modules/foo/index.d.ts",
+        "/node_modules/@types/bar/package.json",
+        "/node_modules/@types/bar/index.d.ts",
+        "/node_modules/bar/package.json",
+        "/node_modules/bar/index.js",
+        "/node_modules/bar/index.mjs",
+        "/index.mts"
+      ],
+      "supportedExplicitModes": [
+        "bundler",
+        "node16"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 2,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-037-01-resolvesWithoutExportsDiagnostic1",
+        "compiler-input-037-02-resolvesWithoutExportsDiagnostic1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/scopedPackages.ts",
+      "sourceSha256": "2b51bcc7a175753b04d505b4402e593a6d96e8b573fe60b873374fa5ab7e2d5f",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "typeRoots",
+          "value": "types"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@cow/boy/index.d.ts",
+        "/node_modules/@types/be__bop/index.d.ts",
+        "/node_modules/@types/be__bop/e/z.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-038-01-scopedPackages"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/scopedPackagesClassic.ts",
+      "sourceSha256": "ea5fb8172b0cf4a5a5938cc74c46b7eca05f5e264e0c95e536d3f225328c6274",
+      "disposition": "excluded-removed-mode-only-fixture",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "typeRoots",
+          "value": "types"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "classic"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/see__saw/index.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [
+        "classic"
+      ],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "excluded-not-executed"
+      },
+      "requestNames": [],
+      "excludedVariants": [
+        {
+          "variant": {
+            "moduleresolution": "classic",
+            "noimplicitreferences": "true",
+            "target": "es2015",
+            "traceresolution": "true",
+            "typeroots": "types"
+          },
+          "reason": "Explicit removed resolution mode; not rewritten to a supported mode."
+        }
+      ],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/selfNameModuleAugmentation.ts",
+      "sourceSha256": "3f1fed11b9791fd92ca832dde937f63f2f5c79bcc906d6d52ff6442a39669a24",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "module",
+          "value": "esnext"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/acorn-walk/package.json",
+        "/node_modules/acorn-walk/dist/walk.d.ts",
+        "/node_modules/acorn-walk/dist/walk.mjs",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-040-01-selfNameModuleAugmentation"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.ambientModules.ts",
+      "sourceSha256": "9f44acf71b1ff71a1b51550041e137cc9655a582da3f03eb3ae16e56afb910a1",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "target",
+          "value": "esnext"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "node_modules/ext/package.json",
+        "node_modules/ext/index.d.ts",
+        "node_modules/ext/ts3.1/index.d.ts",
+        "main.ts",
+        "tsconfig.json"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-041-01-typesVersions.ambientModules"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "traceresolution": "true",
+          "target": "esnext",
+          "module": "commonjs"
+        },
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.emptyTypes.ts",
+      "sourceSha256": "8dafa7d34491e3bf7a89836d6448ec3810364f1469e7ddfb8b90d2435b4389db",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "baseUrl",
+          "value": "/"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "target",
+          "value": "esnext"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        }
+      ],
+      "virtualFileNames": [
+        "/a/package.json",
+        "/a/ts3.1/index.d.ts",
+        "/b/user.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-042-01-typesVersions.emptyTypes"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.justIndex.ts",
+      "sourceSha256": "7b08085018e2927d1b05f1618312fed7744bd306ac582e4439b12e190b56f1ef",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "baseUrl",
+          "value": "/"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "target",
+          "value": "esnext"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        }
+      ],
+      "virtualFileNames": [
+        "/a/package.json",
+        "/a/ts3.1/index.d.ts",
+        "/b/user.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-043-01-typesVersions.justIndex"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.multiFile.ts",
+      "sourceSha256": "ee52c6dbc3539c0badbcd3ecb31f12da7a5e8b0e0736cf5ddc094aa2ca083534",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "target",
+          "value": "esnext"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        }
+      ],
+      "virtualFileNames": [
+        "node_modules/ext/package.json",
+        "node_modules/ext/index.d.ts",
+        "node_modules/ext/other.d.ts",
+        "node_modules/ext/ts3.1/index.d.ts",
+        "node_modules/ext/ts3.1/other.d.ts",
+        "main.ts",
+        "tsconfig.json"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-044-01-typesVersions.multiFile"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "traceresolution": "true",
+          "target": "esnext",
+          "module": "commonjs"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport.ts",
+      "sourceSha256": "02bbb3d9de2c2b49abd740582652d588b584f647e5cfb7758cbc91b1df615a37",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/index.js",
+        "/a.ts",
+        "/b.ts",
+        "/c.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-045-01-untypedModuleImport"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_allowJs.ts",
+      "sourceSha256": "348ca3f343a905252e0a2d296c644ef3f5eb06e30d862a99f190b6c8d8c67659",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        },
+        {
+          "name": "allowJs",
+          "value": "true"
+        },
+        {
+          "name": "maxNodeModuleJsDepth",
+          "value": "1"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-046-01-untypedModuleImport_allowJs"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny.ts",
+      "sourceSha256": "9b93f55d7ed90a70bcf92c4d8d0cef1ed7840a94a7a9d35b636ad41038aab1bd",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-047-01-untypedModuleImport_noImplicitAny"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_relativePath.ts",
+      "sourceSha256": "a00f0cb8eb290ef522122fb2b7d4480762adeab46cb7619477fdee901b4d42ec",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-048-01-untypedModuleImport_noImplicitAny_relativePath"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_scoped.ts",
+      "sourceSha256": "d5111a7b79bd597cbc8548b55e235c130c636dfb493d74128048baa096f3d2d7",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "noImplicitAny",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@foo/bar/package.json",
+        "/node_modules/@foo/bar/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-049-01-untypedModuleImport_noImplicitAny_scoped"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_typesForPackageExist.ts",
+      "sourceSha256": "a47439caeb2994d73436f88b1985f6201d4f6a63c6173c7f40bba7276672e5d7",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "strict",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/foo/index.d.ts",
+        "/node_modules/@types/foo/package.json",
+        "/node_modules/foo/sub.js",
+        "/node_modules/foo/package.json",
+        "/node_modules/bar/sub.js",
+        "/node_modules/bar/package.json",
+        "/node_modules/@types/scope__foo/index.d.ts",
+        "/node_modules/@types/scope__foo/package.json",
+        "/node_modules/@scope/foo/sub.js",
+        "/node_modules/@scope/foo/package.json",
+        "/node_modules/@scope/bar/sub.js",
+        "/node_modules/@scope/bar/package.json",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-050-01-untypedModuleImport_noImplicitAny_typesForPackageExist"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_vsAmbient.ts",
+      "sourceSha256": "e994f733eb57c3df82daa89571b4afc53a4aebe93ff5e0cec4ad11215f91de1e",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/index.js",
+        "/declarations.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-051-01-untypedModuleImport_vsAmbient"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_withAugmentation.ts",
+      "sourceSha256": "462c47e15bf9adce0ecf47d413754161cfc1e55424846606670ea0f4fcc46561",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "strict",
+          "value": "false"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "currentDirectory",
+          "value": "/"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/index.js",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-052-01-untypedModuleImport_withAugmentation"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "currentdirectory": "/"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingInheritedBaseUrl.ts",
+      "sourceSha256": "7160f73214281df0be392ee71f0d74938e61beef064c6533d53d3f4b37b61baa",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/other/tsconfig.base.json",
+        "/project/tsconfig.json",
+        "/other/lib/p1/index.ts",
+        "/project/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-053-01-pathMappingInheritedBaseUrl"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingWithoutBaseUrl1.ts",
+      "sourceSha256": "8aac51447b18e942e195c8abee411ff8e7aaa0d734025cae1f09201a113d7d56",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/project/tsconfig.json",
+        "/project/lib/p1/index.ts",
+        "/project/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-054-01-pathMappingWithoutBaseUrl1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingWithoutBaseUrl2.ts",
+      "sourceSha256": "f8fb3c812bf5e0378732d72ad57487f24a3f20f3b94d13b8dbf2b48143f48a84",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/other/tsconfig.base.json",
+        "/project/tsconfig.json",
+        "/other/lib/p1/index.ts",
+        "/project/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-055-01-pathMappingWithoutBaseUrl2"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks.ts",
+      "sourceSha256": "c70e144564cd3d1864cabc07fd113b22e2758aa93858725a6173dae3af9dfa00",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "fullEmitPaths",
+          "value": "true"
+        },
+        {
+          "name": "symlink",
+          "value": "/src/library-b/node_modules/library-a/index.ts"
+        }
+      ],
+      "virtualFileNames": [
+        "/src/library-a/index.ts",
+        "/src/library-b/index.ts",
+        "/src/app.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-056-01-moduleResolutionWithSymlinks"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "fullemitpaths": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks_preserveSymlinks.ts",
+      "sourceSha256": "1737d080cca8b7e66ccf08f5024109a329fac5029cfb546189bf2466cf2f84e8",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "preserveSymlinks",
+          "value": "true"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "symlink",
+          "value": "/app/node_modules/linked/index.d.ts,/app/node_modules/linked2/index.d.ts"
+        }
+      ],
+      "virtualFileNames": [
+        "/linked/index.d.ts",
+        "/app/node_modules/real/index.d.ts",
+        "/app/app.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-057-01-moduleResolutionWithSymlinks_preserveSymlinks"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks_referenceTypes.ts",
+      "sourceSha256": "33ec7584cd19c6a1572a75ec3af3ec8cb51d85598c2294a7ff0b77bd45842752",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        },
+        {
+          "name": "fullEmitPaths",
+          "value": "true"
+        },
+        {
+          "name": "symlink",
+          "value": "/node_modules/@types/library-b/node_modules/@types/library-a/index.d.ts"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/library-a/index.d.ts",
+        "/node_modules/@types/library-b/index.d.ts",
+        "/app.ts",
+        "/tsconfig.json"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-058-01-moduleResolutionWithSymlinks_referenceTypes"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "target": "es2015",
+          "traceresolution": "true"
+        },
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "fullemitpaths": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_empty.ts",
+      "sourceSha256": "120707b2af4bc189b27fdc2c255006d29a1b711beb0a46bd6d3a917fd43387a7",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-059-01-moduleResolutionWithSuffixes_empty"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one.ts",
+      "sourceSha256": "40471a4d9bcda4e8bfae078307ee022a088e8321bdef30ee76230d99d134cd5a",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ios.ts",
+        "/foo.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-060-01-moduleResolutionWithSuffixes_one"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_oneBlank.ts",
+      "sourceSha256": "8f3faf0816ad6f14dc1832cd82d10804c049de81cf6c0cffdcbce8be915174a1",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-061-01-moduleResolutionWithSuffixes_oneBlank"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_threeLastIsBlank1.ts",
+      "sourceSha256": "66b3a8469c7170addb0a504b363497abc077c9b58ee0c956742a778edaa25b92",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo-ios.ts",
+        "/foo__native.ts",
+        "/foo.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-062-01-moduleResolutionWithSuffixes_threeLastIsBlank1"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_jsonModule.ts",
+      "sourceSha256": "f217a2f1308e82c97fb53e9dc0bba05cdc30eada7f7dcb87ec31b3516bb39d22",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "fullEmitPaths",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ios.json",
+        "/foo.json"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-063-01-moduleResolutionWithSuffixes_one_jsonModule"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "fullemitpaths": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_jsModule.ts",
+      "sourceSha256": "1d544ab3fe0299abafe429f21f4013560bd9468c73d59679a93ab1146a94884c",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "fullEmitPaths",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ios.js",
+        "/foo.js"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-064-01-moduleResolutionWithSuffixes_one_jsModule"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {
+          "fullemitpaths": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_dirModuleWithIndex.ts",
+      "sourceSha256": "ae9e4d882ec0e70bf80c4269cda0c6e0bcebd5a358d32a2b517a84c62aff4bcb",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo/index.ios.ts",
+        "/foo/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-065-01-moduleResolutionWithSuffixes_one_dirModuleWithIndex"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_oneNotFound.ts",
+      "sourceSha256": "cad77ca41c71d8924075d98cfa4e38dbf080ce0335a7856424fd22656baeb4da",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        }
+      ],
+      "virtualFileNames": [
+        "/tsconfig.json",
+        "/index.ts",
+        "/foo.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-066-01-moduleResolutionWithSuffixes_oneNotFound"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015"
+        },
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionNoTsCJS.ts",
+      "sourceSha256": "e0fca24a9d1f3d70c8c3ba21ca3b41c4d2aa37cef6ed0864a923eb197e57c4c3",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "jsx",
+          "value": "Preserve"
+        }
+      ],
+      "virtualFileNames": [
+        "x.ts",
+        "y.tsx",
+        "z.d.ts",
+        "user.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-067-01-moduleResolutionNoTsCJS"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionNoTsESM.ts",
+      "sourceSha256": "83dd2fb76df1f2374c20cc5d13bc4683dc8f1c37ec3287064c79c69de12e6d90",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "module",
+          "value": "es2015"
+        },
+        {
+          "name": "jsx",
+          "value": "Preserve"
+        }
+      ],
+      "virtualFileNames": [
+        "x.ts",
+        "y.tsx",
+        "z.d.ts",
+        "user.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-068-01-moduleResolutionNoTsESM"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_automaticTypeDirectiveNames.ts",
+      "sourceSha256": "770afc69df123a0245d00a7a6c8ad041d0b98b5448958ea97b6d843bc9f20b23",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "types",
+          "value": "*"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@types/.a/index.d.ts",
+        "/node_modules/@types/a/index.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-069-01-moduleResolution_automaticTypeDirectiveNames"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionPackageIdWithRelativeAndAbsolutePath.ts",
+      "sourceSha256": "44494be968efda319cd2374970aa5c476d204f46564bb32248689bb441f71be4",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "fullEmitPaths",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/shared/node_modules/troublesome-lib/package.json",
+        "/shared/node_modules/troublesome-lib/lib/Compactable.d.ts",
+        "/shared/node_modules/troublesome-lib/lib/Option.d.ts",
+        "/shared/lib/app.d.ts",
+        "/project/node_modules/anotherLib/index.d.ts",
+        "/project/node_modules/troublesome-lib/package.json",
+        "/project/node_modules/troublesome-lib/lib/Compactable.d.ts",
+        "/project/node_modules/troublesome-lib/lib/Option.d.ts",
+        "/project/src/app.ts",
+        "/project/tsconfig.json"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-070-01-moduleResolutionPackageIdWithRelativeAndAbsolutePath"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "module": "commonjs",
+          "target": "es2015",
+          "traceresolution": "true"
+        },
+        "harnessOnly": {
+          "noimplicitreferences": "true",
+          "fullemitpaths": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/resolutionModeOverrideWithOtherAttributes.ts",
+      "sourceSha256": "ab5dd85ea0ff2f6bd727b5ed1901d42693dbc9b1f2bfb6c4c418b4fd3c8b7054",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "target",
+          "value": "esnext"
+        },
+        {
+          "name": "module",
+          "value": "preserve"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "bundler"
+        },
+        {
+          "name": "noEmit",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/pkg/package.json",
+        "/node_modules/pkg/index.d.mts",
+        "/node_modules/pkg/index.d.cts",
+        "/app.ts"
+      ],
+      "supportedExplicitModes": [
+        "bundler"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-071-01-resolutionModeOverrideWithOtherAttributes"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/packageJsonImportsWildcardTsExtensionError.ts",
+      "sourceSha256": "7e3d7b9cbe3a2e22ba0be4cfc37738ccdda6768f73d30d6fd2993bd301551981",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "module",
+          "value": "nodenext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "nodenext"
+        }
+      ],
+      "virtualFileNames": [
+        "src/foo.ts",
+        "src/index.ts",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "supportedExplicitModes": [
+        "nodenext"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-072-01-packageJsonImportsWildcardTsExtensionError"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "noemit": "true",
+          "module": "nodenext",
+          "moduleresolution": "nodenext"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/packageJsonImportsWildcardNoCrash.ts",
+      "sourceSha256": "7411e5787f99380a76424e5cc6004a5441cfd14ffdfbd6ead19df175f2fc1657",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "noEmit",
+          "value": "true"
+        },
+        {
+          "name": "noTypesAndSymbols",
+          "value": "true"
+        },
+        {
+          "name": "module",
+          "value": "nodenext"
+        },
+        {
+          "name": "moduleResolution",
+          "value": "nodenext"
+        }
+      ],
+      "virtualFileNames": [
+        "src/a.ts",
+        "src/b.ts",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "supportedExplicitModes": [
+        "nodenext"
+      ],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-073-01-packageJsonImportsWildcardNoCrash"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Original first embedded tsconfig/jsconfig parsed unchanged; top-level compiler directive overrides and harness-only flags are retained as provenance but are not applied after discovery.",
+        "unappliedCompilerDirectives": {
+          "noemit": "true",
+          "module": "nodenext",
+          "moduleresolution": "nodenext"
+        },
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_packageJson_notAtPackageRoot.ts",
+      "sourceSha256": "b6bec39c9cc8d6e8da386ffa185a3b1a86ca165d56d9311b5e045c2a6033b2ac",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/foo/bar/package.json",
+        "/node_modules/foo/package.json",
+        "/node_modules/foo/bar/types.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-074-01-moduleResolution_packageJson_notAtPackageRoot"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_packageJson_scopedPackage.ts",
+      "sourceSha256": "1c9e08713f34a9ea27bd5783448c4c84eb10d92ba56d6e1cd2da0e3c810c04c9",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "noImplicitReferences",
+          "value": "true"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/node_modules/@foo/bar/package.json",
+        "/node_modules/@foo/bar/types.d.ts",
+        "/a.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-075-01-moduleResolution_packageJson_scopedPackage"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {
+          "noimplicitreferences": "true"
+        },
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithRequireAndImport.ts",
+      "sourceSha256": "be9d7c72139b3aedb5e3fe9e2e6670146f7bec0ad2e01989280ce3943bb56833",
+      "disposition": "reused-upstream-input-graph-differential",
+      "directives": [
+        {
+          "name": "module",
+          "value": "commonjs"
+        },
+        {
+          "name": "target",
+          "value": "es2015"
+        },
+        {
+          "name": "traceResolution",
+          "value": "true"
+        }
+      ],
+      "virtualFileNames": [
+        "/other.ts",
+        "/index.ts"
+      ],
+      "supportedExplicitModes": [],
+      "excludedExplicitModes": [],
+      "scope": "Original compiler inputs reused for selected genuine loader/resolver graph operations; original compiler assertions and Program validation are not claimed.",
+      "execution": {
+        "status": "pinned-go-observed-managed-native-pending",
+        "originalRequests": 1,
+        "originalReport": "artifacts/resolution-validation/compiler-inputs/original-report.json",
+        "extractionReport": "artifacts/resolution-validation/compiler-inputs/extraction-review.json",
+        "originalCompilerAssertionsClaimed": 0
+      },
+      "requestNames": [
+        "compiler-input-076-01-moduleResolutionWithRequireAndImport"
+      ],
+      "excludedVariants": [],
+      "adaptations": {
+        "extraction": "Original regular compiler harness removes directive lines, splits CRLF/LF and joins content with LF; original whole fixture SHA retained.",
+        "environment": "Case-sensitive virtual filesystem, original currentDirectory or /.src, original symlink targets. No physical disk relocation.",
+        "configuration": "Authored JSON config encodes original retained directive variant and original root heuristic; original fixture source/package bytes are unchanged after harness extraction.",
+        "unappliedCompilerDirectives": {},
+        "harnessOnly": {},
+        "externalStages": "No checker/emit/baselines/global automatic types/default-library environment/project-reference builds; explicit lib references remain observed unscheduled metadata."
+      }
+    }
+  ],
+  "summary": {
+    "fixtures": 76,
+    "reusedFixtures": 72,
+    "excludedFixtures": 4,
+    "requests": 105,
+    "originalCompilerAssertionsClaimed": 0
+  }
+}

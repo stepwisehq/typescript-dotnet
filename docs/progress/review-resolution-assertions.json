@@ -1,0 +1,225 @@
+{
+  "reviewer": "core (independent of verification test author)",
+  "scope": "32 original assertion bodies outside support-owned data/concurrency review; source/setup/assertion preservation, not rerun or exhaustive production coverage",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "no remaining identified assertion omission",
+  "originalFunctions": [
+    {
+      "name": "TestStaticResolver",
+      "source": "upstream/TypeScript/tsc/internal/module/staticresolver_test.go",
+      "sourceSha256": "4d0841fb322ff010922760cccdcbcb2094b96ec538bbb5877772cd4ef9ea642c",
+      "bodySha256": "f8a497467d3f44b8f1af6b7654779218b478f8c6244ce10f9a90fe4cb4b11907"
+    },
+    {
+      "name": "TestResolveModuleNameTrailingSlash",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "20765e8abcbfe80637ab5b0708a157b7e7e74b2a0b764d6ae8fc6a2a7cedd954"
+    },
+    {
+      "name": "TestResolveModuleNameBlockedByNullExport",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "a1c1c81bfdf2e246535ff3dace47f383930b51b891020634d908bf4d866a2175"
+    },
+    {
+      "name": "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "2ab71ffc1f13de696b2bbe1be875de37cb4132fa6f4873275c2f28fd5e794d4d"
+    },
+    {
+      "name": "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "bodySha256": "73c0206c78c9114e7e0ba9d9060745cb377828f13381bae6419287ad17428822"
+    },
+    {
+      "name": "TestExtensionReplacementPreservesEmptyAndDotStems",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "bodySha256": "4c09caa1e5e9419504cdd3072eb1349bff70f8a3d78ae2787ab5f64e8d4fb9f3"
+    },
+    {
+      "name": "TestOutputDirectoriesRemoveTrailingSeparators",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "bodySha256": "9af0b174f93b42dfe4deb6c7781e4ddf70aaaacf18913269d686a0572e5c401c"
+    },
+    {
+      "name": "TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "bodySha256": "5173312c9b0552f0af4e43689b87fd3c3155589a4538e3d8d0c4d53a6998e525"
+    },
+    {
+      "name": "TestResolveDynamicModuleNameUsingRootDirs",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "7d42f5f5dd9a13bf197a4d6a2b2e4f0fddc7fd42c7aa3554e4406a46cac51b55"
+    },
+    {
+      "name": "TestRootDirsPreservesExceptionalDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "6d9a299f3009aabd590441ab13c3941beadb0a102c49db3cf57342058c0c69fd"
+    },
+    {
+      "name": "TestRootDirsRejectsUnrepresentableDiskSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "5a328844b57ba5bac4d2639b581ff362c15b8147a2cb19d4bbbe4fecac803f0b"
+    },
+    {
+      "name": "TestRootDirsEscapesRootLikeDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "75fab23c55d95832be3ffdb2a6f3e6e77fd915e7a54f75ce82af22e678e5e4e2"
+    },
+    {
+      "name": "TestRootDirsPreservesRelativeDiskSuffixes",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "20aab024bf4fc3514e02c40c82e5d76f792997f7bca4c818b7fddda94c2b885f"
+    },
+    {
+      "name": "TestRootDirsPreservesRelativeDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "84249aa737b291e8e9dbc5ff7082ad4c34a6aaea7cd546f862a666609c81c358"
+    },
+    {
+      "name": "TestResolveDynamicPackageJSONPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "377f8678139470b2ed50d6ceb157a508b133dbcc350b29a997198b075f69449b"
+    },
+    {
+      "name": "TestResolveDynamicPackageSubpathFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "dd88c2a748b17c1435077cde040bbe984bf894a74ffe25f64c9c1fa278dfc202"
+    },
+    {
+      "name": "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "ce7a633803682ee90353c0a051d3856d8181aea0eae8a4f9b2dafe7f7ab53f8a"
+    },
+    {
+      "name": "TestResolveDynamicDottedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "92623a6d0893e4be9469265287d05333a75c1760895067eae5aa6fd83a183318"
+    },
+    {
+      "name": "TestResolvedModuleCarriesCaseInsensitivePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "08d75206e4ba0b9d4f3593f173954136ded483980625c6181f4bac9f18273bf9"
+    },
+    {
+      "name": "TestResolvedTypeReferenceDirectiveCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "e4edb0275abaac7ea9831d6328512f1d3c153c4136f0a0cc12df9b44156a2493"
+    },
+    {
+      "name": "TestResolvedEntrypointCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "0540f318180c41922f7dac1f5157806275cfd24603eaa37ec0b0ccd5fdb60828"
+    },
+    {
+      "name": "TestDynamicExportPatternEntrypointUsesLogicalName",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "bba74b5267c8adfc57e8aed61dce217a5c8d4df2a565c0f18ed4be0b130b192c"
+    },
+    {
+      "name": "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "8e243d3a8980624d93d9344072ff8585c07824519964fbeded1e5a89ffce8594"
+    },
+    {
+      "name": "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "cb75310bd105e8dd2d457909b83bfeee0e0ab82d9371c46989c1fe721b8be53b"
+    },
+    {
+      "name": "TestDynamicExportPatternPreservesStaticSourcePrefix",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "ed74b3e1a14a1b198bf4bdd9018ed37b1ea04fcde85b0190038db1376bd0289c"
+    },
+    {
+      "name": "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "6f8918b8388eb2d43d8f0a1904485d24ac95787904c38b51a6a01d27ae0c6743"
+    },
+    {
+      "name": "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "cf271093460e0ec496389066e852517527957a3a69c26cca6a5d7405670893c1"
+    },
+    {
+      "name": "TestDiskExportPatternKeepsReservedPrefixLiteral",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "64362dee891e3d6a5a2f1ac5d78a1690183bf9a8f336364d66dda1d2a683fcb9"
+    },
+    {
+      "name": "TestDynamicExportPatternUnderExceptionalParent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "50a24a84fba883943c0b29624e6862edfcda652c1535aa673d140f809b57308e"
+    },
+    {
+      "name": "TestDynamicExportPatternWithEmptyMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "45a2166d2fd100c85c7c774647d87fcaea2a0e851ee87b6af92653c617af4a3b"
+    },
+    {
+      "name": "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "aae9680eb09d770a15c2b79bca1faf4a63448d89f66dabeeee904f6c30b39686"
+    },
+    {
+      "name": "TestNodeModulePackageRoot",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "bodySha256": "0406babb363e01a656dd06ff86c5fab77c82078ab3ec86700e9373de2f869bff"
+    }
+  ],
+  "reviewedFiles": {
+    "validation/Resolution.Checks/StaticResolverChecks.cs": "ce0d66c2369567c166405d0b79acf3ff105368560c4a91ff4308c946408601a8",
+    "validation/Resolution.Checks/ResolverBasicChecks.cs": "0e1ec6a1bd4c8295cbe39fb0bc7c9ac348e8cc2dcf83dfa5f406a15eeeaabef3",
+    "validation/Resolution.Checks/ResolverInternalChecks.cs": "3a04ea06639d6cc1d3c2316050ec4c65ca597bc6d8c089ddc0b48ac7e63d4e6d",
+    "validation/Resolution.Checks/ModuleCandidateChecks.cs": "41b38099c9a984beb17c3ee0ceff9ed54d049095e5e0abf16dd88230b2d9a242",
+    "validation/Resolution.Checks/ResolverDynamicChecks.cs": "81efc2712f9ecec6f21b0a69e0435c891973771d5765ffb877beda5ec4cda47b",
+    "validation/Resolution.Checks/ResolverEntrypointChecks.cs": "096f70f7971ce0e13925426bf9512e398a41971413da451f51381448756a1961",
+    "validation/Configuration.Checks/ModulePackageRootChecks.cs": "3269dbf2c71a2b8a4f4b5c38e373ce7208be91cd18020ef597f2b69e8a82efb3",
+    "validation/Resolution.Checks/ResolutionFixtures.cs": "2152ba2de1cd3158bd48b59a14bb15b99dd5e419b15acdc5b3a143d73e4ec29b"
+  },
+  "checks": [
+    "Static six query rows retain mode/directory precedence, nil-result and nil-error assertions; StrongBox retains one shared mode pointer.",
+    "Basic three bodies retain trailing slash forms, trace option, canonical paths, blocked-export zero path and directory-only target unresolved predicates.",
+    "Internal helper state construction, nil search continuation, four dot/empty-stem replacements and output directory count/order retain original arguments.",
+    "Candidate all16 rows retain each of path/directoryOnly/rendered text/trailing-separator assertions; package-root all11 rows retain folder-versus-file invocation.",
+    "Dynamic all10 bodies retain every rootDirs variant, wrong-target distractor, cwd/mode/options, success/failure and path/extension/declaration assertions.",
+    "Entrypoint all13 bodies retain all3 wildcard rows, cache seeding versus asserted resolution, canonical paths, count/specifier predicates, case-view physical distinction, empty-match roundtrip and unaddressable zero count."
+  ],
+  "adaptations": [
+    "Independent top-level/subtest t.Parallel scheduling becomes sequential; production cache races remain real separately reviewed tasks.",
+    "Existing read-only ConfigurationFileSystem replaces vfstest; all paths/text in these selected source fixtures are ASCII and convert once to Go bytes.",
+    "Nullable entrypoint slice is locally coalesced for len/index assertions only; no observed header identity claim.",
+    "Shared cases throw on first failed assertion; original successful assertion domains remain present."
+  ],
+  "runtimeQualification": "Copied4 dispatcher40 completed including all32 reviewed original bodies; final current NativeAOT/xUnit/differential gate pending."
+}

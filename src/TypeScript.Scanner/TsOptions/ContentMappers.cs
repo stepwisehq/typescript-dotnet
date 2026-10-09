@@ -25,9 +25,9 @@ public static partial class TsOptions
         };
         var resolver = new TypeScript.Modules.DefaultResolver(host.FS(), host.GetCurrentDirectory(), new CompilerOptions { ModuleResolution = ModuleResolutionKind.Bundler });
         var resolved = resolver.ResolvePackageDirectory(packageName, containingFile, ResolutionMode.None);
-        if (resolved == null || resolved.ResolvedFileName == "")
+        if (resolved == null || resolved.ResolvedFileName == default)
             return (new(), default, Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_package_0_could_not_be_resolved, packageName));
-        var directory = TsPath.RootedDirectoryPathFromPath(RootedPath.FromGoString(resolved.ResolvedFileName));
+        var directory = TsPath.RootedDirectoryPathFromPath(resolved.ResolvedFileName.AsPath());
         var(contents, read) = fs.ReadFile(directory.ResolveFile("package.json"));
         if (!read)
             return (new(), directory, Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_package_0_could_not_be_resolved, packageName));

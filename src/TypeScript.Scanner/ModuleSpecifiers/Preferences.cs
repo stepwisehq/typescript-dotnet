@@ -83,7 +83,7 @@ internal static partial class ModuleSpecifiers
         var mode = host.GetDefaultResolutionModeForFile(file);
         if (mode != syntaxMode)
             preferred = getPreferredEnding(preferences, host, options, file, oldSpecifier, syntaxMode);
-        bool allowTs = shouldAllowImportingTsExtension(options, file.FileName());
+        bool allowTs = shouldAllowImportingTsExtension(options, host.FileNamesAreGoBytes ? file.FileNameGoBytes() : file.FileName());
         var effective = syntaxMode != ResolutionMode.None ? syntaxMode : mode;
         var resolution = options.GetModuleResolutionKind();
         bool isNodeNext = resolution >= ModuleResolutionKind.Node16 && resolution <= ModuleResolutionKind.NodeNext;

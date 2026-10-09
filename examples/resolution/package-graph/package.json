@@ -1,0 +1,7 @@
+{
+    "name": "resolution-graph-demo",
+    "type": "module",
+    "imports": {
+        "#local": "./src/local.ts"
+    }
+}

@@ -1,22 +1,35 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Partial port of tsc/internal/module/util.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
-using TypeScript.Compiler;
+// Port of tsc/internal/module/util.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using TypeScript.Scanner;
 
 namespace TypeScript.Modules;
 public static class ModuleUtilities
 {
-    // util.go:132. These original TS forms are always allowed. Selected disk
-    // admission permits only .ts implementation winners; other file families
-    // cannot silently enter a successful fixed-profile checker call.
-    internal static Message? GetResolutionDiagnostic(CompilerOptions options, ResolvedModule resolvedModule, SourceFile file)
+    private static readonly TypeScript.Semver.Version typeScriptVersion = TypeScript.Semver.Semver.MustParse(Core.Version());
+    public const string InferredTypesContainingFile = "__inferred type names__.ts";
+
+    public static Message? GetResolutionDiagnostic(CompilerOptions options, ResolvedModule resolvedModule, SourceFile file)
     {
         if (resolvedModule.ResolvedUsingExtraExtensions)
-            throw new ProjectException("extraExtensions", "Custom resolution extensions are unsupported.", resolvedModule.ResolvedFileName);
-        if (resolvedModule.Extension is ".ts" or ".d.ts" or ".mts" or ".d.mts" or ".cts" or ".d.cts")
             return null;
-        throw new ProjectException("resolvedFileForm", "Resolution diagnostics for this file form are unsupported: " + resolvedModule.Extension, resolvedModule.ResolvedFileName);
+
+        Message? NeedJsx() => options.Jsx != JsxEmit.None ? null : Diagnostics.Module_0_was_resolved_to_1_but_jsx_is_not_set;
+        Message? NeedAllowJs()
+        {
+            Tristate noImplicitAny = options.NoImplicitAny != Tristate.Unknown ? options.NoImplicitAny : options.Strict;
+            return options.GetAllowJS() || noImplicitAny != Tristate.True ? null : Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type;
+        }
+
+        return resolvedModule.Extension switch
+        {
+            TsPath.ExtensionTs or TsPath.ExtensionDts or TsPath.ExtensionMts or TsPath.ExtensionDmts or TsPath.ExtensionCts or TsPath.ExtensionDcts => null,
+            TsPath.ExtensionTsx => NeedJsx(),
+            TsPath.ExtensionJsx => NeedJsx() ?? NeedAllowJs(),
+            TsPath.ExtensionJs or TsPath.ExtensionMjs or TsPath.ExtensionCjs => NeedAllowJs(),
+            TsPath.ExtensionJson => options.GetResolveJsonModule() ? null : Diagnostics.Module_0_was_resolved_to_1_but_resolveJsonModule_is_not_used,
+            _ => file.IsDeclarationFile || options.AllowArbitraryExtensions == Tristate.True ? null : Diagnostics.Module_0_was_resolved_to_1_but_allowArbitraryExtensions_is_not_set
+        };
     }
 
     public static bool IsApplicableVersionedTypesKey(string key)
@@ -24,7 +37,7 @@ public static class ModuleUtilities
         if (!key.StartsWith("types@", StringComparison.Ordinal))
             return false;
         var(range, ok) = TypeScript.Semver.Semver.TryParseVersionRange(key[6..]);
-        return ok && range.Test(TypeScript.Semver.Semver.MustParse(Core.Version()));
+        return ok && range.Test(typeScriptVersion);
     }
 
     public static (string PackageName, string Remaining) ParsePackageName(string name)
@@ -64,17 +77,9 @@ public static class ModuleUtilities
         if (index < 0)
             return default;
         int start = index + "/node_modules/".Length;
-        int next(int offset)
-        {
-            if (offset >= path.Length)
-                return path.Length;
-            int separator = path.IndexOf('/', offset);
-            return separator < 0 ? isDirectory ? path.Length : offset : separator;
-        }
-
-        int end = next(start);
+        int end = DefaultResolver.MoveToNextDirectorySeparatorIfAvailable(path, start, isDirectory);
         if (path[start] == '@')
-            end = next(end + 1);
+            end = DefaultResolver.MoveToNextDirectorySeparatorIfAvailable(path, end, isDirectory);
         return TsPath.RootedDirectoryPathFromAbsolute(path[..end]);
     }
 
@@ -94,4 +99,21 @@ public static class ModuleUtilities
 
     public static string GetTypesPackageName(string name) => "@types/" + MangleScopedPackageName(name);
     public static string GetPackageNameFromTypesPackageName(string name) => name.StartsWith("@types/", StringComparison.Ordinal) ? UnmangleScopedPackageName(name[7..]) : name;
+
+    public static string TryGetJSExtensionForFile(string fileName, CompilerOptions options)
+    {
+        return TsPath.TryGetExtensionFromPath(fileName) switch
+        {
+            TsPath.ExtensionTs or TsPath.ExtensionDts => TsPath.ExtensionJs,
+            TsPath.ExtensionTsx => options.Jsx == JsxEmit.Preserve ? TsPath.ExtensionJsx : TsPath.ExtensionJs,
+            TsPath.ExtensionJs => TsPath.ExtensionJs,
+            TsPath.ExtensionJsx => TsPath.ExtensionJsx,
+            TsPath.ExtensionJson => TsPath.ExtensionJson,
+            TsPath.ExtensionDmts or TsPath.ExtensionMts or TsPath.ExtensionMjs => TsPath.ExtensionMjs,
+            TsPath.ExtensionDcts or TsPath.ExtensionCts or TsPath.ExtensionCjs => TsPath.ExtensionCjs,
+            _ => ""
+        };
+    }
+
+    public static string TryGetJSExtensionForFileName(RootedFilePath fileName, CompilerOptions options) => TryGetJSExtensionForFile(fileName.AsString(), options);
 }

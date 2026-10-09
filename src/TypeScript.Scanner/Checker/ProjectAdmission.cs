@@ -5,14 +5,15 @@ namespace TypeScript.Checking;
 
 internal static class ProjectAdmission
 {
-    internal static void Validate(SourceFile file) => CollectionAdmission.Validate(file, project: true);
+    internal static void Validate(SourceFile file, bool allowNonRelativeModuleSpecifiers = false) =>
+        CollectionAdmission.Validate(file, project: true, allowNonRelativeModuleSpecifiers);
 
-    internal static void ValidateSpecifier(SourceFile file, Node specifier)
+    internal static void ValidateSpecifier(SourceFile file, Node specifier, bool allowNonRelativeModuleSpecifiers = false)
     {
         if (specifier.Kind != Kind.StringLiteral)
             throw new UnsupportedSemanticFeatureException(file, specifier, "moduleSpecifier");
         string name = specifier.Text();
-        if (!(name is "." or ".." || name.StartsWith("./", StringComparison.Ordinal) || name.StartsWith("../", StringComparison.Ordinal)))
+        if (!allowNonRelativeModuleSpecifiers && !(name is "." or ".." || name.StartsWith("./", StringComparison.Ordinal) || name.StartsWith("../", StringComparison.Ordinal)))
             throw new UnsupportedSemanticFeatureException(file, specifier, "nonRelativeModuleSpecifier");
     }
 

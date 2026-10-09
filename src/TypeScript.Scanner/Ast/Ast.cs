@@ -377,6 +377,17 @@ public interface SourceFileLike
     List<int> ECMALineMap();
 }
 
+// ast.go: SourceFileMetaData. Loader-owned file metadata, independent of checker admission.
+public readonly record struct SourceFileMetaData
+{
+    private readonly string packageJsonType;
+    public string PackageJsonType => packageJsonType ?? "";
+    public RootedDirectoryPath PackageJsonDirectory { get; }
+    public ResolutionMode ImpliedNodeFormat { get; }
+    public SourceFileMetaData(string packageJsonType, RootedDirectoryPath packageJsonDirectory, ResolutionMode impliedNodeFormat) =>
+        (this.packageJsonType, PackageJsonDirectory, ImpliedNodeFormat) = (packageJsonType, packageJsonDirectory, impliedNodeFormat);
+}
+
 public sealed partial class SourceFile : NodeData, SourceFileLike
 {
     internal SourceFileParseOptions parseOptions;
@@ -411,6 +422,15 @@ public sealed partial class SourceFile : NodeData, SourceFileLike
 
     public SourceFileParseOptions ParseOptions() => parseOptions;
     public string FileName() => parseOptions.FileName;
+    // Authored compatibility seam: legacy parser filenames are Unicode, typed
+    // graph filenames are Go bytes. Source text is always a Go byte string.
+    public string FileNameGoBytes()
+    {
+        // A default managed parse-options struct has a null filename; the
+        // corresponding Go string zero value is empty in either filename role.
+        var fileName = FileName() ?? "";
+        return parseOptions.FileNameIsGoBytes ? fileName : GoString.ToUtf8(fileName);
+    }
     public string PathKey() => parseOptions.PathKey;
     public string Text() => text;
     public byte[] TextBytes() => GoString.Bytes(text);

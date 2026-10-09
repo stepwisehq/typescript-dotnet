@@ -10,6 +10,7 @@ namespace TypeScript.Compiler;
 public sealed class ConfigurationInspection
 {
     public string ConfigurationPath { get; }
+    private readonly RootedFilePath configFileName;
     public ParsedCommandLine? Parsed { get; }
     public IReadOnlyList<Diagnostic> Diagnostics { get; }
 
@@ -28,14 +29,25 @@ public sealed class ConfigurationInspection
             throw new ProjectException("pathEncoding", ex.Message, path);
         }
 
+        configFileName = file;
         var(parsed, errors) = ConfigParser.GetParsedCommandLineOfConfigFile(file, null, null, OsVfs.FS());
         Parsed = parsed;
         Diagnostics = (parsed?.GetConfigFileParsingDiagnostics() ?? errors ?? []).AsReadOnly();
     }
 
+    // Read-only virtual graph seam: parsed config identity and byte paths are
+    // retained without passing through the scalar OS configuration adapter.
+    internal ConfigurationInspection(ParsedCommandLine parsed)
+    {
+        Parsed = parsed;
+        configFileName = parsed.ConfigName();
+        ConfigurationPath = configFileName.AsString();
+        Diagnostics = (parsed.GetConfigFileParsingDiagnostics() ?? []).AsReadOnly();
+    }
+
     // This is the original show-config projection, not a reconstruction of raw
     // input or a fixed checker profile. JSON strings contain ordinary UTF8 bytes.
-    public byte[] ShowConfigurationJSON() => Parsed is null ? JsonCodec.Marshal(null) : JsonCodec.Marshal(ConfigParser.ConvertToTSConfig(Parsed, RootedFilePath.FromUnicode(ConfigurationPath)));
+    public byte[] ShowConfigurationJSON() => Parsed is null ? JsonCodec.Marshal(null) : JsonCodec.Marshal(ConfigParser.ConvertToTSConfig(Parsed, configFileName));
     internal void RequireValid()
     {
         if (Diagnostics.Count != 0)

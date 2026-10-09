@@ -73,6 +73,11 @@ internal enum ModuleSpecifierEnding : byte
 
 internal interface IModuleSpecifierGenerationHost
 {
+    // Explicit compatibility role: legacy project names are Unicode; genuine
+    // graph paths and upstream typed path strings are Go byte strings.
+    bool FileNamesAreGoBytes => false;
+    CaseSensitivity CaseSensitivity() => TypeScript.Scanner.CaseSensitivity.CaseSensitive;
+    IReadOnlyList<string> GetRedirectTargets(PathKey path) => [];
     string BaseDirectory();
     string GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file);
     bool FileExists(string path);

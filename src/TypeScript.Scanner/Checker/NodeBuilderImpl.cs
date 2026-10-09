@@ -2988,7 +2988,7 @@ internal sealed partial class NodeBuilderImpl
         if (ctx.enclosingFile == null)
         {
             var(ambientName, hasAmbientName) = Ast.TryGetAmbientModuleNameFromSymbolName(symbol.Name);
-            return new(hasAmbientName ? ambientName : GoString.ToUtf8(Ast.GetSourceFileOfModule(symbol).FileName()));
+            return new(hasAmbientName ? ambientName : Ast.GetSourceFileOfModule(symbol).FileNameGoBytes());
         }
 
         var contextFile = ctx.enclosingFile;

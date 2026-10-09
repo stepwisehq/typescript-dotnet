@@ -5,9 +5,26 @@
 #nullable disable
 namespace TypeScript.Scanner;
 public readonly record struct ExternalModuleIndicatorOptions(bool JSX = false, bool Force = false);
-public readonly record struct SourceFileParseOptions(string FileName = "", string PathKey = "", ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions = default);
+public readonly record struct SourceFileParseOptions(string FileName = "", string PathKey = "", ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions = default, bool FileNameIsGoBytes = false);
 public static partial class Ast
 {
+    // parseoptions.go:21–62. Keep automatic package/extension force distinct from explicit syntax.
+    public static ExternalModuleIndicatorOptions GetExternalModuleIndicatorOptions(RootedFilePath fileName, CompilerOptions options, SourceFileMetaData metadata)
+    {
+        if (fileName.IsDeclarationFile())
+            return default;
+        return options.GetEmitModuleDetectionKind() switch
+        {
+            ModuleDetectionKind.Force => new(Force: true),
+            ModuleDetectionKind.Legacy => default,
+            ModuleDetectionKind.Auto => new(
+                JSX: options.Jsx is JsxEmit.ReactJSX or JsxEmit.ReactJSXDev,
+                Force: GetImpliedNodeFormatForEmitWorker(fileName, options.GetEmitModuleKind(), metadata) == ResolutionMode.ESNext ||
+                    fileName.ExtensionIsOneOf([TsPath.ExtensionCjs, TsPath.ExtensionCts, TsPath.ExtensionMjs, TsPath.ExtensionMts])),
+            _ => default
+        };
+    }
+
     public static void SetExternalModuleIndicator(SourceFile file, ExternalModuleIndicatorOptions opts) => file.ExternalModuleIndicator = getExternalModuleIndicator(file, opts);
     private static Node getExternalModuleIndicator(SourceFile file, ExternalModuleIndicatorOptions opts)
     {

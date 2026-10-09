@@ -1,0 +1,117 @@
+{
+  "authored": true,
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "requests": "validation/resolution-corpus/requests-graph.jsonl",
+  "requestsSha256": "c5870cfa27a0206981658868b1ae39db9632f14e4ea9dc4c37a22526d8ad573f",
+  "cases": 16,
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/fileloader.go": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+    "upstream/TypeScript/tsc/internal/compiler/filesparser.go": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+    "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+    "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+    "upstream/TypeScript/tsc/internal/module/resolver.go": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae"
+  },
+  "expectedPolicy": "Only independently executed pinned Go observer creates expected bytes; target outputs never generate them",
+  "casesByName": {
+    "graph-missing-explicit-types": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-missing-path-and-lib": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-case-format-module": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-case-format-commonjs": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-case-format-absent": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-api-ambiguous-output-root": {
+      "constructor": "source API ParsedCommandLine.SetCompilerOptions after actual raw Unmarshal/Finalize",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-noresolve-loaded-target": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-package-dedup": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-dedup-casing-7": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "package-graph-loader": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "package-graph-invalid-loader": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-call-cycle-roots-forward": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-call-cycle-roots-reverse": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-external-js-depth-0": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-external-js-depth-1": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    },
+    "graph-malformed-unicode-source": {
+      "constructor": "actual disk-file configuration parsing on virtual supplied files",
+      "expectedGeneration": "passed; actual pinned Go final observer complete response retained"
+    }
+  },
+  "observationLimits": [
+    "Source file order and per-edge trace/search sequence remain actual ordered outputs. Module/path/type association tables are stable-sorted by retained owner identity and source index/span.",
+    "filesparser.go318 ranges taskData.tasks map: acquisition order among pending spelling aliases is unspecified; no claim of a universal ordered host stream for that upstream map domain.",
+    "Nonempty type ResolutionDiagnostics slot is implemented/projected/source-reviewed but unexercised; no exhaustive unreachable claim.",
+    "Explicit default-library/automatic global-type/project-reference build/mapper execution stages remain outside graph observer."
+  ],
+  "authoredConstructorRepair": {
+    "case": "three case-format witnesses",
+    "originalRoots": [
+      "a.ts",
+      "main.ts"
+    ],
+    "selectedRoots": [
+      "main.ts",
+      "a.ts"
+    ],
+    "reason": "Actual LIFO scheduling loads canonical spelling before alias joins unordered task map, retaining 1149 and 1458/1459/1461 format witnesses without assuming map iteration order",
+    "originalNondeterministicEvidence": "artifacts/resolution-validation/r4-probes/absent-order",
+    "sourceSupportedDeterministicEvidence": "artifacts/resolution-validation/r4-probes/absent-ordered-roots",
+    "freshProcesses": 20,
+    "identicalCompleteStreams": 20,
+    "noComparisonNormalization": true,
+    "cases": [
+      "graph-case-format-module",
+      "graph-case-format-commonjs",
+      "graph-case-format-absent"
+    ],
+    "priorAssetArchive": "artifacts/resolution-validation/graph-constructor-repair-before"
+  },
+  "stability": {
+    "freshProcesses": 20,
+    "completeStreamsExact": 20,
+    "report": "artifacts/resolution-validation/graph-constructor-stability/report.json"
+  },
+  "expected": "validation/resolution-corpus/expected-graph.jsonl.gz",
+  "expectedSha256": "ab47f977b01d0bea490bec3f46d5a9119e6e1ade4d9eff2696a8339a5cd138b6"
+}

@@ -41,23 +41,24 @@ public static class IntegrationChecks
             Project project = Project.LoadConfiguration(config);
             Check.Sequence(project.RootFileNames, [source], "Checking retains parsed root identity");
             Check.Equal(project.RootFiles[0].FileName(), source, "Parsed SourceFile preserves Unicode disk identity");
+            Check.Equal(project.UserFiles.Single().FileName(), source, "Public checking user filename stays Unicode");
+            Check.Equal(project.RootFiles[0].FileNameGoBytes(), inspection.Parsed.FileNames()!.Single().AsString(), "Source algorithms retain the exact original byte filename");
+            var graph = Project.InspectResolvedGraph(config);
+            Check.Equal(graph.SourceFiles.Single().FileName(), inspection.Parsed.FileNames()!.Single().AsString(), "Independent graph inspection keeps its byte filename role");
             Check.Equal(project.Check().Count, 0, "Discovered absolute root checks successfully");
             File.WriteAllText(source, "export const value: number = \"bad\";\n");
-            Check.True(Project.LoadConfiguration(config).Check().Any(diagnostic => diagnostic.Code() == 2322), "A fresh inherited project retains the real assignment diagnostic");
+            var assignment = Project.LoadConfiguration(config).Check().Single(diagnostic => diagnostic.Code() == 2322);
+            Check.Equal(assignment.File().FileName(), source, "Assignment diagnostic owner preserves public Unicode filename");
             File.WriteAllText(Path.Combine(fixture, "outside.ts"), "export const value = 1;\n");
             File.WriteAllText(config, """{"extends":"./base.json","files":["../outside.ts"]}""");
             inspection = Project.InspectConfiguration(config);
             Check.Equal(inspection.Diagnostics.Count, 0, "Full interpretation permits outside-root discovery");
             Check.Sequence(inspection.Parsed!.FileNames()!.Select(path => path.ToUnicode()).ToArray(), [Path.Combine(fixture, "outside.ts")], "Outside filename remains unchanged by interpretation");
-            try
-            {
-                _ = Project.LoadConfiguration(config);
-                throw new InvalidOperationException("Outside-root checking must reject explicitly.");
-            }
-            catch (ProjectException error)
-            {
-                Check.Equal(error.Feature, "outsideRoot", "Checking admission retains its named outside-root boundary");
-            }
+            // Resolution contract R5 intentionally removes the former config
+            // root containment restriction. The named legacy entry remains bounded.
+            Project outside = Project.LoadConfiguration(config);
+            Check.Equal(outside.RootFiles.Single().FileName(), Path.Combine(fixture, "outside.ts"), "Checking preserves a genuinely discovered outside-root filename");
+            Check.Equal(outside.Check().Count, 0, "Supported outside-root source checks after truthful graph loading");
 
             string legacy = Path.Combine(root, "tscheck.json");
             File.WriteAllText(legacy, new JsonObject { ["files"] = new JsonArray(source) }.ToJsonString());

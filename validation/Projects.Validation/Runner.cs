@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using TypeScript.Compiler;
+using TypeScript.Modules;
 using TypeScript.Scanner;
 using TypeScript.Checking.CollectionsValidation;
 using Encoder = TypeScript.Scanner.ParserValidation.Encoder;
@@ -220,7 +221,7 @@ public static class Runner
         foreach (var edge in project.ResolutionEdges)
         {
             var r = edge.Resolution;
-            result.Resolutions.Add(new(fileIds[edge.ImportingFile], NodeId(edge.ModuleSpecifier), Encoder.Bytes(edge.ModuleSpecifier.Text()), (int)edge.Mode, true, r.IsResolved(), PathProjection(r.ResolvedFileName), PathProjection(r.ResolvedPath), PathProjection(r.OriginalPath), r.Extension, r.ResolvedUsingTsExtension, r.ResolvedUsingExtraExtensions, r.IsExternalLibraryImport, r.IsCustomResolution, r.AlternateResult, ReferenceEquals(r, project.GetResolvedModule(edge.ImportingFile, edge.ModuleReference, edge.Mode))));
+            result.Resolutions.Add(new(fileIds[edge.ImportingFile], NodeId(edge.ModuleSpecifier), Encoder.Bytes(edge.ModuleSpecifier.Text()), (int)edge.Mode, true, r.IsResolved(), PathProjection(r.ResolvedFileName.ToUnicode()), PathProjection(PathByteText.ToUnicode(r.ResolvedPath.AsString())), PathProjection(r.OriginalPath.ToUnicode()), r.Extension, r.ResolvedUsingTsExtension, r.ResolvedUsingExtraExtensions, r.IsExternalLibraryImport, r.IsCustomResolution, r.AlternateResult.ToUnicode(), ReferenceEquals(r, project.GetResolvedModule(edge.ImportingFile, edge.ModuleReference, edge.Mode))));
         }
 
         result.Nodes = encoder.Nodes;

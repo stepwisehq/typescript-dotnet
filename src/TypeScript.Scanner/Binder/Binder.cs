@@ -1108,7 +1108,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:771:1.
     private void bindSourceFileAsExternalModule()
     {
-        this.bindAnonymousDeclaration(this.file.AsNode(), SymbolFlags.ValueModule, (("\"" + TsPath.RemoveFileExtension(GoString.ToUtf8(this.file.FileName() ?? ""))) + "\""));
+        this.bindAnonymousDeclaration(this.file.AsNode(), SymbolFlags.ValueModule, (("\"" + TsPath.RemoveFileExtension(this.file.FileNameGoBytes())) + "\""));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:775:1.

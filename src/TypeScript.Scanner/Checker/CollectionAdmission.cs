@@ -8,7 +8,7 @@ internal static class CollectionAdmission
 {
     [DoesNotReturn]
     private static void Reject(SourceFile file, Node node, string feature) => throw new UnsupportedSemanticFeatureException(file, node, feature);
-    internal static void Validate(SourceFile file, bool project = false)
+    internal static void Validate(SourceFile file, bool project = false, bool allowNonRelativeModuleSpecifiers = false)
     {
         Node root = file.AsNode();
         if (file.ScriptKind != ScriptKind.TS)
@@ -23,12 +23,12 @@ internal static class CollectionAdmission
             Reject(file, root, "externalReference");
         if ((!project && file.ExternalModuleIndicator is not null) || file.CommonJSModuleIndicator is not null)
             Reject(file, root, "module");
-        Visit(file, root, project);
+        Visit(file, root, project, allowNonRelativeModuleSpecifiers);
     }
 
     private static Node? Field(Node node, string role) => node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as Node;
     private static List<Node>? List(Node node, string role) => (node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as NodeList)?.Nodes;
-    private static void Visit(SourceFile file, Node node, bool project)
+    private static void Visit(SourceFile file, Node node, bool project, bool allowNonRelativeModuleSpecifiers)
     {
         // Preserve ordinary documentation; semantic source JSDoc remains excluded.
         foreach (Node doc in node.JSDoc(file) ?? [])
@@ -64,7 +64,7 @@ internal static class CollectionAdmission
             if (Field(node, "Attributes") is not null)
                 Reject(file, node, "importAttributes");
             if (Field(node, "ModuleSpecifier") is { } specifier)
-                ProjectAdmission.ValidateSpecifier(file, specifier);
+                ProjectAdmission.ValidateSpecifier(file, specifier, allowNonRelativeModuleSpecifiers);
         }
         if (project && node.Kind == Kind.ExportAssignment && node.AsExportAssignment().IsExportEquals)
             Reject(file, node, "exportEquals");
@@ -80,7 +80,7 @@ internal static class CollectionAdmission
             Reject(file, node, "syntax");
         node.ForEachChild(child =>
         {
-            Visit(file, child, project);
+            Visit(file, child, project, allowNonRelativeModuleSpecifiers);
             return false;
         });
     }

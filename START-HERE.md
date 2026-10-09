@@ -189,6 +189,27 @@ Later user directions, in chronological order:
     independent Sol review and committed delivery, or report a material blocker.
     This supersedes the prior instruction to await a new campaign.
 
+22. **Source-import module-resolution completion.** Baseline `37bd57d`; read the
+    [mandate](./docs/RESOLUTION-PROMPT.md), fixed
+    [contract](./docs/RESOLUTION-CONTRACT.md) and
+    [resumption checkpoint](./docs/RESOLUTION-STATUS.md). Full resolver behavior may
+    exceed checker capabilities; preserve that distinction and truthful graph loading.
+    Continue autonomously through independent Sol review, actual Native AOT and
+    committed delivery. .NET 11/optimization work remains deferred. This supersedes
+    the earlier instruction to await a new campaign.
+
+23. **Prospective verification efficiency.** Prioritize implementation progress and
+    efficient verification while retaining upstream fidelity/tests, meaningful Go
+    comparison, independent review and actual Native AOT acceptance. Private-state
+    instrumentation needs a concrete correctness, upstream-invariant or resource
+    reason; exhaustive private equivalence is not an automatic completion gate.
+    Preserve existing machinery and useful evidence, classify observer limitations
+    proportionately, and never hide defects by changing expectations. Do not restart,
+    reopen accepted work, launch cleanup or add a process framework. Simplify only
+    an active bottleneck, make substantive observation changes explicit, and disable
+    observation-only overhead before performance comparisons. Let any ongoing final
+    acceptance run finish. This applies to the remaining current and future work.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -200,7 +221,8 @@ Later user directions, in chronological order:
 4. Follow the next unresolved action in the checkpoints. Reuse active agents if
    available; after session loss, delegate using those checkpoint files instead
    of reconstructing the old chat.
-5. Use the [configuration guide](./docs/CONFIGURATION.md),
+5. Use the [resolution guide](./docs/RESOLUTION.md),
+   [configuration guide](./docs/CONFIGURATION.md),
    [project guide](./docs/PROJECTS.md) and [README.md](./README.md) for
    reproducible invocation and verification. Required acceptance
    includes executing the actual Native AOT binary against the oracle corpus.
@@ -212,5 +234,7 @@ Configuration interpretation/discovery is accepted in the delivery commit contai
 this entry. See its [assessment](./docs/CONFIGURATION-ASSESSMENT.md) and
 [proof](./validation/results/configuration-verified.json). A checkpoint can be accepted,
 incomplete or blocked; never infer completion from source presence or test totals.
-No next campaign is authorized. Follow STATE.md rather than restarting completed work;
-finish only an interrupted authorized delivery if the working tree still has its changes.
+The subsequent source-import resolution contract is accepted in the delivery commit
+containing this entry; see its [assessment](./docs/RESOLUTION-ASSESSMENT.md) and
+[proof](./validation/results/resolution-verified.json). Follow [STATE.md](./docs/STATE.md)
+for delivery recovery or a new mandate. Do not restart accepted work or optimization.

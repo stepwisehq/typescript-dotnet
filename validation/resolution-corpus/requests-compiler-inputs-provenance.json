@@ -1,0 +1,3808 @@
+{
+  "schemaVersion": 1,
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "generator": "tools/resolution-generate-compiler-inputs.py",
+  "generatorSha256": "bdbebabc540924cd14067b8769ba0650576c34f97f1b48bf6a6580fbf08db7a3",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/options_generated.go": "ec1f8e29fc24155d717d717b90089208d771923465f1ff7eb67c80cb2fc89451",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/tsoptions/declarations_generated.go": "13d6ef2de232b16ff818c8ec9e5d5075e62ae511e5254fb4286293b49fa2cc09"
+  },
+  "claim": "Input reuse only. Expected observations must be generated exclusively by the pinned original Go oracle.",
+  "requestsSha256": "1d84b6843ebbca148ea00c9cf41097bc39a569e33f842e50da48e951b251ab3e",
+  "summary": {
+    "fixtures": 76,
+    "reusedFixtures": 72,
+    "excludedFixtures": 4,
+    "requests": 105,
+    "originalCompilerAssertionsClaimed": 0
+  },
+  "requests": [
+    {
+      "name": "compiler-input-001-02-allowImportingTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTsExtensions.ts",
+      "sourceSha256": "5f42c03e7918b6af41a112fbfd07a0ddf80847a72b56e9a7d17ae03da75ef784",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "jsx": "preserve",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/ts.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/tsx.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/dts.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/b.ts",
+          "contentSha256": "cf8f8a71eac45a1da069555643c5b736db99e1f1d2633fa92735db8c9927674a"
+        },
+        {
+          "path": "/c.ts",
+          "contentSha256": "c1aa267f3c28627d7e57945f6bfaf3c1f1834ef9d67c39c453af4f0f897bc9a2"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "5bc6a5c2d8111a4a734e17be487f2dd05243af1204676caf454b02961c0f0690"
+    },
+    {
+      "name": "compiler-input-001-03-allowImportingTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTsExtensions.ts",
+      "sourceSha256": "5f42c03e7918b6af41a112fbfd07a0ddf80847a72b56e9a7d17ae03da75ef784",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "jsx": "preserve",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/ts.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/tsx.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/dts.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/b.ts",
+          "contentSha256": "cf8f8a71eac45a1da069555643c5b736db99e1f1d2633fa92735db8c9927674a"
+        },
+        {
+          "path": "/c.ts",
+          "contentSha256": "c1aa267f3c28627d7e57945f6bfaf3c1f1834ef9d67c39c453af4f0f897bc9a2"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6aaa618c5533e66e9a5ae83c537025a0946e6c950e438b952dfc552962f9fb0d"
+    },
+    {
+      "name": "compiler-input-001-04-allowImportingTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTsExtensions.ts",
+      "sourceSha256": "5f42c03e7918b6af41a112fbfd07a0ddf80847a72b56e9a7d17ae03da75ef784",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "jsx": "preserve",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/ts.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/tsx.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/dts.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/b.ts",
+          "contentSha256": "cf8f8a71eac45a1da069555643c5b736db99e1f1d2633fa92735db8c9927674a"
+        },
+        {
+          "path": "/c.ts",
+          "contentSha256": "c1aa267f3c28627d7e57945f6bfaf3c1f1834ef9d67c39c453af4f0f897bc9a2"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "57c3e56e11ccfd06f30744e47c13a14eab97617e5bba34e5953bfda0f125d600"
+    },
+    {
+      "name": "compiler-input-002-02-allowImportingTypesDtsExtension",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension.ts",
+      "sourceSha256": "037b00b7f6e8fb3dac8d389359a3e921b0e1b4db4439b4352032ca8704c485d0",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "3e475218330c659aa6c41225286bb5b8a77c4f1f989d08f49506eab486368def"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "0eccff306b1c123a0f63531edfcb543797a212f22a92cba7dbf6435d237ecfd6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "a1c0cf3e38176c1c07aa2c85e1a7ad47c4c1d46418e20aced153cd51c5ddf3af"
+    },
+    {
+      "name": "compiler-input-002-03-allowImportingTypesDtsExtension",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension.ts",
+      "sourceSha256": "037b00b7f6e8fb3dac8d389359a3e921b0e1b4db4439b4352032ca8704c485d0",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "3e475218330c659aa6c41225286bb5b8a77c4f1f989d08f49506eab486368def"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "0eccff306b1c123a0f63531edfcb543797a212f22a92cba7dbf6435d237ecfd6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "2567d7484a6c39a73daf91ec8d0e708b49fb097b9002cf823320d82269d03a15"
+    },
+    {
+      "name": "compiler-input-002-05-allowImportingTypesDtsExtension",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension.ts",
+      "sourceSha256": "037b00b7f6e8fb3dac8d389359a3e921b0e1b4db4439b4352032ca8704c485d0",
+      "variant": {
+        "allowimportingtsextensions": "false",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "3e475218330c659aa6c41225286bb5b8a77c4f1f989d08f49506eab486368def"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "0eccff306b1c123a0f63531edfcb543797a212f22a92cba7dbf6435d237ecfd6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "fc795480c128dd961658bbadb4cdec6970ea5312f87f9d7a900cf34ffe2ebad5"
+    },
+    {
+      "name": "compiler-input-002-06-allowImportingTypesDtsExtension",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension.ts",
+      "sourceSha256": "037b00b7f6e8fb3dac8d389359a3e921b0e1b4db4439b4352032ca8704c485d0",
+      "variant": {
+        "allowimportingtsextensions": "false",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "3e475218330c659aa6c41225286bb5b8a77c4f1f989d08f49506eab486368def"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "0eccff306b1c123a0f63531edfcb543797a212f22a92cba7dbf6435d237ecfd6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "172ee32711c2cd8d6c5f6d560805da5e3345ccb90c9b6e7ff0403c5fbedbb964"
+    },
+    {
+      "name": "compiler-input-003-01-allowImportingTypesDtsExtension2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension2.ts",
+      "sourceSha256": "71d4ca160d6080c40dd7aed2556043209a1a7a3ca335e05386e54b6ada72aaa0",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "nouncheckedsideeffectimports": "true",
+        "strict": "true",
+        "verbatimmodulesyntax": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "f4b013ba67e428b8e93783224508417f1d8bab2d886fae51950671017dfa10d3"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "ba3228a88e66fc93dd7acf47b18a690f3ace65f263fbf7f7b3e1e2255cd1cc90"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "10e9c36fc8d320b67d05b0a46b80ada6488d0e741053477920c4240d7afe0093"
+    },
+    {
+      "name": "compiler-input-003-02-allowImportingTypesDtsExtension2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension2.ts",
+      "sourceSha256": "71d4ca160d6080c40dd7aed2556043209a1a7a3ca335e05386e54b6ada72aaa0",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "nouncheckedsideeffectimports": "true",
+        "strict": "true",
+        "verbatimmodulesyntax": "false"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "f4b013ba67e428b8e93783224508417f1d8bab2d886fae51950671017dfa10d3"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "ba3228a88e66fc93dd7acf47b18a690f3ace65f263fbf7f7b3e1e2255cd1cc90"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "2aec0be0bd114abd6c6093c959299937f76d40bf04eb8d32f8902fc36ac52271"
+    },
+    {
+      "name": "compiler-input-003-03-allowImportingTypesDtsExtension2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension2.ts",
+      "sourceSha256": "71d4ca160d6080c40dd7aed2556043209a1a7a3ca335e05386e54b6ada72aaa0",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "nouncheckedsideeffectimports": "false",
+        "strict": "true",
+        "verbatimmodulesyntax": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "f4b013ba67e428b8e93783224508417f1d8bab2d886fae51950671017dfa10d3"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "ba3228a88e66fc93dd7acf47b18a690f3ace65f263fbf7f7b3e1e2255cd1cc90"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "bef09582616e8e9ac34c465d3d91e55f117195e99aad651f3689cd22a668f0c3"
+    },
+    {
+      "name": "compiler-input-003-04-allowImportingTypesDtsExtension2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/allowImportingTypesDtsExtension2.ts",
+      "sourceSha256": "71d4ca160d6080c40dd7aed2556043209a1a7a3ca335e05386e54b6ada72aaa0",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "nouncheckedsideeffectimports": "false",
+        "strict": "true",
+        "verbatimmodulesyntax": "false"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/types.d.ts",
+          "contentSha256": "f4b013ba67e428b8e93783224508417f1d8bab2d886fae51950671017dfa10d3"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "ba3228a88e66fc93dd7acf47b18a690f3ace65f263fbf7f7b3e1e2255cd1cc90"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "e9a20c229fb63639eb3d66f2914c8046772b573721b4723e5c0a354e9047fb02"
+    },
+    {
+      "name": "compiler-input-004-01-bundlerCommonJS",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerCommonJS.ts",
+      "sourceSha256": "8eec14116df76e70d8720b6955ed01502d8e1442e4b5b87dd894634227790097",
+      "variant": {
+        "libreplacement": "false",
+        "module": "commonjs",
+        "moduleresolution": "bundler",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/pkg/package.json",
+          "contentSha256": "0e2e8c9911ff1a651f617b246000211415b46a0e22dfd1e3e5946d72813a783b"
+        },
+        {
+          "path": "/node_modules/pkg/index.d.ts",
+          "contentSha256": "7765daa56756ae5c5cf6cd0b164f492b60878c925d7654e6c160838505536843"
+        },
+        {
+          "path": "/package.json",
+          "contentSha256": "19c3bdad2ee8f94ed22aac608dc8737ed4e89f846b9da0910a797dfd08ca3bcb"
+        },
+        {
+          "path": "/requires.ts",
+          "contentSha256": "731e5eec26f7c633fd9d98c549fd0478f9678a6f5beeb80b24184f1cb51b2309"
+        },
+        {
+          "path": "/imports.ts",
+          "contentSha256": "36a762478a86a854783bc31ed157445731cb85efc4c9d117bd43bf121547fc19"
+        },
+        {
+          "path": "/real-imports.mts",
+          "contentSha256": "4856e6e94f44c82fb35b2b13ba94ee4b59912d7a588af612e15f8c8768e2f374"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "368fca659adc3c3552b30116aeaf9e1df442d06fa035540a8b70cd72483e8164"
+    },
+    {
+      "name": "compiler-input-005-01-bundlerConditionsExcludesNode",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerConditionsExcludesNode.ts",
+      "sourceSha256": "c3d5c6861129d0c6c4621ae888e017ec26d8aee3837c3154e3d3bd4493a8916f",
+      "variant": {
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/conditions/package.json",
+          "contentSha256": "6423192979b1072894295e1d10283d299280de5633edc377f8e44043e8bb05d5"
+        },
+        {
+          "path": "/node_modules/conditions/index.node.js",
+          "contentSha256": "649810a5488480abda04c14a4ff9cbe1ef690b7e5ee4f6ffd57a62d9c6cf2878"
+        },
+        {
+          "path": "/node_modules/conditions/index.node.d.ts",
+          "contentSha256": "27cc3388e66c10a27f3ffdd311781a83fe0821e2efe60591fb97d5dfb0bdbf21"
+        },
+        {
+          "path": "/node_modules/conditions/index.web.js",
+          "contentSha256": "e99e433c79b3f7b3d6366e3584c9ee1b225e2040ca86faa78fef2ff55365ca9e"
+        },
+        {
+          "path": "/node_modules/conditions/index.web.d.ts",
+          "contentSha256": "374a98555ec2af726570832a1f5c6b87ba7f0df63d22cf335e0516318906603d"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "a6fd1f63df8e727a5cfdcd64cdb377af0861e4cf2814fc4ad56d4da8da0da0da"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "e67aa2dc9e3443af12fb1d2012a9ddd1d7ece2ae55499659d5a40eb83fa5f8f5"
+    },
+    {
+      "name": "compiler-input-005-02-bundlerConditionsExcludesNode",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerConditionsExcludesNode.ts",
+      "sourceSha256": "c3d5c6861129d0c6c4621ae888e017ec26d8aee3837c3154e3d3bd4493a8916f",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/conditions/package.json",
+          "contentSha256": "6423192979b1072894295e1d10283d299280de5633edc377f8e44043e8bb05d5"
+        },
+        {
+          "path": "/node_modules/conditions/index.node.js",
+          "contentSha256": "649810a5488480abda04c14a4ff9cbe1ef690b7e5ee4f6ffd57a62d9c6cf2878"
+        },
+        {
+          "path": "/node_modules/conditions/index.node.d.ts",
+          "contentSha256": "27cc3388e66c10a27f3ffdd311781a83fe0821e2efe60591fb97d5dfb0bdbf21"
+        },
+        {
+          "path": "/node_modules/conditions/index.web.js",
+          "contentSha256": "e99e433c79b3f7b3d6366e3584c9ee1b225e2040ca86faa78fef2ff55365ca9e"
+        },
+        {
+          "path": "/node_modules/conditions/index.web.d.ts",
+          "contentSha256": "374a98555ec2af726570832a1f5c6b87ba7f0df63d22cf335e0516318906603d"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "a6fd1f63df8e727a5cfdcd64cdb377af0861e4cf2814fc4ad56d4da8da0da0da"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "199940d2c317df8cd7b4498ed448d9e6bf188e43caac3ed929dc8d0d317913fd"
+    },
+    {
+      "name": "compiler-input-006-01-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "node18",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "bdc76e91f92427716b31936851e24b20958f69467232bc18abc297f95193b0fa"
+    },
+    {
+      "name": "compiler-input-006-02-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "node18",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6454a6c37e25d2da6922c1f38669fa623ee932c086b940d45b124770ee856e69"
+    },
+    {
+      "name": "compiler-input-006-03-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "node20",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "c5ece12fb0aa04398f28afae732e2f580f8ec44b5c5bfd9d356875d5b72f15d6"
+    },
+    {
+      "name": "compiler-input-006-04-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "node20",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "e13cd96fff907df07c53f3056ae091aefb252234c30743e7597e53bc895e9897"
+    },
+    {
+      "name": "compiler-input-006-05-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "nodenext",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "b511277bbd29d4175e1a4531f07e811b7cc4f788c0606d18b15d4169012bf064"
+    },
+    {
+      "name": "compiler-input-006-06-bundlerDirectoryModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerDirectoryModule.ts",
+      "sourceSha256": "8d169a44c1506095347fbfd05345b80d4d59a39e2d9a1cc8df7bf9fa8b9ffb8e",
+      "variant": {
+        "module": "nodenext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "notypesandsymbols": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/lib/package.json",
+          "contentSha256": "ed19be67cb8365bd92a49aef6bc8ccceb73318d939fb526c55e9fc611879d62d"
+        },
+        {
+          "path": "/lib/cjs/index.js",
+          "contentSha256": "fecc15fe9c1bcd9e3d7564ab257555392ce7ea95fcb5f4cb63267cf999543716"
+        },
+        {
+          "path": "/lib/cjs/index.d.ts",
+          "contentSha256": "8f7c475c53a3cdf02c0ffb4e5e014b0b0b25b4faee76d3deae3c8dccb922270b"
+        },
+        {
+          "path": "/app/test.ts",
+          "contentSha256": "33ff63e6aa9e43d428b4c7aacab4a61007bb7ff5d6125c7a53c57f4f3d785e7a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "44ca69311257a7eb86b69e0bf9bd38e73e484c9cf253806486f3b5f05ccdbdd5"
+    },
+    {
+      "name": "compiler-input-007-01-bundlerImportESM",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportESM.ts",
+      "sourceSha256": "92d3beb5000f952f901401b1358c904979def02941c3447bfe428a1483043edd",
+      "variant": {
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/esm.mts",
+          "contentSha256": "b04d1ca29399ef57e50394a20a22d9157cd702b9403001fe934433965e6d358c"
+        },
+        {
+          "path": "/not-actually-cjs.cts",
+          "contentSha256": "935f94027c949dff4a57c8f1615870560df7a4d83f146104f9753e086174aad1"
+        },
+        {
+          "path": "/package.json",
+          "contentSha256": "d18f120db5a99372058690f86a1332484253e3cdbdbddbc0f5effa6a392b26e0"
+        },
+        {
+          "path": "/still-not-cjs.ts",
+          "contentSha256": "935f94027c949dff4a57c8f1615870560df7a4d83f146104f9753e086174aad1"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "f10944aecc2d288f3cd8685f1cdbd32143b575d83e32802a64a54cef7ddfcbaa"
+    },
+    {
+      "name": "compiler-input-007-02-bundlerImportESM",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportESM.ts",
+      "sourceSha256": "92d3beb5000f952f901401b1358c904979def02941c3447bfe428a1483043edd",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/esm.mts",
+          "contentSha256": "b04d1ca29399ef57e50394a20a22d9157cd702b9403001fe934433965e6d358c"
+        },
+        {
+          "path": "/not-actually-cjs.cts",
+          "contentSha256": "935f94027c949dff4a57c8f1615870560df7a4d83f146104f9753e086174aad1"
+        },
+        {
+          "path": "/package.json",
+          "contentSha256": "d18f120db5a99372058690f86a1332484253e3cdbdbddbc0f5effa6a392b26e0"
+        },
+        {
+          "path": "/still-not-cjs.ts",
+          "contentSha256": "935f94027c949dff4a57c8f1615870560df7a4d83f146104f9753e086174aad1"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "4bdbb666d907e4238f8477b67bfbf856d07bb015088e81277f002c5b4bfd3a94"
+    },
+    {
+      "name": "compiler-input-008-01-bundlerImportTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportTsExtensions.ts",
+      "sourceSha256": "90ec95c90b75d19721101d39621602a19ce3296f35207a770e40fc5b3eaa82d2",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "outdir": "out",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.js",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/d/index.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e",
+          "contentSha256": "a07062fdc09c8dce0d4e419161fc7c0914bd6b5ef10161d3e18e3c156626f9f9"
+        },
+        {
+          "path": "/project/e.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e.txt",
+          "contentSha256": "c88f4f4e372787c6a508597724c32cee451c125f8ddf0460ec80bd78b6e41f44"
+        },
+        {
+          "path": "/project/e.txt.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/main.ts",
+          "contentSha256": "efebdf363b1f7a9ceeba0bbc05512d49450d44d064cf80c30a7e639836efa470"
+        },
+        {
+          "path": "/project/types.d.ts",
+          "contentSha256": "ac4cede680924c20775b9745ad10cd14e78faaee4a1c97f2f200636f81890cf7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "25721e8befd3d45296802f2f7b86664292ce8e751e3038b965a37157bfc2abd5"
+    },
+    {
+      "name": "compiler-input-008-02-bundlerImportTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportTsExtensions.ts",
+      "sourceSha256": "90ec95c90b75d19721101d39621602a19ce3296f35207a770e40fc5b3eaa82d2",
+      "variant": {
+        "allowimportingtsextensions": "true",
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "false",
+        "outdir": "out",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.js",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/d/index.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e",
+          "contentSha256": "a07062fdc09c8dce0d4e419161fc7c0914bd6b5ef10161d3e18e3c156626f9f9"
+        },
+        {
+          "path": "/project/e.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e.txt",
+          "contentSha256": "c88f4f4e372787c6a508597724c32cee451c125f8ddf0460ec80bd78b6e41f44"
+        },
+        {
+          "path": "/project/e.txt.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/main.ts",
+          "contentSha256": "efebdf363b1f7a9ceeba0bbc05512d49450d44d064cf80c30a7e639836efa470"
+        },
+        {
+          "path": "/project/types.d.ts",
+          "contentSha256": "ac4cede680924c20775b9745ad10cd14e78faaee4a1c97f2f200636f81890cf7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "b5f03cb16ed55381b5868301bfff70ea493c6176831fca74f063088362475f16"
+    },
+    {
+      "name": "compiler-input-008-03-bundlerImportTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportTsExtensions.ts",
+      "sourceSha256": "90ec95c90b75d19721101d39621602a19ce3296f35207a770e40fc5b3eaa82d2",
+      "variant": {
+        "allowimportingtsextensions": "false",
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "outdir": "out",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.js",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/d/index.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e",
+          "contentSha256": "a07062fdc09c8dce0d4e419161fc7c0914bd6b5ef10161d3e18e3c156626f9f9"
+        },
+        {
+          "path": "/project/e.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e.txt",
+          "contentSha256": "c88f4f4e372787c6a508597724c32cee451c125f8ddf0460ec80bd78b6e41f44"
+        },
+        {
+          "path": "/project/e.txt.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/main.ts",
+          "contentSha256": "efebdf363b1f7a9ceeba0bbc05512d49450d44d064cf80c30a7e639836efa470"
+        },
+        {
+          "path": "/project/types.d.ts",
+          "contentSha256": "ac4cede680924c20775b9745ad10cd14e78faaee4a1c97f2f200636f81890cf7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "4f98906fed9d1dc714b3b082ab13bf4d800aa0c7cfcf858bb594bdfdae145559"
+    },
+    {
+      "name": "compiler-input-008-04-bundlerImportTsExtensions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerImportTsExtensions.ts",
+      "sourceSha256": "90ec95c90b75d19721101d39621602a19ce3296f35207a770e40fc5b3eaa82d2",
+      "variant": {
+        "allowimportingtsextensions": "false",
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "false",
+        "outdir": "out",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.js",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/b.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/c.tsx",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/d/index.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e",
+          "contentSha256": "a07062fdc09c8dce0d4e419161fc7c0914bd6b5ef10161d3e18e3c156626f9f9"
+        },
+        {
+          "path": "/project/e.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/e.txt",
+          "contentSha256": "c88f4f4e372787c6a508597724c32cee451c125f8ddf0460ec80bd78b6e41f44"
+        },
+        {
+          "path": "/project/e.txt.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/project/main.ts",
+          "contentSha256": "efebdf363b1f7a9ceeba0bbc05512d49450d44d064cf80c30a7e639836efa470"
+        },
+        {
+          "path": "/project/types.d.ts",
+          "contentSha256": "ac4cede680924c20775b9745ad10cd14e78faaee4a1c97f2f200636f81890cf7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d1752208751d562fce4c5ef46ac32f9b2e1c0c236e129c2f15bd1eed657daae2"
+    },
+    {
+      "name": "compiler-input-009-01-bundlerNodeModules1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerNodeModules1.ts",
+      "sourceSha256": "4d3dcf006d3dc84cb42340edcd1624c7e928cac35ce320711ec9a6d1bdec81a2",
+      "variant": {
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dual/package.json",
+          "contentSha256": "9e0afdd4f992fdcb1c85b92f283207ef2c0725ee4d989475c853c158628c048a"
+        },
+        {
+          "path": "/node_modules/dual/index.js",
+          "contentSha256": "b04d1ca29399ef57e50394a20a22d9157cd702b9403001fe934433965e6d358c"
+        },
+        {
+          "path": "/node_modules/dual/index.d.ts",
+          "contentSha256": "fde2b61c1bae3a79cd182db7307a38faa10ace15b6a3913878cbe85b141fda25"
+        },
+        {
+          "path": "/node_modules/dual/index.cjs",
+          "contentSha256": "29a3d12937b82c8d92c48e89a7891062227f9e899f201830369840a50330926f"
+        },
+        {
+          "path": "/node_modules/dual/index.d.cts",
+          "contentSha256": "5ded74cab81f67d1e8b0bcd36aa7c203091a3b3dae8db0a5ed90264bc14c59d7"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        },
+        {
+          "path": "/main.mts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        },
+        {
+          "path": "/main.cts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6e2a9fe4a4e47d903b74179173eda80b0c5abc6aa46d9038ad78a5184a62abb2"
+    },
+    {
+      "name": "compiler-input-009-02-bundlerNodeModules1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerNodeModules1.ts",
+      "sourceSha256": "4d3dcf006d3dc84cb42340edcd1624c7e928cac35ce320711ec9a6d1bdec81a2",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dual/package.json",
+          "contentSha256": "9e0afdd4f992fdcb1c85b92f283207ef2c0725ee4d989475c853c158628c048a"
+        },
+        {
+          "path": "/node_modules/dual/index.js",
+          "contentSha256": "b04d1ca29399ef57e50394a20a22d9157cd702b9403001fe934433965e6d358c"
+        },
+        {
+          "path": "/node_modules/dual/index.d.ts",
+          "contentSha256": "fde2b61c1bae3a79cd182db7307a38faa10ace15b6a3913878cbe85b141fda25"
+        },
+        {
+          "path": "/node_modules/dual/index.cjs",
+          "contentSha256": "29a3d12937b82c8d92c48e89a7891062227f9e899f201830369840a50330926f"
+        },
+        {
+          "path": "/node_modules/dual/index.d.cts",
+          "contentSha256": "5ded74cab81f67d1e8b0bcd36aa7c203091a3b3dae8db0a5ed90264bc14c59d7"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        },
+        {
+          "path": "/main.mts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        },
+        {
+          "path": "/main.cts",
+          "contentSha256": "3f84810ac156bda5eba34eb7764f766a9d1d597473b0b22cbfa9f4232c0afeca"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "111f93a76e1b792dad0aec520450b6c6132e9e30add268c30b51838932cbb43a"
+    },
+    {
+      "name": "compiler-input-010-01-bundlerOptionsCompat",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerOptionsCompat.ts",
+      "sourceSha256": "4e772121bc125569ac5e015654e0fd727a18f9fc9680331fb086e9a141053547",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "24a2f0a20a910ab034ffaecfdbe0f0742bec5540500223808bf503bc11be3d2b"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "2f6b1ec58a1790ac2d7ab0856c3f15749d7b3459dc008289aaec78c77b2908da"
+    },
+    {
+      "name": "compiler-input-011-01-bundlerRelative1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerRelative1.ts",
+      "sourceSha256": "6640c46a8571b74da8d7f3da500f2ec7a89e7fa874cf023c4c6e281f8c37f79e",
+      "variant": {
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/dir/index.ts",
+          "contentSha256": "81c3ebd2b6f42a5280c6a6625dde192efd5e4147775b00e2f851b5838aa9a957"
+        },
+        {
+          "path": "/redirect/package.json",
+          "contentSha256": "ebb14c490652cb3be12c43d9c6813aff56b91eeeb6f8dcd51476c07fb79a87e2"
+        },
+        {
+          "path": "/foo/index.ts",
+          "contentSha256": "6ef17659412790a2e64ff3627b66d92a77ca6d08446a8afe9b884cb30f9ff27a"
+        },
+        {
+          "path": "/types/esm.d.ts",
+          "contentSha256": "184ff3b7a8973b7a977295ddba5715b63b6b0122893a00e9df808caa52c6e92b"
+        },
+        {
+          "path": "/types/cjs.d.ts",
+          "contentSha256": "9ff557ab8a465eea5e514f761b77af4fcc84f748d2eb8ce53c11f316844641e2"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "5bbeb1593fd0187f433b461a2db95bf807a9ccf7abb62ff97473dc4a7f1bb124"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "b0d32997b6cebd5266d584e14ed889ef368fbb62bc1e07f3b7dd144fd7137734"
+    },
+    {
+      "name": "compiler-input-011-02-bundlerRelative1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerRelative1.ts",
+      "sourceSha256": "6640c46a8571b74da8d7f3da500f2ec7a89e7fa874cf023c4c6e281f8c37f79e",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/dir/index.ts",
+          "contentSha256": "81c3ebd2b6f42a5280c6a6625dde192efd5e4147775b00e2f851b5838aa9a957"
+        },
+        {
+          "path": "/redirect/package.json",
+          "contentSha256": "ebb14c490652cb3be12c43d9c6813aff56b91eeeb6f8dcd51476c07fb79a87e2"
+        },
+        {
+          "path": "/foo/index.ts",
+          "contentSha256": "6ef17659412790a2e64ff3627b66d92a77ca6d08446a8afe9b884cb30f9ff27a"
+        },
+        {
+          "path": "/types/esm.d.ts",
+          "contentSha256": "184ff3b7a8973b7a977295ddba5715b63b6b0122893a00e9df808caa52c6e92b"
+        },
+        {
+          "path": "/types/cjs.d.ts",
+          "contentSha256": "9ff557ab8a465eea5e514f761b77af4fcc84f748d2eb8ce53c11f316844641e2"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "5bbeb1593fd0187f433b461a2db95bf807a9ccf7abb62ff97473dc4a7f1bb124"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "46bc5511ae3a0e2c5c25d198d8cc051ac95af13c40584eedd8fd9983486b4950"
+    },
+    {
+      "name": "compiler-input-012-01-bundlerSyntaxRestrictions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerSyntaxRestrictions.ts",
+      "sourceSha256": "f9283f854b53b7d71ee11bedb0d65cdaed27c053abb81aae7b5c2329cb32597f",
+      "variant": {
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "outdir": "out",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/node/index.d.ts",
+          "contentSha256": "73b665a72af58e1d37f05420235c3ee937301208df59dc88cb51f13a97675684"
+        },
+        {
+          "path": "/ambient.d.ts",
+          "contentSha256": "592de5681b8341dfd847c1c850244a6e8a37b0debf5f36896f9f56185d9724ef"
+        },
+        {
+          "path": "/mainJs.js",
+          "contentSha256": "7cd80ce0a980dfb89ccfbd5ae59f3bfb45d38b62d6136c9b960a6295be262a9f"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "eb9868d15f21db652c73ae779780f5e58846c571d9d1887e38fb6802416001ae"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "7ea32c6d11d46ca9edc47661877dcb91380f503f066eb84600fc84c62d77b9f2"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "47a6c491d1c24ca1620d27dab7aeb57ad9f361111f265291e4951897b69a2ebc"
+    },
+    {
+      "name": "compiler-input-012-02-bundlerSyntaxRestrictions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/bundler/bundlerSyntaxRestrictions.ts",
+      "sourceSha256": "f9283f854b53b7d71ee11bedb0d65cdaed27c053abb81aae7b5c2329cb32597f",
+      "variant": {
+        "allowjs": "true",
+        "checkjs": "true",
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "outdir": "out",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/node/index.d.ts",
+          "contentSha256": "73b665a72af58e1d37f05420235c3ee937301208df59dc88cb51f13a97675684"
+        },
+        {
+          "path": "/ambient.d.ts",
+          "contentSha256": "592de5681b8341dfd847c1c850244a6e8a37b0debf5f36896f9f56185d9724ef"
+        },
+        {
+          "path": "/mainJs.js",
+          "contentSha256": "7cd80ce0a980dfb89ccfbd5ae59f3bfb45d38b62d6136c9b960a6295be262a9f"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "eb9868d15f21db652c73ae779780f5e58846c571d9d1887e38fb6802416001ae"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "7ea32c6d11d46ca9edc47661877dcb91380f503f066eb84600fc84c62d77b9f2"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "52192182cdf46f931fdc547736c4bc2f2a8197c5daebaffce22f5da6ca62b3c7"
+    },
+    {
+      "name": "compiler-input-013-01-conditionalExportsResolutionFallback",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallback.ts",
+      "sourceSha256": "994c5e25fdd546de731999380d8ef5c6508f0272386af5b88c69594b25ef8b4e",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "dd7d203f351afc6fd1d49662c2dc7dc81d2f643bc0ccc5dd975fb79fb6dfae99"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.mjs",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "38ad975da684ea1dd81ee3741c37903ee3f911d7794cf601995b7c159eda5473"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "a07160b70c9feae1cecb2ac1966db31c14bd4c1d77c0576763f18f7428b53778"
+    },
+    {
+      "name": "compiler-input-013-02-conditionalExportsResolutionFallback",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallback.ts",
+      "sourceSha256": "994c5e25fdd546de731999380d8ef5c6508f0272386af5b88c69594b25ef8b4e",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "dd7d203f351afc6fd1d49662c2dc7dc81d2f643bc0ccc5dd975fb79fb6dfae99"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.mjs",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "38ad975da684ea1dd81ee3741c37903ee3f911d7794cf601995b7c159eda5473"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "68f1248f0a3e6b9e84703555c0315da2322102cf083ed43af0b0c7ac10fe94df"
+    },
+    {
+      "name": "compiler-input-013-03-conditionalExportsResolutionFallback",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallback.ts",
+      "sourceSha256": "994c5e25fdd546de731999380d8ef5c6508f0272386af5b88c69594b25ef8b4e",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "dd7d203f351afc6fd1d49662c2dc7dc81d2f643bc0ccc5dd975fb79fb6dfae99"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.mjs",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "38ad975da684ea1dd81ee3741c37903ee3f911d7794cf601995b7c159eda5473"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "19ef28f9ac108347c6c783a00ef25d9f1957fedf895d96633e7b7cc77989b62b"
+    },
+    {
+      "name": "compiler-input-014-01-conditionalExportsResolutionFallbackNull",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallbackNull.ts",
+      "sourceSha256": "dc4117eb9fff8a3b9b03ab66f843a20c3b0f4a1c293df30eeb00a1afd4c513bc",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "df3cfc384c99f35fe90562a9ebe31cbbe835cc34c8568efb86726233bc03e770"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "42d9c47a712f5e464066bb254628ccd4b133af86bcc891be798f962b7d9f75e0"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "aef30ed9cfec0de2b20d0268092ac00e2c93d746026380a6ca0d00783bbbe9a7"
+    },
+    {
+      "name": "compiler-input-014-02-conditionalExportsResolutionFallbackNull",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallbackNull.ts",
+      "sourceSha256": "dc4117eb9fff8a3b9b03ab66f843a20c3b0f4a1c293df30eeb00a1afd4c513bc",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "df3cfc384c99f35fe90562a9ebe31cbbe835cc34c8568efb86726233bc03e770"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "42d9c47a712f5e464066bb254628ccd4b133af86bcc891be798f962b7d9f75e0"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6ff5405f04d5741b90f411fb4670338706fc13122ae9301a91841bc79364ded9"
+    },
+    {
+      "name": "compiler-input-014-03-conditionalExportsResolutionFallbackNull",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/conditionalExportsResolutionFallbackNull.ts",
+      "sourceSha256": "dc4117eb9fff8a3b9b03ab66f843a20c3b0f4a1c293df30eeb00a1afd4c513bc",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/dep/package.json",
+          "contentSha256": "df3cfc384c99f35fe90562a9ebe31cbbe835cc34c8568efb86726233bc03e770"
+        },
+        {
+          "path": "/node_modules/dep/dist/index.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "42d9c47a712f5e464066bb254628ccd4b133af86bcc891be798f962b7d9f75e0"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "502eea85b995096ec3fa71cc97fb6bff850abc62f6f5cf9bcfcda3cd70f805b6"
+    },
+    {
+      "name": "compiler-input-015-01-customConditions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/customConditions.ts",
+      "sourceSha256": "dc1786f6c17ed4775a4848943cc9a2384d34c45974bf468ee7d38b24741ab529",
+      "variant": {
+        "customconditions": "webpack,browser",
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "resolvepackagejsonexports": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/lodash/package.json",
+          "contentSha256": "62ed6dee3a2bc3ea8504c4d8060088ff78e9b1867fad8459501776f4ce91815b"
+        },
+        {
+          "path": "/node_modules/lodash/index.d.ts",
+          "contentSha256": "eb149d94b2537038bce3c433cf994f231af1f51bb6510706664c48a4cb949597"
+        },
+        {
+          "path": "/node_modules/lodash/browser.d.ts",
+          "contentSha256": "8ead2257cc9c512fe456d346003c11bbfb68a629fc67dbd78ac04b84bd652956"
+        },
+        {
+          "path": "/node_modules/lodash/webpack.d.ts",
+          "contentSha256": "1763983ec9f8212fbb9d682af1592a53a94c9aeef37ee9a1daaa1aabeb4100e9"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "e75bf8e8092b2bbf317e25800a57a13729ad2aeeea434472bba32d4b4ad191a7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d71b9f73116ea27453ba71b35cf54adc5a5a99da8d086d1c9be7e451766b1831"
+    },
+    {
+      "name": "compiler-input-015-02-customConditions",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/customConditions.ts",
+      "sourceSha256": "dc1786f6c17ed4775a4848943cc9a2384d34c45974bf468ee7d38b24741ab529",
+      "variant": {
+        "customconditions": "webpack,browser",
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "resolvepackagejsonexports": "false",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/lodash/package.json",
+          "contentSha256": "62ed6dee3a2bc3ea8504c4d8060088ff78e9b1867fad8459501776f4ce91815b"
+        },
+        {
+          "path": "/node_modules/lodash/index.d.ts",
+          "contentSha256": "eb149d94b2537038bce3c433cf994f231af1f51bb6510706664c48a4cb949597"
+        },
+        {
+          "path": "/node_modules/lodash/browser.d.ts",
+          "contentSha256": "8ead2257cc9c512fe456d346003c11bbfb68a629fc67dbd78ac04b84bd652956"
+        },
+        {
+          "path": "/node_modules/lodash/webpack.d.ts",
+          "contentSha256": "1763983ec9f8212fbb9d682af1592a53a94c9aeef37ee9a1daaa1aabeb4100e9"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "e75bf8e8092b2bbf317e25800a57a13729ad2aeeea434472bba32d4b4ad191a7"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "ba3466b2562e4e2bff16c543f196d1fec156f5b16f7e4d5521c0625c08da0475"
+    },
+    {
+      "name": "compiler-input-016-01-declarationNotFoundPackageBundlesTypes",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/declarationNotFoundPackageBundlesTypes.ts",
+      "sourceSha256": "c2457af2031be82d9ec663f67f717e0337da7618ac7ad38824a02103ac9a7cdc",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/node_modules/foo/package.json",
+          "contentSha256": "e6eefbe503bf9e17360eeedcd7745c2072b211700e2ed5243a417dd09e655dcc"
+        },
+        {
+          "path": "/.src/node_modules/foo/index.js",
+          "contentSha256": "9d040f924c46c4e49bc9b45a77bdbb00d8055f593e50e08d867df1902e854bfb"
+        },
+        {
+          "path": "/.src/node_modules/foo/index.d.ts",
+          "contentSha256": "752e5318fb382b31bfbcb365fe4e46ec886dcd4d7a63459553bef2eaeac5d28d"
+        },
+        {
+          "path": "/.src/node_modules/foo/other.js",
+          "contentSha256": "8222b8169ee86f25cdccd84d340340060ae3f0cff55e2ea9d344d7c332733b71"
+        },
+        {
+          "path": "/.src/index.ts",
+          "contentSha256": "644c61241a2a6922b6ce4f88f39a198f780c4aeceb70a94081524d4433dcdce3"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d13b1e330b76c1333a4a831707ce3313535623b0ee8b0a3d2f8e3f43d57d2351"
+    },
+    {
+      "name": "compiler-input-017-02-extensionLoadingPriority",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/extensionLoadingPriority.ts",
+      "sourceSha256": "0dd1120d5353544cf1af63f85a958a56df11cfd7476e063233d21fafcb6723f7",
+      "variant": {
+        "allowjs": "true",
+        "checkjs": "true",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.js",
+          "contentSha256": "40c16292d89898c7d7fd6d1b11615934816d08b20fbab822c79e7baf1fad1ba5"
+        },
+        {
+          "path": "/project/a.js.js",
+          "contentSha256": "e0adef77db41caadbbdd527c2c31b275811ad9b2b291350acee1e02e6d0e3953"
+        },
+        {
+          "path": "/project/dir/index.ts",
+          "contentSha256": "fc379a4f3ce085369a25735c15ad1b823b75bbd113c57975a7ed4cc13a8e2750"
+        },
+        {
+          "path": "/project/dir.js",
+          "contentSha256": "2c816f0ab9591049bba65605b572bb308dd3352d6de595b587dc46b6641162a8"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "01000af8a479a8f5894e989ba94f010e07a0ece6001135621ec29f11bb2f7c92"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "9eb6b7804e585a3c365722dfa66326b1bea66620120824a818cd8e19e82fbfbd"
+    },
+    {
+      "name": "compiler-input-017-03-extensionLoadingPriority",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/extensionLoadingPriority.ts",
+      "sourceSha256": "0dd1120d5353544cf1af63f85a958a56df11cfd7476e063233d21fafcb6723f7",
+      "variant": {
+        "allowjs": "true",
+        "checkjs": "true",
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.js",
+          "contentSha256": "40c16292d89898c7d7fd6d1b11615934816d08b20fbab822c79e7baf1fad1ba5"
+        },
+        {
+          "path": "/project/a.js.js",
+          "contentSha256": "e0adef77db41caadbbdd527c2c31b275811ad9b2b291350acee1e02e6d0e3953"
+        },
+        {
+          "path": "/project/dir/index.ts",
+          "contentSha256": "fc379a4f3ce085369a25735c15ad1b823b75bbd113c57975a7ed4cc13a8e2750"
+        },
+        {
+          "path": "/project/dir.js",
+          "contentSha256": "2c816f0ab9591049bba65605b572bb308dd3352d6de595b587dc46b6641162a8"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "01000af8a479a8f5894e989ba94f010e07a0ece6001135621ec29f11bb2f7c92"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d248c841fbbc356c1f71a2704f08832cef24daf3c97b4e38c8f95e6a3ad6b9f8"
+    },
+    {
+      "name": "compiler-input-017-04-extensionLoadingPriority",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/extensionLoadingPriority.ts",
+      "sourceSha256": "0dd1120d5353544cf1af63f85a958a56df11cfd7476e063233d21fafcb6723f7",
+      "variant": {
+        "allowjs": "true",
+        "checkjs": "true",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/project/a.js",
+          "contentSha256": "40c16292d89898c7d7fd6d1b11615934816d08b20fbab822c79e7baf1fad1ba5"
+        },
+        {
+          "path": "/project/a.js.js",
+          "contentSha256": "e0adef77db41caadbbdd527c2c31b275811ad9b2b291350acee1e02e6d0e3953"
+        },
+        {
+          "path": "/project/dir/index.ts",
+          "contentSha256": "fc379a4f3ce085369a25735c15ad1b823b75bbd113c57975a7ed4cc13a8e2750"
+        },
+        {
+          "path": "/project/dir.js",
+          "contentSha256": "2c816f0ab9591049bba65605b572bb308dd3352d6de595b587dc46b6641162a8"
+        },
+        {
+          "path": "/project/b.ts",
+          "contentSha256": "01000af8a479a8f5894e989ba94f010e07a0ece6001135621ec29f11bb2f7c92"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "21a66aca31975781fd5f1fd4a95a6dc9a997ccd5c33879151d1a051d92dfdbca"
+    },
+    {
+      "name": "compiler-input-018-01-importFromDot",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/importFromDot.ts",
+      "sourceSha256": "eb4da86a6e84e1f7b41c3ba2a0d4a437cf993459baf9e428c654ad3ce6c846c0",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/a.ts",
+          "contentSha256": "11624ea37de72a347e4fe14ae6ccd27f482a52adceba1fda98f9938a2ede8caf"
+        },
+        {
+          "path": "/.src/a/index.ts",
+          "contentSha256": "fe786aaac20326511c7966301be7988fc1ea3de55f7b8fe9fbcac6d3802fe7aa"
+        },
+        {
+          "path": "/.src/a/b.ts",
+          "contentSha256": "b0be673879c698686a34f90c2fbf582fababea1cf74a4eead155d50a80f36fc5"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "f182bf1627df8c06e51994cecb2d96b872ff4569daa6bd59f8ef217b0486792f"
+    },
+    {
+      "name": "compiler-input-019-01-nestedPackageJsonRedirect",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nestedPackageJsonRedirect.ts",
+      "sourceSha256": "7514da40f54c0a39897fe97df1ec7fb113484fe71b78fa617031097362158d16",
+      "variant": {
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "strict": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@restart/hooks/package.json",
+          "contentSha256": "6e1b904cbe5330c0affff559e21fab96fc2410d9a2684b997f2383c286e25d31"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/useMergedRefs/package.json",
+          "contentSha256": "14b0728e118e02ef33ff2a58372245232b6d0e052e7d0ad29415527b7bde6641"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/esm/useMergedRefs.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "f402c0e308898ce3afba6fcd42f9b8027ae1d1dbf750a48bf42a0df9cb1b7f6f"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "19cc1466397b8e17e498067de205af6b06d1cdc3875ea3922cccb9d1dc796acb"
+    },
+    {
+      "name": "compiler-input-019-02-nestedPackageJsonRedirect",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nestedPackageJsonRedirect.ts",
+      "sourceSha256": "7514da40f54c0a39897fe97df1ec7fb113484fe71b78fa617031097362158d16",
+      "variant": {
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "strict": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@restart/hooks/package.json",
+          "contentSha256": "6e1b904cbe5330c0affff559e21fab96fc2410d9a2684b997f2383c286e25d31"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/useMergedRefs/package.json",
+          "contentSha256": "14b0728e118e02ef33ff2a58372245232b6d0e052e7d0ad29415527b7bde6641"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/esm/useMergedRefs.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "f402c0e308898ce3afba6fcd42f9b8027ae1d1dbf750a48bf42a0df9cb1b7f6f"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "cbab50cf5fa0e70179c0f5ea8fa4f18627579b398e387c3c3b44a121e42e4c94"
+    },
+    {
+      "name": "compiler-input-019-03-nestedPackageJsonRedirect",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nestedPackageJsonRedirect.ts",
+      "sourceSha256": "7514da40f54c0a39897fe97df1ec7fb113484fe71b78fa617031097362158d16",
+      "variant": {
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "strict": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@restart/hooks/package.json",
+          "contentSha256": "6e1b904cbe5330c0affff559e21fab96fc2410d9a2684b997f2383c286e25d31"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/useMergedRefs/package.json",
+          "contentSha256": "14b0728e118e02ef33ff2a58372245232b6d0e052e7d0ad29415527b7bde6641"
+        },
+        {
+          "path": "/node_modules/@restart/hooks/esm/useMergedRefs.d.ts",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "f402c0e308898ce3afba6fcd42f9b8027ae1d1dbf750a48bf42a0df9cb1b7f6f"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "ade50929fbc782bf9cb59acf82da4fe00bb3940d2052628cf825b31a414d863c"
+    },
+    {
+      "name": "compiler-input-023-01-node10IsNode_node10",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/node10IsNode_node10.ts",
+      "sourceSha256": "ecaa9d80dec279689d6222fb59ac47a866a5d1e44eca700d07103b8cf96c7350",
+      "variant": {
+        "module": "commonjs",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/fancy-lib/package.json",
+          "contentSha256": "defdadfe13ee43f626fbbfaa599b77336ca5f0902bc8a04d919dbfaf231d0d9d"
+        },
+        {
+          "path": "/node_modules/fancy-lib/index.d.ts",
+          "contentSha256": "eea620a933766c13ee6396f8ece87de89ea1b60499887f3b5eed9760a05ea02b"
+        },
+        {
+          "path": "/node_modules/fancy-lib/definitely-not-index.d.ts",
+          "contentSha256": "cee31d0ca58de3fdf544d2807f4b4f9f5876e19bf5142047abcf583c284ae060"
+        },
+        {
+          "path": "/main.ts",
+          "contentSha256": "2e81da70c3a428cb20cbc517cc7a24e62204b1232a1cf3a2c8b6a6e5b7bd5440"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "a6b836fb188f12cadccd9c4a2070387305b1d66549d0c096516199ad188b790c"
+    },
+    {
+      "name": "compiler-input-024-01-nodeModulesAtTypesPriority",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/nodeModulesAtTypesPriority.ts",
+      "sourceSha256": "cf31345da628a88679e4722a501611eddabe55896d10e4874ab11c8b41f067ee",
+      "variant": {
+        "module": "node16",
+        "noemit": "true",
+        "strict": "true",
+        "target": "es2022",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/react/index.d.ts",
+          "contentSha256": "dff96e56b26accbd2386311a4641a68f7010c6ec6b479e6f25d4e1a1a96f490f"
+        },
+        {
+          "path": "/node_modules/@types/redux/index.d.ts",
+          "contentSha256": "aebdb4aa09b6946355abe7a1a32ffc0ae0cb8c3fd55c16cd630339577d23944d"
+        },
+        {
+          "path": "/packages/a/node_modules/react/index.js",
+          "contentSha256": "8222b8169ee86f25cdccd84d340340060ae3f0cff55e2ea9d344d7c332733b71"
+        },
+        {
+          "path": "/packages/a/node_modules/redux/index.d.ts",
+          "contentSha256": "aebdb4aa09b6946355abe7a1a32ffc0ae0cb8c3fd55c16cd630339577d23944d"
+        },
+        {
+          "path": "/packages/a/node_modules/redux/index.js",
+          "contentSha256": "8222b8169ee86f25cdccd84d340340060ae3f0cff55e2ea9d344d7c332733b71"
+        },
+        {
+          "path": "/packages/a/index.ts",
+          "contentSha256": "85d13c2cb033807e5d6bdaefd86c2d5fe57fa1398d397f2ad35c3cd350602595"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d701fc09cceec728e8538eddb267ac40aafb3dca307357f050afa73f5ecb439a"
+    },
+    {
+      "name": "compiler-input-025-01-packageJsonExportsOptionsCompat",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonExportsOptionsCompat.ts",
+      "sourceSha256": "6b5b4a33307be645317ad3687b9977a8f8abfa484dffa3f4dacb97aedb754592",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "3183969c39f89cdebdaa8951181022cf8ae1679c8e65e39d2fb5ccdb7d39eaae"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "0d5bd3fa778497ca5f4cab4e8029ff72b63f9af9918a1b02cf6f95e1dc907deb"
+    },
+    {
+      "name": "compiler-input-026-03-packageJsonImportsExportsOptionCompat",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonImportsExportsOptionCompat.ts",
+      "sourceSha256": "353a824688c85b834f7a450bedc1e3d78babd9cb03de1b44ee35a78aa79dcd8a",
+      "variant": {
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "resolvepackagejsonexports": "true",
+        "resolvepackagejsonimports": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/index.ts",
+          "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "717bac3168f73779b10a328edd302c8d71440d18a17a6b3a414fbde1f5cb4131"
+    },
+    {
+      "name": "compiler-input-026-04-packageJsonImportsExportsOptionCompat",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonImportsExportsOptionCompat.ts",
+      "sourceSha256": "353a824688c85b834f7a450bedc1e3d78babd9cb03de1b44ee35a78aa79dcd8a",
+      "variant": {
+        "moduleresolution": "nodenext",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "resolvepackagejsonexports": "true",
+        "resolvepackagejsonimports": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/index.ts",
+          "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "5810f2a3b71d09c03fbfe4c430737e439fce49c64559afcae0eb5ec405a0960e"
+    },
+    {
+      "name": "compiler-input-026-05-packageJsonImportsExportsOptionCompat",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonImportsExportsOptionCompat.ts",
+      "sourceSha256": "353a824688c85b834f7a450bedc1e3d78babd9cb03de1b44ee35a78aa79dcd8a",
+      "variant": {
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "resolvepackagejsonexports": "true",
+        "resolvepackagejsonimports": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/index.ts",
+          "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "daa33a078317da29fefeadf41e1f35ee99b80a5de5cb5c385b8e2639996a69f6"
+    },
+    {
+      "name": "compiler-input-027-01-packageJsonMain",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonMain.ts",
+      "sourceSha256": "e50b6bdf527065b2a6a34fcdc0fa753e22ba6c23159d39b693bba1a49e32aaad",
+      "variant": {
+        "currentdirectory": "/",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "4061331bee49a3b777606621bfeebe9b9b941bdb07c52d9f66fb4dc287e655e3"
+        },
+        {
+          "path": "/node_modules/foo/oof.js",
+          "contentSha256": "676119a07b35f416479d4b6bd3ad06fcd3fdee86778e7f3082ec2e141589de4c"
+        },
+        {
+          "path": "/node_modules/bar/package.json",
+          "contentSha256": "4da49615b9a92a0fc26b9f3e0b395a135dfb867c2a5b88de93e3b143777fdcb0"
+        },
+        {
+          "path": "/node_modules/bar/rab.js",
+          "contentSha256": "676119a07b35f416479d4b6bd3ad06fcd3fdee86778e7f3082ec2e141589de4c"
+        },
+        {
+          "path": "/node_modules/baz/package.json",
+          "contentSha256": "2f900989a9a4ab886c2d8d1d2725910299fe5d158397ed207ef9b77b9b50744d"
+        },
+        {
+          "path": "/node_modules/baz/zab/index.js",
+          "contentSha256": "676119a07b35f416479d4b6bd3ad06fcd3fdee86778e7f3082ec2e141589de4c"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "b0d56ab4aa50117ddd10b32998faab41c6bdc24697871e0fefa06b82e1672a30"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "4da39eb47085b23ad997f2b62a5917329f0d16c251a70e64ba471a2eb4e9db17"
+    },
+    {
+      "name": "compiler-input-028-01-packageJsonMain_isNonRecursive",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/packageJsonMain_isNonRecursive.ts",
+      "sourceSha256": "2cf0192003ae827d7ffc53ef82cd0d7f1eaba8854c3c0addf5f3c75cee14f263",
+      "variant": {
+        "currentdirectory": "/",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "4061331bee49a3b777606621bfeebe9b9b941bdb07c52d9f66fb4dc287e655e3"
+        },
+        {
+          "path": "/node_modules/foo/oof/package.json",
+          "contentSha256": "cc19cc42170d765c8c7a651cd7db607945917899a09e8d583fe768612c895a44"
+        },
+        {
+          "path": "/node_modules/foo/oof/ofo.js",
+          "contentSha256": "676119a07b35f416479d4b6bd3ad06fcd3fdee86778e7f3082ec2e141589de4c"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "60067cfeac7754192f50774c73db658213738a434ce0af02fec64df698dc2c04"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "3c91762222c4f8e86b3662e9510a6af36ab1c79ac7a54caf60ccf6476d3114ad"
+    },
+    {
+      "name": "compiler-input-029-01-resolutionModeCache",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeCache.ts",
+      "sourceSha256": "52ae587ec16aaf4d5841c77409d1e9fad1cc329a6f079da495dd3393c11d2ebf",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "noimplicitany": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/pkg/package.json",
+          "contentSha256": "64ca624c8b3379c68ed2551c9bcb288d02ff1e5133cb55b1beb98d3eb25560c3"
+        },
+        {
+          "path": "/node_modules/pkg/index.d.mts",
+          "contentSha256": "61b15305ae4c6259079949bc706ddd0b682b463007a0dc2ffcb5f6f58ef52c35"
+        },
+        {
+          "path": "/node_modules/pkg/index.d.ts",
+          "contentSha256": "1fc46845906e279520b9e60aadf53d75a9b0bd3f44713a09448826d548fd2f1f"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "2f62704a345ae21f4402bfbf3fab6f43e7b2ba5051c3898c4d59dbc38c9ef7ad"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "75bf81f7135e1ca30500ee9a35af66c4e8a727af31ce8a1e085dede566c3aa3b"
+    },
+    {
+      "name": "compiler-input-030-01-resolutionModeImportType1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeImportType1.ts",
+      "sourceSha256": "326978a28c7453712722e3ec96ce0a07cbdd643e3001a8166dc026b4d4f5f27d",
+      "variant": {
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "0d017a3c2968c9e111064dffd9bc8244bd7a5ba61aad742cacfdb34fc0170eaa"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "9d2e0b87d40813f3680d64d1f2f4055625529d7d1069c9d8a1aa37a017630278"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "c47d644a51a2b893003a0cdac65390cf70433a53e5d87843f40e8dddd8ad1862"
+        },
+        {
+          "path": "/other.ts",
+          "contentSha256": "57bc9ba2a9120328b8bcc177169f3b7b148cec695c3c3b557746f8d9cc3af647"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "2f9e6008063a18b86555b3ae77ff1b6cfbd31561b56d573baea8618c3d7c172f"
+    },
+    {
+      "name": "compiler-input-031-01-resolutionModeTripleSlash1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash1.ts",
+      "sourceSha256": "b00255fd754f25cd90164bc231c3e7900ae6c4de986a917ba75a6ac284bf53ce",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "63d5a17c023ecedfd68982ae982a5e8c5821eed7a8f59bc333d96c97fda08a55"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "f6f5149f28f5fb6315cc9156c601dfd2cf973a15742fe27c52ae8d325a7954dc"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "8b6a01da7b881138c05171359e6e9c9a703b6b593a96d680037fe9afa826e7c5"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "4f54027d842c09c391ce7225e5a9053850a068c3f080e40d1b522ec26efea1d5"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "6c70c0dbac2c81411a841dd88403a13e7f77247eac2589ff050a7b05538fae73"
+    },
+    {
+      "name": "compiler-input-032-01-resolutionModeTripleSlash2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash2.ts",
+      "sourceSha256": "c22ee3c553c48dd86662e86d590700109db69a7684a6fd12a759a6bc9cfea107",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "63d5a17c023ecedfd68982ae982a5e8c5821eed7a8f59bc333d96c97fda08a55"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "f6f5149f28f5fb6315cc9156c601dfd2cf973a15742fe27c52ae8d325a7954dc"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "dfd773a93ac83fb962173225cd565fc8d124b17af7b7638a3eda0392cd948117"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "fd24ff27cccae2cf3e7a8a6a345552a3e0ba89fd6a3436cdf07e26bb3fea78fd"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "024e7322363fd197d4db4e63b46d59314112597c13bfd5805f1dc8e2c5ff3162"
+    },
+    {
+      "name": "compiler-input-033-01-resolutionModeTripleSlash3",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash3.ts",
+      "sourceSha256": "2a73f262b8a53053bde15ed9146c1fc8577b1cf0b4d7cea1e19ebb8bdf6bf048",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "63d5a17c023ecedfd68982ae982a5e8c5821eed7a8f59bc333d96c97fda08a55"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "f6f5149f28f5fb6315cc9156c601dfd2cf973a15742fe27c52ae8d325a7954dc"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "8b6a01da7b881138c05171359e6e9c9a703b6b593a96d680037fe9afa826e7c5"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "ac955780e8754e9c38e303638ad8b167d9471aef5a07b617ca7f57f6a51a1344"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "9d2add7ff0731ae28281cede9b78deabf659ce47614b798ac5887802c191e68b"
+    },
+    {
+      "name": "compiler-input-034-01-resolutionModeTripleSlash4",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash4.ts",
+      "sourceSha256": "97a751dcda3d2a3e67a26069c0d59486309e4b47979c7526d51b218b0786dcfc",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "63d5a17c023ecedfd68982ae982a5e8c5821eed7a8f59bc333d96c97fda08a55"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "f6f5149f28f5fb6315cc9156c601dfd2cf973a15742fe27c52ae8d325a7954dc"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "c763ad8f70b6e35019ade7c0284341cd1a5d81eacd0b68f6de4c351c303676f4"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "dc5503dd70de7acd2ac04c35214468352d8def2426bfe8b43230a294448687f9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "271faadd3090c980c99c3c87c495c1e8165344ab4333c5efb311e8af2e07101b"
+    },
+    {
+      "name": "compiler-input-035-01-resolutionModeTripleSlash5",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTripleSlash5.ts",
+      "sourceSha256": "cf7166ed8c3a7d5d0b868bbd1e09cff8fb37bf986e0473d959a385ac2118601b",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "63d5a17c023ecedfd68982ae982a5e8c5821eed7a8f59bc333d96c97fda08a55"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "f6f5149f28f5fb6315cc9156c601dfd2cf973a15742fe27c52ae8d325a7954dc"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "c763ad8f70b6e35019ade7c0284341cd1a5d81eacd0b68f6de4c351c303676f4"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "ac955780e8754e9c38e303638ad8b167d9471aef5a07b617ca7f57f6a51a1344"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "24f722a18c23164a078aedef4bc01703d02396aa65d435b4ef3bc1de1ddfa4f7"
+    },
+    {
+      "name": "compiler-input-036-01-resolutionModeTypeOnlyImport1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolutionModeTypeOnlyImport1.ts",
+      "sourceSha256": "3037d4c2530aa715faf5b575a6daaee1977c87bb1416e8e6350904be1fa49b47",
+      "variant": {
+        "declaration": "true",
+        "emitdeclarationonly": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "b2901fb1bf6e1581fd877159b5d812cf905e1859f2c1f424e744ce57c6f8c874"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.mts",
+          "contentSha256": "0d017a3c2968c9e111064dffd9bc8244bd7a5ba61aad742cacfdb34fc0170eaa"
+        },
+        {
+          "path": "/node_modules/@types/foo/index.d.cts",
+          "contentSha256": "9d2e0b87d40813f3680d64d1f2f4055625529d7d1069c9d8a1aa37a017630278"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "e8fe08e320c9e622af907cdd627fd0f7adbd8a289a338f519bbb80b343e8b262"
+        },
+        {
+          "path": "/other.ts",
+          "contentSha256": "57bc9ba2a9120328b8bcc177169f3b7b148cec695c3c3b557746f8d9cc3af647"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "9f3faee0f559ed6fdad5619727cb908c8084c99cc041e636f53d69f017b8f508"
+    },
+    {
+      "name": "compiler-input-037-01-resolvesWithoutExportsDiagnostic1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolvesWithoutExportsDiagnostic1.ts",
+      "sourceSha256": "71d758fde9ccc1c9e28ed1659fbca631d40adca7b8ee5f7afddce1161b9ec119",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "strict": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "8635a7553e6f440ebb7573d5d6a4c0c155ebd9b482e030e11f08618bdbe5048e"
+        },
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "7f2568530e0bad8e42b58cc4d738e62c49df183ae8f7352409059af05a2d966f"
+        },
+        {
+          "path": "/node_modules/foo/index.mjs",
+          "contentSha256": "69468cefe3694844eb7e062ab87fd6295f25255a5e12f02f2f10dc55dfaa661d"
+        },
+        {
+          "path": "/node_modules/foo/index.d.ts",
+          "contentSha256": "912748c1db7c28eebc2e68ff51d8afd42b9cad020dcff960fad6bbb9e754311c"
+        },
+        {
+          "path": "/node_modules/@types/bar/package.json",
+          "contentSha256": "e4c7c5770383061abf17f45d13bebeef6579c63f66e52f75d95bdbe1e6f43b1e"
+        },
+        {
+          "path": "/node_modules/@types/bar/index.d.ts",
+          "contentSha256": "5f923d42bec249cca54e14e74a1d35736d223e0a40aeb9f92eb25a4ff474b8af"
+        },
+        {
+          "path": "/node_modules/bar/package.json",
+          "contentSha256": "9250431ec1bcf1a22ac32737f7be6d8198a401d8ba1404684e6e9416fe3a9485"
+        },
+        {
+          "path": "/node_modules/bar/index.js",
+          "contentSha256": "b5a4681a2a79c59b782046266f562a969c9e0d5cabf6812383739821c7af2af6"
+        },
+        {
+          "path": "/node_modules/bar/index.mjs",
+          "contentSha256": "889300ab1d0afe082d820fdd9150229625c3ab69b3b84c2ca65d67479be388cc"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "5fb3f19739cea665e43d96b5129af69225f3461e142bc2e34b992a3c0e4ebc28"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "bafebba7bee7bb4297b5e7dc0ebb48eadf20a19073ce680bb337fea1d4b89cdb"
+    },
+    {
+      "name": "compiler-input-037-02-resolvesWithoutExportsDiagnostic1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/resolvesWithoutExportsDiagnostic1.ts",
+      "sourceSha256": "71d758fde9ccc1c9e28ed1659fbca631d40adca7b8ee5f7afddce1161b9ec119",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "node16",
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "strict": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "8635a7553e6f440ebb7573d5d6a4c0c155ebd9b482e030e11f08618bdbe5048e"
+        },
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "7f2568530e0bad8e42b58cc4d738e62c49df183ae8f7352409059af05a2d966f"
+        },
+        {
+          "path": "/node_modules/foo/index.mjs",
+          "contentSha256": "69468cefe3694844eb7e062ab87fd6295f25255a5e12f02f2f10dc55dfaa661d"
+        },
+        {
+          "path": "/node_modules/foo/index.d.ts",
+          "contentSha256": "912748c1db7c28eebc2e68ff51d8afd42b9cad020dcff960fad6bbb9e754311c"
+        },
+        {
+          "path": "/node_modules/@types/bar/package.json",
+          "contentSha256": "e4c7c5770383061abf17f45d13bebeef6579c63f66e52f75d95bdbe1e6f43b1e"
+        },
+        {
+          "path": "/node_modules/@types/bar/index.d.ts",
+          "contentSha256": "5f923d42bec249cca54e14e74a1d35736d223e0a40aeb9f92eb25a4ff474b8af"
+        },
+        {
+          "path": "/node_modules/bar/package.json",
+          "contentSha256": "9250431ec1bcf1a22ac32737f7be6d8198a401d8ba1404684e6e9416fe3a9485"
+        },
+        {
+          "path": "/node_modules/bar/index.js",
+          "contentSha256": "b5a4681a2a79c59b782046266f562a969c9e0d5cabf6812383739821c7af2af6"
+        },
+        {
+          "path": "/node_modules/bar/index.mjs",
+          "contentSha256": "889300ab1d0afe082d820fdd9150229625c3ab69b3b84c2ca65d67479be388cc"
+        },
+        {
+          "path": "/index.mts",
+          "contentSha256": "5fb3f19739cea665e43d96b5129af69225f3461e142bc2e34b992a3c0e4ebc28"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "4972f8fa6dd57760d78bb303a55a7d9394dc00b75aea6be89b4c013d3c153ce1"
+    },
+    {
+      "name": "compiler-input-038-01-scopedPackages",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/scopedPackages.ts",
+      "sourceSha256": "2b51bcc7a175753b04d505b4402e593a6d96e8b573fe60b873374fa5ab7e2d5f",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "target": "es2015",
+        "traceresolution": "true",
+        "typeroots": "types"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@cow/boy/index.d.ts",
+          "contentSha256": "72d2bcb9dbf62dd1e9fa4383b86d24296b3a4e3bccd312515b9fd5aad1fc71b9"
+        },
+        {
+          "path": "/node_modules/@types/be__bop/index.d.ts",
+          "contentSha256": "4bde29d25a962ec3c6ff49fa997580fbd46b8f5c2c0a8183143af1340aa87ca8"
+        },
+        {
+          "path": "/node_modules/@types/be__bop/e/z.d.ts",
+          "contentSha256": "b4e33561fe1d3d5edd0e0c242707eeddfc120e97a76f61858a00e70f95df938d"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "d62c279dbf7f8755b333635616d1ba5beb750bfe16c9261e5fb2384725748d2c"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "f4b783fe640266d03e7e1dc5d90c529c2d3c67535895f7a336688f89092bcd7d"
+    },
+    {
+      "name": "compiler-input-040-01-selfNameModuleAugmentation",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/selfNameModuleAugmentation.ts",
+      "sourceSha256": "3f1fed11b9791fd92ca832dde937f63f2f5c79bcc906d6d52ff6442a39669a24",
+      "variant": {
+        "allowjs": "true",
+        "module": "esnext",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/acorn-walk/package.json",
+          "contentSha256": "aa00a16921b77fb5b6cec2798efe2ad0beaa1f5da31ef1fd5b00db42e83d0e09"
+        },
+        {
+          "path": "/node_modules/acorn-walk/dist/walk.d.ts",
+          "contentSha256": "63331ac5c2c18b129a1ac3fe371da2565de9e443d6d3fbe3a02c5403526356e8"
+        },
+        {
+          "path": "/node_modules/acorn-walk/dist/walk.mjs",
+          "contentSha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "35c195167663a871c789640b8959aa599e0509dbdbaf4ac94625ec90b43e1b6c"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "2fce4fefa9009e552ef373442da4d4b76cd4fe133a800ab8465741f1470d4316"
+    },
+    {
+      "name": "compiler-input-041-01-typesVersions.ambientModules",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.ambientModules.ts",
+      "sourceSha256": "9f44acf71b1ff71a1b51550041e137cc9655a582da3f03eb3ae16e56afb910a1",
+      "variant": {
+        "traceresolution": "true",
+        "target": "esnext",
+        "module": "commonjs",
+        "noimplicitreferences": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/.src/node_modules/ext/package.json",
+          "contentSha256": "ffa341be5587587fdd5518ad4606ce1f4122a743772e27768f08f209a2594c0f"
+        },
+        {
+          "path": "/.src/node_modules/ext/index.d.ts",
+          "contentSha256": "e7a2f6fbdaf21be5abc2edc10af109d6c7c9f1bbe99091953655d45b4392a8b4"
+        },
+        {
+          "path": "/.src/node_modules/ext/ts3.1/index.d.ts",
+          "contentSha256": "c4a050692ea26a7cdb29722bfe26169d546dae88e32eaee5165a6434cdf3d6f7"
+        },
+        {
+          "path": "/.src/main.ts",
+          "contentSha256": "52137c04d5a31417861aa4a3bd2c217801031eb81d104f6aad9f161d69c762bb"
+        },
+        {
+          "path": "/.src/tsconfig.json",
+          "contentSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "a8b9e3e47be08fb325d4a1e0e5b913bbf16fbf527fbe8d61447197d864a60daa"
+    },
+    {
+      "name": "compiler-input-042-01-typesVersions.emptyTypes",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.emptyTypes.ts",
+      "sourceSha256": "8dafa7d34491e3bf7a89836d6448ec3810364f1469e7ddfb8b90d2435b4389db",
+      "variant": {
+        "baseurl": "/",
+        "module": "commonjs",
+        "target": "esnext",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/a/package.json",
+          "contentSha256": "7186f00368bf0c77c0d181299ac8f70620b68cc3622288f7ddc88cb56eba87de"
+        },
+        {
+          "path": "/a/ts3.1/index.d.ts",
+          "contentSha256": "885a3b911fb2800c327f9e0aeb362ffb3c3ed29b6dafca4404ad69cb76687ca0"
+        },
+        {
+          "path": "/b/user.ts",
+          "contentSha256": "504e456d3bab2c79e7fcdbf13e4849ff407400caeca4c5a50cd2327a6f68ed85"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "b167d07cc190b79b6c97c4fdfe9d0d117e6d450cf6df0768d1b995659d923663"
+    },
+    {
+      "name": "compiler-input-043-01-typesVersions.justIndex",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.justIndex.ts",
+      "sourceSha256": "7b08085018e2927d1b05f1618312fed7744bd306ac582e4439b12e190b56f1ef",
+      "variant": {
+        "baseurl": "/",
+        "module": "commonjs",
+        "target": "esnext",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/a/package.json",
+          "contentSha256": "87ce5ee69ae8f998ee92f3eb51e2f3205ec9cb44d0951c267f0415de7a0e18d1"
+        },
+        {
+          "path": "/a/ts3.1/index.d.ts",
+          "contentSha256": "885a3b911fb2800c327f9e0aeb362ffb3c3ed29b6dafca4404ad69cb76687ca0"
+        },
+        {
+          "path": "/b/user.ts",
+          "contentSha256": "504e456d3bab2c79e7fcdbf13e4849ff407400caeca4c5a50cd2327a6f68ed85"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "9513f12e0137a9ab3e118776e9bbf51adb1438b12e10cade1c1acd2f7ea16f49"
+    },
+    {
+      "name": "compiler-input-044-01-typesVersions.multiFile",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/typesVersions.multiFile.ts",
+      "sourceSha256": "ee52c6dbc3539c0badbcd3ecb31f12da7a5e8b0e0736cf5ddc094aa2ca083534",
+      "variant": {
+        "traceresolution": "true",
+        "target": "esnext",
+        "module": "commonjs"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/.src/node_modules/ext/package.json",
+          "contentSha256": "ffa341be5587587fdd5518ad4606ce1f4122a743772e27768f08f209a2594c0f"
+        },
+        {
+          "path": "/.src/node_modules/ext/index.d.ts",
+          "contentSha256": "a141ecb71fac5109a5cce5bc615d06d8e6c319bcb067af9cdb30e8d1497bbe16"
+        },
+        {
+          "path": "/.src/node_modules/ext/other.d.ts",
+          "contentSha256": "2876c2ae614d31b5caa9c81554fdbb0ceb977e523b32820e04ab3c53cc189b57"
+        },
+        {
+          "path": "/.src/node_modules/ext/ts3.1/index.d.ts",
+          "contentSha256": "322c8fb06460a614c467b00153bde88e97186a28bd899d01011675199375b230"
+        },
+        {
+          "path": "/.src/node_modules/ext/ts3.1/other.d.ts",
+          "contentSha256": "c35b13311ff01073171373db8cf3242fbb916537b99dc05b736597250fb2c9a1"
+        },
+        {
+          "path": "/.src/main.ts",
+          "contentSha256": "52137c04d5a31417861aa4a3bd2c217801031eb81d104f6aad9f161d69c762bb"
+        },
+        {
+          "path": "/.src/tsconfig.json",
+          "contentSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "37dd6b648ac36323919891343746c498656e4565b6fff534d72efdaad37561e4"
+    },
+    {
+      "name": "compiler-input-045-01-untypedModuleImport",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport.ts",
+      "sourceSha256": "02bbb3d9de2c2b49abd740582652d588b584f647e5cfb7758cbc91b1df615a37",
+      "variant": {
+        "currentdirectory": "/",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "e7142dcc61bb621ee022c9b82e22d601981db9f8bc22f1635efcadc3c746c87e"
+        },
+        {
+          "path": "/b.ts",
+          "contentSha256": "fdfef497d32d350518b5bf3ee4107bb1a9707f6a88f59a2c041354b29650b164"
+        },
+        {
+          "path": "/c.ts",
+          "contentSha256": "ccb9e37a915d3e4187efb67d1ab6bfbb71b21891f2908d73ab38ce7d0c3276d6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "81f5d67e8c71c828c4b3da8e8ec112f2ef201cba5b83b27d34eea63b1ebf6596"
+    },
+    {
+      "name": "compiler-input-046-01-untypedModuleImport_allowJs",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_allowJs.ts",
+      "sourceSha256": "348ca3f343a905252e0a2d296c644ef3f5eb06e30d862a99f190b6c8d8c67659",
+      "variant": {
+        "allowjs": "true",
+        "currentdirectory": "/",
+        "maxnodemodulejsdepth": "1",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "19d9c937e97bdeadca11c1e13abf09be143301252c27679039c612a09074876b"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "043b9501ccb5b7eaba4d05f18d52fe10148e2893f678b22b37bb5c235367ef92"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "4faf78b8b9dccb15bf91a4a19aa605655f8026c418c9ece7d598f019f9fe0f6b"
+    },
+    {
+      "name": "compiler-input-047-01-untypedModuleImport_noImplicitAny",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny.ts",
+      "sourceSha256": "9b93f55d7ed90a70bcf92c4d8d0cef1ed7840a94a7a9d35b636ad41038aab1bd",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "b2fde7e23e08547c31e0d7367900fffd06b2895491b758105b0a9778e95dd480"
+        },
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "9f0c1e664f59ed3a8c9f7b58027fd39f8407dbcef02d3065498a95ad82d73a2c"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "a5ddc98ce491c46c77f18bd22f58d96a67f3d710e27a982d0a76fb107152f8d2"
+    },
+    {
+      "name": "compiler-input-048-01-untypedModuleImport_noImplicitAny_relativePath",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_relativePath.ts",
+      "sourceSha256": "a00f0cb8eb290ef522122fb2b7d4480762adeab46cb7619477fdee901b4d42ec",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "b2fde7e23e08547c31e0d7367900fffd06b2895491b758105b0a9778e95dd480"
+        },
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "f12e738acec6c61b4cf5fc93888f0b9ce592d42829efc91e56df243add18d8a6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "798a66b9bf7e977bde93a457dcc24be5cdf3a26b8481f623c851725ecfb4a955"
+    },
+    {
+      "name": "compiler-input-049-01-untypedModuleImport_noImplicitAny_scoped",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_scoped.ts",
+      "sourceSha256": "d5111a7b79bd597cbc8548b55e235c130c636dfb493d74128048baa096f3d2d7",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitany": "true",
+        "noimplicitreferences": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@foo/bar/package.json",
+          "contentSha256": "20afb6bd4a7f1c91041c60238b4d8d5e2a8b991c10320d06f5fc8c72455855f4"
+        },
+        {
+          "path": "/node_modules/@foo/bar/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "de30aecc5922c4d497e6860b28ca020c6107d44ce3e578a664c41e5d480895e8"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "ae3076003e0c9dd060780b4e7a453cac5d63544ea258603eea216c002cf91be4"
+    },
+    {
+      "name": "compiler-input-050-01-untypedModuleImport_noImplicitAny_typesForPackageExist",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_noImplicitAny_typesForPackageExist.ts",
+      "sourceSha256": "a47439caeb2994d73436f88b1985f6201d4f6a63c6173c7f40bba7276672e5d7",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "true",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/foo/index.d.ts",
+          "contentSha256": "148ed7ff33027bc59243f8d51fc386c59baafa843aeea483f4e93f0ba04d240f"
+        },
+        {
+          "path": "/node_modules/@types/foo/package.json",
+          "contentSha256": "d493ee182f45cb082a36d6969642dded08b3a86296495186aa65ad96b6bbc152"
+        },
+        {
+          "path": "/node_modules/foo/sub.js",
+          "contentSha256": "2ad21d5e89849c34021330c42624e67b494ed26f33fca1819704af80434ba91c"
+        },
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "b2fde7e23e08547c31e0d7367900fffd06b2895491b758105b0a9778e95dd480"
+        },
+        {
+          "path": "/node_modules/bar/sub.js",
+          "contentSha256": "2ad21d5e89849c34021330c42624e67b494ed26f33fca1819704af80434ba91c"
+        },
+        {
+          "path": "/node_modules/bar/package.json",
+          "contentSha256": "5db284ae97bb1e16f8606f9ef79d82a86e8242cba3294ed810e4f9f968c700f7"
+        },
+        {
+          "path": "/node_modules/@types/scope__foo/index.d.ts",
+          "contentSha256": "148ed7ff33027bc59243f8d51fc386c59baafa843aeea483f4e93f0ba04d240f"
+        },
+        {
+          "path": "/node_modules/@types/scope__foo/package.json",
+          "contentSha256": "0ccca739e117bda433eef1184700552d77084199e741f24222220f9e282c4a5d"
+        },
+        {
+          "path": "/node_modules/@scope/foo/sub.js",
+          "contentSha256": "2ad21d5e89849c34021330c42624e67b494ed26f33fca1819704af80434ba91c"
+        },
+        {
+          "path": "/node_modules/@scope/foo/package.json",
+          "contentSha256": "db7223b7726271de99efc65ab0d67b860652652f345ab2c3dc156cd0cf2abd13"
+        },
+        {
+          "path": "/node_modules/@scope/bar/sub.js",
+          "contentSha256": "2ad21d5e89849c34021330c42624e67b494ed26f33fca1819704af80434ba91c"
+        },
+        {
+          "path": "/node_modules/@scope/bar/package.json",
+          "contentSha256": "0e253be5601eb81d93cf0dd0c5382af11dc14235585728ccfcd67adf58c43aaa"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "a355885704b346963ba078b88241a2c2fb0f282408c58aa78b9bd1f603aa5ad9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "3d921639d469fa62c0e9db7aebcd32ac804751c629f07de186f84c4ab1ebfbb1"
+    },
+    {
+      "name": "compiler-input-051-01-untypedModuleImport_vsAmbient",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_vsAmbient.ts",
+      "sourceSha256": "e994f733eb57c3df82daa89571b4afc53a4aebe93ff5e0cec4ad11215f91de1e",
+      "variant": {
+        "currentdirectory": "/",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/declarations.d.ts",
+          "contentSha256": "92fa673f2e4ccab677eefb6da2aef5861f89d6332f5d62d2085d35cecc72c0dc"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "27cda027e4730b9baeeaf66619aebd4f96f11bc8f519f8a3efd3ec65e245a866"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "a149cf3af2cd1a39c356613dc1fb0b888d8f7efd510710ed90ae886b1b628900"
+    },
+    {
+      "name": "compiler-input-052-01-untypedModuleImport_withAugmentation",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/moduleResolution/untypedModuleImport_withAugmentation.ts",
+      "sourceSha256": "462c47e15bf9adce0ecf47d413754161cfc1e55424846606670ea0f4fcc46561",
+      "variant": {
+        "currentdirectory": "/",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "strict": "false",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/index.js",
+          "contentSha256": "09032747b9e94e1a4ea7878133aa38b0c42b32bb53155bed1990a5ec9492ea25"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "b87f55916cf91ccb686246576ca2c575c1a72765802402819aaaf56faa1a2cc5"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "8301a0fa747c6f758a94db77f9f641d2abe7c4223470e9fed8b0d3e8c8ea99b7"
+    },
+    {
+      "name": "compiler-input-053-01-pathMappingInheritedBaseUrl",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingInheritedBaseUrl.ts",
+      "sourceSha256": "7160f73214281df0be392ee71f0d74938e61beef064c6533d53d3f4b37b61baa",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/other/tsconfig.base.json",
+          "contentSha256": "7eb28227fa55d265da58d76972d83f5cbe8eee98e7154d1400a320977b629e5c"
+        },
+        {
+          "path": "/project/tsconfig.json",
+          "contentSha256": "a80ad5010ed6cbcac1b47033e01fc12c039441ed7146a5c0eb5e0cb197d3995a"
+        },
+        {
+          "path": "/other/lib/p1/index.ts",
+          "contentSha256": "3da739371374f321f4da4bbce05cdcbcf9616548d96ff83d36fc530744e147e4"
+        },
+        {
+          "path": "/project/index.ts",
+          "contentSha256": "9a62a76ad1e2d85c32e4be321258332942106e32debbb08a14dbfd95b53ed725"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "1b8d73c87605baab3a20f5c947725ff2abbe9779110de5940da7486da396f19a"
+    },
+    {
+      "name": "compiler-input-054-01-pathMappingWithoutBaseUrl1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingWithoutBaseUrl1.ts",
+      "sourceSha256": "8aac51447b18e942e195c8abee411ff8e7aaa0d734025cae1f09201a113d7d56",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/project/tsconfig.json",
+          "contentSha256": "673514cfaeb637838dd5b9ae97265b82419e5ecf97d485a53f0ef2415eaf3d96"
+        },
+        {
+          "path": "/project/lib/p1/index.ts",
+          "contentSha256": "3da739371374f321f4da4bbce05cdcbcf9616548d96ff83d36fc530744e147e4"
+        },
+        {
+          "path": "/project/index.ts",
+          "contentSha256": "9a62a76ad1e2d85c32e4be321258332942106e32debbb08a14dbfd95b53ed725"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "95d10a9f3347c31e5d434c40149f32277ed1bad5cd4a8be8bfe085b905a9b696"
+    },
+    {
+      "name": "compiler-input-055-01-pathMappingWithoutBaseUrl2",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/pathMappingWithoutBaseUrl2.ts",
+      "sourceSha256": "f8fb3c812bf5e0378732d72ad57487f24a3f20f3b94d13b8dbf2b48143f48a84",
+      "variant": {
+        "target": "es2015",
+        "notypesandsymbols": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/other/tsconfig.base.json",
+          "contentSha256": "5867ec0a23dfbd9e480042b6090b0e4e81ec2cddf3608b452b7a69f5d7213dbb"
+        },
+        {
+          "path": "/project/tsconfig.json",
+          "contentSha256": "f337c9f72bf3176cb1f79efbc1ae0dffae6a3d50df63c388c881225ca96553df"
+        },
+        {
+          "path": "/other/lib/p1/index.ts",
+          "contentSha256": "3da739371374f321f4da4bbce05cdcbcf9616548d96ff83d36fc530744e147e4"
+        },
+        {
+          "path": "/project/index.ts",
+          "contentSha256": "9a62a76ad1e2d85c32e4be321258332942106e32debbb08a14dbfd95b53ed725"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "df4de435db90b0f62aff4c485e543800e42a36bdc2cb7b9324e83992fd65ac98"
+    },
+    {
+      "name": "compiler-input-056-01-moduleResolutionWithSymlinks",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks.ts",
+      "sourceSha256": "c70e144564cd3d1864cabc07fd113b22e2758aa93858725a6173dae3af9dfa00",
+      "variant": {
+        "fullemitpaths": "true",
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/src/library-a/index.ts",
+          "contentSha256": "a1ac67f894d25a15044c6eb0fb20630b607dc8a42a5cb85dc590d97c594749bb"
+        },
+        {
+          "path": "/src/library-b/index.ts",
+          "contentSha256": "c7c04f582507362471532e4cede200ede115659955af59db419e52303ca3769e"
+        },
+        {
+          "path": "/src/app.ts",
+          "contentSha256": "2b27633865d0ec3dc0d333ffa088de7541187ff34350d728c15a5f87140462ed"
+        }
+      ],
+      "symlinks": {
+        "/src/library-b/node_modules/library-a/index.ts": "/src/library-a/index.ts"
+      },
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "5f94063875eb4e88131909f51e5ff740142be0fd4e326060aac4206818cd6134"
+    },
+    {
+      "name": "compiler-input-057-01-moduleResolutionWithSymlinks_preserveSymlinks",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks_preserveSymlinks.ts",
+      "sourceSha256": "1737d080cca8b7e66ccf08f5024109a329fac5029cfb546189bf2466cf2f84e8",
+      "variant": {
+        "moduleresolution": "bundler",
+        "noimplicitreferences": "true",
+        "preservesymlinks": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/linked/index.d.ts",
+          "contentSha256": "de572b0852b82ce3ffb607877a1f27073c5c04677e6beb1722e20cb9d84e0a8b"
+        },
+        {
+          "path": "/app/node_modules/real/index.d.ts",
+          "contentSha256": "1849bf0ef94e0afcf3432feb93a4d3c66dff50be51859045ab838f51c562754e"
+        },
+        {
+          "path": "/app/app.ts",
+          "contentSha256": "6054cc569190f4bc3066c673ad5f19c3db6124bdd1d3c815e4bc45021eb569de"
+        }
+      ],
+      "symlinks": {
+        "/app/node_modules/linked/index.d.ts": "/linked/index.d.ts",
+        "/app/node_modules/linked2/index.d.ts": "/linked/index.d.ts"
+      },
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "bad299df347c11fade5c133c32c18b4a63e471e121e1ce864bf60862fc9961cf"
+    },
+    {
+      "name": "compiler-input-058-01-moduleResolutionWithSymlinks_referenceTypes",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSymlinks_referenceTypes.ts",
+      "sourceSha256": "33ec7584cd19c6a1572a75ec3af3ec8cb51d85598c2294a7ff0b77bd45842752",
+      "variant": {
+        "target": "es2015",
+        "noimplicitreferences": "true",
+        "traceresolution": "true",
+        "fullemitpaths": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/library-a/index.d.ts",
+          "contentSha256": "d33d0488d00e90ee0257b1f6039a87b06c068d53aa940c6f4020d38b21555e25"
+        },
+        {
+          "path": "/node_modules/@types/library-b/index.d.ts",
+          "contentSha256": "639be4e293710ae2e5d4ef7d64568e47ffce8085183ecb38e8bc798b3e954cd1"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "4d8074d6a3576b16c113c9799fada35787ae5cdef3faf228f51a4eef209b4cc7"
+        },
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "616be787413264f6e4fadc37b7f5feb724b0948060fb2fac370b309dedbbae25"
+        }
+      ],
+      "symlinks": {
+        "/node_modules/@types/library-b/node_modules/@types/library-a/index.d.ts": "/node_modules/@types/library-a/index.d.ts"
+      },
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "282852c6204f06496fa52d7564a528086a8d9a770098ffaa2ec2a3b942ac3c10"
+    },
+    {
+      "name": "compiler-input-059-01-moduleResolutionWithSuffixes_empty",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_empty.ts",
+      "sourceSha256": "120707b2af4bc189b27fdc2c255006d29a1b711beb0a46bd6d3a917fd43387a7",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "3633f929719d460702d2497508ce3ad9da62e6cb0eb07f3cd13e6aa63d44e86b"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "f6ae7bd2eb20d982c62cdda33237449c598d6f68c92bb322fc5f4b961a834f58"
+        },
+        {
+          "path": "/foo.ts",
+          "contentSha256": "c9793f72bca3e9bce6b345912cd826c922315bd7c854f5116bd4f2175157a4d9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "01bb54d41983eee35d4cbd491dba54c8157bbba87c8fd9e91ab1110ff44044e5"
+    },
+    {
+      "name": "compiler-input-060-01-moduleResolutionWithSuffixes_one",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one.ts",
+      "sourceSha256": "40471a4d9bcda4e8bfae078307ee022a088e8321bdef30ee76230d99d134cd5a",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "6b71ca037389e2ca36401a16dd7e5da5da32e48f8ee898a923ba5a0fed33bc73"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "71c8ee8c4e2d797c651bbace0f5c61b4c289214b79ec7efc493f7dda3cfe99ce"
+        },
+        {
+          "path": "/foo.ios.ts",
+          "contentSha256": "a24872fa2425272b26eb37366889c04c302e84eade8dbaf54a73488292cc1632"
+        },
+        {
+          "path": "/foo.ts",
+          "contentSha256": "c9793f72bca3e9bce6b345912cd826c922315bd7c854f5116bd4f2175157a4d9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "e0dae9563b8008d5ec5c76b22603cdf99cc960542dcc0a71b7da26e5bd904761"
+    },
+    {
+      "name": "compiler-input-061-01-moduleResolutionWithSuffixes_oneBlank",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_oneBlank.ts",
+      "sourceSha256": "8f3faf0816ad6f14dc1832cd82d10804c049de81cf6c0cffdcbce8be915174a1",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "d49c4ee17d039fda0fd0b1c4a2bca5998afc4410507887f0ff588bc279561fa0"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "f6ae7bd2eb20d982c62cdda33237449c598d6f68c92bb322fc5f4b961a834f58"
+        },
+        {
+          "path": "/foo.ts",
+          "contentSha256": "c9793f72bca3e9bce6b345912cd826c922315bd7c854f5116bd4f2175157a4d9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "7f2f5e6416840107accad160ba8ae1e552a5a6d774b0d0bdd2108107a207ae36"
+    },
+    {
+      "name": "compiler-input-062-01-moduleResolutionWithSuffixes_threeLastIsBlank1",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_threeLastIsBlank1.ts",
+      "sourceSha256": "66b3a8469c7170addb0a504b363497abc077c9b58ee0c956742a778edaa25b92",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "bc059dd5f73aaa43a6f902b1351fc70b05608e86bc0007201fe6d665c5759eb1"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "71c8ee8c4e2d797c651bbace0f5c61b4c289214b79ec7efc493f7dda3cfe99ce"
+        },
+        {
+          "path": "/foo-ios.ts",
+          "contentSha256": "a24872fa2425272b26eb37366889c04c302e84eade8dbaf54a73488292cc1632"
+        },
+        {
+          "path": "/foo__native.ts",
+          "contentSha256": "a58295cf8d167c70960870a71f234f5d454fef96911799ccc6d1e5cdd86328da"
+        },
+        {
+          "path": "/foo.ts",
+          "contentSha256": "c9793f72bca3e9bce6b345912cd826c922315bd7c854f5116bd4f2175157a4d9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "b7f0f08199d207ccc6f406570e4b4a3112a83c860e39dc28474384ae0a8ef73a"
+    },
+    {
+      "name": "compiler-input-063-01-moduleResolutionWithSuffixes_one_jsonModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_jsonModule.ts",
+      "sourceSha256": "f217a2f1308e82c97fb53e9dc0bba05cdc30eada7f7dcb87ec31b3516bb39d22",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015",
+        "fullemitpaths": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "5ba6889cde9daef5c256e605cc25ac4479ba268b2baa451cbf4b92183be50704"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "ccfac4391cd503b9b54f8ee7bc77eed92679e38a96ad67e0c5f4ba0077ff5de6"
+        },
+        {
+          "path": "/foo.ios.json",
+          "contentSha256": "8187a874f70245996c837bfc645e2821f9c23a517e7289c711ed25501df92a9b"
+        },
+        {
+          "path": "/foo.json",
+          "contentSha256": "bb7d49fc5b22a81df399c0a13f3fa0159a710f58360d46696c1c2128c32062e3"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "fb643956f56207c4baa0d4ba17e42b7cf5dc8176ae0e1464cd3b0034a1606c0f"
+    },
+    {
+      "name": "compiler-input-064-01-moduleResolutionWithSuffixes_one_jsModule",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_jsModule.ts",
+      "sourceSha256": "1d544ab3fe0299abafe429f21f4013560bd9468c73d59679a93ab1146a94884c",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015",
+        "fullemitpaths": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "ce73a89e1510808ca60e5a99f8604f500f24eafd1efb6545566408af313854b9"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "24bb68638932be81424534c898ef5c35733a4b498feefe92289dcd83eb5058b5"
+        },
+        {
+          "path": "/foo.ios.js",
+          "contentSha256": "c93aa29b7f5b2e0ea1d3ca4565a1dd51d3649a6d5357ee45776f3aba07be7c66"
+        },
+        {
+          "path": "/foo.js",
+          "contentSha256": "5759ae4fe104768b018e6bcfabbe5c712072d36a042315e9852f1cc3fadf4a05"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "0d2f791838c230a914040843ed66f0da50894138b00ba16362d6565c22e5b3c7"
+    },
+    {
+      "name": "compiler-input-065-01-moduleResolutionWithSuffixes_one_dirModuleWithIndex",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_one_dirModuleWithIndex.ts",
+      "sourceSha256": "ae9e4d882ec0e70bf80c4269cda0c6e0bcebd5a358d32a2b517a84c62aff4bcb",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "6b71ca037389e2ca36401a16dd7e5da5da32e48f8ee898a923ba5a0fed33bc73"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "71c8ee8c4e2d797c651bbace0f5c61b4c289214b79ec7efc493f7dda3cfe99ce"
+        },
+        {
+          "path": "/foo/index.ios.ts",
+          "contentSha256": "a24872fa2425272b26eb37366889c04c302e84eade8dbaf54a73488292cc1632"
+        },
+        {
+          "path": "/foo/index.ts",
+          "contentSha256": "e9b9a301988462904aa30a3db599a6cefd846ee2f167a90da6ee3da528c1c2d1"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "7d95ffd9b9b35d99aa4f998c781e846f75ed3b2e5528d1dbeadaa42bdb528b99"
+    },
+    {
+      "name": "compiler-input-066-01-moduleResolutionWithSuffixes_oneNotFound",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithSuffixes_oneNotFound.ts",
+      "sourceSha256": "cad77ca41c71d8924075d98cfa4e38dbf080ce0335a7856424fd22656baeb4da",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/tsconfig.json",
+          "contentSha256": "6b71ca037389e2ca36401a16dd7e5da5da32e48f8ee898a923ba5a0fed33bc73"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "71c8ee8c4e2d797c651bbace0f5c61b4c289214b79ec7efc493f7dda3cfe99ce"
+        },
+        {
+          "path": "/foo.ts",
+          "contentSha256": "c9793f72bca3e9bce6b345912cd826c922315bd7c854f5116bd4f2175157a4d9"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "5ed81ffba2ac68e8781b61f8b515e3898a968a13276b31a95242735d6c062494"
+    },
+    {
+      "name": "compiler-input-067-01-moduleResolutionNoTsCJS",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionNoTsCJS.ts",
+      "sourceSha256": "e0fca24a9d1f3d70c8c3ba21ca3b41c4d2aa37cef6ed0864a923eb197e57c4c3",
+      "variant": {
+        "jsx": "Preserve",
+        "module": "commonjs",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/x.ts",
+          "contentSha256": "9a15b5aa00cb010b885ffae3d28ab390fe0f8a9df7f47f30fd719ace8ed203b1"
+        },
+        {
+          "path": "/.src/y.tsx",
+          "contentSha256": "9a15b5aa00cb010b885ffae3d28ab390fe0f8a9df7f47f30fd719ace8ed203b1"
+        },
+        {
+          "path": "/.src/z.d.ts",
+          "contentSha256": "b70e9e31f98df8c5a1a8ff40065ceb0eb55994f96b99b7e0c87a63537d3071ee"
+        },
+        {
+          "path": "/.src/user.ts",
+          "contentSha256": "647d4ab6a5f4dd583e3de28a52e06ee206d8fb1af899af37477a19ca5c83fa38"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "084996cb6d82cf61e019e3c4a5f9cc2320e649654ae24cbac8ab82e80050b04b"
+    },
+    {
+      "name": "compiler-input-068-01-moduleResolutionNoTsESM",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionNoTsESM.ts",
+      "sourceSha256": "83dd2fb76df1f2374c20cc5d13bc4683dc8f1c37ec3287064c79c69de12e6d90",
+      "variant": {
+        "jsx": "Preserve",
+        "module": "es2015",
+        "target": "es2015"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/.src/x.ts",
+          "contentSha256": "9a15b5aa00cb010b885ffae3d28ab390fe0f8a9df7f47f30fd719ace8ed203b1"
+        },
+        {
+          "path": "/.src/y.tsx",
+          "contentSha256": "9a15b5aa00cb010b885ffae3d28ab390fe0f8a9df7f47f30fd719ace8ed203b1"
+        },
+        {
+          "path": "/.src/z.d.ts",
+          "contentSha256": "b70e9e31f98df8c5a1a8ff40065ceb0eb55994f96b99b7e0c87a63537d3071ee"
+        },
+        {
+          "path": "/.src/user.ts",
+          "contentSha256": "647d4ab6a5f4dd583e3de28a52e06ee206d8fb1af899af37477a19ca5c83fa38"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "cb9a58c474341ab0d834d6dcdbd279ce4dbb246be25a8b81df73b8403fc566c9"
+    },
+    {
+      "name": "compiler-input-069-01-moduleResolution_automaticTypeDirectiveNames",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_automaticTypeDirectiveNames.ts",
+      "sourceSha256": "770afc69df123a0245d00a7a6c8ad041d0b98b5448958ea97b6d843bc9f20b23",
+      "variant": {
+        "noimplicitreferences": "true",
+        "target": "es2015",
+        "types": "*"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@types/.a/index.d.ts",
+          "contentSha256": "d8d5cd3f7350b4b31c601ad5a6cfae2bde0c16f13310971035e66ec03ea16748"
+        },
+        {
+          "path": "/node_modules/@types/a/index.d.ts",
+          "contentSha256": "417afb16bc9830e1357f623c8bcf4ad80b340566e932f3ff3c5bd611b5dbeff1"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "055626364cd04ff8ffaa4a2dd0eef14e63f1bdc51988a6c861dd7ae2b9b3f41c"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6284b18598bf6af537a35d5a55a089116cdd61134de87028f1bd15e2e537f86d"
+    },
+    {
+      "name": "compiler-input-070-01-moduleResolutionPackageIdWithRelativeAndAbsolutePath",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionPackageIdWithRelativeAndAbsolutePath.ts",
+      "sourceSha256": "44494be968efda319cd2374970aa5c476d204f46564bb32248689bb441f71be4",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015",
+        "noimplicitreferences": "true",
+        "fullemitpaths": "true",
+        "traceresolution": "true"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/shared/node_modules/troublesome-lib/package.json",
+          "contentSha256": "1848a144af7b634e203746980be2d3886d478a46d86ee12e9385b60f9b948959"
+        },
+        {
+          "path": "/shared/node_modules/troublesome-lib/lib/Compactable.d.ts",
+          "contentSha256": "f8c67ddeea617567057cfa4f33b6b49fab0b7219bd93344e86bb8c2099fda8aa"
+        },
+        {
+          "path": "/shared/node_modules/troublesome-lib/lib/Option.d.ts",
+          "contentSha256": "a96d02b7fee47cb2d0063eca0345a3859f4737fa18f80ccb1433c6cc2e80b6ba"
+        },
+        {
+          "path": "/shared/lib/app.d.ts",
+          "contentSha256": "547c85713493128afe180b261feeb399588225cbe260f9b1c3fe407469c48ec2"
+        },
+        {
+          "path": "/project/node_modules/anotherLib/index.d.ts",
+          "contentSha256": "7fe39f418193a25f58283f927af420b6f83c1f663c6e514d5dcdaa268217ea10"
+        },
+        {
+          "path": "/project/node_modules/troublesome-lib/package.json",
+          "contentSha256": "1848a144af7b634e203746980be2d3886d478a46d86ee12e9385b60f9b948959"
+        },
+        {
+          "path": "/project/node_modules/troublesome-lib/lib/Compactable.d.ts",
+          "contentSha256": "f8c67ddeea617567057cfa4f33b6b49fab0b7219bd93344e86bb8c2099fda8aa"
+        },
+        {
+          "path": "/project/node_modules/troublesome-lib/lib/Option.d.ts",
+          "contentSha256": "a96d02b7fee47cb2d0063eca0345a3859f4737fa18f80ccb1433c6cc2e80b6ba"
+        },
+        {
+          "path": "/project/src/app.ts",
+          "contentSha256": "6c548cae220338f3627483c22e6d17664a0036476847613a25766fe8e883550b"
+        },
+        {
+          "path": "/project/tsconfig.json",
+          "contentSha256": "11b3486695132230e69465205eced365512beedbb173ba1dbe6eca2d686c5fde"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "0ff14f9f986a90a416ebc385071b5ce1c655a08bca26f3e56e2de10b676f8709"
+    },
+    {
+      "name": "compiler-input-071-01-resolutionModeOverrideWithOtherAttributes",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/resolutionModeOverrideWithOtherAttributes.ts",
+      "sourceSha256": "ab5dd85ea0ff2f6bd727b5ed1901d42693dbc9b1f2bfb6c4c418b4fd3c8b7054",
+      "variant": {
+        "module": "preserve",
+        "moduleresolution": "bundler",
+        "noemit": "true",
+        "target": "esnext"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/pkg/package.json",
+          "contentSha256": "76a9a9fb6f16effd7b84648fb34b7d9784e2d65e058046867044a839f1f574d8"
+        },
+        {
+          "path": "/node_modules/pkg/index.d.mts",
+          "contentSha256": "38115303668cafd26e9819919c119d6c6a1b61de95f7586b4421ec81f9f6f417"
+        },
+        {
+          "path": "/node_modules/pkg/index.d.cts",
+          "contentSha256": "de54f186dc3cc23b1b950fa14200490ac70fbffe92030b0dd9f4d1b686e9c90d"
+        },
+        {
+          "path": "/app.ts",
+          "contentSha256": "9da930c8df04622075beb78a291825fde96f118279594a5f6352bb72c1eb4593"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "d6397575541032f164a85c2369bf21a5a2be445e68d74d0882395c475934a634"
+    },
+    {
+      "name": "compiler-input-072-01-packageJsonImportsWildcardTsExtensionError",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/packageJsonImportsWildcardTsExtensionError.ts",
+      "sourceSha256": "7e3d7b9cbe3a2e22ba0be4cfc37738ccdda6768f73d30d6fd2993bd301551981",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "module": "nodenext",
+        "moduleresolution": "nodenext"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/.src/src/foo.ts",
+          "contentSha256": "a0aa4069dc155c8988861b28f434a2a7d75e3b2bd7361cfde6202325568e59cb"
+        },
+        {
+          "path": "/.src/src/index.ts",
+          "contentSha256": "9110042923e9e6ef4c96187f669b5443f244828a49055d54432138deaf8abe00"
+        },
+        {
+          "path": "/.src/package.json",
+          "contentSha256": "f83953d57cd0621b781c1035268f067742539d95370c3d9de738141f3a2049a7"
+        },
+        {
+          "path": "/.src/tsconfig.json",
+          "contentSha256": "5d25117d1a77c500ae9fcc47b1ae31880a28a19099cff668be826f42b6438b5b"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "eef51e6ee66005745066a9d7712aad56e4bde8e1cf7e5b9d9d4c7cdacfded659"
+    },
+    {
+      "name": "compiler-input-073-01-packageJsonImportsWildcardNoCrash",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/packageJsonImportsWildcardNoCrash.ts",
+      "sourceSha256": "7411e5787f99380a76424e5cc6004a5441cfd14ffdfbd6ead19df175f2fc1657",
+      "variant": {
+        "noemit": "true",
+        "notypesandsymbols": "true",
+        "module": "nodenext",
+        "moduleresolution": "nodenext"
+      },
+      "config": "original-first-embedded",
+      "virtualFiles": [
+        {
+          "path": "/.src/src/a.ts",
+          "contentSha256": "b0f9a79b527d0113682ff0550e03b58e8a977b96a5a38f6dd9d699a240da6dea"
+        },
+        {
+          "path": "/.src/src/b.ts",
+          "contentSha256": "25c2db9d6c4c2c511bec4a736f5adf77423be6011bbedd916fb55003d059b4e3"
+        },
+        {
+          "path": "/.src/package.json",
+          "contentSha256": "ac59e1235d74d281a2f807703309904cbd4633d90567dce669f980ade47b3984"
+        },
+        {
+          "path": "/.src/tsconfig.json",
+          "contentSha256": "5d25117d1a77c500ae9fcc47b1ae31880a28a19099cff668be826f42b6438b5b"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-config-discovery",
+      "requestSha256": "5a40b848f5a1b5cf4000420c9d18e926a588fadc850c8b0c123eda42c9f417e9"
+    },
+    {
+      "name": "compiler-input-074-01-moduleResolution_packageJson_notAtPackageRoot",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_packageJson_notAtPackageRoot.ts",
+      "sourceSha256": "b6bec39c9cc8d6e8da386ffa185a3b1a86ca165d56d9311b5e045c2a6033b2ac",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/foo/bar/package.json",
+          "contentSha256": "7e258c1fae9025ba0a088ce59e374d7f5c0ee30b94197887ad1037317a3b54e1"
+        },
+        {
+          "path": "/node_modules/foo/package.json",
+          "contentSha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+        },
+        {
+          "path": "/node_modules/foo/bar/types.d.ts",
+          "contentSha256": "72d2bcb9dbf62dd1e9fa4383b86d24296b3a4e3bccd312515b9fd5aad1fc71b9"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "a51b7b17ce59d7431597d615f9fd73f8294d1c106f84ea10011f2b6145253ed6"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "c5aea159acbc8c7f5c7c6aed13f331c069b3c1f59435ca98e57d9535222fc06a"
+    },
+    {
+      "name": "compiler-input-075-01-moduleResolution_packageJson_scopedPackage",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolution_packageJson_scopedPackage.ts",
+      "sourceSha256": "1c9e08713f34a9ea27bd5783448c4c84eb10d92ba56d6e1cd2da0e3c810c04c9",
+      "variant": {
+        "module": "commonjs",
+        "noimplicitreferences": "true",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/node_modules/@foo/bar/package.json",
+          "contentSha256": "7e258c1fae9025ba0a088ce59e374d7f5c0ee30b94197887ad1037317a3b54e1"
+        },
+        {
+          "path": "/node_modules/@foo/bar/types.d.ts",
+          "contentSha256": "72d2bcb9dbf62dd1e9fa4383b86d24296b3a4e3bccd312515b9fd5aad1fc71b9"
+        },
+        {
+          "path": "/a.ts",
+          "contentSha256": "555bc8c0de6e0233203e394e197527f4106c960f0298b31e7ce4ab20e3801e75"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "7ddf183a812b024b668cf10ab6f9465906c0b5ab82351f649a6fed0fd22a8cd9"
+    },
+    {
+      "name": "compiler-input-076-01-moduleResolutionWithRequireAndImport",
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleResolutionWithRequireAndImport.ts",
+      "sourceSha256": "be9d7c72139b3aedb5e3fe9e2e6670146f7bec0ad2e01989280ce3943bb56833",
+      "variant": {
+        "module": "commonjs",
+        "target": "es2015",
+        "traceresolution": "true"
+      },
+      "config": "authored-directive-config",
+      "virtualFiles": [
+        {
+          "path": "/other.ts",
+          "contentSha256": "1b65f6cd3e0a1a76be65facb59878aeb22c3e09ec123a5452bf340a0a262ac78"
+        },
+        {
+          "path": "/index.ts",
+          "contentSha256": "a267730fc8075f46b623c1ee98f93c7bc862cd7913320984179bc2c8e86624dd"
+        }
+      ],
+      "symlinks": {},
+      "rootSelection": "original-last-only-or-all-root-heuristic",
+      "requestSha256": "6dc528fcaff2ba2ac4861694bb01bdc39ef0643c769bdaf50a1935ec817212b3"
+    }
+  ]
+}

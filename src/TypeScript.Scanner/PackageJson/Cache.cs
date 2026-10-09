@@ -89,15 +89,15 @@ public struct VersionPaths
     public string Version { readonly get => version ?? ""; set => version = value; }
 
     internal OrderedMap<string, JSONValue>? pathsJSON;
-    private OrderedMap<string, List<string>>? paths;
+    private OrderedMap<string, List<string>?>? paths;
     public readonly bool Exists() => Version != "" && pathsJSON != null;
-    public OrderedMap<string, List<string>>? GetPaths()
+    public OrderedMap<string, List<string>?>? GetPaths()
     {
         if (!Exists())
             return null;
         if (paths != null)
             return paths;
-        var result = new OrderedMap<string, List<string>>(pathsJSON!.Size());
+        var result = new OrderedMap<string, List<string>?>(pathsJSON!.Size());
         foreach (var(key, value)in pathsJSON.Entries())
         {
             if (value.Type != JSONValueType.Array)
@@ -165,14 +165,20 @@ public sealed class InfoCacheEntry
     public PackageDirectory PackageDirectory;
     public bool DirectoryExists;
     public PackageJson? Contents;
-    public bool Exists() => Contents != null;
-    public PackageJson? GetContents() => Contents;
     public InfoCacheEntry WithPackageDirectory(PackageDirectory directory) => PackageDirectory == directory ? this : new InfoCacheEntry
     {
         PackageDirectory = directory,
         DirectoryExists = DirectoryExists,
         Contents = Contents
     };
+}
+
+// cache.go:188–198: both source pointer receivers accept nil. Extension
+// dispatch preserves this before an absent package scope can become an entry.
+public static class InfoCacheEntryOperations
+{
+    public static bool Exists(this InfoCacheEntry? entry) => entry is not null && entry.Contents is not null;
+    public static PackageJson? GetContents(this InfoCacheEntry? entry) => entry?.Contents;
 }
 
 public sealed class InfoCache

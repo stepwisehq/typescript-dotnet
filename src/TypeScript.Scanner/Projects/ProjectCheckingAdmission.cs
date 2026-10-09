@@ -39,6 +39,17 @@ internal static class ProjectCheckingAdmission
         remaining.Strict = remaining.StrictNullChecks = remaining.StrictFunctionTypes = remaining.NoImplicitAny = remaining.NoImplicitThis = Tristate.Unknown;
         remaining.StrictBindCallApply = remaining.StrictPropertyInitialization = remaining.StrictBuiltinIteratorReturn = remaining.UseUnknownInCatchVariables = Tristate.Unknown;
         remaining.NoImplicitReturns = remaining.ExactOptionalPropertyTypes = remaining.NoUncheckedIndexedAccess = Tristate.Unknown;
+        // Resolution-only settings already acted on the genuine graph. Removing
+        // them from this admission copy neither drops files nor changes options.
+        remaining.BaseUrl = default;
+        remaining.Paths = null;
+        remaining.RootDirs = null;
+        remaining.ModuleSuffixes = null;
+        remaining.CustomConditions = null;
+        remaining.ResolvePackageJsonExports = remaining.ResolvePackageJsonImports = remaining.PreserveSymlinks = Tristate.Unknown;
+        remaining.TraceResolution = remaining.AllowArbitraryExtensions = Tristate.Unknown;
+        remaining.DeduplicatePackages = Tristate.Unknown;
+        remaining.MaxNodeModuleJsDepth = null;
         remaining.ConfigFilePath = default;
         Require(remaining.Equals(new CompilerOptions()), "Other explicitly supplied compiler settings are not supported by the current checker.");
     }

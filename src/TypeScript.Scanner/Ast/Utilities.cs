@@ -6,6 +6,66 @@
 namespace TypeScript.Scanner;
 public static partial class Ast
 {
+    // utilities.go:2632–2671. Typed filenames contain original Go bytes.
+    public static ModuleKind GetImpliedNodeFormatForFile(RootedFilePath fileName, string packageJsonType)
+    {
+        if (fileName.ExtensionIsOneOf([TsPath.ExtensionDmts, TsPath.ExtensionMts, TsPath.ExtensionMjs]))
+            return ModuleKind.ESNext;
+        if (fileName.ExtensionIsOneOf([TsPath.ExtensionDcts, TsPath.ExtensionCts, TsPath.ExtensionCjs]))
+            return ModuleKind.CommonJS;
+        if (fileName.ExtensionIsOneOf([TsPath.ExtensionDts, TsPath.ExtensionTs, TsPath.ExtensionTsx, TsPath.ExtensionJs, TsPath.ExtensionJsx]))
+            return packageJsonType == "module" ? ModuleKind.ESNext : ModuleKind.CommonJS;
+        return ModuleKind.None;
+    }
+
+    public static ModuleKind GetEmitModuleFormatOfFileWorker(RootedFilePath fileName, CompilerOptions options, SourceFileMetaData metadata)
+    {
+        ModuleKind result = (ModuleKind)GetImpliedNodeFormatForEmitWorker(fileName, options.GetEmitModuleKind(), metadata);
+        return result != ModuleKind.None ? result : options.GetEmitModuleKind();
+    }
+
+    public static ResolutionMode GetImpliedNodeFormatForEmitWorker(RootedFilePath fileName, ModuleKind emitModuleKind, SourceFileMetaData metadata)
+    {
+        if (emitModuleKind >= ModuleKind.Node16 && emitModuleKind <= ModuleKind.NodeNext)
+            return metadata.ImpliedNodeFormat;
+        if (metadata.ImpliedNodeFormat == ResolutionMode.CommonJS &&
+            (metadata.PackageJsonType == "commonjs" || fileName.ExtensionIsOneOf([TsPath.ExtensionCjs, TsPath.ExtensionCts])))
+            return ResolutionMode.CommonJS;
+        if (metadata.ImpliedNodeFormat == ResolutionMode.ESNext &&
+            (metadata.PackageJsonType == "module" || fileName.ExtensionIsOneOf([TsPath.ExtensionMjs, TsPath.ExtensionMts])))
+            return ResolutionMode.ESNext;
+        return ResolutionMode.None;
+    }
+
+    // utilities.go:2851–2880. These are loader synthetic-dependency producers.
+    public static string GetJSXImplicitImportBase(CompilerOptions options, SourceFile file)
+    {
+        Pragma source = GetPragmaFromSourceFile(file, "jsximportsource");
+        Pragma runtime = GetPragmaFromSourceFile(file, "jsxruntime");
+        if (GetPragmaArgument(runtime, "factory") == "classic")
+            return "";
+        if (options.Jsx is JsxEmit.ReactJSX or JsxEmit.ReactJSXDev || options.JsxImportSource != "" ||
+            source is not null || GetPragmaArgument(runtime, "factory") == "automatic")
+        {
+            string result = GetPragmaArgument(source, "factory");
+            if (result == "") result = options.JsxImportSource;
+            return result == "" ? "react" : result;
+        }
+        return "";
+    }
+
+    public static string GetJSXRuntimeImport(string importBase, CompilerOptions options) => importBase == "" ? importBase :
+        importBase + "/" + (options.Jsx == JsxEmit.ReactJSXDev ? "jsx-dev-runtime" : "jsx-runtime");
+
+    // utilities.go:3779. Filename is retained in the source API although unused by this producer.
+    public static bool ShouldTransformImportCall(RootedFilePath fileName, CompilerOptions options, ModuleKind impliedNodeFormatForEmit)
+    {
+        ModuleKind kind = options.GetEmitModuleKind();
+        if ((kind >= ModuleKind.Node16 && kind <= ModuleKind.NodeNext) || kind == ModuleKind.Preserve)
+            return false;
+        return impliedNodeFormatForEmit < ModuleKind.ES2015;
+    }
+
     // Upstream function: NodeIsMissing
     public static bool NodeIsMissing(Node node)
     {

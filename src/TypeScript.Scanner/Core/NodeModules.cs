@@ -70,4 +70,23 @@ internal static partial class Core
         "node:test",
         "node:test/reporters",
     };
+
+    // nodemodules.go:75. Source once-initialized membership table; parser's
+    // existing prefix-specific tables retain their separate identities.
+    private static readonly Lazy<HashSet<string>> nodeCoreModules = new(() =>
+    {
+        var modules = new HashSet<string>(StringComparer.Ordinal);
+        foreach (string unprefixed in UnprefixedNodeCoreModules)
+        {
+            modules.Add(unprefixed);
+            modules.Add("node:" + unprefixed);
+        }
+        modules.UnionWith(ExclusivelyPrefixedNodeCoreModules);
+        return modules;
+    });
+
+    public static HashSet<string> NodeCoreModules() => nodeCoreModules.Value;
+
+    public static string NonRelativeModuleNameForTypingCache(string moduleName) =>
+        NodeCoreModules().Contains(moduleName) ? "node" : moduleName;
 }
