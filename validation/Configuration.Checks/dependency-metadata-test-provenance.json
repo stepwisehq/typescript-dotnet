@@ -1,0 +1,132 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sources": {
+    "upstream/TypeScript/tsc/internal/core/pattern_test.go": "52d6450c846dae0cf1793de8aeba17220a3c1425ab385b438a448ae0dfbfa6b1",
+    "upstream/TypeScript/tsc/internal/contentmapper/host_test.go": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe"
+  },
+  "artifacts": {
+    "validation/Configuration.Checks/DependencyMetadataChecks.cs": "07914314f1cba3c1b1c16b45d26acacc9f33964da10843352461cde69208b868",
+    "tests/Configuration.Tests/DependencyMetadataTests.cs": "797171417221aa8604737dab6301e173ace9a9676954c629e78077717b0a2392"
+  },
+  "assertionPreservingFunctions": [
+    "TestPatternOverlappingMatch",
+    "TestMapperDiagnosticName"
+  ],
+  "execution": "Copied10 isolated shared dispatcher passed 2 groups, exit0. xUnit/final NativeAOT pending.",
+  "assertions": {
+    "TestPatternOverlappingMatch": 5,
+    "TestMapperDiagnosticName": 3
+  },
+  "excludedHostFunctions": [
+    {
+      "name": "TestRunnerTransform",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostLogging",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostDiscardsStderrWithoutLogging",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerTransformResponseValidation",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostClosesProcessWhenReadLoopFails",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostReportsInitializationTimeoutBeforeClosingProcess",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostReportsProcessExitBeforeInitialization",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerTransformDiagnosticDirectives",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestMappedDiagnosticDirectiveJSON",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerTransformSupplementalOutputs",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerTransformInvalidSupplementalDiagnosticDirective",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerRejectsInvalidVirtualExtension",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerPositionEncodings",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerRejectsUnsupportedPositionEncoding",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerRejectsInvalidDiagnosticSource",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerRejectsPositionsInsideUnicodeCharacters",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerConsolidatesByIdentity",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerLeaseLifecycle",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestProjectLifecycle",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestProjectMethodsAfterHostClose",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestProjectRejectsRelativeWatchedFiles",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestDynamicProjectRequiresConfigIdentity",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestStaticMapperRejectsDynamicProjectResponseFields",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestProjectRejectsInvalidOptionDiagnosticPath",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestRunnerForwardsProjectOptions",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostSetLocaleRestartsMapper",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    },
+    {
+      "name": "TestHostSetLocaleWaitsForTransform",
+      "reason": "Original process/IPC/runner/transform/span-map/watch execution is external to selected metadata closure."
+    }
+  ],
+  "scope": "No external mapper execution or arbitrary pattern helpers beyond genuine selected production.",
+  "executionReport": "artifacts/configuration-validation/build10/dependency-metadata-shared/report.json"
+}

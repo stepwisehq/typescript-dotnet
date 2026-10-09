@@ -1,0 +1,10 @@
+{"name":"package-priority-exports-overflow-before-invalid-token","mode":"package-json","argumentsBase64":["eyJleHBvcnRzIjoxZTEwMDAsImxhdGVyIjo/fQ=="]}
+{"name":"package-priority-typesversions-overflow-before-invalid-token","mode":"package-json","argumentsBase64":["eyJ0eXBlc1ZlcnNpb25zIjp7IngiOjFlMTAwMH0sImxhdGVyIjo/fQ=="]}
+{"name":"package-priority-invalid-token-before-exports-overflow","mode":"package-json","argumentsBase64":["eyJlYXJsaWVyIjo/LCJleHBvcnRzIjoxZTEwMDB9"]}
+{"name":"package-priority-invalid-token-before-typesversions-overflow","mode":"package-json","argumentsBase64":["eyJlYXJsaWVyIjo/LCJ0eXBlc1ZlcnNpb25zIjp7IngiOjFlMTAwMH19"]}
+{"name":"package-priority-exports-overflow-before-truncated-string","mode":"package-json","argumentsBase64":["eyJleHBvcnRzIjoxZTEwMDAsImxhdGVyIjoidW5maW5pc2hlZA=="]}
+{"name":"package-priority-exports-overflow-before-missing-close","mode":"package-json","argumentsBase64":["eyJleHBvcnRzIjoxZTEwMDA="]}
+{"name":"package-priority-expected-number-before-invalid-token","mode":"package-json","argumentsBase64":["eyJuYW1lIjozLCJsYXRlciI6P30="]}
+{"name":"package-priority-dependency-number-before-invalid-token","mode":"package-json","argumentsBase64":["eyJkZXBlbmRlbmNpZXMiOnsiYSI6M30sImxhdGVyIjo/fQ=="]}
+{"name":"package-priority-ignored-overflow-before-invalid-token","mode":"package-json","argumentsBase64":["eyJ1bmtub3duIjoxZTEwMDAsImxhdGVyIjo/fQ=="]}
+{"name":"package-priority-exports-nested-overflow-before-invalid-token","mode":"package-json","argumentsBase64":["eyJleHBvcnRzIjp7IngiOjFlMTAwMH0sImxhdGVyIjo/fQ=="]}

@@ -1,0 +1,26 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 54,
+  "requestsSha256": "00fef16f69178aba4e74c7d39c9d977b03565897bcacc2b6609f7655ba7b5323",
+  "expectedUncompressedSha256": "3e2f521e90cbb86108fa32b81e948d6d13a72b1c7799942af62fcbaf8b04c4c8",
+  "oracleSha256": "2122cf8857da8f084d5eba2d8bf3faabe48a016b176590f23c3b824717a114ca",
+  "seconds": 0.034,
+  "expectedPolicy": "Actual original public json.Value Marshal, Definition.Options omission, Mapper.Equals nil/empty byte sequences, static supported source models and package callback ReadValue boundaries. Typed SemanticError own modal canonicalized; original raw error traces retained. No managed outputs or previous265 expected changes. Earlier27 probe stream retained under artifacts/configuration-validation/raw-values-original.",
+  "sources": {
+    "tools/configuration-oracle/author_raw_json_requests.py": "ae8d04e07e7c18a442b0ecea3f9e1e09889e519ac4fc6cd2bab262678f04ff08",
+    "tools/configuration-oracle/main.go": "516ec8b22580d10ccc6959da259e708ad03818279872f57d63c441b103cec12f",
+    "upstream/TypeScript/tsc/internal/contentmapper/contentmapper.go": "0ad086a1a255421249d08b6fc5e2dd6cd1b3fe06d7bee439daf56a90bc94eda5",
+    "upstream/TypeScript/tsc/internal/packagejson/packagejson.go": "858537735303a60c23edf6e153534934a06f751b77be900662d651d06c3f3b7b",
+    "upstream/TypeScript/tsc/internal/tsoptions/showconfig.go": "f18ccd30da901529f431abd626c279bb61dcc64bb0f5a94766afd2b9d8f7d2f1",
+    "upstream/TypeScript/tsc/internal/core/options_generated.go": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af",
+    "upstream/TypeScript/tsc/internal/core/projectreference.go": "84e6d4e30fa4d98d38901c6cd5790d0dd07a2c83f532efa9f6cfffe84084d825"
+  },
+  "fixtureCorrection": "Two intended prior-prefix assertions now explicitly construct actual source OrderedMap; original ordinary two-key map default order was nondeterministic and a wrong exact-order fixture. Two single-key malformed ordinary-map rows directly retain default-producer boundary. Prior317 requests/goldens/provenance retained unchanged under raw-map-order-investigation/prior317-assets. Fifty unaffected raw records unchanged, earlier265 bytes unchanged. No offset/value/partial-byte comparator normalization.",
+  "unobservedBoundary": "Exact ordinary multi-key map traversal and correlated error-prefix order are not asserted; forty original processes retained both full supported records. Actual ordered-map prefix and default single-key partial output remain exact.",
+  "freshProcessReproducibility": {
+    "report": "artifacts/configuration-validation/raw-map-order-investigation/final54-reproducibility/report.json",
+    "processes": 20,
+    "casesPerProcess": 54,
+    "fullExactProcesses": 20
+  }
+}

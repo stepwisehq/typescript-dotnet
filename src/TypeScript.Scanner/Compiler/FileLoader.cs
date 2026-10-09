@@ -34,7 +34,12 @@ internal sealed class FileLoader
         foreach (SourceFile file in libraries)
             loader.AddRootFileTask(file.FileName(), file.FileName(), new());
         for (int i = 0; i < roots.Count; i++)
-            loader.AddRootFileTask(roots[i], roots[i], new() { rootIndex = configuration.Files.ToList().FindIndex(spec => host.Resolve(configuration.Root, spec) == roots[i]) });
+        {
+            int rootIndex = configuration.Parsed is not null ? i : configuration.Files.ToList().FindIndex(spec => host.Resolve(configuration.Root, spec) == roots[i]);
+            string referenceText = configuration.Parsed is not null ? PathByteText.ToUnicode(configuration.Parsed.RootFileNameForDiagnostic(i)) : roots[i];
+            loader.AddRootFileTask(roots[i], referenceText, new() { rootIndex = rootIndex });
+        }
+
         loader.filesParser.Parse(loader, loader.rootTasks);
         return loader.filesParser.GetProcessedFiles(loader);
     }

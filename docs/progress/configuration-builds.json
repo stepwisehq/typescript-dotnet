@@ -1,0 +1,123 @@
+{
+  "scope": "Central shared library/CLI compiler invocations only; adapter/test/oracle/AOT build time excluded. Snapshot6 library succeeded while CLI failed3; errors recorded at overall invocation boundary.",
+  "runs": [
+    {
+      "snapshot": "1",
+      "elapsedSeconds": 1.56,
+      "errors": 4,
+      "log": "/tmp/configuration-build1.log"
+    },
+    {
+      "snapshot": "1b",
+      "elapsedSeconds": 1.31,
+      "errors": 1,
+      "log": "/tmp/configuration-build1b.log"
+    },
+    {
+      "snapshot": "1c",
+      "elapsedSeconds": 5.06,
+      "errors": 10,
+      "log": "/tmp/configuration-build1c.log"
+    },
+    {
+      "snapshot": "2",
+      "elapsedSeconds": 4.9,
+      "errors": 3,
+      "log": "/tmp/configuration-build2.log"
+    },
+    {
+      "snapshot": "3",
+      "elapsedSeconds": 5.98,
+      "errors": 0,
+      "log": "/tmp/configuration-build3.log"
+    },
+    {
+      "snapshot": "4",
+      "elapsedSeconds": 6.42,
+      "errors": 0,
+      "log": "/tmp/configuration-build4.log"
+    },
+    {
+      "snapshot": "5",
+      "elapsedSeconds": 6.03,
+      "errors": 7,
+      "log": "/tmp/configuration-build5.log"
+    },
+    {
+      "snapshot": "5b",
+      "elapsedSeconds": 5.01,
+      "errors": 0,
+      "log": "/tmp/configuration-build5b.log"
+    },
+    {
+      "snapshot": "6",
+      "elapsedSeconds": 7.15,
+      "errors": 3,
+      "log": "/tmp/configuration-build6.log"
+    },
+    {
+      "snapshot": "6b",
+      "elapsedSeconds": 1.9,
+      "errors": 0,
+      "log": "/tmp/configuration-build6b.log"
+    },
+    {
+      "snapshot": "7",
+      "elapsedSeconds": 7.63,
+      "errors": 0,
+      "log": "/tmp/configuration-build7.log"
+    },
+    {
+      "snapshot": "8",
+      "elapsedSeconds": 7.79,
+      "errors": 0,
+      "log": "/tmp/configuration-build8.log"
+    },
+    {
+      "snapshot": "9",
+      "elapsedSeconds": 3.58,
+      "errors": 0,
+      "log": "/tmp/configuration-build9.log"
+    },
+    {
+      "snapshot": "10",
+      "elapsedSeconds": 3.34,
+      "errors": 0,
+      "log": "/tmp/configuration-build10.log"
+    },
+    {
+      "snapshot": "11",
+      "elapsedSeconds": 2.67,
+      "errors": 1,
+      "log": "/tmp/configuration-build11.log"
+    },
+    {
+      "snapshot": "11b",
+      "elapsedSeconds": 2.97,
+      "errors": 0,
+      "log": "/tmp/configuration-build11b.log"
+    },
+    {
+      "snapshot": "12",
+      "elapsedSeconds": 3.258,
+      "errors": 0,
+      "log": "/tmp/configuration-build12.log"
+    },
+    {
+      "snapshot": "13",
+      "elapsedSeconds": 3.181,
+      "errors": 0,
+      "log": "/tmp/configuration-build13.log"
+    },
+    {
+      "snapshot": "14",
+      "elapsedSeconds": 6.072,
+      "errors": 0,
+      "log": "/tmp/configuration-build14.log"
+    }
+  ],
+  "compilerInvocations": 19,
+  "passedInvocations": 12,
+  "failedInvocations": 7,
+  "totalCompilerElapsedSeconds": 85.811
+}

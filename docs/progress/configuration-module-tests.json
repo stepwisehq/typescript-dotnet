@@ -1,0 +1,340 @@
+{
+  "scope": "All 38 module test functions: 37 resolver/internal functions plus one separate static resolver original. Applicability is reassessed against selected configuration and package-directory entry APIs, not the old package exclusion.",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "selectedProduction": [
+    "DefaultResolver.ResolveConfig",
+    "DefaultResolver.ResolvePackageDirectory",
+    "ModuleUtilities.NodeModulePackageRootForFile",
+    "ModuleUtilities.NodeModulePackageRootForDirectory",
+    "DefaultResolver.normalizePathForCJSResolution"
+  ],
+  "limits": [
+    "No general source-import/type-reference/static/entrypoint/shared ResolutionData/concurrent resolver API claim.",
+    "Selected exports/imports/self/tsconfig/typesVersions/semver behavior uses actual config-resolution fixtures and does not imply every ResolveModuleName assertion is ported."
+  ],
+  "entries": [
+    {
+      "name": "TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 11,
+      "disposition": "assertion-preserving-port",
+      "reason": "The exact normalization helper is selected by ResolveConfig. Preserve all sixteen inputs and four assertions per input, including opaque dynamic roots; prior Projects twelve-row prefix is insufficient for this subsystem.",
+      "shared": "ModuleCandidateChecks.TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+      "managedEvidence": "pending next immutable snapshot"
+    },
+    {
+      "name": "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 85,
+      "disposition": "excluded-operation",
+      "reason": "Private declaration-extension-mask invocation is unselected by JSON-only ResolveConfig and directory-only lookup. Its directory-only rejection is exercised by config package-target controls; no original body port is claimed."
+    },
+    {
+      "name": "TestExtensionReplacementPreservesEmptyAndDotStems",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 102,
+      "disposition": "excluded-operation",
+      "reason": "Calls TS/declaration extension replacement with ModuleSuffixes. JSON-only config lookup and package-directory lookup do not select this extension-mask family."
+    },
+    {
+      "name": "TestOutputDirectoriesRemoveTrailingSeparators",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go",
+      "sourceSha256": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+      "line": 132,
+      "disposition": "excluded-operation",
+      "reason": "Calls private module declaration/output redirection helper; ResolveConfig fresh options and package-directory early return do not reach this helper. Independent TsOptions OutputPaths originals are selected separately."
+    },
+    {
+      "name": "TestResolverSharedData",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 42,
+      "disposition": "excluded-operation",
+      "reason": "Reflection data-only assertion over ResolutionData; the general shared source-import resolver data graph is outside the selected config/package-directory entry APIs."
+    },
+    {
+      "name": "TestResolveModuleNameTrailingSlash",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 54,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolutionDataCaches",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 83,
+      "disposition": "excluded-operation",
+      "reason": "Requires GetResolutionData, NewResolver rebind/Clone, module/type-directive/path-pattern caches and their sizes; these general source-import cache APIs are unselected. Selected InfoCache clone/storage assertions are preserved by packagejson tests and config cache/order controls, without claiming this body."
+    },
+    {
+      "name": "TestResolveDynamicModuleNameUsingRootDirs",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 128,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestRootDirsPreservesExceptionalDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 183,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestRootDirsRejectsUnrepresentableDiskSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 218,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestRootDirsEscapesRootLikeDynamicSegments",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 258,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestRootDirsPreservesRelativeDiskSuffixes",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 303,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestRootDirsPreservesRelativeDirectoryIntent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 351,
+      "disposition": "excluded-operation",
+      "reason": "Source-module RootDirs search is not enabled by fresh ResolveConfig options, and package-directory lookup bypasses it; typed dynamic path assertions are selected separately."
+    },
+    {
+      "name": "TestResolveDynamicPackageJSONPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 427,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolveDynamicPackageSubpathFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 465,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 496,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolveDynamicDottedDirectory",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 529,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolvedModuleCarriesCaseInsensitivePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 562,
+      "disposition": "excluded-operation",
+      "reason": "Full source-module TS/DTS ResolveModuleName invocation is unselected; actual config/package-directory resolved path-key values and case policy are observed through selected entry APIs, not labelled as this original body."
+    },
+    {
+      "name": "TestResolvedTypeReferenceDirectiveCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 588,
+      "disposition": "excluded-operation",
+      "reason": "Type-reference directive resolution is outside standalone configuration interpretation; parsing Types/TypeRoots is observed without resolving directives."
+    },
+    {
+      "name": "TestResolvedEntrypointCarriesPath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 619,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestDynamicExportPatternEntrypointUsesLogicalName",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 661,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 742,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 796,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestDynamicExportPatternPreservesStaticSourcePrefix",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 852,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 900,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 948,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestDiskExportPatternKeepsReservedPrefixLiteral",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 992,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestDynamicExportPatternUnderExceptionalParent",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1032,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestDynamicExportPatternWithEmptyMatch",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1081,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1138,
+      "disposition": "excluded-operation",
+      "reason": "Source-module entrypoint enumeration/specifier generation is outside config/package-directory lookup; export-map interpretation itself is selected and tested through genuine ResolveConfig fixtures."
+    },
+    {
+      "name": "TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1181,
+      "disposition": "excluded-operation",
+      "reason": "Requires externally supplied mismatched PackageJsonCache through NewResolverWithOptions. Selected DefaultResolver creates its own InfoCache with the actual IFS case policy and exposes no cache-injection constructor; no equivalent assertion is claimed."
+    },
+    {
+      "name": "TestResolveModuleNameBlockedByNullExport",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1200,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1224,
+      "disposition": "excluded-operation",
+      "reason": "Invokes general ResolveModuleName with source TS/DTS/ESM extension semantics, outside selected JSON-only ResolveConfig and directory-only lookup. Shared exports/imports/package metadata branches are observed via selected entry fixtures, without relabelling this original body."
+    },
+    {
+      "name": "TestResolveModuleNameTrailingSlashRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1335,
+      "disposition": "excluded-operation",
+      "reason": "Concurrent source-module/type/peer package-resolution cache scheduling is outside selected fresh config lookup/directory-only APIs. No full resolver race or shared ResolutionData claim."
+    },
+    {
+      "name": "TestResolveSubpathNilContentsRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1410,
+      "disposition": "excluded-operation",
+      "reason": "Concurrent source-module/type/peer package-resolution cache scheduling is outside selected fresh config lookup/directory-only APIs. No full resolver race or shared ResolutionData claim."
+    },
+    {
+      "name": "TestNodeModulePackageRoot",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1495,
+      "disposition": "assertion-preserving-port",
+      "reason": "Both public typed package-root helpers are selected by package/config resolution; preserve all eleven original path/folder results.",
+      "shared": "ModulePackageRootChecks.TestNodeModulePackageRoot",
+      "managedEvidence": "artifacts/configuration-validation/build10/module-package-root-shared/report.json"
+    },
+    {
+      "name": "TestResolvePeerDependencyNilContentsRace",
+      "source": "upstream/TypeScript/tsc/internal/module/resolver_test.go",
+      "sourceSha256": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+      "line": 1541,
+      "disposition": "excluded-operation",
+      "reason": "Concurrent source-module/type/peer package-resolution cache scheduling is outside selected fresh config lookup/directory-only APIs. No full resolver race or shared ResolutionData claim."
+    },
+    {
+      "name": "TestStaticResolver",
+      "source": "upstream/TypeScript/tsc/internal/module/staticresolver_test.go",
+      "sourceSha256": "4d0841fb322ff010922760cccdcbcb2094b96ec538bbb5877772cd4ef9ea642c",
+      "line": 12,
+      "disposition": "excluded-operation",
+      "reason": "Static source-import/type-reference resolver is outside configuration and package-directory interpretation."
+    }
+  ],
+  "counts": {
+    "resolverFunctions": 37,
+    "staticFunctions": 1,
+    "selectedFullBodies": 2,
+    "excludedOperations": 36
+  },
+  "execution": "Both selected original module helper groups passed current source14 xUnit and Linux x64 Native AOT. Complete package-root and normalization assertions retained; broader resolver APIs remain excluded.",
+  "originalGoEvidence": "artifacts/configuration-validation/module-original-tests/report.json",
+  "independentReview": "Support inspected all 11 package-root rows and all 16x4 normalization assertions; no lost assertion or wrongly inherited package exclusion identified.",
+  "finalExecution": {
+    "evidence": "validation/results/configuration-verified.json",
+    "platform": "Linux x64 Native AOT",
+    "status": "passed with original selected obligations unchanged",
+    "note": "Earlier probe/runtime notes remain historical evidence, superseded by this final proof; no broader dependency or per-branch execution claim."
+  }
+}

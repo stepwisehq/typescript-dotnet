@@ -1,0 +1,12 @@
+{
+  "kind": "complete original assertion-preserving source port",
+  "functions": 4,
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/tsoptions/contentmappers_test.go": "5fe1d7a7244b73d29bb36b322af153bcbe984d2f893b08274f49d18b625775bf",
+    "validation/Configuration.Checks/ContentMapperChecks.cs": "35986be0793cf6d6c556822947bd3d04027b9f665078c85c8bca87d8ed250c3a"
+  },
+  "mechanics": "Sequential shared dispatch; finite read-only virtual filesystem supplies original manifest setup; no external mapper execution. All original receiver identity, exact output list and seven manifest branch assertions retained.",
+  "managedEvidence": "artifacts/configuration-validation/build7/content-mapper-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

@@ -1,0 +1,30 @@
+{
+    // These settings are explicit checking admission, not parser defaults.
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "noEmit": true,
+        "noLib": true,
+        "skipLibCheck": true,
+        "types": [],
+        "allowImportingTsExtensions": true,
+        "noUncheckedSideEffectImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "allowJs": false,
+        "resolveJsonModule": false,
+        "noResolve": false,
+        "strict": false,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictBindCallApply": false,
+        "strictPropertyInitialization": false,
+        "strictBuiltinIteratorReturn": false,
+        "useUnknownInCatchVariables": false,
+        "noImplicitReturns": false,
+        "exactOptionalPropertyTypes": false,
+        "noUncheckedIndexedAccess": false
+    }
+}

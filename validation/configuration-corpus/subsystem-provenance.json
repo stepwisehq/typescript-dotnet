@@ -1,0 +1,16 @@
+{
+  "inputPolicy": "Authored subsystem interactions using real pinned public APIs. Every132 compiler-option field observed. File/source/JSON entry distinctions, option overrides, package extends/import/self/exports/versions, references/mapper manifests, reload/cache repeats, CLI/build and virtual root styles.",
+  "expectedPolicy": "Generated only by original Go oracle; no managed output used.",
+  "rawInputPolicy": "Typed-nil map/list declaration retained as requested input metadata where managed null erases interface type; nil ordered-map pointer rejected invalid upstream debug-assert API input.",
+  "hostAdaptations": [
+    "UNC actual FS path roles reversibly mapped to a POSIX backing root because original vfstest cannot construct UNC.",
+    "Raw invalid-byte config-owner witness uses source API: original fstest.MapFS ReadFile rejects invalid UTF8, so arbitrary-byte FS equivalence is not claimed. Managed virtual host permits raw bytes; OS adapter rejects non-scalar disk encoding."
+  ],
+  "observerCorrections": [
+    "existingOptionsRaw now passed at actual file and sequence calls in both authored adapters.",
+    "Embedded Definition rendered with declared base field scope instead of derived redispatch; exact source JSON tags retained.",
+    "Demonstration fixture materialization preserves all five nested src/ files instead of enumerating only top-level *.ts."
+  ],
+  "requestsSha256": "f5ee71154df4503a22a636b3df6184cbe8804f19e2bd6870ea9476d18114e74b",
+  "expectedUncompressedSha256": "b477794628729bcfc32dbfa20aaab45fc67b3dba77ff4913a6a6325e5a5f59bb"
+}

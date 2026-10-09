@@ -1,0 +1,9 @@
+{"name": "marshal-nan", "mode": "marshal", "constructor": "nan"}
+{"name": "marshal-positive-infinity", "mode": "marshal", "constructor": "positive-infinity"}
+{"name": "marshal-negative-infinity", "mode": "marshal", "constructor": "negative-infinity"}
+{"name": "marshal-list-nan", "mode": "marshal", "constructor": "list-nan"}
+{"name": "marshal-list-positive-infinity", "mode": "marshal", "constructor": "list-positive-infinity"}
+{"name": "marshal-list-negative-infinity", "mode": "marshal", "constructor": "list-negative-infinity"}
+{"name": "marshal-map-nan", "mode": "marshal", "constructor": "map-nan"}
+{"name": "marshal-map-positive-infinity", "mode": "marshal", "constructor": "map-positive-infinity"}
+{"name": "marshal-map-negative-infinity", "mode": "marshal", "constructor": "map-negative-infinity"}

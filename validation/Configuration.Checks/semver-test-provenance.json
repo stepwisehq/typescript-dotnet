@@ -1,0 +1,56 @@
+{
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/semver/version_test.go": "39d38de4aac04020a889d6db46baa6348d4ebe7d673cac9ccffae48c32575e0c",
+    "upstream/TypeScript/tsc/internal/semver/version_range_test.go": "65458b883ad12c50c8f45df49bde32043aa055e329fb78a1856ab6f36885f886"
+  },
+  "functions": {
+    "TestTryParseSemver": {
+      "rows": 4,
+      "assertionsPerRow": 6
+    },
+    "TestVersionString": {
+      "rows": 6,
+      "assertionsPerRow": 1
+    },
+    "TestVersionCompare": {
+      "rows": 36,
+      "assertionsPerRow": 3
+    },
+    "TestWildcardsHaveSameString": {
+      "matrices": 4,
+      "orderedPairs": 190,
+      "assertionsPerPair": 3
+    },
+    "TestVersionRanges": {
+      "ranges": 11,
+      "values": 66
+    },
+    "TestComparatorsOfVersionRanges": {
+      "rows": 610,
+      "assertionsPerRow": 3
+    },
+    "TestConjunctionsOfVersionRanges": {
+      "rows": 4,
+      "assertionsPerRow": 3
+    },
+    "TestDisjunctionsOfVersionRanges": {
+      "rows": 7,
+      "assertionsPerRow": 3
+    },
+    "TestHyphensOfVersionRanges": {
+      "rows": 6,
+      "assertionsPerRow": 3
+    },
+    "TestTildesOfVersionRanges": {
+      "rows": 27,
+      "assertionsPerRow": 3
+    },
+    "TestCaretsOfVersionRanges": {
+      "rows": 29,
+      "assertionsPerRow": 3
+    }
+  },
+  "mechanicsAdaptation": "Parallel subtest scheduling becomes sequential shared dispatch; all input literal rows, Cartesian pairs and original helper assertions retained. Runtime values are not used to generate expectations.",
+  "managedExecution": "pending-source-snapshot"
+}

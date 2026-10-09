@@ -1,0 +1,17 @@
+{
+  "source": "upstream/TypeScript/tsc/internal/tsoptions/tsconfigparsing_test.go",
+  "sourceSha256": "174c3ab8ee38f3f0d464d5593d2c276441abbfe86008618dab1de6702ee1cc61",
+  "originalFunctions": [
+    "TestContentMappers",
+    "TestContentMapperOptionDiagnosticLocation",
+    "TestContentMappersAreInheritedFromExtendedConfig",
+    "TestContentMappersRequireFlag",
+    "TestUnresolvedContentMapperDoesNotRegisterExtensions",
+    "TestContentMappersValidation",
+    "TestContentMapperExtensionValidationUsesHostCaseSensitivity"
+  ],
+  "assertions": "All7 bodies; both source/JSON APIs where original,9 full validation table rows,4 host case-sensitivity rows, every range-slice/manifest/inherited/discovery/assertion retained. Sequential scheduling and finite read-host construction only. Original JSON fixture trivia is adapted to C# raw literal indentation; original asserted text/range relationships retained, no baseline bytes changed.",
+  "managed": "artifacts/configuration-validation/build9/config-mapper-shared/report.json",
+  "native": "pending",
+  "xUnit": "pending"
+}

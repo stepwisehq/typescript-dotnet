@@ -1,0 +1,325 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sources": {
+    "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go": "3f4908a0dbfcdf9ac2da518a411180cbe064350d1b3fe1a55aff303d16ec4c9f",
+    "upstream/TypeScript/tsc/internal/tspath/untitled_test.go": "fd7b7c1415434439adef63efc636bc01dcb05ec8f982e3f88a08d17cf1f66587"
+  },
+  "artifacts": {
+    "validation/Configuration.Checks/TypedPathChecks.cs": "9ba714904326ddcd19dda73615175a291432f43db6498443208bcc8cf7ae0d54",
+    "validation/Configuration.Checks/TypedPathChecks.Generated.cs": "ef316302bfc533910a95e028536a1ef2807c013e69da5c656e9cf696062ece8b",
+    "tools/configuration-generate-typed-path-tests.py": "1f5aa1d8fb18e3a2b5a8857ece95511b75dd31622860afcdcc4bcf509aca4118",
+    "tests/Configuration.Tests/TypedPathTests.cs": "d247984f9f8795bdbc0f15322b364bf2ee98b661ec81f21fe1ba156480e1d907"
+  },
+  "counts": {
+    "functions": 33,
+    "assertionPreserving": 31,
+    "adapted": 2
+  },
+  "generatedOriginalTables": {
+    "fileNameStems": 11,
+    "stemComparisons": 6,
+    "containment": 11
+  },
+  "entries": [
+    {
+      "name": "TestToRootedFilePath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 10,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestEncodedDynamicPathsPreserveOpaqueIdentity",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 72,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestPathKeyFromCanonicalRejectsURLSuffix",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 100,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestDynamicPathKeyCaseInsensitiveKeyPreservesIdentity",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 108,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestExtensionMutationsPreserveNormalizedInvariant",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 119,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestFileNameStemsPreserveFilenamePrefixes",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 178,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestCompareFileNameStemsKeepsLiteralDotComponentsAndCasingPolicy",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 227,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestSplitAtRootLevelComponentKeepsRoot",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 249,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestToRootedFilePathRequiresRoot",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 275,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathFromAbsolute",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 286,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathFromNormalized",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 307,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestTypedPathConstructorsAndDecoders",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 368,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRelativePath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 411,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestTypedPathComponents",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 446,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestTryRelativePathBetweenFilePaths",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 459,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathDirectory",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 475,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathWithoutRoot",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 484,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathRootAndRelativePath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 492,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestCommonDirectoryOfFiles",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 508,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRelativePathsFromTypedPaths",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 524,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestContainsFilePath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 551,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestSourceMapLocation",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 606,
+      "disposition": "adapted-selected-original-assertions",
+      "assertions": "Original JSON result strings retained through static JsonCodec and source-mapped ToSourceMapLocation text callback; no general JSON text-unmarshal framework.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedPath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 634,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedPathCompare",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 648,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestPathOperationsSeparateRooting",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 656,
+      "disposition": "adapted-selected-original-assertions",
+      "assertions": "Only preexisting case-sensitive GetRelativePathFromDirectory original assertion retained; unselected free-string ComparePaths/ComparePathsRelativeTo/ContainsPath/ResolveRelativePathFromDirectory assertions excluded with root scope approval.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathExtensionOperationsPreserveInvariants",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 667,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestForEachAncestorDirectoryPath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 679,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedFilePathComponents",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 695,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestCaseSensitivityKey",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 724,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestPathKeyConstructionMethods",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 737,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestRootedDirectoryPathResolutionMatchesGeneralRooting",
+      "source": "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go",
+      "line": 781,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestUntitledPathHandling",
+      "source": "upstream/TypeScript/tsc/internal/tspath/untitled_test.go",
+      "line": 10,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    },
+    {
+      "name": "TestUntitledPathEdgeCases",
+      "source": "upstream/TypeScript/tsc/internal/tspath/untitled_test.go",
+      "line": 34,
+      "disposition": "assertion-preserving-port",
+      "assertions": "Complete original input/predicate/value/panic domain retained with explicit raw Go-byte wrapper construction; scheduling and managed exception channel are language adaptations.",
+      "managed": "pending",
+      "native": "pending"
+    }
+  ],
+  "representation": "Original string bytes enter FromGoString/GoString.ToUtf8; no ProjectDiskHost/scalar decoding or ASCII restriction. Expected exception tests require argument-precondition failure, not NotImplemented success. Separate authored arbitrary-byte config/path packets supply invalid UTF8/typed-nil observations.",
+  "retainedCoverage": "Historical Projects/Foundation scalar functions remain separate unchanged regressions. They do not claim typed wrappers, opaque dynamic URI roots, typed JSON callbacks or new raw-byte entrypoint assertions.",
+  "scope": "No benchmarks or unrelated ignored-path/source-import framework claim."
+}

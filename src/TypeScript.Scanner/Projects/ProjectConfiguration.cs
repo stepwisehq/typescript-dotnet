@@ -1,5 +1,7 @@
 // Authored strict tscheck.json subset; not a tsconfig/JSONC implementation.
-using System.Text.Json;
+using TypeScript.Collections;
+using TypeScript.Json;
+using TypeScript.TsOptions;
 using TypeScript.Scanner;
 
 namespace TypeScript.Compiler;
@@ -10,6 +12,7 @@ internal sealed class ProjectConfiguration
     internal SourceFile SourceFile { get; }
     internal IReadOnlyList<string> Files { get; }
     internal CompilerOptions Options { get; } = CreateOptions();
+    internal ParsedCommandLine? Parsed { get; }
 
     internal static CompilerOptions CreateOptions() => new()
     {
@@ -59,51 +62,61 @@ internal sealed class ProjectConfiguration
 
         // Own identity outside Program.SourceFiles, just as the original config AST.
         SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(FileName, FileName), bytes, ScriptKind.JSON);
-        JsonDocument document;
+        // The compatibility policy is deliberately strict JSON, but decoding uses
+        // the shared raw-value adapter rather than a second configuration parser.
+        ValidateCompatibilityStrings(SourceFile.AsNode());
+        var(value, error) = JsonCodec.Parse(bytes, allowDuplicateNames: true);
+        if (error is not null)
+            throw new ProjectException(error is InvalidOperationException ? "configuration" : "configurationJson", error.Message, FileName);
+        if (value is not OrderedMap<string, object?> root)
+            throw Error("configuration must be an object.");
+        RequireUniqueProperties(SourceFile.AsNode());
+        object? files = null;
+        foreach (var(name, item)in root.Entries())
+        {
+            switch (name)
+            {
+                case "files":
+                    files = item;
+                    break;
+                case "compilerOptions":
+                    ValidateOptions(item);
+                    break;
+                default:
+                    throw Error("Unsupported configuration property: " + Decode(name));
+            }
+        }
+
+        if (files is not List<object?> array || array.Count == 0)
+            throw Error("files must be a nonempty array of relative .ts paths.");
+        var paths = new List<string>();
+        foreach (object? item in array)
+        {
+            if (item is not string raw)
+                throw Error("files entries must be nonempty strings.");
+            string text = Decode(raw);
+            if (string.IsNullOrWhiteSpace(text))
+                throw Error("files entries must be nonempty strings.");
+            paths.Add(text);
+        }
+
+        Files = paths;
+    }
+
+    internal ProjectConfiguration(ConfigurationInspection inspection)
+    {
+        Parsed = inspection.Parsed ?? throw new InvalidOperationException("A parsed configuration is required.");
+        FileName = inspection.ConfigurationPath;
+        Root = Parsed.BaseDirectory().ToUnicode();
+        SourceFile = Parsed.ConfigFile!.SourceFile;
+        Options = Parsed.CompilerOptions().Clone();
         try
         {
-            document = JsonDocument.Parse(bytes);
+            Files = (Parsed.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
         }
-        catch (JsonException ex)
+        catch (System.Text.DecoderFallbackException ex)
         {
-            throw new ProjectException("configurationJson", ex.Message, FileName);
-        }
-
-        using (document)
-        {
-            JsonElement root = document.RootElement;
-            RequireObject(root, "configuration");
-            JsonElement? files = null;
-            foreach (JsonProperty property in root.EnumerateObject())
-            {
-                string name = ReadPropertyName(property);
-                switch (name)
-                {
-                    case "files":
-                        files = property.Value;
-                        break;
-                    case "compilerOptions":
-                        ValidateOptions(property.Value);
-                        break;
-                    default:
-                        throw Error("Unsupported configuration property: " + name);
-                }
-            }
-
-            if (files is not JsonElement array || array.ValueKind != JsonValueKind.Array || array.GetArrayLength() == 0)
-                throw Error("files must be a nonempty array of relative .ts paths.");
-            var paths = new List<string>();
-            foreach (JsonElement item in array.EnumerateArray())
-            {
-                if (item.ValueKind != JsonValueKind.String)
-                    throw Error("files entries must be nonempty strings.");
-                string text = ReadString(item);
-                if (string.IsNullOrWhiteSpace(text))
-                    throw Error("files entries must be nonempty strings.");
-                paths.Add(text);
-            }
-
-            Files = paths;
+            throw new ProjectException("pathEncoding", ex.Message, FileName);
         }
     }
 
@@ -132,52 +145,53 @@ internal sealed class ProjectConfiguration
     }
 
     private ProjectException Error(string message) => new("configuration", message, FileName);
-    // JsonDocument accepts escaped lone surrogates, but decoding those strings
-    // throws InvalidOperationException. Catch only the actual decoding boundary.
-    private string ReadString(JsonElement value)
+    private string Decode(string raw)
     {
         try
         {
-            return value.GetString()!;
+            return PathByteText.ToUnicode(raw);
         }
-        catch (InvalidOperationException ex)
+        catch (System.Text.DecoderFallbackException ex)
         {
             throw Error("Invalid configuration string: " + ex.Message);
         }
     }
 
-    private string ReadPropertyName(JsonProperty property)
+    private void ValidateCompatibilityStrings(Node node)
     {
-        try
+        if (Ast.IsStringLiteral(node))
+            Decode(node.Text());
+        node.ForEachChild(child =>
         {
-            return property.Name;
-        }
-        catch (InvalidOperationException ex)
-        {
-            throw Error("Invalid configuration property name: " + ex.Message);
-        }
+            ValidateCompatibilityStrings(child);
+            return false;
+        });
     }
 
-    private void RequireObject(JsonElement element, string name)
+    private void RequireUniqueProperties(Node node)
     {
-        if (element.ValueKind != JsonValueKind.Object)
-            throw Error(name + " must be an object.");
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (JsonProperty property in element.EnumerateObject())
+        if (node.Kind == Kind.ObjectLiteralExpression)
         {
-            string propertyName = ReadPropertyName(property);
-            if (!seen.Add(propertyName))
-                throw Error("Duplicate " + name + " property: " + propertyName);
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (Node property in node.AsObjectLiteralExpression().Properties?.Nodes ?? [])
+                if (property.Kind == Kind.PropertyAssignment && !seen.Add(property.AsPropertyAssignment().Name().Text()))
+                    throw Error("Duplicate configuration property: " + Decode(property.AsPropertyAssignment().Name().Text()));
         }
+
+        node.ForEachChild(child =>
+        {
+            RequireUniqueProperties(child);
+            return false;
+        });
     }
 
-    private void ValidateOptions(JsonElement element)
+    private void ValidateOptions(object? value)
     {
-        RequireObject(element, "compilerOptions");
-        foreach (JsonProperty property in element.EnumerateObject())
+        if (value is not OrderedMap<string, object?> fields)
+            throw Error("compilerOptions must be an object.");
+        foreach (var(rawName, item)in fields.Entries())
         {
-            string name = ReadPropertyName(property);
-            JsonElement value = property.Value;
+            string name = Decode(rawName);
             string? requiredString = name switch
             {
                 "target" or "module" => "ESNext",
@@ -186,14 +200,14 @@ internal sealed class ProjectConfiguration
             };
             if (requiredString is not null)
             {
-                if (value.ValueKind != JsonValueKind.String || ReadString(value) != requiredString)
+                if (item is not string text || Decode(text) != requiredString)
                     throw Error(name + " must equal " + requiredString + ".");
                 continue;
             }
 
             if (name == "types")
             {
-                if (value.ValueKind != JsonValueKind.Array || value.GetArrayLength() != 0)
+                if (item is not List<object?> { Count: 0 })
                     throw Error("types must be [].");
                 continue;
             }
@@ -206,7 +220,7 @@ internal sealed class ProjectConfiguration
             };
             if (required is null)
                 throw Error("Unsupported compiler option: " + name);
-            if (value.ValueKind is not (JsonValueKind.True or JsonValueKind.False) || value.GetBoolean() != required.Value)
+            if (item is not bool flag || flag != required.Value)
                 throw Error(name + " must equal " + required.Value.ToString().ToLowerInvariant() + ".");
         }
     }

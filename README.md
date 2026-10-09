@@ -1,5 +1,14 @@
 # TypeScript port feasibility study
 
+The upstream configuration interpretation and file-discovery contract is now complete
+and verified under **Linux x64 Native AOT**. Use `tscheck --inspect-config <tsconfig>`
+for genuine interpretation/discovery and `tscheck --config <tsconfig>` for supported
+checking. See the [guide](./docs/CONFIGURATION.md),
+[assessment](./docs/CONFIGURATION-ASSESSMENT.md) and
+[proof](./validation/results/configuration-verified.json). Configuration support is
+broader than the current checker's language/project capabilities; unsupported checking
+is rejected explicitly.
+
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained
 [microsoft/TypeScript source](./UPSTREAM.md). The defined scanner/parser/syntax-AST

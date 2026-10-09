@@ -1,0 +1,802 @@
+{
+  "source": "upstream/TypeScript/tsc/internal/core/options_generated.go",
+  "sourceSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af",
+  "originalTest": "upstream/TypeScript/tsc/internal/tsoptions/compileroptions_test.go",
+  "originalTestSha256": "5396fa26a83bf9085b634cdb29d1917504bd47588b48b31a88c40628cc26e74c",
+  "fields": [
+    {
+      "name": "AllowJs",
+      "goType": "Tristate",
+      "jsonName": "allowJs",
+      "originalJsonTag": "allowJs,omitzero"
+    },
+    {
+      "name": "AllowArbitraryExtensions",
+      "goType": "Tristate",
+      "jsonName": "allowArbitraryExtensions",
+      "originalJsonTag": "allowArbitraryExtensions,omitzero"
+    },
+    {
+      "name": "AllowImportingTsExtensions",
+      "goType": "Tristate",
+      "jsonName": "allowImportingTsExtensions",
+      "originalJsonTag": "allowImportingTsExtensions,omitzero"
+    },
+    {
+      "name": "AllowNonTsExtensions",
+      "goType": "Tristate",
+      "jsonName": "allowNonTsExtensions",
+      "originalJsonTag": "allowNonTsExtensions,omitzero"
+    },
+    {
+      "name": "AllowUmdGlobalAccess",
+      "goType": "Tristate",
+      "jsonName": "allowUmdGlobalAccess",
+      "originalJsonTag": "allowUmdGlobalAccess,omitzero"
+    },
+    {
+      "name": "AllowUnreachableCode",
+      "goType": "Tristate",
+      "jsonName": "allowUnreachableCode",
+      "originalJsonTag": "allowUnreachableCode,omitzero"
+    },
+    {
+      "name": "AllowUnusedLabels",
+      "goType": "Tristate",
+      "jsonName": "allowUnusedLabels",
+      "originalJsonTag": "allowUnusedLabels,omitzero"
+    },
+    {
+      "name": "AssumeChangesOnlyAffectDirectDependencies",
+      "goType": "Tristate",
+      "jsonName": "assumeChangesOnlyAffectDirectDependencies",
+      "originalJsonTag": "assumeChangesOnlyAffectDirectDependencies,omitzero"
+    },
+    {
+      "name": "CheckJs",
+      "goType": "Tristate",
+      "jsonName": "checkJs",
+      "originalJsonTag": "checkJs,omitzero"
+    },
+    {
+      "name": "CustomConditions",
+      "goType": "[]string",
+      "jsonName": "customConditions",
+      "originalJsonTag": "customConditions,omitzero"
+    },
+    {
+      "name": "Composite",
+      "goType": "Tristate",
+      "jsonName": "composite",
+      "originalJsonTag": "composite,omitzero"
+    },
+    {
+      "name": "EmitDeclarationOnly",
+      "goType": "Tristate",
+      "jsonName": "emitDeclarationOnly",
+      "originalJsonTag": "emitDeclarationOnly,omitzero"
+    },
+    {
+      "name": "EmitBOM",
+      "goType": "Tristate",
+      "jsonName": "emitBOM",
+      "originalJsonTag": "emitBOM,omitzero"
+    },
+    {
+      "name": "EmitDecoratorMetadata",
+      "goType": "Tristate",
+      "jsonName": "emitDecoratorMetadata",
+      "originalJsonTag": "emitDecoratorMetadata,omitzero"
+    },
+    {
+      "name": "Declaration",
+      "goType": "Tristate",
+      "jsonName": "declaration",
+      "originalJsonTag": "declaration,omitzero"
+    },
+    {
+      "name": "DeclarationDir",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "declarationDir",
+      "originalJsonTag": "declarationDir,omitzero"
+    },
+    {
+      "name": "DeclarationMap",
+      "goType": "Tristate",
+      "jsonName": "declarationMap",
+      "originalJsonTag": "declarationMap,omitzero"
+    },
+    {
+      "name": "DeduplicatePackages",
+      "goType": "Tristate",
+      "jsonName": "deduplicatePackages",
+      "originalJsonTag": "deduplicatePackages,omitzero"
+    },
+    {
+      "name": "DisableSizeLimit",
+      "goType": "Tristate",
+      "jsonName": "disableSizeLimit",
+      "originalJsonTag": "disableSizeLimit,omitzero"
+    },
+    {
+      "name": "DisableSourceOfProjectReferenceRedirect",
+      "goType": "Tristate",
+      "jsonName": "disableSourceOfProjectReferenceRedirect",
+      "originalJsonTag": "disableSourceOfProjectReferenceRedirect,omitzero"
+    },
+    {
+      "name": "DisableSolutionSearching",
+      "goType": "Tristate",
+      "jsonName": "disableSolutionSearching",
+      "originalJsonTag": "disableSolutionSearching,omitzero"
+    },
+    {
+      "name": "DisableReferencedProjectLoad",
+      "goType": "Tristate",
+      "jsonName": "disableReferencedProjectLoad",
+      "originalJsonTag": "disableReferencedProjectLoad,omitzero"
+    },
+    {
+      "name": "ErasableSyntaxOnly",
+      "goType": "Tristate",
+      "jsonName": "erasableSyntaxOnly",
+      "originalJsonTag": "erasableSyntaxOnly,omitzero"
+    },
+    {
+      "name": "ExactOptionalPropertyTypes",
+      "goType": "Tristate",
+      "jsonName": "exactOptionalPropertyTypes",
+      "originalJsonTag": "exactOptionalPropertyTypes,omitzero"
+    },
+    {
+      "name": "ExperimentalDecorators",
+      "goType": "Tristate",
+      "jsonName": "experimentalDecorators",
+      "originalJsonTag": "experimentalDecorators,omitzero"
+    },
+    {
+      "name": "ForceConsistentCasingInFileNames",
+      "goType": "Tristate",
+      "jsonName": "forceConsistentCasingInFileNames",
+      "originalJsonTag": "forceConsistentCasingInFileNames,omitzero"
+    },
+    {
+      "name": "IsolatedModules",
+      "goType": "Tristate",
+      "jsonName": "isolatedModules",
+      "originalJsonTag": "isolatedModules,omitzero"
+    },
+    {
+      "name": "IsolatedDeclarations",
+      "goType": "Tristate",
+      "jsonName": "isolatedDeclarations",
+      "originalJsonTag": "isolatedDeclarations,omitzero"
+    },
+    {
+      "name": "IgnoreConfig",
+      "goType": "Tristate",
+      "jsonName": "ignoreConfig",
+      "originalJsonTag": "ignoreConfig,omitzero"
+    },
+    {
+      "name": "IgnoreDeprecations",
+      "goType": "string",
+      "jsonName": "ignoreDeprecations",
+      "originalJsonTag": "ignoreDeprecations,omitzero"
+    },
+    {
+      "name": "ImportHelpers",
+      "goType": "Tristate",
+      "jsonName": "importHelpers",
+      "originalJsonTag": "importHelpers,omitzero"
+    },
+    {
+      "name": "InlineSourceMap",
+      "goType": "Tristate",
+      "jsonName": "inlineSourceMap",
+      "originalJsonTag": "inlineSourceMap,omitzero"
+    },
+    {
+      "name": "InlineSources",
+      "goType": "Tristate",
+      "jsonName": "inlineSources",
+      "originalJsonTag": "inlineSources,omitzero"
+    },
+    {
+      "name": "Init",
+      "goType": "Tristate",
+      "jsonName": "init",
+      "originalJsonTag": "init,omitzero"
+    },
+    {
+      "name": "Incremental",
+      "goType": "Tristate",
+      "jsonName": "incremental",
+      "originalJsonTag": "incremental,omitzero"
+    },
+    {
+      "name": "Jsx",
+      "goType": "JsxEmit",
+      "jsonName": "jsx",
+      "originalJsonTag": "jsx,omitzero"
+    },
+    {
+      "name": "JsxFactory",
+      "goType": "string",
+      "jsonName": "jsxFactory",
+      "originalJsonTag": "jsxFactory,omitzero"
+    },
+    {
+      "name": "JsxFragmentFactory",
+      "goType": "string",
+      "jsonName": "jsxFragmentFactory",
+      "originalJsonTag": "jsxFragmentFactory,omitzero"
+    },
+    {
+      "name": "JsxImportSource",
+      "goType": "string",
+      "jsonName": "jsxImportSource",
+      "originalJsonTag": "jsxImportSource,omitzero"
+    },
+    {
+      "name": "Lib",
+      "goType": "[]string",
+      "jsonName": "lib",
+      "originalJsonTag": "lib,omitzero"
+    },
+    {
+      "name": "LibReplacement",
+      "goType": "Tristate",
+      "jsonName": "libReplacement",
+      "originalJsonTag": "libReplacement,omitzero"
+    },
+    {
+      "name": "Locale",
+      "goType": "string",
+      "jsonName": "locale",
+      "originalJsonTag": "locale,omitzero"
+    },
+    {
+      "name": "MapRoot",
+      "goType": "tspath.SourceMapLocation",
+      "jsonName": "mapRoot",
+      "originalJsonTag": "mapRoot,omitzero"
+    },
+    {
+      "name": "Module",
+      "goType": "ModuleKind",
+      "jsonName": "module",
+      "originalJsonTag": "module,omitzero"
+    },
+    {
+      "name": "ModuleResolution",
+      "goType": "ModuleResolutionKind",
+      "jsonName": "moduleResolution",
+      "originalJsonTag": "moduleResolution,omitzero"
+    },
+    {
+      "name": "ModuleSuffixes",
+      "goType": "[]string",
+      "jsonName": "moduleSuffixes",
+      "originalJsonTag": "moduleSuffixes,omitzero"
+    },
+    {
+      "name": "ModuleDetection",
+      "goType": "ModuleDetectionKind",
+      "jsonName": "moduleDetection",
+      "originalJsonTag": "moduleDetection,omitzero"
+    },
+    {
+      "name": "NewLine",
+      "goType": "NewLineKind",
+      "jsonName": "newLine",
+      "originalJsonTag": "newLine,omitzero"
+    },
+    {
+      "name": "NoEmit",
+      "goType": "Tristate",
+      "jsonName": "noEmit",
+      "originalJsonTag": "noEmit,omitzero"
+    },
+    {
+      "name": "NoCheck",
+      "goType": "Tristate",
+      "jsonName": "noCheck",
+      "originalJsonTag": "noCheck,omitzero"
+    },
+    {
+      "name": "NoErrorTruncation",
+      "goType": "Tristate",
+      "jsonName": "noErrorTruncation",
+      "originalJsonTag": "noErrorTruncation,omitzero"
+    },
+    {
+      "name": "NoFallthroughCasesInSwitch",
+      "goType": "Tristate",
+      "jsonName": "noFallthroughCasesInSwitch",
+      "originalJsonTag": "noFallthroughCasesInSwitch,omitzero"
+    },
+    {
+      "name": "NoImplicitAny",
+      "goType": "Tristate",
+      "jsonName": "noImplicitAny",
+      "originalJsonTag": "noImplicitAny,omitzero"
+    },
+    {
+      "name": "NoImplicitThis",
+      "goType": "Tristate",
+      "jsonName": "noImplicitThis",
+      "originalJsonTag": "noImplicitThis,omitzero"
+    },
+    {
+      "name": "NoImplicitReturns",
+      "goType": "Tristate",
+      "jsonName": "noImplicitReturns",
+      "originalJsonTag": "noImplicitReturns,omitzero"
+    },
+    {
+      "name": "NoEmitHelpers",
+      "goType": "Tristate",
+      "jsonName": "noEmitHelpers",
+      "originalJsonTag": "noEmitHelpers,omitzero"
+    },
+    {
+      "name": "NoLib",
+      "goType": "Tristate",
+      "jsonName": "noLib",
+      "originalJsonTag": "noLib,omitzero"
+    },
+    {
+      "name": "NoPropertyAccessFromIndexSignature",
+      "goType": "Tristate",
+      "jsonName": "noPropertyAccessFromIndexSignature",
+      "originalJsonTag": "noPropertyAccessFromIndexSignature,omitzero"
+    },
+    {
+      "name": "NoUncheckedIndexedAccess",
+      "goType": "Tristate",
+      "jsonName": "noUncheckedIndexedAccess",
+      "originalJsonTag": "noUncheckedIndexedAccess,omitzero"
+    },
+    {
+      "name": "NoEmitOnError",
+      "goType": "Tristate",
+      "jsonName": "noEmitOnError",
+      "originalJsonTag": "noEmitOnError,omitzero"
+    },
+    {
+      "name": "NoUnusedLocals",
+      "goType": "Tristate",
+      "jsonName": "noUnusedLocals",
+      "originalJsonTag": "noUnusedLocals,omitzero"
+    },
+    {
+      "name": "NoUnusedParameters",
+      "goType": "Tristate",
+      "jsonName": "noUnusedParameters",
+      "originalJsonTag": "noUnusedParameters,omitzero"
+    },
+    {
+      "name": "NoResolve",
+      "goType": "Tristate",
+      "jsonName": "noResolve",
+      "originalJsonTag": "noResolve,omitzero"
+    },
+    {
+      "name": "NoImplicitOverride",
+      "goType": "Tristate",
+      "jsonName": "noImplicitOverride",
+      "originalJsonTag": "noImplicitOverride,omitzero"
+    },
+    {
+      "name": "NoUncheckedSideEffectImports",
+      "goType": "Tristate",
+      "jsonName": "noUncheckedSideEffectImports",
+      "originalJsonTag": "noUncheckedSideEffectImports,omitzero"
+    },
+    {
+      "name": "OutDir",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "outDir",
+      "originalJsonTag": "outDir,omitzero"
+    },
+    {
+      "name": "Paths",
+      "goType": "*collections.OrderedMap[string, []string]",
+      "jsonName": "paths",
+      "originalJsonTag": "paths,omitzero"
+    },
+    {
+      "name": "Plugins",
+      "goType": "[]PluginImport",
+      "jsonName": "plugins",
+      "originalJsonTag": "plugins,omitzero"
+    },
+    {
+      "name": "PreserveConstEnums",
+      "goType": "Tristate",
+      "jsonName": "preserveConstEnums",
+      "originalJsonTag": "preserveConstEnums,omitzero"
+    },
+    {
+      "name": "PreserveSymlinks",
+      "goType": "Tristate",
+      "jsonName": "preserveSymlinks",
+      "originalJsonTag": "preserveSymlinks,omitzero"
+    },
+    {
+      "name": "Project",
+      "goType": "tspath.RootedPath",
+      "jsonName": "project",
+      "originalJsonTag": "project,omitzero"
+    },
+    {
+      "name": "ResolveJsonModule",
+      "goType": "Tristate",
+      "jsonName": "resolveJsonModule",
+      "originalJsonTag": "resolveJsonModule,omitzero"
+    },
+    {
+      "name": "ResolvePackageJsonExports",
+      "goType": "Tristate",
+      "jsonName": "resolvePackageJsonExports",
+      "originalJsonTag": "resolvePackageJsonExports,omitzero"
+    },
+    {
+      "name": "ResolvePackageJsonImports",
+      "goType": "Tristate",
+      "jsonName": "resolvePackageJsonImports",
+      "originalJsonTag": "resolvePackageJsonImports,omitzero"
+    },
+    {
+      "name": "RemoveComments",
+      "goType": "Tristate",
+      "jsonName": "removeComments",
+      "originalJsonTag": "removeComments,omitzero"
+    },
+    {
+      "name": "RewriteRelativeImportExtensions",
+      "goType": "Tristate",
+      "jsonName": "rewriteRelativeImportExtensions",
+      "originalJsonTag": "rewriteRelativeImportExtensions,omitzero"
+    },
+    {
+      "name": "ReactNamespace",
+      "goType": "string",
+      "jsonName": "reactNamespace",
+      "originalJsonTag": "reactNamespace,omitzero"
+    },
+    {
+      "name": "RootDir",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "rootDir",
+      "originalJsonTag": "rootDir,omitzero"
+    },
+    {
+      "name": "RootDirs",
+      "goType": "[]tspath.RootedDirectoryPath",
+      "jsonName": "rootDirs",
+      "originalJsonTag": "rootDirs,omitzero"
+    },
+    {
+      "name": "SkipLibCheck",
+      "goType": "Tristate",
+      "jsonName": "skipLibCheck",
+      "originalJsonTag": "skipLibCheck,omitzero"
+    },
+    {
+      "name": "StableTypeOrdering",
+      "goType": "Tristate",
+      "jsonName": "stableTypeOrdering",
+      "originalJsonTag": "stableTypeOrdering,omitzero"
+    },
+    {
+      "name": "Strict",
+      "goType": "Tristate",
+      "jsonName": "strict",
+      "originalJsonTag": "strict,omitzero"
+    },
+    {
+      "name": "StrictBindCallApply",
+      "goType": "Tristate",
+      "jsonName": "strictBindCallApply",
+      "originalJsonTag": "strictBindCallApply,omitzero"
+    },
+    {
+      "name": "StrictBuiltinIteratorReturn",
+      "goType": "Tristate",
+      "jsonName": "strictBuiltinIteratorReturn",
+      "originalJsonTag": "strictBuiltinIteratorReturn,omitzero"
+    },
+    {
+      "name": "StrictFunctionTypes",
+      "goType": "Tristate",
+      "jsonName": "strictFunctionTypes",
+      "originalJsonTag": "strictFunctionTypes,omitzero"
+    },
+    {
+      "name": "StrictNullChecks",
+      "goType": "Tristate",
+      "jsonName": "strictNullChecks",
+      "originalJsonTag": "strictNullChecks,omitzero"
+    },
+    {
+      "name": "StrictPropertyInitialization",
+      "goType": "Tristate",
+      "jsonName": "strictPropertyInitialization",
+      "originalJsonTag": "strictPropertyInitialization,omitzero"
+    },
+    {
+      "name": "StripInternal",
+      "goType": "Tristate",
+      "jsonName": "stripInternal",
+      "originalJsonTag": "stripInternal,omitzero"
+    },
+    {
+      "name": "SkipDefaultLibCheck",
+      "goType": "Tristate",
+      "jsonName": "skipDefaultLibCheck",
+      "originalJsonTag": "skipDefaultLibCheck,omitzero"
+    },
+    {
+      "name": "SourceMap",
+      "goType": "Tristate",
+      "jsonName": "sourceMap",
+      "originalJsonTag": "sourceMap,omitzero"
+    },
+    {
+      "name": "SourceRoot",
+      "goType": "tspath.SourceMapLocation",
+      "jsonName": "sourceRoot",
+      "originalJsonTag": "sourceRoot,omitzero"
+    },
+    {
+      "name": "SuppressOutputPathCheck",
+      "goType": "Tristate",
+      "jsonName": "suppressOutputPathCheck",
+      "originalJsonTag": "suppressOutputPathCheck,omitzero"
+    },
+    {
+      "name": "Target",
+      "goType": "ScriptTarget",
+      "jsonName": "target",
+      "originalJsonTag": "target,omitzero"
+    },
+    {
+      "name": "TraceResolution",
+      "goType": "Tristate",
+      "jsonName": "traceResolution",
+      "originalJsonTag": "traceResolution,omitzero"
+    },
+    {
+      "name": "TsBuildInfoFile",
+      "goType": "tspath.RootedFilePath",
+      "jsonName": "tsBuildInfoFile",
+      "originalJsonTag": "tsBuildInfoFile,omitzero"
+    },
+    {
+      "name": "TypeRoots",
+      "goType": "[]tspath.RootedDirectoryPath",
+      "jsonName": "typeRoots",
+      "originalJsonTag": "typeRoots,omitzero"
+    },
+    {
+      "name": "Types",
+      "goType": "[]string",
+      "jsonName": "types",
+      "originalJsonTag": "types,omitzero"
+    },
+    {
+      "name": "UseDefineForClassFields",
+      "goType": "Tristate",
+      "jsonName": "useDefineForClassFields",
+      "originalJsonTag": "useDefineForClassFields,omitzero"
+    },
+    {
+      "name": "UseUnknownInCatchVariables",
+      "goType": "Tristate",
+      "jsonName": "useUnknownInCatchVariables",
+      "originalJsonTag": "useUnknownInCatchVariables,omitzero"
+    },
+    {
+      "name": "VerbatimModuleSyntax",
+      "goType": "Tristate",
+      "jsonName": "verbatimModuleSyntax",
+      "originalJsonTag": "verbatimModuleSyntax,omitzero"
+    },
+    {
+      "name": "MaxNodeModuleJsDepth",
+      "goType": "*int",
+      "jsonName": "maxNodeModuleJsDepth",
+      "originalJsonTag": "maxNodeModuleJsDepth,omitzero"
+    },
+    {
+      "name": "AllowSyntheticDefaultImports",
+      "goType": "Tristate",
+      "jsonName": "allowSyntheticDefaultImports",
+      "originalJsonTag": "allowSyntheticDefaultImports,omitzero"
+    },
+    {
+      "name": "AlwaysStrict",
+      "goType": "Tristate",
+      "jsonName": "alwaysStrict",
+      "originalJsonTag": "alwaysStrict,omitzero"
+    },
+    {
+      "name": "BaseUrl",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "baseUrl",
+      "originalJsonTag": "baseUrl,omitzero"
+    },
+    {
+      "name": "DownlevelIteration",
+      "goType": "Tristate",
+      "jsonName": "downlevelIteration",
+      "originalJsonTag": "downlevelIteration,omitzero"
+    },
+    {
+      "name": "ESModuleInterop",
+      "goType": "Tristate",
+      "jsonName": "esModuleInterop",
+      "originalJsonTag": "esModuleInterop,omitzero"
+    },
+    {
+      "name": "OutFile",
+      "goType": "tspath.RootedFilePath",
+      "jsonName": "outFile",
+      "originalJsonTag": "outFile,omitzero"
+    },
+    {
+      "name": "ConfigFilePath",
+      "goType": "tspath.RootedFilePath",
+      "jsonName": "configFilePath",
+      "originalJsonTag": "configFilePath,omitzero"
+    },
+    {
+      "name": "NoDtsResolution",
+      "goType": "Tristate",
+      "jsonName": "noDtsResolution",
+      "originalJsonTag": "noDtsResolution,omitzero"
+    },
+    {
+      "name": "PathsBasePath",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "pathsBasePath",
+      "originalJsonTag": "pathsBasePath,omitzero"
+    },
+    {
+      "name": "Diagnostics",
+      "goType": "Tristate",
+      "jsonName": "diagnostics",
+      "originalJsonTag": "diagnostics,omitzero"
+    },
+    {
+      "name": "ExtendedDiagnostics",
+      "goType": "Tristate",
+      "jsonName": "extendedDiagnostics",
+      "originalJsonTag": "extendedDiagnostics,omitzero"
+    },
+    {
+      "name": "GenerateCpuProfile",
+      "goType": "tspath.RootedFilePath",
+      "jsonName": "generateCpuProfile",
+      "originalJsonTag": "generateCpuProfile,omitzero"
+    },
+    {
+      "name": "GenerateTrace",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "generateTrace",
+      "originalJsonTag": "generateTrace,omitzero"
+    },
+    {
+      "name": "ListEmittedFiles",
+      "goType": "Tristate",
+      "jsonName": "listEmittedFiles",
+      "originalJsonTag": "listEmittedFiles,omitzero"
+    },
+    {
+      "name": "ListFiles",
+      "goType": "Tristate",
+      "jsonName": "listFiles",
+      "originalJsonTag": "listFiles,omitzero"
+    },
+    {
+      "name": "ExplainFiles",
+      "goType": "Tristate",
+      "jsonName": "explainFiles",
+      "originalJsonTag": "explainFiles,omitzero"
+    },
+    {
+      "name": "ListFilesOnly",
+      "goType": "Tristate",
+      "jsonName": "listFilesOnly",
+      "originalJsonTag": "listFilesOnly,omitzero"
+    },
+    {
+      "name": "NoEmitForJsFiles",
+      "goType": "Tristate",
+      "jsonName": "noEmitForJsFiles",
+      "originalJsonTag": "noEmitForJsFiles,omitzero"
+    },
+    {
+      "name": "PreserveWatchOutput",
+      "goType": "Tristate",
+      "jsonName": "preserveWatchOutput",
+      "originalJsonTag": "preserveWatchOutput,omitzero"
+    },
+    {
+      "name": "Pretty",
+      "goType": "Tristate",
+      "jsonName": "pretty",
+      "originalJsonTag": "pretty,omitzero"
+    },
+    {
+      "name": "Version",
+      "goType": "Tristate",
+      "jsonName": "version",
+      "originalJsonTag": "version,omitzero"
+    },
+    {
+      "name": "Watch",
+      "goType": "Tristate",
+      "jsonName": "watch",
+      "originalJsonTag": "watch,omitzero"
+    },
+    {
+      "name": "ShowConfig",
+      "goType": "Tristate",
+      "jsonName": "showConfig",
+      "originalJsonTag": "showConfig,omitzero"
+    },
+    {
+      "name": "Build",
+      "goType": "Tristate",
+      "jsonName": "build",
+      "originalJsonTag": "build,omitzero"
+    },
+    {
+      "name": "Help",
+      "goType": "Tristate",
+      "jsonName": "help",
+      "originalJsonTag": "help,omitzero"
+    },
+    {
+      "name": "All",
+      "goType": "Tristate",
+      "jsonName": "all",
+      "originalJsonTag": "all,omitzero"
+    },
+    {
+      "name": "RunExternalCode",
+      "goType": "Tristate",
+      "jsonName": "runExternalCode",
+      "originalJsonTag": "runExternalCode,omitzero"
+    },
+    {
+      "name": "PprofDir",
+      "goType": "tspath.RootedDirectoryPath",
+      "jsonName": "pprofDir",
+      "originalJsonTag": "pprofDir,omitzero"
+    },
+    {
+      "name": "SingleThreaded",
+      "goType": "Tristate",
+      "jsonName": "singleThreaded",
+      "originalJsonTag": "singleThreaded,omitzero"
+    },
+    {
+      "name": "Quiet",
+      "goType": "Tristate",
+      "jsonName": "quiet",
+      "originalJsonTag": "quiet,omitzero"
+    },
+    {
+      "name": "Checkers",
+      "goType": "*int",
+      "jsonName": "checkers",
+      "originalJsonTag": "checkers,omitzero"
+    }
+  ],
+  "declarationTagAdaptation": "Static source guard retains every full name,omitzero tag assertion; C# has no Go struct-tag metadata. Actual zero omission is independently exercised by the complete showconfig and static codec assertion domains.",
+  "domain": "Every exported field, original parse input/expected value, enum-number branch, shallow reference requirement and Cartesian equality values; extra path-map matrix is in explicit shared assertion body. No production field descriptors or runtime values determine expected domains."
+}

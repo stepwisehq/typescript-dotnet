@@ -1,0 +1,22 @@
+{"name": "text-0-LF", "mode": "text", "text": "", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\n"}
+{"name": "text-1-LF", "mode": "text", "text": "{}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\n"}
+{"name": "text-2-LF", "mode": "text", "text": "{\"compilerOptions\":{\"strict\":true,\"target\":\"esnext\"},\"files\":[\"\u00e9.ts\",null]}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\n"}
+{"name": "text-3-LF", "mode": "text", "text": "// comment\n{\"x\":1,\"x\":2,\"nest\":[true,false,null,{},[]],}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\n"}
+{"name": "text-4-LF", "mode": "text", "text": "{\"x\":}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\n"}
+{"name": "text-5-LF", "mode": "text", "text": "[1,{\"x\":2}]", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\n"}
+{"name": "text-6-LF", "mode": "text", "text": "true", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\n"}
+{"name": "text-7-LF", "mode": "text", "text": "{\"word\":\"\\uD800\", \"small\":1.5, \"large\":9007199254740993}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\n"}
+{"name": "text-8-LF", "mode": "text", "text": "{'x': 1, bad: undefined}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\n"}
+{"name": "text-9-LF", "mode": "text", "text": "\ufeff{\"x\":-0}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\n"}
+{"name": "raw-file-and-source-LF", "mode": "text", "configPathBase64": "L3Byb2plY3Qv/y90c2NvbmZpZy5qc29u", "textBase64": "eyJ4IjogIv8iLCAiYnJva2VuIjp9", "formatNewLine": "\n"}
+{"name": "text-0-CRLF", "mode": "text", "text": "", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\r\n"}
+{"name": "text-1-CRLF", "mode": "text", "text": "{}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\r\n"}
+{"name": "text-2-CRLF", "mode": "text", "text": "{\"compilerOptions\":{\"strict\":true,\"target\":\"esnext\"},\"files\":[\"\u00e9.ts\",null]}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\r\n"}
+{"name": "text-3-CRLF", "mode": "text", "text": "// comment\n{\"x\":1,\"x\":2,\"nest\":[true,false,null,{},[]],}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\r\n"}
+{"name": "text-4-CRLF", "mode": "text", "text": "{\"x\":}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\r\n"}
+{"name": "text-5-CRLF", "mode": "text", "text": "[1,{\"x\":2}]", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\r\n"}
+{"name": "text-6-CRLF", "mode": "text", "text": "true", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\r\n"}
+{"name": "text-7-CRLF", "mode": "text", "text": "{\"word\":\"\\uD800\", \"small\":1.5, \"large\":9007199254740993}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\r\n"}
+{"name": "text-8-CRLF", "mode": "text", "text": "{'x': 1, bad: undefined}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 0, "formatNewLine": "\r\n"}
+{"name": "text-9-CRLF", "mode": "text", "text": "\ufeff{\"x\":-0}", "configPath": "/project/\u00e9/tsconfig.json", "caseSensitivity": 1, "formatNewLine": "\r\n"}
+{"name": "raw-file-and-source-CRLF", "mode": "text", "configPathBase64": "L3Byb2plY3Qv/y90c2NvbmZpZy5qc29u", "textBase64": "eyJ4IjogIv8iLCAiYnJva2VuIjp9", "formatNewLine": "\r\n"}

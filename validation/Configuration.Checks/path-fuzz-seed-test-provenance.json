@@ -1,0 +1,19 @@
+{
+  "scope": "Selected finite original fuzz seed/reference assertions, no arbitrary generated or mutation domain.",
+  "functions": {
+    "FuzzHasRelativePathSegment": {
+      "seeds": 9,
+      "reference": "Original ASCII path-segment regex, unchanged."
+    },
+    "FuzzToFileNameLowerCase": {
+      "seeds": 8,
+      "reference": "Original exclusion regex. All matched seed spans are ASCII uppercase; ToLowerInvariant equals source strings.ToLower only in this disclosed finite domain."
+    }
+  },
+  "source": "upstream/TypeScript/tsc/internal/tspath/path_test.go",
+  "sourceSha256": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a",
+  "mechanics": "Finite seed scheduling replaces Go f.Fuzz; public/internal mapped source helpers are actual methods, not copied implementations. Source regex reference is independently applied, never derived from actual output.",
+  "managedEvidence": "artifacts/configuration-validation/build11b/path-fuzz-seed-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

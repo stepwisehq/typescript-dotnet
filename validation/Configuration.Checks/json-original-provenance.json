@@ -1,0 +1,23 @@
+{
+  "generator": "tools/configuration-generate-json-tests.py",
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "sourceFiles": {
+    "tools/.cache/go/src/encoding/json/internal/jsonwire/decode_test.go": "fce541e23253d4561e4bb1de0d580f969619daec8260e0a38fb941363b295fb6",
+    "tools/.cache/go/src/encoding/json/internal/jsonwire/encode_test.go": "dca65f6c67a30405a834477d7d0925468d4974cda36a6b4f928a4735b158bc5b",
+    "tools/.cache/go/src/encoding/json/internal/jsonwire/wire_test.go": "fba80de1cb7b14ba24f3dbdd758c37e95c5536d73822319e83ff9daaf3ad6bde"
+  },
+  "sourceTests": {
+    "TestConsumeWhitespace": 7,
+    "TestConsumeLiteral": 25,
+    "TestConsumeString": 66,
+    "TestConsumeNumber": 67,
+    "TestParseHexUint16": 10,
+    "TestAppendQuote": 23,
+    "TestAppendNumber": 49,
+    "TestQuoteRune": 8,
+    "TestTruncatePointer": 12
+  },
+  "expectedSelection": "Literal table fields only; strict consumeString UTF8 offsets/errors, flags=0 AppendQuote AllowInvalidUTF8 output, float64 AppendFloat expectations. No codec result generation. Specialized fast consumers, ValueFlags, nonstrict unquote and float32/custom flags excluded.",
+  "rows": 267,
+  "generatedSha256": "1c42bad23167d6845c83bb2da6c5afd95c9740ae19a8015d131d3ac8d65d8561"
+}

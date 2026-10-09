@@ -1,0 +1,19 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sources": {
+    "upstream/TypeScript/tsc/internal/tsoptions/parsinghelpers_test.go": "d08aeabf1d37a452edf391a34dfba5122c04bbc7dbe0fb19a412cfcb3059acec",
+    "upstream/TypeScript/tsc/internal/tsoptions/decls_test.go": "b8eb4ef6cc658c312f5f8ab426cdf3f9265368fc7f9f16bbecf00353e23ba5b4",
+    "upstream/TypeScript/tsc/internal/tsoptions/rawcompileroptions_test.go": "5cad57c09fa4935e983e0a9aa6225672acbfd796af864edc8040bede792bea36",
+    "upstream/TypeScript/tsc/internal/tsoptions/compileroptions_test.go": "5396fa26a83bf9085b634cdb29d1917504bd47588b48b31a88c40628cc26e74c"
+  },
+  "originalFunctions": [
+    "TestMergeCompilerOptions",
+    "TestMergeCompilerOptionsRawNulls",
+    "TestParseCompilerOptionNoMissingFields",
+    "TestCompilerOptionsDeclaration",
+    "TestCommandLineOptionPathKinds",
+    "TestRawCompilerOptionsFinalizePaths"
+  ],
+  "assertionPreservation": "Full bodies/domains: all132 fields and original equality value Cartesian matrix with explicit-null both modes; complete deep result, target identity, pointer/list shallow sharing and source unchanged. Full132 declaration JSON metadata plus internal/skipped names, all path kind declarations/elements and raw finalized field/order assertions. Independent field table is source-generated from original declarations; no production Equals used for expected merge.",
+  "mechanics": "C# null receiver adaptation, finite static AOT field table replaces reflection, sequential scheduling. Raw JSON whitespace differs in test setup only; original values and every asserted state unchanged."
+}

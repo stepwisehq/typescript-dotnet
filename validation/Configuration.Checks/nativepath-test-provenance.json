@@ -1,0 +1,84 @@
+{
+  "dependency": "Go filepath selected POSIX fallback and TypeScript Linux nativepath",
+  "version": "go1.27.1",
+  "sourceFiles": {
+    "tools/.cache/go/src/path/filepath/path_test.go": "0a6e19efa621813d3152bdfb4ad6444366c887d1f48727e98a9cfe3ca784de45",
+    "tools/.cache/go/src/path/filepath/symlink.go": "d4e5ae166c208c8d0fbbed9aa907208f7cc541100b8e04029a38f16f1b5da1b5",
+    "upstream/TypeScript/tsc/internal/nativepath/realpath_linux.go": "f06ac32f09363f01aae4b08e858560255104f29a5aabedf31d45e50533894e9a"
+  },
+  "testFiles": {
+    "validation/Configuration.Checks/NativePathChecks.cs": "8e16b15c6cbe3f1acc3a2513e841b3a1b68a149f701170df788ed24fa3df7ad1",
+    "tests/Configuration.Tests/NativePathTests.cs": "2ef8e0939123586f43e15a7e15424d48705159d7317897959d1c501800f9c2d6"
+  },
+  "selectedOriginals": [
+    {
+      "name": "TestEvalSymlinks",
+      "case": "Adapted.TestEvalSymlinks.AbsolutePOSIX",
+      "rows": 12,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "All original absolute POSIX farm rows and 17 fixture entries retained; relative/chdir loops and Windows volumes excluded from rooted Linux production caller."
+    },
+    {
+      "name": "TestEvalSymlinksIsNotExist",
+      "case": "Adapted.TestEvalSymlinksIsNotExist",
+      "rows": 2,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "Same missing file and dangling symlink assertions rooted in private temp directory; original os.IsNotExist becomes actual walker failure, not error-class equality."
+    },
+    {
+      "name": "TestIssue13582",
+      "case": "Adapted.TestIssue13582",
+      "rows": 5,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "All five original expected canonical paths retained."
+    },
+    {
+      "name": "TestIssue29372",
+      "case": "Adapted.TestIssue29372",
+      "rows": 6,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "All six original non-directory-before-clean rows retained; source ENOTDIR identity becomes walker failure, exact errno/message unclaimed."
+    },
+    {
+      "name": "TestEvalSymlinksAboveRoot",
+      "case": "Adapted.TestEvalSymlinksAboveRoot",
+      "rows": 3,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "Same three original above-root counts and success/suffix assertions; Linux domain, no Darwin flaky skip."
+    },
+    {
+      "name": "TestEvalSymlinksTooManyLinks",
+      "case": "Adapted.TestEvalSymlinksTooManyLinks",
+      "rows": 1,
+      "disposition": "adapted-selected-original-assertions",
+      "adaptation": "Same self-referential symlink failure assertion; null is original caller-consumed failure adaptation."
+    }
+  ],
+  "authoredGroups": [
+    {
+      "case": "Authored.NativeFastpathAndFallbackLimits",
+      "assertions": "Fallback255 succeeds/256 fails; fallback41 succeeds, original O_PATH41 fails and actual OS consumer retains input. These are source-directed authored limits, not original test rows."
+    }
+  ],
+  "excludedDomains": [
+    {
+      "name": "TestEvalSymlinks relative and chdir loops",
+      "reason": "Rooted Linux VFS caller cannot produce relative walk entry; process-global cwd mutation is not introduced into parallel shared tests."
+    },
+    {
+      "name": "TestRelativeSymlinkToAbsolute",
+      "reason": "Its sole invocation is process-cwd-relative; absolute symlink-target behavior remains selected in TestIssue13582."
+    },
+    {
+      "name": "TestEvalSymlinksAboveRootChdir",
+      "reason": "Sole relative invocation with process-wide chdir outside rooted caller."
+    },
+    {
+      "name": "TestDriveLetterInEvalSymlinks",
+      "reason": "Windows drive behavior outside Linux-only selected nativepath boundary."
+    }
+  ],
+  "scope": "No full Go filepath API/test-suite claim, no writable production filesystem, no error object/errno parity; fixture creation is authored .NET setup. Private walker test invocation is read-only friend access, not a new API.",
+  "execution": "Copied10 managed shared dispatcher passed all7, including genuine fastpath/fallback distinctions. xUnit/final native pending.",
+  "report": "artifacts/configuration-validation/build10/native-path-shared/report.json"
+}

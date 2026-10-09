@@ -1,0 +1,7 @@
+{
+  "repository": "https://go.googlesource.com/go",
+  "revision": "go1.27.1",
+  "source": "src/strconv/isprint.go",
+  "sourceSha256": "e6f4b35fbf38f9c9c8b251e5d3cf94daa880789cb89825f11f9734ba4a42e9ff",
+  "generatedSha256": "1fb38f12edde04b0a6e168110f6c0fa7adba8d7aaf034b20c924c40e7f6a603d"
+}

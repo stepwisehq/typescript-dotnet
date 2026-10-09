@@ -1,0 +1,1076 @@
+{
+  "dependency": "golang.org/x/text",
+  "version": "v0.42.0",
+  "scope": "Selected Locale grammar/Default canonicalization/partial outcomes plus full demanded registry; no language matcher/collator/likely-subtag/compose API claim. Source original inventory is independent of authored72 differential rows.",
+  "sourceRoot": "Go module cache golang.org/x/text@v0.42.0",
+  "counts": {
+    "excluded": 72,
+    "adapted-selected-roundtrip-assertions": 3,
+    "adapted-selected-helper-assertions": 3,
+    "adapted-selected-assertion-subset": 12,
+    "assertion-preserving-port": 8,
+    "adapted-selected-invocation-assertions": 1
+  },
+  "currentEvidence": {
+    "localePublicDifferential": {
+      "rows": 72,
+      "status": "Final native corpus exact: one locale observation containing 72 original public Parse outcomes",
+      "report": "artifacts/configuration-validation/native-corpus/locale/report.json"
+    },
+    "valueIdentityAuthored": {
+      "rows": 8,
+      "status": "original only; public equality source proof",
+      "provenance": "artifacts/configuration-validation/locale-identity/provenance.json"
+    },
+    "selectedOriginalBodies": {
+      "preservedGroups": 8,
+      "adaptedInvocationGroups": 1,
+      "provenance": "validation/Configuration.Checks/locale-test-provenance.json",
+      "execution": "All 27 final Linux x64 NativeAOT shared groups and 27 xUnit cases passed; proof validation/results/configuration-verified.json",
+      "internalAccess": "Authored friend-test visibility of already-portable selected helpers; no new semantics or public API.",
+      "adaptedRoundtripGroups": 3,
+      "adaptedSelectedHelperGroups": 3,
+      "totalGroups": 27,
+      "historicalManaged": {
+        "groups": 12,
+        "report": "artifacts/configuration-validation/build7/locale-shared/report.json",
+        "status": "Historical12-group copied7 dispatcher passed; superseded by current27 copied10."
+      },
+      "adaptedSelectedAssertionSubsetGroups": 12,
+      "latestManaged": {
+        "groups": 27,
+        "report": "artifacts/configuration-validation/build10/locale-shared/report.json"
+      }
+    },
+    "selectedShared27": {
+      "report": "artifacts/configuration-validation/build10/locale-shared/report.json",
+      "actual": "exit0/stdout27; includes returned-zero M49 assertions on five error rows",
+      "scope": "Final native shared dispatcher and xUnit accepted; historical copied10 report retained",
+      "nativeEvidence": "validation/results/configuration-verified.json",
+      "xUnitEvidence": "artifacts/configuration-validation/configuration.trx"
+    }
+  },
+  "functions": [
+    {
+      "source": "internal/language/compact/gen_test.go",
+      "sourceSha256": "e8b12579ef1833263f08bfd5c37922e749a037916056fdea1630d06e88e99a3e",
+      "name": "TestParents",
+      "line": 13,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestTagSize",
+      "line": 22,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Go layout/reflection encapsulation assertion; managed Locale representation adaptation is explicit, no equivalent byte-size claim.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestNoPublic",
+      "line": 29,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Go layout/reflection encapsulation assertion; managed Locale representation adaptation is explicit, no equivalent byte-size claim.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestEquality",
+      "line": 45,
+      "kind": "test",
+      "disposition": "adapted-selected-roundtrip-assertions",
+      "reason": "Comparable Parse/String outcomes selected; private compact tag representation differs intentionally; whole topology not claimed.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Compact.TestEqualityAdapted",
+      "adaptation": "Original103 inputs test selected canonical comparable Locale value; private compact numeric-ID topology omitted."
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestLanguageID",
+      "line": 87,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Every assertion queries numeric compact LanguageID/exactness including fallback/parent state not exposed by selected FromTagExact/String closure. Parsing is setup only; no selected output assertion is omitted from this function.",
+      "execution": "Not ported or executed; all assertion targets are unselected APIs, as distinguished from parse setup."
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestRegionalID",
+      "line": 106,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Every assertion queries numeric compact RegionalID/exactness/fallback IDs outside selected canonical String/rg closure. Parsing is setup only; no numeric ID implementation added for tests.",
+      "execution": "Not ported or executed; all assertion targets are unselected APIs, as distinguished from parse setup."
+    },
+    {
+      "source": "internal/language/compact/language_test.go",
+      "sourceSha256": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+      "name": "TestParent",
+      "line": 127,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/compose_test.go",
+      "sourceSha256": "b2fbaab61d78d6479dd17c665d853798c3bf9a92e85a809c9e6d58792ff66e61",
+      "name": "TestBuilder",
+      "line": 33,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/compose_test.go",
+      "sourceSha256": "b2fbaab61d78d6479dd17c665d853798c3bf9a92e85a809c9e6d58792ff66e61",
+      "name": "TestSetTag",
+      "line": 56,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestTagSize",
+      "line": 14,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Go layout/reflection encapsulation assertion; managed Locale representation adaptation is explicit, no equivalent byte-size claim.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestIsRoot",
+      "line": 21,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Every assertion invokes unselected internal Tag.IsRoot, including zero Tag; Parse is setup only. Selected Locale comparable-zero/String/parse outcomes remain separately asserted, with no whole IsRoot test claim.",
+      "execution": "Not ported or executed; all assertion targets are unselected APIs, as distinguished from parse setup."
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestEquality",
+      "line": 35,
+      "kind": "test",
+      "disposition": "adapted-selected-roundtrip-assertions",
+      "reason": "Parse/String/reparse selected; Compose/from-tags assertion external.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestEqualityAdapted",
+      "adaptation": "Every original raw Tag field compared after Parse/String/Parse rather than CLR reference identity."
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestMakeString",
+      "line": 46,
+      "kind": "test",
+      "disposition": "adapted-selected-helper-assertions",
+      "reason": "Seven original RemakeString outputs and exact three-field setup are preserved; Go AllocsPerRun <= 1 is excluded.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestMakeStringAdapted"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestMarshal",
+      "line": 75,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestParseBase",
+      "line": 108,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All9 original input/output/error/raw-field assertions via existing language-ID helper and raw Tag. External Base construction adapted.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParseBaseAdapted"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestParseScript",
+      "line": 135,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All7 original input/error/raw-field rows retained via existing script-ID helper; Script.String assertion becomes expected canonical script-ID comparison. External Script wrapper is not implemented.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParseScriptAdapted"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestEncodeM49",
+      "line": 162,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestParseRegion",
+      "line": 184,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All9 original output/error/raw-field rows retained via existing region-ID helper. External Region construction adapted.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParseRegionAdapted"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestIsCountry",
+      "line": 213,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestIsGroup",
+      "line": 239,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestContains",
+      "line": 265,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestRegionCanonicalize",
+      "line": 300,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All6 original expected region IDs retained via selected canonical-region helper; external Region wrapper invocation adapted.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestRegionCanonicalizeAdapted"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestRegionTLD",
+      "line": 317,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestTypeForKey",
+      "line": 407,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestSetTypeForKey",
+      "line": 424,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestFindKeyAndType",
+      "line": 493,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "name": "TestParent",
+      "line": 547,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestLangID",
+      "line": 17,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All27 original inputs; exact errors, ISO2/ISO3 input identity, normalized ID and BCP47 String retained. Only ISO3 output method assertion excluded.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestLangIDSubset"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestGrandfathered",
+      "line": 86,
+      "kind": "test",
+      "disposition": "adapted-selected-helper-assertions",
+      "reason": "All 32 original rewrite expectations are preserved; Make/MustParse invoke the selected raw parser and Go comparable Tag is compared through every retained field.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestGrandfatheredAdapted"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestRegionID",
+      "line": 132,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All15 original inputs/error/String assertions retained; second ISO2 assertion invokes existing inlined two-byte GetRegionID branch.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestRegionIDSubset"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestRegionType",
+      "line": 173,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestRegionISO3",
+      "line": 201,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestRegionM49",
+      "line": 243,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All25 original fromTests numeric lookup/error/ID assertions retained. All27 inverse Region.M49 output assertions excluded: that method is not in selected parse closure.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestRegionM49Subset"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestRegionDeprecation",
+      "line": 330,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All22 original rows retained through existing canonical-region helper; unchanged input is explicitly adapted to original normRegion zero-sentinel decision. No new Region API.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestRegionDeprecationAdapted"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestGetScriptID",
+      "line": 369,
+      "kind": "test",
+      "disposition": "adapted-selected-helper-assertions",
+      "reason": "All 11 original custom-index expected IDs/errors are preserved through selected FindIndex; this is an invocation adaptation, not specialized GetScriptID API parity.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestGetScriptIDAdapted"
+    },
+    {
+      "source": "internal/language/lookup_test.go",
+      "sourceSha256": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+      "name": "TestIsPrivateUse",
+      "line": 396,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/match_test.go",
+      "sourceSha256": "22a3f52ea0c0fb82a283a950dc5c016fffe7c6b40edff68f4c7dbd7876e98d35",
+      "name": "TestAddLikelySubtags",
+      "line": 14,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/match_test.go",
+      "sourceSha256": "22a3f52ea0c0fb82a283a950dc5c016fffe7c6b40edff68f4c7dbd7876e98d35",
+      "name": "TestMinimize",
+      "line": 106,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestScan",
+      "line": 49,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestScan"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestAcceptMinSize",
+      "line": 70,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestAcceptMinSize"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestParseExtensions",
+      "line": 242,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParseExtensions"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestParseTag",
+      "line": 304,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParseTag"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestParse",
+      "line": 318,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestParse"
+    },
+    {
+      "source": "internal/language/parse_test.go",
+      "sourceSha256": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+      "name": "TestErrors",
+      "line": 346,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalLanguage.TestErrors"
+    },
+    {
+      "source": "internal/tag/tag_test.go",
+      "sourceSha256": "64dba9a69bda84f02a3ca73bcf472fbe0a0bfa635405768382669e6fdf20b36b",
+      "name": "TestIndex",
+      "line": 39,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalTag.TestIndex"
+    },
+    {
+      "source": "internal/tag/tag_test.go",
+      "sourceSha256": "64dba9a69bda84f02a3ca73bcf472fbe0a0bfa635405768382669e6fdf20b36b",
+      "name": "TestFixCase",
+      "line": 48,
+      "kind": "test",
+      "disposition": "assertion-preserving-port",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "InternalTag.TestFixCase"
+    },
+    {
+      "source": "language/coverage_test.go",
+      "sourceSha256": "755c209e00037afde1a6d99515013fdfb99a2a0ed737f4b1f5bc7d71f89a8ec3",
+      "name": "TestSupported",
+      "line": 15,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/coverage_test.go",
+      "sourceSha256": "755c209e00037afde1a6d99515013fdfb99a2a0ed737f4b1f5bc7d71f89a8ec3",
+      "name": "TestNewCoverage",
+      "line": 48,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleCanonType",
+      "line": 14,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleTag_Base",
+      "line": 49,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleTag_Script",
+      "line": 63,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleTag_Region",
+      "line": 81,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleRegion_TLD",
+      "line": 91,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleCompose",
+      "line": 117,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleParse_errors",
+      "line": 177,
+      "kind": "example",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All7 original inputs and complete unchanged example stdout retained via selected Default parser, existing error subtag and Go Quote helper; external language ValueError interface invocation adapted.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.ExampleParseErrorsAdapted"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleTag_Parent",
+      "line": 208,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleMatcher",
+      "line": 246,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleMatchStrings",
+      "line": 342,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleComprehends",
+      "line": 356,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/examples_test.go",
+      "sourceSha256": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5",
+      "name": "ExampleTag_values",
+      "line": 393,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/httpexample_test.go",
+      "sourceSha256": "e66614e0004d2aebe29353c80de0eba85c2dacdc224fe7ecc770344673e82e72",
+      "name": "ExampleParseAcceptLanguage",
+      "line": 30,
+      "kind": "example",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestTagSize",
+      "line": 12,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Go layout/reflection encapsulation assertion; managed Locale representation adaptation is explicit, no equivalent byte-size claim.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestIsRoot",
+      "line": 19,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Every assertion invokes unselected public language.Tag.IsRoot. Locale does not expose that API; parsed tag setup is not independently asserted by this source function.",
+      "execution": "Not ported or executed; all assertion targets are unselected APIs, as distinguished from parse setup."
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestEquality",
+      "line": 33,
+      "kind": "test",
+      "disposition": "adapted-selected-roundtrip-assertions",
+      "reason": "Make/string/reparse equality is selected; Compose assertion is external.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.TestEqualityAdapted",
+      "adaptation": "Original103 inputs test actual comparable Locale Parse/String roundtrip; separate unselected Compose assertion omitted."
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestString",
+      "line": 48,
+      "kind": "test",
+      "disposition": "adapted-selected-invocation-assertions",
+      "reason": "Entire semantic assertion domain uses the selected scanner/grammar/extension/lookup helper or Parse/String behavior; needs shared static body and source-language representation adaptation, not an execution claim.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.TestString",
+      "adaptation": "Original sole valid literal and String expectation unchanged; Make call uses selected equivalent Default.Parse/String path."
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestMarshal",
+      "line": 60,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestBase",
+      "line": 99,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestParseBase",
+      "line": 126,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestScript",
+      "line": 153,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestParseScript",
+      "line": 183,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestRegion",
+      "line": 210,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestEncodeM49",
+      "line": 236,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestParseRegion",
+      "line": 258,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestIsCountry",
+      "line": 287,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestIsGroup",
+      "line": 313,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestContains",
+      "line": 339,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestRegionCanonicalize",
+      "line": 373,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestRegionTLD",
+      "line": 390,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestCanonicalize",
+      "line": 480,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "Original14 compatible Legacy/Deprecated expected outputs adapted through Default, plus10 original Raw expected outputs via raw parser. Generator lists every excluded non-Default row. All/Supported/Compose idempotence excluded.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.TestCanonicalizeSubset"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestTypeForKey",
+      "line": 551,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "name": "TestParent",
+      "line": 576,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/lookup_test.go",
+      "sourceSha256": "172bc6485dd4e65beb9608a7b6b44887852449876611e101e35dcf8e9d077684",
+      "name": "TestRegionID",
+      "line": 11,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/lookup_test.go",
+      "sourceSha256": "172bc6485dd4e65beb9608a7b6b44887852449876611e101e35dcf8e9d077684",
+      "name": "TestRegionISO3",
+      "line": 52,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/lookup_test.go",
+      "sourceSha256": "172bc6485dd4e65beb9608a7b6b44887852449876611e101e35dcf8e9d077684",
+      "name": "TestRegionM49",
+      "line": 94,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/lookup_test.go",
+      "sourceSha256": "172bc6485dd4e65beb9608a7b6b44887852449876611e101e35dcf8e9d077684",
+      "name": "TestRegionDeprecation",
+      "line": 181,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/lookup_test.go",
+      "sourceSha256": "172bc6485dd4e65beb9608a7b6b44887852449876611e101e35dcf8e9d077684",
+      "name": "TestIsPrivateUse",
+      "line": 220,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestCompliance",
+      "line": 24,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestMatchStrings",
+      "line": 110,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestRegionGroups",
+      "line": 164,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestIsParadigmLocale",
+      "line": 195,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestIssue43834",
+      "line": 238,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "name": "TestBestMatchAlloc",
+      "line": 252,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestParse",
+      "line": 205,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All103 original Raw parse inputs and every partChecks language/script/region/variant/extension assertion retained through selected raw Tag fields; no Default projection or derived Go outputs.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.TestParseAdapted"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestErrors",
+      "line": 212,
+      "kind": "test",
+      "disposition": "adapted-selected-assertion-subset",
+      "reason": "All8 original public Parse error type/value expectations retained via selected Default parser and comparable error type/subtag adaptation.",
+      "execution": "Passed final Linux x64 NativeAOT shared dispatcher and xUnit; applicable original/adapted assertion domain unchanged.",
+      "sharedCase": "Language.TestErrorsAdapted"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestCompose1",
+      "line": 239,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestCompose2",
+      "line": 259,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestCompose3",
+      "line": 280,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestParseAcceptLanguage",
+      "line": 292,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    },
+    {
+      "source": "language/parse_test.go",
+      "sourceSha256": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+      "name": "TestParseAcceptLanguageTooBig",
+      "line": 398,
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No selected Locale Parse/String producer: matching/collation, composition, coverage, parent/likely-subtag, public subtag queries, binary/text marshal or Go allocation/layout machinery.",
+      "execution": "not ported or executed as original by this campaign"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{"name": "raw-json-0", "mode": "raw-options", "argumentsBase64": [""]}
+{"name": "raw-json-1", "mode": "raw-options", "argumentsBase64": ["ew=="]}
+{"name": "raw-json-2", "mode": "raw-options", "argumentsBase64": ["eyJzdHJpY3QiOnRydWUs"]}
+{"name": "raw-json-3", "mode": "raw-options", "argumentsBase64": ["eyJzdHJpY3QiOnRydWUsInRhcmdldCI6"]}
+{"name": "raw-json-4", "mode": "raw-options", "argumentsBase64": ["e30gMA=="]}
+{"name": "raw-json-5", "mode": "raw-options", "argumentsBase64": ["eyJzdHJpY3QiOnRydWUsInN0cmljdCI6ZmFsc2V9"]}
+{"name": "raw-json-6", "mode": "raw-options", "argumentsBase64": ["W10="]}
+{"name": "raw-json-7", "mode": "raw-options", "argumentsBase64": ["MQ=="]}
+{"name": "raw-json-8", "mode": "raw-options", "argumentsBase64": ["ZmFsc2U="]}
+{"name": "raw-json-9", "mode": "raw-options", "argumentsBase64": ["bnVsbA=="]}
+{"name": "raw-json-10", "mode": "raw-options", "argumentsBase64": ["eyJzdHJpY3QiOnRydWUsInRleHQiOiL/In0="]}
+{"name": "raw-json-11", "mode": "raw-options", "argumentsBase64": ["eyJvdXREaXIiOiJcdUQ4MDAifQ=="]}
+{"name": "raw-json-12", "mode": "raw-options", "argumentsBase64": ["eyJjaGVja2VycyI6MWUxMDAwfQ=="]}
+{"name": "raw-json-13", "mode": "raw-options", "argumentsBase64": ["eyJvdXREaXIiOiI8PiYiLCAiY2hlY2tlcnMiOi0wfQ=="]}
+{"name": "raw-json-14", "mode": "raw-options", "argumentsBase64": ["eyJjaGVja2VycyI6MC4wMDAwMDAxfQ=="]}
+{"name": "raw-json-15", "mode": "raw-options", "argumentsBase64": ["eyJjaGVja2VycyI6MWUyMH0="]}
+{"name": "raw-json-16", "mode": "raw-options", "argumentsBase64": ["eyJjaGVja2VycyI6MWUyMX0="]}
+{"name": "raw-json-17", "mode": "raw-options", "argumentsBase64": ["eyJjaGVja2VycyI6MC4wMDAwMDF9"]}
+{"name": "raw-json-18", "mode": "raw-options", "argumentsBase64": ["eyJwYXRocyI6eyJhIjpbIm9uZSJdLCJiIjpbInR3byJdfX0="]}
+{"name": "raw-json-19", "mode": "raw-options", "argumentsBase64": ["eyJwYXRocyI6eyJhIjogWyJvbmUiXSwgImIiOn0gfQ=="]}
+{"name": "raw-json-mutation-sequence", "mode": "raw-options", "arguments": ["{\"strict\":true,\"outDir\":\"first\"}", "{\"target\":99,\"strict\":false}", "{\"outDir\":\"second\",\"checkers\":", "null", "{\"strict\":null}"]}

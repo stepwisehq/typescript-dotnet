@@ -1,0 +1,41 @@
+{
+  "scope": "Linux x64 read-side OS adaptation only; pure virtual paths retain arbitrary bytes. No writable filesystem or general Windows/nativepath claim.",
+  "sources": {
+    "upstream/TypeScript/tsc/internal/nativepath/realpath_linux.go": "f06ac32f09363f01aae4b08e858560255104f29a5aabedf31d45e50533894e9a",
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/os.go": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+    "tools/.cache/go/src/path/filepath/symlink.go": "d4e5ae166c208c8d0fbbed9aa907208f7cc541100b8e04029a38f16f1b5da1b5"
+  },
+  "counterparts": {
+    "upstream/TypeScript/tsc/internal/nativepath/realpath_linux.go": "src/TypeScript.Scanner/NativePath/RealpathLinux.cs",
+    "tools/.cache/go/src/path/filepath/symlink.go": "src/TypeScript.Scanner/Runtime/GoFilePathSymlink.cs"
+  },
+  "authoredAbi": {
+    "file": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxReadPaths.cs",
+    "platform": "Linux x64/glibc",
+    "dirent64": {
+      "recordLengthOffset": 16,
+      "typeOffset": 18,
+      "nameOffset": 19
+    },
+    "flags": {
+      "O_PATH": 2097152,
+      "O_CLOEXEC": 524288,
+      "AT_SYMLINK_NOFOLLOW": 256
+    },
+    "errno": "Native __errno_location reset distinguishes readdir EOF; open/readlink retry EINTR. Handles closed in finally.",
+    "utf8Boundary": "Actual raw directory/proc/readlink bytes validated scalar before Unicode; input/output NUL guards prevent native truncation."
+  },
+  "adaptations": [
+    "Original nativepath error objects are consumed solely as failure by osvfs; null represents that internal failed lookup, and public Realpath returns its actual original input.",
+    "POSIX filepath walk preserves source lstat/missing/non-directory/link-limit ordering; Windows volume/dot branches are external to this Linux-only helper. Final POSIX Clean is a bounded structural adaptation, not general filepath API parity.",
+    "OS paths/names that cannot be represented by .NET scalar paths raise FileSystemPathEncodingException rather than replacing bytes; this restriction does not affect pure interpretation/virtual hosts.",
+    "Missing invalid symlink targets in the fastpath preserve actual open failure/original input. Earlier stronger authored rejection expectation was withdrawn; no original Go expected output changed."
+  ],
+  "evidence": {
+    "filenameCollision": "artifacts/configuration-validation/os-name-collision/report.json",
+    "linkProducer": "artifacts/configuration-validation/os-name-collision/link-report.json",
+    "status": "Copied10 isolated OS6 and NativePath7 dispatchers passed with original fastpath and corrected missing-target controls. Final native/xUnit pending.",
+    "nativePathChecks": "artifacts/configuration-validation/build10/native-path-shared/report.json",
+    "rawPathChecks": "artifacts/configuration-validation/build10/os-shared/report.json"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "functions": 11,
+  "groups": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/tsoptions/parsedoptions_test.go",
+      "sourceSha256": "7c2902860daa8b2c9848324082279390431d20897083ea0514e2c541dcdcc232",
+      "counterpart": "validation/Configuration.Checks/ParsedOptionChecks.cs",
+      "functions": [
+        "TestParsedOptionsEquality",
+        "TestParsedOptionsEqualityIgnoresEmptyTypeAcquisitionLists",
+        "TestParsedOptionsEqualityIgnoresPathsAllocation"
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/outputpaths/outputpaths_test.go",
+      "sourceSha256": "848a0b72df64ce05eeef15c05cb41c6e4d55fdcc20df6bc595d24413fa765912",
+      "counterpart": "validation/Configuration.Checks/OutputPathChecks.cs",
+      "functions": [
+        "TestGetSourceFileNameInNewDirSourceMatchesCommonDirectory",
+        "TestGetSourceFileNameInNewDirCanonicalizationShrinksCommonDirectory",
+        "TestGetBuildInfoFileNameAcrossRoots",
+        "TestGetOutputFileNameAcrossRoots",
+        "TestOutputFileNamesPreserveEmptyAndDotStems"
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/tsoptions/wildcarddirectories_test.go",
+      "sourceSha256": "cca29ad5dc2d71063db627c3511b951227d6b9a6b375679f0d0cab93eb0b8a78",
+      "counterpart": "validation/Configuration.Checks/WildcardDirectoryChecks.cs",
+      "functions": [
+        "TestGetWildcardDirectories_DotPrefixedIncludeWithDotDirExclude",
+        "TestGetWildcardDirectories_DriveRoot",
+        "TestGetWildcardDirectories_NonASCIICharacters"
+      ]
+    }
+  ],
+  "fieldSources": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/tsoptions/parsedoptions.go",
+      "sourceSha256": "a62cf2017e9e441d9fc2d5d79d2048e121541540f8efcdedeefabe8fcc036c4b"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/contentmapper.go",
+      "sourceSha256": "0ad086a1a255421249d08b6fc5e2dd6cd1b3fe06d7bee439daf56a90bc94eda5"
+    }
+  ],
+  "parsedEquality": {
+    "visibleFields": [
+      "ParsedOptions.CompilerOptions",
+      "ParsedOptions.TypeAcquisition",
+      "ParsedOptions.FileNames",
+      "ParsedOptions.ProjectReferences",
+      "ParsedOptions.ContentMappers",
+      "Mapper.Package",
+      "Mapper.Extensions",
+      "Mapper.Options",
+      "Mapper.Name",
+      "Mapper.Version",
+      "Mapper.Exec",
+      "Mapper.CompilerOptions",
+      "Mapper.DynamicConfig",
+      "Mapper.PackageDirectory",
+      "Mapper.ContributionID"
+    ],
+    "mutations": [
+      "compiler options",
+      "nil compiler options",
+      "nil type acquisition",
+      "type acquisition enable",
+      "type acquisition include",
+      "type acquisition exclude",
+      "type acquisition filename",
+      "filenames order",
+      "reference path",
+      "reference original path",
+      "reference circular",
+      "nil reference",
+      "reference order",
+      "mapper package",
+      "mapper extension",
+      "mapper options",
+      "mapper name",
+      "mapper version",
+      "mapper exec",
+      "mapper compiler options",
+      "mapper dynamic config",
+      "mapper directory",
+      "mapper contribution",
+      "nil mapper",
+      "mapper order"
+    ],
+    "nilEmptySlices": [
+      "ParsedOptions.FileNames",
+      "ParsedOptions.ProjectReferences",
+      "ParsedOptions.ContentMappers",
+      "Definition.Extensions",
+      "Definition.Options",
+      "Manifest.Exec",
+      "Manifest.CompilerOptions"
+    ],
+    "expectedEqualityChecks": 124,
+    "emptyTypeAcquisitionComparisons": 16,
+    "pathsAllocationComparisons": 2,
+    "adaptation": "Original reflection becomes a source-guarded static field/mutation table. Source-populated fixture and each zero/change establish the finite DeepEqual result independently; no production Equals result determines expected values. Nullable receivers dispatch explicitly. JsonValue null versus allocated empty Bytes represents nil versus empty json.Value."
+  },
+  "outputPaths": {
+    "buildInfoRows": 10,
+    "stemRows": 6,
+    "totalPathEqualityAssertions": 26
+  },
+  "wildcardDirectories": {
+    "exactMapRows": 2,
+    "unicodeNonnilRows": 4
+  },
+  "runtimeStatus": "Independent execution and review evidence are recorded separately; this file guards source assertion inventory only."
+}

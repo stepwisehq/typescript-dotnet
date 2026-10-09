@@ -1,0 +1,16 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "upstream/TypeScript/tsc/internal/vfs/walkdir_test.go",
+  "sourceSha256": "09ffa3a3c4360f761c78651989f9c84167ed169da0879e59d9d1a72267518950",
+  "policy": "All eight original function bodies and every assertion; vfstest/wrapvfs read host only. No write/clock/OS behavior claim.",
+  "originalFunctions": [
+    "TestWalkDir",
+    "TestWalkDirDoesNotFollowRootSymlink",
+    "TestWalkDirReportsRootFileSymlink",
+    "TestWalkDirSkipDir",
+    "TestWalkDirSkipAll",
+    "TestWalkDirConsumesSkipDirForRootFile",
+    "TestWalkDirConsumesSkipForMissingRoot",
+    "TestWalkDirUsesSymlinkMetadataWithoutRealpathCalls"
+  ]
+}

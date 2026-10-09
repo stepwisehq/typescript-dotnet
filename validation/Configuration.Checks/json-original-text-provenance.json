@@ -1,0 +1,22 @@
+{
+  "sourceFiles": {
+    "tools/.cache/go/src/encoding/json/jsontext/coder_test.go": "1ade7cd1ca1c563914d3a35a7887fc585fc5bf29ab56ef09d9840c846bd78dd7",
+    "tools/.cache/go/src/encoding/json/jsontext/decode_test.go": "620cb10b6fb85089662f3cb2a5e294f923ca7fef4dffe6487d26634a059ce441",
+    "tools/.cache/go/src/encoding/json/jsontext/encode_test.go": "20057b118375343142a64710f8741f8d027edb11d1cbd96014664055c20e9bfd",
+    "tools/.cache/go/src/encoding/json/jsontext/state_test.go": "0572c8ab3442c9a74f8a80e2e12d79523eda4aff1287955a4ff78e1beb0b73a0",
+    "tools/.cache/go/src/encoding/json/jsontext/value_test.go": "6f9e4a4dfe5cec5308b1b5948fe5ded07a021ee80e9c8d3664424913d5e98b24",
+    "tools/.cache/go/src/encoding/json/jsontext/fuzz_test.go": "2aed4732854fb30aa1a74efe2098d620eee5584401212fb35b6bbad5c6d950b0"
+  },
+  "sourceTests": {
+    "TestEncoder": 6,
+    "TestDecoder": 25,
+    "TestDecoderErrors": 52,
+    "TestEncoderErrors": 47,
+    "TestCoderMaxDepth": 4,
+    "TestPointer": 4,
+    "TestObjectNamespace": 49,
+    "TestValueMethods": 33
+  },
+  "selection": "Decoder first whole-value/default grammar acceptance and first Value error only; no stream-state/offset/peek/read output claims. Encoder first whole-value/default WriteValue errors through actual strict FormatRawValue producer; no stream state claim. Decoder first raw ReadValue errors use lexical raw mode, not generic Unmarshal. Pointer valid Parent+AppendToken roundtrip selected; traversal/malformed validation omitted. Namespace source insertion/removal predicate sequence selected at duplicate validation API; topology/storage and invalid-UTF8 replacement row excluded. Maxdepth SingleValue validation only. TestValueMethods all33 IsValid literal predicates; Compact/Indent/Canonicalize omitted. Fuzz strict-validity seed inputs reuse these unit assertions without a fuzz body claim.",
+  "generatedSha256": "75a743166e8c6f10f9d7605782884e3cc7196e3a45dfb15c9a306daa233c390e"
+}

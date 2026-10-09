@@ -1,0 +1,10 @@
+{
+  "repository": "https://go.googlesource.com/text",
+  "revision": "v0.42.0",
+  "source": "internal/language/tables.go",
+  "sourceSha256": "876a73fb8b8fffd239efa592ffdf903c25757b4d17b715fc80d7aee8db2b985e",
+  "compactSource": "internal/language/compact/tables.go",
+  "compactSourceSha256": "99415fb6642ebd291f825497d32e70ae32da8569815d8f4ef587664c6c5ce7d5",
+  "generatedSha256": "802bea494b2d6727cb37560356b242640493eb12c3381d00723d2e23a3970b74",
+  "scope": "complete Parse registry/alias tables; matcher/likely-subtag tables omitted"
+}

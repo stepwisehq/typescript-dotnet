@@ -1,0 +1,11 @@
+{
+  "kind": "authored original Linux read-side observation, no private Sys layout",
+  "exitCode": 0,
+  "seconds": 0.004,
+  "sources": {
+    "tools/configuration-oracle/os_projections.go": "6aca5142098173273e5304c525ef6608cdafdd7cb17e6d8b7679abd14bf83b42",
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/os.go": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+    "upstream/TypeScript/tsc/internal/vfs/internal/internal.go": "2d641c466808f1417e4e20d46aa4beb7f9dcc1bc5fd872a5d134fb3ae56d1def"
+  },
+  "expectedSha256": "8be6899a526d8c0b3c896f6d329a77072a04f88c8ba074545304ff9be4e64005"
+}

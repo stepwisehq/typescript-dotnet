@@ -1,0 +1,13 @@
+{
+  "sourceFiles": {
+    "tools/.cache/go/src/encoding/json/v2/arshal_test.go": "5f7aaa79a50a41b9cdae86522c94109c548d533cd18d12f12387b8c7b15e86b5",
+    "tools/.cache/go/src/encoding/json/v2/errors_test.go": "76d17b890901eec6074a61395e08fec4460686342916ee99841f9a8db10decc2",
+    "tools/.cache/go/src/encoding/json/v2/errors.go": "029a385fcdca05f9ac1194b49d80202a895c00e569d10f306fd419915e23b784"
+  },
+  "sourceTests": {
+    "TestMarshal": 18,
+    "TestUnmarshal": 9
+  },
+  "selection": "Default (no option overrides), nonwriter, noncanonicalized standard bool/string/byte/list/map/int/uint/float64 value domains only. Map marshal >1 fields excluded for unspecified order. Go named types, arbitrary struct/method/reflection target encoders excluded. Typed nil slices adapted only at output-value equality. Unmarshal actual initially nil *any target rows only; prepopulated interfaces/merge and reflected typed destinations and target pointer identity excluded. Literal want/wantErr fields exported, not actual runtime codec results. Expected struct error rendering applies only original TestSemanticError cleanup of randomized errorModalVerb unable-to/cannot; no corpus diagnostic normalization.",
+  "generatedSha256": "0efd5cd2074c4e5f4aa2c6dc5ccac68e47374e38f9beeaf56979c64410531506"
+}

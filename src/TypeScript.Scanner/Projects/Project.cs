@@ -54,6 +54,18 @@ public sealed class Project : ICheckerProgramHost
         return new Project(new ProjectConfiguration(configPath));
     }
 
+    public static ConfigurationInspection InspectConfiguration(string configPath) => new(configPath);
+    public static Project LoadConfiguration(string configPath)
+    {
+        ConfigurationInspection inspection = InspectConfiguration(configPath);
+        inspection.RequireValid();
+        ProjectCheckingAdmission.Validate(inspection.Parsed!, inspection.ConfigurationPath);
+        if (!OperatingSystem.IsLinux())
+            throw new ProjectException("platform", "This checking host currently supports Linux case-sensitive disk identity.", configPath);
+        ProjectDiskHost.CheckSymlinks(inspection.ConfigurationPath);
+        return new Project(new ProjectConfiguration(inspection));
+    }
+
     private Project(ProjectConfiguration configuration)
     {
         this.configuration = configuration;
@@ -63,7 +75,22 @@ public sealed class Project : ICheckerProgramHost
         var rootNames = new List<string>();
         foreach (string root in configuration.Files)
         {
-            string path = disk.Resolve(configuration.Root, root);
+            string path;
+            if (configuration.Parsed is not null)
+            {
+                // Genuine configuration discovery already supplies normalized
+                // absolute filenames. Keep their identity and inclusion metadata;
+                // the legacy entry alone accepts relative user-supplied roots.
+                if (root.IndexOf('\0') >= 0)
+                    throw new ProjectException("path", "Configuration filename contains a NUL character.", root);
+                disk.EnsureBounded(root);
+                path = root;
+            }
+            else
+            {
+                path = disk.Resolve(configuration.Root, root);
+            }
+
             RequireImplementationFile(path);
             if (!rootNames.Contains(path, StringComparer.Ordinal))
                 rootNames.Add(path);
@@ -168,14 +195,14 @@ public sealed class Project : ICheckerProgramHost
     string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetNearestAncestorDirectoryWithPackageJson(string directory)
     {
         var scoped = resolver.GetPackageScopeForPath(directory);
-        return scoped?.Exists() == true ? scoped.PackageDirectory : "";
+        return scoped?.Exists() == true ? scoped.PackageDirectory.AsDirectoryPath().ToUnicode() : "";
     }
 
     TypeScript.PackageJson.InfoCacheEntry? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetPackageJsonInfo(string path)
     {
         string directory = TsPath.GetDirectoryPath(path);
         var scoped = resolver.GetPackageScopeForPath(directory);
-        return scoped?.Exists() == true && scoped.PackageDirectory == directory ? scoped : null;
+        return scoped?.Exists() == true && scoped.PackageDirectory.AsDirectoryPath().ToUnicode() == directory ? scoped : null;
     }
 
     ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => GetResolvedModule(file, ProjectDiskHost.DecodeModuleReference(specifier.Text()), GetModeForUsageLocation(file, specifier));

@@ -1,0 +1,12 @@
+using Configuration.Checks;
+using Xunit;
+
+namespace Configuration.Tests;
+public sealed class ConfigDirectTests
+{
+    public static IEnumerable<object[]> Cases => ConfigDirectChecks.Cases.Select(name => new object[] { name });
+
+    [Theory]
+    [MemberData(nameof(Cases))]
+    public void OriginalAssertions(string name) => ConfigDirectChecks.Run(name);
+}

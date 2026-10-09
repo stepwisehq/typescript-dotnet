@@ -1,0 +1,26 @@
+{
+  "kind": "complete original assertion-preserving source port",
+  "functions": [
+    "TestParseJsonConfigFileContentAcceptsJsonRepresentations",
+    "TestParseJsonConfigFileContentPreservesRaw",
+    "TestParseJsonConfigFileContentHandlesNullArrayElements",
+    "TestParseJsonConfigFileContentDefaultsCompileOnSaveToFalse",
+    "TestParseJsonSourceFileConfigFileContentReportsInvalidExtendedConfig",
+    "TestParseJsonSourceFileConfigFileContentWithEmptyExtendedConfig",
+    "TestParseJsonSourceFileConfigFileContentDoesNotDuplicateUnquotedKeyDiagnostics",
+    "TestParseJsonSourceFileConfigFileContentReportsQuestionTokenDiagnostics",
+    "TestParseNullEnumCompilerOptions",
+    "TestExtendedConfigErrorsAppearOnCacheHit",
+    "TestExtendedConfigConfigDirPathsAreNotCached",
+    "TestParseSrcCompiler"
+  ],
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/tsoptions/tsconfigparsing_test.go": "174c3ab8ee38f3f0d464d5593d2c276441abbfe86008618dab1de6702ee1cc61",
+    "validation/Configuration.Checks/ConfigDirectChecks.cs": "23620d341c1bb06b97cde25397df2041f10d80339975e7a2debe7822a3997ae8"
+  },
+  "mechanics": "Only parallel scheduling, typed/static language representation and finite read-side virtual filesystem construction adapted. Every source assertion and subtest retained. Actual shared source/cache/query APIs used.",
+  "managedEvidence": "artifacts/configuration-validation/build9/config-direct-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending",
+  "sourceCompilerFixture": "Original src/compiler fixture retains all 79 source files and every original file-discovery assertion."
+}

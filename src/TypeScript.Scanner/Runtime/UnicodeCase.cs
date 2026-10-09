@@ -5,6 +5,7 @@ namespace TypeScript.Scanner;
 internal static partial class UnicodeCase
 {
     public static int ToLower(int rune) => ConvertCase(rune, true);
+    public static int ToUpper(int rune) => ConvertCase(rune, false);
     private static int ConvertCase(int rune, bool lower)
     {
         int lo = 0, hi = CaseRanges.Length;

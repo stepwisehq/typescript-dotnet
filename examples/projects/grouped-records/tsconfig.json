@@ -1,0 +1,5 @@
+{
+    "extends": "../../configuration/checking-base.json",
+    "include": ["src/**/*.ts"],
+    "exclude": ["src/**/*.generated.ts"]
+}

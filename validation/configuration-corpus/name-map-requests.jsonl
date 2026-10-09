@@ -1,0 +1,2 @@
+{"name": "name-map-nil", "mode": "name-map", "constructor": "nil", "arguments": ["", "help", "target"]}
+{"name": "name-map-empty", "mode": "name-map", "constructor": "empty", "arguments": ["", "help", "target"]}

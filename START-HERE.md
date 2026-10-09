@@ -3,7 +3,7 @@
 To restart work, give the new session this instruction:
 
 > Read START-HERE.md in /home/greg/projects/typescript-dotnet and resume the
-> current bounded phase. Follow the original user prompt and subsequent
+> current campaign. Follow the original user prompt and subsequent
 > directions recorded here. Inspect existing work and the last verified
 > subsystem checkpoints before taking action; do not restart the port.
 
@@ -180,6 +180,15 @@ Later user directions, in chronological order:
     [durable proof](./validation/results/projects-verified.json). The delivery commit
     containing this entry fulfills the mandate; no next campaign is authorized.
 
+21. The user authorized **upstream subsystem completion**, baseline `2c850db`.
+    Read the [exact mandate](./docs/CONFIGURATION-PROMPT.md) and current state.
+    Configuration parsing/discovery is the leading candidate. Define completion
+    from upstream responsibilities, not the demonstration or already passing fixtures;
+    preserve separate implementation and evidence inventories, original tests,
+    actual Linux x64 Native AOT and all regressions. Complete autonomously through
+    independent Sol review and committed delivery, or report a material blocker.
+    This supersedes the prior instruction to await a new campaign.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -191,15 +200,17 @@ Later user directions, in chronological order:
 4. Follow the next unresolved action in the checkpoints. Reuse active agents if
    available; after session loss, delegate using those checkpoint files instead
    of reconstructing the old chat.
-5. Use the [project guide](./docs/PROJECTS.md) and [README.md](./README.md) for
+5. Use the [configuration guide](./docs/CONFIGURATION.md),
+   [project guide](./docs/PROJECTS.md) and [README.md](./README.md) for
    reproducible invocation and verification. Required acceptance
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-Source-file binding completion is accepted at `de855ca`; the callable contract is also accepted
-at `cfa6d2f`. The generic-collection contract is accepted at `2598ceb`; the bounded
-project contract is accepted in the delivery commit containing this entry. A checkpoint can
-be accepted, incomplete, or blocked; never infer completion from source presence,
-an agent finishing, or a small set of passing tests. A later full compiler phase
-needs a new bounded mandate. Follow STATE.md for the active phase instead of
-resuming completed scanner or performance work.
+Source-file binding completion is accepted at `de855ca`, callable checking at
+`cfa6d2f`, generic collections at `2598ceb`, and bounded project checking at `2c850db`.
+Configuration interpretation/discovery is accepted in the delivery commit containing
+this entry. See its [assessment](./docs/CONFIGURATION-ASSESSMENT.md) and
+[proof](./validation/results/configuration-verified.json). A checkpoint can be accepted,
+incomplete or blocked; never infer completion from source presence or test totals.
+No next campaign is authorized. Follow STATE.md rather than restarting completed work;
+finish only an interrupted authorized delivery if the working tree still has its changes.

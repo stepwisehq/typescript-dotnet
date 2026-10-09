@@ -1,0 +1,27 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "controls": 6,
+  "qualification": "Only actual direct *encoding/json/v2.SemanticError nodes. Immutable copies retain original private action, kind/value/type/position/cause fields; canonical own modal renders cannot. Direct nested SemanticError causes are likewise structurally qualified; other user/caller causes are unchanged.",
+  "allowedSourceModals": [
+    "cannot",
+    "unable to"
+  ],
+  "rawRetention": "Every qualified raw error rendering and actual type/kind/GoType/pointer/offset retained in captured original oracle stderr JSON records. Original forty-process pre-adaptation raw variants are investigation evidence; accepted expected265 bytes remain unchanged.",
+  "controlsScope": [
+    "Actual nonfinite marshal SemanticError",
+    "Plain unable-to lookalike retained",
+    "Plain cannot lookalike retained",
+    "Wrapped text lookalike retained",
+    "SemanticError plain user cause retained byte-exact",
+    "Genuine nested SemanticError own modals canonicalized"
+  ],
+  "sources": {
+    "tools/configuration-oracle/json_error_observe.go": "bb84a440409186e1a01e7471be59fa0492819d77be6635ac7d59573c4a8ae2ae",
+    "tools/configuration-oracle/main.go": "516ec8b22580d10ccc6959da259e708ad03818279872f57d63c441b103cec12f",
+    "tools/.cache/go/src/encoding/json/v2/errors.go": "029a385fcdca05f9ac1194b49d80202a895c00e569d10f306fd419915e23b784"
+  },
+  "freshProcessEvidence": "artifacts/configuration-validation/json-modal-variation/report.json",
+  "managedPolicy": "Managed errors remain exact source fixed legal cannot rendering; no FormatException/user text normalization. Compiler and ordinary CLI diagnostics remain byte-exact.",
+  "fixtureCorrection": "Control initially assumed a preposition for default JSONKind; corrected to original errors.go default preposition empty. No production error or canonical corpus bytes altered."
+}

@@ -1,0 +1,26 @@
+{
+  "reviewer": "verification (independent of core author)",
+  "verdict": "No assertion/domain omission found. Source literal and static reflected-field coverage reviewed directly against all eleven source bodies.",
+  "families": {
+    "ParsedOptions3": "All four nil/zero pairs, populated copies, all15 visible fields,25 explicit changes both directions/self,7 nil-vs-empty slice pairs, all4x4 acquisition nil-empty combinations and both paths allocation comparisons retained. Expected equality is from source fixture/domain, not production Equals.",
+    "OutputPaths5": "Exact source-equal path, Kelvin shrinking case, ten build-info root/stem rows, two cross-drive outputs and six stem/extension pairs with both JS/declaration assertions retained.",
+    "WildcardDirectories3": "Two exact whole-map associations/cardinalities and all four nonASCII nonnil predicates retained; the source weak nonnil assertion is preserved as written."
+  },
+  "adaptations": [
+    "Sequential scheduling instead of Go parallel subtests.",
+    "Static source-guarded finite reflected visible-field table replaces reflection for NativeAOT, without narrowing the domain.",
+    "Typed paths encode literal Unicode to original Go bytes exactly once."
+  ],
+  "sources": {
+    "upstream/TypeScript/tsc/internal/tsoptions/parsedoptions_test.go": "7c2902860daa8b2c9848324082279390431d20897083ea0514e2c541dcdcc232",
+    "upstream/TypeScript/tsc/internal/outputpaths/outputpaths_test.go": "848a0b72df64ce05eeef15c05cb41c6e4d55fdcc20df6bc595d24413fa765912",
+    "upstream/TypeScript/tsc/internal/tsoptions/wildcarddirectories_test.go": "cca29ad5dc2d71063db627c3511b951227d6b9a6b375679f0d0cab93eb0b8a78",
+    "validation/Configuration.Checks/ParsedOptionChecks.cs": "89d823048495175850d50bda0754e7812cb60d73627cb7ee9d7270e314851f42",
+    "validation/Configuration.Checks/OutputPathChecks.cs": "4bb214b2a0ca9a8a990cd6f439611c69c55278dbd25c936eb45ee2fcedf18154",
+    "validation/Configuration.Checks/WildcardDirectoryChecks.cs": "6b26ae009a69ced77a61752a2e40aee585338f19e18078e70f64162597d81a9a",
+    "tools/configuration-inventory-metadata-tests.py": "e672798f534880d21fe9f02439af86ea0a5f40795e923d348e8e8fa0f1cb652c"
+  },
+  "sourceGuardCommand": "python3 tools/configuration-inventory-metadata-tests.py --check",
+  "runtime": "artifacts/configuration-validation/metadata-tests/report.json",
+  "native": "pending final gate"
+}

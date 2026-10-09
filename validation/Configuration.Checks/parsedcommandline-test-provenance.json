@@ -1,0 +1,14 @@
+{
+  "kind": "complete original assertion-preserving source port",
+  "functions": [
+    "TestParsedCommandLine"
+  ],
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/tsoptions/parsedcommandline_test.go": "cc621cb30f5f6e289c2bb46861ec3c0aafa069576fe5adffd414646203170a53",
+    "validation/Configuration.Checks/ParsedCommandLineChecks.cs": "099f791083e22218b91ead54378e5f631dca9ff94ec50f0f5cc207bf4afd2a3b"
+  },
+  "mechanics": "Only parallel scheduling, typed/static language representation and finite read-side virtual filesystem construction adapted. Every source assertion and subtest retained. Actual shared source/cache/query APIs used.",
+  "managedEvidence": "artifacts/configuration-validation/build8/parsed-command-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

@@ -1,0 +1,26 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "functions": {
+    "TestGetLongestExtensionFromPath": {
+      "assertions": 4,
+      "reason": "RootedFilePath.LongestExtension invokes actual selected helper."
+    },
+    "TestRemoveAnyFileExtension": {
+      "assertions": 3,
+      "reason": "Direct implemented complete Extension API; no producer reachability inferred."
+    },
+    "TestCaseSensitivityTrimPrefix": {
+      "rows": 6,
+      "assertionsPerRow": 2,
+      "reason": "PathKey relative operations invoke actual selected helper; Kelvin input remains raw Go bytes."
+    }
+  },
+  "sources": {
+    "upstream/TypeScript/tsc/internal/tspath/path_test.go": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a",
+    "validation/Configuration.Checks/PathHelperChecks.cs": "e94c4fe10b1ff5e05a4e71e725166e1ae4afebc179e46a0dca1ddbdbe93007e8"
+  },
+  "mechanics": "Sequential scheduling only. Every original value/predicate assertion retained, no computed expected values. Free-string StartsWithDirectory unrooted/empty/mixed-slash domains are unselected; typed original TestContainsFilePath separately checks selected rooted predicate.",
+  "managedEvidence": "artifacts/configuration-validation/build10/path-helper-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

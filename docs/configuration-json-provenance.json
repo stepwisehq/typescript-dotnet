@@ -1,0 +1,213 @@
+{
+  "toolchain": "go1.27.1",
+  "originalWrapper": "upstream/TypeScript/tsc/internal/json/json.go",
+  "originalWrapperSha256": "22a2a5590e8899bc197af1271e52684c86858401706e779dcc6faea02ea1a2c1",
+  "license": "licenses/Go-LICENSE.txt",
+  "scope": "Selected token/error/container closure for declared static configuration models, scalar/list/string-key map trees and raw JSON bytes, including whole-buffer raw value ReadValue validation and WriteValue default compaction. General reflection, arbitrary custom JSON hooks, streaming I/O, option framework, nondefault formatting and canonicalization remain external. Explicit frames preserve Go growing-stack depth behavior.",
+  "mapping": [
+    {
+      "source": "tools/.cache/go/src/encoding/json/internal/jsonwire/decode.go",
+      "sourceSha256": "2ec579bfd801743cb8073f89d35c1f5540811e435b53793b2732cf57423e2eaa",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonWire.cs",
+      "functions": [
+        "ConsumeWhitespace",
+        "ConsumeLiteral",
+        "ConsumeString/ConsumeStringResumable (whole-buffer strict branch)",
+        "ConsumeNumber/ConsumeNumberResumable (whole-buffer initial state)",
+        "parseHexUint16",
+        "hasEscapedUTF16Prefix"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/internal/jsonwire/wire.go",
+      "sourceSha256": "f7e0e72cf8624ebb19501b79f5c3be45a10419be52fd027ec3c5a8caf0b8944c",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonWire.cs",
+      "functions": [
+        "NewInvalidCharacterError",
+        "NewInvalidEscapeSequenceError",
+        "InvalidTextError.Error",
+        "TruncatePointer"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/jsontext/errors.go",
+      "sourceSha256": "782a2da67bce8694e02280f808993f2747747d9154861ca83dd15d308a3a0538",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonTextErrors.cs",
+      "functions": [
+        "SyntacticError.Error (selected syntax/duplicate/offset/pointer branches)"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/v2/errors.go",
+      "sourceSha256": "029a385fcdca05f9ac1194b49d80202a895c00e569d10f306fd419915e23b784",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonTextErrors.cs",
+      "functions": [
+        "SemanticError.Error (actual selected static Go types/number/custom errors)"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/jsontext/decode.go",
+      "sourceSha256": "6978277353d629e9fa02a3a351df55d647a067918c33fff6617ccaf307656fc8",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonDiagnosticReader.cs",
+      "functions": [
+        "PeekKind/checkDelim/checkDelimBeforeIOError selected whole-input frame adaptation",
+        "consumeObject/consumeArray token grammar and depth"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/jsontext/state.go",
+      "sourceSha256": "07930c12fd4a0cd219859f9cd7257cb9e3d71f7581e32f73510c4ddc4c8cc08f",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonDiagnosticReader.cs",
+      "functions": [
+        "needDelim/needImplicitComma/needObjectValue",
+        "ErrNonStringName/maxNestingDepth"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/v2/arshal_any.go",
+      "sourceSha256": "bdd67f2105b186fbd39c8de10f6997070a11e69717af69f3d803c8ae5f34ec2e",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "unmarshalValueAny/unmarshalObjectAny/unmarshalArrayAny selected partial container/value behavior",
+        "marshalValueAny/marshalObjectAny/marshalArrayAny selected static container traversal/empty fast paths"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/v2/arshal_default.go",
+      "sourceSha256": "c786a1d08a38eb0fee2df1ef68c7d7ce3415d8ad5cbc500a538c1bcec9be7515",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "startDetectingCyclesAfter/visitPointer/leavePointer (static reference-container adaptation)",
+        "makeFloatArshaler nonfinite error branch"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/unicode/utf8/utf8.go",
+      "sourceSha256": "3c145ee25fd7631ebbc670fd1236e8c163ca30ae8913c796489efbf3f267ad54",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonWire.cs",
+      "functions": [
+        "FullRune strict initial-prefix equivalent"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/internal/jsonwire/encode.go",
+      "sourceSha256": "b0a9c70c49442959833ba37dd669bedc0fe7a2f1ab16cadbc7f3205dd2c6b934",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "ReformatString selected default ->ConsumeString/AppendUnquote/AppendQuote",
+        "ReformatNumber selected default verbatim number branch"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/internal/jsonwire/decode.go",
+      "sourceSha256": "2ec579bfd801743cb8073f89d35c1f5540811e435b53793b2732cf57423e2eaa",
+      "counterpart": "src/TypeScript.Scanner/Json/Internal/JsonWire.cs",
+      "functions": [
+        "AppendUnquote selected default/permissive escaped and raw bytes",
+        "ConsumeString strict/permissive whole-buffer UTF8 conditions"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/jsontext/encode.go",
+      "sourceSha256": "1ad3b78ff3e407a13a3f3d05f3cc7ecba92fcd7a3edc95c14c0f65d09e932ef8",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "WriteValue atomic local-buffer commitment, whole-buffer offsets/depth/duplicates",
+        "reformatValue/reformatObject/reformatArray compact default projection via iterative validation then lexical output"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/v2/arshal_methods.go",
+      "sourceSha256": "f4f9841376d866ad8d6eb40a05fddbc2d754d70383ad64b78b0fc0462c16f805",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "Raw Value MarshalJSON ->WriteValue wrapper; UnmarshalJSON byte callback ->ReadValue prevalidation"
+      ]
+    },
+    {
+      "source": "tools/.cache/go/src/encoding/json/v2/arshal_default.go",
+      "sourceSha256": "c786a1d08a38eb0fee2df1ef68c7d7ce3415d8ad5cbc500a538c1bcec9be7515",
+      "counterpart": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "functions": [
+        "Static supported model field tag branches: omitzero/isZero; omitempty/UnwriteEmptyObjectMember for Definition.Options only; false JSON values remain nonempty"
+      ]
+    }
+  ],
+  "status": "accepted selected dependency closure; actual Linux x64 Native AOT, xUnit and independent review complete",
+  "entrypointModes": [
+    {
+      "entry": "JsonCodec.Parse / RawCompilerOptions.UnmarshalJSON value decoding",
+      "source": "v2.Unmarshal/UnmarshalDecode(any)",
+      "semantics": "Generic token-driven decoding; existing generic error/pointer/partial-value semantics unchanged."
+    },
+    {
+      "entry": "JsonCodec.ValidateValue / PackageJson Expected parent prevalidation",
+      "source": "v2/arshal_methods.go Unmarshaler byte callback -> jsontext.Decoder.ReadValue",
+      "semantics": "Whole-value lexical consumeObject/consumeArray; object-name string context, default parent duplicate policy, decoder numeric EOF resume; no float conversion."
+    },
+    {
+      "entry": "JsonCodec.FormatRawValue strict internal helper",
+      "source": "jsontext.encoderState.WriteValue +reformatValue/Object/Array",
+      "semantics": "Strict default whole-buffer producer, no streaming state; temporary output committed only after successful validation; raw number spelling/punctuation/order retained; strings round-trip AppendUnquote/AppendQuote."
+    },
+    {
+      "entry": "JsonCodec.TryMarshal/Marshal(JsonValue), including Definition.Options",
+      "source": "jsontext.Value.MarshalJSON -> v2/arshal_methods.go enc.WriteValue ->newMarshalErrorBefore",
+      "semantics": "Nil bytes map to null; allocated empty errors. Public internal/json wrapper permits invalid UTF8, source replacement on output. Failed raw value commits no delimiter/output and wraps syntactic cause as jsontext.Value SemanticError; prior output preserved."
+    }
+  ],
+  "staticModelConditions": [
+    {
+      "model": "CompilerOptions132 / TypeAcquisition4 / BuildOptions6",
+      "source": "upstream/TypeScript/tsc/internal/core/options_generated.go",
+      "conditions": "All fields omitzero. Zero enums/tristate/strings/typedpaths and nil slices/maps/boxes omitted; allocated empty slices/maps and boxes containing zero emitted. Tristate false remains false; invalid nonzero tristate marshals null.",
+      "sourceSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af"
+    },
+    {
+      "model": "TSConfig",
+      "source": "upstream/TypeScript/tsc/internal/tsoptions/showconfig.go",
+      "conditions": "CompilerOptions always emitted. Four slices omitzero: nil omitted, allocated[] emitted. CompileOnSave pointer nil omitted, nonnilfalse emitted.",
+      "sourceSha256": "f18ccd30da901529f431abd626c279bb61dcc64bb0f5a94766afd2b9d8f7d2f1"
+    },
+    {
+      "model": "Definition / Mapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/contentmapper.go",
+      "conditions": "Package/Extensions always emitted. Options json.Value omitempty: successful null/emptystring/[]/{} omitted after actualrawmarshal; false/zero stay, malformedallocatedempty errors retaining priorfields/membername; nilraw mapsnull. Mapper Manifest/PackageDirectory/ContributionID excluded by exact tags. Equality compares rawbytes nil state then bytes, no wrapperidentity.",
+      "sourceSha256": "0ad086a1a255421249d08b6fc5e2dd6cd1b3fe06d7bee439daf56a90bc94eda5"
+    },
+    {
+      "model": "ProjectReference",
+      "source": "upstream/TypeScript/tsc/internal/core/projectreference.go",
+      "conditions": "Path always emitted. OriginalPath emptystring omitted by omitempty. Circular false remains emitted under JSONv2 emptyJSON rules.",
+      "sourceSha256": "84e6d4e30fa4d98d38901c6cd5790d0dd07a2c83f532efa9f6cfffe84084d825"
+    },
+    {
+      "model": "PluginImport",
+      "source": "upstream/TypeScript/tsc/internal/core/options_generated.go",
+      "conditions": "Required name always emitted, even empty.",
+      "sourceSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af"
+    }
+  ],
+  "runtimeEvidence": [
+    {
+      "snapshot": "12",
+      "artifact": "artifacts/configuration-validation/build12/raw-values52-managed/report.json",
+      "cases": 52,
+      "exact": 52,
+      "scope": "RawWrite/RawRead/custom callback/complete static model tag conditions; original52 bytes unchanged"
+    },
+    {
+      "snapshot": "12",
+      "artifact": "artifacts/configuration-validation/build12/json-original-individual/report.json",
+      "groups": 20,
+      "passed": 19,
+      "remaining": "Exact encode.go891 rawWrite array value wording; decoder generic/ReadValue element wording unchanged."
+    }
+  ],
+  "finalExecution": {
+    "evidence": "validation/results/configuration-verified.json",
+    "platform": "Linux x64 Native AOT",
+    "status": "passed with original selected obligations unchanged",
+    "note": "Earlier probe/runtime notes remain historical evidence, superseded by this final proof; no broader dependency or per-branch execution claim."
+  }
+}

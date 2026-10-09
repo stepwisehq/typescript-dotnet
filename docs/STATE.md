@@ -1,5 +1,36 @@
 # Current project state
 
+**Accepted: configuration interpretation and file discovery, S1–S6.**
+Baseline `2c850db`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
+Read the [mandate](CONFIGURATION-PROMPT.md), [contract](CONFIGURATION-CONTRACT.md),
+[assessment](CONFIGURATION-ASSESSMENT.md), [guide](CONFIGURATION.md),
+[concise checkpoint](CONFIGURATION-STATUS.md) and
+[durable proof](../validation/results/configuration-verified.json).
+The delivery commit containing this entry records the accepted campaign.
+
+All 17 TsOptions files /210 functions are implemented and independently reviewed,
+with required dependency scopes mapped separately. The successful final gate took
+860.209 seconds: 24,078 xUnit cases pass with zero failures/skips; actual Linux x64
+Native AOT passes 319 configuration comparisons, 217 shared groups, 38 order executions
+per runtime and 14 ordinary CLI cases plus lexical controls. All retained regressions
+pass. Source/assets/upstream/obligations and 126 historical fixture/proof files are unchanged.
+
+Use `tscheck --inspect-config <tsconfig>` for genuine interpretation/discovery and
+`tscheck --config <tsconfig>` for supported checking with explicit admission. The
+legacy strict `--project` adapter remains named compatibility behavior. Configuration
+completion does not imply full Program validation/execution or checker support.
+Source package imports, reference/watch/mapper execution, emit and services remain external.
+
+No next campaign is authorized. If delivery was interrupted, inspect git status and
+finish the authorized commit, preserving the proven source and assets. Otherwise await
+the next mandate. Recommended next subsystem: remaining source-import module resolution,
+followed by full Program construction/validation. Do not restart completed investigations.
+Three GPT-6.1 Sol workers were reused; root owned coordination and acceptance.
+See the assessment for measured build/gate effort, limitations and process corrections.
+
+The following project and earlier records are historical. Their superseded next-step
+recommendations and configuration exclusions do not override the accepted contract above.
+
 **Accepted: bounded multi-file ES-module project checking, P1–P5.**
 Baseline `2598ceb`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
 The delivery commit containing this entry records the completed campaign.

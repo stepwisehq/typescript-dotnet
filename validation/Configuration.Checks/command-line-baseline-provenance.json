@@ -1,0 +1,36 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalTest": "upstream/TypeScript/tsc/internal/tsoptions/commandlineparser_test.go",
+  "originalTestSha256": "982216b41350c5e73fd6541c379c8f84486c43509d82a1c4bec161de44a45f7a",
+  "baselines": [
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/watchInterval.js",
+      "sha256": "27a37b64551f9c3144575e5a29e95b346e96c6b9038f58db3415ff2db1683e58"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/watchFile.js",
+      "sha256": "325b14dadc4d106051c54141d1d1b28603af2c07236e7aa0ea9c3e0834692420"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/watchDirectory.js",
+      "sha256": "0bf09a414eeff7abb3f2d2af805e4dd4e7e71cc360885c73973f2c4ddfc82a16"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/fallbackPolling.js",
+      "sha256": "63a356eaba5aa0ca978891ed20c1091bb905f34f553e153f6d158623786dc8e4"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/synchronousWatchDirectory.js",
+      "sha256": "44638dc5ca4ef6f1c3d47ab26f70d67f2fe8ac64c476832901fd1bd54559212b"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/excludeDirectories.js",
+      "sha256": "bc57676af7a379e793c0dcd9ce010764b326a064e3ce40ed3f2062fbc86fcbe4"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/baselines/reference/tsoptions/removedWatchOptions/excludeFiles.js",
+      "sha256": "f6d90fd2275993b7d8fda7f7295f3f687e216f1fae103c1e596b4f8ff3d70280"
+    }
+  ],
+  "policy": "All seven original baseline files retained byte-for-byte; no generated expectations."
+}

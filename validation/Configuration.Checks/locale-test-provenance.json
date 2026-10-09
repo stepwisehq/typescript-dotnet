@@ -1,0 +1,147 @@
+{
+  "dependency": "golang.org/x/text",
+  "version": "v0.42.0",
+  "sourceFiles": {
+    "internal/language/parse_test.go": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+    "internal/tag/tag_test.go": "64dba9a69bda84f02a3ca73bcf472fbe0a0bfa635405768382669e6fdf20b36b",
+    "language/language_test.go": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+    "language/parse_test.go": "deb3ceb15cf3abe7177da956c4a4df1f0eeb9b50d3b20cd959d21edfb04e26c1",
+    "internal/language/compact/parse_test.go": "e689e37c97c8ed4fedada1a0c7ba11096d59c38be2437ffe622570848fbb2a2d",
+    "internal/language/compact/language_test.go": "c657e9801fd9dcf528564e0a1e16f398fefa0b33f5d7583e22c15c7bb2512079",
+    "internal/language/language_test.go": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+    "internal/language/lookup_test.go": "ef966645a3fc0c6380ecbf454f15fc00871861fa478b9a200c40b013862225d5",
+    "language/examples_test.go": "37371feed3a0f79c1f0e8d5566ce47ebb145cf9e1c581d09ed429e7f11998fe5"
+  },
+  "functions": [
+    "TestScan",
+    "TestAcceptMinSize",
+    "TestParseExtensions",
+    "TestParseTag",
+    "TestParse",
+    "TestErrors",
+    "TestIndex",
+    "TestFixCase",
+    "TestString"
+  ],
+  "rows": {
+    "scan": 25,
+    "acceptMinSizesPerScan": 8,
+    "parse": 100,
+    "index": 12,
+    "fixCase": 7,
+    "errors": 8,
+    "publicString": 1
+  },
+  "expectations": "Locked original literals only. Same source skip/rewrite domains and every applicable original assertion retained.",
+  "adaptations": [
+    "Byte buffers use managed char arrays whose elements retain byte values.",
+    "Go value-error interface equality compares exception type and original subtag, while shared syntax sentinel identity is asserted.",
+    "language.Make input is observed through its selected equivalent Default Parse/String path; no unselected Make API is introduced."
+  ],
+  "adaptedMixedHelpers": {
+    "grandfathered": 32,
+    "makeString": 7,
+    "scriptID": 11,
+    "differences": "Grandfathered raw Go Tag equality uses all retained fields. MakeString copies the original three setup fields directly and retains both output assertions; Go allocation limit excluded. GetScriptID calls its existing FindIndex helper with the original custom table; no whole unselected GetScriptID API claim."
+  },
+  "selectedMixedAssertions": {
+    "langID": 27,
+    "regionID": 15,
+    "m49From": 25,
+    "regionDeprecation": 22,
+    "regionCanonical": 6,
+    "baseRows": 9,
+    "scriptRows": 7,
+    "regionRows": 9,
+    "canonicalization": 24,
+    "canonicalizationExcludedRows": [
+      {
+        "input": "en-Latn",
+        "flags": "SuppressScript",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "sr-Cyrl",
+        "flags": "SuppressScript",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "no",
+        "flags": "Legacy | CLDR",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "cmn",
+        "flags": "Macro",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "cmn-u-co-stroke",
+        "flags": "Macro",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "yue",
+        "flags": "Macro",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "nb",
+        "flags": "Macro",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "nb",
+        "flags": "Macro | CLDR",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "no",
+        "flags": "Macro",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "no",
+        "flags": "Macro | CLDR",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "mo",
+        "flags": "Legacy | CLDR",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "und-YD",
+        "flags": "DeprecatedBase",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "und-Qaai",
+        "flags": "DeprecatedBase",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      },
+      {
+        "input": "drh",
+        "flags": "All",
+        "reason": "Original non-Default transformation or intentionally suppressed alias differs; not projected through Default."
+      }
+    ],
+    "publicRawPartChecks": 103,
+    "publicErrors": 8,
+    "errorExample": 7,
+    "exclusions": [
+      "Language ISO3 output method.",
+      "Numeric region inverse M49 method.",
+      "Non-Default canonical flags and All/Supported/Compose idempotence.",
+      "Public language wrapper API construction; selected IDs/raw payloads assert original expected fields."
+    ]
+  },
+  "adaptedRoundtrips": {
+    "internalLanguage": 100,
+    "publicEqualityInputs": 103,
+    "compactEqualityInputs": 103,
+    "assertion": "Same original input domains and expected roundtrip comparable-state equality.",
+    "differences": "Managed raw Tag field values replace Go struct equality; compact equality uses the selected canonical Locale value representation and omits private numeric IDs; public equality uses Locale Parse/String and omits unselected Compose assertion."
+  },
+  "execution": "Original assertion bodies pending managed/native execution; authored72 differentials are separate evidence."
+}

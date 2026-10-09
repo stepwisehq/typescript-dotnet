@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded. Fixed generic-collection contract G1–G6 accepted with genuine bounded libraries under actual Linux x64 Native AOT; not whole checker/library/project parity. Fixed bounded ES-module project contract P1–P5 accepted on Linux x64 Native AOT; not full Program, module-resolution, checker or configuration parity.",
+  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded. Fixed generic-collection contract G1–G6 accepted with genuine bounded libraries under actual Linux x64 Native AOT; not whole checker/library/project parity. Fixed bounded ES-module project contract P1–P5 accepted on Linux x64 Native AOT; not full Program, module-resolution, checker or configuration parity. Fixed configuration interpretation/discovery contract S1–S6 accepted on Linux x64 Native AOT; all17 TsOptions files/210functions implemented and reviewed. Full Program, source resolver, checker and external-library parity remain separate.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -78,8 +78,8 @@
     {
       "upstream": "tsc/internal/core/options_generated.go",
       "destination": "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
-      "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "status": "ported",
+      "scope": "Complete source-generated option schema/enums/String and132 CompilerOptions,4 TypeAcquisition,6 BuildOptions fields, Clone/Equals. Authored static descriptors support Native AOT; StrongBox<long> preserves selected64-bit *int shallow identity. Semantic consumers remain separately bounded.",
       "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af",
       "binderCheckpointScope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded.",
       "callablesCampaignState": "accepted-callables",
@@ -92,7 +92,11 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/core/languagevariant.go",
@@ -486,7 +490,7 @@
       "upstream": "tsc/internal/tspath/path.go",
       "destination": "src/TypeScript.Scanner/TsPath/Path.cs",
       "status": "partial",
-      "scope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup. Foundation adds GetRootLength and normalized base-filename extraction required by declaration-file recognition. Managed separator replacement retains original normalization semantics.",
+      "scope": "Selected accepted scalar helpers plus required original raw-byte relative/root/canonical/config path algorithms. Dedicated scalar compatibility overloads remain explicit; no whole path.go/free-string API claim.",
       "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328",
       "dataTypesCheckpointScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup.",
       "foundationManifestState": "accepted-foundation",
@@ -494,7 +498,11 @@
       "projectsCampaignScope": "Original path directory/components/reduction/combination/normalization helpers required by disk resolution. General normalization retained; optimization omitted. Direct upstream assertion provenance in projects-support-tests.json.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignBaselineScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup. Foundation adds GetRootLength and normalized base-filename extraction required by declaration-file recognition. Managed separator replacement retains original normalization semantics.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": null,
@@ -537,14 +545,18 @@
     {
       "upstream": "tsc/internal/core/compileroptions.go",
       "destination": "src/TypeScript.Scanner/Core/CompilerOptions.cs",
-      "status": "partial",
-      "scope": "ResolutionMode bounded enum plus selected target/module/strict-option/wildcard-types/isolated-module/standard-class-field accessors; general compiler-option evaluation, config merging and module-resolution options excluded.",
+      "status": "ported",
+      "scope": "Complete runtime compileroptions.go effective-option/default/type-root/module/newline accessors. Go noCopy Lock/Unlock vet-only marker omitted; existing ResolutionMode managed-enum adaptation retained. Supporting option interpretation does not imply downstream execution support.",
       "upstreamSha256": "fef841f3f06b3ef5f68124672e56996983795c43d3c1c10fa46d978820dc3564",
       "binderCheckpointScope": "ResolutionMode alias represented by a bounded C# enum; no compiler option evaluation.",
       "projectsCampaignScope": "Selected Bundler/module/usage option accessors for the fixed project configuration; no full option infrastructure.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "ResolutionMode bounded enum plus selected target/module/strict-option/wildcard-types/isolated-module/standard-class-field accessors; general compiler-option evaluation, config merging and module-resolution options excluded.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/subtreefacts.go",
@@ -622,24 +634,32 @@
     {
       "upstream": "tsc/internal/core/pattern.go",
       "destination": "src/TypeScript.Scanner/Core/Pattern.cs",
-      "status": "partial",
-      "scope": "Pattern Text/StarIndex, TryParsePattern and IsValid only; byte-string star offsets and Go zero value preserved. Matches, MatchedText and FindBestPatternMatch excluded; no module resolution.",
+      "status": "ported",
+      "scope": "Complete original pattern.go API and matching algorithms, including named patterns, exact keys and invalid multiple-star rejection.",
       "upstreamSha256": "53c0fc3df09cb967338b3390c6f891089694d4976923acd1b6ba0765cbd33651",
       "excludedSymbols": [
         "Matches",
         "MatchedText",
         "FindBestPatternMatch"
-      ]
+      ],
+      "configurationCampaignBaselineScope": "Pattern Text/StarIndex, TryParsePattern and IsValid only; byte-string star offsets and Go zero value preserved. Matches, MatchedText and FindBestPatternMatch excluded; no module resolution.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/tspath/extension.go",
       "destination": "src/TypeScript.Scanner/TsPath/Extension.cs",
-      "status": "partial",
-      "scope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded. Foundation adds exact declaration-file extension recognition, including arbitrary .d.*.ts names; no module lookup.",
+      "status": "ported",
+      "scope": "Complete original extension classification/removal/mutation/declaration-file algorithm unit; no module-resolution execution claim.",
       "upstreamSha256": "2b8814ec6b8408f8df45709f853556f057af227d3262ae8cd8fd794794a07101",
       "dataTypesCheckpointScope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "RemoveFileExtension and ordered extensionsToRemove data only, for binder source-module names; rooted-path/FileNameStem wrappers collapse to the existing raw string boundary. Other extension/path APIs and module resolution excluded. Foundation adds exact declaration-file extension recognition, including arbitrary .d.*.ts names; no module lookup.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": null,
@@ -1962,11 +1982,15 @@
       "upstream": "tsc/internal/compiler/fileloader.go",
       "destination": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
       "status": "partial",
-      "scope": "Selected processAllProgramFiles/root task/parse/import-discovery and usage-mode functions for fixed relative Bundler .ts projects and exact explicit libraries. Excludes package/project references, content mapping, implicit default libraries, automatic types, tracing and general hosts.",
+      "scope": "Selected original source task/discovery/loading algorithms for bounded relative Bundler TypeScript checking, now consuming actual parsed absolute roots. Full Program/reference/content-mapped/default-library loading remains external.",
       "upstreamSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignBaselineScope": "Selected processAllProgramFiles/root task/parse/import-discovery and usage-mode functions for fixed relative Bundler .ts projects and exact explicit libraries. Excludes package/project references, content mapping, implicit default libraries, automatic types, tracing and general hosts.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/filesparser.go",
@@ -1982,11 +2006,15 @@
       "upstream": "tsc/internal/compiler/fileInclude.go",
       "destination": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
       "status": "partial",
-      "scope": "Root/import include reasons and original diagnostic/reference-location helpers required by bounded project loading; other references and redirects excluded.",
+      "scope": "Selected root/import include reasons plus genuine parsed configuration files/include matched-spec explanations, locations and arguments. Other reference/default/type-library include reasons remain outside.",
       "upstreamSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignBaselineScope": "Root/import include reasons and original diagnostic/reference-location helpers required by bounded project loading; other references and redirects excluded.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/compiler/processingDiagnostic.go",
@@ -2006,17 +2034,24 @@
       "upstreamSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/module/resolver.go",
       "destination": "src/TypeScript.Scanner/Module/Resolver.cs",
       "status": "partial",
-      "scope": "Selected genuine Bundler relative resolution, directory intent, candidate/extension precedence and .ts winning records; authored explicit unsupported boundary and cache adapter. Package/Node/JSON/JS/custom extension environments excluded; see project contract.",
+      "scope": "Selected prior relative Bundler TypeScript project resolution plus genuine ResolveConfig (fresh NodeNext/JSON lookup) and ResolvePackageDirectory reachable package/node/conditional/types-version/symlink algorithms and caches. Source-import paths/baseUrl/rootDirs/type-root/project redirect modes remain outside; config lookup does not admit source package imports.",
       "upstreamSha256": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignBaselineScope": "Selected genuine Bundler relative resolution, directory intent, candidate/extension precedence and .ts winning records; authored explicit unsupported boundary and cache adapter. Package/Node/JSON/JS/custom extension environments excluded; see project contract.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/module/types.go",
@@ -2062,25 +2097,34 @@
       "scope": "Authored ordinary disk project CLI, diagnostic rendering and static JSON serialization; success/diagnostic/unsupported exit statuses.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/Project.cs",
       "status": "new",
-      "scope": "Authored public composition over mapped loader/resolver/Program diagnostics and shared original checker; no substitute semantic algorithms.",
+      "scope": "Authored public composition over mapped loader/resolver/Program diagnostics and actual checker, now consuming genuine interpreted options/discovered roots with explicit capability admission; no substitute semantic algorithms.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/ProjectConfiguration.cs",
       "status": "new",
-      "scope": "Authored strict JSON fixed-option/files configuration subset, explicitly rejecting unsupported properties and values; not full tsconfig.",
+      "scope": "Named legacy strict configuration compatibility adapter using the shared raw decoder; preserves accepted fixed-option/files policy. Genuine tsconfig interpretation resides in TsOptions and Project.LoadConfiguration.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": null,
@@ -2134,11 +2178,15 @@
       "upstream": "tsc/internal/modulespecifiers/specifiers.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
       "status": "partial",
-      "scope": "Required original GetModuleSpecifiers, existing-import spelling, relative/local path and selected ancestor lookup for diagnostic type names. Genuine demanded package mapping fails explicitly; broad package resolution excluded.",
+      "scope": "Selected admitted relative diagnostic module-specifier generation with required ancestor typed package-JSON metadata adaptation. Package/source mapping and auto-import expansion remain outside.",
       "upstreamSha256": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignBaselineScope": "Required original GetModuleSpecifiers, existing-import spelling, relative/local path and selected ancestor lookup for diagnostic type names. Genuine demanded package mapping fails explicitly; broad package resolution excluded.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/util.go",
@@ -2153,32 +2201,44 @@
     {
       "upstream": "tsc/internal/packagejson/packagejson.go",
       "destination": "src/TypeScript.Scanner/PackageJson/PackageJson.cs",
-      "status": "partial",
-      "scope": "Selected genuine package contents/imports parsing for reached diagnostic-specifier lookup; .NET JSON facilities with matching selected semantics, other package/dependency/version APIs excluded.",
+      "status": "ported",
+      "scope": "Complete original package JSON production counterpart, including headers/paths/dependency/content-mapper fields and typed partial/repeated/error behavior. Static decoder adaptation and selected Go JSON grammar dependencies mapped separately.",
       "upstreamSha256": "858537735303a60c23edf6e153534934a06f751b77be900662d651d06c3f3b7b",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignBaselineScope": "Selected genuine package contents/imports parsing for reached diagnostic-specifier lookup; .NET JSON facilities with matching selected semantics, other package/dependency/version APIs excluded.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/packagejson/cache.go",
       "destination": "src/TypeScript.Scanner/PackageJson/Cache.cs",
-      "status": "partial",
-      "scope": "Selected original ancestor package info/cache/read behavior demanded by diagnostic formatting; package resolution and project infrastructure remain excluded.",
+      "status": "ported",
+      "scope": "Complete original package JSON cache counterpart, preserving typed canonical directory, first-writer/reused state, presentation-corrected shallow copy and version selection. Managed locks replace original synchronization machinery; private synchronization topology not claimed.",
       "upstreamSha256": "03e64da3205d159a26249bff73e376139bc1461e7afc70f8aae08dc648d0a0e8",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignBaselineScope": "Selected original ancestor package info/cache/read behavior demanded by diagnostic formatting; package resolution and project infrastructure remain excluded.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/module/util.go",
       "destination": "src/TypeScript.Scanner/Module/Util.cs",
       "status": "partial",
-      "scope": "Selected GetResolutionDiagnostic for admitted TypeScript resolution forms; unsupported file forms and custom extensions reject explicitly.",
+      "scope": "Prior fixed-TypeScript resolution diagnostics plus required original extension/package-name/versioned-key utilities; broader source-resolution diagnostics remain partial.",
       "upstreamSha256": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "configurationCampaignBaselineScope": "Selected GetResolutionDiagnostic for admitted TypeScript resolution forms; unsupported file forms and custom extensions reject explicitly.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/compare.go",
@@ -2189,20 +2249,895 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/collections/ordered_map.go",
+      "destination": "src/TypeScript.Scanner/Collections/OrderedMap.cs",
+      "status": "partial",
+      "scope": "Selected ordered storage, iteration, clone/equality, clear/delete and string-key raw JSON receiver behavior. Arbitrary reflected key/value JSON APIs and Go allocation-budget behavior remain external.",
+      "upstreamSha256": "c085c2f9cbeb18ab54eb9f570155c0becbc33374a788de500274bb96fa336c68",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/core/projectreference.go",
+      "destination": "src/TypeScript.Scanner/Core/ProjectReference.cs",
+      "status": "ported",
+      "scope": "Complete original project-reference model and resolve-path helpers; project-reference build execution belongs to other files/subsystems.",
+      "upstreamSha256": "84e6d4e30fa4d98d38901c6cd5790d0dd07a2c83f532efa9f6cfffe84084d825",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Configuration subsystem counterpart under implementation; complete/partial function disposition and independent review pending. See docs/CONFIGURATION-CONTRACT.md and owner checkpoints.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/core/typeacquisition.go",
+      "destination": "src/TypeScript.Scanner/Core/TypeAcquisition.cs",
+      "status": "ported",
+      "scope": "Complete original type-acquisition equality behavior.",
+      "upstreamSha256": "d22cdb1f3fc95cb95341c8c36979ff21f1314831b6183c6166a14b9a377e7182",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Configuration subsystem counterpart under implementation; complete/partial function disposition and independent review pending. See docs/CONFIGURATION-CONTRACT.md and owner checkpoints.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/semver/version.go",
+      "destination": "src/TypeScript.Scanner/Semver/Version.cs",
+      "status": "ported",
+      "scope": "Complete original semantic-version representation, parsing, comparison and formatting algorithms; Go ASCII/overflow behavior retained through documented .NET adaptation.",
+      "upstreamSha256": "7995ec78cd25dc722ec8418e96a184d92766f626c58283ba12d9d6f5b90a66c3",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/semver/version_range.go",
+      "destination": "src/TypeScript.Scanner/Semver/VersionRange.cs",
+      "status": "ported",
+      "scope": "Complete original semantic-version range parsing and matching algorithms, including source normalization and version comparisons.",
+      "upstreamSha256": "c85a73697841de20d84a0c042e5ffc05f3339ede5cc3ca8b696a43917cdb4d17",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/file_spec.go",
+      "destination": "src/TypeScript.Scanner/TsPath/FileSpec.cs",
+      "status": "ported",
+      "scope": "Complete original file-spec typed value, construction and path operations, preserving Go byte semantics; Unicode factories are explicit boundary adapters.",
+      "upstreamSha256": "742f7360dd735844c513d9c33cf7d5d32ccc6515ffadde4e71bbe5673643f55c",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/module_specifier.go",
+      "destination": "src/TypeScript.Scanner/TsPath/ModuleSpecifier.cs",
+      "status": "ported",
+      "scope": "Complete original module-specifier typed value, construction and classification operations, preserving Go byte semantics.",
+      "upstreamSha256": "6dbaf328680eef72a5c0b51609b4bf83fe618c5f92377a0f03c2365dd8347980",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/TsPath/PathByteText.cs",
+      "status": "new",
+      "scope": "Authored explicit Unicode/Go byte-string API boundary. Pure paths never decode.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/pathkey.go",
+      "destination": "src/TypeScript.Scanner/TsPath/PathKey.cs",
+      "status": "ported",
+      "scope": "Complete original canonical path-key typed value and comparison operations; source case-sensitivity rules retained.",
+      "upstreamSha256": "b663be08658a7782d7db9bf721e8de154b2eaf42eca202fc773312b8df1246a3",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/relative_path.go",
+      "destination": "src/TypeScript.Scanner/TsPath/RelativePath.cs",
+      "status": "ported",
+      "scope": "Complete original relative-path typed value and path operations; general relative path computation retains original parent-segment behavior.",
+      "upstreamSha256": "dd1af738a7c3b6bc4553365f51592f0ec02dbf87d03925a05161e0521498f86e",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/rooted_path.go",
+      "destination": "src/TypeScript.Scanner/TsPath/RootedPath.cs",
+      "status": "partial",
+      "scope": "Selected typed constructors, resolution, components/extensions, relative/containment/comparison and ancestors. GetCommonParentDirectories and global-cache-stopping traversal remain external; some fast-append operations use general resolution.",
+      "upstreamSha256": "03a97967ebe7bd5d44bcdb7d33243b331bb918752c7ca61f8e3ced124155c646",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/source_map_location.go",
+      "destination": "src/TypeScript.Scanner/TsPath/SourceMapLocation.cs",
+      "status": "partial",
+      "scope": "Selected original path/value operations; MarshalText/UnmarshalText dispatch represented by static JSON adapters rather than a general text-codec interface. Partial source unit.",
+      "upstreamSha256": "62b2c81a016e2c5054f2e66856efd12f94d80d7f9dd8605a56fdcbcb83e0cb3b",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/vfs.go",
+      "destination": "src/TypeScript.Scanner/Vfs/Vfs.cs",
+      "status": "partial",
+      "scope": "Selected read IFS, entries, FileInfo, DirEntry, FileMode, walk and error models. Writable/watch filesystem surface remains external.",
+      "upstreamSha256": "c21c89156413e237fd00b454d5e25a7c030ae2f56f916f844b4051b6b038bee4",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/vfsmatch/vfsmatch.go",
+      "destination": "src/TypeScript.Scanner/Vfs/VfsMatch/VfsMatch.cs",
+      "status": "ported",
+      "scope": "Complete original wildcard/file matcher API and algorithms; case sensitivity and platform path syntax are supplied by the host.",
+      "upstreamSha256": "1ed81fd4c3ee99570e64c6082f80a3d16e4ae2602d52e51a727fda4cc0b2d3fa",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/walkdir.go",
+      "destination": "src/TypeScript.Scanner/Vfs/WalkDir.cs",
+      "status": "ported",
+      "scope": "Complete original directory-walker API and algorithms; selected read-side host supplies traversal data.",
+      "upstreamSha256": "d6ccab599aaae3edec51b5b0ad7cad9ebe751ec7e5cd03373a12b7866b0b06e9",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/contentmapper/contentmapper.go",
+      "destination": "src/TypeScript.Scanner/ContentMapper/ContentMapper.cs",
+      "status": "partial",
+      "scope": "Selected metadata Definition/Manifest/Mapper/OptionPathSegment, IsSupportedVirtualExtension, DiagnosticName, Identity/manifestIdentity and Equals. TransformIdentity, MarshalDeclaredOptions and host/IPC/transform execution remain external.",
+      "upstreamSha256": "0ad086a1a255421249d08b6fc5e2dd6cd1b3fe06d7bee439daf56a90bc94eda5",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of metadata models/methods in tsc/internal/contentmapper/contentmapper.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/core/version.go",
+      "destination": "src/TypeScript.Scanner/Core/Version.cs",
+      "status": "ported",
+      "scope": "Fixed pinned revision version helpers; Go ldflags link-time override is outside the static pinned build adaptation.",
+      "upstreamSha256": "db30d271c7537a95dc67302c56622e7915faf9d706bda452fad98e792817b7f1",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of tsc/internal/core/version.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/diagnosticwriter/diagnosticwriter.go",
+      "destination": "src/TypeScript.Scanner/DiagnosticWriter/DiagnosticWriter.cs",
+      "status": "partial",
+      "scope": "Original generic diagnostic formatting algorithms and ordinary source adapter, preserving configuration baseline text, color, positions, related information and line endings. Content-mapped span execution and translated resources remain external.",
+      "upstreamSha256": "6db890694b7034a0de80829fcbf95357af81d161e386df500bb49639a7f187d7",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/glob/glob.go",
+      "destination": "src/TypeScript.Scanner/Glob/Glob.cs",
+      "status": "ported",
+      "scope": "Complete original glob.go production API.",
+      "upstreamSha256": "a330d021c5adee5618d20ad75fb377d65df6c7246030be0ac1738289af26a8af",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of tsc/internal/glob/glob.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/locale/locale.go",
+      "destination": "src/TypeScript.Scanner/Locale/Locale.cs",
+      "status": "partial",
+      "scope": "Selected original locale-tag Parse/String wrapper and required x/text grammar/canonicalization/registry closure. Context locale APIs, matching and collation remain external.",
+      "upstreamSha256": "6d855e6b563a9f0fb11e8b26ae882abce8dbdbfa370f2d1d46c4e6d68f56e5ae",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/outputpaths/commonsourcedirectory.go",
+      "destination": "src/TypeScript.Scanner/OutputPaths/CommonSourceDirectory.cs",
+      "status": "ported",
+      "scope": "Complete original commonsourcedirectory.go source directory computation and metadata dependencies; no emit execution.",
+      "upstreamSha256": "5fe412c344590ee8cad9f47eae38910b825e763da6ec95e881ea3f96f5f7e46f",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of tsc/internal/outputpaths/commonsourcedirectory.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/outputpaths/outputpaths.go",
+      "destination": "src/TypeScript.Scanner/OutputPaths/OutputPaths.cs",
+      "status": "ported",
+      "scope": "Complete original outputpaths.go filename/extension/buildinfo metadata algorithms; no emit execution.",
+      "upstreamSha256": "935587849786d1fe824ca8a6ff69c7e0da9c8fb8fdd31e92f203f99566ec6402",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of tsc/internal/outputpaths/outputpaths.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/expected.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/Expected.cs",
+      "status": "ported",
+      "scope": "Complete original Expected typed wrapper behavior using static supported package/model adapters; retains parent raw validation, duplicate-field policy, partial mutation and decode errors. General Go reflection is not ported.",
+      "upstreamSha256": "75a23eb89d2da593bf1979b18257ae2a68e5b647212619b953c20bfe0337f177",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/exportsorimports.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/ExportsOrImports.cs",
+      "status": "ported",
+      "scope": "Complete original ordered package exports/imports data representation and JSON behavior, with source nil/empty/type distinctions.",
+      "upstreamSha256": "2669b97e940de2f916fca773847aad338c093ceef1bee3eedc58c5cb575252c7",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/jsonvalue.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/JsonValue.cs",
+      "status": "ported",
+      "scope": "Complete original raw JSON-value representation, scalar/container access and comparison behavior; selected JSON dependency algorithms mapped separately.",
+      "upstreamSha256": "d3860406f722e988978bfea718cb490abac5ded6cf7d2b6154b5277c19ac7764",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/packagejson/validated.go",
+      "destination": "src/TypeScript.Scanner/PackageJson/Validated.cs",
+      "status": "ported",
+      "scope": "Complete original package validated-value representation and validation behavior.",
+      "upstreamSha256": "27ea3e73c2985e1926e86e2ed3dd2425d7d75267060521d1c83c792cf83bd6cd",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/commandlineoption.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/CommandLineOption.cs",
+      "status": "ported",
+      "scope": "Complete command-line option metadata model and path/null/list/enum accessors.",
+      "upstreamSha256": "3c15653631c1cb32e54e40ca0d8b4e336635f551a9f206851e69228efb060d1e",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/commandlineparser.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/CommandLineParser.cs",
+      "status": "ported",
+      "scope": "Complete original command-line, response-file and build-argument parsing, diagnostics and option conversion.",
+      "upstreamSha256": "b7f60467dc4f303107912c3e8850dd4b0a0ecec4d33ac76e487b96b4a13c1723",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/contentmappers.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ContentMappers.cs",
+      "status": "ported",
+      "scope": "Complete configuration-owned mapper metadata parsing, manifest resolution and diagnostics; mapper execution belongs to the external host subsystem.",
+      "upstreamSha256": "fa536fcc44b64f74ff525828e1b08465edf481df79ed1bfe17a1381fba8a8e0c",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/declarations_generated.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/DeclarationsGenerated.cs",
+      "status": "ported",
+      "scope": "Complete source-derived generated option declarations and metadata; static generation preserves original declaration order and values.",
+      "upstreamSha256": "13d6ef2de232b16ff818c8ec9e5d5075e62ae511e5254fb4286293b49fa2cc09",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/diagnostics.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/Diagnostics.cs",
+      "status": "ported",
+      "scope": "Complete original configuration diagnostic creation and source-location helpers.",
+      "upstreamSha256": "0b1a70032d47051779f09e2287194300106ebac7af134bd3a1e53fe9eb6ff451",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/enummaps.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/EnumMaps.cs",
+      "status": "ported",
+      "scope": "Complete original configuration enum conversion tables.",
+      "upstreamSha256": "0bc4330d006f040550025a0ec1e58531037d49f2e79a165356d1be73664aeff1",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/errors.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/Errors.cs",
+      "status": "ported",
+      "scope": "Complete original option/path/configuration error helpers.",
+      "upstreamSha256": "f63da5973b822776dfce424105e4f4adbcbde73cca9d7cb60badac17bd6879cc",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/namemap.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/NameMap.cs",
+      "status": "ported",
+      "scope": "Complete original option-name map initialization/lookups, preserving nil-list to allocated-empty behavior.",
+      "upstreamSha256": "998646c27cdf8aafab0eac39804de2395aeacf443095c436ccf98f6087e14cc5",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/options_generated.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/OptionsGenerated.cs",
+      "status": "ported",
+      "scope": "Complete generated option conversion/access/merge behavior using static source-derived dispatch for Native AOT.",
+      "upstreamSha256": "333f1dd771e53e6bd0976dae450c5b05bac18994140e4d365645d7cbabe069dd",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/parsedbuildcommandline.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ParsedBuildCommandLine.cs",
+      "status": "ported",
+      "scope": "Complete original parsed build-argument result model and helpers; no build execution.",
+      "upstreamSha256": "81844ab5a5416e99cd8c93ccef3e4c13cadd241a10864fa613a954534f55481a",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/parsedcommandline.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ParsedCommandLine.cs",
+      "status": "ported",
+      "scope": "Complete original parsed project queries, metadata and lazy/reload state behavior, with documented Go.Once adaptation.",
+      "upstreamSha256": "c4bce61bd2be9e3f20b02a3166865268eec5e38482d66c0346b81e9a9fe7de64",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/parsedoptions.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ParsedOptions.cs",
+      "status": "ported",
+      "scope": "Complete original parsed-options storage and compiler/type-acquisition representation.",
+      "upstreamSha256": "a62cf2017e9e441d9fc2d5d79d2048e121541540f8efcdedeefabe8fcc036c4b",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/parsinghelpers.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ParsingHelpers.cs",
+      "status": "ported",
+      "scope": "Complete original configuration raw/object/JSONC parsing, validation, inheritance and conversion helpers.",
+      "upstreamSha256": "6c028f8cbc2008364dde5c39cb12052c91b4d7ea4b082b53b6f9f54f2754a7bd",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/rawcompileroptions.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/RawCompilerOptions.cs",
+      "status": "ported",
+      "scope": "Complete original ordered raw option map, merge, lookup and JSON API behavior; selected Go JSON adapters preserve errors and partial state.",
+      "upstreamSha256": "73f5387f2e48d3e442e4927c7ecdbd37fa1573a657068ab0ab3f47d8c0231433",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/showconfig.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/ShowConfig.cs",
+      "status": "ported",
+      "scope": "Complete original show-config projection, implied settings and serialization behavior.",
+      "upstreamSha256": "f18ccd30da901529f431abd626c279bb61dcc64bb0f5a94766afd2b9d8f7d2f1",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/tsconfigparsing.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/TsConfigParsing.cs",
+      "status": "ported",
+      "scope": "Complete original config-file/JSONC entry APIs, extends/cache/cycle behavior, discovery, diagnostics and result construction.",
+      "upstreamSha256": "30022574c3cdfa40db251f115e67a71a55b96d853dbca382381a58840d74f3a3",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tsoptions/wildcarddirectories.go",
+      "destination": "src/TypeScript.Scanner/TsOptions/WildcardDirectories.cs",
+      "status": "ported",
+      "scope": "Complete original wildcard-directory metadata algorithms.",
+      "upstreamSha256": "4df5f34476e018b807f96e00b39dfa86a1e9f3b57fca5e64a1868fb98a1cc58f",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/tspath/dynamic.go",
+      "destination": "src/TypeScript.Scanner/TsPath/Dynamic.cs",
+      "status": "ported",
+      "scope": "Complete original dynamic-path encoding, decoding and opaque identity algorithms, preserving Go byte strings.",
+      "upstreamSha256": "08498d7901513fbdb73ef67332c29c6d53b06f84f915ee37f0b41e6953e1b898",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/internal/internal.go",
+      "destination": "src/TypeScript.Scanner/Vfs/Internal.cs",
+      "status": "partial",
+      "scope": "Selected RootLength, SplitPath and BOM/UTF16 read decoding. Generic Common/iofs routing framework remains external; selected read responsibilities are implemented in the OS counterpart.",
+      "upstreamSha256": "2d641c466808f1417e4e20d46aa4beb7f9dcc1bc5fd872a5d134fb3ae56d1def",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/osvfs/os.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/Os.cs",
+      "status": "partial",
+      "scope": "Selected actual read/stat/entries/realpath/case detection with explicit scalar OS boundary and Linux x64 statx/raw-name/readlink adapters. Write/remove/chtimes/watch/global-cache directory machinery remains external; other platforms unverified.",
+      "upstreamSha256": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/TsOptions/ConfigurationObserve.cs",
+      "status": "new",
+      "scope": "Authored read-only static AOT-safe configuration state observation; no upstream algorithm.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/strconv/quote.go",
+      "destination": "src/TypeScript.Scanner/Runtime/GoQuote.cs",
+      "status": "partial",
+      "scope": "Quote and IsPrint dependency for exact Go byte-string error formatting; other strconv operations excluded. Generated tables are separately mapped.",
+      "upstreamSha256": "6602960ec8777de9926c1d02fbf5cb0828d4aefa38083865f4af17b6892c09a2",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/strconv/isprint.go",
+      "destination": "src/TypeScript.Scanner/Runtime/GoQuoteTables.cs",
+      "status": "partial",
+      "scope": "Quote and IsPrint dependency for exact Go byte-string error formatting; other strconv operations excluded. Generated tables are separately mapped.",
+      "upstreamSha256": "e6f4b35fbf38f9c9c8b251e5d3cf94daa880789cb89825f11f9734ba4a42e9ff",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "internal/language/lookup.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Lookup.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "8f0ac8780f89d5c2b29b98fd599269b445d7bb612a7948c9e97d425424b5ea38",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "additionalSources": [
+        {
+          "upstream": "internal/tag/tag.go",
+          "upstreamSha256": "97a27a6bfdd26d872e07d051fc27e622e1cd764943350e8bfa9cf0e2e13cc474"
+        }
+      ],
+      "mappingException": "Selected closely coupled helper/table closure co-located; original secondary source hashes retained.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "internal/language/parse.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Parse.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "0c884b51bb83d3633a51f16e90c7dbaf45c301a449e366df591eda11a3000972",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "internal/language/tables.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Tables.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "876a73fb8b8fffd239efa592ffdf903c25757b4d17b715fc80d7aee8db2b985e",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "additionalSources": [
+        {
+          "upstream": "internal/language/compact/tables.go",
+          "upstreamSha256": "99415fb6642ebd291f825497d32e70ae32da8569815d8f4ef587664c6c5ce7d5"
+        }
+      ],
+      "mappingException": "Selected closely coupled helper/table closure co-located; original secondary source hashes retained.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "internal/language/language.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Language.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "19a0ccf7635fd3dbad3766d953996df5d1c24a367e44c49200ab6ec3023fc871",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "internal/language/compact/language.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/Compact/Language.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "1d49845ec8c93b000391718e3127c0979c054186570805fce27f7fe167ad2c5d",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "additionalSources": [
+        {
+          "upstream": "internal/language/compact/compact.go",
+          "upstreamSha256": "e154aa511d328fd47a9c9fc1115d9c92be2d385e885ae65c5e348ec1d5844ead"
+        }
+      ],
+      "mappingException": "Selected closely coupled helper/table closure co-located; original secondary source hashes retained.",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "language/parse.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/Language/Parse.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "3552f8fba45f310216182d167ba1da8e0c02212ad1896eeb66b194dd546b7bc2",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/text",
+      "revision": "v0.42.0",
+      "upstream": "language/language.go",
+      "destination": "src/TypeScript.Scanner/Locale/XText/Language/Language.cs",
+      "status": "partial",
+      "scope": "Selected Parse/canonicalization/String closure required by TsOptions locale. Matching, collation and unrelated language APIs excluded; selected source/omission review and Linux x64 Native AOT acceptance complete.",
+      "upstreamSha256": "3f2032f0367d83fb14772384d47119d27c2c427b277aa0a02913db59abe32bb0",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "status": "new",
+      "scope": "Authored static adapter over selected genuine Go JSON generic decode, raw ReadValue callback validation and raw WriteValue default compaction/wrapping algorithms. Complete selected model field/omission conditions in dependency inventory. General streaming, arbitrary reflection/custom hooks and nondefault formatting remain external.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationDependencyInventory": "docs/configuration-json-provenance.json",
+      "configurationDependencyFunctions": [
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/v2/arshal_any.go",
+          "upstreamSha256": "bdd67f2105b186fbd39c8de10f6997070a11e69717af69f3d803c8ae5f34ec2e",
+          "functions": [
+            "unmarshalValueAny/unmarshalObjectAny/unmarshalArrayAny selected partial container/value behavior",
+            "marshalValueAny/marshalObjectAny/marshalArrayAny selected static container traversal/empty fast paths"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/v2/arshal_default.go",
+          "upstreamSha256": "c786a1d08a38eb0fee2df1ef68c7d7ce3415d8ad5cbc500a538c1bcec9be7515",
+          "functions": [
+            "startDetectingCyclesAfter/visitPointer/leavePointer (static reference-container adaptation)",
+            "makeFloatArshaler nonfinite error branch"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/internal/jsonwire/encode.go",
+          "upstreamSha256": "b0a9c70c49442959833ba37dd669bedc0fe7a2f1ab16cadbc7f3205dd2c6b934",
+          "functions": [
+            "ReformatString selected default ->ConsumeString/AppendUnquote/AppendQuote",
+            "ReformatNumber selected default verbatim number branch"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/jsontext/encode.go",
+          "upstreamSha256": "1ad3b78ff3e407a13a3f3d05f3cc7ecba92fcd7a3edc95c14c0f65d09e932ef8",
+          "functions": [
+            "WriteValue atomic local-buffer commitment, whole-buffer offsets/depth/duplicates",
+            "reformatValue/reformatObject/reformatArray compact default projection via iterative validation then lexical output"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/v2/arshal_methods.go",
+          "upstreamSha256": "f4f9841376d866ad8d6eb40a05fddbc2d754d70383ad64b78b0fc0462c16f805",
+          "functions": [
+            "Raw Value MarshalJSON ->WriteValue wrapper; UnmarshalJSON byte callback ->ReadValue prevalidation"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/v2/arshal_default.go",
+          "upstreamSha256": "c786a1d08a38eb0fee2df1ef68c7d7ce3415d8ad5cbc500a538c1bcec9be7515",
+          "functions": [
+            "Static supported model field tag branches: omitzero/isZero; omitempty/UnwriteEmptyObjectMember for Definition.Options only; false JSON values remain nonempty"
+          ]
+        }
+      ],
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxStat.cs",
+      "status": "new",
+      "scope": "Authored Linux x64 statx ABI adapter supplying os.Stat file-kind information unavailable through public System.IO attributes. Pure virtual paths are separate; actual Linux x64 native and selected edge behavior verified.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ConfigurationInspection.cs",
+      "status": "new",
+      "scope": "Authored disk adapter invoking genuine TsOptions config interpretation, exposing diagnostics and show-config independently of checker support.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ProjectCheckingAdmission.cs",
+      "status": "new",
+      "scope": "Authored explicit capability admission for the existing bounded checker after genuine configuration interpretation; retains all settings/files or rejects unsupported downstream execution.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/encoding/json/internal/jsonwire/decode.go",
+      "upstreamSha256": "2ec579bfd801743cb8073f89d35c1f5540811e435b53793b2732cf57423e2eaa",
+      "additionalSources": [
+        {
+          "upstream": "src/encoding/json/internal/jsonwire/wire.go",
+          "upstreamSha256": "f7e0e72cf8624ebb19501b79f5c3be45a10419be52fd027ec3c5a8caf0b8944c"
+        }
+      ],
+      "mappingException": "Selected tightly coupled raw-JSON diagnostic dependency is co-located; original source paths/hashes preserved separately.",
+      "destination": "src/TypeScript.Scanner/Json/Internal/JsonWire.cs",
+      "status": "partial",
+      "scope": "Selected original whole-buffer literal/string/number grammar, byte quoting/unquoting and default raw reformat dependencies. Generic streaming, nondefault formatting and unrelated options remain external.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationDependencyInventory": "docs/configuration-json-provenance.json",
+      "configurationDependencyFunctions": [
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/internal/jsonwire/decode.go",
+          "upstreamSha256": "2ec579bfd801743cb8073f89d35c1f5540811e435b53793b2732cf57423e2eaa",
+          "functions": [
+            "ConsumeWhitespace",
+            "ConsumeLiteral",
+            "ConsumeString/ConsumeStringResumable (whole-buffer strict branch)",
+            "ConsumeNumber/ConsumeNumberResumable (whole-buffer initial state)",
+            "parseHexUint16",
+            "hasEscapedUTF16Prefix"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/internal/jsonwire/wire.go",
+          "upstreamSha256": "f7e0e72cf8624ebb19501b79f5c3be45a10419be52fd027ec3c5a8caf0b8944c",
+          "functions": [
+            "NewInvalidCharacterError",
+            "NewInvalidEscapeSequenceError",
+            "InvalidTextError.Error",
+            "TruncatePointer"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/unicode/utf8/utf8.go",
+          "upstreamSha256": "3c145ee25fd7631ebbc670fd1236e8c163ca30ae8913c796489efbf3f267ad54",
+          "functions": [
+            "FullRune strict initial-prefix equivalent"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/internal/jsonwire/decode.go",
+          "upstreamSha256": "2ec579bfd801743cb8073f89d35c1f5540811e435b53793b2732cf57423e2eaa",
+          "functions": [
+            "AppendUnquote selected default/permissive escaped and raw bytes",
+            "ConsumeString strict/permissive whole-buffer UTF8 conditions"
+          ]
+        }
+      ],
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/encoding/json/jsontext/errors.go",
+      "upstreamSha256": "782a2da67bce8694e02280f808993f2747747d9154861ca83dd15d308a3a0538",
+      "additionalSources": [
+        {
+          "upstream": "src/encoding/json/v2/errors.go",
+          "upstreamSha256": "029a385fcdca05f9ac1194b49d80202a895c00e569d10f306fd419915e23b784"
+        }
+      ],
+      "mappingException": "Selected tightly coupled raw-JSON diagnostic dependency is co-located; original source paths/hashes preserved separately.",
+      "destination": "src/TypeScript.Scanner/Json/Internal/JsonTextErrors.cs",
+      "status": "partial",
+      "scope": "Selected syntactic/semantic error formatting preserving pointer, byte offset and source type information; broader JSON APIs outside scope.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationDependencyInventory": "docs/configuration-json-provenance.json",
+      "configurationDependencyFunctions": [
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/jsontext/errors.go",
+          "upstreamSha256": "782a2da67bce8694e02280f808993f2747747d9154861ca83dd15d308a3a0538",
+          "functions": [
+            "SyntacticError.Error (selected syntax/duplicate/offset/pointer branches)"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/v2/errors.go",
+          "upstreamSha256": "029a385fcdca05f9ac1194b49d80202a895c00e569d10f306fd419915e23b784",
+          "functions": [
+            "SemanticError.Error (actual selected static Go types/number/custom errors)"
+          ]
+        }
+      ],
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Json/Internal/JsonDiagnosticReader.cs",
+      "status": "new",
+      "scope": "Authored whole-input frame adapter using selected original token/state/error producers. Exact original dependency functions and adaptations tracked in docs/configuration-json-provenance.json; no streaming or general JSON framework claim.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationDependencyInventory": "docs/configuration-json-provenance.json",
+      "configurationDependencyFunctions": [
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/jsontext/decode.go",
+          "upstreamSha256": "6978277353d629e9fa02a3a351df55d647a067918c33fff6617ccaf307656fc8",
+          "functions": [
+            "PeekKind/checkDelim/checkDelimBeforeIOError selected whole-input frame adaptation",
+            "consumeObject/consumeArray token grammar and depth"
+          ]
+        },
+        {
+          "repository": "https://go.googlesource.com/go",
+          "revision": "go1.27.1",
+          "upstream": "src/encoding/json/jsontext/state.go",
+          "upstreamSha256": "07930c12fd4a0cd219859f9cd7257cb9e3d71f7581e32f73510c4ddc4c8cc08f",
+          "functions": [
+            "needDelim/needImplicitComma/needObjectValue",
+            "ErrNonStringName/maxNestingDepth"
+          ]
+        }
+      ],
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxReadPaths.cs",
+      "status": "new",
+      "scope": "Authored Linux x64 raw directory-name/readlink/open/close syscall boundary preventing lossy filesystem-name collisions. Original realpath fastpath/fallback algorithms have separate NativePath/RealpathLinux and GoFilePathSymlink mappings; no writable FS or other-platform acceptance.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "additionalSources": [
+        {
+          "upstream": "tsc/internal/nativepath/eintr_unix.go",
+          "upstreamSha256": "68400158122128f32249c81284087dbd3168798069e026449865f5e28131d218",
+          "scope": "Selected ignoringEINTR retry semantics at actual open/readlink calls; authored ABI wrappers remain explicit."
+        }
+      ],
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/nativepath/realpath_linux.go",
+      "destination": "src/TypeScript.Scanner/NativePath/RealpathLinux.cs",
+      "status": "partial",
+      "scope": "Selected original Linux O_PATH/proc-fd realpath and filepath fallback closure; original errors consumed as failure by OSVFS, invalid encoding remains an explicit host rejection.",
+      "upstreamSha256": "f06ac32f09363f01aae4b08e858560255104f29a5aabedf31d45e50533894e9a",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+    },
+    {
+      "upstream": "src/path/filepath/symlink.go",
+      "destination": "src/TypeScript.Scanner/Runtime/GoFilePathSymlink.cs",
+      "status": "partial",
+      "scope": "Selected Linux/POSIX symlink-walk fallback with original lstat/non-directory and255-link behavior; Windows volume branches excluded at this explicit Linux boundary.",
+      "upstreamSha256": "d4e5ae166c208c8d0fbbed9aa907208f7cc541100b8e04029a38f16f1b5da1b5",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
     }
   ],
   "activePhase": {
-    "name": "bounded-es-module-project-checking",
+    "name": "configuration-subsystem-completion",
     "status": "accepted-contract",
-    "acceptance": "P1–P5 accepted on Linux x64; delivery commit contains this manifest",
-    "baselineCommit": "2598ceb",
-    "contract": "docs/PROJECTS-CONTRACT.md",
-    "mandate": "docs/PROJECTS-PROMPT.md",
+    "baselineCommit": "2c850db",
+    "contract": "docs/CONFIGURATION-CONTRACT.md",
+    "mandate": "docs/CONFIGURATION-PROMPT.md",
     "state": "docs/STATE.md",
-    "note": "Bounded disk/config/Bundler-relative ES-module program over accepted collection semantics and exact libraries. P1-P5 require meaningful Go comparison, independent review, Linux x64 Native AOT and retained regressions. No packages, broad Node behavior, emit or services.",
-    "statusInventory": "docs/PROJECTS-STATUS.md",
-    "evidence": "validation/results/projects-verified.json",
-    "assessment": "docs/PROJECTS-ASSESSMENT.md"
+    "statusInventory": "docs/CONFIGURATION-STATUS.md",
+    "note": "Configuration interpretation/discovery complete within fixed contract. Downstream checking capabilities remain explicitly bounded. Delivery commit contains this manifest; no subsequent campaign authorized."
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -2326,6 +3261,24 @@
     "orderExecutionsPerRuntime": 30,
     "ordinaryNativeCliCases": 10,
     "platform": "Linux x64",
-    "scope": "Fixed authored explicit-files config, Bundler/ESNext relative TS modules, genuine three-library environment with skipLibCheck, selected cross-file semantic behavior and complete diagnostics. Unicode-scalar disk paths only. Packages, general tsconfig, broad language/library parity and emit excluded; delivery commit contains this manifest."
+    "scope": "Fixed authored explicit-files config, Bundler/ESNext relative TS modules, genuine three-library environment with skipLibCheck, selected cross-file semantic behavior and complete diagnostics. Unicode-scalar disk paths only. Packages, general tsconfig, broad language/library parity and emit excluded; delivery commit contains this manifest.",
+    "commit": "2c850db"
+  },
+  "acceptedConfigurationCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "2c850db",
+    "contract": "docs/CONFIGURATION-CONTRACT.md",
+    "assessment": "docs/CONFIGURATION-ASSESSMENT.md",
+    "evidence": "validation/results/configuration-verified.json",
+    "sourceSha256": "1354fd8ba087038cf4d952314203b52b2184fdf24367718de7bc082bdb7dc49d",
+    "verificationAssetsSha256": "868f4203227396b0c63d9cc5f3d318e6e5cfca2a66c05e1cc4065ef38eca142e",
+    "xUnitCases": 24078,
+    "nativeConfigurationCases": 319,
+    "nativeSharedChecks": 217,
+    "orderExecutionsPerRuntime": 38,
+    "ordinaryNativeCliCases": 14,
+    "originalDirectFunctions": 152,
+    "platform": "Linux x64",
+    "scope": "Complete17-file210-function TsOptions interpretation/discovery and required dependencies. Actual configuration inspection independent of explicit downstream checking admission. Program-owned validation/execution, source package imports, mapper execution, watch/emit/services remain external. Selected GoJSON/xtext/read-OS boundaries documented; delivery commit contains this manifest."
   }
 }

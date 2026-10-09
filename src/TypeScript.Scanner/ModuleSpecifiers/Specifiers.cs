@@ -3,7 +3,7 @@
 // Modified partial C# port of tsc/internal/modulespecifiers/specifiers.go at
 // fed0bf24149fb1ed36039212648bafdafc1ea10e. Genuine fixed relative diagnostic
 // branch; packages/project redirects/symlinks/paths/rootDirs/auto-imports excluded.
-using System.Text.Json;
+using TypeScript.PackageJson;
 using TypeScript.Checking;
 using TypeScript.Compiler;
 using TypeScript.Scanner;
@@ -174,14 +174,9 @@ internal static partial class ModuleSpecifiers
         if (info?.GetContents()is not { } contents)
             return "";
         var imports = contents.Imports;
-        if (imports.ValueKind != JsonValueKind.Object)
+        if (imports.Type != JSONValueType.Object)
             return "";
-        // Original ordered-map JSON decoding updates duplicate names in their
-        // first insertion position; retain the final value before lookup.
-        var entries = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
-        foreach (var pair in imports.EnumerateObject())
-            entries[pair.Name] = pair.Value;
-        foreach (var pair in entries)
+        foreach (var pair in imports.AsObject().Entries())
         {
             string key = pair.Key;
             if (key is "#" or "#/" || !key.StartsWith('#'))
@@ -191,7 +186,7 @@ internal static partial class ModuleSpecifiers
             // The next original branch reverse-matches conditional/package path
             // mappings. Reaching a valid mapping producer is explicitly unsupported;
             // never pretend that a selected mapping was absent.
-            if (pair.Value.ValueKind is JsonValueKind.String or JsonValueKind.Array or JsonValueKind.Object)
+            if (pair.Value.Type is JSONValueType.String or JSONValueType.Array or JSONValueType.Object)
                 throw new ProjectException("packageJsonSpecifierMapping", "Diagnostic module names require unsupported ancestor imports mapping: " + TsPath.CombinePaths(ancestor, "package.json"));
         }
 

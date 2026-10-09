@@ -3,6 +3,7 @@
 // Partial port of tsc/internal/compiler/fileInclude.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Root-file and ordinary import reasons; other reference families are excluded.
 using TypeScript.Scanner;
+using ConfigParser = TypeScript.TsOptions.TsOptions;
 using TsScanner = TypeScript.Scanner.Scanner;
 
 namespace TypeScript.Compiler;
@@ -34,6 +35,25 @@ internal sealed class FileIncludeReason
 
         if (rootIndex >= 0)
         {
+            if (processor.configuration.Parsed is { } config)
+            {
+                var file = config.FileNames()![rootIndex];
+                string Name(RootedFilePath path)
+                {
+                    if (relativeFileName && config.CaseSensitivity().RelativePathFromDirectory(RootedDirectoryPath.FromUnicode(relativeTo), path)is var pair && pair.Ok)
+                        return pair.Path.AsString();
+                    return path.AsString();
+                }
+
+                string spec = config.GetMatchedFileSpec(file);
+                if (spec != "")
+                    return Ast.NewCompilerDiagnostic(Diagnostics.Part_of_files_list_in_tsconfig_json, spec, Name(file));
+                var(include, isDefault) = config.GetMatchedIncludeSpec(file);
+                if (include != "")
+                    return isDefault ? Ast.NewCompilerDiagnostic(Diagnostics.Matched_by_default_include_pattern_Asterisk_Asterisk_Slash_Asterisk) : Ast.NewCompilerDiagnostic(Diagnostics.Matched_by_include_pattern_0_in_1, include, Name(config.ConfigName()));
+                return Ast.NewCompilerDiagnostic(Diagnostics.Root_file_specified_for_compilation);
+            }
+
             // fileInclude.go:170–175. Diagnostic arguments remain stored even
             // when the localized explanation contains no placeholders.
             string matchedFileSpec = processor.configuration.Files[rootIndex];
@@ -52,6 +72,26 @@ internal sealed class FileIncludeReason
             return DiagnosticAt(Diagnostics.File_is_included_via_import_here);
         if (rootIndex < 0)
             return null;
+        if (processor.configuration.Parsed is { } config)
+        {
+            var file = config.FileNames()![rootIndex];
+            string spec = config.GetMatchedFileSpec(file);
+            if (spec != "")
+            {
+                var node = ConfigParser.GetTsConfigPropArrayElementValue(config.ConfigFile!.SourceFile, "files", spec);
+                return node is null ? null : ConfigParser.CreateDiagnosticForNodeInSourceFile(config.ConfigFile.SourceFile, node.AsNode(), Diagnostics.File_is_matched_by_files_list_specified_here);
+            }
+
+            var(include, isDefault) = config.GetMatchedIncludeSpec(file);
+            if (include != "" && !isDefault)
+            {
+                var node = ConfigParser.GetTsConfigPropArrayElementValue(config.ConfigFile!.SourceFile, "include", include);
+                return node is null ? null : ConfigParser.CreateDiagnosticForNodeInSourceFile(config.ConfigFile.SourceFile, node.AsNode(), Diagnostics.File_is_matched_by_include_pattern_specified_here);
+            }
+
+            return null;
+        }
+
         Node? literal = processor.configuration.GetFileLiteral(rootIndex);
         return literal is null ? null : Ast.NewDiagnostic(processor.configuration.SourceFile, TsScanner.GetErrorRangeForNode(processor.configuration.SourceFile, literal), Diagnostics.File_is_matched_by_files_list_specified_here);
     }

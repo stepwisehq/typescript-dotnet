@@ -3,7 +3,7 @@
 // Modified C# port of tsc/internal/tspath/path.go syntax-reference helpers.
 // Pinned upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 namespace TypeScript.Scanner;
-internal static partial class TsPath
+public static partial class TsPath
 {
     private const string DynamicURIFileNamePrefix = "^/~ts-uri~/";
     private const string urlSchemeSeparator = "://";
@@ -100,6 +100,8 @@ internal static partial class TsPath
         return 0;
     }
 
+    public static bool IsDynamicFileName(string path) => path.StartsWith("^/", StringComparison.Ordinal);
+    public static bool PathIsAbsolute(string path) => GetEncodedRootLength(path) != 0;
     public static bool IsRootedDiskPath(string path) => GetEncodedRootLength(path) > 0;
     public static int GetRootLength(string path)
     {
@@ -335,6 +337,15 @@ internal static partial class TsPath
         return builder.ToString();
     }
 
+    // path.go:665, original-byte counterpart for pure configuration/VFS paths.
+    public static string ToFileNameLowerCaseGoBytes(string bytes)
+    {
+        var builder = new GoBuilder();
+        foreach (int rune in GoString.Runes(bytes))
+            builder.WriteRune(rune == 0x130 ? rune : UnicodeCase.ToLower(rune));
+        return builder.String();
+    }
+
     // path.go:737/753/795. Case-sensitive project paths share a POSIX root;
     // retain component reduction and the original relative component assembly.
     public static List<string> GetPathComponentsRelativeTo(string from, string to)
@@ -366,5 +377,200 @@ internal static partial class TsPath
         return GetPathFromPathComponents(GetPathComponentsRelativeTo(fromDirectory, to));
     }
 
+    // Source byte-oriented overloads; the legacy two-argument scalar API above
+    // remains the established Projects adapter.
+    public static string ConvertToRelativePath(string absoluteOrRelativePath, RootedDirectoryPath currentDirectory, CaseSensitivity sensitivity)
+    {
+        if (!IsRootedDiskPath(absoluteOrRelativePath))
+            return absoluteOrRelativePath;
+        return ResolveRelativePathToDirectoryOrUrl(currentDirectory.AsString(), absoluteOrRelativePath, false, currentDirectory, sensitivity);
+    }
+
+    public static List<string> GetPathComponentsRelativeTo(string from, string to, CaseSensitivity sensitivity) => getPathComponentsRelativeTo(ReducePathComponents(GetPathComponents(from)), ReducePathComponents(GetPathComponents(to)), sensitivity);
+    private static List<string> resolvePathComponentsRelativeTo(string from, string to, RootedDirectoryPath currentDirectory, CaseSensitivity sensitivity) => getPathComponentsRelativeTo(ReducePathComponents(GetPathComponents(CombinePaths(currentDirectory.AsString(), from))), ReducePathComponents(GetPathComponents(CombinePaths(currentDirectory.AsString(), to))), sensitivity);
+    private static List<string> getPathComponentsRelativeTo(List<string> from, List<string> to, CaseSensitivity sensitivity)
+    {
+        int start = 0, maxCommonComponents = Math.Min(from.Count, to.Count);
+        for (; start < maxCommonComponents; start++)
+            if (!(start == 0 || !sensitivity.IsCaseSensitive() ? UnicodeCase.EqualFold(from[start], to[start]) : from[start] == to[start]))
+                break;
+        if (start == 0)
+            return to;
+        List<string> result = [""];
+        for (int i = start; i < from.Count; i++)
+            result.Add("..");
+        for (int i = start; i < to.Count; i++)
+            result.Add(to[i]);
+        return result;
+    }
+
+    public static string GetRelativePathToDirectoryOrUrl(string directoryPathOrUrl, string relativeOrAbsolutePath, bool isAbsolutePathAnUrl, CaseSensitivity sensitivity) => getRelativePathToDirectoryOrUrl(GetPathComponentsRelativeTo(directoryPathOrUrl, relativeOrAbsolutePath, sensitivity), isAbsolutePathAnUrl);
+    public static string ResolveRelativePathToDirectoryOrUrl(string directoryPathOrUrl, string relativeOrAbsolutePath, bool isAbsolutePathAnUrl, RootedDirectoryPath currentDirectory, CaseSensitivity sensitivity) => getRelativePathToDirectoryOrUrl(resolvePathComponentsRelativeTo(directoryPathOrUrl, relativeOrAbsolutePath, currentDirectory, sensitivity), isAbsolutePathAnUrl);
+    private static string getRelativePathToDirectoryOrUrl(List<string> components, bool isAbsolutePathAnUrl)
+    {
+        string first = components[0];
+        if (isAbsolutePathAnUrl && IsRootedDiskPath(first))
+            components[0] = (first[0] == '/' ? "file://" : "file:///") + first;
+        return GetPathFromPathComponents(components);
+    }
+
     public static string EnsurePathIsNonModuleName(string path) => GetRootLength(path) == 0 && !PathIsRelative(path) ? "./" + path : path;
+    public static string GetAnyExtensionFromPath(string path, IEnumerable<string>? extensions, CaseSensitivity sensitivity)
+    {
+        if (extensions != null && extensions.Any())
+        {
+            path = RemoveTrailingDirectorySeparator(path);
+            foreach (string extension in extensions)
+            {
+                string result = tryGetExtensionFromPath(path, extension, sensitivity);
+                if (result != "")
+                    return result;
+            }
+
+            return "";
+        }
+
+        string name = getBaseFileNameFromNormalized(NormalizeSlashes(path));
+        int dot = name.LastIndexOf('.');
+        return dot >= 0 ? name[dot..] : "";
+    }
+
+    public static string GetLongestExtensionFromPath(string path, IEnumerable<string>? extensions, CaseSensitivity sensitivity)
+    {
+        path = RemoveTrailingDirectorySeparator(path);
+        string longest = "";
+        foreach (string extension in extensions ?? [])
+            if (extension.Length > longest.Length)
+            {
+                string matched = tryGetExtensionFromPath(path, extension, sensitivity);
+                if (matched != "")
+                    longest = matched;
+            }
+
+        return longest;
+    }
+
+    private static string tryGetExtensionFromPath(string path, string extension, CaseSensitivity sensitivity)
+    {
+        if (!extension.StartsWith('.'))
+            extension = "." + extension;
+        if (path.Length < extension.Length || path[path.Length - extension.Length] != '.')
+            return "";
+        string actual = path[(path.Length - extension.Length)..];
+        return (sensitivity.IsCaseSensitive() ? actual == extension : UnicodeCase.EqualFold(actual, extension)) ? actual : "";
+    }
+
+    // path.go:554. Needed by normalized typed-path admission, including //.
+    internal static bool hasRelativePathSegment(string p)
+    {
+        int n = p.Length;
+        if (n == 0)
+            return false;
+        if (p is "." or "..")
+            return true;
+        if (p[0] == '.')
+        {
+            if (n >= 2 && p[1] == '/')
+                return true;
+            if (n >= 3 && p[1] == '.' && p[2] == '/')
+                return true;
+        }
+
+        if (p[n - 1] == '.')
+        {
+            if (n >= 2 && p[n - 2] == '/')
+                return true;
+            if (n >= 3 && p[n - 2] == '.' && p[n - 3] == '/')
+                return true;
+        }
+
+        bool prevSlash = false;
+        int segLen = 0, dotCount = 0;
+        for (int i = 0; i < n; i++)
+        {
+            char c = p[i];
+            if (c == '/')
+            {
+                if (prevSlash)
+                    return true;
+                if ((segLen == 1 && dotCount == 1) || (segLen == 2 && dotCount == 2))
+                    return true;
+                prevSlash = true;
+                segLen = dotCount = 0;
+                continue;
+            }
+
+            if (c == '.')
+            {
+                if (dotCount >= 0)
+                    dotCount++;
+            }
+            else
+                dotCount = -1;
+            segLen++;
+            prevSlash = false;
+        }
+
+        return (segLen == 1 && dotCount == 1) || (segLen == 2 && dotCount == 2);
+    }
+}
+
+// path.go:1003 et seq. Canonical identity is distinct from EqualFold matching.
+public enum CaseSensitivity : byte
+{
+    CaseInsensitive,
+    CaseSensitive
+}
+
+public static class CaseSensitivityOperations
+{
+    public static bool IsCaseSensitive(this CaseSensitivity value) => value == CaseSensitivity.CaseSensitive;
+    public static bool IsCaseInsensitive(this CaseSensitivity value) => value == CaseSensitivity.CaseInsensitive;
+    public static string String(this CaseSensitivity value) => value switch
+    {
+        CaseSensitivity.CaseInsensitive => "false",
+        CaseSensitivity.CaseSensitive => "true",
+        _ => "unknown"
+    };
+    public static Func<string, string, int> GetComparer(this CaseSensitivity value) => (left, right) => value.CompareStrings(left, right);
+    public static string Canonicalize(this CaseSensitivity value, string bytes)
+    {
+        if (value.IsCaseSensitive())
+            return bytes;
+        return TsPath.ToFileNameLowerCaseGoBytes(bytes);
+    }
+
+    public static (string Remaining, bool Ok) TrimPrefix(this CaseSensitivity value, string text, string prefix)
+    {
+        if (value.IsCaseSensitive())
+            return text.StartsWith(prefix, StringComparison.Ordinal) ? (text[prefix.Length..], true) : (text, false);
+        string canonical = value.Canonicalize(prefix);
+        if (!value.Canonicalize(text).StartsWith(canonical, StringComparison.Ordinal))
+            return (text, false);
+        int count = GoString.Runes(canonical).Length, offset = 0;
+        for (int i = 0; i < count && offset < text.Length; i++)
+            offset += Utf8.DecodeRuneInString(text.AsSpan(offset)).Size;
+        return (text[offset..], true);
+    }
+
+    public static int CompareStrings(this CaseSensitivity value, string a, string b)
+    {
+        if (value.IsCaseSensitive())
+            return Math.Sign(string.CompareOrdinal(a, b));
+        int ai = 0, bi = 0;
+        while (ai < a.Length && bi < b.Length)
+        {
+            var(ar, sa) = Utf8.DecodeRuneInString(a.AsSpan(ai));
+            var(br, sb) = Utf8.DecodeRuneInString(b.AsSpan(bi));
+            int result = UnicodeCase.ToLower(ar).CompareTo(UnicodeCase.ToLower(br));
+            if (result != 0)
+                return result;
+            ai += sa;
+            bi += sb;
+        }
+
+        return (a.Length - ai).CompareTo(b.Length - bi);
+    }
+
+
 }

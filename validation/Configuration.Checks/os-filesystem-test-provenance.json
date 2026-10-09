@@ -1,0 +1,31 @@
+{
+  "kind": "Linux read-side original assertions and additional source-grounded controls",
+  "fullOriginalFunctions": [
+    "TestOS",
+    "TestSymlinkRealpath",
+    "TestGetAccessibleEntries"
+  ],
+  "authoredGroups": [
+    "Authored.ReadBOM",
+    "Authored.LinuxStatAndPathBoundaries",
+    "Authored.RawNativePathEncoding"
+  ],
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/os_test.go": "f13cfcb7ab6c95e7802dcee2767449eeca9908d1bda697b9ace23a2629e242f4",
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/realpath_test.go": "0f1715d1bdf1ce20114d66425c58e3e01d7f3e6d115c07212f85703bd6ee26f6",
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/helpers_test.go": "32d73f629fafc0e7bfc9d84ce08b30dd2238fffc919383b17e6375f2621ad971",
+    "validation/Configuration.Checks/OsFileSystemChecks.cs": "120eddd973f3435042f57886e6c7e6360d17197abd7c3eb8df7d587b95090226",
+    "validation/Configuration.Checks/OsRawPathChecks.cs": "d0dd536cd1255033bc10a1b81718234dba558154ca0d991096c12bed805a3a78"
+  },
+  "mechanics": "Native setup creates original fixture files/symlinks; mapped read APIs execute assertions. Linux original setup selected, Windows mklink/junction setup is not claimed executed. Supplementary/BMP paths are Unicode only at disk boundary. FIFO/socket Stat and entry filtering are checked without reading these nodes.",
+  "limits": [
+    "Stat Sys layout is not observed or claimed.",
+    "DateTimeOffset represents nanosecond timestamps at 100 ns precision; the selected control uses exactly representable fractional timestamp.",
+    "No write-side VFS API or Windows native execution claim.",
+    "Raw invalid native directory names and successful realpath results reject before replacement decoding; failed O_PATH retains the unchanged input without inspecting a missing target. Virtual arbitrary-byte ReadFile equivalence with original fstest is unclaimed."
+  ],
+  "originalAuthoredProjection": "validation/configuration-corpus/os-projections-provenance.json",
+  "managedEvidence": "artifacts/configuration-validation/build10/os-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

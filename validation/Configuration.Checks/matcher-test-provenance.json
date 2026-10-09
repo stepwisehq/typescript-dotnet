@@ -1,0 +1,88 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "upstream/TypeScript/tsc/internal/vfs/vfsmatch/vfsmatch_test.go",
+  "sourceSha256": "c977c317f6ceaef876793a90c9a1ed0e9a6a47e25836e7bc3a7a840d4cb8a22e",
+  "originalFunctions": [
+    "TestReadDirectory",
+    "TestIsImplicitGlob",
+    "TestReadDirectoryEdgeCases",
+    "TestReadDirectoryEmptyIncludes",
+    "TestReadDirectorySymlinkCycle",
+    "TestReadDirectoryMatchesTypeScriptBaselines",
+    "TestReadDirectoryWithExtendedDynamicRoot",
+    "TestReadDirectoryDynamicRootUsesCaseSensitivePatterns",
+    "TestDynamicAbsoluteGlobUsesCaseSensitivePattern",
+    "TestSpecMatcher",
+    "TestSpecMatcher_MatchString",
+    "TestSingleSpecMatcher_MatchString",
+    "TestSpecMatchers_MatchIndex",
+    "TestSingleSpecMatcher",
+    "TestSpecMatchers",
+    "TestGlobPatternInternals",
+    "TestMatchSegmentsEdgeCases",
+    "TestReadDirectoryConsecutiveSlashes",
+    "TestGlobPatternLiteralWithPackageFolders",
+    "TestGetBasePathsCaseSensitivity"
+  ],
+  "generatedTables": {
+    "TestReadDirectory": {
+      "rows": 52,
+      "predicateSourcePreserved": true
+    },
+    "TestIsImplicitGlob": {
+      "rows": 10,
+      "predicateSourcePreserved": true
+    },
+    "TestReadDirectoryEdgeCases": {
+      "rows": 8,
+      "predicateSourcePreserved": true
+    },
+    "TestReadDirectoryEmptyIncludes": {
+      "rows": 1,
+      "predicateSourcePreserved": true
+    },
+    "TestReadDirectorySymlinkCycle": {
+      "rows": 1,
+      "predicateSourcePreserved": true
+    },
+    "TestReadDirectoryMatchesTypeScriptBaselines": {
+      "rows": 21,
+      "predicateSourcePreserved": true
+    },
+    "TestSpecMatcher": {
+      "rows": 5,
+      "predicateSourcePreserved": true
+    },
+    "TestSpecMatcher_MatchString": {
+      "rows": 3,
+      "predicateSourcePreserved": true
+    },
+    "TestSingleSpecMatcher_MatchString": {
+      "rows": 2,
+      "predicateSourcePreserved": true
+    },
+    "TestSpecMatchers_MatchIndex": {
+      "rows": 2,
+      "predicateSourcePreserved": true
+    },
+    "TestSingleSpecMatcher": {
+      "rows": 3,
+      "predicateSourcePreserved": true
+    },
+    "TestSpecMatchers": {
+      "rows": 2,
+      "predicateSourcePreserved": true
+    }
+  },
+  "manualBodies": [
+    "TestReadDirectoryWithExtendedDynamicRoot",
+    "TestReadDirectoryDynamicRootUsesCaseSensitivePatterns",
+    "TestDynamicAbsoluteGlobUsesCaseSensitivePattern",
+    "TestGlobPatternInternals",
+    "TestMatchSegmentsEdgeCases",
+    "TestReadDirectoryConsecutiveSlashes",
+    "TestGlobPatternLiteralWithPackageFolders",
+    "TestGetBasePathsCaseSensitivity"
+  ],
+  "policy": "All rows and original predicates; read-only host adaptation, no inferred expected output."
+}

@@ -1,0 +1,31 @@
+{
+  "scope": "Two complete selected original module helper bodies; no source-import resolver invocation substitution.",
+  "functions": {
+    "TestNodeModulePackageRoot": {
+      "rows": 11,
+      "assertionsPerRow": 1,
+      "shared": "ModulePackageRootChecks"
+    },
+    "TestNormalizePathForCJSResolutionPreservesDirectoryIntent": {
+      "rows": 16,
+      "assertionsPerRow": 4,
+      "shared": "ModuleCandidateChecks"
+    }
+  },
+  "sources": {
+    "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+    "upstream/TypeScript/tsc/internal/module/resolver_test.go": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f"
+  },
+  "adaptations": [
+    "Sequential scheduling instead of t.Parallel.",
+    "Friend-only candidate projection returns actual helper result path/text/directoryOnly/trailing state; no alternate algorithm or resolver query."
+  ],
+  "managedEvidence": {
+    "TestNodeModulePackageRoot": "artifacts/configuration-validation/build10/module-package-root-shared/report.json",
+    "TestNormalizePathForCJSResolutionPreservesDirectoryIntent": "artifacts/configuration-validation/build11b/module-candidate-shared/report.json"
+  },
+  "native": "pending",
+  "xUnit": "pending",
+  "originalGoEvidence": "artifacts/configuration-validation/module-original-tests/report.json",
+  "independentReview": "Support inspected all 11 package-root rows and all 16x4 normalization assertions; no lost assertion or wrongly inherited package exclusion identified."
+}

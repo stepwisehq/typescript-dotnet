@@ -1,0 +1,10 @@
+{"name": "marshal-list-depth-0", "mode": "marshal", "constructor": "list-depth", "depth": 0}
+{"name": "marshal-list-depth-9999", "mode": "marshal", "constructor": "list-depth", "depth": 9999}
+{"name": "marshal-list-depth-10000", "mode": "marshal", "constructor": "list-depth", "depth": 10000}
+{"name": "marshal-list-depth-10001", "mode": "marshal", "constructor": "list-depth", "depth": 10001}
+{"name": "marshal-map-depth-0", "mode": "marshal", "constructor": "map-depth", "depth": 0}
+{"name": "marshal-map-depth-9999", "mode": "marshal", "constructor": "map-depth", "depth": 9999}
+{"name": "marshal-map-depth-10000", "mode": "marshal", "constructor": "map-depth", "depth": 10000}
+{"name": "marshal-map-depth-10001", "mode": "marshal", "constructor": "map-depth", "depth": 10001}
+{"name": "marshal-list-cycle", "mode": "marshal", "constructor": "list-cycle"}
+{"name": "marshal-map-cycle", "mode": "marshal", "constructor": "map-cycle"}

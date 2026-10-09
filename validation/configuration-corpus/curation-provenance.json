@@ -1,0 +1,131 @@
+{
+  "investigationInputsRetained": [
+    {
+      "group": "initial",
+      "requestsSource": "artifacts/configuration-validation/initial-oracle/requests.jsonl",
+      "requestsSourceSha256": "0eb95e15b23881e7256b703c0995c84e304ec6f8bb4d7960c6777f0a42cef51f",
+      "expectedSource": "artifacts/configuration-validation/initial-oracle/expected.jsonl",
+      "expectedUncompressedSha256": "e1007be127af24155e5caa64d3a659833a1f46c68335be372fca0fa7dd3a42e0",
+      "cases": 6,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "numeric",
+      "requestsSource": "artifacts/configuration-validation/build5b/numeric-original-current/requests.jsonl",
+      "requestsSourceSha256": "f928d631333532dd02df960a37b358625011202a5ac666c6baee2788ed23026d",
+      "expectedSource": "artifacts/configuration-validation/build5b/numeric-original-current/expected.jsonl",
+      "expectedUncompressedSha256": "167539439bbf242f0603add89fa50d5e927f7900232a6d4eab96afe5ccfb76ce",
+      "cases": 33,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "locale",
+      "requestsSource": "artifacts/configuration-validation/build4/locale-boundaries/requests.jsonl",
+      "requestsSourceSha256": "bb2c6f4124057ce3e0768164ef0780ac5489ae19d7f2bbe9a07157c2613fbe04",
+      "expectedSource": "artifacts/configuration-validation/build4/locale-boundaries/go.jsonl",
+      "expectedUncompressedSha256": "c36106d8c62d4b70b2f967ec46dbce3c2bb7c669a292d9d58cde5ea0a6d6d333",
+      "cases": 1,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "writer",
+      "requestsSource": "artifacts/configuration-validation/build4/writer-vertical/requests.jsonl",
+      "requestsSourceSha256": "a6fe876da0baa3ecb70b367456c30f5a2ed9c1256f439ea1279b2c74505ccb59",
+      "expectedSource": "artifacts/configuration-validation/build4/writer-vertical/go.jsonl",
+      "expectedUncompressedSha256": "a8c7c26504892805909d9af033d3220af03c9fdf113352ec018530334c78fe0c",
+      "cases": 22,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "semver",
+      "requestsSource": "artifacts/configuration-validation/semver-boundaries/requests.jsonl",
+      "requestsSourceSha256": "5044be46e5ace663e6fad8d09a9758c05c1c9e85902f0df7f6b6ee4973b26601",
+      "expectedSource": "artifacts/configuration-validation/semver-boundaries/expected.jsonl",
+      "expectedUncompressedSha256": "68c39210efc9dc5566ad609294d153de6f04f20524a62fcd05f9ec3881f63f4c",
+      "cases": 2,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "raw-options",
+      "requestsSource": "artifacts/configuration-validation/build5b/raw-json-boundaries/valid-domain-requests.jsonl",
+      "requestsSourceSha256": "494b3c2d8bcf51939a074c58de9cc31f4afdae0834b04c04766a84c24e157757",
+      "expectedSource": "artifacts/configuration-validation/build5b/raw-json-boundaries/valid-domain-expected.jsonl",
+      "expectedUncompressedSha256": "c3f9c43759fe1211f5fdcfeef0e4a9420c805e0151f3bd5ae275d49f942eca9d",
+      "cases": 21,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "package",
+      "requestsSource": "artifacts/configuration-validation/build5b/package-json-boundaries/requests.jsonl",
+      "requestsSourceSha256": "8218665fbea88293c5a0858d76bc5cbb025c66efa068e796b1cdfac71f94020f",
+      "expectedSource": "artifacts/configuration-validation/build5b/package-json-boundaries/expected.jsonl",
+      "expectedUncompressedSha256": "86ded7c59caad4107d149438d611e13fc598bb52d56e6eb6933f1446f0773065",
+      "cases": 35,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "package-duplicates",
+      "requestsSource": "artifacts/configuration-validation/build6b/package-duplicate-boundaries/requests.jsonl",
+      "requestsSourceSha256": "136ebe579da7e90a2ff3c2c8e77f9e5d9672c176ae1d1fb847dd4f80a91e778c",
+      "expectedSource": "artifacts/configuration-validation/build6b/package-duplicate-boundaries/expected.jsonl",
+      "expectedUncompressedSha256": "51f9a2392ff493f1ad72ea18d1fafaef42e8a535f7477413f98f2f45fc613d2c",
+      "cases": 25,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "json-errors",
+      "requestsSource": "artifacts/configuration-validation/json-error-adapter/generic-requests.jsonl",
+      "requestsSourceSha256": "c78eeeab08544cebc2545af2715ccc05fda81d67a3e460731f406345ffc45cc7",
+      "expectedSource": "artifacts/configuration-validation/json-error-adapter/generic-original.jsonl",
+      "expectedUncompressedSha256": "deb562e1d507a790fdf00dc6d44ca313f25b44b17ba62bfc59f3642918cf2b3c",
+      "cases": 53,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "marshal",
+      "requestsSource": "artifacts/configuration-validation/json-marshal-boundaries/requests.jsonl",
+      "requestsSourceSha256": "5ef2e3c1e9724544bf26590a582ba401b204e55cb3ffb39b75e55e3133eab109",
+      "expectedSource": "artifacts/configuration-validation/json-marshal-boundaries/expected.jsonl",
+      "expectedUncompressedSha256": "7e707de1d3aac24df7365008580cb7f0be82583eeecf08a039c4710fa1b4f8ef",
+      "cases": 10,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "parse-depth",
+      "requestsSource": "artifacts/configuration-validation/json-parse-depth/requests.jsonl",
+      "requestsSourceSha256": "99ee916a623e3931358233b3a3a89ce247efc62296f5babdd406401027e4625d",
+      "expectedSource": "artifacts/configuration-validation/json-parse-depth/expected.jsonl",
+      "expectedUncompressedSha256": "6c2d13833983e62c399b2436909d7092ffdc10b74a300ae49fd73478a5102c97",
+      "cases": 6,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "nonfinite",
+      "requestsSource": "artifacts/configuration-validation/json-marshal-nonfinite/requests.jsonl",
+      "requestsSourceSha256": "7960191d484e1e1312b27185cf863737487c7b7b85035d1cdcb86f73979b1830",
+      "expectedSource": "artifacts/configuration-validation/json-marshal-nonfinite/expected.jsonl",
+      "expectedUncompressedSha256": "4354c4104f371d565370b907f42ec8f055e0583e8832a529d535eab9b7cbbdae",
+      "cases": 9,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "name-map",
+      "requestsSource": "artifacts/configuration-validation/name-map-empty/requests.jsonl",
+      "requestsSourceSha256": "4f29e229abc2f2f8aa46485abb6059cd661789a95353e8ebe4299a284703051a",
+      "expectedSource": "artifacts/configuration-validation/name-map-empty/expected.jsonl",
+      "expectedUncompressedSha256": "f160f7f3a274f4b2d3131b823ddbd15fbac98cc4f4b5d9d0f8a691c0d88aa4ea",
+      "cases": 2,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    },
+    {
+      "group": "package-priority",
+      "requestsSource": "artifacts/configuration-validation/package-error-precedence/requests.jsonl",
+      "requestsSourceSha256": "5c87cde24108fa0f538ce2be9949419b16ca0afbce2fa68d0a786cf4aa2b1106",
+      "expectedSource": "artifacts/configuration-validation/package-error-precedence/expected.jsonl",
+      "expectedUncompressedSha256": "0d888862a0a3b71347097537daa01c1a42eba0bdfac6794d18cf0b688477eee9",
+      "cases": 10,
+      "expectedPolicy": "Original-Go output bytes retained unchanged; gzip container only."
+    }
+  ],
+  "semanticPolicy": "Expected values never regenerated from managed output. Earlier invalid-domain/partial oracle streams remain investigation-only in artifacts. Selected preserved raw expected bytes are independently reproduced by final pinned Go executable."
+}

@@ -1,0 +1,23 @@
+{
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "sources": {
+    "tools/.cache/go/src/strconv/quote_test.go": "7fc6b61c20729f12e7fd6cd7d5b2c01cf312d5b35db8d173276c2acef588d2b6",
+    "tools/.cache/go/src/strconv/quote.go": "6602960ec8777de9926c1d02fbf5cb0828d4aefa38083865f4af17b6892c09a2",
+    "tools/.cache/go/src/strconv/isprint.go": "e6f4b35fbf38f9c9c8b251e5d3cf94daa880789cb89825f11f9734ba4a42e9ff",
+    "tools/.cache/go/src/unicode/tables.go": "ac0e5d5d1b58ed4b02d7cb4a0085bdefbdb4f7aae6fadddbc9477f8463da8bd8"
+  },
+  "TestIsPrint": {
+    "disposition": "assertion-preserving-port",
+    "domain": "rune 0 through unicode.MaxRune inclusive",
+    "assertions": 1114112,
+    "expectedPredicate": "locked Go unicode.IsPrint, independent of strconv tables",
+    "groupCount": 1
+  },
+  "TestQuote": {
+    "disposition": "adapted-selected-operation-assertions",
+    "rows": 8,
+    "preserved": "All eight original Quote assertions with unchanged literal expected bytes",
+    "omitted": "Eight AppendQuote assertions; append API not selected or implemented",
+    "groupCount": 1
+  }
+}

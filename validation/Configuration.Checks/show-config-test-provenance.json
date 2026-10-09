@@ -1,0 +1,17 @@
+{
+  "originalFunctions": [
+    "TestShowConfigSerialization",
+    "TestShowConfigEnumSerialization"
+  ],
+  "sources": {
+    "upstream/TypeScript/tsc/internal/tsoptions/showconfig_test.go": "bdf1a2406b311040622c53588fbdcbe3fed7d606946cdb45ab640055a836632e",
+    "upstream/TypeScript/tsc/internal/tsoptions/compileroptions_test.go": "5396fa26a83bf9085b634cdb29d1917504bd47588b48b31a88c40628cc26e74c",
+    "validation/Configuration.Checks/CompilerOptionFields.Generated.cs": "03e53d264bee43138b53923e65a5bc11f9d23d4ddd433ff91422fb3d3eff723e",
+    "validation/Configuration.Checks/ShowConfigChecks.cs": "1f5f684f1fd6d25b622f2dc43abe268b0e45fee23117ef2549bf908b2b6987b5"
+  },
+  "assertions": "Full132 original reflected field domain, zero/default/b/c/allocated-zero-pointer/nil-empty-one-zero-slice values, every enum map value, invalid enums/tristate255, relative/rooted paths and mixed final all-options; unchanged independent reflection serializer translated to static stored reads. All enum declarations preserve first-alias expectations.",
+  "mechanics": "Static source-derived fields replace reflection; structural map key/order/value assertions replace Go private collection representation equality, without asserting managed backing topology. Original shared path serializer helper remains shared, as upstream reflected serializer uses it.",
+  "managedEvidence": "artifacts/configuration-validation/build8/show-config-shared/report.json",
+  "xUnit": "pending",
+  "native": "pending"
+}

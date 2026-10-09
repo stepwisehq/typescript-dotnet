@@ -1,0 +1,34 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sources": {
+    "upstream/TypeScript/tsc/internal/collections/ordered_map_test.go": "d82b698647954bc54243cc376646283876ea3c45730d13fa5157ee18e450a26c"
+  },
+  "artifacts": {
+    "validation/Configuration.Checks/OrderedMapChecks.cs": "86205bd676a0cd53388f8b828b4815111bffd419118e46640c383c966adc374b",
+    "tests/Configuration.Tests/OrderedMapTests.cs": "c50d7fd98f958d8673a475b93d88aba31c51c1a8a2854d610dcd5e7fffedf029"
+  },
+  "assertionPreservingFunctions": [
+    "TestOrderedMapEqualFunc",
+    "TestOrderedMap",
+    "TestOrderedMapClone",
+    "TestOrderedMapClear"
+  ],
+  "execution": "Copied10 isolated shared dispatcher passed 5 groups, exit0. xUnit/final NativeAOT pending.",
+  "completeAssertions": "EqualFunc10 rows in BOTH directions incl nil/empty/order/custom values; Map1000 inserts/overwrites/reads, entries/counts/sorted/early break,999double-delete/zero/Has checks+last delete; Clone distinct identity/all keys+values before+after source delete; Clear zero count.",
+  "adaptedFunctions": [
+    {
+      "name": "TestOrderedMapUnmarshalJSON",
+      "case": "Adapted.TestOrderedMapUnmarshalJSON.StringAny",
+      "retained": "Actual JsonCodec.UnmarshalObject uses selected ordered map receiver and original typed wrapper text; object count3/a float64(1), null success, nonobject original error substring retained.",
+      "excluded": "Arbitrary integer-key reflection decode; no generic Go stream/custom-unmarshal interface claim."
+    }
+  ],
+  "excludedFunctions": [
+    {
+      "name": "TestOrderedMapWithSizeHint",
+      "reason": "Its sole assertion is Go allocation budget <10; no managed allocation parity/performance claim."
+    }
+  ],
+  "representation": "Null Go receiver EqualFunc calls use existing OrderedMaps.EqualFunc static nullable adapter; values/keys/order/zero strings and clone identity assertions unchanged. SizeHint0 is used as original equality fixture, not allocation proof.",
+  "executionReport": "artifacts/configuration-validation/build10/ordered-map-shared/report.json"
+}

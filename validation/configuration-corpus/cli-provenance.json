@@ -1,0 +1,17 @@
+{
+  "originalCases": 12,
+  "authoredUnsupportedCases": 2,
+  "originalPolicy": "Actual GetParsedCommandLineOfConfigFile with nil overrides, actual ConvertToTSConfig; checking uses actual Program/default resolver/options and original diagnostics APIs, exact3 complete source libraries supplied as explicit host roots. No downstream checker admission in original.",
+  "hostPolicy": "Same finite read fixtures; ordinary native disk proof uses owned-field relocation only. Invalid raw native names are authored fail-closed OS encoding boundary, not original file-discovery equality.",
+  "sources": {
+    "tools/configuration-oracle/cli_observe.go": "8307d5705f2fb81bb6e82ac15dea623d1860581e0e8e4e77cb0d14a68eef1cec",
+    "examples/configuration/checking-base.json": "16bf1544a70f22ec2dea368de677797944bb28b58c39e06c72b06486f00676a7",
+    "upstream/TypeScript/tsc/internal/tsoptions/tsconfigparsing.go": "30022574c3cdfa40db251f115e67a71a55b96d853dbca382381a58840d74f3a3",
+    "upstream/TypeScript/tsc/internal/compiler/program.go": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c"
+  },
+  "requestsSha256": "2625367ef1bca6f0b77e465803bd1a70a18ea878ba68ad7b159d7f6ed78d2bb3",
+  "expectedSha256": "f707ebbdd9172d29b24baf5daa01c69f01b36e4d6b5aae3b539fc07482e129cf",
+  "fixtureCorrections": [
+    "Nested demonstration sources are enumerated recursively and retain original src/ paths; tentative top-level-only setup failures are investigation artifacts, not accepted expected bytes."
+  ]
+}

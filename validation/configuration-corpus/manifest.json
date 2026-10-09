@@ -1,0 +1,719 @@
+{
+  "schema": "configuration-v1",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "2c850db",
+  "cases": 319,
+  "groups": [
+    {
+      "group": "initial",
+      "requests": "validation/configuration-corpus/initial-requests.jsonl",
+      "expected": "validation/configuration-corpus/initial-expected.jsonl.gz",
+      "cases": 6,
+      "requestsSha256": "0eb95e15b23881e7256b703c0995c84e304ec6f8bb4d7960c6777f0a42cef51f",
+      "expectedSha256": "ed1fdaaa1d6308b60415a37e4e89336189a7cbdd298508d7420cd92435965502"
+    },
+    {
+      "group": "json-errors",
+      "requests": "validation/configuration-corpus/json-errors-requests.jsonl",
+      "expected": "validation/configuration-corpus/json-errors-expected.jsonl.gz",
+      "cases": 53,
+      "requestsSha256": "c78eeeab08544cebc2545af2715ccc05fda81d67a3e460731f406345ffc45cc7",
+      "expectedSha256": "c17b32af8a64a36dee1a29ce8c7b45e767ef30638127b849e37c299645590243"
+    },
+    {
+      "group": "locale",
+      "requests": "validation/configuration-corpus/locale-requests.jsonl",
+      "expected": "validation/configuration-corpus/locale-expected.jsonl.gz",
+      "cases": 1,
+      "requestsSha256": "bb2c6f4124057ce3e0768164ef0780ac5489ae19d7f2bbe9a07157c2613fbe04",
+      "expectedSha256": "bd38caca981a028981021981b9e14e9aa91dfc7bf812f503ca5a40931a56db1c"
+    },
+    {
+      "group": "marshal",
+      "requests": "validation/configuration-corpus/marshal-requests.jsonl",
+      "expected": "validation/configuration-corpus/marshal-expected.jsonl.gz",
+      "cases": 10,
+      "requestsSha256": "5ef2e3c1e9724544bf26590a582ba401b204e55cb3ffb39b75e55e3133eab109",
+      "expectedSha256": "6b2164225df3c8eb9a16c9affc5088e813088f05f3118e52987c0fdf988a9fbe"
+    },
+    {
+      "group": "name-map",
+      "requests": "validation/configuration-corpus/name-map-requests.jsonl",
+      "expected": "validation/configuration-corpus/name-map-expected.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "4f29e229abc2f2f8aa46485abb6059cd661789a95353e8ebe4299a284703051a",
+      "expectedSha256": "0c996edb6dac3270dcb805d045dce592600fa428eb9b7408c9a5d44db6e066b2"
+    },
+    {
+      "group": "nonfinite",
+      "requests": "validation/configuration-corpus/nonfinite-requests.jsonl",
+      "expected": "validation/configuration-corpus/nonfinite-expected.jsonl.gz",
+      "cases": 9,
+      "requestsSha256": "7960191d484e1e1312b27185cf863737487c7b7b85035d1cdcb86f73979b1830",
+      "expectedSha256": "a75e665eb5c8e50f6ae34113f6b8188f50c0ce3ec554066a40714792760175cb"
+    },
+    {
+      "group": "numeric",
+      "requests": "validation/configuration-corpus/numeric-requests.jsonl",
+      "expected": "validation/configuration-corpus/numeric-expected.jsonl.gz",
+      "cases": 33,
+      "requestsSha256": "f928d631333532dd02df960a37b358625011202a5ac666c6baee2788ed23026d",
+      "expectedSha256": "a30eec572b8c6f4a83e7b02cd09147b2f40f6d03e5ff46a13a1d5b38f8b27ae0"
+    },
+    {
+      "group": "package-duplicates",
+      "requests": "validation/configuration-corpus/package-duplicates-requests.jsonl",
+      "expected": "validation/configuration-corpus/package-duplicates-expected.jsonl.gz",
+      "cases": 25,
+      "requestsSha256": "136ebe579da7e90a2ff3c2c8e77f9e5d9672c176ae1d1fb847dd4f80a91e778c",
+      "expectedSha256": "6795e2ead612906f01be34770016395dec7898d4a318d8f9e250564c27893fa9"
+    },
+    {
+      "group": "package-priority",
+      "requests": "validation/configuration-corpus/package-priority-requests.jsonl",
+      "expected": "validation/configuration-corpus/package-priority-expected.jsonl.gz",
+      "cases": 10,
+      "requestsSha256": "5c87cde24108fa0f538ce2be9949419b16ca0afbce2fa68d0a786cf4aa2b1106",
+      "expectedSha256": "c7eaf6303bd7a743b2172ae3c16ab6ce7ccf218029256501b5844d063235102e"
+    },
+    {
+      "group": "package",
+      "requests": "validation/configuration-corpus/package-requests.jsonl",
+      "expected": "validation/configuration-corpus/package-expected.jsonl.gz",
+      "cases": 35,
+      "requestsSha256": "8218665fbea88293c5a0858d76bc5cbb025c66efa068e796b1cdfac71f94020f",
+      "expectedSha256": "7e96304bd0f64a17adeae1e8422f64ba54c931388defda32c2e8aa100784e42a"
+    },
+    {
+      "group": "parse-depth",
+      "requests": "validation/configuration-corpus/parse-depth-requests.jsonl",
+      "expected": "validation/configuration-corpus/parse-depth-expected.jsonl.gz",
+      "cases": 6,
+      "requestsSha256": "99ee916a623e3931358233b3a3a89ce247efc62296f5babdd406401027e4625d",
+      "expectedSha256": "dcaca8b980052166e08602d8817af6aa8eaefe293c77c72ad2cb6a3d2e84f2df"
+    },
+    {
+      "group": "raw-options",
+      "requests": "validation/configuration-corpus/raw-options-requests.jsonl",
+      "expected": "validation/configuration-corpus/raw-options-expected.jsonl.gz",
+      "cases": 21,
+      "requestsSha256": "494b3c2d8bcf51939a074c58de9cc31f4afdae0834b04c04766a84c24e157757",
+      "expectedSha256": "38353c8d34b9db820a6c062f1911ea6a3a08a3acc34761f1c7d9e1d646640599"
+    },
+    {
+      "group": "raw-values",
+      "requests": "validation/configuration-corpus/raw-values-requests.jsonl",
+      "expected": "validation/configuration-corpus/raw-values-expected.jsonl.gz",
+      "cases": 54,
+      "requestsSha256": "00fef16f69178aba4e74c7d39c9d977b03565897bcacc2b6609f7655ba7b5323",
+      "expectedSha256": "aea6e079dc732be09ff7e68faffedc4db2fabb90e6456f37c6edda9fe9a03cc1"
+    },
+    {
+      "group": "semver",
+      "requests": "validation/configuration-corpus/semver-requests.jsonl",
+      "expected": "validation/configuration-corpus/semver-expected.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "5044be46e5ace663e6fad8d09a9758c05c1c9e85902f0df7f6b6ee4973b26601",
+      "expectedSha256": "3d4947143f772dbac5e5005010392b26e4cdc4d2449ef94e7ae1d84b82d97d4d"
+    },
+    {
+      "group": "subsystem",
+      "requests": "validation/configuration-corpus/subsystem-requests.jsonl",
+      "expected": "validation/configuration-corpus/subsystem-expected.jsonl.gz",
+      "cases": 30,
+      "requestsSha256": "f5ee71154df4503a22a636b3df6184cbe8804f19e2bd6870ea9476d18114e74b",
+      "expectedSha256": "fb342d27ba9e09df72c8f4e088d39cbdfb85846772f2d6517de505a6ab279c30"
+    },
+    {
+      "group": "writer",
+      "requests": "validation/configuration-corpus/writer-requests.jsonl",
+      "expected": "validation/configuration-corpus/writer-expected.jsonl.gz",
+      "cases": 22,
+      "requestsSha256": "a6fe876da0baa3ecb70b367456c30f5a2ed9c1256f439ea1279b2c74505ccb59",
+      "expectedSha256": "1e9631fd08959a1ab1979039aee77b5eebc4d8d7854608fb91af013c8eb9263a"
+    }
+  ],
+  "modeCounts": {
+    "source": 15,
+    "json": 3,
+    "command": 14,
+    "build": 13,
+    "text": 23,
+    "raw-json": 59,
+    "locales": 1,
+    "marshal": 65,
+    "name-map": 2,
+    "package-json": 71,
+    "raw-options": 21,
+    "mapper-equality": 7,
+    "versions": 1,
+    "ranges": 1,
+    "file": 23
+  },
+  "sharedChecks": {
+    "count": 217,
+    "groups": [
+      {
+        "flag": "--semver-checks",
+        "count": 11,
+        "classNames": [
+          "Configuration.Tests.SemverTests"
+        ]
+      },
+      {
+        "flag": "--option-checks",
+        "count": 6,
+        "classNames": [
+          "Configuration.Tests.CompilerOptionTests"
+        ]
+      },
+      {
+        "flag": "--package-checks",
+        "count": 7,
+        "classNames": [
+          "Configuration.Tests.PackageJsonTests"
+        ]
+      },
+      {
+        "flag": "--command-checks",
+        "count": 8,
+        "classNames": [
+          "Configuration.Tests.CommandLineTests"
+        ]
+      },
+      {
+        "flag": "--matcher-checks",
+        "count": 20,
+        "classNames": [
+          "Configuration.Tests.MatcherTests"
+        ]
+      },
+      {
+        "flag": "--walker-checks",
+        "count": 8,
+        "classNames": [
+          "Configuration.Tests.WalkDirTests"
+        ]
+      },
+      {
+        "flag": "--quote-checks",
+        "count": 2,
+        "classNames": [
+          "Configuration.Tests.QuoteTests"
+        ]
+      },
+      {
+        "flag": "--parsing-helper-checks",
+        "count": 6,
+        "classNames": [
+          "Configuration.Tests.ParsingHelperTests"
+        ]
+      },
+      {
+        "flag": "--content-mapper-checks",
+        "count": 4,
+        "classNames": [
+          "Configuration.Tests.ContentMapperTests"
+        ]
+      },
+      {
+        "flag": "--locale-checks",
+        "count": 27,
+        "classNames": [
+          "Configuration.Tests.LocaleTests"
+        ]
+      },
+      {
+        "flag": "--os-checks",
+        "count": 6,
+        "classNames": [
+          "Configuration.Tests.OsFileSystemTests"
+        ]
+      },
+      {
+        "flag": "--parsed-command-checks",
+        "count": 1,
+        "classNames": [
+          "Configuration.Tests.ParsedCommandLineTests"
+        ]
+      },
+      {
+        "flag": "--config-baseline-checks",
+        "count": 4,
+        "classNames": [
+          "Configuration.Tests.ConfigBaselineTests"
+        ]
+      },
+      {
+        "flag": "--config-direct-checks",
+        "count": 12,
+        "classNames": [
+          "Configuration.Tests.ConfigDirectTests"
+        ]
+      },
+      {
+        "flag": "--show-config-checks",
+        "count": 2,
+        "classNames": [
+          "Configuration.Tests.ShowConfigTests"
+        ]
+      },
+      {
+        "flag": "--integration-checks",
+        "count": 1,
+        "classNames": [
+          "Configuration.Tests.IntegrationTests"
+        ]
+      },
+      {
+        "flag": "--parsed-option-checks",
+        "count": 3,
+        "classNames": [
+          "Configuration.Tests.ParsedOptionTests"
+        ]
+      },
+      {
+        "flag": "--output-path-checks",
+        "count": 5,
+        "classNames": [
+          "Configuration.Tests.OutputPathTests"
+        ]
+      },
+      {
+        "flag": "--wildcard-directory-checks",
+        "count": 3,
+        "classNames": [
+          "Configuration.Tests.WildcardDirectoryTests"
+        ]
+      },
+      {
+        "flag": "--config-mapper-checks",
+        "count": 7,
+        "classNames": [
+          "Configuration.Tests.ConfigMapperTests"
+        ]
+      },
+      {
+        "flag": "--ordered-map-checks",
+        "count": 5,
+        "classNames": [
+          "Configuration.Tests.OrderedMapTests"
+        ]
+      },
+      {
+        "flag": "--dependency-metadata-checks",
+        "count": 2,
+        "classNames": [
+          "Configuration.Tests.DependencyMetadataTests"
+        ]
+      },
+      {
+        "flag": "--module-package-root-checks",
+        "count": 1,
+        "classNames": [
+          "Configuration.Tests.ModulePackageRootTests"
+        ]
+      },
+      {
+        "flag": "--path-helper-checks",
+        "count": 3,
+        "classNames": [
+          "Configuration.Tests.PathHelperTests"
+        ]
+      },
+      {
+        "flag": "--module-candidate-checks",
+        "count": 1,
+        "classNames": [
+          "Configuration.Tests.ModuleCandidateTests"
+        ]
+      },
+      {
+        "flag": "--json-original-checks",
+        "count": 20,
+        "classNames": [
+          "Configuration.Tests.JsonOriginalTests"
+        ]
+      },
+      {
+        "flag": "--path-fuzz-seed-checks",
+        "count": 2,
+        "classNames": [
+          "Configuration.Tests.PathFuzzSeedTests"
+        ]
+      },
+      {
+        "flag": "--typed-path-checks",
+        "count": 33,
+        "classNames": [
+          "Configuration.Tests.TypedPathTests"
+        ]
+      },
+      {
+        "flag": "--native-path-checks",
+        "count": 7,
+        "classNames": [
+          "Configuration.Tests.NativePathTests"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "Configuration.Tests.SemverTests": 11,
+      "Configuration.Tests.CompilerOptionTests": 6,
+      "Configuration.Tests.PackageJsonTests": 7,
+      "Configuration.Tests.CommandLineTests": 8,
+      "Configuration.Tests.MatcherTests": 20,
+      "Configuration.Tests.WalkDirTests": 8,
+      "Configuration.Tests.QuoteTests": 2,
+      "Configuration.Tests.ParsingHelperTests": 6,
+      "Configuration.Tests.ContentMapperTests": 4,
+      "Configuration.Tests.LocaleTests": 27,
+      "Configuration.Tests.OsFileSystemTests": 6,
+      "Configuration.Tests.ParsedCommandLineTests": 1,
+      "Configuration.Tests.ConfigBaselineTests": 4,
+      "Configuration.Tests.ConfigDirectTests": 12,
+      "Configuration.Tests.ShowConfigTests": 2,
+      "Configuration.Tests.IntegrationTests": 1,
+      "Configuration.Tests.ParsedOptionTests": 3,
+      "Configuration.Tests.OutputPathTests": 5,
+      "Configuration.Tests.WildcardDirectoryTests": 3,
+      "Configuration.Tests.ConfigMapperTests": 7,
+      "Configuration.Tests.OrderedMapTests": 5,
+      "Configuration.Tests.DependencyMetadataTests": 2,
+      "Configuration.Tests.ModulePackageRootTests": 1,
+      "Configuration.Tests.PathHelperTests": 3,
+      "Configuration.Tests.ModuleCandidateTests": 1,
+      "Configuration.Tests.JsonOriginalTests": 20,
+      "Configuration.Tests.PathFuzzSeedTests": 2,
+      "Configuration.Tests.TypedPathTests": 33,
+      "Configuration.Tests.NativePathTests": 7
+    }
+  },
+  "corpusXUnitClassCounts": {
+    "Configuration.Tests.ConfigurationOracleTests": 319
+  },
+  "orderControls": {
+    "requests": "validation/configuration-corpus/order-requests.jsonl",
+    "requestsSha256": "13ad11c894f7650a48f12c24ca9bc067effb29da6dc36615c7251912a1324583",
+    "cases": 18,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 38
+  },
+  "cliControls": {
+    "requests": "validation/configuration-corpus/cli-requests.jsonl",
+    "expected": "validation/configuration-corpus/cli-expected.jsonl",
+    "provenance": "validation/configuration-corpus/cli-provenance.json",
+    "cases": 14,
+    "originalCases": 12,
+    "authoredBoundaryCases": 2,
+    "lexicalProjectionControls": 14,
+    "requestsSha256": "2625367ef1bca6f0b77e465803bd1a70a18ea878ba68ad7b159d7f6ed78d2bb3",
+    "expectedSha256": "f707ebbdd9172d29b24baf5daa01c69f01b36e4d6b5aae3b539fc07482e129cf",
+    "provenanceSha256": "ca2429fdc062e7d97afb751005cf66eba41755aa47d61f49287666ec4dd15381"
+  },
+  "originalTests": [
+    {
+      "package": "./internal/tsoptions",
+      "functions": [
+        "TestCommandLineParseResult",
+        "TestRemovedWatchOptions",
+        "TestResponseFileDoesNotPanic",
+        "TestResponseFileParsing",
+        "TestParseCommandLineTypeRootsRelativePath",
+        "TestCustomConditionsNullOverride",
+        "TestParseCommandLineVerifyNull",
+        "TestParseBuildCommandLine",
+        "TestOptionEnumStrings",
+        "TestGeneratedCompilerOptionParsingAndClone",
+        "TestGeneratedCompilerOptionParserCompatibility",
+        "TestCompilerOptionsEquality",
+        "TestCompilerOptionConfigDirSubstitution",
+        "TestCompilerOptionConfigDirSubstitutionCopyOnWrite",
+        "TestGetContentMapperForFileNameUsesLongestExtension",
+        "TestGetContentMapperForFileNameUsesHostCaseSensitivity",
+        "TestGetOutputFileNamesExcludesMapperOwnedOutputs",
+        "TestResolveContentMapperManifest",
+        "TestCompilerOptionsDeclaration",
+        "TestCommandLineOptionPathKinds",
+        "TestParsedCommandLine",
+        "TestParsedOptionsEquality",
+        "TestParsedOptionsEqualityIgnoresEmptyTypeAcquisitionLists",
+        "TestParsedOptionsEqualityIgnoresPathsAllocation",
+        "TestMergeCompilerOptions",
+        "TestMergeCompilerOptionsRawNulls",
+        "TestParseCompilerOptionNoMissingFields",
+        "TestRawCompilerOptionsFinalizePaths",
+        "TestShowConfigSerialization",
+        "TestShowConfigEnumSerialization",
+        "TestParseConfigFileTextToJson",
+        "TestParseJsonConfigFileContent",
+        "TestParseJsonConfigFileContentAcceptsJsonRepresentations",
+        "TestParseJsonConfigFileContentPreservesRaw",
+        "TestParseJsonConfigFileContentHandlesNullArrayElements",
+        "TestParseJsonConfigFileContentDefaultsCompileOnSaveToFalse",
+        "TestParseJsonSourceFileConfigFileContent",
+        "TestParseJsonSourceFileConfigFileContentReportsInvalidExtendedConfig",
+        "TestParseJsonSourceFileConfigFileContentWithEmptyExtendedConfig",
+        "TestParseJsonSourceFileConfigFileContentDoesNotDuplicateUnquotedKeyDiagnostics",
+        "TestParseJsonSourceFileConfigFileContentReportsQuestionTokenDiagnostics",
+        "TestParseNullEnumCompilerOptions",
+        "TestContentMappers",
+        "TestContentMapperOptionDiagnosticLocation",
+        "TestContentMappersAreInheritedFromExtendedConfig",
+        "TestContentMappersRequireFlag",
+        "TestUnresolvedContentMapperDoesNotRegisterExtensions",
+        "TestContentMappersValidation",
+        "TestContentMapperExtensionValidationUsesHostCaseSensitivity",
+        "TestParseTypeAcquisition",
+        "TestParseSrcCompiler",
+        "TestExtendedConfigErrorsAppearOnCacheHit",
+        "TestExtendedConfigConfigDirPathsAreNotCached",
+        "TestGetWildcardDirectories_DotPrefixedIncludeWithDotDirExclude",
+        "TestGetWildcardDirectories_DriveRoot",
+        "TestGetWildcardDirectories_NonASCIICharacters"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/tsoptions/commandlineparser_test.go": "982216b41350c5e73fd6541c379c8f84486c43509d82a1c4bec161de44a45f7a",
+        "upstream/TypeScript/tsc/internal/tsoptions/compileroptions_test.go": "5396fa26a83bf9085b634cdb29d1917504bd47588b48b31a88c40628cc26e74c",
+        "upstream/TypeScript/tsc/internal/tsoptions/contentmappers_test.go": "5fe1d7a7244b73d29bb36b322af153bcbe984d2f893b08274f49d18b625775bf",
+        "upstream/TypeScript/tsc/internal/tsoptions/decls_test.go": "b8eb4ef6cc658c312f5f8ab426cdf3f9265368fc7f9f16bbecf00353e23ba5b4",
+        "upstream/TypeScript/tsc/internal/tsoptions/parsedcommandline_test.go": "cc621cb30f5f6e289c2bb46861ec3c0aafa069576fe5adffd414646203170a53",
+        "upstream/TypeScript/tsc/internal/tsoptions/parsedoptions_test.go": "7c2902860daa8b2c9848324082279390431d20897083ea0514e2c541dcdcc232",
+        "upstream/TypeScript/tsc/internal/tsoptions/parsinghelpers_test.go": "d08aeabf1d37a452edf391a34dfba5122c04bbc7dbe0fb19a412cfcb3059acec",
+        "upstream/TypeScript/tsc/internal/tsoptions/rawcompileroptions_test.go": "5cad57c09fa4935e983e0a9aa6225672acbfd796af864edc8040bede792bea36",
+        "upstream/TypeScript/tsc/internal/tsoptions/showconfig_test.go": "bdf1a2406b311040622c53588fbdcbe3fed7d606946cdb45ab640055a836632e",
+        "upstream/TypeScript/tsc/internal/tsoptions/tsconfigparsing_test.go": "174c3ab8ee38f3f0d464d5593d2c276441abbfe86008618dab1de6702ee1cc61",
+        "upstream/TypeScript/tsc/internal/tsoptions/wildcarddirectories_test.go": "cca29ad5dc2d71063db627c3511b951227d6b9a6b375679f0d0cab93eb0b8a78"
+      }
+    },
+    {
+      "package": "./internal/vfs/vfsmatch",
+      "functions": [
+        "TestReadDirectory",
+        "TestIsImplicitGlob",
+        "TestReadDirectoryEdgeCases",
+        "TestReadDirectoryEmptyIncludes",
+        "TestReadDirectorySymlinkCycle",
+        "TestReadDirectoryMatchesTypeScriptBaselines",
+        "TestReadDirectoryWithExtendedDynamicRoot",
+        "TestReadDirectoryDynamicRootUsesCaseSensitivePatterns",
+        "TestDynamicAbsoluteGlobUsesCaseSensitivePattern",
+        "TestSpecMatcher",
+        "TestSpecMatcher_MatchString",
+        "TestSingleSpecMatcher_MatchString",
+        "TestSpecMatchers_MatchIndex",
+        "TestSingleSpecMatcher",
+        "TestSpecMatchers",
+        "TestGlobPatternInternals",
+        "TestMatchSegmentsEdgeCases",
+        "TestReadDirectoryConsecutiveSlashes",
+        "TestGlobPatternLiteralWithPackageFolders",
+        "TestGetBasePathsCaseSensitivity"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/vfs/vfsmatch/vfsmatch_test.go": "c977c317f6ceaef876793a90c9a1ed0e9a6a47e25836e7bc3a7a840d4cb8a22e"
+      }
+    },
+    {
+      "package": "./internal/packagejson",
+      "functions": [
+        "TestExpected",
+        "TestExports",
+        "TestJSONValue",
+        "TestPackageDirectory",
+        "TestPackageDirectoryCacheIdentityPreservesPresentation",
+        "TestForEachAncestorDirectoryStoppingAtGlobalCache",
+        "TestParse"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/packagejson/expected_test.go": "aa122b1717e31bc903fe4442890cb057b888206873fff91b213817aabcc86d5d",
+        "upstream/TypeScript/tsc/internal/packagejson/exportsorimports_test.go": "fed9c59a27a44ca2d3a1efec0f17e3dc46c39d7e1c4e09b6fa7898448cd6740e",
+        "upstream/TypeScript/tsc/internal/packagejson/jsonvalue_test.go": "588f113227e0ca0d42ecb07503d6619f7899efc3ab5c990f5d9a2a903ec8fd0e",
+        "upstream/TypeScript/tsc/internal/packagejson/packagejson_test.go": "8033bf4292108a745d704cd0aec7a914382583919fa6e7d4c312ab041bb3a441"
+      }
+    },
+    {
+      "package": "./internal/semver",
+      "functions": [
+        "TestWildcardsHaveSameString",
+        "TestVersionRanges",
+        "TestComparatorsOfVersionRanges",
+        "TestConjunctionsOfVersionRanges",
+        "TestDisjunctionsOfVersionRanges",
+        "TestHyphensOfVersionRanges",
+        "TestTildesOfVersionRanges",
+        "TestCaretsOfVersionRanges",
+        "TestTryParseSemver",
+        "TestVersionString",
+        "TestVersionCompare"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/semver/version_range_test.go": "65458b883ad12c50c8f45df49bde32043aa055e329fb78a1856ab6f36885f886",
+        "upstream/TypeScript/tsc/internal/semver/version_test.go": "39d38de4aac04020a889d6db46baa6348d4ebe7d673cac9ccffae48c32575e0c"
+      }
+    },
+    {
+      "package": "./internal/outputpaths",
+      "functions": [
+        "TestGetSourceFileNameInNewDirSourceMatchesCommonDirectory",
+        "TestGetSourceFileNameInNewDirCanonicalizationShrinksCommonDirectory",
+        "TestGetBuildInfoFileNameAcrossRoots",
+        "TestGetOutputFileNameAcrossRoots",
+        "TestOutputFileNamesPreserveEmptyAndDotStems"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/outputpaths/outputpaths_test.go": "848a0b72df64ce05eeef15c05cb41c6e4d55fdcc20df6bc595d24413fa765912"
+      }
+    },
+    {
+      "package": "./internal/vfs",
+      "functions": [
+        "TestWalkDir",
+        "TestWalkDirDoesNotFollowRootSymlink",
+        "TestWalkDirReportsRootFileSymlink",
+        "TestWalkDirSkipDir",
+        "TestWalkDirSkipAll",
+        "TestWalkDirConsumesSkipDirForRootFile",
+        "TestWalkDirConsumesSkipForMissingRoot",
+        "TestWalkDirUsesSymlinkMetadataWithoutRealpathCalls"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/vfs/walkdir_test.go": "09ffa3a3c4360f761c78651989f9c84167ed169da0879e59d9d1a72267518950"
+      }
+    },
+    {
+      "package": "./internal/vfs/osvfs",
+      "functions": [
+        "TestOS",
+        "TestSymlinkRealpath",
+        "TestGetAccessibleEntries"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/vfs/osvfs/os_test.go": "f13cfcb7ab6c95e7802dcee2767449eeca9908d1bda697b9ace23a2629e242f4",
+        "upstream/TypeScript/tsc/internal/vfs/osvfs/realpath_test.go": "0f1715d1bdf1ce20114d66425c58e3e01d7f3e6d115c07212f85703bd6ee26f6"
+      }
+    }
+  ],
+  "dependencyOriginalTests": [
+    {
+      "package": "./internal/collections",
+      "functions": [
+        "TestOrderedMap",
+        "TestOrderedMapClear",
+        "TestOrderedMapClone",
+        "TestOrderedMapEqualFunc"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/collections/ordered_map_test.go": "d82b698647954bc54243cc376646283876ea3c45730d13fa5157ee18e450a26c"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "functions": [
+        "TestMapperDiagnosticName"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/contentmapper/host_test.go": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe"
+      }
+    },
+    {
+      "package": "./internal/core",
+      "functions": [
+        "TestPatternOverlappingMatch"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/core/pattern_test.go": "52d6450c846dae0cf1793de8aeba17220a3c1425ab385b438a448ae0dfbfa6b1"
+      }
+    },
+    {
+      "package": "./internal/module",
+      "functions": [
+        "TestNodeModulePackageRoot",
+        "TestNormalizePathForCJSResolutionPreservesDirectoryIntent"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/module/resolver_test.go": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+        "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc"
+      }
+    },
+    {
+      "package": "./internal/tspath",
+      "functions": [
+        "TestCaseSensitivityKey",
+        "TestCaseSensitivityTrimPrefix",
+        "TestCommonDirectoryOfFiles",
+        "TestCompareFileNameStemsKeepsLiteralDotComponentsAndCasingPolicy",
+        "TestContainsFilePath",
+        "TestDynamicPathKeyCaseInsensitiveKeyPreservesIdentity",
+        "TestEncodedDynamicPathsPreserveOpaqueIdentity",
+        "TestExtensionMutationsPreserveNormalizedInvariant",
+        "TestFileNameStemsPreserveFilenamePrefixes",
+        "TestForEachAncestorDirectoryPath",
+        "TestGetLongestExtensionFromPath",
+        "TestPathKeyConstructionMethods",
+        "TestPathKeyFromCanonicalRejectsURLSuffix",
+        "TestRelativePath",
+        "TestRelativePathsFromTypedPaths",
+        "TestRemoveAnyFileExtension",
+        "TestRootedDirectoryPathResolutionMatchesGeneralRooting",
+        "TestRootedFilePathComponents",
+        "TestRootedFilePathDirectory",
+        "TestRootedFilePathExtensionOperationsPreserveInvariants",
+        "TestRootedFilePathFromAbsolute",
+        "TestRootedFilePathFromNormalized",
+        "TestRootedFilePathRootAndRelativePath",
+        "TestRootedFilePathWithoutRoot",
+        "TestRootedPath",
+        "TestRootedPathCompare",
+        "TestSplitAtRootLevelComponentKeepsRoot",
+        "TestToRootedFilePath",
+        "TestToRootedFilePathRequiresRoot",
+        "TestTryRelativePathBetweenFilePaths",
+        "TestTypedPathComponents",
+        "TestTypedPathConstructorsAndDecoders",
+        "TestUntitledPathEdgeCases",
+        "TestUntitledPathHandling"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/tspath/typed_paths_test.go": "3f4908a0dbfcdf9ac2da518a411180cbe064350d1b3fe1a55aff303d16ec4c9f",
+        "upstream/TypeScript/tsc/internal/tspath/path_test.go": "2e2887bf57821b8f923792d810171b48c31f82b0282e7a8f3cb80bebea941c8a",
+        "upstream/TypeScript/tsc/internal/tspath/untitled_test.go": "fd7b7c1415434439adef63efc636bc01dcb05ec8f982e3f88a08d17cf1f66587"
+      }
+    }
+  ],
+  "demonstrations": [
+    {
+      "name": "checking-demo-valid",
+      "directory": "examples/projects/grouped-records",
+      "configuration": "tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "name": "checking-demo-invalid",
+      "directory": "examples/projects/grouped-records-invalid",
+      "configuration": "tsconfig.json",
+      "exitCode": 1
+    }
+  ],
+  "observationLimits": [
+    "Complete stored option/spec/cache/query values are observed; shared reference topology is established only by preserved clone/merge/WithFileNames/cache mutation assertions, not a private graph census.",
+    "Ordinary multi-key map traversal and correlated error-prefix order are not compared; malformed default-map boundaries use single-key inputs, and prior-prefix assertions use actual OrderedMap insertion order. Forty source process variants remain investigation evidence.",
+    "Original json/v2 SemanticError own modal prefix is canonicalized only at actual typed error nodes; original raw variants are retained in oracle stderr. Plain or wrapped user errors and compiler/CLI diagnostics remain exact.",
+    "Typed-nil JSON input declarations are authored metadata where managed null erases interface type; nil ordered-map pointer is rejected invalid source API input.",
+    "UNC host path-role relocation only; virtual arbitrary-byte ReadFile equivalence with original fstest is unclaimed. Raw config owner bytes are observed through the source API.",
+    "Contentmapper processes, project builds/referenced-project execution, emit, watch, acquisition and full Program option-combination validation remain outside standalone interpretation."
+  ],
+  "osProjections": {
+    "expected": "validation/configuration-corpus/os-projections-expected.json",
+    "provenance": "validation/configuration-corpus/os-projections-provenance.json",
+    "expectedSha256": "8be6899a526d8c0b3c896f6d329a77072a04f88c8ba074545304ff9be4e64005",
+    "provenanceSha256": "ac1a4aae49fd4e6b8338e955540f447bea1273ce1e9fc5e5bb958712ca687388"
+  },
+  "jsonErrorProjection": {
+    "expected": "validation/configuration-corpus/json-error-controls-expected.json",
+    "provenance": "validation/configuration-corpus/json-error-controls-provenance.json",
+    "expectedSha256": "31115caa8aa1ff8b5bc1190d9b29aaaa581e403ec6f11fa984ad4a047937d8db",
+    "provenanceSha256": "b70b0c77005f45306c3cba012da5c0db68368c0101fddcc959e151d0189a46a4",
+    "controls": 6
+  }
+}
