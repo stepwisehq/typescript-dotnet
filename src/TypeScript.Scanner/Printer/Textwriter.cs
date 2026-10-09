@@ -5,7 +5,7 @@
 using System.Text;
 
 namespace TypeScript.DiagnosticPrinting;
-internal sealed class TextWriter
+internal class TextWriter
 {
     private StringBuilder builder = new();
     private string lastWritten = "";
@@ -24,7 +24,7 @@ internal sealed class TextWriter
         return w;
     }
 
-    internal void Clear()
+    internal virtual void Clear()
     {
         builder.Clear();
         lastWritten = "";
@@ -33,7 +33,7 @@ internal sealed class TextWriter
         hasTrailingCommentState = false;
     }
 
-    internal string String() => builder.ToString();
+    internal virtual string String() => builder.ToString();
     private void writeText(string text)
     {
         if (text != "")
@@ -50,7 +50,7 @@ internal sealed class TextWriter
         }
     }
 
-    internal void Write(string text)
+    internal virtual void Write(string text)
     {
         if (text != "")
             hasTrailingCommentState = false;
@@ -58,17 +58,17 @@ internal sealed class TextWriter
     }
 
     // textwriter.go:150. Comment state is retained even though multiline output is excluded.
-    internal void WriteComment(string text)
+    internal virtual void WriteComment(string text)
     {
         if (text != "")
             hasTrailingCommentState = true;
         writeText(text);
     }
 
-    internal void WriteKeyword(string text) => Write(text);
-    internal void WriteStringLiteral(string text) => Write(text);
+    internal virtual void WriteKeyword(string text) => Write(text);
+    internal virtual void WriteStringLiteral(string text) => Write(text);
     // textwriter.go: token-category methods all forward to Write in this writer.
-    internal void WriteSpace(string text) => Write(text);
-    internal void WritePunctuation(string text) => Write(text);
-    internal void WriteTrailingSemicolon(string text) => Write(text);
+    internal virtual void WriteSpace(string text) => Write(text);
+    internal virtual void WritePunctuation(string text) => Write(text);
+    internal virtual void WriteTrailingSemicolon(string text) => Write(text);
 }

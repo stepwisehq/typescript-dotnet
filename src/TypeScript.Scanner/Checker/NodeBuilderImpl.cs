@@ -20,6 +20,7 @@ internal sealed partial class NodeBuilderImpl
     internal sealed class NodeBuilderContext
     {
         internal Node enclosingDeclaration;
+        internal int depth = 0, maxExpansionDepth = -1;
         internal SourceFile enclosingFile;
         internal int approximateLength;
         internal bool truncating, encounteredError, reportedDiagnostic, suppressReportInferenceFallback;
@@ -31,6 +32,10 @@ internal sealed partial class NodeBuilderImpl
         internal NodeBuilderFlags flags;
         internal TypeScript.NodeBuilding.InternalFlags internalFlags;
         internal TypeMapper mapper;
+        internal Dictionary<uint, Node> typeParameterNames = new();
+        internal HashSet<string> typeParameterNamesByText = new(StringComparer.Ordinal);
+        internal Dictionary<string, int> typeParameterNamesByTextNextNameCount = new(StringComparer.Ordinal);
+        internal HashSet<ulong> typeParameterSymbolList = new();
     }
 
     internal NodeBuilderContext ctx;
@@ -73,6 +78,7 @@ internal sealed partial class NodeBuilderImpl
     private sealed class NodeBuilderLinks
     {
         internal Dictionary<CompositeTypeCacheIdentity, SerializedTypeEntry> serializedTypes;
+        internal string fakeScopeForSignatureDeclaration;
     }
 
     private readonly Dictionary<Node, NodeBuilderLinks> links = new();
@@ -181,6 +187,13 @@ internal sealed partial class NodeBuilderImpl
             return f.NewLiteralTypeNode(f.NewNumericLiteral(text, TokenFlags.None));
         }
 
+        if ((t.flags & TypeFlags.BigIntLiteral) != 0)
+        {
+            var text = Checker.pseudoBigIntToString(Checker.getBigIntLiteralValue(t));
+            approximateLength += text.Length + 1;
+            return f.NewLiteralTypeNode(f.NewBigIntLiteral(text + "n", TokenFlags.None));
+        }
+
         if ((t.flags & TypeFlags.BooleanLiteral) != 0)
         {
             bool value = (bool)t.AsLiteralType().value;
@@ -188,10 +201,23 @@ internal sealed partial class NodeBuilderImpl
             return f.NewLiteralTypeNode(f.NewKeywordExpression(value ? Kind.TrueKeyword : Kind.FalseKeyword));
         }
 
-        if ((t.flags & TypeFlags.ESSymbol) != 0)
+        // nodebuilderimpl.go:3470. Default diagnostic flags allow the unique
+        // operator; declaration reuse also preserves the accessible-symbol arm.
+        if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
         {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.SymbolKeyword);
+            if ((ctx.flags & NodeBuilderFlags.AllowUniqueESSymbolType) == 0)
+            {
+                if (ch.IsValueSymbolAccessible(t.symbol, ctx.enclosingDeclaration))
+                {
+                    approximateLength += 6;
+                    return symbolToTypeNode(t.symbol, SymbolFlags.Value, null);
+                }
+
+                ctx.tracker.ReportInaccessibleUniqueSymbolError();
+            }
+
+            approximateLength += 13;
+            return f.NewTypeOperatorNode(Kind.UniqueKeyword, f.NewKeywordTypeNode(Kind.SymbolKeyword));
         }
 
         if ((t.flags & TypeFlags.Void) != 0)
@@ -216,6 +242,12 @@ internal sealed partial class NodeBuilderImpl
         {
             approximateLength += 5;
             return f.NewKeywordTypeNode(Kind.NeverKeyword);
+        }
+
+        if ((t.flags & TypeFlags.ESSymbol) != 0)
+        {
+            approximateLength += 6;
+            return f.NewKeywordTypeNode(Kind.SymbolKeyword);
         }
 
         if ((t.flags & TypeFlags.NonPrimitive) != 0)
@@ -670,8 +702,8 @@ internal sealed partial class NodeBuilderImpl
         if (t == null)
         {
             if (symbol == null)
-                throw Checker.unsupported("serializeTypeForDeclaration: unknown property declaration");
-            if (!ctx.enclosingSymbolTypes.TryGetValue(Ast.GetSymbolId(symbol), out t) || t == null)
+                t = Ast.IsVariableLike(declaration) ? ch.getTypeForVariableLikeDeclaration(declaration, false, Checker.CheckMode.Normal) : ch.errorType;
+            else if (!ctx.enclosingSymbolTypes.TryGetValue(Ast.GetSymbolId(symbol), out t) || t == null)
             {
                 if ((symbol.Flags & SymbolFlags.Accessor) != 0 && declaration.Kind == Kind.SetAccessor)
                     throw Checker.unsupported("serializeTypeForDeclaration: accessor write type/mapper");
@@ -682,28 +714,58 @@ internal sealed partial class NodeBuilderImpl
             }
         }
 
-        if ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (symbol.Flags & SymbolFlags.Accessor) != 0)
+        if (symbol != null && ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (symbol.Flags & SymbolFlags.Accessor) != 0))
             throw Checker.unsupported("serializeTypeForDeclaration: mapped/accessor");
         bool requiresAddingUndefined = declaration != null && (declaration.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration) && ch.requiresAddingImplicitUndefined(declaration, symbol, ctx.enclosingDeclaration);
-        if (requiresAddingUndefined)
-            throw Checker.unsupported("serializeTypeForDeclaration: implicit mapped/parameter undefined");
+        if (requiresAddingUndefined && Ast.IsParameterDeclaration(declaration))
+            t = ch.getOptionalType(t, false);
+        var restoreFlags = saveRestoreFlags();
+        if ((t.flags & TypeFlags.UniqueESSymbol) != 0 && t.symbol == symbol && (ctx.enclosingDeclaration == null || Core.Some(symbol.Declarations, d => Ast.GetSourceFileOfNode(d) == ctx.enclosingFile)))
+            ctx.flags |= NodeBuilderFlags.AllowUniqueESSymbolType;
         Node result = null;
         bool reportedInferenceFallback = false;
-        if (tryReuse && ctx.enclosingDeclaration != null && declaration != null && Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) && (t.objectFlags & ObjectFlags.RequiresWidening) == 0)
+        if (!isActivelyExpanding() && tryReuse && ctx.enclosingDeclaration != null && declaration != null && Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) && (t.objectFlags & ObjectFlags.RequiresWidening) == 0)
         {
-            var remove = addSymbolTypeToContext(symbol, t);
+            var remove = symbol != null ? addSymbolTypeToContext(symbol, t) : null;
             var pt = pc.GetTypeOfDeclaration(declaration);
+            if ((pt == null || pt.Kind == PseudoTypeKind.NoResult) && Ast.IsBinaryExpression(declaration) && symbol != null)
+            {
+                var annotated = symbol.Declarations?.FirstOrDefault(hasTypeAnnotation);
+                if (annotated != null)
+                    pt = pc.GetTypeOfDeclaration(annotated);
+            }
+
             bool reportErrors = !ctx.suppressReportInferenceFallback;
-            bool optionalAnnotated = (declaration.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration) && Checker.isOptionalDeclaration(declaration);
+            bool optionalAnnotated = !requiresAddingUndefined && (declaration.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration) && Checker.isOptionalDeclaration(declaration);
             if (pseudoTypeEquivalentToType(pt, t, optionalAnnotated, reportErrors))
+            {
+                var ptt = pseudoTypeToType(pt);
+                if (ptt != null && requiresAddingUndefined && Checker.containsNonMissingUndefinedType(ch, t) && !Checker.containsNonMissingUndefinedType(ch, ptt))
+                    pt = PseudoType.NewPseudoTypeUnion([pt, PseudoType.PseudoTypeUndefined]);
                 result = pseudoTypeToNodeWithCheckerFallback(pt, t);
+            }
             else
             {
                 reportedInferenceFallback = reportErrors && pt.Kind == PseudoTypeKind.Inferred && (pt.AsPseudoTypeInferred().ErrorNodes?.Count ?? 0) > 0;
-            // requiresAddingUndefined is false after the actual selected predicate.
+                bool shouldAddUndefined = false;
+                if (requiresAddingUndefined)
+                {
+                    var ptt = pseudoTypeToType(pt);
+                    shouldAddUndefined = ptt != null ? !Checker.containsNonMissingUndefinedType(ch, ptt) : !PseudoChecker.CouldAlreadyReferToUndefinedType(pt);
+                }
+
+                if (shouldAddUndefined)
+                {
+                    pt = PseudoType.NewPseudoTypeUnion([pt, PseudoType.PseudoTypeUndefined]);
+                    if (pseudoTypeEquivalentToType(pt, t, false, reportErrors))
+                    {
+                        result = pseudoTypeToNodeWithCheckerFallback(pt, t);
+                        reportedInferenceFallback = false;
+                    }
+                }
             }
 
-            remove();
+            remove?.Invoke();
         }
 
         if (result == null)
@@ -715,14 +777,17 @@ internal sealed partial class NodeBuilderImpl
             ctx.suppressReportInferenceFallback = saved;
         }
 
+        restoreFlags();
         return result ?? f.NewKeywordTypeNode(Kind.AnyKeyword);
     }
 
+    // nodebuilderimpl.go:2234.
+    private static bool hasTypeAnnotation(Node declaration) => declaration != null && declaration.Type() != null && !Ast.IsTypeAliasDeclaration(declaration) && !Ast.IsJSTypeAliasDeclaration(declaration);
     // nodebuilderimpl.go:2581. Finite data-property branch. All excluded cases
     // are guarded before assuming their declaration/context caches are absent.
     private List<Node> addPropertyToElementList(Symbol propertySymbol, List<Node> typeElements)
     {
-        if ((propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (propertySymbol.Flags & (SymbolFlags.Accessor | SymbolFlags.Function | SymbolFlags.Method)) != 0 || propertySymbol.Name.StartsWith(Ast.InternalSymbolNameComputed, StringComparison.Ordinal))
+        if ((propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (propertySymbol.Flags & SymbolFlags.Accessor) != 0 || propertySymbol.Name.StartsWith(Ast.InternalSymbolNameComputed, StringComparison.Ordinal))
             throw Checker.unsupported("addPropertyToElementList: nondata/dynamic property");
         var propertyType = ch.getNonMissingTypeOfSymbol(propertySymbol);
         var saveEnclosingDeclaration = ctx.enclosingDeclaration;
@@ -734,6 +799,15 @@ internal sealed partial class NodeBuilderImpl
         ctx.enclosingDeclaration = saveEnclosingDeclaration;
         approximateLength += Ast.SymbolName(propertySymbol).Length + 1;
         var optionalToken = (propertySymbol.Flags & SymbolFlags.Optional) != 0 ? f.NewToken(Kind.QuestionToken) : null;
+        if ((propertySymbol.Flags & (SymbolFlags.Function | SymbolFlags.Method)) != 0 && GoRuntime.Len(ch.getPropertiesOfObjectType(propertyType)) == 0 && !ch.isReadonlySymbol(propertySymbol))
+        {
+            var signatures = ch.getSignaturesOfType(ch.filterType(propertyType, t => (t.flags & TypeFlags.Undefined) == 0), SignatureKind.Call);
+            foreach (var signature in signatures ?? [])
+                (typeElements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken }));
+            if (GoRuntime.Len(signatures) != 0 || optionalToken == null)
+                return typeElements;
+        }
+
         var typeNode = propertyType != null ? serializeTypeForDeclaration(null, propertyType, propertySymbol, true) : f.NewKeywordTypeNode(Kind.AnyKeyword);
         ModifierList modifiers = null;
         if (ch.isReadonlySymbol(propertySymbol))
@@ -776,15 +850,17 @@ internal sealed partial class NodeBuilderImpl
         return f.NewIndexSignatureDeclaration(modifiers, f.NewNodeList([parameter]), typeNode);
     }
 
-    // nodebuilderimpl.go:2722. Original truncation/order loop; signatures/indexes
-    // remain genuinely absent and nonempty values are explicit unsupported paths.
+    // nodebuilderimpl.go:2722. Original truncation/order loop; ordinary calls and
+    // internal any-base index information are retained, constructors excluded.
     private NodeList createTypeNodesFromResolvedType(StructuredType resolved)
     {
         if (checkTruncationLength())
             return f.NewNodeList([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]);
-        if ((resolved.signatures?.Count ?? 0) != 0)
-            throw Checker.unsupported("createTypeNodesFromResolvedType: signatures");
         List<Node> elements = null;
+        foreach (var signature in resolved.CallSignatures() ?? [])
+            (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
+        if (GoRuntime.Len(resolved.ConstructSignatures()) != 0)
+            throw Checker.unsupported("createTypeNodesFromResolvedType: construct signatures");
         foreach (var info in resolved.indexInfos ?? [])
             (elements ??= new()).AddRange(indexInfoToObjectComputedNamesOrSignatureDeclaration(info, null));
         var properties = resolved.properties;
@@ -808,16 +884,24 @@ internal sealed partial class NodeBuilderImpl
         return elements is { Count: > 0 } ? f.NewNodeList(elements) : null;
     }
 
-    // nodebuilderimpl.go:2789. Anonymous records with no signature/index members.
+    // nodebuilderimpl.go:2789. Anonymous records and ordinary call signatures; construct signatures remain guarded.
     private Node createTypeNodeFromObjectType(Type t)
     {
         var resolved = ch.resolveStructuredTypeMembers(t);
-        if ((resolved.signatures?.Count ?? 0) != 0)
-            throw Checker.unsupported("createTypeNodeFromObjectType: signatures");
-        if ((resolved.properties?.Count ?? 0) == 0 && (resolved.indexInfos?.Count ?? 0) == 0)
+        var callSigs = resolved.CallSignatures();
+        var ctorSigs = resolved.ConstructSignatures();
+        if (GoRuntime.Len(ctorSigs) != 0)
+            throw Checker.unsupported("createTypeNodeFromObjectType: construct signatures");
+        if (GoRuntime.Len(resolved.properties) == 0 && GoRuntime.Len(resolved.indexInfos) == 0)
         {
-            approximateLength += 2;
-            return f.NewTypeLiteralNode(f.NewNodeList([]));
+            if (GoRuntime.Len(callSigs) == 0)
+            {
+                approximateLength += 2;
+                return f.NewTypeLiteralNode(f.NewNodeList([]));
+            }
+
+            if (callSigs.Count == 1)
+                return signatureToSignatureDeclarationHelper(callSigs[0], Kind.FunctionType, null);
         }
 
         bool saved = inObjectTypeLiteral;
@@ -829,8 +913,8 @@ internal sealed partial class NodeBuilderImpl
     // EFSingleLine is a fixed diagnostic printer option, not general emit state.
     }
 
-    // nodebuilderimpl.go:2897/2912. Data-only anonymous records retain mapping,
-    // cycles and alias fallback; callable/class/mapped forms remain excluded.
+    // nodebuilderimpl.go:2897/2912. Anonymous records and callable objects retain mapping,
+    // cycles and alias fallback; class/mapped forms remain excluded.
     private Node createAnonymousTypeNode(Type t) => createAnonymousTypeNodeEx(t, false, false);
     private Node createAnonymousTypeNodeEx(Type t, bool forceClassExpansion, bool forceExpansion)
     {
@@ -852,12 +936,46 @@ internal sealed partial class NodeBuilderImpl
         return t.symbol != null ? visitAndTransformType(t, createTypeNodeFromObjectType) : createTypeNodeFromObjectType(t);
     }
 
-    // nodebuilderimpl.go:2859/2901. Callable/class declarations remain excluded;
-    // globalThis's real ValueModule symbol uses the ordinary typeof arm.
+    // nodebuilderimpl.go:2859/2901. Ordinary nonlocal function symbols and recursive
+    // callable types retain typeof selection; class/static method paths remain excluded.
     private (bool result, Symbol symbol) shouldWriteTypeOfFunctionSymbol(Symbol symbol, uint typeId)
     {
-        if ((symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method)) != 0)
-            throw Checker.unsupported("shouldWriteTypeOfFunctionSymbol: callable declaration");
+        bool isStaticMethodSymbol = (symbol.Flags & SymbolFlags.Method) != 0 && TypeScript.Scanner.Scanner.IsIdentifierTextByteString(symbol.Name, LanguageVariant.Standard) && Core.Some(symbol.Declarations, declaration =>
+        {
+            if (!Ast.IsStatic(declaration))
+                return false;
+            throw Checker.unsupported("shouldWriteTypeOfFunctionSymbol: source static/class methods");
+        });
+        bool isNonLocalFunctionSymbol = false, isFunctionExpressionSymbol = false;
+        if ((symbol.Flags & SymbolFlags.Function) != 0)
+        {
+            if (symbol.Parent != null)
+                isNonLocalFunctionSymbol = true;
+            else
+                foreach (var declaration in symbol.Declarations ?? [])
+                {
+                    if (declaration.Parent.Kind is Kind.SourceFile or Kind.ModuleBlock)
+                    {
+                        isNonLocalFunctionSymbol = true;
+                        break;
+                    }
+
+                    if (Ast.IsFunctionExpressionOrArrowFunction(declaration) && Ast.IsVariableDeclaration(declaration.Parent) && Ast.IsVariableDeclarationList(declaration.Parent.Parent) && Ast.IsVariableStatement(declaration.Parent.Parent.Parent) && declaration.Parent.Parent.Parent.Parent != null && declaration.Parent.Parent.Parent.Parent.Kind is Kind.SourceFile or Kind.ModuleBlock)
+                    {
+                        isNonLocalFunctionSymbol = true;
+                        isFunctionExpressionSymbol = true;
+                        break;
+                    }
+                }
+        }
+
+        if (isStaticMethodSymbol || isNonLocalFunctionSymbol)
+        {
+            if (isFunctionExpressionSymbol && symbol.ValueDeclaration?.Parent != null && symbol.ValueDeclaration.Parent != ctx.enclosingDeclaration)
+                symbol = ch.getMergedSymbol(symbol.ValueDeclaration.Parent.Symbol());
+            return ((ctx.flags & NodeBuilderFlags.UseTypeOfFunction) != 0 || visitedTypes.Contains(typeId)) && ((ctx.flags & NodeBuilderFlags.UseStructuralFallback) == 0 || ch.IsValueSymbolAccessible(symbol, ctx.enclosingDeclaration)) ? (true, symbol) : (false, symbol);
+        }
+
         return (false, symbol);
     }
 
@@ -991,5 +1109,476 @@ internal sealed partial class NodeBuilderImpl
             e.SetOriginalEx(range, location, true);
         range.Loc = ctx.enclosingFile != null && ctx.enclosingFile == Ast.GetSourceFileOfNode(mostOriginal(location)) ? location.Loc : new(-1, -1);
         return range;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1647:1.
+    internal Node typePredicateToTypePredicateNode(TypePredicate predicate)
+    {
+        Node assertsModifier = default;
+        if (((predicate.kind == TypePredicateKind.AssertsIdentifier) || (predicate.kind == TypePredicateKind.AssertsThis)))
+        {
+            assertsModifier = this.f.NewToken(Kind.AssertsKeyword);
+        }
+
+        Node parameterName = default;
+        if (((predicate.kind == TypePredicateKind.Identifier) || (predicate.kind == TypePredicateKind.AssertsIdentifier)))
+        {
+            parameterName = this.f.NewIdentifier(predicate.parameterName);
+            this.e.AddEmitFlags(parameterName, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+        }
+        else
+        {
+            parameterName = this.f.NewThisTypeNode();
+        }
+
+        Node typeNode = default;
+        if ((predicate.t != null))
+        {
+            typeNode = this.typeToTypeNode(predicate.t);
+        }
+
+        return this.f.NewTypePredicateNode(assertsModifier, parameterName, typeNode);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1716:1.
+    private static Node getEffectiveParameterDeclaration(Symbol symbol)
+    {
+        var parameterDeclaration = Ast.GetDeclarationOfKind(symbol, Kind.Parameter);
+        if ((parameterDeclaration != null))
+        {
+            return parameterDeclaration;
+        }
+
+        if (((symbol.Flags & SymbolFlags.Transient) == 0))
+        {
+            return Ast.GetDeclarationOfKind(symbol, Kind.JSDocParameterTag);
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1727:1.
+    private Node symbolToParameterDeclaration(Symbol parameterSymbol, bool preserveModifierFlags)
+    {
+        var parameterDeclaration = getEffectiveParameterDeclaration(parameterSymbol);
+        var parameterType = this.ch.getTypeOfSymbol(parameterSymbol);
+        var parameterTypeNode = this.serializeTypeForDeclaration(parameterDeclaration, parameterType, parameterSymbol, true);
+        ModifierList modifiers = default;
+        if ((((((this.ctx.flags & NodeBuilderFlags.OmitParameterModifiers) == 0) && preserveModifierFlags) && (parameterDeclaration != null)) && Ast.CanHaveModifiers(parameterDeclaration)))
+        {
+            var originals = Core.Filter(parameterDeclaration.ModifierNodes(), Ast.IsModifier);
+            var clones = Core.Map(originals, (node) =>
+            {
+                return node.Clone(this.f);
+            });
+            if ((GoRuntime.Len(clones) > 0))
+            {
+                modifiers = this.f.NewModifierList(clones);
+            }
+        }
+
+        var isRest = (((parameterDeclaration != null) && Checker.isRestParameter(parameterDeclaration)) || ((parameterSymbol.CheckFlags & CheckFlags.RestParameter) != 0));
+        Node dotDotDotToken = default;
+        if (isRest)
+        {
+            throw Checker.unsupported("symbolToParameterDeclaration: rest parameter");
+        }
+
+        var name = this.parameterToParameterDeclarationName(parameterSymbol, parameterDeclaration);
+        var isOptional = (((parameterDeclaration != null) && this.ch.isOptionalParameter(parameterDeclaration)) || ((parameterSymbol.CheckFlags & CheckFlags.OptionalParameter) != 0));
+        Node questionToken = default;
+        if (isOptional)
+        {
+            questionToken = this.f.NewToken(Kind.QuestionToken);
+        }
+
+        var parameterNode = this.f.NewParameterDeclaration(modifiers, dotDotDotToken, name, questionToken, parameterTypeNode, null);
+        this.ctx.approximateLength += (GoRuntime.Len(parameterSymbol.Name) + 3);
+        return parameterNode;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1764:1.
+    private Node parameterToParameterDeclarationName(Symbol parameterSymbol, Node parameterDeclaration)
+    {
+        if (((parameterDeclaration == null) || (parameterDeclaration.Name() == null)))
+        {
+            return this.newIdentifier(parameterSymbol.Name, parameterSymbol);
+        }
+
+        var name = parameterDeclaration.Name();
+        switch (name.Kind)
+        {
+            case Kind.Identifier:
+            {
+                var cloned = this.f.DeepCloneNode(name);
+                this.e.SetEmitFlags(cloned, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                this.idToSymbol[cloned] = parameterSymbol;
+                return cloned;
+            }
+
+            case Kind.QualifiedName:
+            {
+                var cloned2 = this.f.DeepCloneNode(name.AsQualifiedName().Right);
+                this.e.SetEmitFlags(cloned2, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                this.idToSymbol[cloned2] = parameterSymbol;
+                return cloned2;
+            }
+
+            default:
+            {
+                throw Checker.unsupported("parameterToParameterDeclarationName: binding pattern");
+            }
+        }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1818:1.
+    private Node serializeInferredReturnTypeForSignature(Signature signature, Type returnType)
+    {
+        var oldSuppressReportInferenceFallback = this.ctx.suppressReportInferenceFallback;
+        this.ctx.suppressReportInferenceFallback = true;
+        var typePredicate = this.ch.getTypePredicateOfSignature(signature);
+        Node returnTypeNode = default;
+        if ((typePredicate != null))
+        {
+            TypePredicate predicate = default;
+            if ((this.ctx.mapper != null))
+            {
+                predicate = this.ch.instantiateTypePredicate(typePredicate, this.ctx.mapper);
+            }
+            else
+            {
+                predicate = typePredicate;
+            }
+
+            returnTypeNode = this.typePredicateToTypePredicateNodeHelper(predicate);
+        }
+        else
+        {
+            returnTypeNode = this.typeToTypeNode(returnType);
+        }
+
+        this.ctx.suppressReportInferenceFallback = oldSuppressReportInferenceFallback;
+        return returnTypeNode;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1838:1.
+    private Node typePredicateToTypePredicateNodeHelper(TypePredicate typePredicate)
+    {
+        Node assertsModifier = default;
+        if (((typePredicate.kind == TypePredicateKind.AssertsThis) || (typePredicate.kind == TypePredicateKind.AssertsIdentifier)))
+        {
+            assertsModifier = this.f.NewToken(Kind.AssertsKeyword);
+        }
+        else
+        {
+            assertsModifier = null;
+        }
+
+        Node parameterName = default;
+        if (((typePredicate.kind == TypePredicateKind.Identifier) || (typePredicate.kind == TypePredicateKind.AssertsIdentifier)))
+        {
+            parameterName = this.newIdentifier(typePredicate.parameterName, null);
+            this.e.SetEmitFlags(parameterName, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+        }
+        else
+        {
+            parameterName = this.f.NewThisTypeNode();
+        }
+
+        Node typeNode = default;
+        if ((typePredicate.t != null))
+        {
+            typeNode = this.typeToTypeNode(typePredicate.t);
+        }
+
+        return this.f.NewTypePredicateNode(assertsModifier, parameterName, typeNode);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1865:1.
+    internal Node signatureToSignatureDeclarationHelper(Signature signature, Kind kind, SignatureToSignatureDeclarationOptions options)
+    {
+        List<Node> typeParameters = default;
+        var tuple1 = this.enterSignatureScope(signature);
+        var expandedParams = tuple1.Item1;
+        var cleanup = tuple1.Item2;
+        this.ctx.approximateLength += 3;
+        if (GoRuntime.Len(signature.typeParameters) != 0 || ((ctx.flags & NodeBuilderFlags.WriteTypeArgumentsOfSignature) != 0 && signature.target != null && signature.mapper != null && GoRuntime.Len(signature.target.typeParameters) != 0))
+            throw Checker.unsupported("signatureToSignatureDeclarationHelper: generic signature");
+        var restoreFlags = this.saveRestoreFlags();
+        this.ctx.flags &= ~(NodeBuilderFlags.SuppressAnyReturnType);
+        var parameters = Core.Map(Core.IfElse(Core.Some(expandedParams, (p) =>
+        {
+            return ((p != expandedParams[(GoRuntime.Len(expandedParams) - 1)]) && ((p.CheckFlags & CheckFlags.RestParameter) != 0));
+        }), signature.parameters, expandedParams), (parameter3) =>
+        {
+            return this.symbolToParameterDeclaration(parameter3, (kind == Kind.Constructor));
+        });
+        Node thisParameter = default;
+        if (((this.ctx.flags & NodeBuilderFlags.OmitThisParameter) != 0))
+        {
+            thisParameter = null;
+        }
+        else
+        {
+            thisParameter = this.tryGetThisParameterDeclaration(signature);
+        }
+
+        if ((thisParameter != null))
+        {
+            parameters = GoRuntime.Append(new List<Node> { thisParameter }, parameters);
+        }
+
+        restoreFlags();
+        var returnTypeNode = this.serializeReturnTypeForSignature(signature, true);
+        List<Node> modifiers = default;
+        if ((options != null))
+        {
+            modifiers = options.modifiers;
+        }
+
+        if ((((kind == Kind.ConstructorType)) && ((signature.flags & SignatureFlags.Abstract) != 0)))
+        {
+            var flags = Ast.ModifiersToFlags(modifiers);
+            modifiers = Ast.CreateModifiersFromModifierFlags((flags | ModifierFlags.Abstract), this.f.NewModifier);
+        }
+
+        var paramList = this.f.NewNodeList(parameters);
+        NodeList typeParamList = default;
+        if ((GoRuntime.Len(typeParameters) != 0))
+        {
+            typeParamList = this.f.NewNodeList(typeParameters);
+        }
+
+        ModifierList modifierList = default;
+        if ((GoRuntime.Len(modifiers) > 0))
+        {
+            modifierList = this.f.NewModifierList(modifiers);
+        }
+
+        Node name = default;
+        if ((options != null))
+        {
+            name = options.name;
+        }
+
+        if ((name == null))
+        {
+            name = this.f.NewIdentifier("");
+        }
+
+        Node node = default;
+        switch (true)
+        {
+            case true when (kind == Kind.CallSignature):
+            {
+                node = this.f.NewCallSignatureDeclaration(typeParamList, paramList, returnTypeNode);
+                break;
+            }
+
+            case true when (kind == Kind.ConstructSignature):
+            {
+                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+            }
+
+            case true when (kind == Kind.MethodSignature):
+            {
+                Node questionToken = default;
+                if ((options != null))
+                {
+                    questionToken = options.questionToken;
+                }
+
+                node = this.f.NewMethodSignatureDeclaration(modifierList, name, questionToken, typeParamList, paramList, returnTypeNode);
+                break;
+            }
+
+            case true when (kind == Kind.MethodDeclaration):
+            {
+                node = this.f.NewMethodDeclaration(modifierList, null, name, null, typeParamList, paramList, returnTypeNode, null, null);
+                break;
+            }
+
+            case true when (kind == Kind.Constructor):
+            {
+                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+            }
+
+            case true when (kind == Kind.GetAccessor):
+            {
+                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+            }
+
+            case true when (kind == Kind.SetAccessor):
+            {
+                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+            }
+
+            case true when (kind == Kind.IndexSignature):
+            {
+                node = this.f.NewIndexSignatureDeclaration(modifierList, paramList, returnTypeNode);
+                break;
+            }
+
+            case true when (kind == Kind.FunctionType):
+            {
+                if ((returnTypeNode == null))
+                {
+                    returnTypeNode = this.f.NewTypeReferenceNode(this.f.NewIdentifier(""), null);
+                }
+
+                node = this.f.NewFunctionTypeNode(typeParamList, paramList, returnTypeNode);
+                break;
+            }
+
+            case true when (kind == Kind.ConstructorType):
+            {
+                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+            }
+
+            case true when (kind == Kind.FunctionDeclaration):
+            {
+                node = this.f.NewFunctionDeclaration(modifierList, null, name, typeParamList, paramList, returnTypeNode, null, null);
+                break;
+            }
+
+            case true when (kind == Kind.FunctionExpression):
+            {
+                node = this.f.NewFunctionExpression(modifierList, null, name, typeParamList, paramList, returnTypeNode, null, this.f.NewBlock(this.f.NewNodeList(new List<Node> { }), false));
+                break;
+            }
+
+            case true when (kind == Kind.ArrowFunction):
+            {
+                node = this.f.NewArrowFunction(modifierList, typeParamList, paramList, returnTypeNode, null, null, this.f.NewBlock(this.f.NewNodeList(new List<Node> { }), false));
+                break;
+            }
+
+            default:
+            {
+                throw new InvalidOperationException("Unhandled kind in signatureToSignatureDeclarationHelper");
+            }
+        }
+
+        cleanup();
+        return node;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:2073:1.
+    private Node tryGetThisParameterDeclaration(Signature signature)
+    {
+        if ((signature.thisParameter != null))
+        {
+            return this.symbolToParameterDeclaration(signature.thisParameter, false);
+        }
+
+        if (signature.declaration != null && Ast.IsInJSFile(signature.declaration))
+            throw Checker.unsupported("tryGetThisParameterDeclaration: JS");
+        return null;
+    }
+
+    // *
+    // * Serializes the return type of the signature by first trying to use the syntactic printer if possible and falling back to the checker type if not.
+    //
+    // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:2096:1.
+    private Node serializeReturnTypeForSignature(Signature signature, bool tryReuse)
+    {
+        var suppressAny = ((this.ctx.flags & NodeBuilderFlags.SuppressAnyReturnType) != 0);
+        var restoreFlags = this.saveRestoreFlags();
+        if (suppressAny)
+        {
+            this.ctx.flags &= ~(NodeBuilderFlags.SuppressAnyReturnType);
+        }
+
+        Node returnTypeNode = default;
+        Type returnType = default;
+        if (((signature.declaration != null) && !Ast.NodeIsSynthesized(signature.declaration)))
+        {
+            var symbol = this.ch.getSymbolOfDeclaration(signature.declaration);
+            var ok = this.ctx.enclosingSymbolTypes.TryGetValue(Ast.GetSymbolId(symbol), out returnType);
+            if ((!ok || (returnType == null)))
+            {
+                returnType = this.ch.instantiateType(this.ch.getReturnTypeOfSignature(signature), this.ctx.mapper);
+            }
+        }
+        else
+        {
+            returnType = this.ch.getReturnTypeOfSignature(signature);
+        }
+
+        if (!((suppressAny && Checker.IsTypeAny(returnType))))
+        {
+            if (((((!this.isActivelyExpanding() && tryReuse) && (this.ctx.enclosingDeclaration != null)) && (signature.declaration != null)) && !Ast.NodeIsSynthesized(signature.declaration)))
+            {
+                var declarationSymbol = this.ch.getSymbolOfDeclaration(signature.declaration);
+                var restore = this.addSymbolTypeToContext(declarationSymbol, returnType);
+                var pt = this.pc.GetReturnTypeOfSignature(signature.declaration);
+                if (this.pseudoTypeEquivalentToType(pt, returnType, false, !this.ctx.suppressReportInferenceFallback))
+                {
+                    var typePredicate = this.ch.getTypePredicateOfSignature(signature);
+                    if (((typePredicate != null) && !this.pseudoReturnTypeMatchesPredicate(pt, typePredicate)))
+                    {
+                        if (!this.ctx.suppressReportInferenceFallback)
+                        {
+                            this.ctx.tracker.ReportInferenceFallback(signature.declaration);
+                        }
+
+                        pt = null;
+                    }
+
+                    if ((pt != null))
+                    {
+                        returnTypeNode = this.pseudoTypeToNodeWithCheckerFallback(pt, returnType);
+                    }
+                }
+
+                restore();
+            }
+
+            if ((returnTypeNode == null))
+            {
+                returnTypeNode = this.serializeInferredReturnTypeForSignature(signature, returnType);
+            }
+        }
+
+        if (((returnTypeNode == null) && !suppressAny))
+        {
+            returnTypeNode = this.f.NewKeywordTypeNode(Kind.AnyKeyword);
+        }
+
+        restoreFlags();
+        return returnTypeNode;
+    }
+
+    // nodebuilderimpl.go:1859.
+    internal sealed class SignatureToSignatureDeclarationOptions
+    {
+        internal List<Node> modifiers = null;
+        internal Node name = null, questionToken = null;
+    }
+
+    // nodebuilderimpl.go:184/168. Default diagnostic verbosity has no active expansion.
+    private bool isActivelyExpanding() => ctx.maxExpansionDepth > 0 && ctx.depth < ctx.maxExpansionDepth;
+    private Action saveRestoreFlags()
+    {
+        var saved = ctx.flags;
+        var savedInternal = ctx.internalFlags;
+        var savedDepth = ctx.depth;
+        return () =>
+        {
+            ctx.flags = saved;
+            ctx.internalFlags = savedInternal;
+            ctx.depth = savedDepth;
+        };
+    }
+}
+
+public sealed partial class Checker
+{
+    // nodebuilderimpl.go:1985. No tuple/rest expansion is admitted.
+    internal List<List<Symbol>> getExpandedParameters(Signature sig, bool skipUnionExpanding)
+    {
+        if (signatureHasRestParameter(sig))
+            throw unsupported("getExpandedParameters: tuple/rest parameters");
+        return[sig.parameters];
     }
 }

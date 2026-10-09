@@ -1,0 +1,5 @@
+{"name": "typed-call", "text": "function f(x:number):number {return x;} const y=f(1);", "scriptKind": 3, "fileName": "/main.ts", "profile": "Callable", "callableObservations": true, "dataObservations": true}
+{"name": "wrong-call", "text": "function f(x:number):number {return x;} const y=f(\"bad\");", "scriptKind": 3, "fileName": "/main.ts", "profile": "Callable", "callableObservations": true, "dataObservations": true}
+{"name": "context-callback", "text": "declare function apply(f:(x:number)=>number):number; const result=apply(x=>x);", "scriptKind": 3, "fileName": "/main.ts", "profile": "Callable", "callableObservations": true, "dataObservations": true}
+{"name": "branch-return", "text": "function f(x:boolean){if(x)return 1;else return \"no\";} const y=f(true);", "scriptKind": 3, "fileName": "/main.ts", "profile": "Callable", "callableObservations": true, "dataObservations": true}
+{"name": "function-relation", "text": "let f:(x:{a:number})=>number; let g:(x:{a:number;b:string})=>number; f=g;", "scriptKind": 3, "fileName": "/main.ts", "profile": "Callable", "callableObservations": true, "dataObservations": true, "relationPairs": [[4, 16], [16, 4], [4, 4]]}

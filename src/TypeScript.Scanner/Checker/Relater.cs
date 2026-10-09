@@ -1,13 +1,66 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/relater.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Selected scalar, named data-object and union/intersection relations; excluded source-generic/signature/index paths fail explicitly.
+// Selected scalar, data-object/composite and ordinary callable relations; generic, rest and construct paths remain guarded.
 #nullable disable
 using TypeScript.Scanner;
 
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    [Flags]
+    internal enum SignatureCheckMode : uint
+    {
+        None = 0,
+        BivariantCallback = 1,
+        StrictCallback = 2,
+        IgnoreReturnTypes = 4,
+        StrictArity = 8,
+        StrictTopSignature = 16,
+        Callback = BivariantCallback | StrictCallback
+    }
+
+    [Flags]
+    internal enum MinArgumentCountFlags : uint
+    {
+        None = 0,
+        StrongArityForUntypedJS = 1,
+        VoidIsNonOptional = 2
+    }
+
+    // relater.go:161/165.
+    private bool isTypeComparableTo(Type source, Type target) => isTypeRelatedTo(source, target, comparableRelation);
+    private bool areTypesComparable(Type type1, Type type2) => isTypeComparableTo(type1, type2) || isTypeComparableTo(type2, type1);
+    // relater.go:4995. The ordinary object/base/constraint branches are retained.
+    private bool isTypeDerivedFrom(Type source, Type target)
+    {
+        if ((source.flags & TypeFlags.Union) != 0)
+            return source.Types().All(t => isTypeDerivedFrom(t, target));
+        if ((target.flags & TypeFlags.Union) != 0)
+            return target.Types().Any(t => isTypeDerivedFrom(source, t));
+        if ((source.flags & TypeFlags.Intersection) != 0)
+            return source.Types().Any(t => isTypeDerivedFrom(t, target));
+        if ((source.flags & TypeFlags.InstantiableNonPrimitive) != 0)
+            return isTypeDerivedFrom(getBaseConstraintOfType(source) ?? unknownType, target);
+        if (IsEmptyAnonymousObjectType(target))
+            return (source.flags & (TypeFlags.Object | TypeFlags.NonPrimitive)) != 0;
+        if (target == globalObjectType)
+            return (source.flags & (TypeFlags.Object | TypeFlags.NonPrimitive)) != 0 && !IsEmptyAnonymousObjectType(source);
+        if (target == globalFunctionType)
+            return (source.flags & TypeFlags.Object) != 0 && isFunctionObjectType(source);
+        if (hasBaseType(source, getTargetType(target)))
+            return true;
+        if (isArrayType(target))
+            throw unsupported("isTypeDerivedFrom: array ancestry");
+        return false;
+    }
+
+    // relater.go:2559.
+    private static string visibilityToString(ModifierFlags flags) => flags == ModifierFlags.Private ? "private" : flags == ModifierFlags.Protected ? "protected" : "public";
+    // relater.go:1829. Even a nonrest invocation creates a tuple of remaining
+    // parameters upstream; this helper is reached only from excluded rest paths.
+    private Type getRestTypeAtPosition(Signature source, int pos, bool readOnly) => throw unsupported("getRestTypeAtPosition: tuple/rest creation");
+    private delegate void ErrorReporter(Message message, params object[] args);
     [Flags]
     private enum IntersectionState : uint
     {
@@ -296,29 +349,13 @@ public sealed partial class Checker
             throw unsupported(branch);
     }
 
-    // Source signatures remain excluded; actual synthetic internal index information
-    // is retained by the selected index relation algorithms below.
-    private void guardAbsentSignaturesAndIndexes(Type t, string branch)
-    {
-        if ((t.flags & TypeFlags.Object) != 0)
-        {
-            var data = resolveStructuredTypeMembers(t);
-            if ((data.signatures?.Count ?? 0) != 0)
-                throw unsupported(branch);
-        }
-        else if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-            foreach (var part in t.Types())
-                guardAbsentSignaturesAndIndexes(part, branch);
-    }
-
     private bool isWeakType(Type t)
     {
         guardFiniteObject(t, "isWeakType: unselected type payload");
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var resolved = resolveStructuredTypeMembers(t);
-            guardAbsentSignaturesAndIndexes(t, "isWeakType: signatures/indexes");
-            return (resolved.indexInfos?.Count ?? 0) == 0 && (resolved.properties?.Count ?? 0) > 0 && resolved.properties.All(p => (p.Flags & SymbolFlags.Optional) != 0);
+            return GoRuntime.Len(resolved.signatures) == 0 && (resolved.indexInfos?.Count ?? 0) == 0 && (resolved.properties?.Count ?? 0) > 0 && resolved.properties.All(p => (p.Flags & SymbolFlags.Optional) != 0);
         }
 
         if ((t.flags & TypeFlags.Intersection) != 0)
@@ -841,6 +878,845 @@ public sealed partial class Checker
         return excluded ? reduced : properties;
     }
 
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1487:1.
+    private bool isSignatureAssignableTo(Signature source, Signature target, bool ignoreReturnTypes)
+    {
+        return (this.compareSignaturesRelated(source, target, Core.IfElse(ignoreReturnTypes, SignatureCheckMode.IgnoreReturnTypes, SignatureCheckMode.None), false, null, this.compareTypesAssignableWorker, null) != Ternary.False);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1491:1.
+    private Ternary compareSignaturesRelated(Signature source, Signature target, SignatureCheckMode checkMode, bool reportErrors, ErrorReporter errorReporter, TypeComparer compareTypes, TypeMapper reportUnreliableMarkers)
+    {
+        if ((source == target))
+        {
+            return Ternary.True;
+        }
+
+        if ((!((((checkMode & SignatureCheckMode.StrictTopSignature) != 0) && this.isTopSignature(source))) && this.isTopSignature(target)))
+        {
+            return Ternary.True;
+        }
+
+        if (((((checkMode & SignatureCheckMode.StrictTopSignature) != 0) && this.isTopSignature(source)) && !this.isTopSignature(target)))
+        {
+            return Ternary.False;
+        }
+
+        var targetCount = this.getParameterCount(target);
+        bool sourceHasMoreParameters = default;
+        if (!this.hasEffectiveRestParameter(target))
+        {
+            if (((checkMode & SignatureCheckMode.StrictArity) != 0))
+            {
+                sourceHasMoreParameters = (this.hasEffectiveRestParameter(source) || (this.getParameterCount(source) > targetCount));
+            }
+            else
+            {
+                sourceHasMoreParameters = (this.getMinArgumentCount(source) > targetCount);
+            }
+        }
+
+        if (sourceHasMoreParameters)
+        {
+            if ((reportErrors && (((checkMode & SignatureCheckMode.StrictArity) == 0))))
+            {
+                errorReporter(Diagnostics.Target_signature_provides_too_few_arguments_Expected_0_or_more_but_got_1, this.getMinArgumentCount(source), targetCount);
+            }
+
+            return Ternary.False;
+        }
+
+        if (((GoRuntime.Len(source.typeParameters) != 0) && !ReferenceEquals(source.typeParameters, target.typeParameters)))
+        {
+            throw unsupported("compareSignaturesRelated: generic signature context");
+        }
+
+        var sourceCount = this.getParameterCount(source);
+        var sourceRestType = this.getNonArrayRestType(source);
+        var targetRestType = this.getNonArrayRestType(target);
+        if (((sourceRestType != null) || (targetRestType != null)))
+        {
+            this.instantiateType(Core.IfElse((sourceRestType != null), sourceRestType, targetRestType), reportUnreliableMarkers);
+        }
+
+        var kind = Kind.Unknown;
+        if ((target.declaration != null))
+        {
+            kind = target.declaration.Kind;
+        }
+
+        var strictVariance = ((((((checkMode & SignatureCheckMode.Callback) == 0) && this.strictFunctionTypes) && (kind != Kind.MethodDeclaration)) && (kind != Kind.MethodSignature)) && (kind != Kind.Constructor));
+        var result = Ternary.True;
+        var sourceThisType = this.getThisTypeOfSignature(source);
+        if (((sourceThisType != null) && (sourceThisType != this.voidType)))
+        {
+            var targetThisType = this.getThisTypeOfSignature(target);
+            if ((targetThisType != null))
+            {
+                Ternary related = default;
+                if (!strictVariance)
+                {
+                    related = compareTypes(sourceThisType, targetThisType, false);
+                }
+
+                if ((related == Ternary.False))
+                {
+                    related = compareTypes(targetThisType, sourceThisType, reportErrors);
+                }
+
+                if ((related == Ternary.False))
+                {
+                    if (reportErrors)
+                    {
+                        errorReporter(Diagnostics.The_this_types_of_each_signature_are_incompatible);
+                    }
+
+                    return Ternary.False;
+                }
+
+                result &= related;
+            }
+        }
+
+        int paramCount = default;
+        if (((sourceRestType != null) || (targetRestType != null)))
+        {
+            paramCount = Math.Min(sourceCount, targetCount);
+        }
+        else
+        {
+            paramCount = Math.Max(sourceCount, targetCount);
+        }
+
+        int restIndex = default;
+        if (((sourceRestType != null) || (targetRestType != null)))
+        {
+            restIndex = (paramCount - 1);
+        }
+        else
+        {
+            restIndex = -1;
+        }
+
+        {
+            foreach (var i in GoRuntime.RangeKeys(paramCount))
+            {
+                Type sourceType = default;
+                if ((i == restIndex))
+                {
+                    sourceType = this.getRestOrAnyTypeAtPosition(source, i);
+                }
+                else
+                {
+                    sourceType = this.tryGetTypeAtPosition(source, i);
+                }
+
+                Type targetType = default;
+                if ((i == restIndex))
+                {
+                    targetType = this.getRestOrAnyTypeAtPosition(target, i);
+                }
+                else
+                {
+                    targetType = this.tryGetTypeAtPosition(target, i);
+                }
+
+                if ((((sourceType != null) && (targetType != null)) && (((sourceType != targetType) || ((checkMode & SignatureCheckMode.StrictArity) != 0)))))
+                {
+                    Signature sourceSig = default;
+                    Signature targetSig = default;
+                    if ((((checkMode & SignatureCheckMode.Callback) == 0) && !this.isInstantiatedGenericParameter(source, i)))
+                    {
+                        sourceSig = this.getSingleCallSignature(this.GetNonNullableType(sourceType));
+                    }
+
+                    if ((((checkMode & SignatureCheckMode.Callback) == 0) && !this.isInstantiatedGenericParameter(target, i)))
+                    {
+                        targetSig = this.getSingleCallSignature(this.GetNonNullableType(targetType));
+                    }
+
+                    var callbacks = (((((sourceSig != null) && (targetSig != null)) && (this.getTypePredicateOfSignature(sourceSig) == null)) && (this.getTypePredicateOfSignature(targetSig) == null)) && (this.getTypeFacts(sourceType, TypeFacts.IsUndefinedOrNull) == this.getTypeFacts(targetType, TypeFacts.IsUndefinedOrNull)));
+                    Ternary related2 = default;
+                    if (callbacks)
+                    {
+                        related2 = this.compareSignaturesRelated(targetSig, sourceSig, ((checkMode & SignatureCheckMode.StrictArity) | Core.IfElse(strictVariance, SignatureCheckMode.StrictCallback, SignatureCheckMode.BivariantCallback)), reportErrors, errorReporter, compareTypes, reportUnreliableMarkers);
+                    }
+                    else
+                    {
+                        if ((((checkMode & SignatureCheckMode.Callback) == 0) && !strictVariance))
+                        {
+                            related2 = compareTypes(sourceType, targetType, false);
+                        }
+
+                        if ((related2 == Ternary.False))
+                        {
+                            related2 = compareTypes(targetType, sourceType, reportErrors);
+                        }
+                    }
+
+                    if ((((((related2 != Ternary.False) && ((checkMode & SignatureCheckMode.StrictArity) != 0)) && (i >= this.getMinArgumentCount(source))) && (i < this.getMinArgumentCount(target))) && (compareTypes(sourceType, targetType, false) != Ternary.False)))
+                    {
+                        related2 = Ternary.False;
+                    }
+
+                    if ((related2 == Ternary.False))
+                    {
+                        if (reportErrors)
+                        {
+                            errorReporter(Diagnostics.Types_of_parameters_0_and_1_are_incompatible, this.getParameterNameAtPosition(source, i), this.getParameterNameAtPosition(target, i));
+                        }
+
+                        return Ternary.False;
+                    }
+
+                    result &= related2;
+                }
+            }
+        }
+
+        if (((checkMode & SignatureCheckMode.IgnoreReturnTypes) == 0))
+        {
+            var targetReturnType = this.getNonCircularReturnTypeOfSignature(target);
+            if (((targetReturnType == this.voidType) || (targetReturnType == this.anyType)))
+            {
+                return result;
+            }
+
+            var sourceReturnType = this.getNonCircularReturnTypeOfSignature(source);
+            var targetTypePredicate = this.getTypePredicateOfSignature(target);
+            if ((targetTypePredicate != null))
+            {
+                var sourceTypePredicate = this.getTypePredicateOfSignature(source);
+                if ((sourceTypePredicate != null))
+                {
+                    result &= this.compareTypePredicateRelatedTo(sourceTypePredicate, targetTypePredicate, reportErrors, errorReporter, compareTypes);
+                }
+                else
+                {
+                    if (((targetTypePredicate.kind == TypePredicateKind.Identifier) || (targetTypePredicate.kind == TypePredicateKind.This)))
+                    {
+                        if (reportErrors)
+                        {
+                            errorReporter(Diagnostics.Signature_0_must_be_a_type_predicate, this.signatureToString(source));
+                        }
+
+                        return Ternary.False;
+                    }
+                }
+            }
+            else
+            {
+                Ternary related3 = default;
+                if (((checkMode & SignatureCheckMode.BivariantCallback) != 0))
+                {
+                    related3 = compareTypes(targetReturnType, sourceReturnType, false);
+                }
+
+                if ((related3 == Ternary.False))
+                {
+                    related3 = compareTypes(sourceReturnType, targetReturnType, reportErrors);
+                }
+
+                result &= related3;
+                if (((result == Ternary.False) && reportErrors))
+                {
+                    Message message = default;
+                    if (((GoRuntime.Len(source.parameters) == 0) && (GoRuntime.Len(target.parameters) == 0)))
+                    {
+                        message = Core.IfElse(((source.flags & SignatureFlags.Construct) != 0), Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_return_types_0_and_1, Diagnostics.Call_signatures_with_no_arguments_have_incompatible_return_types_0_and_1);
+                    }
+                    else
+                    {
+                        message = Core.IfElse(((source.flags & SignatureFlags.Construct) != 0), Diagnostics.Construct_signature_return_types_0_and_1_are_incompatible, Diagnostics.Call_signature_return_types_0_and_1_are_incompatible);
+                    }
+
+                    errorReporter(message, this.typeToStringByteString(sourceReturnType), this.typeToStringByteString(targetReturnType));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1675:1.
+    private Ternary compareTypePredicateRelatedTo(TypePredicate source, TypePredicate target, bool reportErrors, ErrorReporter errorReporter, TypeComparer compareTypes)
+    {
+        if ((source.kind != target.kind))
+        {
+            if (reportErrors)
+            {
+                errorReporter(Diagnostics.A_this_based_type_guard_is_not_compatible_with_a_parameter_based_type_guard);
+                errorReporter(Diagnostics.Type_predicate_0_is_not_assignable_to_1, this.typePredicateToString(source), this.typePredicateToString(target));
+            }
+
+            return Ternary.False;
+        }
+
+        if (((source.kind == TypePredicateKind.Identifier) || (source.kind == TypePredicateKind.AssertsIdentifier)))
+        {
+            if ((source.parameterIndex != target.parameterIndex))
+            {
+                if (reportErrors)
+                {
+                    errorReporter(Diagnostics.Parameter_0_is_not_in_the_same_position_as_parameter_1, source.parameterName, target.parameterName);
+                    errorReporter(Diagnostics.Type_predicate_0_is_not_assignable_to_1, this.typePredicateToString(source), this.typePredicateToString(target));
+                }
+
+                return Ternary.False;
+            }
+        }
+
+        Ternary related = default;
+        switch (true)
+        {
+            case true when (source.t == target.t):
+            {
+                related = Ternary.True;
+                break;
+            }
+
+            case true when ((source.t != null) && (target.t != null)):
+            {
+                related = compareTypes(source.t, target.t, reportErrors);
+                break;
+            }
+
+            default:
+            {
+                related = Ternary.False;
+                break;
+            }
+        }
+
+        if (((related == Ternary.False) && reportErrors))
+        {
+            errorReporter(Diagnostics.Type_predicate_0_is_not_assignable_to_1, this.typePredicateToString(source), this.typePredicateToString(target));
+        }
+
+        return related;
+    }
+
+    // Returns true if `s` is `(...args: A) => R` where `A` is `any`, `any[]`, `never`, or `never[]`, and `R` is `any` or `unknown`.
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1708:1.
+    private bool isTopSignature(Signature s)
+    {
+        if ((GoRuntime.Len(s.typeParameters) == 0) && (s.thisParameter == null || IsTypeAny(getTypeOfParameter(s.thisParameter))) && GoRuntime.Len(s.parameters) == 1 && signatureHasRestParameter(s))
+            throw unsupported("isTopSignature: rest/array signature");
+        return false;
+    }
+
+    // Return the number of parameters in a signature. The rest parameter, if present, counts as one
+    // parameter. For example, the parameter count of (x: number, y: number, ...z: string[]) is 3 and
+    // the parameter count of (x: number, ...args: [number, ...string[], boolean])) is also 3. In the
+    // latter example, the effective rest type is [...string[], boolean].
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1726:1.
+    private int getParameterCount(Signature signature)
+    {
+        var length = GoRuntime.Len(signature.parameters);
+        if (signatureHasRestParameter(signature))
+            throw unsupported("getParameterCount: rest/tuple signature");
+        return length;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1737:1.
+    private int getMinArgumentCount(Signature signature)
+    {
+        return this.getMinArgumentCountEx(signature, MinArgumentCountFlags.None);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1741:1.
+    private int getMinArgumentCountEx(Signature signature, MinArgumentCountFlags flags)
+    {
+        var strongArityForUntypedJS = (flags & MinArgumentCountFlags.StrongArityForUntypedJS);
+        var voidIsNonOptional = (flags & MinArgumentCountFlags.VoidIsNonOptional);
+        if (((voidIsNonOptional != 0) || (signature.resolvedMinArgumentCount == -1)))
+        {
+            var minArgumentCount = -1;
+            if (signatureHasRestParameter(signature))
+                throw unsupported("getMinArgumentCountEx: rest/tuple signature");
+            if ((minArgumentCount == -1))
+            {
+                if (((strongArityForUntypedJS == 0) && ((signature.flags & SignatureFlags.IsUntypedSignatureInJSFile) != 0)))
+                {
+                    return 0;
+                }
+
+                minArgumentCount = (int)(signature.minArgumentCount);
+            }
+
+            if ((voidIsNonOptional != 0))
+            {
+                return minArgumentCount;
+            }
+
+            {
+                var i = (minArgumentCount - 1);
+                for (; (i >= 0); i--)
+                {
+                    var t = this.getTypeAtPosition(signature, i);
+                    if (!someType(t, (t2) =>
+                    {
+                        return ((t2.flags & TypeFlags.Void) != 0);
+                    }))
+                    {
+                        break;
+                    }
+
+                    minArgumentCount = i;
+                }
+            }
+
+            signature.resolvedMinArgumentCount = (int)(minArgumentCount);
+        }
+
+        return (int)(signature.resolvedMinArgumentCount);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1782:1.
+    private bool hasEffectiveRestParameter(Signature signature)
+    {
+        if (signatureHasRestParameter(signature))
+            throw unsupported("hasEffectiveRestParameter: rest/tuple signature");
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1790:1.
+    private Type getTypeAtPosition(Signature signature, int pos)
+    {
+        var t = this.tryGetTypeAtPosition(signature, pos);
+        if ((t != null))
+        {
+            return t;
+        }
+
+        return this.anyType;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1798:1.
+    private Type tryGetTypeAtPosition(Signature signature, int pos)
+    {
+        var paramCount = GoRuntime.Len(signature.parameters) - Core.IfElse(signatureHasRestParameter(signature), 1, 0);
+        if (pos < paramCount)
+            return getTypeOfParameter(signature.parameters[pos]);
+        if (signatureHasRestParameter(signature))
+            throw unsupported("tryGetTypeAtPosition: rest/tuple signature");
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2049:1.
+    internal TypePredicate getTypePredicateOfSignature(Signature sig)
+    {
+        if ((sig.resolvedTypePredicate == null))
+        {
+            switch (true)
+            {
+                case true when (sig.target != null):
+                {
+                    var targetTypePredicate = this.getTypePredicateOfSignature(sig.target);
+                    if ((targetTypePredicate != null))
+                    {
+                        sig.resolvedTypePredicate = this.instantiateTypePredicate(targetTypePredicate, sig.mapper);
+                    }
+
+                    break;
+                }
+
+                case true when (sig.composite != null):
+                {
+                    sig.resolvedTypePredicate = this.getUnionOrIntersectionTypePredicate(sig.composite.signatures, sig.composite.isUnion);
+                    break;
+                }
+
+                default:
+                {
+                    if ((sig.declaration != null))
+                    {
+                        var typeNode = sig.declaration.Type();
+                        switch (true)
+                        {
+                            case true when (typeNode != null):
+                            {
+                                if (Ast.IsTypePredicateNode(typeNode))
+                                {
+                                    throw unsupported("getTypePredicateOfSignature: written type predicate");
+                                }
+
+                                break;
+                            }
+
+                            case true when ((Ast.IsFunctionLikeDeclaration(sig.declaration) && (((sig.resolvedReturnType == null) || ((sig.resolvedReturnType.flags & TypeFlags.Boolean) != 0)))) && (this.getParameterCount(sig) > 0)):
+                            {
+                                sig.resolvedTypePredicate = this.noTypePredicate;
+                                sig.resolvedTypePredicate = this.getTypePredicateFromBody(sig.declaration);
+                                break;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if ((sig.resolvedTypePredicate == null))
+            {
+                sig.resolvedTypePredicate = this.noTypePredicate;
+            }
+        }
+
+        if ((sig.resolvedTypePredicate == this.noTypePredicate))
+        {
+            return null;
+        }
+
+        return sig.resolvedTypePredicate;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2083:1.
+    private TypePredicate getUnionOrIntersectionTypePredicate(List<Signature> signatures, bool isUnion)
+    {
+        TypePredicate last = default;
+        List<Type> types = default;
+        {
+            foreach (var sig in GoRuntime.RangeValues(signatures))
+            {
+                var pred = this.getTypePredicateOfSignature(sig);
+                if ((pred != null))
+                {
+                    if ((((pred.kind != TypePredicateKind.This) && (pred.kind != TypePredicateKind.Identifier)) || ((last != null) && !this.typePredicateKindsMatch(last, pred))))
+                    {
+                        return null;
+                    }
+
+                    last = pred;
+                    types = GoRuntime.Append(types, pred.t);
+                }
+                else
+                {
+                    Type returnType = default;
+                    if (isUnion)
+                    {
+                        returnType = this.getReturnTypeOfSignature(sig);
+                    }
+
+                    if (((returnType != this.falseType) && (returnType != this.regularFalseType)))
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        if ((last == null))
+        {
+            return null;
+        }
+
+        var compositeType = this.getUnionOrIntersectionType(types, isUnion, UnionReduction.Literal);
+        return this.newTypePredicate(last.kind, last.parameterName, last.parameterIndex, compositeType);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2187:1.
+    private Signature findMatchingSignature(List<Signature> signatureList, Signature signature, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes)
+    {
+        Func<Type, Type, Ternary> compareTypes = partialMatch ? this.compareTypesSubtypeOf : this.compareTypesIdentical;
+        {
+            foreach (var s in GoRuntime.RangeValues(signatureList))
+            {
+                if ((this.compareSignaturesIdentical(s, signature, partialMatch, ignoreThisTypes, ignoreReturnTypes, compareTypes) != 0))
+                {
+                    return s;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // *
+    // * See signatureRelatedTo, compareSignaturesIdentical
+    //
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2200:1.
+    private Ternary compareSignaturesIdentical(Signature source, Signature target, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes, Func<Type, Type, Ternary> compareTypes)
+    {
+        if ((source == target))
+        {
+            return Ternary.True;
+        }
+
+        if (!this.isMatchingSignature(source, target, partialMatch))
+        {
+            return Ternary.False;
+        }
+
+        if ((GoRuntime.Len(source.typeParameters) != GoRuntime.Len(target.typeParameters)))
+        {
+            return Ternary.False;
+        }
+
+        if ((GoRuntime.Len(target.typeParameters) != 0))
+        {
+            throw unsupported("compareSignaturesIdentical: generic signature");
+        }
+
+        var result = Ternary.True;
+        if (!ignoreThisTypes)
+        {
+            var sourceThisType = this.getThisTypeOfSignature(source);
+            if ((sourceThisType != null))
+            {
+                var targetThisType = this.getThisTypeOfSignature(target);
+                if ((targetThisType != null))
+                {
+                    var related = compareTypes(sourceThisType, targetThisType);
+                    if ((related == Ternary.False))
+                    {
+                        return Ternary.False;
+                    }
+
+                    result &= related;
+                }
+            }
+        }
+
+        {
+            foreach (var i2 in GoRuntime.RangeKeys(this.getParameterCount(target)))
+            {
+                var s3 = this.getTypeAtPosition(source, i2);
+                var t3 = this.getTypeAtPosition(target, i2);
+                var related2 = compareTypes(t3, s3);
+                if ((related2 == Ternary.False))
+                {
+                    return Ternary.False;
+                }
+
+                result &= related2;
+            }
+        }
+
+        if (!ignoreReturnTypes)
+        {
+            var sourceTypePredicate = this.getTypePredicateOfSignature(source);
+            var targetTypePredicate = this.getTypePredicateOfSignature(target);
+            if (((sourceTypePredicate != null) || (targetTypePredicate != null)))
+            {
+                result &= this.compareTypePredicatesIdentical(sourceTypePredicate, targetTypePredicate, compareTypes);
+            }
+            else
+            {
+                result &= compareTypes(this.getReturnTypeOfSignature(source), this.getReturnTypeOfSignature(target));
+            }
+        }
+
+        return result;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2260:1.
+    private bool isMatchingSignature(Signature source, Signature target, bool partialMatch)
+    {
+        var sourceParameterCount = this.getParameterCount(source);
+        var targetParameterCount = this.getParameterCount(target);
+        var sourceMinArgumentCount = this.getMinArgumentCount(source);
+        var targetMinArgumentCount = this.getMinArgumentCount(target);
+        var sourceHasRestParameter = this.hasEffectiveRestParameter(source);
+        var targetHasRestParameter = this.hasEffectiveRestParameter(target);
+        if ((((sourceParameterCount == targetParameterCount) && (sourceMinArgumentCount == targetMinArgumentCount)) && (sourceHasRestParameter == targetHasRestParameter)))
+        {
+            return true;
+        }
+
+        if ((partialMatch && (sourceMinArgumentCount <= targetMinArgumentCount)))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2280:1.
+    private bool compareTypeParametersIdentical(List<Type> sourceParams, List<Type> targetParams)
+    {
+        if ((GoRuntime.Len(sourceParams) != GoRuntime.Len(targetParams)))
+        {
+            return false;
+        }
+
+        if (GoRuntime.Len(sourceParams) != 0)
+            throw unsupported("compareTypeParametersIdentical: generic signature");
+        return true;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2303:1.
+    private Ternary compareTypePredicatesIdentical(TypePredicate source, TypePredicate target, Func<Type, Type, Ternary> compareTypes)
+    {
+        switch (true)
+        {
+            case true when (((source == null) || (target == null)) || !this.typePredicateKindsMatch(source, target)):
+            {
+                return Ternary.False;
+            }
+
+            case true when (source.t == target.t):
+            {
+                return Ternary.True;
+            }
+
+            case true when ((source.t != null) && (target.t != null)):
+            {
+                return compareTypes(source.t, target.t);
+            }
+        }
+
+        return Ternary.False;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1947:1.
+    private Type getThisTypeOfSignature(Signature signature)
+    {
+        if ((signature.thisParameter != null))
+        {
+            return this.getTypeOfSymbol(signature.thisParameter);
+        }
+
+        return null;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:1954:1.
+    private bool isInstantiatedGenericParameter(Signature signature, int pos)
+    {
+        if ((signature.target == null))
+        {
+            return false;
+        }
+
+        var t = this.tryGetTypeAtPosition(signature.target, pos);
+        return ((t != null) && this.isGenericType(t));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2113:1.
+    private bool typePredicateKindsMatch(TypePredicate a, TypePredicate b)
+    {
+        return ((a.kind == b.kind) && (a.parameterIndex == b.parameterIndex));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2133:1.
+    internal TypePredicate instantiateTypePredicate(TypePredicate predicate, TypeMapper mapper)
+    {
+        var t = this.instantiateType(predicate.t, mapper);
+        if ((t == predicate.t))
+        {
+            return predicate;
+        }
+
+        return this.newTypePredicate(predicate.kind, predicate.parameterName, predicate.parameterIndex, t);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2141:1.
+    private TypePredicate newTypePredicate(TypePredicateKind kind, string parameterName, int parameterIndex, Type t)
+    {
+        return new TypePredicate
+        {
+            kind = kind,
+            parameterIndex = parameterIndex,
+            parameterName = parameterName,
+            t = t
+        };
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2145:1.
+    private bool isResolvingReturnTypeOfSignature(Signature signature)
+    {
+        if (((signature.composite != null) && Core.Some(signature.composite.signatures, this.isResolvingReturnTypeOfSignature)))
+        {
+            return true;
+        }
+
+        return ((signature.resolvedReturnType == null) && (this.findResolutionCycleStartIndex(signature, TypeSystemPropertyName.ResolvedReturnType) >= 0));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2152:1.
+    private List<Signature> findMatchingSignatures(List<List<Signature>> signatureLists, Signature signature, int listIndex)
+    {
+        if ((GoRuntime.Len(signature.typeParameters) != 0))
+        {
+            if ((listIndex > 0))
+            {
+                return null;
+            }
+
+            {
+                var i = 1;
+                for (; (i < GoRuntime.Len(signatureLists)); i++)
+                {
+                    if ((this.findMatchingSignature(signatureLists[i], signature, false, false, false) == null))
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            return new List<Signature>
+            {
+                signature
+            };
+        }
+
+        List<Signature> result = default;
+        {
+            foreach (var i2 in GoRuntime.RangeKeys(signatureLists))
+            {
+                Signature match = default;
+                if ((i2 == listIndex))
+                {
+                    match = signature;
+                }
+                else
+                {
+                    match = this.findMatchingSignature(signatureLists[i2], signature, false, false, true);
+                    if ((match == null))
+                    {
+                        match = this.findMatchingSignature(signatureLists[i2], signature, true, false, true);
+                    }
+                }
+
+                if ((match == null))
+                {
+                    return null;
+                }
+
+                result = Core.AppendIfUnique(result, match);
+            }
+        }
+
+        return result;
+    }
+
+    // relater.go:1891/1900. Ordinary signatures have no rest type; rest creation is excluded.
+    private Type getNonArrayRestType(Signature signature)
+    {
+        var restType = getEffectiveRestType(signature);
+        if (restType != null)
+            throw unsupported("getNonArrayRestType: rest/array type");
+        return null;
+    }
+
+    private Type getEffectiveRestType(Signature signature)
+    {
+        if (signatureHasRestParameter(signature))
+            throw unsupported("getEffectiveRestType: rest/array type");
+        return null;
+    }
+
+    // relater.go:1815. Reached only for effective nonarray rest parameters.
+    private Type getRestOrAnyTypeAtPosition(Signature source, int pos) => throw unsupported("getRestOrAnyTypeAtPosition: tuple/array creation");
+    // relater.go:1962. The admitted ordinary parameter arm preserves raw names.
+    private string getParameterNameAtPosition(Signature signature, int pos)
+    {
+        int paramCount = GoRuntime.Len(signature.parameters) - Core.IfElse(signatureHasRestParameter(signature), 1, 0);
+        if (pos < paramCount)
+            return signature.parameters[pos].Name;
+        throw unsupported("getParameterNameAtPosition: rest/tuple parameter");
+    }
+
     private sealed class Relater
     {
         private readonly Checker c;
@@ -927,9 +1803,10 @@ public sealed partial class Checker
                         var targetString = c.typeToStringByteString(originalTarget.alias != null ? originalTarget : target);
                         var calls = c.getSignaturesOfType(source, SignatureKind.Call);
                         var constructs = c.getSignaturesOfType(source, SignatureKind.Construct);
-                        if ((calls?.Count ?? 0) != 0 || (constructs?.Count ?? 0) != 0)
-                            throw unsupported("isRelatedToEx: callable return-type suggestion");
-                        reportError(Diagnostics.Type_0_has_no_properties_in_common_with_type_1, sourceString, targetString);
+                        if (Core.Some(calls, sig => c.isTypeAssignableTo(c.getReturnTypeOfSignature(sig), target)) || Core.Some(constructs, sig => c.isTypeAssignableTo(c.getReturnTypeOfSignature(sig), target)))
+                            reportError(Diagnostics.Value_of_type_0_has_no_properties_in_common_with_type_1_Did_you_mean_to_call_it, sourceString, targetString);
+                        else
+                            reportError(Diagnostics.Type_0_has_no_properties_in_common_with_type_1, sourceString, targetString);
                     }
 
                     return Ternary.False;
@@ -1549,29 +2426,101 @@ public sealed partial class Checker
             return result;
         }
 
+        // relater.go:4473. Ordered overload matrix and original error-state rollback.
         private Ternary signaturesRelatedTo(Type source, Type target, SignatureKind kind, bool reportErrors, IntersectionState intersectionState)
         {
             if (relation == c.identityRelation)
                 return signaturesIdenticalTo(source, target, kind);
-            // Callable wildcard initialization is excluded along with source calls.
+            if (source == c.anyFunctionType)
+                return Ternary.True;
+            if (target == c.anyFunctionType)
+                return Ternary.False;
             var sourceSignatures = c.getSignaturesOfType(source, kind);
             var targetSignatures = c.getSignaturesOfType(target, kind);
-            if ((sourceSignatures?.Count ?? 0) != 0 || (targetSignatures?.Count ?? 0) != 0)
-                throw unsupported("signaturesRelatedTo: callable signature comparison");
-            // All branches of the original signature comparison have empty loops.
-            return Ternary.True;
+            if (kind == SignatureKind.Construct && GoRuntime.Len(sourceSignatures) != 0 && GoRuntime.Len(targetSignatures) != 0)
+                throw unsupported("signaturesRelatedTo: construct signatures");
+            var result = Ternary.True;
+            if ((source.objectFlags & ObjectFlags.Instantiated) != 0 && (target.objectFlags & ObjectFlags.Instantiated) != 0 && source.symbol == target.symbol || (source.objectFlags & ObjectFlags.Reference) != 0 && (target.objectFlags & ObjectFlags.Reference) != 0 && source.Target() == target.Target())
+            {
+                for (int i = 0; i < GoRuntime.Len(targetSignatures); i++)
+                {
+                    var related = signatureRelatedTo(sourceSignatures[i], targetSignatures[i], true, reportErrors, intersectionState);
+                    if (related == Ternary.False)
+                        return Ternary.False;
+                    result &= related;
+                }
+            }
+            else if (GoRuntime.Len(sourceSignatures) == 1 && GoRuntime.Len(targetSignatures) == 1)
+                result = signatureRelatedTo(sourceSignatures[0], targetSignatures[0], relation == c.comparableRelation, reportErrors, intersectionState);
+            else
+            {
+                foreach (var t in GoRuntime.RangeValues(targetSignatures))
+                {
+                    var saveErrorState = getErrorState();
+                    var shouldElaborateErrors = reportErrors;
+                    bool matched = false;
+                    foreach (var sourceSignature in GoRuntime.RangeValues(sourceSignatures))
+                    {
+                        var related = signatureRelatedTo(sourceSignature, t, true, shouldElaborateErrors, intersectionState);
+                        if (related != Ternary.False)
+                        {
+                            result &= related;
+                            restoreErrorState(saveErrorState);
+                            matched = true;
+                            break;
+                        }
+
+                        shouldElaborateErrors = false;
+                    }
+
+                    // The boolean represents the original labelled continue outer.
+                    if (matched)
+                        continue;
+                    if (shouldElaborateErrors)
+                        reportError(Diagnostics.Type_0_provides_no_match_for_the_signature_1, c.typeToStringByteString(source), c.signatureToString(t));
+                    return Ternary.False;
+                }
+            }
+
+            return result;
+        }
+
+        // relater.go:4575.
+        private Ternary signatureRelatedTo(Signature source, Signature target, bool erase, bool reportErrors, IntersectionState intersectionState)
+        {
+            var checkMode = SignatureCheckMode.None;
+            if (relation == c.subtypeRelation)
+                checkMode = SignatureCheckMode.StrictTopSignature;
+            else if (relation == c.strictSubtypeRelation)
+                checkMode = SignatureCheckMode.StrictTopSignature | SignatureCheckMode.StrictArity;
+            if (erase)
+            {
+                source = c.getErasedSignature(source);
+                target = c.getErasedSignature(target);
+            }
+
+            TypeComparer isRelatedToWorker = (sourceType, targetType, errors) => isRelatedToEx(sourceType, targetType, RecursionFlags.Both, errors, null, intersectionState);
+            return c.compareSignaturesRelated(source, target, checkMode, reportErrors, reportError, isRelatedToWorker, c.reportUnreliableMapper);
         }
 
         // relater.go:4593. Actual length check and nil-slot resolution boundaries.
+        // relater.go:4593. Ordered pairwise signature identity.
         private Ternary signaturesIdenticalTo(Type source, Type target, SignatureKind kind)
         {
             var sourceSignatures = c.getSignaturesOfType(source, kind);
             var targetSignatures = c.getSignaturesOfType(target, kind);
-            if ((sourceSignatures?.Count ?? 0) != (targetSignatures?.Count ?? 0))
+            if (GoRuntime.Len(sourceSignatures) != GoRuntime.Len(targetSignatures))
                 return Ternary.False;
-            if ((sourceSignatures?.Count ?? 0) != 0)
-                throw unsupported("signaturesIdenticalTo: callable signature comparison");
-            return Ternary.True;
+            var result = Ternary.True;
+            for (int i = 0; i < GoRuntime.Len(sourceSignatures); i++)
+            {
+                var related = c.compareSignaturesIdentical(sourceSignatures[i], targetSignatures[i], false, false, false, isRelatedToSimple);
+                if (related == Ternary.False)
+                    return Ternary.False;
+                result &= related;
+            }
+
+            return result;
         }
 
         // relater.go:4610. Nonempty selected indexes arise from any-base
@@ -2053,13 +3002,17 @@ public sealed partial class Checker
                 return elaborateError(node.Expression(), source, target, relation, headMessage, diagnosticOutput);
             case Kind.ObjectLiteralExpression:
                 return elaborateObjectLiteral(node, source, target, relation, diagnosticOutput);
+            case Kind.BinaryExpression:
+                if (node.AsBinaryExpression().OperatorToken.Kind is Kind.EqualsToken or Kind.CommaToken)
+                    return elaborateError(node.AsBinaryExpression().Right, source, target, relation, headMessage, diagnosticOutput);
+                break;
+            case Kind.ArrowFunction:
+                return elaborateArrowFunction(node, source, target, relation, diagnosticOutput);
             case Kind.AsExpression:
             case Kind.JsxExpression:
-            case Kind.BinaryExpression:
             case Kind.ArrayLiteralExpression:
-            case Kind.ArrowFunction:
             case Kind.JsxAttributes:
-                throw unsupported("elaborateError: assertions/writes/arrays/callable/JSX");
+                throw unsupported("elaborateError: assertions/arrays/JSX");
         }
 
         return false;
@@ -2067,11 +3020,59 @@ public sealed partial class Checker
 
     private bool elaborateDidYouMeanToCallOrConstruct(Node node, Type source, Type target, Relation relation, SignatureKind kind, Message headMessage, List<Diagnostic> diagnosticOutput)
     {
-        // Preserve the original getSignaturesOfType call even for empty slots:
-        // resolving union members is an observable cache side effect.
-        var signatures = getSignaturesOfType(source, kind);
-        if (signatures?.Any(s => throw unsupported("elaborateDidYouMeanToCallOrConstruct: callable return type")) == true)
-            throw unsupported("elaborateDidYouMeanToCallOrConstruct: call/construct suggestion");
+        if (Core.Some(getSignaturesOfType(source, kind), signature =>
+        {
+            var returnType = getReturnTypeOfSignature(signature);
+            return (returnType.flags & (TypeFlags.Any | TypeFlags.Never)) == 0 && checkTypeRelatedTo(returnType, target, relation, null);
+        }))
+        {
+            var diags = new List<Diagnostic>();
+            if (!checkTypeRelatedToEx(source, target, relation, node, headMessage, diags))
+            {
+                var message = kind == SignatureKind.Construct ? Diagnostics.Did_you_mean_to_use_new_with_this_expression : Diagnostics.Did_you_mean_to_call_this_expression;
+                reportDiagnostic(diags[0].AddRelatedInfo(createDiagnosticForNode(node, message)), diagnosticOutput);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // relater.go:639. Elaborate expression-bodied arrow return mismatches.
+    private bool elaborateArrowFunction(Node node, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    {
+        if (Ast.IsBlock(node.Body()) || Core.Some(node.Parameters(), parameter => parameter.Type() != null))
+            return false;
+        var sourceSig = getSingleCallSignature(source);
+        if (sourceSig == null)
+            return false;
+        var targetSignatures = getSignaturesOfType(target, SignatureKind.Call);
+        if (GoRuntime.Len(targetSignatures) == 0)
+            return false;
+        var returnExpression = node.Body();
+        var sourceReturn = getReturnTypeOfSignature(sourceSig);
+        var targetReturn = getUnionType(targetSignatures.Select(getReturnTypeOfSignature).ToList());
+        if (checkTypeRelatedTo(sourceReturn, targetReturn, relation, null))
+            return false;
+        if (returnExpression != null && elaborateError(returnExpression, sourceReturn, targetReturn, relation, null, diagnosticOutput))
+            return true;
+        var diags = new List<Diagnostic>();
+        checkTypeRelatedToEx(sourceReturn, targetReturn, relation, returnExpression, null, diags);
+        if (diags.Count != 0)
+        {
+            var diagnostic = diags[0];
+            if (target.symbol != null && GoRuntime.Len(target.symbol.Declarations) != 0)
+            {
+                var declaration = target.symbol.Declarations[0];
+                diagnostic.AddRelatedInfo(createDiagnosticForNode(declaration, Diagnostics.The_expected_type_comes_from_the_return_type_of_this_signature));
+            }
+
+            if ((Ast.GetFunctionFlags(node) & FunctionFlags.Async) == 0 && getTypeOfPropertyOfType(sourceReturn, "then") == null && checkTypeRelatedTo(createPromiseType(sourceReturn), targetReturn, relation, null))
+                diagnostic.AddRelatedInfo(createDiagnosticForNode(node, Diagnostics.Did_you_mean_to_mark_this_function_as_async));
+            reportDiagnostic(diagnostic, diagnosticOutput);
+            return true;
+        }
+
         return false;
     }
 
@@ -2089,6 +3090,7 @@ public sealed partial class Checker
                 continue;
             switch (prop.Kind)
             {
+                case Kind.MethodDeclaration:
                 case Kind.ShorthandPropertyAssignment:
                     reportedError = elaborateElement(source, target, relation, prop.Name(), null, nameType, null, null, diagnosticOutput) || reportedError;
                     break;
@@ -2097,10 +3099,9 @@ public sealed partial class Checker
                         throw unsupported("elaborateObjectLiteral: computed name");
                     reportedError = elaborateElement(source, target, relation, prop.Name(), prop.Initializer(), nameType, null, null, diagnosticOutput) || reportedError;
                     break;
-                case Kind.MethodDeclaration:
                 case Kind.GetAccessor:
                 case Kind.SetAccessor:
-                    throw unsupported("elaborateObjectLiteral: callable/accessor");
+                    throw unsupported("elaborateObjectLiteral: accessor");
             }
         }
 

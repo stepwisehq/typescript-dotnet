@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/nodecopy.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property/scalar context reuse; general emit excluded.
+// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
@@ -83,6 +83,7 @@ internal sealed partial class NodeBuilderImpl
 
         public void ReportCyclicStructureError() => bound.markError(wrapped.ReportCyclicStructureError);
         public void ReportInaccessibleThisError() => bound.markError(wrapped.ReportInaccessibleThisError);
+        public void ReportInaccessibleUniqueSymbolError() => bound.markError(wrapped.ReportInaccessibleUniqueSymbolError);
         public void ReportInferenceFallback(Node node) => wrapped.ReportInferenceFallback(node);
     }
 
@@ -224,6 +225,47 @@ internal sealed partial class NodeBuilderImpl
                 return visitor.VisitEachChild(node);
             }
 
+            if (Ast.IsFunctionLike(node) && node.Type() == null || Ast.IsParameterDeclaration(node) && node.Type() == null && node.Initializer() == null)
+            {
+                var visited = visitor.VisitEachChild(node);
+                if (visited == node)
+                    visited = setTextRange(node.Clone(f), node);
+                var anyType = f.NewKeywordTypeNode(Kind.AnyKeyword);
+                switch (visited.Kind)
+                {
+                    case Kind.Parameter:
+                        var parameter = visited.AsParameterDeclaration();
+                        return f.UpdateParameterDeclaration(parameter, null, parameter.DotDotDotToken, visited.Name(), parameter.QuestionToken, anyType, null);
+                    case Kind.MethodSignature:
+                        var method = visited.AsMethodSignatureDeclaration();
+                        return f.UpdateMethodSignatureDeclaration(method, visited.Modifiers(), visited.Name(), method.PostfixToken, method.TypeParameters, method.Parameters, anyType);
+                    case Kind.CallSignature:
+                        var call = visited.AsCallSignatureDeclaration();
+                        return f.UpdateCallSignatureDeclaration(call, call.TypeParameters, call.Parameters, anyType);
+                    case Kind.FunctionType:
+                        var function = visited.AsFunctionTypeNode();
+                        return f.UpdateFunctionTypeNode(function, function.TypeParameters, function.Parameters, anyType);
+                    default:
+                        throw Checker.unsupported("getExistingNodeTreeVisitor: unselected missing-return signature");
+                }
+            }
+
+            if (node.Kind == Kind.TypePredicate)
+            {
+                var predicate = node.AsTypePredicateNode();
+                Node parameterName;
+                if (Ast.IsIdentifier(predicate.ParameterName))
+                {
+                    var(introducesError, name, _) = trackExistingEntityName(predicate.ParameterName);
+                    if (introducesError)
+                        bound.markError(null);
+                    parameterName = name;
+                }
+                else
+                    parameterName = predicate.ParameterName.Clone(f);
+                return f.UpdateTypePredicateNode(predicate, visitor.VisitNode(predicate.AssertsModifier), parameterName, visitor.VisitNode(predicate.Type));
+            }
+
             if (node.Kind == Kind.TypeLiteral)
             {
                 var res = visitor.VisitEachChild(node);
@@ -257,7 +299,7 @@ internal sealed partial class NodeBuilderImpl
                 return node;
             }
 
-            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType)
+            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType or Kind.FunctionType or Kind.CallSignature or Kind.MethodSignature or Kind.Parameter)
                 return visitor.VisitEachChild(node);
             throw Checker.unsupported("getExistingNodeTreeVisitor: references/signatures/indexes/JS/dynamic syntax");
         }
@@ -267,7 +309,15 @@ internal sealed partial class NodeBuilderImpl
             if (bound.hadError)
                 return node;
             var recovery = bound.startRecoveryScope();
+            Action exit = null;
+            if (Ast.IsFunctionLike(node))
+            {
+                var signature = ch.getSignatureFromDeclaration(node);
+                exit = enterNewScope(node, signature.parameters, signature.typeParameters, null, null);
+            }
+
             var result = worker(node);
+            exit?.Invoke();
             if (result == node && !Ast.NodeIsSynthesized(node))
                 result = f.DeepCloneNode(node);
             result = setTextRange(result, node);

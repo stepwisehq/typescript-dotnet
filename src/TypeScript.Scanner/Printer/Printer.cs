@@ -9,10 +9,12 @@ internal sealed partial class Printer
 {
     private readonly EmitContext emitContext;
     private readonly bool removeComments;
-    internal Printer(EmitContext context, bool removeComments = true)
+    private readonly bool omitTrailingSemicolon;
+    internal Printer(EmitContext context, bool removeComments = true, bool omitTrailingSemicolon = false)
     {
         emitContext = context;
         this.removeComments = removeComments;
+        this.omitTrailingSemicolon = omitTrailingSemicolon;
     }
 
     private TextWriter writer;
@@ -23,7 +25,7 @@ internal sealed partial class Printer
         var savedWriter = writer;
         var savedSourceFile = currentSourceFile;
         currentSourceFile = sourceFile;
-        writer = output;
+        writer = omitTrailingSemicolon ? trailingSemicolonDeferringWriter.getTrailingSemicolonDeferringWriter(output) : output;
         writer.Clear();
         if (node?.Kind == Kind.Identifier)
             emitIdentifierReference(node.AsIdentifier());
@@ -56,6 +58,7 @@ internal sealed partial class Printer
         {
             case Kind.StringLiteral:
             case Kind.NumericLiteral:
+            case Kind.BigIntLiteral:
             case Kind.NoSubstitutionTemplateLiteral:
                 emitLiteral(node);
                 return;
@@ -89,7 +92,7 @@ internal sealed partial class Printer
             if (!canUseSourceFile || Ast.GetSourceFileOfNode(node) != currentSourceFile)
                 return node.Text();
         }
-        else if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.NoSubstitutionTemplateLiteral)
+        else if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.BigIntLiteral or Kind.NoSubstitutionTemplateLiteral)
             return getLiteralText(node);
         else
             throw TypeScript.Checking.Checker.unsupported("Printer.getTextOfNode: unselected name/literal");
@@ -185,6 +188,18 @@ internal sealed partial class Printer
                     throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeNode: named/generic reference");
                 emitEntityName(reference.TypeName);
                 return;
+            case Kind.FunctionType:
+                emitFunctionType(node.AsFunctionTypeNode());
+                return;
+            case Kind.TypePredicate:
+                emitTypePredicate(node.AsTypePredicateNode());
+                return;
+            case Kind.CallSignature:
+                emitCallSignature(node.AsCallSignatureDeclaration());
+                return;
+            case Kind.MethodSignature:
+                emitMethodSignature(node.AsMethodSignatureDeclaration());
+                return;
             case Kind.TypeQuery:
                 emitTypeQuery(node.AsTypeQueryNode());
                 return;
@@ -206,12 +221,12 @@ internal sealed partial class Printer
             throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeQuery: source generic arguments");
     }
 
-    // printer.go:2125. Selected internal finite-key origins only.
+    // printer.go:2125. Selected internal finite-key and unique-symbol operators.
     private void emitTypeOperator(TypeOperatorNode node)
     {
-        if (node.Operator != Kind.KeyOfKeyword)
+        if (node.Operator is not (Kind.KeyOfKeyword or Kind.UniqueKeyword))
             throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeOperator: unselected operator");
-        writer.Write("keyof");
+        writer.Write(node.Operator == Kind.KeyOfKeyword ? "keyof" : "unique");
         writeSpace();
         emitTypeNode(node.Type, TypePrecedence.TypeOperator);
     }
@@ -277,6 +292,10 @@ internal sealed partial class Printer
     {
         if (node.Kind == Kind.PropertySignature)
             emitPropertySignature(node.AsPropertySignatureDeclaration());
+        else if (node.Kind == Kind.MethodSignature)
+            emitMethodSignature(node.AsMethodSignatureDeclaration());
+        else if (node.Kind == Kind.CallSignature)
+            emitCallSignature(node.AsCallSignatureDeclaration());
         else if (node.Kind == Kind.IndexSignature)
             emitIndexSignature(node.AsIndexSignatureDeclaration());
         else
@@ -324,6 +343,7 @@ internal sealed partial class Printer
     private enum ListFormat
     {
         SingleLine = 0,
+        CommaDelimited = 1 << 4,
         BarDelimited = 1 << 2,
         AmpersandDelimited = 1 << 3,
         SpaceBetweenBraces = 1 << 8,
@@ -333,6 +353,7 @@ internal sealed partial class Printer
         SingleLineTypeLiteralMembers = SingleLine | SpaceBetweenBraces | SpaceBetweenSiblings,
         UnionTypeConstituents = BarDelimited | SpaceBetweenSiblings | SingleLine,
         IntersectionTypeConstituents = AmpersandDelimited | SpaceBetweenSiblings | SingleLine,
+        Parameters = CommaDelimited | SpaceBetweenSiblings | SingleLine,
     }
 
     // printer.go:4726/4734. Fixed single-line synthesized lists: no comments,
@@ -363,7 +384,9 @@ internal sealed partial class Printer
     // flow with physical-newline/comment/indent branches excluded by fixed options.
     private void writeDelimiter(ListFormat format)
     {
-        if ((format & ListFormat.BarDelimited) != 0)
+        if ((format & ListFormat.CommaDelimited) != 0)
+            writePunctuation(",");
+        else if ((format & ListFormat.BarDelimited) != 0)
         {
             writeSpace();
             writePunctuation("|");
@@ -400,4 +423,102 @@ internal sealed partial class Printer
     private void writeSpace() => writer.WriteSpace(" ");
     private void writePunctuation(string text) => writer.WritePunctuation(text);
     private void writeTrailingSemicolon() => writer.WriteTrailingSemicolon(";");
+    // printer.go:1473. Synthesized diagnostic parameters have no initializer or
+    // decorators; names retain their actual per-node escape flags.
+    private void emitParameter(ParameterDeclaration node)
+    {
+        emitModifierList(node.Modifiers());
+        emitTokenNode(node.DotDotDotToken);
+        if (node.Name().Kind != Kind.Identifier)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitParameter: binding pattern");
+        emitIdentifierReference(node.Name().AsIdentifier());
+        emitTokenNode(node.QuestionToken);
+        emitTypeAnnotation(node.Type);
+        if (node.Initializer != null)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitParameter: source initializer emit");
+    }
+
+    // printer.go:1545. The original Parameters list mode has comma delimiters,
+    // sibling spaces and parentheses; no source trailing comma is selected.
+    private void emitParameters(Node parentNode, NodeList parameters)
+    {
+        writePunctuation("(");
+        emitList(n => emitParameter(n.AsParameterDeclaration()), parentNode, parameters, ListFormat.Parameters);
+        writePunctuation(")");
+    }
+
+    // printer.go:1586. Written generic parameters remain outside admission.
+    private void emitSignature(Node node)
+    {
+        var signature = node.FunctionLikeData();
+        if (signature.TypeParameters != null)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitSignature: generic parameters");
+        emitParameters(node, signature.Parameters);
+        emitTypeAnnotation(signature.Type);
+    }
+
+    // printer.go:1678/1756. Fixed single-line diagnostic mode has no indentation
+    // or generated names, source comments, hooks, or physical-newline scope work.
+    private void emitMethodSignature(MethodSignatureDeclaration node)
+    {
+        emitModifierList(node.Modifiers());
+        emitPropertyName(node.Name());
+        emitTokenNode(node.PostfixToken);
+        emitSignature(node.AsNode());
+        writeTrailingSemicolon();
+    }
+
+    private void emitCallSignature(CallSignatureDeclaration node)
+    {
+        emitSignature(node.AsNode());
+        writeTrailingSemicolon();
+    }
+
+    // printer.go:1873/1884.
+    private void emitTypePredicateParameterName(Node node)
+    {
+        if (node.Kind == Kind.Identifier)
+            emitIdentifierReference(node.AsIdentifier());
+        else if (node.Kind == Kind.ThisType)
+            writer.Write("this");
+        else
+            throw new InvalidOperationException("Unexpected type predicate parameter name");
+    }
+
+    private void emitTypePredicate(TypePredicateNode node)
+    {
+        if (node.AssertsModifier != null)
+        {
+            emitTokenNode(node.AssertsModifier);
+            writeSpace();
+        }
+
+        emitTypePredicateParameterName(node.ParameterName);
+        if (node.Type != null)
+        {
+            writeSpace();
+            writer.WriteKeyword("is");
+            writeSpace();
+            emitTypeNode(node.Type);
+        }
+    }
+
+    // printer.go:1919/1937. Conditional/infer extends context is excluded.
+    private void emitReturnType(Node node)
+    {
+        if (node == null)
+            return;
+        writePunctuation("=>");
+        writeSpace();
+        emitTypeNode(node);
+    }
+
+    private void emitFunctionType(FunctionTypeNode node)
+    {
+        if (node.TypeParameters != null)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitFunctionType: generic parameters");
+        emitParameters(node.AsNode(), node.Parameters);
+        writeSpace();
+        emitReturnType(node.Type);
+    }
 }

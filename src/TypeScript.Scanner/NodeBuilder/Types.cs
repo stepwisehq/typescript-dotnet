@@ -61,5 +61,6 @@ internal interface SymbolTracker
     bool TrackSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning);
     void ReportCyclicStructureError();
     void ReportInaccessibleThisError();
+    void ReportInaccessibleUniqueSymbolError();
     void ReportInferenceFallback(Node node);
 }

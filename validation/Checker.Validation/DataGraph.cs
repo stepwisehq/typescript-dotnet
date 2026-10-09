@@ -6,6 +6,8 @@ using CheckType = TypeScript.Checking.Type;
 namespace TypeScript.Checking.Validation;
 public sealed class DataGraphValue
 {
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public List<DataInstantiationAssociation>? InstantiationAssociations { get; set; }
     public bool PropertiesCacheNull { get; set; }
     public List<DeclaredObservation> Declared { get; set; } = [];
     public List<DataTypeObservation> Types { get; set; } = [];
@@ -19,6 +21,7 @@ public sealed class DataGraphValue
     public List<DataKeyObservation> Keys { get; set; } = [];
 }
 
+public sealed record DataInstantiationAssociation(int Owner, int Value, string Family, List<int> Arguments, int? Alias, bool SingleSignature, bool Membership, bool RepeatedIdentity);
 public sealed record DataResolvedSymbol(int Node, int? Symbol);
 public sealed record DataKeyObservation(int Owner, int? Other, string Name, bool BoolValue);
 public sealed record DeclaredObservation(int Node, int? BoundSymbol, int Symbol, int Type, bool RepeatedIdentity);
@@ -203,9 +206,20 @@ public sealed partial class Graph
                 foreach (var item in (List<IndexInfo>? )value ?? [])
                     field.Refs.Add(Index(item)!.Value);
                 break;
+            case "signature":
+                field.Ref = Signature((Signature? )value);
+                break;
+            case "predicate":
+                field.Ref = Predicate((TypePredicate? )value);
+                break;
+            case "composite":
+                field.Ref = Composite((CompositeSignature? )value);
+                break;
             case "signatures":
-                if (((List<Signature>? )value)?.Count > 0)
+                if (callables is null && ((List<Signature>? )value)?.Count > 0)
                     throw new InvalidDataException("Source signature dependency outside data contract");
+                foreach (var sig in (List<Signature>? )value ?? [])
+                    field.Refs.Add(Signature(sig)!.Value);
                 break;
             case "instantiations":
                 var values = ((Dictionary<Checker.CacheHashKey, CheckType>? )value)?.Values.ToList() ?? [];
@@ -253,6 +267,15 @@ public sealed partial class Graph
     private List<DataField> Fields(TypeData payload)
     {
         List<DataField> fields = [];
+        if (payload is UniqueESSymbolType unique)
+        {
+            var symbol = unique.AsType().Symbol() ?? throw new InvalidDataException("Unique symbol has no owner");
+            string expected = "\xfe@" + symbol.Name + "@" + Ast.GetSymbolId(symbol).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (unique.name != expected)
+                throw new InvalidDataException("Unique symbol raw name does not match actual owner");
+            fields.Add(new() { Name = "name", Kind = "unique-symbol-name", Ref = Symbol(symbol), Bytes = Encoder.Bytes(symbol.Name) });
+        }
+
         if (payload is ConstrainedType c)
             fields.Add(F("resolvedBaseConstraint", "type", c.resolvedBaseConstraint));
         if (payload is StructuredType s)
@@ -273,7 +296,7 @@ public sealed partial class Graph
             fields.AddRange([F("constraint", "type", p.constraint), F("target", "type", p.target), F("mapper", "mapper", p.mapper), F("isThisType", "bool", p.isThisType), F("isDistributed", "bool", p.isDistributed), F("resolvedDefaultType", "type", p.resolvedDefaultType), F("distributedType", "type", p.distributedType)]);
         if (payload is IndexType index)
             fields.AddRange([F("target", "type", index.target), F("indexFlags", "number", index.indexFlags)]);
-        if (payload is not (IntrinsicType or LiteralType or ObjectType or UnionOrIntersectionType or TypeParameter or IndexType))
+        if (payload is not (IntrinsicType or LiteralType or UniqueESSymbolType or ObjectType or UnionOrIntersectionType or TypeParameter or IndexType))
             throw new InvalidDataException("Unobserved data type payload");
         return fields;
     }
@@ -294,6 +317,8 @@ public sealed partial class Graph
     public DataGraphValue Data(Request request, Dictionary<int, CheckType> queried)
     {
         data = new();
+        if (request.CallableObservations)
+            StartCallables();
         data.PropertiesCacheNull = checker.VerificationDataPropertiesTypesNil();
         foreach (int id in request.DeclaredNodeIds)
         {
@@ -325,7 +350,7 @@ public sealed partial class Graph
         }
 
         int cursor = 0, linkCursor = 0;
-        while (cursor < rawTypes.Count || linkCursor < result.Symbols.Count)
+        while (cursor < rawTypes.Count || linkCursor < result.Symbols.Count || (callables is not null && callableCacheCursor < callables.Signatures.Count))
         {
             while (cursor < rawTypes.Count)
             {
@@ -361,8 +386,12 @@ public sealed partial class Graph
                 var merged = checker.VerificationDataMergedSymbol(symbol);
                 data.Links.Add(new("symbol", id, "mergedSymbols", merged.Present, merged.Present ? [F("target", "symbol", merged.Symbol)] : []));
             }
+
+            FinishCallableCaches();
         }
 
+        if (callables is not null && callables.CachedSignatures.Count != checker.VerificationCallableCachedSignatureCount())
+            throw new InvalidDataException("Callable cached signature has an unobserved owner");
         foreach (var record in data.Types)
         {
             var type = rawTypes[record.Type];
@@ -370,12 +399,20 @@ public sealed partial class Graph
             result.Types[record.Type].ObjectFlags = (uint)type.ObjectFlags();
         }
 
+        if (rawTypes.Count(t => (t.Flags() & TypeFlags.UniqueESSymbol) != 0) != checker.VerificationCallableUniqueSymbolCount())
+            throw new InvalidDataException("Unique symbol cache contains unobserved values");
         foreach (var record in data.Types)
         {
             var type = rawTypes[record.Type];
             if ((type.ObjectFlags() & ObjectFlags.Reference) != 0)
                 foreach (var key in checker.VerificationDataReferenceKeys(type))
                     data.Keys.Add(new(record.Type, record.Type, key.Name, key.BoolValue));
+            if ((type.Flags() & TypeFlags.UniqueESSymbol) != 0)
+            {
+                data.Keys.Add(new(record.Type, null, "unique-symbol.cache-membership", checker.VerificationCallableUniqueSymbolMembership(type)));
+                data.Keys.Add(new(record.Type, null, "unique-symbol.cache-repeated", checker.VerificationCallableUniqueSymbolMembership(type)));
+            }
+
             if ((type.Flags() & TypeFlags.UnionOrIntersection) != 0)
                 data.Keys.Add(new(record.Type, null, "composite.intern-membership", checker.VerificationDataInternMembership(type)));
             foreach (var field in record.Fields)
@@ -384,7 +421,18 @@ public sealed partial class Graph
                     if (field.Refs.Count > 0)
                         data.Keys.Add(new(record.Type, null, "reference.instantiations-all-key-associated", checker.VerificationDataCacheAssociation(type)));
                     foreach (int id in field.Refs)
+                    {
                         data.Keys.Add(new(record.Type, id, "reference.instantiation-membership", checker.VerificationDataKeyMembership(type, rawTypes[id])));
+                        if ((type.ObjectFlags() & ObjectFlags.Anonymous) != 0)
+                        {
+                            var entry = checker.VerificationDataInstantiation(type, rawTypes[id]);
+                            if (entry.Arguments.Any(t => !types.ContainsKey(t)))
+                                throw new InvalidDataException("Unrooted anonymous instantiation argument after graph fixedpoint");
+                            if (entry.Alias is not null && !dataAliases.ContainsKey(entry.Alias))
+                                throw new InvalidDataException("Unrooted anonymous instantiation alias after graph fixedpoint");
+                            (data.InstantiationAssociations ??= []).Add(new(record.Type, id, entry.Family, entry.Arguments.Select(t => types[t]).ToList(), entry.Alias is null ? null : dataAliases[entry.Alias], entry.SingleSignature, entry.Membership, checker.VerificationDataInstantiation(type, rawTypes[id]).Membership));
+                        }
+                    }
                 }
         }
 

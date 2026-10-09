@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/emitsupport.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property/scalar context reuse; general emit excluded.
+// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
@@ -26,18 +26,24 @@ public sealed partial class Checker
         switch (node.Kind)
         {
             case Kind.VariableDeclaration:
+            case Kind.FunctionDeclaration:
             case Kind.InterfaceDeclaration:
             case Kind.TypeAliasDeclaration:
                 if (Ast.IsVariableDeclaration(node) && Ast.IsBindingPattern(node.Name()) && (node.Name().Elements()?.Count ?? 0) == 0)
                     return false;
                 var parent = Ast.GetDeclarationContainer(node);
-                if ((Ast.GetCombinedModifierFlags(node) & ModifierFlags.Export) == 0 && !(parent.Kind != Kind.SourceFile && (parent.Flags & NodeFlags.Ambient) != 0))
+                if ((getCombinedModifierFlagsCached(node) & ModifierFlags.Export) == 0 && !(parent.Kind != Kind.SourceFile && (parent.Flags & NodeFlags.Ambient) != 0))
                     return Ast.IsGlobalSourceFile(parent);
                 return isDeclarationVisible(parent);
             case Kind.PropertySignature:
-                if ((Ast.GetCombinedModifierFlags(node) & (ModifierFlags.Private | ModifierFlags.Protected)) != 0)
+            case Kind.MethodDeclaration:
+            case Kind.MethodSignature:
+                if (getEffectiveDeclarationFlags(node, ModifierFlags.Private | ModifierFlags.Protected) != 0)
                     return false;
                 return isDeclarationVisible(node.Parent);
+            case Kind.CallSignature:
+            case Kind.Parameter:
+            case Kind.FunctionType:
             case Kind.TypeLiteral:
             case Kind.TypeReference:
             case Kind.UnionType:
@@ -88,7 +94,7 @@ public sealed partial class Checker
     }
 
     // emitsupport.go:285. The anonymous property-signature branch can add undefined
-    // only for a reverse-mapped symbol; mapped types and parameters are unsupported.
+    // only for a reverse-mapped symbol; mapped types remain guarded; ordinary parameter defaults retain the original worker.
     internal bool requiresAddingImplicitUndefined(Node declaration, Symbol symbol, Node enclosingDeclaration)
     {
         if (!Ast.IsParseTreeNode(declaration))
@@ -101,13 +107,55 @@ public sealed partial class Checker
                 if ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0)
                     throw unsupported("requiresAddingImplicitUndefined: reverse mapping");
                 return false; // Exact final conjunct (ReverseMappedSymbolLinks.Has) is false in this guarded slice.
+            case Kind.Parameter:
+                return requiresAddingImplicitUndefinedWorker(declaration, enclosingDeclaration);
             case Kind.PropertyDeclaration:
             case Kind.JSDocPropertyTag:
-            case Kind.Parameter:
             case Kind.JSDocParameterTag:
-                throw unsupported("requiresAddingImplicitUndefined: class/JS/parameter");
+                throw unsupported("requiresAddingImplicitUndefined: class/JS");
             default:
                 throw new InvalidOperationException("Node cannot possibly require adding undefined");
         }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/emitsupport.go:304:1.
+    private bool requiresAddingImplicitUndefinedWorker(Node parameter, Node enclosingDeclaration)
+    {
+        return (((this.isRequiredInitializedParameter(parameter, enclosingDeclaration) || this.isOptionalUninitializedParameterProperty(parameter))) && !this.declaredParameterTypeContainsUndefined(parameter));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/emitsupport.go:308:1.
+    private bool declaredParameterTypeContainsUndefined(Node parameter)
+    {
+        var typeNode = parameter.Type();
+        if ((typeNode == null))
+        {
+            return false;
+        }
+
+        var t = this.getTypeFromTypeNode(typeNode);
+        return (this.isErrorType(t) || this.containsUndefinedType(t));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/emitsupport.go:321:1.
+    private bool isOptionalUninitializedParameterProperty(Node parameter)
+    {
+        return (((this.strictNullChecks && this.isOptionalParameter(parameter)) && ((parameter.Initializer() == null))) && Ast.HasSyntacticModifier(parameter, ModifierFlags.ParameterPropertyModifier));
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/emitsupport.go:328:1.
+    private bool isRequiredInitializedParameter(Node parameter, Node enclosingDeclaration)
+    {
+        if (((!this.strictNullChecks || this.isOptionalParameter(parameter)) || (parameter.Initializer() == null)))
+        {
+            return false;
+        }
+
+        if (Ast.HasSyntacticModifier(parameter, ModifierFlags.ParameterPropertyModifier))
+        {
+            return ((enclosingDeclaration != null) && Ast.IsFunctionLikeDeclaration(enclosingDeclaration));
+        }
+
+        return true;
     }
 }

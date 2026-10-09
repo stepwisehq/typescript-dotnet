@@ -9,7 +9,7 @@ using System.Text;
 namespace TypeScript.Scanner;
 internal static partial class JsNum
 {
-    public readonly record struct Number(double Value)
+    public readonly partial record struct Number(double Value)
     {
         public string String()
         {

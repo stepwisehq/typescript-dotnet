@@ -19,11 +19,14 @@ import (
 	"os"
 	"reflect"
 	"slices"
+	"strings"
 )
 
 var lastSyntaxEncoder *encoder
 
 type SemanticRequest struct {
+	Profile              string `json:"profile"`
+	CallableObservations bool   `json:"callableObservations"`
 	Request
 	QueryNodeIDs       []int    `json:"queryNodeIds"`
 	RelationPairs      [][2]int `json:"relationPairs"`
@@ -107,6 +110,7 @@ type Relation struct {
 	Assignable bool `json:"assignable"`
 }
 type SemanticResult struct {
+	CallableGraph      *CallableGraph       `json:"callableGraph,omitempty"`
 	Parser             Response             `json:"parser"`
 	BindDiagnostics    []SemanticDiagnostic `json:"bindDiagnostics"`
 	CheckerDiagnostics []SemanticDiagnostic `json:"checkerDiagnostics"`
@@ -124,12 +128,14 @@ type SemanticResult struct {
 	DataGraph          *DataGraph           `json:"dataGraph,omitempty"`
 }
 type semanticGraph struct {
-	c       *checker.Checker
-	syntax  *encoder
-	result  *SemanticResult
-	types   map[*checker.Type]int
-	symbols map[*ast.Symbol]int
-	tables  map[uintptr]int
+	callableObservations bool
+	callableQueries      []CallableQueryIdentity
+	c                    *checker.Checker
+	syntax               *encoder
+	result               *SemanticResult
+	types                map[*checker.Type]int
+	symbols              map[*ast.Symbol]int
+	tables               map[uintptr]int
 }
 
 func (g *semanticGraph) node(n *ast.Node) *int {
@@ -218,7 +224,12 @@ func (g *semanticGraph) typ(t *checker.Type) *int {
 		case jsnum.Number:
 			v.LiteralValue = map[string]any{"kind": "number", "bitsHex": fmt.Sprintf("%016x", math.Float64bits(float64(value)))}
 		case jsnum.PseudoBigInt:
-			v.LiteralValue = map[string]any{"kind": "bigint", "text": value.String()}
+			literal := map[string]any{"kind": "bigint", "text": value.String()}
+			if g.callableObservations {
+				literal["negative"] = value.Negative
+				literal["base10ValueBase64"] = bytes(value.Base10Value)
+			}
+			v.LiteralValue = literal
 		case nil:
 			v.LiteralValue = map[string]any{"kind": "nil"}
 		default:
@@ -251,6 +262,11 @@ func runChecker(r SemanticRequest) SemanticResult {
 		text = string(data)
 	}
 	config := `{"files":[` + fmt.Sprintf("%q", r.FileName) + `],"compilerOptions":{"target":"esnext","noLib":true,"noResolve":true,"strictNullChecks":true,"strictBindCallApply":false,"noImplicitAny":false}}`
+	if r.Profile == "Callable" {
+		config = strings.Replace(config, `"noImplicitAny":false`, `"noImplicitAny":true,"noImplicitThis":true,"strictFunctionTypes":true`, 1)
+	} else if r.Profile != "" && r.Profile != "Legacy" {
+		panic("Unknown checker profile")
+	}
 	fs := vfstest.FromMap(map[string]string{r.FileName: text, "/tsconfig.json": config}, tspath.CaseSensitive)
 	parsed, errors := tsoptions.GetParsedCommandLineOfConfigFile("/tsconfig.json", &core.CompilerOptions{}, nil, fs, nil)
 	if len(errors) != 0 {
@@ -263,8 +279,14 @@ func runChecker(r SemanticRequest) SemanticResult {
 		panic("Single-file no-library host contract failed")
 	}
 	result := SemanticResult{Parser: runParser(r.Request, file), Types: []*SemanticType{}, Symbols: []*SemanticSymbol{}, Tables: []*SemanticTable{}, Queries: []Query{}, Relations: []Relation{}, Options: map[string]any{"target": "ESNext", "noLib": true, "noResolve": true, "skipModuleResolution": true, "strictNullChecks": true, "strictBindCallApply": false, "noImplicitAny": false}}
+	if r.Profile == "Callable" {
+		result.Options["noImplicitAny"] = true
+		result.Options["noImplicitThis"] = true
+		result.Options["strictFunctionTypes"] = true
+		result.Options["profile"] = "Callable"
+	}
 	c, _ := checker.NewChecker(program, nil)
-	g := semanticGraph{c: c, syntax: lastSyntaxEncoder, result: &result, types: map[*checker.Type]int{}, symbols: map[*ast.Symbol]int{}, tables: map[uintptr]int{}}
+	g := semanticGraph{callableObservations: r.CallableObservations, c: c, syntax: lastSyntaxEncoder, result: &result, types: map[*checker.Type]int{}, symbols: map[*ast.Symbol]int{}, tables: map[uintptr]int{}}
 	fileDiagnostics := c.GetDiagnostics(context.Background(), file)
 	ids := r.QueryNodeIDs
 	if ids == nil {
@@ -282,7 +304,11 @@ func runChecker(r SemanticRequest) SemanticResult {
 		n := g.syntax.raw[id]
 		t := c.GetTypeAtLocation(n)
 		queried[id] = t
-		result.Queries = append(result.Queries, Query{id, *g.typ(t), g.symbol(c.GetSymbolAtLocation(n))})
+		symbol := c.GetSymbolAtLocation(n)
+		result.Queries = append(result.Queries, Query{id, *g.typ(t), g.symbol(symbol)})
+		if r.CallableObservations {
+			g.callableQueries = append(g.callableQueries, CallableQueryIdentity{id, t == c.GetTypeAtLocation(n), symbol == c.GetSymbolAtLocation(n)})
+		}
 	}
 	for _, pair := range r.RelationPairs {
 		source, ok := queried[pair[0]]
@@ -305,8 +331,18 @@ func runChecker(r SemanticRequest) SemanticResult {
 	if r.ObjectObservations {
 		result.ObjectGraph = g.objectGraph(r.WidenNodeIDs, queried)
 	}
-	if r.DataObservations {
+	if r.DataObservations || r.CallableObservations {
 		result.DataGraph = g.dataGraph(r, queried)
+	}
+	if result.CallableGraph != nil {
+		out := result.CallableGraph
+		global := c.GetGlobalDiagnostics()
+		out.BindDiagnosticsNull = file.BindDiagnostics() == nil
+		out.FileDiagnosticsNull = fileDiagnostics == nil
+		out.GlobalDiagnosticsNull = global == nil
+		out.BindDiagnosticStates = callableDiagnosticStates(file.BindDiagnostics())
+		out.FileDiagnosticStates = callableDiagnosticStates(fileDiagnostics)
+		out.GlobalDiagnosticStates = callableDiagnosticStates(global)
 	}
 	return result
 }

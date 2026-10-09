@@ -143,6 +143,19 @@ Later user directions, in chronological order:
     with actual Linux x64 Native AOT. Callable checking is ready for a subsequent
     bounded campaign, but no new campaign is automatically authorized.
 
+18. The user authorized **functions and callable-object checking**, building on binder
+    `de855ca` and foundation `2886d47`. Read the exact
+    [mandate](./docs/CALLABLES-PROMPT.md), fixed [contract](./docs/CALLABLES-CONTRACT.md)
+    and [status](./docs/CALLABLES-STATUS.md). Retain close upstream fidelity and explicit
+    Sol delegation. Complete the substantial non-generic capability autonomously,
+    including selected body/parameter/inference dependencies, meaningful actual-Go
+    comparison and Linux x64 Native AOT plus all regressions. Do not broaden into
+    generics/libraries/projects/modules without a material scope decision. Direction
+    17 is complete. This callable mandate is also fulfilled: the
+    [assessment](./docs/CALLABLES-ASSESSMENT.md) and
+    [proof](./validation/results/callables-verified.json) record fixed C1–C6 acceptance.
+    No subsequent campaign is automatically authorized.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -158,8 +171,8 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-Source-file binding completion is accepted; no active implementation campaign remains.
-The delivery commit builds on foundation `2886d47`. A checkpoint can
+Source-file binding completion is accepted at `de855ca`; the callable contract is also accepted
+in the delivery commit containing this entry. No active implementation campaign remains. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

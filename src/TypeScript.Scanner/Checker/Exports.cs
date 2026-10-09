@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/exports.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Scalar IsTypeAssignableTo export only; general checker exports excluded.
+// Selected data/callable forwarding APIs; general checker exports remain excluded.
 using TypeScript.Scanner;
 
 namespace TypeScript.Checking;
@@ -51,7 +51,9 @@ public sealed partial class Checker
     {
         if (symbol == null)
             throw new ArgumentNullException(nameof(symbol));
-        if (symbol != undefinedSymbol && symbol != argumentsSymbol && symbol != unknownSymbol && symbol != globalThisSymbol)
+        if ((symbol.Flags & SymbolFlags.Transient) != 0 && !authoredOwnedSymbols.Contains(symbol))
+            throw new ArgumentException("Symbol belongs to a different checker", nameof(symbol));
+        if (!authoredOwnedSymbols.Contains(symbol))
         {
             var declarations = symbol.Declarations;
             if (declarations == null || declarations.Count == 0)
@@ -69,5 +71,39 @@ public sealed partial class Checker
             throw new ArgumentNullException(nameof(t));
         if (t.checker != this)
             throw new ArgumentException("Type belongs to a different checker", nameof(t));
+    }
+}
+
+public sealed partial class Checker
+{
+    public List<Signature> GetSignaturesOfType(Type t, SignatureKind kind)
+    {
+        validateOwnedType(t);
+        return getSignaturesOfType(t, kind);
+    }
+
+    public Type GetReturnTypeOfSignature(Signature signature)
+    {
+        validateOwnedSignature(signature);
+        return getReturnTypeOfSignature(signature);
+    }
+
+    public TypePredicate GetTypePredicateOfSignature(Signature signature)
+    {
+        validateOwnedSignature(signature);
+        return getTypePredicateOfSignature(signature);
+    }
+
+    public Signature GetResolvedSignature(Node node)
+    {
+        SemanticAdmission.ValidateOwnedNode(sourceFile, node);
+        return getResolvedSignature(node, null, CheckMode.Normal);
+    }
+
+    private void validateOwnedSignature(Signature signature)
+    {
+        ArgumentNullException.ThrowIfNull(signature);
+        if (!authoredOwnedSignatures.Contains(signature))
+            throw new ArgumentException("Signature belongs to a different checker", nameof(signature));
     }
 }

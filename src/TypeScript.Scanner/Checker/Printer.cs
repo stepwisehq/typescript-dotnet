@@ -53,6 +53,27 @@ public sealed partial class Checker
         return writer.String();
     }
 
+    // printer.go:180/224. Default signature and predicate diagnostic flags.
+    private string signatureToString(Signature signature)
+    {
+        if ((signature.flags & SignatureFlags.Construct) != 0)
+            throw unsupported("signatureToString: construct signature");
+        var builder = getNodeBuilder();
+        var node = builder.SignatureToSignatureDeclaration(signature, Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
+        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true).Write(node, writer, null);
+        return writer.String();
+    }
+
+    private string typePredicateToString(TypePredicate predicate)
+    {
+        var builder = getNodeBuilder();
+        var node = builder.TypePredicateToTypePredicateNode(predicate, null, TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
+        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext()).Write(node, writer, null);
+        return writer.String();
+    }
+
     // checker/printer.go:253. Boolean grouping and nullable suffix ordering.
     internal List<Type> formatUnionTypes(List<Type> types, bool expandingEnum)
     {

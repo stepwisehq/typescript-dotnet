@@ -113,6 +113,12 @@ public sealed partial class Checker
             if (c != 0)
                 return c;
         }
+        else if ((t1.flags & TypeFlags.UniqueESSymbol) != 0)
+        {
+            c = t1.checker.compareSymbols(t1.symbol, t2.symbol);
+            if (c != 0)
+                return c;
+        }
         else if ((t1.flags & TypeFlags.StringLiteral) != 0)
         {
             c = string.CompareOrdinal((string)t1.AsLiteralType().value, (string)t2.AsLiteralType().value);
@@ -207,9 +213,7 @@ public sealed partial class Checker
             return t.alias.symbol;
         return (t.flags & (TypeFlags.TypeParameter | TypeFlags.StringMapping)) != 0 || (t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0 ? t.symbol : null;
     }
-
-    // isMutableLocalVariableDeclaration (1096).
-    private bool isMutableLocalVariableDeclaration(Node declaration) => (declaration.Parent.Flags & NodeFlags.Let) != 0 && !((Ast.GetCombinedModifierFlags(declaration) & ModifierFlags.Export) != 0 || declaration.Parent.Parent.Kind == Kind.VariableStatement && Ast.IsGlobalSourceFile(declaration.Parent.Parent.Parent));
+// isMutableLocalVariableDeclaration (1096).
 }
 
 public sealed partial class Checker
@@ -333,7 +337,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.NumberLiteral) != 0)
             return ((JsNum.Number)t.AsLiteralType().value).String();
         if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
-            throw unsupported("getPropertyNameFromType: unique symbol");
+            return t.AsUniqueESSymbolType().name;
         throw new InvalidOperationException("Unhandled case in getPropertyNameFromType");
     }
 }
@@ -428,4 +432,505 @@ public sealed partial class Checker
             node = node.Parent;
         return node;
     }
+}
+
+public sealed partial class Checker
+{
+    private static bool hasDotDotDotToken(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Parameter:
+            {
+                return (node.AsParameterDeclaration().DotDotDotToken != null);
+            }
+
+            case Kind.BindingElement:
+            {
+                return (node.AsBindingElement().DotDotDotToken != null);
+            }
+
+            case Kind.NamedTupleMember:
+            {
+                return (node.AsNamedTupleMember().DotDotDotToken != null);
+            }
+
+            case Kind.JsxExpression:
+            {
+                return (node.AsJsxExpression().DotDotDotToken != null);
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool declarationBelongsToPrivateAmbientMember(Node declaration)
+    {
+        var root = Ast.GetRootDeclaration(declaration);
+        var memberDeclaration = root;
+        if ((root.Kind == Kind.Parameter))
+        {
+            memberDeclaration = root.Parent;
+        }
+
+        return isPrivateWithinAmbient(memberDeclaration);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isPrivateWithinAmbient(Node node)
+    {
+        return (((Ast.HasModifier(node, ModifierFlags.Private) || Ast.IsPrivateIdentifierClassElementDeclaration(node))) && ((node.Flags & NodeFlags.Ambient) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getContainingFunctionOrClassStaticBlock(Node node)
+    {
+        return Ast.FindAncestor(node.Parent, Ast.IsFunctionLikeOrClassStaticBlockDeclaration);
+    }
+}
+
+public sealed partial class Checker
+{
+    internal bool isOptionalParameter(Node node)
+    {
+        if ((Ast.IsParameterDeclaration(node) && (node.QuestionToken() != null)))
+        {
+            return true;
+        }
+
+        if (!Ast.IsParameterDeclaration(node))
+        {
+            return false;
+        }
+
+        if ((node.Initializer() != null))
+        {
+            var signature = this.getSignatureFromDeclaration(node.Parent);
+            var parameterIndex = Core.FindIndex(node.Parent.Parameters(), (p) =>
+            {
+                return (p == node);
+            });
+            Debug.Assert((parameterIndex >= 0));
+            return (parameterIndex >= this.getMinArgumentCountEx(signature, (MinArgumentCountFlags.StrongArityForUntypedJS | MinArgumentCountFlags.VoidIsNonOptional)));
+        }
+
+        var iife = Ast.GetImmediatelyInvokedFunctionExpression(node.Parent);
+        if ((iife != null))
+        {
+            var parameterIndex2 = Core.FindIndex(node.Parent.Parameters(), (p2) =>
+            {
+                return (p2 == node);
+            });
+            return (((node.Type() == null) && (node.AsParameterDeclaration().DotDotDotToken == null)) && (parameterIndex2 >= GoRuntime.Len(this.getEffectiveCallArguments(iife))));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal static bool containsNonMissingUndefinedType(Checker c, Type t)
+    {
+        Type candidate = default;
+        if (((t.flags & TypeFlags.Union) != 0))
+        {
+            candidate = t.AsUnionType().types[0];
+        }
+        else
+        {
+            candidate = t;
+        }
+
+        return (((candidate.flags & TypeFlags.Undefined) != 0) && (candidate != c.missingType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isConstantVariable(Symbol symbol)
+    {
+        return (((symbol.Flags & SymbolFlags.Variable) != 0) && (((this.getDeclarationNodeFlagsFromSymbol(symbol) & NodeFlags.Constant)) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isParameterOrMutableLocalVariable(Symbol symbol)
+    {
+        if ((symbol.ValueDeclaration != null))
+        {
+            var declaration = Ast.GetRootDeclaration(symbol.ValueDeclaration);
+            return ((declaration != null) && ((Ast.IsParameterDeclaration(declaration) || (Ast.IsVariableDeclaration(declaration) && ((Ast.IsCatchClause(declaration.Parent) || this.isMutableLocalVariableDeclaration(declaration)))))));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isMutableLocalVariableDeclaration(Node declaration)
+    {
+        return (((declaration.Parent.Flags & NodeFlags.Let) != 0) && !((((Ast.GetCombinedModifierFlags(declaration) & ModifierFlags.Export) != 0) || ((declaration.Parent.Parent.Kind == Kind.VariableStatement) && Ast.IsGlobalSourceFile(declaration.Parent.Parent.Parent)))));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getEnclosingContainer(Node node)
+    {
+        return Ast.FindAncestor(node.Parent, (n) =>
+        {
+            return ((Binder.GetContainerFlags(n) & ContainerFlags.IsContainer) != 0);
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isInCompoundLikeAssignment(Node node)
+    {
+        var target = Ast.GetAssignmentTarget(node);
+        return (((target != null) && Ast.IsAssignmentExpression(target, true)) && isCompoundLikeAssignment(target));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isCompoundLikeAssignment(Node assignment)
+    {
+        var right = Ast.SkipParentheses(assignment.AsBinaryExpression().Right);
+        return ((right.Kind == Kind.BinaryExpression) && isShiftOperatorOrHigher(right.AsBinaryExpression().OperatorToken.Kind));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isNonNullAccess(Node node)
+    {
+        return (Ast.IsAccessExpression(node) && Ast.IsNonNullExpression(node.Expression()));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isCallChain(Node node)
+    {
+        return (Ast.IsCallExpression(node) && ((node.Flags & NodeFlags.OptionalChain) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isShiftOperatorOrHigher(Kind kind)
+    {
+        return (isShiftOperator(kind) || isAdditiveOperatorOrHigher(kind));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool callLikeExpressionMayHaveTypeArguments(Node node)
+    {
+        return ((Ast.IsCallOrNewExpression(node) || Ast.IsTaggedTemplateExpression(node)) || Ast.IsJsxOpeningLikeElement(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isSuperCall(Node n)
+    {
+        return (Ast.IsCallExpression(n) && (n.Expression().Kind == Kind.SuperKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int getNonRestParameterCount(Signature sig)
+    {
+        return (GoRuntime.Len(sig.parameters) - Core.IfElse(signatureHasRestParameter(sig), 1, 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    public static bool IsTypeAny(Type t)
+    {
+        return ((t != null) && ((t.flags & TypeFlags.Any) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isExponentiationOperator(Kind kind)
+    {
+        return (kind == Kind.AsteriskAsteriskToken);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isMultiplicativeOperatorOrHigher(Kind kind)
+    {
+        return (isExponentiationOperator(kind) || isMultiplicativeOperator(kind));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isAdditiveOperatorOrHigher(Kind kind)
+    {
+        return (isAdditiveOperator(kind) || isMultiplicativeOperatorOrHigher(kind));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isShiftOperator(Kind kind)
+    {
+        return (((kind == Kind.LessThanLessThanToken) || (kind == Kind.GreaterThanGreaterThanToken)) || (kind == Kind.GreaterThanGreaterThanGreaterThanToken));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isMultiplicativeOperator(Kind kind)
+    {
+        return (((kind == Kind.AsteriskToken) || (kind == Kind.SlashToken)) || (kind == Kind.PercentToken));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isAdditiveOperator(Kind kind)
+    {
+        return ((kind == Kind.PlusToken) || (kind == Kind.MinusToken));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getContainingObjectLiteral(Node f)
+    {
+        if ((((((f.Kind == Kind.MethodDeclaration) || (f.Kind == Kind.GetAccessor)) || (f.Kind == Kind.SetAccessor))) && (f.Parent.Kind == Kind.ObjectLiteralExpression)))
+        {
+            return f.Parent;
+        }
+        else
+        {
+            if (((f.Kind == Kind.FunctionExpression) && (f.Parent.Kind == Kind.PropertyAssignment)))
+            {
+                return f.Parent.Parent;
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static List<Node> getAllJSDocTags(Node node)
+    {
+        if (((node.Flags & NodeFlags.JSDoc) == 0))
+        {
+            {
+                var current = node;
+                for (; (current != null); current = Ast.GetNextJSDocCommentLocation(current))
+                {
+                    var jsdocs = current.JSDoc(null);
+                    if ((GoRuntime.Len(jsdocs) == 0))
+                    {
+                        continue;
+                    }
+
+                    var lastJSDoc = jsdocs[(GoRuntime.Len(jsdocs) - 1)].AsJSDoc();
+                    if ((lastJSDoc.Tags != null))
+                    {
+                        return lastJSDoc.Tags.Nodes;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static (int, int) minAndMax<T>(List<T> slice, Func<T, int> getValue)
+    {
+        int minValue = default;
+        int maxValue = default;
+        {
+            foreach (var range1 in GoRuntime.Range(slice))
+            {
+                var i = range1.Key;
+                var element = range1.Value;
+                var value2 = getValue(element);
+                if ((i == 0))
+                {
+                    minValue = value2;
+                    maxValue = value2;
+                }
+                else
+                {
+                    minValue = Math.Min(minValue, value2);
+                    maxValue = Math.Max(maxValue, value2);
+                }
+            }
+        }
+
+        return (minValue, maxValue);
+    }
+}
+
+public sealed partial class Checker
+{
+    public static bool IsInTypeQuery(Node node)
+    {
+        return (Ast.FindAncestorOrQuit(node, (n) =>
+        {
+            switch (n.Kind)
+            {
+                case Kind.TypeQuery:
+                {
+                    return FindAncestorResult.True;
+                }
+
+                case Kind.Identifier:
+                case Kind.QualifiedName:
+                {
+                    return FindAncestorResult.False;
+                }
+            }
+
+            return FindAncestorResult.Quit;
+        }) != null);
+    }
+}
+
+public sealed partial class Checker
+{
+}
+
+public sealed partial class Checker
+{
+    private static bool isLiteralExpressionOfObject(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.ObjectLiteralExpression:
+            case Kind.ArrayLiteralExpression:
+            case Kind.RegularExpressionLiteral:
+            case Kind.FunctionExpression:
+            case Kind.ClassExpression:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isDeleteTarget(Node node)
+    {
+        if (!Ast.IsAccessExpression(node))
+        {
+            return false;
+        }
+
+        node = Ast.WalkUpParenthesizedExpressions(node.Parent);
+        return ((node != null) && (node.Kind == Kind.DeleteExpression));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isThisProperty(Node node)
+    {
+        return (((Ast.IsPropertyAccessExpression(node) || Ast.IsElementAccessExpression(node))) && (node.Expression().Kind == Kind.ThisKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isJSLiteralType(Type t)
+    {
+        if (this.noImplicitAny)
+        {
+            return false;
+        }
+
+        if (((t.objectFlags & ObjectFlags.JSLiteral) != 0))
+        {
+            return true;
+        }
+
+        if (((t.flags & TypeFlags.Union) != 0))
+        {
+            return Core.Every(t.AsUnionType().types, this.isJSLiteralType);
+        }
+
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            return Core.Some(t.AsIntersectionType().types, this.isJSLiteralType);
+        }
+
+        if (((t.flags & TypeFlags.Instantiable) != 0))
+        {
+            var constraint = this.getResolvedBaseConstraint(t, null);
+            return ((constraint != t) && this.isJSLiteralType(constraint));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:871.
+    private static bool isDeclarationReadonly(Node declaration) => (Ast.GetCombinedModifierFlags(declaration) & ModifierFlags.Readonly) != 0 && !Ast.IsParameterPropertyDeclaration(declaration, declaration.Parent);
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1228.
+    internal static string pseudoBigIntToString(JsNum.PseudoBigInt value) => value.String();
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:294.
+    private static bool isExclamationToken(Node node) => node != null && node.Kind == Kind.ExclamationToken;
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1004.
+    private static bool isValidESSymbolDeclaration(Node node)
+    {
+        if (Ast.IsVariableDeclaration(node))
+            return Ast.IsVarConst(node) && Ast.IsIdentifier(node.AsVariableDeclaration().Name()) && isVariableDeclarationInVariableStatement(node);
+        if (Ast.IsPropertyDeclaration(node))
+            return hasReadonlyModifier(node) && Ast.HasStaticModifier(node);
+        return Ast.IsPropertySignatureDeclaration(node) && hasReadonlyModifier(node);
+    }
+
+    // utilities.go:1014.
+    private static bool isVariableDeclarationInVariableStatement(Node node) => Ast.IsVariableDeclarationList(node.Parent) && Ast.IsVariableStatement(node.Parent.Parent);
+    // utilities.go:67.
+    private static bool hasReadonlyModifier(Node node) => Ast.HasModifier(node, ModifierFlags.Readonly);
 }

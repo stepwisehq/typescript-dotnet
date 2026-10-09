@@ -21,3 +21,9 @@ internal sealed class EmitResolverLinks
         return links;
     }
 }
+
+public sealed partial class Checker
+{
+    // emitresolver.go:383. Pure symbol classification used by actual alias tracking.
+    private static bool isConstEnumOrConstEnumOnlyModule(Symbol s) => isConstEnumSymbol(s) || (s.Flags & SymbolFlags.ConstEnumOnlyModule) != 0;
+}

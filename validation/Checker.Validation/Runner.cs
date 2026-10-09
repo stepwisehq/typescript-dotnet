@@ -13,14 +13,16 @@ public sealed partial class Graph
     private readonly Result result;
     private readonly bool objectObservations;
     private readonly bool dataObservations;
+    private readonly bool callableObservations;
     private readonly List<CheckType> rawTypes = [];
-    public Graph(Checker checker, Encoder syntax, Result result, bool objectObservations = false, bool dataObservations = false)
+    public Graph(Checker checker, Encoder syntax, Result result, bool objectObservations = false, bool dataObservations = false, bool callableObservations = false)
     {
         this.checker = checker;
         this.syntax = syntax;
         this.result = result;
         this.objectObservations = objectObservations;
         this.dataObservations = dataObservations;
+        this.callableObservations = callableObservations;
     }
 
     private readonly Dictionary<CheckType, int> types = new(ReferenceEqualityComparer.Instance);
@@ -128,6 +130,13 @@ public sealed partial class Graph
                         Kind = "number",
                         BitsHex = BitConverter.DoubleToUInt64Bits(number.Value).ToString("x16", CultureInfo.InvariantCulture)
                     },
+                    JsNum.PseudoBigInt bigInt => new()
+                    {
+                        Kind = "bigint",
+                        Text = bigInt.String(),
+                        Negative = callableObservations ? bigInt.Negative : null,
+                        Base10ValueBase64 = callableObservations ? Encoder.Bytes(bigInt.Base10Value ?? "") : null
+                    },
                     null => new()
                     {
                         Kind = "nil"
@@ -142,6 +151,8 @@ public sealed partial class Graph
                 foreach (var member in type.Types())
                     value.Types.Add(Type(member)!.Value);
                 break;
+            case "UniqueESSymbolType" when callableObservations:
+                break;
             case "ObjectType" when objectObservations || dataObservations:
             case "InterfaceType" or "TypeReference" or "TypeParameter" or "IndexType" when dataObservations:
                 break;
@@ -155,13 +166,13 @@ public sealed partial class Graph
 
 public static class Runner
 {
-    private static List<DiagnosticValue> Diagnostics(IEnumerable<Diagnostic>? diagnostics) => (diagnostics ?? []).Select(d => new DiagnosticValue { Code = d.Code(), Category = (int)d.Category(), Pos = d.Pos(), End = d.End(), Key = d.MessageKey(), ArgsNull = d.MessageArgs()is null, ArgsBase64 = (d.MessageArgs() ?? []).Select(Encoder.Bytes).ToList(), Text = d.String(), FileNameBase64 = d.File()is { } file ? Convert.ToBase64String(Encoding.UTF8.GetBytes(file.FileName())) : null, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), SourceBase64 = Encoder.Bytes(d.Source()), Related = Diagnostics(d.RelatedInformation()), Chain = Diagnostics(d.MessageChain()), }).ToList();
+    internal static List<DiagnosticValue> Diagnostics(IEnumerable<Diagnostic>? diagnostics) => (diagnostics ?? []).Select(d => new DiagnosticValue { Code = d.Code(), Category = (int)d.Category(), Pos = d.Pos(), End = d.End(), Key = d.MessageKey(), ArgsNull = d.MessageArgs()is null, ArgsBase64 = (d.MessageArgs() ?? []).Select(Encoder.Bytes).ToList(), Text = d.String(), FileNameBase64 = d.File()is { } file ? Convert.ToBase64String(Encoding.UTF8.GetBytes(file.FileName())) : null, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), SourceBase64 = Encoder.Bytes(d.Source()), Related = Diagnostics(d.RelatedInformation()), Chain = Diagnostics(d.MessageChain()), }).ToList();
     public static AdmissionResult Admission(Request request)
     {
         var file = TypeScript.Scanner.ParserValidation.Runner.Parse(request.ParserInput());
         try
         {
-            Checker.Create(file).GetDiagnostics();
+            Checker.Create(file, Profile(request)).GetDiagnostics();
             return new(true, null, null, null, null);
         }
         catch (UnsupportedSemanticFeatureException error)
@@ -179,8 +190,8 @@ public static class Runner
         {
             Parser = TypeScript.Scanner.ParserValidation.Runner.Encode(file, parserRequest, encoder)
         };
-        var checker = Checker.Create(file);
-        var graph = new Graph(checker, encoder, result, request.ObjectObservations, request.DataObservations);
+        var checker = Checker.Create(file, Profile(request));
+        var graph = new Graph(checker, encoder, result, request.ObjectObservations, request.DataObservations || request.CallableObservations, request.CallableObservations);
         var fileDiagnostics = checker.GetDiagnostics();
         var ids = request.QueryNodeIds ?? encoder.RawNodes.Select((node, id) => (node, id)).Where(pair => Ast.IsIdentifier(pair.node) || Ast.IsLiteralExpression(pair.node) || pair.node.Kind is Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword).Select(pair => pair.id).ToList();
         var queried = new Dictionary<int, CheckType>();
@@ -191,7 +202,10 @@ public static class Runner
             var node = encoder.RawNodes[id];
             var type = checker.GetTypeAtLocation(node);
             queried.Add(id, type);
-            result.Queries.Add(new(id, graph.Type(type)!.Value, graph.Symbol(checker.GetSymbolAtLocation(node))));
+            var symbol = checker.GetSymbolAtLocation(node);
+            result.Queries.Add(new(id, graph.Type(type)!.Value, graph.Symbol(symbol)));
+            if (request.CallableObservations)
+                graph.RecordCallableQuery(id, ReferenceEquals(type, checker.GetTypeAtLocation(node)), ReferenceEquals(symbol, checker.GetSymbolAtLocation(node)));
         }
 
         foreach (var pair in request.RelationPairs)
@@ -211,8 +225,33 @@ public static class Runner
         result.GlobalDiagnostics = Diagnostics(checker.GetGlobalDiagnostics());
         if (request.ObjectObservations)
             result.ObjectGraph = graph.Objects(request.WidenNodeIds, queried);
-        if (request.DataObservations)
+        if (request.DataObservations || request.CallableObservations)
             result.DataGraph = graph.Data(request, queried);
+        if (request.Profile == "Callable")
+            result.Options = new(NoImplicitAny: true)
+            {
+                Profile = "Callable",
+                NoImplicitThis = true,
+                StrictFunctionTypes = true
+            };
+        if (result.CallableGraph is { } cg)
+        {
+            var globals = checker.GetGlobalDiagnostics();
+            cg.BindDiagnosticsNull = file.BindDiagnostics()is null;
+            cg.FileDiagnosticsNull = fileDiagnostics is null;
+            cg.GlobalDiagnosticsNull = globals is null;
+            cg.BindDiagnosticStates = DiagnosticStates(file.BindDiagnostics());
+            cg.FileDiagnosticStates = DiagnosticStates(fileDiagnostics);
+            cg.GlobalDiagnosticStates = DiagnosticStates(globals);
+        }
+
         return result;
     }
+
+    private static CheckerProfile Profile(Request request) => request.Profile switch
+    {
+        "" or "Legacy" => CheckerProfile.Legacy,
+        "Callable" => CheckerProfile.Callable,
+        _ => throw new InvalidDataException("Unknown checker profile")};
+    private static List<CallableDiagnosticState> DiagnosticStates(IEnumerable<Diagnostic>? values) => (values ?? []).Select(d => new CallableDiagnosticState(Diagnostics([d])[0], d.RelatedInformation()is null, d.MessageChain()is null, DiagnosticStates(d.RelatedInformation()), DiagnosticStates(d.MessageChain()))).ToList();
 }

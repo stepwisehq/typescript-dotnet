@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/mapper.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Original mapper models/factories; inference-context mappers excluded by source contract.
+// Original selected mapper models/factories, including hidden-this signature instantiation.
+// Inference mapper allocation occurs through guarded generic/conditional inference branches.
 #nullable disable
 namespace TypeScript.Checking;
 internal enum TypeMapperKind : int

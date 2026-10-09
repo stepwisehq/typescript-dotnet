@@ -61,6 +61,13 @@ internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
         inner?.ReportInaccessibleThisError();
     }
 
+    // symboltracker.go:58. Preserve diagnostic state with a nil external tracker.
+    public void ReportInaccessibleUniqueSymbolError()
+    {
+        onDiagnosticReported();
+        inner?.ReportInaccessibleUniqueSymbolError();
+    }
+
     private void onDiagnosticReported() => context.reportedDiagnostic = true;
     public void ReportInferenceFallback(Node node)
     {

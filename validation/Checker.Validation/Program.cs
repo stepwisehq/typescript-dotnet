@@ -13,8 +13,20 @@ if (args.SequenceEqual(new[] { "--self-tests" }))
     return;
 }
 
+if (args.SequenceEqual(new[] { "--callable-self-tests" }))
+{
+    Console.WriteLine(JsonSerializer.Serialize(CallableSelfTests.Run(), CheckerJson.Default.ListUtilityObservation));
+    return;
+}
+
+if (args.SequenceEqual(new[] { "--callable-numeric-tests" }))
+{
+    Console.WriteLine(JsonSerializer.Serialize(CallableNumericChecks.RunAll(), CheckerJson.Default.ListUtilityObservation));
+    return;
+}
+
 if (args.Length != 0)
-    throw new ArgumentException("Expected no arguments, --utilities or --self-tests");
+    throw new ArgumentException("Expected no arguments, --utilities, --self-tests --callable-self-tests or --callable-numeric-tests");
 while (Console.ReadLine()is { } line)
 {
     var request = JsonSerializer.Deserialize(line, CheckerJson.Default.Request) ?? throw new JsonException("Missing request");

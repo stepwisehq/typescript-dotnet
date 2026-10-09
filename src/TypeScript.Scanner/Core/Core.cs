@@ -294,4 +294,28 @@ internal static partial class Core
         // Go returns its captured slice header even if the caller appended through a callback.
         return values.Count == count ? values : values.GetRange(0, count);
     }
+
+    // core.go:117. Preserve nil output when no mapped value differs from its Go zero value.
+    internal static List<U>? MapNonNil<T, U>(List<T>? source, Func<T, U> f)
+    {
+        List<U>? result = null;
+        U zero = typeof(U) == typeof(string) ? (U)(object)string.Empty : default!;
+        int count = source?.Count ?? 0;
+        for (int i = 0; i < count; i++)
+        {
+            var mapped = f(source![i]);
+            if (!EqualityComparer<U>.Default.Equals(mapped, zero))
+                (result ??= []).Add(mapped);
+        }
+
+        return result;
+    }
+
+    // core.go:269. A negative index retains the upstream invalid-index behavior.
+    internal static T? ElementOrNil<T>(List<T>? source, int index)
+    {
+        if (index < (source?.Count ?? 0))
+            return source![index];
+        return typeof(T) == typeof(string) ? (T)(object)string.Empty : default;
+    }
 }

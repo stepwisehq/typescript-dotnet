@@ -4,6 +4,8 @@ using TypeScript.Scanner.ParserValidation;
 namespace TypeScript.Checking.Validation;
 public sealed class Request
 {
+    public string Profile { get; set; } = "Legacy";
+    public bool CallableObservations { get; set; }
     public string Name { get; set; } = "";
     public string Text { get; set; } = "";
     public string? TextBytesBase64 { get; set; }
@@ -67,6 +69,12 @@ public sealed class LiteralValue
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Text { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Negative { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Base10ValueBase64 { get; set; }
 }
 
 public sealed class TypeValue
@@ -105,9 +113,23 @@ public sealed record TableEntry(string KeyBase64, int SymbolId);
 public sealed record TableValue(int Id, List<TableEntry> Entries);
 public sealed record QueryValue(int NodeId, int Type, int? Symbol);
 public sealed record RelationValue(int SourceNodeId, int TargetNodeId, bool Assignable);
-public sealed record FixedOptions(string Target = "ESNext", bool NoLib = true, bool NoResolve = true, bool SkipModuleResolution = true, bool StrictNullChecks = true, bool StrictBindCallApply = false, bool NoImplicitAny = false);
+public sealed record FixedOptions(string Target = "ESNext", bool NoLib = true, bool NoResolve = true, bool SkipModuleResolution = true, bool StrictNullChecks = true, bool StrictBindCallApply = false, bool NoImplicitAny = false)
+{
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Profile { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? NoImplicitThis { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? StrictFunctionTypes { get; init; }
+}
+
 public sealed class Result
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public CallableGraphValue? CallableGraph { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DataGraphValue? DataGraph { get; set; }
 

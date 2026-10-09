@@ -7,21 +7,33 @@ import (
 	"github.com/microsoft/TypeScript/tsc/internal/checker"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 )
 
+type DataInstantiationAssociation struct {
+	Owner            int    `json:"owner"`
+	Value            int    `json:"value"`
+	Family           string `json:"family"`
+	Arguments        []int  `json:"arguments"`
+	Alias            *int   `json:"alias"`
+	SingleSignature  bool   `json:"singleSignature"`
+	Membership       bool   `json:"membership"`
+	RepeatedIdentity bool   `json:"repeatedIdentity"`
+}
 type DataGraph struct {
-	PropertiesCacheNull bool                     `json:"propertiesCacheNull"`
-	Declared            []DeclaredObservation    `json:"declared"`
-	Types               []*DataTypeObservation   `json:"types"`
-	Aliases             []*DataRecord            `json:"aliases"`
-	Mappers             []*DataRecord            `json:"mappers"`
-	Indexes             []*DataRecord            `json:"indexes"`
-	Links               []DataLinkObservation    `json:"links"`
-	Widenings           []WidenObservation       `json:"widenings"`
-	Caches              []ObjectCacheObservation `json:"caches"`
-	ResolvedSymbols     []DataResolvedSymbol     `json:"resolvedSymbols"`
-	Keys                []DataKeyObservation     `json:"keys"`
+	InstantiationAssociations []DataInstantiationAssociation `json:"instantiationAssociations,omitempty"`
+	PropertiesCacheNull       bool                           `json:"propertiesCacheNull"`
+	Declared                  []DeclaredObservation          `json:"declared"`
+	Types                     []*DataTypeObservation         `json:"types"`
+	Aliases                   []*DataRecord                  `json:"aliases"`
+	Mappers                   []*DataRecord                  `json:"mappers"`
+	Indexes                   []*DataRecord                  `json:"indexes"`
+	Links                     []DataLinkObservation          `json:"links"`
+	Widenings                 []WidenObservation             `json:"widenings"`
+	Caches                    []ObjectCacheObservation       `json:"caches"`
+	ResolvedSymbols           []DataResolvedSymbol           `json:"resolvedSymbols"`
+	Keys                      []DataKeyObservation           `json:"keys"`
 }
 type DataResolvedSymbol struct {
 	Node   int  `json:"node"`
@@ -86,11 +98,12 @@ type DataEntry struct {
 	Value int `json:"value"`
 }
 type dataEncoder struct {
-	g       *semanticGraph
-	out     *DataGraph
-	aliases map[*checker.TypeAlias]int
-	mappers map[*checker.TypeMapper]int
-	indexes map[*checker.IndexInfo]int
+	callables *callableEncoder
+	g         *semanticGraph
+	out       *DataGraph
+	aliases   map[*checker.TypeAlias]int
+	mappers   map[*checker.TypeMapper]int
+	indexes   map[*checker.IndexInfo]int
 }
 
 // Cache-only identities are seeded independently of map/hash iteration. Require
@@ -165,6 +178,21 @@ func (d *dataEncoder) fields(value reflect.Value) []DataField {
 	for i := 0; i < value.NumField(); i++ {
 		schema := typ.Field(i)
 		field := readable(value.Field(i))
+
+		if typ.Name() == "UniqueESSymbolType" && schema.Name == "name" {
+			payload := value.Addr().Interface().(*checker.UniqueESSymbolType)
+			owner := payload.AsType().Symbol()
+			if owner == nil {
+				panic("Unique symbol has no owner")
+			}
+			expected := "\xfe@" + owner.Name + "@" + strconv.FormatUint(uint64(ast.GetSymbolId(owner)), 10)
+			if field.String() != expected {
+				panic("Unique symbol raw name does not match actual owner")
+			}
+			f := DataField{Name: schema.Name, Kind: "unique-symbol-name", Refs: []int{}, Entries: []DataEntry{}, NamedEntries: []DataNamedEntry{}, Ref: d.g.symbol(owner), Bytes: bytes(owner.Name)}
+			result = append(result, f)
+			continue
+		}
 		if schema.Anonymous {
 			if schema.Name == "Type" || schema.Name == "TypeMapper" {
 				continue
@@ -230,11 +258,35 @@ func (d *dataEncoder) field(name string, v reflect.Value) DataField {
 		for _, item := range x {
 			f.Refs = append(f.Refs, *d.index(item))
 		}
+	case *checker.Signature:
+		f.Kind = "signature"
+		f.Null = x == nil
+		if d.callables == nil {
+			panic("Signature outside callable observation")
+		}
+		f.Ref = d.callables.signature(x)
+	case *checker.TypePredicate:
+		f.Kind = "predicate"
+		f.Null = x == nil
+		if d.callables == nil {
+			panic("Predicate outside callable observation")
+		}
+		f.Ref = d.callables.predicate(x)
+	case *checker.CompositeSignature:
+		f.Kind = "composite"
+		f.Null = x == nil
+		if d.callables == nil {
+			panic("Composite outside callable observation")
+		}
+		f.Ref = d.callables.composite(x)
 	case []*checker.Signature:
 		f.Kind = "signatures"
 		f.Null = x == nil
-		if len(x) != 0 {
+		if len(x) != 0 && d.callables == nil {
 			panic("Source signature dependency outside data contract")
+		}
+		for _, sig := range x {
+			f.Refs = append(f.Refs, *d.callables.signature(sig))
 		}
 	case map[checker.CacheHashKey]*checker.Type:
 		f.Kind = "instantiations"
@@ -327,6 +379,9 @@ func (d *dataEncoder) field(name string, v reflect.Value) DataField {
 func (g *semanticGraph) dataGraph(r SemanticRequest, queried map[int]*checker.Type) *DataGraph {
 	out := &DataGraph{Declared: []DeclaredObservation{}, Types: []*DataTypeObservation{}, Aliases: []*DataRecord{}, Mappers: []*DataRecord{}, Indexes: []*DataRecord{}, Links: []DataLinkObservation{}, Widenings: []WidenObservation{}, Caches: []ObjectCacheObservation{}}
 	d := dataEncoder{g: g, out: out, aliases: map[*checker.TypeAlias]int{}, mappers: map[*checker.TypeMapper]int{}, indexes: map[*checker.IndexInfo]int{}}
+	if r.CallableObservations {
+		d.startCallables()
+	}
 	out.PropertiesCacheNull = checker.OracleObserveDataPropertiesTypesNil(g.c)
 	for _, id := range r.DeclaredNodeIDs {
 		node := g.syntax.raw[id]
@@ -360,7 +415,7 @@ func (g *semanticGraph) dataGraph(r SemanticRequest, queried map[int]*checker.Ty
 		out.ResolvedSymbols = append(out.ResolvedSymbols, DataResolvedSymbol{id, g.symbol(checker.OracleObserveDataResolvedSymbol(g.c, n))})
 	}
 	cursor, linkCursor := 0, 0
-	for cursor < len(g.result.Types) || linkCursor < len(g.result.Symbols) {
+	for cursor < len(g.result.Types) || linkCursor < len(g.result.Symbols) || (d.callables != nil && d.callables.cacheCursor < len(d.callables.out.Signatures)) {
 		for cursor < len(g.result.Types) {
 			id := cursor
 			cursor++
@@ -414,11 +469,28 @@ func (g *semanticGraph) dataGraph(r SemanticRequest, queried map[int]*checker.Ty
 			}
 			out.Links = append(out.Links, DataLinkObservation{"symbol", id, "mergedSymbols", present, fields})
 		}
+		if d.callables != nil {
+			d.finishCallables()
+		}
 	}
+	if d.callables != nil && len(d.callables.out.CachedSignatures) != checker.OracleObserveCallableCachedSignatureCount(g.c) {
+		panic("Callable cached signature has an unobserved owner")
+	}
+
 	for _, t := range out.Types {
 		value := g.rawType(t.Type)
 		g.result.Types[t.Type].Flags = uint32(value.Flags())
 		g.result.Types[t.Type].ObjectFlags = uint32(value.ObjectFlags())
+	}
+
+	uniqueCount := 0
+	for _, t := range g.result.Types {
+		if t.Flags&uint32(checker.TypeFlagsUniqueESSymbol) != 0 {
+			uniqueCount++
+		}
+	}
+	if uniqueCount != checker.OracleObserveCallableUniqueSymbolCount(g.c) {
+		panic("Unique symbol cache contains unobserved values")
 	}
 	for _, record := range out.Types {
 		t := g.rawType(record.Type)
@@ -426,6 +498,10 @@ func (g *semanticGraph) dataGraph(r SemanticRequest, queried map[int]*checker.Ty
 			for _, key := range checker.OracleObserveDataReferenceKeys(t) {
 				out.Keys = append(out.Keys, DataKeyObservation{record.Type, ptr(record.Type), key.Name, key.BoolValue})
 			}
+		}
+
+		if t.Flags()&checker.TypeFlagsUniqueESSymbol != 0 {
+			out.Keys = append(out.Keys, DataKeyObservation{record.Type, nil, "unique-symbol.cache-membership", checker.OracleObserveCallableUniqueSymbolMembership(g.c, t)}, DataKeyObservation{record.Type, nil, "unique-symbol.cache-repeated", checker.OracleObserveCallableUniqueSymbolMembership(g.c, t)})
 		}
 		if t.Flags()&checker.TypeFlagsUnionOrIntersection != 0 {
 			out.Keys = append(out.Keys, DataKeyObservation{record.Type, nil, "composite.intern-membership", checker.OracleObserveDataInternMembership(g.c, t)})
@@ -437,6 +513,24 @@ func (g *semanticGraph) dataGraph(r SemanticRequest, queried map[int]*checker.Ty
 				}
 				for _, id := range field.Refs {
 					out.Keys = append(out.Keys, DataKeyObservation{record.Type, ptr(id), "reference.instantiation-membership", checker.OracleObserveDataKeyMembership(g.c, t, g.rawType(id))})
+
+					if t.ObjectFlags()&checker.ObjectFlagsAnonymous != 0 {
+						entry := checker.OracleObserveDataInstantiation(g.c, t, g.rawType(id))
+						args := []int{}
+						for _, arg := range entry.Arguments {
+							canonical, ok := g.types[arg]
+							if !ok {
+								panic("Unrooted anonymous cache key argument")
+							}
+							args = append(args, canonical)
+						}
+						if entry.Alias != nil {
+							if _, ok := d.aliases[entry.Alias]; !ok {
+								panic("Unrooted anonymous cache alias")
+							}
+						}
+						out.InstantiationAssociations = append(out.InstantiationAssociations, DataInstantiationAssociation{record.Type, id, entry.Family, args, d.alias(entry.Alias), entry.SingleSignature, entry.Membership, checker.OracleObserveDataInstantiation(g.c, t, g.rawType(id)).Membership})
+					}
 				}
 			}
 		}

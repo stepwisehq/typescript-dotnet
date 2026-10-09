@@ -44,6 +44,8 @@ internal sealed class PseudoType
         return n;
     }
 
+    internal PseudoTypeSingleCallSignature AsPseudoTypeSingleCallSignature() => (PseudoTypeSingleCallSignature)data;
+    internal static PseudoType NewPseudoTypeSingleCallSignature(Node signature, List<PseudoParameter> parameters, List<TypeParameterDeclaration> typeParameters, PseudoType returnType) => newPseudoType(PseudoTypeKind.SingleCallSignature, new PseudoTypeSingleCallSignature { Signature = signature, Parameters = parameters, TypeParameters = typeParameters, ReturnType = returnType });
     internal PseudoTypeDirect AsPseudoTypeDirect() => (PseudoTypeDirect)data;
     internal PseudoTypeInferred AsPseudoTypeInferred() => (PseudoTypeInferred)data;
     internal PseudoTypeNoResult AsPseudoTypeNoResult() => (PseudoTypeNoResult)data;
@@ -129,6 +131,18 @@ internal class PseudoObjectElement
     internal Node Name;
     internal bool Optional;
     internal PseudoObjectElementKind Kind;
+    internal PseudoObjectMethod AsPseudoObjectMethod() => (PseudoObjectMethod)this;
+    internal Node Signature() => Kind == PseudoObjectElementKind.Method ? AsPseudoObjectMethod().SignatureNode : null;
+    internal static PseudoObjectElement NewPseudoObjectMethod(Node signature, Node name, bool optional, List<TypeParameterDeclaration> typeParameters, List<PseudoParameter> parameters, PseudoType returnType) => new PseudoObjectMethod
+    {
+        Kind = PseudoObjectElementKind.Method,
+        SignatureNode = signature,
+        Name = name,
+        Optional = optional,
+        TypeParameters = typeParameters,
+        Parameters = parameters,
+        ReturnType = returnType
+    };
     internal PseudoPropertyAssignment AsPseudoPropertyAssignment() => (PseudoPropertyAssignment)this;
     internal static PseudoObjectElement NewPseudoPropertyAssignment(bool isReadonly, Node name, bool optional, PseudoType type) => new PseudoPropertyAssignment
     {
@@ -144,4 +158,34 @@ internal sealed class PseudoPropertyAssignment : PseudoObjectElement
 {
     internal bool Readonly;
     internal PseudoType Type;
+}
+
+internal sealed class PseudoParameter
+{
+    internal bool Rest, Optional;
+    internal Node Name;
+    internal PseudoType Type;
+    internal static PseudoParameter NewPseudoParameter(bool rest, Node name, bool optional, PseudoType type) => new()
+    {
+        Rest = rest,
+        Name = name,
+        Optional = optional,
+        Type = type
+    };
+}
+
+internal sealed class PseudoTypeSingleCallSignature : PseudoTypeBase
+{
+    internal Node Signature;
+    internal List<PseudoParameter> Parameters;
+    internal List<TypeParameterDeclaration> TypeParameters;
+    internal PseudoType ReturnType;
+}
+
+internal sealed class PseudoObjectMethod : PseudoObjectElement
+{
+    internal Node SignatureNode;
+    internal List<PseudoParameter> Parameters;
+    internal List<TypeParameterDeclaration> TypeParameters;
+    internal PseudoType ReturnType;
 }

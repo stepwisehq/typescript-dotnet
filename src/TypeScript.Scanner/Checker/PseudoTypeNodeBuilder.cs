@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/pseudotypenodebuilder.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property/scalar context reuse; general emit excluded.
+// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
@@ -60,16 +60,26 @@ internal sealed partial class NodeBuilderImpl
                     ctx.tracker.ReportInferenceFallback(node.Parent);
                 else
                     ctx.tracker.ReportInferenceFallback(node);
-                if (inferred.IsSignatureReturn || node.Parent?.Kind is Kind.ReturnStatement or Kind.ArrowFunction)
-                    throw Checker.unsupported("pseudoTypeToNode: callable inference");
+                if (inferred.IsSignatureReturn)
+                    return serializeReturnTypeForSignature(ch.getSignatureFromDeclaration(node), false);
+                if (Ast.IsReturnStatement(node.Parent))
+                {
+                    var enclosing = Ast.GetContainingFunction(node);
+                    if (Ast.IsAccessor(enclosing))
+                        throw Checker.unsupported("pseudoTypeToNode: accessor return");
+                    return serializeReturnTypeForSignature(ch.getSignatureFromDeclaration(enclosing), false);
+                }
+
+                if (Ast.IsArrowFunction(node.Parent) && node.Parent.Body() == node)
+                    return serializeReturnTypeForSignature(ch.getSignatureFromDeclaration(node.Parent), false);
                 if (Ast.IsDeclaration(node.Parent))
                     return serializeTypeForDeclaration(node.Parent, null, null, false);
                 return typeToTypeNode(ch.getTypeOfExpression(node));
             case PseudoTypeKind.NoResult:
                 var decl = t.AsPseudoTypeNoResult().Declaration;
                 ctx.tracker.ReportInferenceFallback(decl);
-                if (Ast.IsFunctionLike(decl))
-                    throw Checker.unsupported("pseudoTypeToNode: callable declaration");
+                if (Ast.IsFunctionLike(decl) && !Ast.IsAccessor(decl))
+                    return serializeReturnTypeForSignature(ch.getSignatureFromDeclaration(decl), false);
                 return serializeTypeForDeclaration(decl, null, null, false);
             case PseudoTypeKind.MaybeConstLocation:
                 var d = t.AsPseudoTypeMaybeConstLocation();
@@ -133,6 +143,17 @@ internal sealed partial class NodeBuilderImpl
                 return f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.FalseKeyword));
             case PseudoTypeKind.True:
                 return f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.TrueKeyword));
+            case PseudoTypeKind.SingleCallSignature:
+                var single = t.AsPseudoTypeSingleCallSignature();
+                if (GoRuntime.Len(single.TypeParameters) != 0)
+                    throw Checker.unsupported("pseudoTypeToNode: source generic signature");
+                var singleSignature = ch.getSignatureFromDeclaration(single.Signature);
+                var expanded = ch.getExpandedParameters(singleSignature, true)[0];
+                var cleanupSingle = enterNewScope(single.Signature, expanded, singleSignature.typeParameters, singleSignature.parameters, singleSignature.mapper);
+                var singleParameters = pseudoParametersToNodeList(single.Parameters);
+                var singleReturn = pseudoTypeToNode(single.ReturnType);
+                cleanupSingle();
+                return f.NewFunctionTypeNode(null, singleParameters, singleReturn);
             case PseudoTypeKind.ObjectLiteral:
                 var elements = t.AsPseudoTypeObjectLiteral().Elements;
                 if (elements is not { Count: > 0 })
@@ -143,11 +164,34 @@ internal sealed partial class NodeBuilderImpl
                 inObjectTypeLiteral = true;
                 foreach (var e in elements)
                 {
+                    ModifierList modifiers = isConstObject || e.Kind == PseudoObjectElementKind.PropertyAssignment && e.AsPseudoPropertyAssignment().Readonly ? f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]) : null;
+                    Action cleanup = null;
                     if (e.Kind != PseudoObjectElementKind.PropertyAssignment)
-                        throw Checker.unsupported("pseudoTypeToNode: object method/accessor");
-                    var data = e.AsPseudoPropertyAssignment();
-                    ModifierList modifiers = isConstObject || data.Readonly ? f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]) : null;
-                    newElements.Add(f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, pseudoTypeToNode(data.Type), null));
+                    {
+                        var signature = ch.getSignatureFromDeclaration(e.Signature());
+                        var paramsExpanded = ch.getExpandedParameters(signature, true)[0];
+                        cleanup = enterNewScope(e.Signature(), paramsExpanded, signature.typeParameters, signature.parameters, signature.mapper);
+                    }
+
+                    Node newProperty;
+                    switch (e.Kind)
+                    {
+                        case PseudoObjectElementKind.Method:
+                            var method = e.AsPseudoObjectMethod();
+                            if (GoRuntime.Len(method.TypeParameters) != 0)
+                                throw Checker.unsupported("pseudoTypeToNode: source generic method");
+                            newProperty = isConstObject ? f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, f.NewFunctionTypeNode(null, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType)), null) : f.NewMethodSignatureDeclaration(modifiers, reuseName(e.Name, true), null, null, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType));
+                            break;
+                        case PseudoObjectElementKind.PropertyAssignment:
+                            var data = e.AsPseudoPropertyAssignment();
+                            newProperty = f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, pseudoTypeToNode(data.Type), null);
+                            break;
+                        default:
+                            throw Checker.unsupported("pseudoTypeToNode: accessor");
+                    }
+
+                    newElements.Add(newProperty);
+                    cleanup?.Invoke();
                 }
 
                 inObjectTypeLiteral = savedObjectFlag;
@@ -242,8 +286,27 @@ internal sealed partial class NodeBuilderImpl
                     }
 
                     var propType = ch.removeMissingType(ch.getTypeOfSymbol(targetProp), targetOptional);
+                    if (e.Kind == PseudoObjectElementKind.Method)
+                    {
+                        var method = e.AsPseudoObjectMethod();
+                        var signature = ch.getSingleCallSignature(propType);
+                        if (signature == null)
+                            continue;
+                        if (!pseudoParametersEquivalentToParameters(method.Parameters, signature, reportErrors, e.Name.Parent))
+                            return false;
+                        var predicate = ch.getTypePredicateOfSignature(signature);
+                        if (predicate != null ? !pseudoReturnTypeMatchesPredicate(method.ReturnType, predicate) : !pseudoTypeEquivalentToType(method.ReturnType, ch.getReturnTypeOfSignature(signature), false, false))
+                        {
+                            if (reportErrors)
+                                ctx.tracker.ReportInferenceFallback(e.Name.Parent);
+                            return false;
+                        }
+
+                        continue;
+                    }
+
                     if (e.Kind != PseudoObjectElementKind.PropertyAssignment)
-                        throw Checker.unsupported("pseudoTypeEquivalentToType: method/accessor");
+                        throw Checker.unsupported("pseudoTypeEquivalentToType: accessor");
                     var data = e.AsPseudoPropertyAssignment();
                     if (!pseudoTypeEquivalentToType(data.Type, propType, e.Optional, false))
                     {
@@ -265,9 +328,35 @@ internal sealed partial class NodeBuilderImpl
                 if (reportErrors)
                     ctx.tracker.ReportInferenceFallback(t.AsPseudoTypeNoResult().Declaration);
                 return false;
-            case PseudoTypeKind.Tuple:
             case PseudoTypeKind.SingleCallSignature:
-                throw Checker.unsupported("pseudoTypeEquivalentToType: tuple/signature");
+                var targetSig = ch.getSingleCallSignature(undefinedStripped);
+                if (targetSig == null)
+                    return false;
+                var signatureType = t.AsPseudoTypeSingleCallSignature();
+                if (GoRuntime.Len(targetSig.typeParameters) != GoRuntime.Len(signatureType.TypeParameters))
+                {
+                    if (reportErrors)
+                        ctx.tracker.ReportInferenceFallback(signatureType.Signature);
+                    return false;
+                }
+
+                if (!pseudoParametersEquivalentToParameters(signatureType.Parameters, targetSig, reportErrors, signatureType.Signature))
+                    return false;
+                var targetPredicate = ch.getTypePredicateOfSignature(targetSig);
+                if (targetPredicate != null)
+                {
+                    if (!pseudoReturnTypeMatchesPredicate(signatureType.ReturnType, targetPredicate))
+                    {
+                        if (reportErrors)
+                            ctx.tracker.ReportInferenceFallback(signatureType.Signature);
+                        return false;
+                    }
+                }
+                else if (!pseudoTypeEquivalentToType(signatureType.ReturnType, ch.getReturnTypeOfSignature(targetSig), false, reportErrors))
+                    return false;
+                return true;
+            case PseudoTypeKind.Tuple:
+                throw Checker.unsupported("pseudoTypeEquivalentToType: tuple");
             default:
                 return false;
         }
@@ -288,7 +377,7 @@ internal sealed partial class NodeBuilderImpl
                 return ch.getTypeFromTypeNode(t.AsPseudoTypeDirect().TypeNode);
             case PseudoTypeKind.Inferred:
                 if (t.AsPseudoTypeInferred().IsSignatureReturn)
-                    throw Checker.unsupported("pseudoTypeToType: signature return");
+                    return ch.getReturnTypeOfSignature(ch.getSignatureFromDeclaration(t.AsPseudoTypeInferred().Expression));
                 return ch.getWidenedType(ch.getRegularTypeOfExpression(t.AsPseudoTypeInferred().Expression));
             case PseudoTypeKind.NoResult:
                 return null;
@@ -340,9 +429,203 @@ internal sealed partial class NodeBuilderImpl
             case PseudoTypeKind.BigIntLiteral:
                 return ch.getRegularTypeOfExpression(t.AsPseudoTypeLiteral().Node);
             case PseudoTypeKind.ObjectLiteral:
+            case PseudoTypeKind.SingleCallSignature:
                 return null;
             default:
                 throw Checker.unsupported("pseudoTypeToType: tuple/signature");
         }
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/pseudotypenodebuilder.go:327:1.
+    private NodeList pseudoParametersToNodeList(List<PseudoParameter> @params)
+    {
+        var res = GoRuntime.MakeSlice<Node>(0);
+        {
+            foreach (var p in GoRuntime.RangeValues(@params))
+            {
+                res = GoRuntime.Append(res, this.pseudoParameterToNode(p));
+            }
+        }
+
+        return this.f.NewNodeList(res);
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/pseudotypenodebuilder.go:335:1.
+    private Node pseudoParameterToNode(PseudoParameter p)
+    {
+        Node dotDotDot = default;
+        Node questionMark = default;
+        if (p.Rest)
+        {
+            dotDotDot = this.f.NewToken(Kind.DotDotDotToken);
+        }
+
+        if (p.Optional)
+        {
+            questionMark = this.f.NewToken(Kind.QuestionToken);
+        }
+
+        var parameter = this.f.NewParameterDeclaration(null, dotDotDot, this.parameterToParameterDeclarationName(p.Name.Parent.Symbol(), p.Name.Parent), questionMark, this.pseudoTypeToNode(p.Type), null);
+        {
+            var original = p.Name.Parent;
+            if (Ast.IsParameterDeclaration(original))
+            {
+            // Default diagnostic printing removes comments; source node identity is retained by clone hooks.
+            }
+        }
+
+        return parameter;
+    }
+
+    // Upstream upstream/TypeScript/tsc/internal/checker/pseudotypenodebuilder.go:585:1.
+    private bool pseudoParametersEquivalentToParameters(List<PseudoParameter> @params, Signature targetSig, bool reportErrors, Node nonParamErrorLocation)
+    {
+        if (((targetSig.thisParameter != null) && (GoRuntime.Len(@params) == 0)))
+        {
+            if (reportErrors)
+            {
+                this.ctx.tracker.ReportInferenceFallback(nonParamErrorLocation);
+            }
+
+            return false;
+        }
+        else
+        {
+            if (((targetSig.thisParameter != null) && Ast.IsThisIdentifier(@params[0].Name)))
+            {
+                var targetParam = targetSig.thisParameter;
+                var paramType = this.ch.getTypeOfParameter(targetParam);
+                if (!this.pseudoTypeEquivalentToType(@params[0].Type, paramType, @params[0].Optional, false))
+                {
+                    if (reportErrors)
+                    {
+                        this.ctx.tracker.ReportInferenceFallback(@params[0].Name.Parent);
+                    }
+
+                    return false;
+                }
+
+                @params = GoRuntime.Slice(@params, 1);
+            }
+            else
+            {
+                if ((targetSig.thisParameter != null))
+                {
+                    if (reportErrors)
+                    {
+                        this.ctx.tracker.ReportInferenceFallback(nonParamErrorLocation);
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        if ((GoRuntime.Len(targetSig.parameters) != GoRuntime.Len(@params)))
+        {
+            if (reportErrors)
+            {
+                this.ctx.tracker.ReportInferenceFallback(nonParamErrorLocation);
+            }
+
+            return false;
+        }
+
+        {
+            foreach (var range2 in GoRuntime.Range(@params))
+            {
+                var i = range2.Key;
+                var p = range2.Value;
+                var targetParam2 = targetSig.parameters[i];
+                if ((p.Optional != this.ch.isOptionalParameter(targetParam2.ValueDeclaration)))
+                {
+                    if (reportErrors)
+                    {
+                        this.ctx.tracker.ReportInferenceFallback(p.Name.Parent);
+                    }
+
+                    return false;
+                }
+
+                var paramType2 = this.ch.getTypeOfParameter(targetParam2);
+                if (!this.pseudoTypeEquivalentToType(p.Type, paramType2, p.Optional, false))
+                {
+                    if (reportErrors)
+                    {
+                        this.ctx.tracker.ReportInferenceFallback(p.Name.Parent);
+                    }
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // pseudoReturnTypeMatchesPredicate checks if a pseudo return type (which should be a Direct type
+    // wrapping a TypePredicate) matches the given type predicate from the checker.
+    // Upstream upstream/TypeScript/tsc/internal/checker/pseudotypenodebuilder.go:645:1.
+    private bool pseudoReturnTypeMatchesPredicate(PseudoType rt, TypePredicate predicate)
+    {
+        if ((rt.Kind != PseudoTypeKind.Direct))
+        {
+            return false;
+        }
+
+        var node = rt.AsPseudoTypeDirect().TypeNode;
+        if (!Ast.IsTypePredicateNode(node))
+        {
+            return false;
+        }
+
+        var tp = node.AsTypePredicateNode();
+        var isAsserts = (tp.AssertsModifier != null);
+        var predicateIsAsserts = ((predicate.kind == TypePredicateKind.AssertsThis) || (predicate.kind == TypePredicateKind.AssertsIdentifier));
+        if ((isAsserts != predicateIsAsserts))
+        {
+            return false;
+        }
+
+        var isThis = Ast.IsThisTypeNode(tp.ParameterName);
+        var predicateIsThis = ((predicate.kind == TypePredicateKind.This) || (predicate.kind == TypePredicateKind.AssertsThis));
+        if ((isThis != predicateIsThis))
+        {
+            return false;
+        }
+
+        if (!isThis)
+        {
+            if ((tp.ParameterName.Text() != predicate.parameterName))
+            {
+                return false;
+            }
+        }
+
+        if ((predicate.t != null))
+        {
+            if ((tp.Type == null))
+            {
+                return false;
+            }
+
+            var predicateTypeFromNode = this.ch.getTypeFromTypeNode(tp.Type);
+            if ((predicateTypeFromNode != predicate.t))
+            {
+                if ((this.ch.compareTypesIdentical(predicateTypeFromNode, predicate.t) != Ternary.True))
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if ((tp.Type != null))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

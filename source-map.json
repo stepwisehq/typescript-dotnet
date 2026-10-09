@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, plus prior bounded scalar/object/named-data checking checkpoints. Later compiler subsystems remain partial or excluded.",
+  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, prior bounded scalar/object/named-data checkpoints, and the fixed non-generic callable contract. Other checker functionality remains partial or excluded.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -79,9 +79,13 @@
       "upstream": "tsc/internal/core/options_generated.go",
       "destination": "src/TypeScript.Scanner/Core/OptionsGenerated.cs",
       "status": "partial",
-      "scope": "ScriptTarget, ModuleKind and NewLineKind enums plus actual selected CompilerOptions fields for fixed noLib scalar checking; general option records, configuration parsing and serialization excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "133eb1f0d134b192e82ec97254e5202e26c05f654dc77ec14cfd9ec7b110f6af",
-      "binderCheckpointScope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded."
+      "binderCheckpointScope": "ScriptTarget, ModuleKind and NewLineKind enums; other compiler option definitions excluded.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "ScriptTarget, ModuleKind and NewLineKind enums plus actual selected CompilerOptions fields for fixed noLib scalar checking; general option records, configuration parsing and serialization excluded."
     },
     {
       "upstream": "tsc/internal/core/languagevariant.go",
@@ -104,19 +108,23 @@
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded. Foundation adds UTF16Len, PositionToLineAndByteOffset and nil/identity-preserving Filter for actual syntax dependencies.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
       "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
       "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded.",
       "dataTypesCheckpointScope": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Scanner spelling, parser slice/collection and ECMAScript line starts; binder pointer-comparable OrElse/AppendIfUnique; generic GetSpellingSuggestion and candidate-cap variants preserve raw-byte/rune distance, caller tie-breaks and Go string zero value. Managed delegates/lists and fresh distance buffers replace Go iterators/pooling; unrelated core utilities excluded. FirstNonNil is the selected pointer-result branch; broader comparable value zero semantics remain excluded. Foundation adds UTF16Len, PositionToLineAndByteOffset and nil/identity-preserving Filter for actual syntax dependencies."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
       "destination": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
       "status": "ported",
-      "scope": "All 2,222 pinned default-English diagnostic metadata records, preserving names/codes/categories/keys/text/report flags. Independent field comparison exact. This data support does not implement every emitting compiler stage.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f",
       "scannerCheckpointScope": "Only diagnostics referenced by scanner/regex.",
       "parserCheckpointScope": "Pinned diagnostic metadata referenced by scanner/regex/parser syntax dependencies; unrelated compiler messages excluded.",
@@ -129,7 +137,11 @@
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "dataTypesCheckpointScope": "Generated selected scanner/parser/binder/scalar/object/data-type diagnostic metadata catalog; only actual retained source references selected, not the full diagnostics catalog.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "All 2,222 pinned default-English diagnostic metadata records, preserving names/codes/categories/keys/text/report flags. Independent field comparison exact. This data support does not implement every emitting compiler stage."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics.go",
@@ -170,21 +182,29 @@
       "upstream": "tsc/internal/jsnum/string.go",
       "destination": "src/TypeScript.Scanner/JsNum/String.cs",
       "status": "partial",
-      "scope": "Number.String/FromString and required helpers retain upstream branches using .NET numeric facilities. Original numeric assertions exposed a runtime R-format roundtrip discrepancy; general verified-roundtrip/G17 fallback added. Original assertions, independent review and 16,705 supplemental Go/Node bit-pattern comparisons pass natively; no arithmetic/exponentiation API port.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "79cba5294aa96796c280169b6d3d5ed1b62da2b2aad312c8d9d06dc0a563d62b",
       "dataTypesCheckpointScope": "Numeric parse and string conversion required by scanner; .NET double/BigInteger adaptation.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Number.String/FromString and required helpers retain upstream branches using .NET numeric facilities. Original numeric assertions exposed a runtime R-format roundtrip discrepancy; general verified-roundtrip/G17 fallback added. Original assertions, independent review and 16,705 supplemental Go/Node bit-pattern comparisons pass natively; no arithmetic/exponentiation API port."
     },
     {
       "upstream": "tsc/internal/jsnum/pseudobigint.go",
       "destination": "src/TypeScript.Scanner/JsNum/PseudoBigInt.cs",
-      "status": "partial",
-      "scope": "Original scanner-required ParsePseudoBigInt algorithm and .NET BigInteger adaptation. Original tests exposed numeric-separator handling; repaired by original nondecimal parsing rules. Other numeric APIs remain outside foundation scope.",
+      "status": "ported",
+      "scope": "All original pseudobigint.go fields/functions, including parsing, sign/comparison, formatting and default-value equality; .NET BigInteger adaptation. Written bigint literals remain outside callable source admission; original parsing and internal bigint-zero semantics verified.",
       "upstreamSha256": "512d46777b6d9955db52bef696cca72ec3002309f4b8a2d12cba0529f809a64a",
       "dataTypesCheckpointScope": "ParsePseudoBigInt only.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Original scanner-required ParsePseudoBigInt algorithm and .NET BigInteger adaptation. Original tests exposed numeric-separator handling; repaired by original nondecimal parsing rules. Other numeric APIs remain outside foundation scope."
     },
     {
       "upstream": null,
@@ -623,20 +643,24 @@
       "upstream": "tsc/internal/checker/checker.go",
       "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
       "status": "partial",
-      "scope": "Selected fixed noLib/noResolve single-file data checking: original alias/name/type resolution, interface hidden-this/base/member/merge checks, recursive resolution and instantiation, union/intersection construction/reduction/member caches, contextual object checking, dot reads, widening and deferred diagnostics. Genuine internal synthetic any-base indexes and finite-key IndexType origins are included; written generics/signatures/indexes/classes/modules/libraries/general emit remain guarded. Complete original key-preimage bytes replace opaque XXH3 storage; actual node/type-node fields use core.LinkStore rather than paged nodeLinkStore. Actual empty inference-context stack lookup returns unchanged contextual types for internal hidden-this state; nonnil inference contexts remain guarded. Original per-node currentNode and instantiation budget save/reset/restore boundaries retained.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature construction, return resolution/cycles, contextual functions, call/overload selection, selected function-body/flow algorithms, local interfaces, merged anonymous instantiation caches and internal unique-symbol inference from caller declarations. Shared actual checker under explicit authored profile; selected contract only.",
       "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
       "scalarCheckerCheckpointScope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
       "objectCheckerCheckpointScope": "Selected scalar and finite anonymous object construction/context/member resolution/property reads/widening/cache/deferred diagnostics/type cycles; actual finite property-key extraction and primitive literal-key intersection reduction for diagnostic best matching. Scoped noLib initialization; named/generic/signature/index/retained intersection paths reject. Complete selected relation-key preimage replaces opaque XXH3 representation, preserving identity-order normalization.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected fixed noLib/noResolve single-file data checking: original alias/name/type resolution, interface hidden-this/base/member/merge checks, recursive resolution and instantiation, union/intersection construction/reduction/member caches, contextual object checking, dot reads, widening and deferred diagnostics. Genuine internal synthetic any-base indexes and finite-key IndexType origins are included; written generics/signatures/indexes/classes/modules/libraries/general emit remain guarded. Complete original key-preimage bytes replace opaque XXH3 storage; actual node/type-node fields use core.LinkStore rather than paged nodeLinkStore. Actual empty inference-context stack lookup returns unchanged contextual types for internal hidden-this state; nonnil inference contexts remain guarded. Original per-node currentNode and instantiation budget save/reset/restore boundaries retained.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Original signature construction, return resolution/cycles, contextual functions, call/overload selection, selected function-body/flow algorithms, local interfaces, merged anonymous instantiation caches and internal unique-symbol inference from caller declarations. Shared actual checker under explicit authored profile; selected contract only.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected fixed noLib/noResolve single-file data checking: original alias/name/type resolution, interface hidden-this/base/member/merge checks, recursive resolution and instantiation, union/intersection construction/reduction/member caches, contextual object checking, dot reads, widening and deferred diagnostics. Genuine internal synthetic any-base indexes and finite-key IndexType origins are included; written generics/signatures/indexes/classes/modules/libraries/general emit remain guarded. Complete original key-preimage bytes replace opaque XXH3 storage; actual node/type-node fields use core.LinkStore rather than paged nodeLinkStore. Actual empty inference-context stack lookup returns unchanged contextual types for internal hidden-this state; nonnil inference contexts remain guarded. Original per-node currentNode and instantiation budget save/reset/restore boundaries retained."
     },
     {
       "upstream": "tsc/internal/checker/types.go",
       "destination": "src/TypeScript.Scanner/Checker/Types.cs",
       "status": "partial",
-      "scope": "Complete selected enums and stable wrappers for intrinsic/literal/anonymous/union/intersection/interface/reference/hidden-this TypeParameter/finite-key IndexType payloads; real alias/origin/target/mapper/instantiation/base/declared/member/property/module/deferred/variance/accessibility/cache links. Managed inheritance flattens embedded structs and static DataType supports AOT observations. Real synthetic any-base IndexInfo allocated; callable Signature slots remain genuinely empty and their nonempty behavior guarded. Source generic/conditional/mapped/enum/signature models not implied.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Full original Signature fields, CompositeSignature, TypePredicate, SignatureLinks and internal UniqueESSymbolType storage. Source generics/rest/construct paths remain excluded.",
       "upstreamSha256": "0265c1f309f28f4c6a608ea20243fe30625ba055e3b779b662dbec93172f9eb7",
       "generator": "tools/generate-checker-support-enums.py generates enum prefix and preserves handwritten model suffix; scratch reproduction checked.",
       "scalarCheckerCheckpointScope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags enums; stable Type wrapper plus IntrinsicType/LiteralType fresh-regular cycles, UnionType and actual partial ObjectType initialization markers; selected node/symbol/assignment cache records. Managed classes flatten Go embedded payload bases; static DataType is authored AOT-safe graph metadata. Unselected signature/mapper/type-parameter/structured payloads and object signature/index/instantiation state excluded.",
@@ -644,7 +668,11 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Complete selected enums and stable wrappers for intrinsic/literal/anonymous/union/intersection/interface/reference/hidden-this TypeParameter/finite-key IndexType payloads; real alias/origin/target/mapper/instantiation/base/declared/member/property/module/deferred/variance/accessibility/cache links. Managed inheritance flattens embedded structs and static DataType supports AOT observations. Real synthetic any-base IndexInfo allocated; callable Signature slots remain genuinely empty and their nonempty behavior guarded. Source generic/conditional/mapped/enum/signature models not implied.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Full original Signature fields, CompositeSignature, TypePredicate, SignatureLinks and internal UniqueESSymbolType storage. Source generics/rest/construct paths remain excluded.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Complete selected enums and stable wrappers for intrinsic/literal/anonymous/union/intersection/interface/reference/hidden-this TypeParameter/finite-key IndexType payloads; real alias/origin/target/mapper/instantiation/base/declared/member/property/module/deferred/variance/accessibility/cache links. Managed inheritance flattens embedded structs and static DataType supports AOT observations. Real synthetic any-base IndexInfo allocated; callable Signature slots remain genuinely empty and their nonempty behavior guarded. Source generic/conditional/mapped/enum/signature models not implied."
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -658,50 +686,66 @@
       "upstream": "tsc/internal/checker/relater.go",
       "destination": "src/TypeScript.Scanner/Checker/Relater.cs",
       "status": "partial",
-      "scope": "Selected named/recursive/composite data relationships retaining original ternary relation/maybe caches, recursive source-target stacks, reference/hidden-this constraint and zero-declared-parameter variance paths, identity/missing/optional/readonly/excess/weak properties, union/intersection reductions/discrimination including Cartesian fallback, synthetic internal index relations, diagnostic chains/error snapshots and elaboration. Written generic/callable/class/array/mapped/operator paths remain guarded; no replacement property-only checker.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original ordered signature comparisons, function variance/method bivariance, callable relationships, recursive/composite interaction and diagnostic elaboration within the fixed contract.",
       "upstreamSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47",
       "scalarCheckerCheckpointScope": "Selected scalar, literal, boolean and undefined-union relationships; general structured relationships excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/internal-union and finite anonymous structural relations: original ternary recursive cache/maybe/source-target stacks, identity/required-optional/readonly properties, excess/weak/missing-property checks, diagnostics chains/error snapshots, elaboration and discrimination. Actual Construct/Call signature resolution preserves cache side effects while nonempty signatures/indexes/retained intersections/generics reject. Managed prefix-list snapshots preserve Go slice error-state isolation.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected named/recursive/composite data relationships retaining original ternary relation/maybe caches, recursive source-target stacks, reference/hidden-this constraint and zero-declared-parameter variance paths, identity/missing/optional/readonly/excess/weak properties, union/intersection reductions/discrimination including Cartesian fallback, synthetic internal index relations, diagnostic chains/error snapshots and elaboration. Written generic/callable/class/array/mapped/operator paths remain guarded; no replacement property-only checker.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Original ordered signature comparisons, function variance/method bivariance, callable relationships, recursive/composite interaction and diagnostic elaboration within the fixed contract.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected named/recursive/composite data relationships retaining original ternary relation/maybe caches, recursive source-target stacks, reference/hidden-this constraint and zero-declared-parameter variance paths, identity/missing/optional/readonly/excess/weak properties, union/intersection reductions/discrimination including Cartesian fallback, synthetic internal index relations, diagnostic chains/error snapshots and elaboration. Written generic/callable/class/array/mapped/operator paths remain guarded; no replacement property-only checker."
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
       "destination": "src/TypeScript.Scanner/Checker/Flow.cs",
       "status": "partial",
-      "scope": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c",
       "scalarCheckerCheckpointScope": "Straight-line start/assignment flow paths used by scalar identifier references; branching flow excluded.",
       "objectCheckerCheckpointScope": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded."
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
       "destination": "src/TypeScript.Scanner/Checker/Utilities.cs",
       "status": "partial",
-      "scope": "Selected actual data/scalar semantic predicates, literal/static-name/optionality helpers, source aliases/interface/composite query dependencies and original missing-name/library/property suggestions; broad cross-file/generic/class utilities excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0",
       "scalarCheckerCheckpointScope": "Selected semantic predicates, literal handling and missing-library feature suggestions.",
       "objectCheckerCheckpointScope": "Selected semantic predicates, literal handling, object/property name helpers, optionality and actual missing-library/name/property suggestions; unselected broad semantic utilities excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected actual data/scalar semantic predicates, literal/static-name/optionality helpers, source aliases/interface/composite query dependencies and original missing-name/library/property suggestions; broad cross-file/generic/class utilities excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected actual data/scalar semantic predicates, literal/static-name/optionality helpers, source aliases/interface/composite query dependencies and original missing-name/library/property suggestions; broad cross-file/generic/class utilities excluded."
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
       "destination": "src/TypeScript.Scanner/Checker/GrammarChecks.cs",
       "status": "partial",
-      "scope": "Selected scalar/object/type-literal plus non-generic alias/interface/heritage/merge grammar checks and duplicate/modifier diagnostics. Written callable/index/computed/generic/class/module syntax excluded by admission.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9",
       "scalarCheckerCheckpointScope": "Selected scalar declaration/script grammar checks.",
       "objectCheckerCheckpointScope": "Selected script/scalar declaration and anonymous object/data type-literal grammar checks, duplicate names/modifiers and actual numeric-literal suggestions. Methods/indexes/computed names/ambient/classes/unselected declarations excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected scalar/object/type-literal plus non-generic alias/interface/heritage/merge grammar checks and duplicate/modifier diagnostics. Written callable/index/computed/generic/class/module syntax excluded by admission.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected scalar/object/type-literal plus non-generic alias/interface/heritage/merge grammar checks and duplicate/modifier diagnostics. Written callable/index/computed/generic/class/module syntax excluded by admission."
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -726,13 +770,17 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/Admission.cs",
       "status": "new",
-      "scope": "Authored fixed-option single-file scalar/anonymous/named/recursive/union/intersection data-type admission and public creation/ownership adapter; supported invalid semantic input reaches original diagnostics. Syntax/environment outside contract rejects explicitly; no ported semantic logic or general compiler host.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Authored explicit Legacy/Callable semantic admission profiles. Invalid admitted forms reach checker diagnostics; excluded syntax remains unsupported.",
       "scalarCheckerCheckpointScope": "Authored input admission and public checker creation adapter; explicit unsupported feature exception, not ported semantic logic.",
       "objectCheckerCheckpointScope": "Authored fixed noLib single-file TS scalar plus finite anonymous object admission/public creation adapter; rejects unsupported syntax/environment/foreign queries explicitly, not ported semantic logic. Historical scalar-only object negatives retired in current selection without altering their evidence.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Authored fixed-option single-file scalar/anonymous/named/recursive/union/intersection data-type admission and public creation/ownership adapter; supported invalid semantic input reaches original diagnostics. Syntax/environment outside contract rejects explicitly; no ported semantic logic or general compiler host.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Authored explicit Legacy/Callable semantic admission profiles. Invalid admitted forms reach checker diagnostics; excluded syntax remains unsupported.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Authored fixed-option single-file scalar/anonymous/named/recursive/union/intersection data-type admission and public creation/ownership adapter; supported invalid semantic input reaches original diagnostics. Syntax/environment outside contract rejects explicitly; no ported semantic logic or general compiler host."
     },
     {
       "upstream": null,
@@ -744,76 +792,100 @@
       "upstream": "tsc/internal/checker/nodebuilder.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
       "status": "partial",
-      "scope": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "4e8a07599eb531900eabf825a0b6552bc812e0c541cdee5ab261405e39699a46",
       "scalarCheckerCheckpointScope": "Selected TypeToTypeNode and SymbolToNode/context entry-exit branches for synthesized scalar types and unqualified diagnostic identifiers; general declaration serialization, context/tracker/expansion/verbosity options excluded.",
       "objectCheckerCheckpointScope": "Selected TypeToTypeNode/SymbolToNode/context stack/managed cached builder branches for scalar and finite anonymous diagnostic types; actual nonnil enclosing declaration and fully-qualified diagnostic variant retained. External trackers/verbosity/general declaration emit excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
       "status": "partial",
-      "scope": "Actual selected scalar/named/recursive/composite/hidden-this/reference/alias/internal IndexType and synthetic any-base index diagnostic nodes; scoped symbol accessibility, alias/reference reuse, property source-context pseudochecker fallback and recovery, tracker replay, original/text links and truncation/cycle/depth/cache semantics. Flags/internal flags participate in managed cache identity; inference/verbosity/general emit state excluded. Bare unresolved types retain the real synthesized diagnostic comment.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original signature/parameter/return/predicate and internal unique-symbol diagnostic serialization; general declaration emit remains excluded.",
       "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302",
       "scalarCheckerCheckpointScope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/literal/internal-union/anonymous object diagnostic nodes and static data-property serialization; actual pseudochecker reuse, enclosing symbol types, text-range/original links, cache reads/writes, truncation and cycle/symbol-depth states. Fixed default flag projection retains varying fully-qualified/InObjectTypeLiteral keys and actual reportedDiagnostic. Named/generic/mapped/accessor/signature/index/general emit branches reject.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Actual selected scalar/named/recursive/composite/hidden-this/reference/alias/internal IndexType and synthetic any-base index diagnostic nodes; scoped symbol accessibility, alias/reference reuse, property source-context pseudochecker fallback and recovery, tracker replay, original/text links and truncation/cycle/depth/cache semantics. Flags/internal flags participate in managed cache identity; inference/verbosity/general emit state excluded. Bare unresolved types retain the real synthesized diagnostic comment.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Original signature/parameter/return/predicate and internal unique-symbol diagnostic serialization; general declaration emit remains excluded.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Actual selected scalar/named/recursive/composite/hidden-this/reference/alias/internal IndexType and synthetic any-base index diagnostic nodes; scoped symbol accessibility, alias/reference reuse, property source-context pseudochecker fallback and recovery, tracker replay, original/text links and truncation/cycle/depth/cache semantics. Flags/internal flags participate in managed cache identity; inference/verbosity/general emit state excluded. Bare unresolved types retain the real synthesized diagnostic comment."
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
       "destination": "src/TypeScript.Scanner/Checker/Printer.cs",
       "status": "partial",
-      "scope": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5",
       "scalarCheckerCheckpointScope": "Default scalar TypeToString/typeToString byte helper and selected symbol naming wrappers for diagnostics; public strings decode once, internal diagnostic strings remain raw. Includes serialization-level guard and default byte cutoff; general signature/qualified naming/verbosity/print options excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/anonymous-object TypeToString and symbol naming wrappers; genuine enclosing-declaration diagnostic serialization, default/fully-qualified variants, recursion bound/default byte cutoff. Public Unicode decoded once; internal strings/diagnostic args remain raw byte strings. Signature/qualified symbol/verbosity/general print options excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded."
     },
     {
       "upstream": "tsc/internal/printer/printer.go",
       "destination": "src/TypeScript.Scanner/Printer/Printer.cs",
       "status": "partial",
-      "scope": "Diagnostic-only actual scalar/static-data/named reference/hidden-this/union/intersection/type-query/internal keyof/synthetic any-base index output and type-precedence parentheses, per-node ASCII flags and source-text reuse. Selected synthesized unresolved leading block-comment emission included; source comments/statements/declarations/maps/general emit excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c",
       "scalarCheckerCheckpointScope": "Diagnostic-only synthesized scalar keyword/literal/unqualified identifier dispatch and required emitter branches; no public emit API, source maps, comments or general statements/declarations.",
       "objectCheckerCheckpointScope": "Diagnostic-only scalar/object/type-literal/property-signature/union/parenthesized/static-name output and selected source-context text reuse. Actual node-specific escape flags; no public emit API/source maps/comments/general statements/declarations.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Diagnostic-only actual scalar/static-data/named reference/hidden-this/union/intersection/type-query/internal keyof/synthetic any-base index output and type-precedence parentheses, per-node ASCII flags and source-text reuse. Selected synthesized unresolved leading block-comment emission included; source comments/statements/declarations/maps/general emit excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Diagnostic-only actual scalar/static-data/named reference/hidden-this/union/intersection/type-query/internal keyof/synthetic any-base index output and type-precedence parentheses, per-node ASCII flags and source-text reuse. Selected synthesized unresolved leading block-comment emission included; source comments/statements/declarations/maps/general emit excluded."
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
       "destination": "src/TypeScript.Scanner/Printer/Textwriter.cs",
       "status": "partial",
-      "scope": "Selected single-line diagnostic writer construction/clear/string/token/category forwarding plus actual WriteComment state. Managed byte-backed builder; broad writer positions/newlines/source emit options excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "a41ab6981ff7e604fd43f4f1b9cebc02af1aa4628f688629630b471156affa89",
       "scalarCheckerCheckpointScope": "Required default single-line writer construction/clear/string/write/keyword/string-literal/identifier branches; managed builder replaces byte builder. General position tracking/indent/newline/options excluded.",
       "objectCheckerCheckpointScope": "Required single-line diagnostic writer construction/clear/string/write and token/property-name/punctuation/space/semicolon/string/identifier forwarding. Managed byte-string builder adaptation; full writer position/indent/newline/emit options excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected single-line diagnostic writer construction/clear/string/token/category forwarding plus actual WriteComment state. Managed byte-backed builder; broad writer positions/newlines/source emit options excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected single-line diagnostic writer construction/clear/string/token/category forwarding plus actual WriteComment state. Managed byte-backed builder; broad writer positions/newlines/source emit options excluded."
     },
     {
       "upstream": "tsc/internal/printer/utilities.go",
       "destination": "src/TypeScript.Scanner/Printer/Utilities.cs",
       "status": "partial",
-      "scope": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e",
       "scalarCheckerCheckpointScope": "Synthesized numeric/string literal getLiteralText and NeverAsciiEscape string-worker/UTF16-escape branches required for diagnostic types. Retains invalid-byte/lone-surrogate/control/line separator/null-before-digit behavior; original-source reuse, JSX/backtick and general literal modes excluded.",
       "objectCheckerCheckpointScope": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded."
     },
     {
       "upstream": null,
@@ -864,44 +936,60 @@
       "upstream": "tsc/internal/checker/exports.go",
       "destination": "src/TypeScript.Scanner/Checker/Exports.cs",
       "status": "partial",
-      "scope": "Selected actual type/symbol/property/widening/declared-type/base and directed-relation query forwarding with authored ownership guards; broader checker API excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
       "scalarCheckerCheckpointScope": "Only public IsTypeAssignableTo forwarding to actual isTypeAssignableTo; authored ownership guard rejects foreign checker types. All other checker exports excluded.",
       "objectCheckerCheckpointScope": "Selected public IsTypeAssignableTo and object/property/widening query forwarding over genuine selected checker helpers; authored type ownership guards. Unselected general checker exports excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected actual type/symbol/property/widening/declared-type/base and directed-relation query forwarding with authored ownership guards; broader checker API excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected actual type/symbol/property/widening/declared-type/base and directed-relation query forwarding with authored ownership guards; broader checker API excluded."
     },
     {
       "upstream": "tsc/internal/checker/pseudotypenodebuilder.go",
       "destination": "src/TypeScript.Scanner/Checker/PseudoTypeNodeBuilder.cs",
       "status": "partial",
-      "scope": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "6388e508e9bdfc8a2f915c3d27ff15f2d756d9e38516c8bae58e37eb99fc2e7c",
       "objectCheckerCheckpointScope": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject."
     },
     {
       "upstream": "tsc/internal/checker/nodecopy.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeCopy.cs",
       "status": "partial",
-      "scope": "Selected diagnostic scalar/static-data/named reference/union/intersection/hidden-this syntax visitor and original recovery scope rollback; existing entity-name symbol resolution/accessibility, mapper-aware type reuse, context/tracker/original/flag copying. JS/callable/mapped/conditional/general declaration emit remain guarded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "2c59724c3d8eaf7e96f19276274da04aefbe16670e47159e2368c1cffc2a3083",
       "objectCheckerCheckpointScope": "Diagnostic static data/scalar existing-node visitor, name/type reuse and actual recovery restoration/length/original/text-range paths. Entity/type-reference/signature/JS/dynamic branches reject before excluded wrapped tracker/deferred symbol reports; full recovery/emit support not claimed.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected diagnostic scalar/static-data/named reference/union/intersection/hidden-this syntax visitor and original recovery scope rollback; existing entity-name symbol resolution/accessibility, mapper-aware type reuse, context/tracker/original/flag copying. JS/callable/mapped/conditional/general declaration emit remain guarded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected diagnostic scalar/static-data/named reference/union/intersection/hidden-this syntax visitor and original recovery scope rollback; existing entity-name symbol resolution/accessibility, mapper-aware type reuse, context/tracker/original/flag copying. JS/callable/mapped/conditional/general declaration emit remain guarded."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderscopes.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderScopes.cs",
       "status": "partial",
-      "scope": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "aaa98985ce7968f096070b570023ad7f3ced7db58dbcb1ee670c42c4c9330ce6",
       "objectCheckerCheckpointScope": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded."
     },
     {
       "upstream": "tsc/internal/checker/symboltracker.go",
@@ -913,19 +1001,26 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected actual tracker construction, requested symbol tracking/cache replay, nested tracker stripping, inference fallback nil callback, cyclic/inaccessible-this reporting and reportedDiagnostic state. No external general emit tracker supplied; unselected reports excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded."
     },
     {
       "upstream": "tsc/internal/checker/emitsupport.go",
       "destination": "src/TypeScript.Scanner/Checker/EmitSupport.cs",
       "status": "partial",
-      "scope": "Selected declaration visibility links/Tristate cache and real hasVisibleDeclarations/accessibility dependencies plus requiresAddingImplicitUndefined for diagnostic reuse. General declaration emit, cross-file/export alias visibility and mapped/accessor/parameter/JS consumers excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "486b68a3d05c9a7b36941ad246b7ce260646ea255f2b2d6c8a9c6d0c1fe1a6ae",
       "objectCheckerCheckpointScope": "Only requiresAddingImplicitUndefined property-signature branch required by diagnostic reuse; reverse-mapped/accessor/parameter/JS paths guard before unselected link-state behavior. General emit APIs excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesScope": "Selected declaration visibility links/Tristate cache and real hasVisibleDeclarations/accessibility dependencies plus requiresAddingImplicitUndefined for diagnostic reuse. General declaration emit, cross-file/export alias visibility and mapped/accessor/parameter/JS consumers excluded.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected declaration visibility links/Tristate cache and real hasVisibleDeclarations/accessibility dependencies plus requiresAddingImplicitUndefined for diagnostic reuse. General declaration emit, cross-file/export alias visibility and mapped/accessor/parameter/JS consumers excluded."
     },
     {
       "upstream": "tsc/internal/printer/emitcontext.go",
@@ -964,19 +1059,27 @@
       "upstream": "tsc/internal/pseudochecker/type.go",
       "destination": "src/TypeScript.Scanner/Pseudochecker/Type.cs",
       "status": "partial",
-      "scope": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "7dfb2e16a131f4f37da033232b49e601de92c5a99c9908a88df3f045bc4e857f",
       "objectCheckerCheckpointScope": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded."
     },
     {
       "upstream": "tsc/internal/pseudochecker/lookup.go",
       "destination": "src/TypeScript.Scanner/Pseudochecker/Lookup.cs",
       "status": "partial",
-      "scope": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "upstreamSha256": "bf75df1ab50ad5af5c416e7c42fbd4d0b46b7774e085be53b9fd40998bc485b8",
       "objectCheckerCheckpointScope": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
-      "objectCheckerEvidence": "validation/results/object-checker-verified.json"
+      "objectCheckerEvidence": "validation/results/object-checker-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject."
     },
     {
       "upstream": null,
@@ -1065,28 +1168,40 @@
       "upstream": "tsc/internal/checker/mapper.go",
       "destination": "src/TypeScript.Scanner/Checker/Mapper.cs",
       "status": "partial",
-      "scope": "Original selected mapper wrappers/data/factories and simple/array/array-to-single/deferred/function/merged/composite Map operations required by internal hidden-this instantiation and literal-key reduction. Managed class union and authored AOT kind discriminator adapt Go interfaces; source generic/inference-context mapper behavior excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "8096ffd92648d76a2e6b967141eea35477173adca98be33ad494bb9cf407a3c9",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Original selected mapper wrappers/data/factories and simple/array/array-to-single/deferred/function/merged/composite Map operations required by internal hidden-this instantiation and literal-key reduction. Managed class union and authored AOT kind discriminator adapt Go interfaces; source generic/inference-context mapper behavior excluded."
     },
     {
       "upstream": "tsc/internal/checker/symbolaccessibility.go",
       "destination": "src/TypeScript.Scanner/Checker/SymbolAccessibility.cs",
       "status": "partial",
-      "scope": "Selected actual single-file data-symbol meanings, lexical scope/qualification, nullable accessible-chain caches, table-origin IDs, alias-cache filtering and accessibility results. Pinned surprising stKindMask value retained. Source modules/external aliases/class/property containing chains excluded where not required by contract.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "912e06b46d9c27035938a7cce1e0124aacd2438eacd8b7505a1b320f8b8a6d5b",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Selected actual single-file data-symbol meanings, lexical scope/qualification, nullable accessible-chain caches, table-origin IDs, alias-cache filtering and accessibility results. Pinned surprising stKindMask value retained. Source modules/external aliases/class/property containing chains excluded where not required by contract."
     },
     {
       "upstream": "tsc/internal/checker/emitresolver.go",
       "destination": "src/TypeScript.Scanner/Checker/EmitResolver.cs",
       "status": "partial",
-      "scope": "Only actual DeclarationLinks.isVisible and identity-preserving declaration visibility link Get storage for diagnostic accessibility; general EmitResolver API excluded.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "43435b252bef7eab920ce208db2d60faf2c77a8d0509d7dd7e77eb8d10e8c669",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Only actual DeclarationLinks.isVisible and identity-preserving declaration visibility link Get storage for diagnostic accessibility; general EmitResolver API excluded."
     },
     {
       "upstream": "tsc/internal/printer/emitresolver.go",
@@ -1104,15 +1219,22 @@
       "scope": "Complete Flags/InternalFlags enum slices plus selected SymbolTracker contract callbacks for requested-symbol tracking, cyclic/inaccessible-this reporting and inference fallback. External tracker/report APIs excluded; enum prefix generated, selected interface handwritten.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "1cbbf774332b79f7747e71b20bffac1095f16a5cb4a8db87c6031cbd5707ea2e",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded."
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Checker/DataVerificationAccess.cs",
       "status": "new",
-      "scope": "Authored friend-only existing reference/alias/relation-key, instantiated-target and finite-key property-cache observations calling actual private helpers or reading initialized entries; no cache entry invented or getter forced solely for serialization.",
+      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Authored strict read-only anonymous-instantiation key preimages, stored-mapper/argument/alias/target relationships and complete map association checks, extending retained reference observations.",
       "dataTypesManifestState": "accepted-bounded",
-      "dataTypesEvidence": "validation/results/data-types-verified.json"
+      "dataTypesEvidence": "validation/results/data-types-verified.json",
+      "callablesCampaignScope": "Authored strict read-only anonymous-instantiation key preimages, stored-mapper/argument/alias/target relationships and complete map association checks, extending retained reference observations.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "scopeBeforeCallables": "Authored friend-only existing reference/alias/relation-key, instantiated-target and finite-key property-cache observations calling actual private helpers or reading initialized entries; no cache entry invented or getter forced solely for serialization."
     },
     {
       "upstream": null,
@@ -1345,24 +1467,133 @@
       "scope": "Authored targeted input/Go observation fixtures supplement unchanged foundation compiler-input reuse. Natural identity witnesses and seeded API controls are explicitly distinguished.",
       "bindingCompletionManifestState": "accepted-source-file-binding",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/semicolon_writer.go",
+      "destination": "src/TypeScript.Scanner/Printer/SemicolonWriter.cs",
+      "status": "partial",
+      "scope": "Original selected trailing-semicolon deferring writer methods for callable diagnostic rendering; general emit position/line/indent APIs excluded.",
+      "callablesCampaignState": "accepted-callables",
+      "upstreamSha256": "29cec6e7948aa747e99654c06533d5a0671a75c8df572a8ad78eddd89d02b53a",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Checker/CallableVerificationAccess.cs",
+      "status": "new",
+      "scope": "Authored read-only friend-assembly observations of real signature/predicate/cache/source-file-link storage; no replacement checking or fabricated state.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/evaluator/evaluator.go",
+      "destination": "src/TypeScript.Scanner/Evaluator/Evaluator.cs",
+      "status": "partial",
+      "scope": "Original selected constant-evaluation helpers required by callable operator and diagnostic paths; source enums, element access and template interpolation remain excluded.",
+      "upstreamSha256": "4dfe5a4e7f33c838bfaf3c28be4c4c547d49a84390186002f6e7f83efb6d4ef3",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/jsnum/jsnum.go",
+      "destination": "src/TypeScript.Scanner/JsNum/JsNum.cs",
+      "status": "partial",
+      "scope": "Original numeric coercion/bitwise/shift/remainder/exponentiation support needed by evaluator; CLR binary64 and System.Numerics.BigInteger adaptation preserve specified Go/JavaScript behavior; original tests and Linux x64 native verification passed.",
+      "upstreamSha256": "73715154bbf53961ec20fe522ea8c583f97299d887f7d1e1a6622c6b79551337",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Checker.Validation/CallableGraph.cs",
+      "status": "new",
+      "scope": "Static authored callable/signature/link/cache observer for exact Go comparison and Native AOT; preserves nullable states and identity/order.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/jsnum/jsnum_test.go",
+      "destination": "validation/Checker.Validation/CallableNumericChecks.cs",
+      "status": "partial",
+      "scope": "Original ten numeric test functions: 152 literal and 152 live Node assertions. Tables extracted to numeric-fixtures.json; Node subprocesses batched; original equality and exponentiation tolerance preserved. Benchmarks excluded; shared by xUnit and native dispatch.",
+      "callablesCampaignState": "accepted-callables",
+      "upstreamSha256": "9ef8793cee85ce0c3ff5b6fa6b0e0301eb0f5ab6e0616160a21a4af44421824e",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Checker.Validation/CallableSelfTests.cs",
+      "status": "new",
+      "scope": "Authored profile/public API ownership controls, including returned synthetic parameters without declarations.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.Tests/CallableBoundaryTests.cs",
+      "status": "new",
+      "scope": "Authored unsupported/admitted profile boundary and public API xUnit controls.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.Tests/CallableNumericTests.cs",
+      "status": "new",
+      "scope": "Thin xUnit dispatch to shared original numeric assertions; not separate new upstream tests.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.Tests/CallableOracleTests.cs",
+      "status": "new",
+      "scope": "Authored complete callable Go-result comparison rows; not original full compiler tests.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/callables-corpus",
+      "status": "new",
+      "scope": "Authored independent-Go semantic inputs/expectations, boundary controls, numeric original-table extraction and explicit provenance.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/callables-core-port",
+      "status": "new",
+      "scope": "Development-only Go AST translation scaffold; reviewed hand-edited C# is authoritative and must not be overwritten by rerunning this scaffold.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/callable-support-port",
+      "status": "new",
+      "scope": "Development-only selected support translation scaffold; not the authoritative/reproducible compiler implementation.",
+      "callablesCampaignState": "accepted-callables",
+      "callablesCampaignEvidence": "validation/results/callables-verified.json"
     }
   ],
   "activePhase": {
-    "name": "source-file-binding-completion",
+    "name": "non-generic-functions-and-callable-objects",
     "status": "complete",
-    "acceptance": "B1\u2013B6 accepted within source-file binding contract",
-    "manifestState": "accepted-source-file-binding",
-    "baselineCommit": "2886d47",
-    "contract": "docs/BINDING-COMPLETION-CONTRACT.md",
-    "statusInventory": "docs/BINDING-COMPLETION-STATUS.md",
-    "implementationInventory": [
-      "docs/binding-completion-functions.json",
-      "docs/binding-completion-support-inventory.json"
-    ],
-    "note": "Complete initial source-file binding and systematic evidence, including cold observation order and prior identity/mode/diagnostic gaps. Existing accepted foundation and semantic checkpoints remain historical; no callable/checker expansion.",
-    "evidence": "validation/results/binding-completion-verified.json",
-    "assessment": "docs/BINDING-COMPLETION-ASSESSMENT.md",
-    "verification": "docs/BINDING-COMPLETION-VERIFICATION.md"
+    "acceptance": "accepted-contract",
+    "manifestState": "accepted-callables",
+    "baselineCommit": "de855ca",
+    "foundationCommit": "2886d47",
+    "contract": "docs/CALLABLES-CONTRACT.md",
+    "statusInventory": "docs/CALLABLES-STATUS.md",
+    "note": "Actual upstream callable checker logic; selected explicit Callable profile, noLib and bounded bodies/parameters. Historical foundation/binding/semantic checkpoints retained; no project/module/library expansion.",
+    "functionInventory": "docs/checker-functions.json",
+    "functionCount": 1474,
+    "departures": "docs/CALLABLES-DEPARTURES.md",
+    "testInventory": "docs/callables-tests.json",
+    "evidence": "validation/results/callables-verified.json",
+    "assessment": "docs/CALLABLES-ASSESSMENT.md",
+    "platform": "Linux x64"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -1438,6 +1669,21 @@
     "nativeTargetedCases": 26,
     "sharedNativeGroups": 15,
     "platform": "linux-x64",
-    "scope": "Complete fixed fresh source-file binding contract; not cross-file/global/checker/emit parity. Delivery commit contains this manifest."
+    "scope": "Complete fixed fresh source-file binding contract; not cross-file/global/checker/emit parity. Delivery commit contains this manifest.",
+    "commit": "de855ca"
+  },
+  "acceptedCallablesCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "de855ca",
+    "foundationCommit": "2886d47",
+    "contract": "docs/CALLABLES-CONTRACT.md",
+    "assessment": "docs/CALLABLES-ASSESSMENT.md",
+    "evidence": "validation/results/callables-verified.json",
+    "sourceSha256": "32e043af7ec8419dbee4ce132be7cb72df84ef56a148d564c1a081dc989302df",
+    "verificationAssetsSha256": "3af53ddfe83af1841091aa73608fb2fe1460adfdc8b8ef5f08628ba668e06a95",
+    "xUnitCases": 23411,
+    "nativeCallableCases": 89,
+    "platform": "Linux x64",
+    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1\u2013C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest."
   }
 }

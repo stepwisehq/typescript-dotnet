@@ -11,6 +11,7 @@ public sealed partial class Checker
 {
     private readonly symbolArenaLinkStore<ContainingSymbolLinks> symbolContainerLinks = new();
     private readonly Dictionary<ulong, List<Symbol>> symbolTableAliasCache = new();
+    internal bool IsValueSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Value, false, true).Accessibility == SymbolAccessibility.Accessible;
     internal bool IsTypeSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Type, false, true).Accessibility == SymbolAccessibility.Accessible;
     internal SymbolAccessibilityResult IsSymbolAccessible(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, bool shouldComputeAliasesToMakeVisible) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, meaning, shouldComputeAliasesToMakeVisible, true);
     // symbolaccessibility.go:435/462. IDs encode table origin, not table contents.

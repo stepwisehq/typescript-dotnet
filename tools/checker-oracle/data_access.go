@@ -105,23 +105,90 @@ func OracleObserveDataMergedSymbol(c *Checker, s *ast.Symbol) (*ast.Symbol, bool
 	value, present := c.mergedSymbols[s]
 	return value, present
 }
-func OracleObserveDataKeyMembership(c *Checker, t *Type, value *Type) bool {
-	if t.AsInterfaceType() == nil || value.AsTypeReference() == nil {
-		panic("Instantiation key association requires additional exact observer")
-	}
-	return t.AsObjectType().instantiations[getTypeListKey(value.AsTypeReference().resolvedTypeArguments)] == value
+
+type OracleDataInstantiation struct {
+	Arguments       []*Type
+	Alias           *TypeAlias
+	SingleSignature bool
+	Family          string
+	Membership      bool
 }
-func OracleObserveDataCacheAssociation(c *Checker, t *Type) bool {
-	if t.AsInterfaceType() == nil {
+
+func OracleObserveDataInstantiation(c *Checker, owner, value *Type) OracleDataInstantiation {
+	var out OracleDataInstantiation
+	var key CacheHashKey
+	if owner.AsInterfaceType() != nil && value.AsTypeReference() != nil {
+		out.Arguments = value.AsTypeReference().resolvedTypeArguments
+		out.Family = "reference"
+		key = getTypeListKey(out.Arguments)
+	} else if owner.objectFlags&ObjectFlagsAnonymous != 0 {
+		declarations := owner.symbol.Declarations
+		if len(declarations) == 0 {
+			panic("Anonymous cache owner has no declaration")
+		}
+		links := c.typeNodeLinks.TryGet(declarations[0])
+		if links == nil || len(links.outerTypeParameters) == 0 {
+			panic("Anonymous cache has no stored outer parameters")
+		}
+		parameters := links.outerTypeParameters
+		out.Family = "anonymous"
+		if owner == value {
+			out.Arguments = parameters
+			out.Alias = owner.alias
+		} else {
+			if value.Target() != owner {
+				panic("Anonymous cache value has another target")
+			}
+			out.SingleSignature = owner.objectFlags&ObjectFlagsSingleSignatureType != 0
+			mapper := value.Mapper()
+			if out.SingleSignature && mapper != nil {
+				if composite, ok := mapper.data.(*CompositeTypeMapper); ok {
+					mapper = composite.m1
+				}
+			}
+			if mapper == nil {
+				panic("Unknown stored anonymous key mapper")
+			}
+			switch m := mapper.data.(type) {
+			case *SimpleTypeMapper:
+				if len(parameters) != 1 || parameters[0] != m.source {
+					panic("Anonymous mapper source mismatch")
+				}
+				out.Arguments = []*Type{m.target}
+			case *ArrayTypeMapper:
+				if !slices.Equal(parameters, m.sources) || len(m.targets) != len(parameters) {
+					panic("Anonymous mapper source mismatch")
+				}
+				out.Arguments = m.targets
+			default:
+				panic("Unknown stored anonymous key mapper")
+			}
+			out.Alias = value.alias
+		}
+		key = getTypeInstantiationKey(out.Arguments, out.Alias, out.SingleSignature)
+	} else {
 		panic("Unknown instantiated-object key family")
 	}
-	for key, value := range t.AsObjectType().instantiations {
-		if value.AsTypeReference() == nil {
-			panic("Unknown reference cache value")
+	out.Membership = owner.AsObjectType().instantiations[key] == value
+	return out
+}
+func OracleObserveDataKeyMembership(c *Checker, t, value *Type) bool {
+	return OracleObserveDataInstantiation(c, t, value).Membership
+}
+func OracleObserveDataCacheAssociation(c *Checker, t *Type) bool {
+	used := map[CacheHashKey]bool{}
+	for actual, value := range t.AsObjectType().instantiations {
+		entry := OracleObserveDataInstantiation(c, t, value)
+		var key CacheHashKey
+		if entry.Family == "reference" {
+			key = getTypeListKey(entry.Arguments)
+		} else {
+			key = getTypeInstantiationKey(entry.Arguments, entry.Alias, entry.SingleSignature)
 		}
-		if key != getTypeListKey(value.AsTypeReference().resolvedTypeArguments) {
+		if actual != key || used[key] || !entry.Membership {
 			return false
 		}
+		used[key] = true
 	}
 	return true
 }

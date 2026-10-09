@@ -1,0 +1,1487 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 89,
+  "provenance": "Actual original-Go stored expectation observations; runtime C# verdict recorded separately.",
+  "totals": {
+    "signatures": 178,
+    "predicates": 91,
+    "composites": 2,
+    "calls": 105,
+    "queries": 1208,
+    "signatureLinks": 3652,
+    "cachedSignatures": 0,
+    "noPredicateSentinel": 89
+  },
+  "signatureFields": {
+    "Signature.flags": {
+      "observations": 178,
+      "nonnull": 178,
+      "scalar:0": 170,
+      "scalar:2": 6,
+      "scalar:258": 1,
+      "scalar:256": 1
+    },
+    "Signature.minArgumentCount": {
+      "observations": 178,
+      "nonnull": 178,
+      "scalar:1": 117,
+      "scalar:2": 6,
+      "scalar:0": 55
+    },
+    "Signature.resolvedMinArgumentCount": {
+      "observations": 178,
+      "nonnull": 178,
+      "scalar:1": 71,
+      "scalar:-1": 74,
+      "scalar:2": 3,
+      "scalar:0": 30
+    },
+    "Signature.declaration": {
+      "observations": 178,
+      "nonnull": 167,
+      "reference": 167,
+      "null": 11
+    },
+    "Signature.typeParameters": {
+      "observations": 178,
+      "null": 178
+    },
+    "Signature.parameters": {
+      "observations": 178,
+      "nonnull": 127,
+      "nonempty": 127,
+      "null": 51
+    },
+    "Signature.thisParameter": {
+      "observations": 178,
+      "null": 175,
+      "nonnull": 3,
+      "reference": 3
+    },
+    "Signature.resolvedReturnType": {
+      "observations": 178,
+      "nonnull": 178,
+      "reference": 178
+    },
+    "Signature.resolvedTypePredicate": {
+      "observations": 178,
+      "nonnull": 178,
+      "reference": 178
+    },
+    "Signature.target": {
+      "observations": 178,
+      "null": 175,
+      "nonnull": 3,
+      "reference": 3
+    },
+    "Signature.mapper": {
+      "observations": 178,
+      "null": 175,
+      "nonnull": 3,
+      "reference": 3
+    },
+    "Signature.isolatedSignatureType": {
+      "observations": 178,
+      "null": 178
+    },
+    "Signature.composite": {
+      "observations": 178,
+      "null": 176,
+      "nonnull": 2,
+      "reference": 2
+    },
+    "TypePredicate.kind": {
+      "observations": 91,
+      "nonnull": 91,
+      "scalar:1": 91
+    },
+    "TypePredicate.parameterIndex": {
+      "observations": 91,
+      "nonnull": 91,
+      "scalar:0": 91
+    },
+    "TypePredicate.parameterName": {
+      "observations": 91,
+      "nonnull": 91,
+      "nonempty": 91
+    },
+    "TypePredicate.t": {
+      "observations": 91,
+      "nonnull": 91,
+      "reference": 91
+    },
+    "CompositeSignature.isUnion": {
+      "observations": 2,
+      "nonnull": 2,
+      "scalar:true": 2
+    },
+    "CompositeSignature.signatures": {
+      "observations": 2,
+      "nonnull": 2,
+      "nonempty": 2
+    }
+  },
+  "diagnosticRootCounts": {
+    "checkerDiagnostics": 109,
+    "globalDiagnostics": 711,
+    "bindDiagnostics": 0
+  },
+  "diagnosticCodesIncludingChainsAndRelated": {
+    "1016": 1,
+    "1024": 2,
+    "1042": 1,
+    "1156": 1,
+    "2304": 4,
+    "2318": 711,
+    "2322": 33,
+    "2326": 2,
+    "2328": 3,
+    "2339": 4,
+    "2345": 8,
+    "2353": 1,
+    "2362": 11,
+    "2363": 13,
+    "2365": 5,
+    "2366": 1,
+    "2367": 5,
+    "2369": 2,
+    "2372": 1,
+    "2373": 1,
+    "2394": 1,
+    "2430": 1,
+    "2454": 1,
+    "2554": 3,
+    "2680": 1,
+    "2683": 2,
+    "2684": 1,
+    "2722": 2,
+    "2728": 6,
+    "2730": 1,
+    "2736": 1,
+    "2741": 2,
+    "2750": 1,
+    "2769": 2,
+    "2770": 2,
+    "2771": 2,
+    "2773": 2,
+    "2774": 1,
+    "2793": 1,
+    "6210": 2,
+    "6212": 2,
+    "6500": 4,
+    "6502": 2,
+    "7005": 1,
+    "7006": 2,
+    "7017": 1,
+    "7023": 2,
+    "7034": 1,
+    "7041": 1,
+    "18048": 2
+  },
+  "cacheAndLinkStates": {
+    "presentSignatureLinks": 265,
+    "resolvedSignatureNonNull": 265,
+    "identifierCheckNodesNonEmptyCases": 83,
+    "effectsSignatureNonNull": 12
+  },
+  "caseCounts": {
+    "typed-call": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 6,
+      "signatureLinks": 18,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "wrong-call": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 6,
+      "signatureLinks": 18,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "context-callback": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 7,
+      "signatureLinks": 24,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "branch-return": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 8,
+      "signatureLinks": 21,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "function-relation": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 9,
+      "signatureLinks": 34,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C1-optional-default": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 13,
+      "signatureLinks": 34,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-missing-extra-arity": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 3,
+      "queries": 11,
+      "signatureLinks": 27,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 3
+    },
+    "C1-overload-selection": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 3,
+      "queries": 21,
+      "signatureLinks": 56,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-overload-reversed": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 18,
+      "signatureLinks": 49,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C1-overload-incompatible": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 7,
+      "signatureLinks": 23,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-default-forward-shadow": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 16,
+      "signatureLinks": 38,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-declare-external": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 9,
+      "signatureLinks": 31,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C1-this-receiver": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 24,
+      "signatureLinks": 62,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-invalid-this-positions": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 9,
+      "signatureLinks": 33,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 5
+    },
+    "C2-not-callable-null": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 9,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C2-overload-callback": {
+      "signatures": 5,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 10,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C2-call-fresh-excess": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 19,
+      "signatureLinks": 47,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C2-call-nested-wrong": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 30,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C2-unknown-name": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 7,
+      "signatureLinks": 19,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C3-context-nested": {
+      "signatures": 5,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 37,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-context-wrong-return": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 10,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 9,
+      "fileDiagnostics": 1
+    },
+    "C3-inferred-property-return": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 10,
+      "signatureLinks": 27,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-self-recursive-return": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 4,
+      "signatureLinks": 14,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-mutual-return": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 3,
+      "queries": 6,
+      "signatureLinks": 20,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C3-recursive-annotated": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 9,
+      "signatureLinks": 24,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-capture-default": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 12,
+      "signatureLinks": 31,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-implicit-any": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 9,
+      "signatureLinks": 25,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C3-predicate-typeof": {
+      "signatures": 2,
+      "predicates": 2,
+      "composites": 0,
+      "calls": 1,
+      "queries": 12,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-predicate-null": {
+      "signatures": 2,
+      "predicates": 2,
+      "composites": 0,
+      "calls": 1,
+      "queries": 13,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-predicate-assigned-parameter": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 13,
+      "signatureLinks": 42,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-predicate-annotated-boolean": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 38,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-predicate-multiple-return": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 15,
+      "signatureLinks": 45,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-predicate-conditional-return": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 15,
+      "signatureLinks": 46,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C1-parameter-order-self-default": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 12,
+      "signatureLinks": 32,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 3
+    },
+    "C4-method-vs-function-variance": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 27,
+      "signatureLinks": 83,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-return-void-special": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 8,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-callable-property-merge": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 19,
+      "signatureLinks": 54,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-method-inherit-conflict": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 7,
+      "signatureLinks": 21,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-hidden-this-instantiated-call": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 34,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-callable-alias-heritage": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-recursive-callable-property": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 20,
+      "signatureLinks": 57,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-recursive-callable-mismatch": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 14,
+      "signatureLinks": 41,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-union-call": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 1,
+      "calls": 2,
+      "queries": 14,
+      "signatureLinks": 43,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-union-different-params": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 1,
+      "calls": 1,
+      "queries": 8,
+      "signatureLinks": 31,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-intersection-call": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 3,
+      "queries": 14,
+      "signatureLinks": 45,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C4-function-property-expando": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 15,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-flow-auto-variable": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 15,
+      "signatureLinks": 42,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-return-fallthrough": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 14,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-throw-never": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 9,
+      "signatureLinks": 27,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-this-arrow-capture": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 12,
+      "signatureLinks": 40,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-assignment-capture": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 9,
+      "signatureLinks": 31,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-operators-invalid": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 18,
+      "signatureLinks": 53,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 3
+    },
+    "C5-nullish-logical": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 14,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-function-local-type-shadow": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 9,
+      "signatureLinks": 26,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-auto-implicit-capture": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 5,
+      "signatureLinks": 17,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C4-did-you-mean-call": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 10,
+      "signatureLinks": 30,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C4-object-method-bad-context": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 11,
+      "signatureLinks": 39,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C1-invalid-method-parameter-modifiers": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 13,
+      "signatureLinks": 43,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 5
+    },
+    "C2-thenable-argument": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 10,
+      "signatureLinks": 31,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-thenable-arrow-return": {
+      "signatures": 5,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 8,
+      "signatureLinks": 30,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-recursive-thenable": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 32,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C6-source-builtins": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 8,
+      "signatureLinks": 21,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 6,
+      "fileDiagnostics": 0
+    },
+    "C6-unicode-signatures": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 13,
+      "signatureLinks": 36,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C5-operator-family-arithmetic": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 42,
+      "signatureLinks": 133,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 10
+    },
+    "C5-operator-family-bitwise": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 42,
+      "signatureLinks": 133,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 12
+    },
+    "C5-operator-family-relational": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 30,
+      "signatureLinks": 101,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 4
+    },
+    "C5-operator-family-equality": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 30,
+      "signatureLinks": 101,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 4
+    },
+    "C5-operator-family-logical": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 24,
+      "signatureLinks": 85,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-unary-operand-families": {
+      "signatures": 0,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 34,
+      "signatureLinks": 113,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-named-function-expression-iife": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 4,
+      "queries": 23,
+      "signatureLinks": 68,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C2-optional-callable-member": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 18,
+      "signatureLinks": 47,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C5-define-property-value": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 10,
+      "signatureLinks": 23,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C5-define-property-callback": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 13,
+      "signatureLinks": 33,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C5-arguments-arrow-capture": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 6,
+      "signatureLinks": 21,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C2-thenable-missing-property": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 11,
+      "signatureLinks": 35,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C5-bigint-union-truthiness": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 8,
+      "signatureLinks": 24,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-hidden-this-nested-method": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 15,
+      "signatureLinks": 42,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-bigint-zero-narrowing": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 15,
+      "signatureLinks": 43,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 2
+    },
+    "C5-function-truthiness": {
+      "signatures": 3,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 10,
+      "signatureLinks": 29,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    },
+    "C3-return-shape-fallthrough": {
+      "signatures": 4,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 4,
+      "queries": 21,
+      "signatureLinks": 58,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-local-interface-function": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 30,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-local-interface-arrow": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 11,
+      "signatureLinks": 34,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C3-local-interface-method": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 13,
+      "signatureLinks": 37,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-merged-hidden-this-cache": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 22,
+      "signatureLinks": 58,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C4-merged-hidden-this-cache-reversed": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 2,
+      "queries": 22,
+      "signatureLinks": 58,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-symbol-constructor-ordinary": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 1,
+      "queries": 5,
+      "signatureLinks": 19,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-global-symbol-identity-widening": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 4,
+      "queries": 12,
+      "signatureLinks": 41,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-global-symbol-for-identity": {
+      "signatures": 2,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 3,
+      "queries": 16,
+      "signatureLinks": 49,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 0
+    },
+    "C5-if-let-grammar": {
+      "signatures": 1,
+      "predicates": 1,
+      "composites": 0,
+      "calls": 0,
+      "queries": 5,
+      "signatureLinks": 15,
+      "cachedSignatures": 0,
+      "globalDiagnostics": 8,
+      "fileDiagnostics": 1
+    }
+  },
+  "limits": [
+    "Allocator signature IDs are canonical graph identities, not compared process counters.",
+    "Retained signature caches are empty; source-generic and optional-chain key paths remain excluded.",
+    "isolatedSignatureType stays null; no fabricated cache state.",
+    "SourceFileLinks deferredNodes observes actual ordered Values sequence, not internal Set backing-map capacity/identity.",
+    "Structured/type/symbol caches are queue-visit snapshots after stated queries, not one simultaneous final-state snapshot."
+  ],
+  "cacheCompleteness": "Both observers reject unknown key families and reconstruct every populated reference/anonymous instantiation key, verify actual key equality/map membership/value identity and duplicate preimages. Anonymous key argument/alias identities must already be rooted at fixedpoint. All actual unique symbol cache entries must be rooted, with each actual symbol-key membership verified. Cached signatures final discovered entry count equals actual whole-map cardinality.",
+  "managedEvidence": "artifacts/callables-validation/managed24/report.json",
+  "stateCountDefinition": "Null is counted separately; empty means nonnull allocated-empty list, reference means one canonical edge, nonempty means ordered canonical edges. Scalar counts retain exact values.",
+  "nondefaultGlobalDiagnostics": {
+    "C3-context-wrong-return": [
+      "Cannot find global type 'Array'.",
+      "Cannot find global type 'Boolean'.",
+      "Cannot find global type 'Function'.",
+      "Cannot find global type 'IArguments'.",
+      "Cannot find global type 'Number'.",
+      "Cannot find global type 'Object'.",
+      "Cannot find global type 'Promise'.",
+      "Cannot find global type 'RegExp'.",
+      "Cannot find global type 'String'."
+    ],
+    "C6-source-builtins": [
+      "Cannot find global type 'Array'.",
+      "Cannot find global type 'Boolean'.",
+      "Cannot find global type 'IArguments'.",
+      "Cannot find global type 'Number'.",
+      "Cannot find global type 'RegExp'.",
+      "Cannot find global type 'String'."
+    ]
+  },
+  "anonymousInstantiationAssociations": [
+    {
+      "case": "C4-merged-hidden-this-cache",
+      "associations": [
+        {
+          "owner": 3,
+          "value": 3,
+          "family": "anonymous",
+          "arguments": [
+            13
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        },
+        {
+          "owner": 3,
+          "value": 7,
+          "family": "anonymous",
+          "arguments": [
+            6
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        },
+        {
+          "owner": 3,
+          "value": 14,
+          "family": "anonymous",
+          "arguments": [
+            1
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        }
+      ]
+    },
+    {
+      "case": "C4-merged-hidden-this-cache-reversed",
+      "associations": [
+        {
+          "owner": 4,
+          "value": 4,
+          "family": "anonymous",
+          "arguments": [
+            13
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        },
+        {
+          "owner": 4,
+          "value": 7,
+          "family": "anonymous",
+          "arguments": [
+            6
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        },
+        {
+          "owner": 4,
+          "value": 14,
+          "family": "anonymous",
+          "arguments": [
+            1
+          ],
+          "alias": null,
+          "singleSignature": false,
+          "membership": true,
+          "repeatedIdentity": true
+        }
+      ]
+    }
+  ],
+  "uniqueSymbolObservations": [
+    {
+      "case": "C5-global-symbol-identity-widening",
+      "types": 2,
+      "owners": [
+        1,
+        2
+      ],
+      "relations": [
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 14,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 14,
+          "targetNodeId": 8,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 8,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 20,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 20,
+          "targetNodeId": 8,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 8,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 26,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 26,
+          "targetNodeId": 8,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 8,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 33,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 33,
+          "targetNodeId": 8,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 8,
+          "targetNodeId": 8,
+          "assignable": true
+        }
+      ],
+      "cacheMembershipChecks": [
+        {
+          "owner": 1,
+          "other": null,
+          "name": "unique-symbol.cache-membership",
+          "boolValue": true
+        },
+        {
+          "owner": 1,
+          "other": null,
+          "name": "unique-symbol.cache-repeated",
+          "boolValue": true
+        },
+        {
+          "owner": 2,
+          "other": null,
+          "name": "unique-symbol.cache-membership",
+          "boolValue": true
+        },
+        {
+          "owner": 2,
+          "other": null,
+          "name": "unique-symbol.cache-repeated",
+          "boolValue": true
+        }
+      ]
+    },
+    {
+      "case": "C5-global-symbol-for-identity",
+      "types": 2,
+      "owners": [
+        5,
+        6
+      ],
+      "relations": [
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 27,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 27,
+          "targetNodeId": 18,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 18,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 36,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 36,
+          "targetNodeId": 18,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 18,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 46,
+          "assignable": true
+        },
+        {
+          "sourceNodeId": 46,
+          "targetNodeId": 18,
+          "assignable": false
+        },
+        {
+          "sourceNodeId": 18,
+          "targetNodeId": 18,
+          "assignable": true
+        }
+      ],
+      "cacheMembershipChecks": [
+        {
+          "owner": 3,
+          "other": null,
+          "name": "unique-symbol.cache-membership",
+          "boolValue": true
+        },
+        {
+          "owner": 3,
+          "other": null,
+          "name": "unique-symbol.cache-repeated",
+          "boolValue": true
+        },
+        {
+          "owner": 6,
+          "other": null,
+          "name": "unique-symbol.cache-membership",
+          "boolValue": true
+        },
+        {
+          "owner": 6,
+          "other": null,
+          "name": "unique-symbol.cache-repeated",
+          "boolValue": true
+        }
+      ]
+    }
+  ],
+  "managedOrderEvidence": "artifacts/callables-validation/order24/report.json",
+  "managedXunitEvidence": "artifacts/callables-validation/callables-build24.trx",
+  "nativeEvidence": "validation/results/callables-verified.json",
+  "nativeStatus": "passed89/89-exact-final-postclosure-gate",
+  "nativeExecution": {
+    "semanticCounts": {
+      "requests": 89,
+      "exact": 89,
+      "signatures": 178,
+      "calls": 105,
+      "queries": 1208,
+      "composites": 2
+    },
+    "sourceSha256": "32e043af7ec8419dbee4ce132be7cb72df84ef56a148d564c1a081dc989302df",
+    "verificationAssetsSha256": "3af53ddfe83af1841091aa73608fb2fe1460adfdc8b8ef5f08628ba668e06a95",
+    "elapsedSeconds": 512.357,
+    "xUnitCases": 23411,
+    "checkerXUnitCases": 701,
+    "admissionControls": 43,
+    "apiAssertions": 10,
+    "originalNumericAssertions": 304,
+    "orderOriginalGoExact": 21,
+    "orderNativeExact": 21,
+    "noDrift": true
+  }
+}

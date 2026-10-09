@@ -1,0 +1,23 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "internal/jsnum/jsnum_test.go",
+  "sourceSha256": "9ef8793cee85ce0c3ff5b6fa6b0e0301eb0f5ab6e0616160a21a4af44421824e",
+  "fixtureSha256": "e5cf1e5a912ff11b5244b38143fafa770d60ea40ead1ad6e959d81258a513358",
+  "originalFunctions": 10,
+  "tableRows": 152,
+  "nodeAssertions": 152,
+  "functionRowCounts": {
+    "ToInt32": 46,
+    "BitwiseNOT": 7,
+    "BitwiseAND": 4,
+    "BitwiseOR": 4,
+    "BitwiseXOR": 4,
+    "SignedRightShift": 13,
+    "UnsignedRightShift": 13,
+    "LeftShift": 11,
+    "Remainder": 24,
+    "Exponentiate": 26
+  },
+  "method": "Original Go literal/data expressions evaluated to IEEE bits; original literal assertion and independent Node assertion both retained. Node exponent comparison preserves original one-ULP allowance; literal exponent expectations remain exact.",
+  "benchmarks": "BenchmarkToInt32 and BenchmarkExponentiate are excluded performance loops, not correctness assertions."
+}

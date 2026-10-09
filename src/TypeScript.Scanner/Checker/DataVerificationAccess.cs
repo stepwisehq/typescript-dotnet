@@ -17,20 +17,71 @@ public sealed partial class Checker
     internal (TypeScript.Scanner.Symbol? Symbol, bool Present) VerificationDataMergedSymbol(TypeScript.Scanner.Symbol symbol) => mergedSymbols.TryGetValue(symbol, out var merged) ? (merged, true) : (null, false);
     internal bool VerificationDataKeyMembership(Type type, Type value)
     {
-        if (type.AsInterfaceType()is null || value.AsTypeReference()is null)
-            throw new InvalidDataException("Instantiation key association requires additional exact observer");
-        return type.AsObjectType().instantiations.TryGetValue(getTypeListKey(value.AsTypeReference().resolvedTypeArguments), out var found) && ReferenceEquals(found, value);
+        return VerificationDataInstantiation(type, value).Membership;
+    }
+
+    internal (List<Type> Arguments, TypeAlias? Alias, bool SingleSignature, string Family, bool Membership) VerificationDataInstantiation(Type owner, Type value)
+    {
+        List<Type> arguments;
+        TypeAlias? alias;
+        bool single;
+        string family;
+        CacheHashKey key;
+        if (owner.AsInterfaceType()is not null && value.AsTypeReference()is not null)
+        {
+            arguments = value.AsTypeReference().resolvedTypeArguments;
+            alias = null;
+            single = false;
+            family = "reference";
+            key = getTypeListKey(arguments);
+        }
+        else if ((owner.ObjectFlags() & ObjectFlags.Anonymous) != 0)
+        {
+            var declarations = owner.Symbol()?.Declarations;
+            if (declarations is null || declarations.Count == 0)
+                throw new InvalidDataException("Anonymous cache owner has no declaration");
+            var parameters = typeNodeLinks.TryGet(declarations[0])?.outerTypeParameters;
+            if (parameters is null || parameters.Count == 0)
+                throw new InvalidDataException("Anonymous cache has no stored outer parameters");
+            family = "anonymous";
+            if (ReferenceEquals(owner, value))
+            {
+                arguments = parameters;
+                alias = owner.alias;
+                single = false; // Original getObjectTypeInstantiation seed key.
+            }
+            else
+            {
+                if (!ReferenceEquals(value.Target(), owner))
+                    throw new InvalidDataException("Anonymous cache value has another target");
+                single = (owner.ObjectFlags() & ObjectFlags.SingleSignatureType) != 0;
+                var mapper = value.Mapper();
+                if (single && mapper?.data is CompositeTypeMapper composite)
+                    mapper = composite.m1; // Original combines extra mapper after key arguments.
+                arguments = mapper?.data switch
+                {
+                    SimpleTypeMapper m when parameters.Count == 1 && ReferenceEquals(m.source, parameters[0]) => [m.target],
+                    ArrayTypeMapper m when (m.sources ?? []).SequenceEqual(parameters) && m.targets?.Count == parameters.Count => m.targets,
+                    _ => throw new InvalidDataException("Unknown stored anonymous key mapper")};
+                alias = value.alias;
+            }
+
+            key = getTypeInstantiationKey(arguments, alias, single);
+        }
+        else
+            throw new InvalidDataException("Unknown instantiated-object key family");
+        bool membership = owner.AsObjectType().instantiations.TryGetValue(key, out var found) && ReferenceEquals(found, value);
+        return (arguments, alias, single, family, membership);
     }
 
     internal bool VerificationDataCacheAssociation(Type type)
     {
-        if (type.AsInterfaceType()is null)
-            throw new InvalidDataException("Unknown instantiated-object key family");
+        var used = new HashSet<CacheHashKey>();
         foreach (var entry in type.AsObjectType().instantiations)
         {
-            if (entry.Value.AsTypeReference()is null)
-                throw new InvalidDataException("Unknown reference cache value");
-            if (entry.Key != getTypeListKey(entry.Value.AsTypeReference().resolvedTypeArguments))
+            var association = VerificationDataInstantiation(type, entry.Value);
+            var key = association.Family == "reference" ? getTypeListKey(association.Arguments) : getTypeInstantiationKey(association.Arguments, association.Alias, association.SingleSignature);
+            if (entry.Key != key || !used.Add(key) || !association.Membership)
                 return false;
         }
 

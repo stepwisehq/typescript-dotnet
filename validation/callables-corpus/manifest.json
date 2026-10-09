@@ -1,0 +1,22 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "profile": "Callable",
+  "disposition": "authored-independent-Go-differential",
+  "groups": [
+    {
+      "group": "tiny",
+      "cases": 5,
+      "elapsedSeconds": 0.017,
+      "requestsSha256": "4c2276b72ff45e80fc826acfbcfe02f8b0626413c9bd325e3c15b64ff6967e39",
+      "expectedSha256": "a9444a50ea5f9a27debefb9fd2fe050957cc16a6b0ed56a0d4fa1810998d1d5a"
+    },
+    {
+      "group": "matrix",
+      "cases": 84,
+      "elapsedSeconds": 0.226,
+      "requestsSha256": "a5c8acbbb357a33cf5258586a08424dd53830300a58363c9bde6ec2bf8035715",
+      "expectedSha256": "00a16004eed6088d8d61c06225381de2f1834e2e608929fa395894a88a1cc30e"
+    }
+  ],
+  "cases": 89
+}

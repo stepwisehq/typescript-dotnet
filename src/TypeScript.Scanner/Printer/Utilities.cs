@@ -12,7 +12,7 @@ internal sealed partial class Printer
     {
         if (currentSourceFile != null && canUseOriginalText(node))
             return TypeScript.Scanner.Scanner.GetSourceTextOfNodeFromSourceFileByteString(currentSourceFile, node, false);
-        if (node.Kind == Kind.NumericLiteral)
+        if (node.Kind is Kind.NumericLiteral or Kind.BigIntLiteral)
             return node.Text();
         if (node.Kind == Kind.NoSubstitutionTemplateLiteral)
         {

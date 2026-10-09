@@ -21,3 +21,8 @@ data_access=root/'upstream/TypeScript/tsc/internal/checker/oracle_data_access.go
 if data_access.exists() and not data_access.read_text().startswith('// Independent read-only observations'):
     raise RuntimeError('Refusing to replace unknown data-type observation helper')
 data_access.write_bytes((root/'tools/checker-oracle/data_access.go').read_bytes())
+
+callable_access=root/'upstream/TypeScript/tsc/internal/checker/oracle_callable_access.go'
+if callable_access.exists() and not callable_access.read_text().startswith('// Independent read-only observations'):
+    raise RuntimeError('Refusing to replace unknown callable observation helper')
+callable_access.write_bytes((root/'tools/checker-oracle/callable_access.go').read_bytes())

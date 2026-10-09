@@ -181,6 +181,7 @@ public sealed class Type
     public TypeAlias Alias() => alias;
     public IntrinsicType AsIntrinsicType() => (IntrinsicType)data;
     public LiteralType AsLiteralType() => (LiteralType)data;
+    public UniqueESSymbolType AsUniqueESSymbolType() => (UniqueESSymbolType)data;
     public UnionType AsUnionType() => (UnionType)data;
     public IntersectionType AsIntersectionType() => (IntersectionType)data;
     public TypeParameter AsTypeParameter() => (TypeParameter)data;
@@ -236,6 +237,7 @@ public sealed class Type
     {
         IntrinsicType => "IntrinsicType",
         LiteralType => "LiteralType",
+        UniqueESSymbolType => "UniqueESSymbolType",
         UnionType => "UnionType",
         IntersectionType => "IntersectionType",
         InterfaceType => "InterfaceType",
@@ -289,6 +291,13 @@ public sealed class LiteralType : TypeBase
 // String() belongs to the selected ValueToString/escaping dependency closure.
 }
 
+// types.go:920. Internal const Symbol()/Symbol.for() results retain their actual
+// owning symbol and opaque raw name; written unique-symbol syntax stays excluded.
+public sealed class UniqueESSymbolType : TypeBase
+{
+    internal string name = "";
+}
+
 public class ConstrainedType : TypeBase
 {
     internal Type resolvedBaseConstraint;
@@ -304,8 +313,7 @@ public class StructuredType : ConstrainedType
     internal List<IndexInfo> indexInfos;
     internal Type objectTypeWithoutAbstractConstructSignatures;
     public override StructuredType AsStructuredType() => this;
-    // types.go:949/953. The admitted object slice creates no signatures; callers
-    // guard nonempty lists before attempting unselected signature semantics.
+    // types.go:949/953. Preserve ordered call/construct slices and their nil state.
     public List<Signature> CallSignatures() => signatures?.GetRange(0, callSignatureCount);
     public List<Signature> ConstructSignatures() => signatures?.GetRange(callSignatureCount, signatures.Count - callSignatureCount);
     public List<Symbol> Properties() => properties;
@@ -456,20 +464,82 @@ internal sealed class MembersAndExportsLinks
     internal SymbolTable this[MembersOrExportsResolutionKind kind] { get => tables[(int)kind]; set => tables[(int)kind] = value; }
 }
 
-// Actual partial types.go:1312 payload for typed absent signature storage only.
-// No signature is allocated by the admitted object slice. Mapper/predicate/
-// composite and call-resolution behavior remain excluded, guarded by callers.
+// types.go:1288. Call-chain flags are deliberately absent from PropagatingFlags.
+[Flags]
+public enum SignatureFlags : uint
+{
+    None = 0,
+    HasRestParameter = 1 << 0,
+    HasLiteralTypes = 1 << 1,
+    Construct = 1 << 2,
+    Abstract = 1 << 3,
+    IsInnerCallChain = 1 << 4,
+    IsOuterCallChain = 1 << 5,
+    IsUntypedSignatureInJSFile = 1 << 6,
+    IsNonInferrable = 1 << 7,
+    IsSignatureCandidateForOverloadFailure = 1 << 8,
+    PropagatingFlags = HasRestParameter | HasLiteralTypes | Construct | Abstract | IsUntypedSignatureInJSFile | IsSignatureCandidateForOverloadFailure,
+    CallChainFlags = IsInnerCallChain | IsOuterCallChain,
+}
+
+// Complete types.go:1312 payload. Nullable references/slices preserve cache state.
 public sealed class Signature
 {
     internal uint id;
-    internal uint flags;
+    internal SignatureFlags flags;
     internal int minArgumentCount, resolvedMinArgumentCount;
     internal Node declaration;
     internal List<Type> typeParameters;
     internal List<Symbol> parameters;
     internal Symbol thisParameter;
     internal Type resolvedReturnType, isolatedSignatureType;
+    internal TypePredicate resolvedTypePredicate;
     internal Signature target;
+    internal TypeMapper mapper;
+    internal CompositeSignature composite;
+    public uint Id() => id;
+    public SignatureFlags Flags() => flags;
+    public List<Type> TypeParameters() => typeParameters;
+    public Node Declaration() => declaration;
+    public Signature Target() => target;
+    public Symbol ThisParameter() => thisParameter;
+    public List<Symbol> Parameters() => parameters;
+    public bool HasRestParameter() => (flags & SignatureFlags.HasRestParameter) != 0;
+    public int MinArgumentCount() => minArgumentCount;
+}
+
+// types.go:1365. Constituent order is retained; target and composite are distinct.
+internal sealed class CompositeSignature
+{
+    internal bool isUnion;
+    internal List<Signature> signatures;
+}
+
+public enum TypePredicateKind : int
+{
+    This,
+    Identifier,
+    AssertsThis,
+    AssertsIdentifier,
+}
+
+// types.go:1379. ParameterName is a Go-compatible raw byte string.
+public sealed class TypePredicate
+{
+    internal TypePredicateKind kind;
+    internal int parameterIndex;
+    internal string parameterName;
+    internal Type t;
+    public Type Type() => t;
+    public TypePredicateKind Kind() => kind;
+    public int ParameterIndex() => parameterIndex;
+    public string ParameterName() => parameterName;
+}
+
+// types.go:425. The owning store uses logical Node identity, not paged presence.
+internal sealed class SignatureLinks
+{
+    internal Signature resolvedSignature, effectsSignature, decoratorSignature;
 }
 
 // types.go:1404. Real index payload/storage, including synthetic any-base indexes.
@@ -524,7 +594,14 @@ internal sealed class MarkedAssignmentSymbolLinks
 internal sealed class SourceFileLinks
 {
     internal bool typeChecked;
+    internal bool unusedChecked = false;
+    internal Symbol externalHelpersModule = null;
+    internal ExternalEmitHelpers requestedExternalEmitHelpers = 0;
     internal GoOrderedNodeSet deferredNodes = new();
+    internal List<Node> identifierCheckNodes = null;
+    internal string localJsxNamespace = "", localJsxFragmentNamespace = "";
+    internal Node localJsxFactory = null, localJsxFragmentFactory = null;
+    internal Type jsxFragmentType = null;
 }
 
 // Language adapter for collections.OrderedSet[*ast.Node]: insertion order and
@@ -573,8 +650,8 @@ internal enum IndexFlags : uint
     NoReducibleCheck = 1 << 2
 }
 
-// types.go:29. Signature payload behavior remains guarded.
-internal enum SignatureKind
+// types.go:29. Call and construct signature categories.
+public enum SignatureKind
 {
     Call,
     Construct
@@ -607,4 +684,49 @@ internal sealed class ContainingSymbolLinks
 {
     internal Dictionary<accessibleChainCacheKey, List<Symbol>> accessibleChainCache;
 // Cross-file/alternative-module container caches are excluded with modules.
+}
+
+// types.go:1444. Actual relation callback; reportErrors controls diagnostic elaboration.
+internal delegate Ternary TypeComparer(Type source, Type target, bool reportErrors);
+// types.go:51. Contextual signature acquisition flags.
+[Flags]
+internal enum ContextFlags : uint
+{
+    None = 0,
+    Signature = 1,
+    NoConstraints = 2,
+    IgnoreNodeInferences = 4,
+    SkipBindingPatterns = 8
+}
+
+// types.go:128. Metadata flags only; general emit helper execution is excluded.
+[Flags]
+internal enum ExternalEmitHelpers : uint
+{
+    Rest = 1u << 0, // __rest (used by ESNext object rest transformation)
+    Decorate = 1u << 1, // __decorate (used by TypeScript decorators transformation)
+    Metadata = 1u << 2, // __metadata (used by TypeScript decorators transformation)
+    Param = 1u << 3, // __param (used by TypeScript decorators transformation)
+    Awaiter = 1u << 4, // __awaiter (used by ES2017 async functions transformation)
+    Await = 1u << 5, // __await (used by ES2017 async generator transformation)
+    AsyncGenerator = 1u << 6, // __asyncGenerator (used by ES2017 async generator transformation)
+    AsyncDelegator = 1u << 7, // __asyncDelegator (used by ES2017 async generator yield* transformation)
+    AsyncValues = 1u << 8, // __asyncValues (used by ES2017 for..await..of transformation)
+    ExportStar = 1u << 9, // __exportStar (used by CommonJS/AMD/UMD module transformation)
+    ImportStar = 1u << 10, // __importStar (used by CommonJS/AMD/UMD module transformation)
+    ImportDefault = 1u << 11, // __importDefault (used by CommonJS/AMD/UMD module transformation)
+    MakeTemplateObject = 1u << 12, // __makeTemplateObject (used for constructing template string array objects)
+    ClassPrivateFieldGet = 1u << 13, // __classPrivateFieldGet (used by the class private field transformation)
+    ClassPrivateFieldSet = 1u << 14, // __classPrivateFieldSet (used by the class private field transformation)
+    ClassPrivateFieldIn = 1u << 15, // __classPrivateFieldIn (used by the class private field transformation)
+    SetFunctionName = 1u << 16, // __setFunctionName (used by class fields and ECMAScript decorators)
+    PropKey = 1u << 17, // __propKey (used by class fields and ECMAScript decorators)
+    AddDisposableResourceAndDisposeResources = 1u << 18, // __addDisposableResource and __disposeResources (used by ESNext transformations)
+    RewriteRelativeImportExtension = 1u << 19, // __rewriteRelativeImportExtension (used by --rewriteRelativeImportExtensions)
+    ESDecorateAndRunInitializers = Decorate, // __esDecorate and __runInitializers (used by ECMAScript decorators transformation)
+    FirstEmitHelper = Rest,
+    LastEmitHelper = RewriteRelativeImportExtension,
+    ForAwaitOfIncludes = AsyncValues,
+    AsyncGeneratorIncludes = Await | AsyncGenerator,
+    AsyncDelegatorIncludes = Await | AsyncDelegator | AsyncValues,
 }

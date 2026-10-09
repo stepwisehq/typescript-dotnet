@@ -1,0 +1,303 @@
+[
+  {
+    "name": "rest",
+    "text": "function f(...args:number[]){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "restParameter"
+  },
+  {
+    "name": "array-type",
+    "text": "let a:number[];",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "array-value",
+    "text": "const a=[1];",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "tuple",
+    "text": "let a:[number,string];",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "destructure",
+    "text": "function f({a}:{a:number}){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "bindingPattern"
+  },
+  {
+    "name": "spread",
+    "text": "declare function f(a:number):number;const x=f(...args);",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "new",
+    "text": "const x=new Object();",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "class",
+    "text": "class A{}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "generic",
+    "text": "function f<T>(x:T){return x;}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "typeParameters"
+  },
+  {
+    "name": "type-arguments",
+    "text": "declare function f(a:number):number;f<number>(1);",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "typeArguments"
+  },
+  {
+    "name": "async",
+    "text": "async function f(){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "functionModifier"
+  },
+  {
+    "name": "generator",
+    "text": "function* f(){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "asyncGenerator"
+  },
+  {
+    "name": "for",
+    "text": "function f(){for(;;){}}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "while",
+    "text": "while(true){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "switch",
+    "text": "switch(x){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "try",
+    "text": "try{}finally{}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "label",
+    "text": "label:{}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "statement"
+  },
+  {
+    "name": "compound",
+    "text": "let x=1;x+=1;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "binaryOperator"
+  },
+  {
+    "name": "increment",
+    "text": "let x=1;++x;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "unaryOperator"
+  },
+  {
+    "name": "accessor",
+    "text": "const x={get a(){return 1;}};",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "objectMember"
+  },
+  {
+    "name": "computed",
+    "text": "const x={[key]:1};",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "propertyName"
+  },
+  {
+    "name": "optional",
+    "text": "declare let f:()=>number;const x=f?.();",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "optionalChain"
+  },
+  {
+    "name": "element",
+    "text": "const a={x:1};const b=a[\"x\"];",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "in",
+    "text": "const a=\"x\" in obj;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "binaryOperator"
+  },
+  {
+    "name": "instanceof",
+    "text": "const a=x instanceof f;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "binaryOperator"
+  },
+  {
+    "name": "delete",
+    "text": "delete obj.x;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "comma",
+    "text": "const x=(1,2);",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "binaryOperator"
+  },
+  {
+    "name": "written-predicate",
+    "text": "function f(x:unknown):x is string{return true;}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "assertion-signature",
+    "text": "function f(x:unknown):asserts x{}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "type-assertion",
+    "text": "const x=1 as number;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "expression"
+  },
+  {
+    "name": "type-query",
+    "text": "type T=typeof x;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "source-this-type",
+    "text": "interface I{x:this}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "type"
+  },
+  {
+    "name": "index-signature",
+    "text": "type T={[x:string]:number};",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "typeMember"
+  },
+  {
+    "name": "module",
+    "text": "export function f(){}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "module"
+  },
+  {
+    "name": "jsdoc-semantic",
+    "text": "/** @param {number} x */function f(x){return x;}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": "jsDocTag"
+  },
+  {
+    "name": "admit-function",
+    "text": "function f(x:number):number{return x;}const y=f(1);",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "admit-context",
+    "text": "const f:(x:number)=>number=x=>x;",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "admit-method",
+    "text": "const x={m(){return 1;}};const y=x.m();",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "admit-call-signature",
+    "text": "interface F{(x:number):number}declare let f:F;const y=f(1);",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "admit-semantic-error",
+    "text": "function f(x:number){return x;}const y=f(\"bad\");",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "admit-this",
+    "text": "function f(this:{a:number}){return this.a;}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "invalid-readonly-method",
+    "text": "interface A{readonly m(x:number):number}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  },
+  {
+    "name": "invalid-parameter-modifier",
+    "text": "function f(readonly x:number){return x;}",
+    "profile": "Callable",
+    "admissionOnly": true,
+    "expectedFeature": null
+  }
+]

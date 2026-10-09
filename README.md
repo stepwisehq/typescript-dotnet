@@ -1,32 +1,59 @@
 # TypeScript port feasibility study
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
-and bounded scalar/object/data-type checking, pinned to maintained
+and bounded scalar/object/data-type and non-generic callable checking, pinned to maintained
 [microsoft/TypeScript source](./UPSTREAM.md). The defined scanner/parser/syntax-AST
 foundation contract, source-file binding completion contract and six earlier bounded
-checkpoints passed actual **Linux x64 Native AOT** verification. See the
+checkpoints, plus the fixed callable contract, passed actual **Linux x64 Native AOT** verification. See the
 [current state](./docs/STATE.md), [binding assessment](./docs/BINDING-COMPLETION-ASSESSMENT.md),
 [foundation assessment](./docs/FOUNDATION-ASSESSMENT.md),
 [completion contract](./docs/FOUNDATION-CONTRACT.md) and
 [verification](./docs/FOUNDATION-VERIFICATION.md) for scope and evidence.
 
-The semantic capability checks standalone scalar/object data shapes: named aliases,
-data-only interfaces with inheritance and merging, recursive properties, unions and
-intersections, object construction, dot reads and structural relationships under
-fixed single-file no-library options. Missing-library errors stay separately visible
-(normally eight; source builtin declarations can change the exact result).
-Unsupported inputs fail explicitly.
+The default `Legacy` profile retains standalone scalar/object data checking. The
+explicit `Callable` profile adds ordinary functions/arrows/methods, overloads,
+contextual callbacks and inferred returns, callable objects and relationships,
+receivers, recursive shapes, selected `if`/return/throw bodies, simple assignments
+and scalar operators. Select it with `Checker.Create(sourceFile, CheckerProfile.Callable)`
+or `"profile":"Callable"` in a checker validation request.
 
-**Semantic checking of functions/methods/signatures, arrays/tuples, classes, source generics, branching,
-explicit writes, standard libraries, modules and project checking remain excluded.**
-These constructs can be parsed; checking supports data shapes, not typical complete
-applications or full checker parity.
+Both profiles use fixed single-file no-library options. Missing-library errors stay
+separately visible: usually eight, with real source declarations and diagnostic paths
+changing the exact result. Unsupported inputs fail explicitly. **Arrays/tuples/rest,
+source generics, classes, async, loops/switch/try, standard libraries, modules and
+project checking remain outside this callable contract.** This is not typical complete
+application checking or full checker parity. See the full
+[callable boundary](./docs/CALLABLES-CONTRACT.md).
 
 The [library](./src/TypeScript.Scanner) targets .NET 10. Separate executable harnesses
 for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Validation),
 [binder](./validation/Binder.Validation) and [checker](./validation/Checker.Validation)
 support Native AOT; xUnit compares stored pinned-Go results. No Go process is
 needed to use the C# implementation.
+
+## Callable campaign verification
+
+The [callable contract](./docs/CALLABLES-CONTRACT.md),
+[verification instructions](./docs/CALLABLES-VERIFICATION.md),
+[coverage inventory](./docs/callables-coverage.json) and
+[adaptations](./docs/CALLABLES-DEPARTURES.md) define this capability.
+The accepted callable contract matches 89 authored pinned-Go semantic graphs under
+actual Linux x64 Native AOT. All 23,411 xUnit cases pass, including 701 checker cases;
+all retained regressions pass. See the [assessment](./docs/CALLABLES-ASSESSMENT.md) and
+[durable proof](./validation/results/callables-verified.json) for limitations and evidence.
+
+```sh
+python3 tools/run-callables-gate.py
+# Only after a successful complete gate:
+python3 tools/record-callables-evidence.py
+```
+
+The gate performs one complete binding/foundation/earlier-semantic regression cascade,
+fresh Go comparisons, Native AOT callable/numeric/API/boundary/order checks and source/
+asset/binary drift checks. Ten newly applicable original numeric test functions provide
+152 literal plus 152 live Node assertions. The 89 semantic cases are authored differential
+comparisons, not original full compiler tests. No Node or Go process is needed for
+ordinary use of the C# checker; Node is required by the original numeric verification.
 
 ## Source-file binding completion verification
 
@@ -45,8 +72,8 @@ python3 tools/record-binding-completion-evidence.py
 This gate includes the complete foundation and semantic regression cascade plus the
 full original numeric finite baseline sets. See
 [verification instructions](./docs/BINDING-COMPLETION-VERIFICATION.md) for prerequisites,
-observation order, provenance and limits. Callable-type checking is the recommended
-next bounded campaign; it has not been implemented by this binding work.
+observation order, provenance and limits. This historical binding campaign did not implement callable checking; the later
+callable campaign above builds on its accepted contract.
 
 ## Foundation completion verification
 

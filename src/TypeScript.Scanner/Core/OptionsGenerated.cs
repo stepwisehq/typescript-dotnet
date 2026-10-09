@@ -57,9 +57,10 @@ public sealed partial class CompilerOptions
 {
     public ScriptTarget Target;
     public ModuleKind Module;
-    public Tristate NoLib, Strict, StrictNullChecks, NoImplicitAny, NoImplicitThis;
+    public Tristate NoLib, Strict, StrictNullChecks, NoImplicitAny, NoImplicitThis, NoImplicitReturns;
     public Tristate StrictFunctionTypes, StrictBindCallApply, StrictPropertyInitialization;
     public Tristate StrictBuiltinIteratorReturn, UseUnknownInCatchVariables;
+    public Tristate AllowUnreachableCode;
     public Tristate ExactOptionalPropertyTypes, ExperimentalDecorators;
     public Tristate VerbatimModuleSyntax, IsolatedModules, UseDefineForClassFields;
     public List<string>? Types;

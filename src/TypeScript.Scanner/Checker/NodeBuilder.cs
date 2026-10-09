@@ -30,6 +30,21 @@ internal sealed class NodeBuilder
         return exitContext(impl.symbolToNode(symbol, meaning));
     }
 
+    // nodebuilder.go: SignatureToSignatureDeclaration / TypePredicateToTypePredicateNode.
+    internal Node SignatureToSignatureDeclaration(Signature signature, Kind kind, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags)
+    {
+        enterContext(enclosingDeclaration);
+        impl.ctx.flags = flags;
+        return exitContext(impl.signatureToSignatureDeclarationHelper(signature, kind, new()));
+    }
+
+    internal Node TypePredicateToTypePredicateNode(TypePredicate predicate, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags)
+    {
+        enterContext(enclosingDeclaration);
+        impl.ctx.flags = flags;
+        return exitContext(impl.typePredicateToTypePredicateNode(predicate));
+    }
+
     private void enterContext(Node enclosingDeclaration = null, bool fullyQualified = false, bool noTypeReduction = false)
     {
         ctxStack.Push(impl.ctx);

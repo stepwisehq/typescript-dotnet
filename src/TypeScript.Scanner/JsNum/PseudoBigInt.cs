@@ -1,13 +1,49 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/jsnum/pseudobigint.go, scanner-only ParsePseudoBigInt slice.
+// Port of tsc/internal/jsnum/pseudobigint.go, parsing plus original scalar pseudo-bigint value model.
 using System.Numerics;
 using System.Globalization;
 
 namespace TypeScript.Scanner;
 internal static partial class JsNum
 {
+    public readonly record struct PseudoBigInt(bool Negative, string Base10Value)
+    {
+        public string String() => string.IsNullOrEmpty(Base10Value) ? "0" : Negative ? "-" + Base10Value : Base10Value;
+        public int Sign() => string.IsNullOrEmpty(Base10Value) ? 0 : Negative ? -1 : 1;
+        public int Compare(PseudoBigInt other)
+        {
+            int c = Sign().CompareTo(other.Sign());
+            if (c != 0)
+                return c;
+            c = (Base10Value?.Length ?? 0).CompareTo(other.Base10Value?.Length ?? 0);
+            if (c == 0)
+                c = string.CompareOrdinal(Base10Value ?? "", other.Base10Value ?? "");
+            return Negative ? -c : c;
+        }
+
+        // The managed default string is null; Go's zero string is empty. Treat
+        // those backing representations identically in the value's equality.
+        public bool Equals(PseudoBigInt other) => Negative == other.Negative && (Base10Value ?? "") == (other.Base10Value ?? "");
+        public override int GetHashCode() => HashCode.Combine(Negative, Base10Value ?? "");
+        public override string ToString() => String();
+    }
+
+    public static PseudoBigInt NewPseudoBigInt(string value, bool negative)
+    {
+        value = value.TrimStart('0');
+        return new(negative && value.Length != 0, value);
+    }
+
+    public static PseudoBigInt ParseValidBigInt(string text)
+    {
+        bool negative = text.StartsWith('-');
+        if (negative)
+            text = text[1..];
+        return NewPseudoBigInt(ParsePseudoBigInt(text), negative);
+    }
+
     public static string ParsePseudoBigInt(string stringValue)
     {
         if (stringValue.EndsWith('n'))
