@@ -28,6 +28,15 @@ followed by full Program construction/validation. Do not restart completed inves
 Three GPT-6.1 Sol workers were reused; root owned coordination and acceptance.
 See the assessment for measured build/gate effort, limitations and process corrections.
 
+## Deferred side investigation
+
+The user requested a Sol investigation of .NET 11 Unicode/text APIs, then explicitly
+deferred it until after initial implementation. The worker was stopped. Preserve the
+[preliminary notes](DOTNET11-INVESTIGATION.md) without treating them as an adoption
+review or active task. No runtime/SDK/source changes or benchmarks were performed;
+the accepted checkpoint remains on .NET 10. Do not resume optimization work without
+new authorization.
+
 The following project and earlier records are historical. Their superseded next-step
 recommendations and configuration exclusions do not override the accepted contract above.
 
