@@ -153,8 +153,8 @@ public enum NodeCheckFlags : uint
 }
 
 // BEGIN MANUAL TYPE MODEL
-// Selected data-type models retain Go wrapper/payload identity. Source generics,
-// signatures and index behavior remain excluded; implicit-this state is retained.
+// Selected data-type models retain Go wrapper/payload identity, including generic
+// references, inference-facing mapped/conditional types, arrays and tuples.
 #nullable disable
 public sealed class TypeAlias
 {
@@ -182,10 +182,18 @@ public sealed class Type
     public IntrinsicType AsIntrinsicType() => (IntrinsicType)data;
     public LiteralType AsLiteralType() => (LiteralType)data;
     public UniqueESSymbolType AsUniqueESSymbolType() => (UniqueESSymbolType)data;
+    public TupleType AsTupleType() => (TupleType)data;
+    public MappedType AsMappedType() => (MappedType)data;
+    public ReverseMappedType AsReverseMappedType() => (ReverseMappedType)data;
+    public EvolvingArrayType AsEvolvingArrayType() => (EvolvingArrayType)data;
     public UnionType AsUnionType() => (UnionType)data;
     public IntersectionType AsIntersectionType() => (IntersectionType)data;
     public TypeParameter AsTypeParameter() => (TypeParameter)data;
     public IndexType AsIndexType() => (IndexType)data;
+    public IndexedAccessType AsIndexedAccessType() => (IndexedAccessType)data;
+    public TemplateLiteralType AsTemplateLiteralType() => (TemplateLiteralType)data;
+    public SubstitutionType AsSubstitutionType() => (SubstitutionType)data;
+    public ConditionalType AsConditionalType() => (ConditionalType)data;
     public ConstrainedType AsConstrainedType() => data.AsConstrainedType();
     public StructuredType AsStructuredType() => data.AsStructuredType();
     public UnionOrIntersectionType AsUnionOrIntersectionType() => data.AsUnionOrIntersectionType();
@@ -210,10 +218,13 @@ public sealed class Type
             return AsObjectType().mapper;
         if ((flags & TypeFlags.TypeParameter) != 0)
             return AsTypeParameter().mapper;
+        if ((flags & TypeFlags.Conditional) != 0)
+            return AsConditionalType().mapper;
         throw Checker.unsupported("Type.Mapper: conditional payload");
     }
 
     public InterfaceType TargetInterfaceType() => Target().AsInterfaceType();
+    public TupleType TargetTupleType() => AsTypeReference().target.AsTupleType();
     // Upstream checker/types.go:740.
     public List<Type> Distributed()
     {
@@ -229,6 +240,8 @@ public sealed class Type
     {
         if ((flags & TypeFlags.UnionOrIntersection) != 0)
             return AsUnionOrIntersectionType().types;
+        if ((flags & TypeFlags.TemplateLiteral) != 0)
+            return AsTemplateLiteralType().types;
         throw new NotSupportedException("Type.Types requires an unsupported type payload");
     }
 
@@ -240,11 +253,19 @@ public sealed class Type
         UniqueESSymbolType => "UniqueESSymbolType",
         UnionType => "UnionType",
         IntersectionType => "IntersectionType",
+        TupleType => "TupleType",
         InterfaceType => "InterfaceType",
         TypeReference => "TypeReference",
+        MappedType => "MappedType",
+        ReverseMappedType => "ReverseMappedType",
+        EvolvingArrayType => "EvolvingArrayType",
         ObjectType => "ObjectType",
         TypeParameter => "TypeParameter",
         IndexType => "IndexType",
+        IndexedAccessType => "IndexedAccessType",
+        TemplateLiteralType => "TemplateLiteralType",
+        SubstitutionType => "SubstitutionType",
+        ConditionalType => "ConditionalType",
         _ => throw new NotSupportedException("Unselected type payload")};
     public bool IsUnion() => (flags & TypeFlags.Union) != 0;
     public bool IsString() => (flags & TypeFlags.String) != 0;
@@ -255,6 +276,10 @@ public sealed class Type
     public bool IsEnumLiteral() => (flags & TypeFlags.EnumLiteral) != 0;
     public bool IsBooleanLike() => (flags & TypeFlags.BooleanLike) != 0;
     public bool IsStringLike() => (flags & TypeFlags.StringLike) != 0;
+    public bool IsClass() => (objectFlags & TypeScript.Checking.ObjectFlags.Class) != 0;
+    public bool IsTypeParameter() => (flags & TypeFlags.TypeParameter) != 0;
+    public bool IsIndex() => (flags & TypeFlags.Index) != 0;
+    public bool IsTupleType() => (objectFlags & TypeScript.Checking.ObjectFlags.Reference) != 0 && (Target().objectFlags & TypeScript.Checking.ObjectFlags.Tuple) != 0;
 }
 
 // Go's TypeData interface/embedded TypeBase become a payload with one stable wrapper.
@@ -337,7 +362,7 @@ public class TypeReference : ObjectType
     public override TypeReference AsTypeReference() => this;
 }
 
-public sealed class InterfaceType : TypeReference
+public class InterfaceType : TypeReference
 {
     internal List<Type> allTypeParameters;
     internal int outerTypeParameterCount;
@@ -355,8 +380,8 @@ public sealed class InterfaceType : TypeReference
     public Type ThisType() => thisType;
 }
 
-// types.go:1187. Source parameters are excluded; synthetic interface this-types
-// retain the same constraint/target/mapper and resolution cache fields.
+// types.go:1187. Declared and synthetic parameters retain their constraint,
+// target/mapper, default and distribution resolution caches.
 public sealed class TypeParameter : ConstrainedType
 {
     internal Type constraint, target;
@@ -373,6 +398,100 @@ public sealed class IndexType : ConstrainedType
     internal Type target;
     internal IndexFlags indexFlags;
     public Type Target() => target;
+}
+
+// types.go:1059/1073/1081. A tuple target is a real synthesized generic interface.
+[Flags]
+public enum ElementFlags : uint
+{
+    None = 0,
+    Required = 1 << 0,
+    Optional = 1 << 1,
+    Rest = 1 << 2,
+    Variadic = 1 << 3,
+    Fixed = Required | Optional,
+    Variable = Rest | Variadic,
+    NonRequired = Optional | Rest | Variadic,
+    NonRest = Required | Optional | Variadic
+}
+
+public struct TupleElementInfo
+{
+    internal ElementFlags flags;
+    internal Node labeledDeclaration;
+    public ElementFlags TupleElementFlags() => flags;
+    public Node LabeledDeclaration() => labeledDeclaration;
+}
+
+public sealed class TupleType : InterfaceType
+{
+    internal List<TupleElementInfo> elementInfos;
+    internal int minLength, fixedLength;
+    internal ElementFlags combinedFlags;
+    internal bool @readonly;
+    public int FixedLength() => fixedLength;
+    public bool IsReadonly() => @readonly;
+    public List<ElementFlags> ElementFlags() => elementInfos.Select(info => info.flags).ToList();
+    public List<TupleElementInfo> ElementInfos() => elementInfos;
+}
+
+// types.go:1110/1135/1144. Nullable lazy slots are distinct from resolved values.
+public sealed class MappedType : ObjectType
+{
+    internal MappedTypeNode declaration;
+    internal Type typeParameter, constraintType, nameType, templateType, modifiersType, resolvedApparentType;
+    internal bool containsError;
+    public Type TypeParameter() => typeParameter;
+    public Type ConstraintType() => constraintType;
+    public Type NameType() => nameType;
+    public Type TemplateType() => templateType;
+}
+
+public sealed class ReverseMappedType : ObjectType
+{
+    internal Type source, mappedType, constraintType;
+}
+
+public sealed class EvolvingArrayType : ObjectType
+{
+    internal Type elementType, finalArrayType;
+}
+
+// types.go:1223. accessFlags stores only AccessFlags.Persistent.
+public sealed class IndexedAccessType : ConstrainedType
+{
+    internal Type objectType, indexType;
+    internal AccessFlags accessFlags;
+    public Type ObjectType() => objectType;
+    public Type IndexType() => indexType;
+}
+
+// types.go:1249. A substitution retains the constraint known to hold for its base.
+public sealed class SubstitutionType : ConstrainedType
+{
+    internal Type baseType, constraint;
+    public Type BaseType() => baseType;
+    public Type SubstConstraint() => constraint;
+}
+
+// types.go:1258/1269. Roots are shared by conditional instantiations.
+public sealed class ConditionalRoot
+{
+    internal ConditionalTypeNode node;
+    internal Type checkType, extendsType;
+    internal bool isDistributive;
+    internal List<Type> inferTypeParameters, outerTypeParameters;
+    internal Dictionary<CacheHashKey, Type> instantiations;
+    internal TypeAlias alias;
+}
+
+public sealed class ConditionalType : ConstrainedType
+{
+    internal ConditionalRoot root;
+    internal Type checkType, extendsType, resolvedTrueType, resolvedFalseType, resolvedInferredTrueType, resolvedDefaultConstraint, resolvedConstraintOfDistributive;
+    internal TypeMapper mapper, combinedMapper;
+    public Type CheckType() => checkType;
+    public Type ExtendsType() => extendsType;
 }
 
 public class UnionOrIntersectionType : StructuredType
@@ -439,6 +558,26 @@ internal sealed class MappedSymbolLinks
 {
     internal Type keyType;
     internal Symbol syntheticOrigin;
+}
+
+// types.go:224. Reverse inference preserves each property's original input type.
+internal sealed class ReverseMappedSymbolLinks
+{
+    internal Type propertyType, mappedType, constraintType;
+}
+
+// types.go:281. Spread indices are lazily computed for an array literal.
+internal sealed class ArrayLiteralLinks
+{
+    internal bool indicesComputed;
+    internal int firstSpreadIndex, lastSpreadIndex;
+}
+
+// types.go:390. Nullable bool distinguishes an uncomputed name from no name.
+internal sealed class ComputedNameNodeLinks
+{
+    internal bool? hasName;
+    internal string name;
 }
 
 // types.go:218. The internal globalThis module uses the real export cache;
@@ -590,7 +729,8 @@ internal sealed class MarkedAssignmentSymbolLinks
     internal bool hasDefiniteAssignment;
 }
 
-// types.go:409. Unused/JSX/emit-helper fields excluded by the admitted script slice.
+// types.go:409. Actual source-file state; unused/JSX/emit-helper slots remain
+// zero where the fixed profiles and admitted script syntax do not select them.
 internal sealed class SourceFileLinks
 {
     internal bool typeChecked;
@@ -615,6 +755,11 @@ internal sealed class GoOrderedNodeSet
         if (set.Add(node))
             values.Add(node);
     }
+
+    // collections/ordered_set.go:23,45; membership and size of the selected
+    // ordered identity set, without exposing managed backing topology.
+    internal bool Has(Node node) => set.Contains(node);
+    internal int Size() => values.Count;
 
     internal IEnumerable<Node> Values()
     {
@@ -729,4 +874,14 @@ internal enum ExternalEmitHelpers : uint
     ForAwaitOfIncludes = AsyncValues,
     AsyncGeneratorIncludes = Await | AsyncGenerator,
     AsyncDelegatorIncludes = Await | AsyncDelegator | AsyncValues,
+}
+
+// types.go:1233. Internal numeric-string keys for homomorphic mapped arrays
+// retain the actual constrained template payload; written templates stay excluded.
+public sealed class TemplateLiteralType : ConstrainedType
+{
+    internal List<string> texts;
+    internal List<Type> types;
+    public List<string> Texts() => texts;
+    public List<Type> Types() => types;
 }

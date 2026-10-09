@@ -32,6 +32,8 @@ internal sealed partial class NodeBuilderImpl
         internal NodeBuilderFlags flags;
         internal TypeScript.NodeBuilding.InternalFlags internalFlags;
         internal TypeMapper mapper;
+        internal List<Type> inferTypeParameters;
+        internal List<Symbol> reverseMappedStack;
         internal Dictionary<uint, Node> typeParameterNames = new();
         internal HashSet<string> typeParameterNamesByText = new(StringComparer.Ordinal);
         internal Dictionary<string, int> typeParameterNamesByTextNextNameCount = new(StringComparer.Ordinal);
@@ -72,8 +74,8 @@ internal sealed partial class NodeBuilderImpl
 
     private readonly PseudoChecker pc;
     // Selected diagnostic flags and internal flags retain their complete values;
-    // inference-parameter identity and general emit expansion are excluded.
-    private readonly record struct CompositeTypeCacheIdentity(uint typeId, bool fullyQualified, bool inObject, NodeBuilderFlags flags, TypeScript.NodeBuilding.InternalFlags internalFlags);
+    // ordered infer-parameter identity is included; configured hover expansion is excluded.
+    private readonly record struct CompositeTypeCacheIdentity(uint typeId, bool fullyQualified, bool inObject, NodeBuilderFlags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, Checker.CacheHashKey inferTypeParameters);
     private sealed record SerializedTypeEntry(Node node, bool truncating, int addedLength, List<TrackedSymbolArgs> trackedSymbols);
     private sealed class NodeBuilderLinks
     {
@@ -128,10 +130,11 @@ internal sealed partial class NodeBuilderImpl
 
         var inTypeAlias = ctx.flags & NodeBuilderFlags.InTypeAlias;
         ctx.flags &= ~NodeBuilderFlags.InTypeAlias;
+        t = Checker.getNonDistributedTypeParameter(t);
         if ((ctx.flags & NodeBuilderFlags.NoTypeReduction) == 0)
             t = ch.getReducedType(t);
-        if ((t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.Substitution | TypeFlags.IndexedAccess | TypeFlags.Conditional | TypeFlags.EnumLike)) != 0)
-            throw Checker.unsupported("typeToTypeNode: generic/mapped/enum payload");
+        if ((t.flags & (TypeFlags.StringMapping | TypeFlags.EnumLike)) != 0)
+            throw Checker.unsupported("typeToTypeNode: template/string-mapping/enum payload");
         if ((t.flags & TypeFlags.Any) != 0)
         {
             if (t.alias != null)
@@ -275,6 +278,8 @@ internal sealed partial class NodeBuilderImpl
             return symbolToTypeNode(t.alias.Symbol(), SymbolFlags.Type, mapToTypeNodes(t.alias.TypeArguments(), false));
         if ((t.objectFlags & ObjectFlags.Reference) != 0)
         {
+            if (ch.isArrayOrTupleType(t))
+                return visitAndTransformType(t, arrayOrTupleTypeToNode);
             if (t.AsTypeReference().node != null)
                 return visitAndTransformType(t, typeReferenceToTypeNode);
             return typeReferenceToTypeNode(t);
@@ -282,6 +287,24 @@ internal sealed partial class NodeBuilderImpl
 
         if ((t.flags & TypeFlags.TypeParameter) != 0 || (t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
         {
+            if (Core.Some(ctx.inferTypeParameters, parameter => ReferenceEquals(parameter, t)))
+            {
+                approximateLength += Ast.SymbolName(t.symbol).Length + 6;
+                Node constraintNode = null;
+                var constraint = ch.getConstraintOfTypeParameter(t);
+                if (constraint != null)
+                {
+                    var inferredConstraint = ch.getInferredTypeParameterConstraint(t, true);
+                    if (inferredConstraint == null || !ch.isTypeIdenticalTo(constraint, inferredConstraint))
+                    {
+                        approximateLength += 9;
+                        constraintNode = typeToTypeNode(constraint);
+                    }
+                }
+
+                return f.NewInferTypeNode(typeParameterToDeclarationWithConstraint(t, constraintNode));
+            }
+
             if ((t.objectFlags & ObjectFlags.Class) != 0)
                 throw Checker.unsupported("typeToTypeNode: class");
             if (t.symbol != null)
@@ -304,12 +327,48 @@ internal sealed partial class NodeBuilderImpl
             return null;
         }
 
-        if ((t.objectFlags & ObjectFlags.Anonymous) != 0)
+        if ((t.objectFlags & (ObjectFlags.Anonymous | ObjectFlags.Mapped)) != 0)
             return createAnonymousTypeNode(t);
         if ((t.flags & TypeFlags.Index) != 0)
         {
             approximateLength += 6;
             return f.NewTypeOperatorNode(Kind.KeyOfKeyword, typeToTypeNode(t.Target()));
+        }
+
+        // nodebuilderimpl.go:3634. Internal template keys retain real placeholder types.
+        if ((t.flags & TypeFlags.TemplateLiteral) != 0)
+        {
+            var texts = t.AsTemplateLiteralType().texts;
+            var types = t.AsTemplateLiteralType().types;
+            var head = f.NewTemplateHead(texts[0], "", TokenFlags.None);
+            e.AddEmitFlags(head, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+            var spans = f.NewNodeList(Core.MapIndex(types, (type, i) =>
+            {
+                var literal = i < types.Count - 1 ? f.NewTemplateMiddle(texts[i + 1], "", TokenFlags.None) : f.NewTemplateTail(texts[i + 1], "", TokenFlags.None);
+                e.AddEmitFlags(literal, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                return f.NewTemplateLiteralTypeSpan(typeToTypeNode(type), literal);
+            }));
+            approximateLength += 2;
+            return f.NewTemplateLiteralTypeNode(head, spans);
+        }
+
+        if ((t.flags & TypeFlags.IndexedAccess) != 0)
+        {
+            var objectType = typeToTypeNode(t.AsIndexedAccessType().objectType);
+            var indexType = typeToTypeNode(t.AsIndexedAccessType().indexType);
+            approximateLength += 2;
+            return f.NewIndexedAccessTypeNode(objectType, indexType);
+        }
+
+        if ((t.flags & TypeFlags.Conditional) != 0)
+            return visitAndTransformType(t, conditionalTypeToTypeNode);
+        if ((t.flags & TypeFlags.Substitution) != 0)
+        {
+            var typeNode = typeToTypeNode(t.AsSubstitutionType().baseType);
+            if (!ch.isNoInferType(t))
+                return typeNode;
+            var noInferSymbol = ch.getGlobalTypeAliasSymbol("NoInfer", 1, false);
+            return noInferSymbol != null ? symbolToTypeNode(noInferSymbol, SymbolFlags.Type, f.NewNodeList([typeNode])) : typeNode;
         }
 
         throw Checker.unsupported("typeToTypeNode: type payload");
@@ -357,36 +416,94 @@ internal sealed partial class NodeBuilderImpl
     // this argument; the original declared-parameter count elides that argument.
     private Node typeReferenceToTypeNode(Type t)
     {
-        var arguments = ch.getTypeArguments(t);
-        var outer = t.Target().AsInterfaceType().OuterTypeParameters();
-        if (outer is { Count: > 0 })
-            throw Checker.unsupported("typeReferenceToTypeNode: outer generic parameters");
-        NodeList argumentNodes = null;
-        if (arguments is { Count: > 0 })
+        List<Type> typeArguments = this.ch.getTypeArguments(t);
+        if ((((((this.ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0) && (t.symbol.ValueDeclaration != null)) && Ast.IsClassLike(t.symbol.ValueDeclaration)) && !this.ch.IsValueSymbolAccessible(t.symbol, this.ctx.enclosingDeclaration)))
         {
-            int count = 0;
-            var parameters = t.Target().AsInterfaceType().TypeParameters();
-            if (parameters != null)
+            return this.createAnonymousTypeNode(t);
+        }
+        else
+        {
+            var outerTypeParameters = t.Target().AsInterfaceType().OuterTypeParameters();
+            var i = 0;
+            Node resultType = default;
+            if ((outerTypeParameters != null))
             {
-                count = Math.Min(parameters.Count, arguments.Count);
-                if (ch.isReferenceToType(t, ch.getGlobalIterableType()) || ch.isReferenceToType(t, ch.getGlobalIterableIteratorType()) || ch.isReferenceToType(t, ch.getGlobalAsyncIterableType()) || ch.isReferenceToType(t, ch.getGlobalAsyncIterableIteratorType()))
+                var length = GoRuntime.Len(outerTypeParameters);
+                while ((i < length))
                 {
-                    if (t.AsTypeReference().node == null || !Ast.IsTypeReferenceNode(t.AsTypeReference().node) || t.AsTypeReference().node.TypeArguments() == null || t.AsTypeReference().node.TypeArguments().Count < count)
+                    var start = i;
+                    var parent = this.getParentSymbolOfTypeParameter(outerTypeParameters[i].AsTypeParameter());
                     {
-                        if (count > 0)
-                            throw Checker.unsupported("typeReferenceToTypeNode: source generic default arguments");
+                        var ok = true;
+                        for (; ok; ok = ((i < length) && (this.getParentSymbolOfTypeParameter(outerTypeParameters[i].AsTypeParameter()) == parent)))
+                        {
+                            i++;
+                        }
+                    }
+
+                    if (!GoSlices.Equal(GoRuntime.Slice(outerTypeParameters, start, i), GoRuntime.Slice(typeArguments, start, i)))
+                    {
+                        var typeArgumentSlice = this.mapToTypeNodes(GoRuntime.Slice(typeArguments, start, i), false);
+                        var restoreFlags = this.saveRestoreFlags();
+                        this.ctx.flags |= NodeBuilderFlags.ForbidIndexedAccessSymbolReferences;
+                        var @ref = this.symbolToTypeNode(parent, SymbolFlags.Type, typeArgumentSlice);
+                        restoreFlags();
+                        if ((resultType == null))
+                        {
+                            resultType = @ref;
+                        }
+                        else
+                        {
+                            resultType = this.appendReferenceToType(resultType, @ref);
+                        }
                     }
                 }
             }
 
-            argumentNodes = mapToTypeNodes(arguments.GetRange(0, count), false);
-        }
+            NodeList typeArgumentNodes = default;
+            if ((GoRuntime.Len(typeArguments) > 0))
+            {
+                var typeParameterCount = 0;
+                var typeParams = t.Target().AsInterfaceType().TypeParameters();
+                if ((typeParams != null))
+                {
+                    typeParameterCount = Math.Min(GoRuntime.Len(typeParams), GoRuntime.Len(typeArguments));
+                    if ((((this.ch.isReferenceToType(t, this.ch.getGlobalIterableType()) || this.ch.isReferenceToType(t, this.ch.getGlobalIterableIteratorType())) || this.ch.isReferenceToType(t, this.ch.getGlobalAsyncIterableType())) || this.ch.isReferenceToType(t, this.ch.getGlobalAsyncIterableIteratorType())))
+                    {
+                        if (((((t.AsTypeReference().node == null) || !Ast.IsTypeReferenceNode(t.AsTypeReference().node)) || (t.AsTypeReference().node.TypeArguments() == null)) || (GoRuntime.Len(t.AsTypeReference().node.TypeArguments()) < typeParameterCount)))
+                        {
+                            while ((typeParameterCount > 0))
+                            {
+                                var typeArgument = typeArguments[(typeParameterCount - 1)];
+                                var typeParameter = t.Target().AsInterfaceType().TypeParameters()[(typeParameterCount - 1)];
+                                var defaultType = this.ch.getDefaultFromTypeParameter(typeParameter);
+                                if (((defaultType == null) || !this.ch.isTypeIdenticalTo(typeArgument, defaultType)))
+                                {
+                                    break;
+                                }
 
-        var saved = ctx.flags;
-        ctx.flags |= NodeBuilderFlags.ForbidIndexedAccessSymbolReferences;
-        var result = symbolToTypeNode(t.symbol, SymbolFlags.Type, argumentNodes);
-        ctx.flags = saved;
-        return result;
+                                typeParameterCount--;
+                            }
+                        }
+                    }
+                }
+
+                typeArgumentNodes = this.mapToTypeNodes(GoRuntime.Slice(typeArguments, i, typeParameterCount), false);
+            }
+
+            var restoreFlags2 = this.saveRestoreFlags();
+            this.ctx.flags |= NodeBuilderFlags.ForbidIndexedAccessSymbolReferences;
+            var finalRef = this.symbolToTypeNode(t.symbol, SymbolFlags.Type, typeArgumentNodes);
+            restoreFlags2();
+            if ((resultType == null))
+            {
+                return finalRef;
+            }
+            else
+            {
+                return this.appendReferenceToType(resultType, finalRef);
+            }
+        }
     }
 
     // nodebuilderimpl.go:443/512/2994. Actual source reuse, resolution cache and mapper.
@@ -534,7 +651,7 @@ internal sealed partial class NodeBuilderImpl
     {
         if (typeArguments == null || GoRuntime.Len(typeArguments.Nodes) == 0)
             return expression;
-        throw Checker.unsupported("createExpressionWithTypeArguments: type arguments");
+        return f.NewExpressionWithTypeArguments(expression, typeArguments);
     }
 
     private NodeList lookupExpressionChainTypeArgumentNodes(List<Symbol> chain, int index)
@@ -677,22 +794,57 @@ internal sealed partial class NodeBuilderImpl
         return name != null && Ast.IsStringLiteral(name) && (name.AsStringLiteral().TokenFlags & TokenFlags.SingleQuote) != 0;
     }
 
-    private Node getPropertyNameNodeForSymbol(Symbol symbol)
+    private Node getPropertyNameNodeForSymbol(Symbol symbol, Node enclosingDeclaration)
     {
         if (symbol.ValueDeclaration != null && symbol.ValueDeclaration.Name()?.Kind == Kind.PrivateIdentifier)
             throw Checker.unsupported("getPropertyNameNodeForSymbol: private name");
         bool stringNamed = symbol.Declarations is { Count: > 0 } && symbol.Declarations.All(isStringNamed);
         bool singleQuote = symbol.Declarations is { Count: > 0 } && symbol.Declarations.All(isSingleQuotedStringNamed);
-        if (ch.valueSymbolLinks.TryGet(symbol)?.nameType != null)
-            throw Checker.unsupported("getPropertyNameNodeForSymbol: computed name type");
+        var fromNameType = getPropertyNameNodeForSymbolFromNameType(symbol, enclosingDeclaration, singleQuote, stringNamed, (symbol.Flags & SymbolFlags.Method) != 0);
+        if (fromNameType != null)
+            return fromNameType;
         if (symbol.Name.StartsWith(Ast.InternalSymbolNamePrefix + "#", StringComparison.Ordinal))
             throw Checker.unsupported("getPropertyNameNodeForSymbol: generated private name");
         return createPropertyNameNodeForIdentifierOrLiteral(symbol.Name, singleQuote, stringNamed, (symbol.Flags & SymbolFlags.Method) != 0, symbol);
     }
 
+    // nodebuilderimpl.go:2530. Mapped and instantiated property names retain
+    // their real literal or unique-symbol payload rather than using the raw key.
+    private Node getPropertyNameNodeForSymbolFromNameType(Symbol symbol, Node enclosingDeclaration, bool singleQuote, bool stringNamed, bool isMethod)
+    {
+        if (!ch.valueSymbolLinks.Has(symbol))
+            return null;
+        var nameType = ch.valueSymbolLinks.TryGet(symbol).nameType;
+        if (nameType == null)
+            return null;
+        var enumEnclosingDeclaration = enclosingDeclaration;
+        if (enumEnclosingDeclaration == null && ctx.enclosingFile != null)
+            enumEnclosingDeclaration = ctx.enclosingFile.AsNode();
+        if ((nameType.flags & TypeFlags.EnumLiteral) != 0)
+            throw Checker.unsupported("getPropertyNameNodeForSymbolFromNameType: source enum");
+        if ((nameType.flags & TypeFlags.StringOrNumberLiteral) != 0)
+        {
+            string name = nameType.AsLiteralType().value switch
+            {
+                JsNum.Number number => number.String(),
+                string text => text,
+                _ => ""
+            };
+            if (!TypeScript.Scanner.Scanner.IsIdentifierTextByteString(name, LanguageVariant.Standard) && (stringNamed || !Checker.isNumericLiteralName(name)))
+                return f.NewStringLiteral(name, singleQuote ? TokenFlags.SingleQuote : TokenFlags.None);
+            if (Checker.isNumericLiteralName(name) && name[0] == '-')
+                return f.NewComputedPropertyName(f.NewPrefixUnaryExpression(Kind.MinusToken, f.NewNumericLiteral(name[1..], TokenFlags.None)));
+            return createPropertyNameNodeForIdentifierOrLiteral(name, singleQuote, stringNamed, isMethod, symbol);
+        }
+
+        if ((nameType.flags & TypeFlags.UniqueESSymbol) != 0)
+            return f.NewComputedPropertyName(symbolToExpressionWorker(nameType.symbol, SymbolFlags.Value));
+        return null;
+    }
+
     // nodebuilderimpl.go:2253. Selected data-property declaration serialization
     // retains nonnil diagnostic context and actual pseudochecker reuse.
-    // Reverse mapped implicit-undefined behavior and accessors remain excluded.
+    // Reverse-mapped implicit-undefined behavior is retained; source accessors remain excluded.
     private Node serializeTypeForDeclaration(Node declaration, Type t, Symbol symbol, bool tryReuse)
     {
         if (declaration == null && symbol != null)
@@ -714,8 +866,8 @@ internal sealed partial class NodeBuilderImpl
             }
         }
 
-        if (symbol != null && ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (symbol.Flags & SymbolFlags.Accessor) != 0))
-            throw Checker.unsupported("serializeTypeForDeclaration: mapped/accessor");
+        if (symbol != null && (symbol.Flags & SymbolFlags.Accessor) != 0)
+            throw Checker.unsupported("serializeTypeForDeclaration: source accessor");
         bool requiresAddingUndefined = declaration != null && (declaration.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration) && ch.requiresAddingImplicitUndefined(declaration, symbol, ctx.enclosingDeclaration);
         if (requiresAddingUndefined && Ast.IsParameterDeclaration(declaration))
             t = ch.getOptionalType(t, false);
@@ -787,15 +939,16 @@ internal sealed partial class NodeBuilderImpl
     // are guarded before assuming their declaration/context caches are absent.
     private List<Node> addPropertyToElementList(Symbol propertySymbol, List<Node> typeElements)
     {
-        if ((propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (propertySymbol.Flags & SymbolFlags.Accessor) != 0 || propertySymbol.Name.StartsWith(Ast.InternalSymbolNameComputed, StringComparison.Ordinal))
+        if ((propertySymbol.Flags & SymbolFlags.Accessor) != 0 || propertySymbol.Name.StartsWith(Ast.InternalSymbolNameComputed, StringComparison.Ordinal))
             throw Checker.unsupported("addPropertyToElementList: nondata/dynamic property");
-        var propertyType = ch.getNonMissingTypeOfSymbol(propertySymbol);
+        bool propertyIsReverseMapped = (propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0;
+        var propertyType = shouldUsePlaceholderForProperty(propertySymbol) ? ch.anyType : ch.getNonMissingTypeOfSymbol(propertySymbol);
         var saveEnclosingDeclaration = ctx.enclosingDeclaration;
         if (propertySymbol.ValueDeclaration != null)
             ctx.enclosingDeclaration = propertySymbol.ValueDeclaration;
         else if (propertySymbol.Declarations is { Count: > 0 } && propertySymbol.Declarations[0] != null)
             ctx.enclosingDeclaration = propertySymbol.Declarations[0];
-        var propertyName = getPropertyNameNodeForSymbol(propertySymbol);
+        var propertyName = getPropertyNameNodeForSymbol(propertySymbol, saveEnclosingDeclaration);
         ctx.enclosingDeclaration = saveEnclosingDeclaration;
         approximateLength += Ast.SymbolName(propertySymbol).Length + 1;
         var optionalToken = (propertySymbol.Flags & SymbolFlags.Optional) != 0 ? f.NewToken(Kind.QuestionToken) : null;
@@ -808,7 +961,18 @@ internal sealed partial class NodeBuilderImpl
                 return typeElements;
         }
 
-        var typeNode = propertyType != null ? serializeTypeForDeclaration(null, propertyType, propertySymbol, true) : f.NewKeywordTypeNode(Kind.AnyKeyword);
+        Node typeNode;
+        if (shouldUsePlaceholderForProperty(propertySymbol))
+            typeNode = createElidedInformationPlaceholder();
+        else
+        {
+            if (propertyIsReverseMapped)
+                (ctx.reverseMappedStack ??= new()).Add(propertySymbol);
+            typeNode = propertyType != null ? serializeTypeForDeclaration(null, propertyType, propertySymbol, true) : f.NewKeywordTypeNode(Kind.AnyKeyword);
+            if (propertyIsReverseMapped)
+                ctx.reverseMappedStack.RemoveAt(ctx.reverseMappedStack.Count - 1);
+        }
+
         ModifierList modifiers = null;
         if (ch.isReadonlySymbol(propertySymbol))
         {
@@ -859,10 +1023,15 @@ internal sealed partial class NodeBuilderImpl
         List<Node> elements = null;
         foreach (var signature in resolved.CallSignatures() ?? [])
             (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
-        if (GoRuntime.Len(resolved.ConstructSignatures()) != 0)
-            throw Checker.unsupported("createTypeNodesFromResolvedType: construct signatures");
+        foreach (var signature in resolved.ConstructSignatures() ?? [])
+            if ((signature.flags & SignatureFlags.Abstract) == 0)
+                (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.ConstructSignature, null));
         foreach (var info in resolved.indexInfos ?? [])
-            (elements ??= new()).AddRange(indexInfoToObjectComputedNamesOrSignatureDeclaration(info, null));
+        {
+            var typeNode = (resolved.AsType().objectFlags & ObjectFlags.ReverseMapped) != 0 && (ctx.flags & NodeBuilderFlags.AllowAnonymousIdentifier) != 0 ? createElidedInformationPlaceholder() : null;
+            (elements ??= new()).AddRange(indexInfoToObjectComputedNamesOrSignatureDeclaration(info, typeNode));
+        }
+
         var properties = resolved.properties;
         if (properties == null || properties.Count == 0)
             return f.NewNodeList(elements);
@@ -884,56 +1053,89 @@ internal sealed partial class NodeBuilderImpl
         return elements is { Count: > 0 } ? f.NewNodeList(elements) : null;
     }
 
-    // nodebuilderimpl.go:2789. Anonymous records and ordinary call signatures; construct signatures remain guarded.
+    // nodebuilderimpl.go:2789. Mapped, anonymous and internal callable/constructable object serialization.
     private Node createTypeNodeFromObjectType(Type t)
     {
+        if (ch.isGenericMappedType(t) || ((t.objectFlags & ObjectFlags.Mapped) != 0 && t.AsMappedType().containsError))
+            return createMappedTypeNodeFromType(t);
         var resolved = ch.resolveStructuredTypeMembers(t);
         var callSigs = resolved.CallSignatures();
         var ctorSigs = resolved.ConstructSignatures();
-        if (GoRuntime.Len(ctorSigs) != 0)
-            throw Checker.unsupported("createTypeNodeFromObjectType: construct signatures");
         if (GoRuntime.Len(resolved.properties) == 0 && GoRuntime.Len(resolved.indexInfos) == 0)
         {
-            if (GoRuntime.Len(callSigs) == 0)
+            if (GoRuntime.Len(callSigs) == 0 && GoRuntime.Len(ctorSigs) == 0)
             {
                 approximateLength += 2;
-                return f.NewTypeLiteralNode(f.NewNodeList([]));
+                var result = f.NewTypeLiteralNode(f.NewNodeList([]));
+                e.SetEmitFlags(result, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                return result;
             }
 
-            if (callSigs.Count == 1)
+            if (GoRuntime.Len(callSigs) == 1 && GoRuntime.Len(ctorSigs) == 0)
                 return signatureToSignatureDeclarationHelper(callSigs[0], Kind.FunctionType, null);
+            if (GoRuntime.Len(ctorSigs) == 1 && GoRuntime.Len(callSigs) == 0)
+                return signatureToSignatureDeclarationHelper(ctorSigs[0], Kind.ConstructorType, null);
         }
 
-        bool saved = inObjectTypeLiteral;
-        inObjectTypeLiteral = true;
+        var abstractSignatures = Core.Filter(ctorSigs, signature => (signature.flags & SignatureFlags.Abstract) != 0);
+        if (GoRuntime.Len(abstractSignatures) > 0)
+        {
+            var types = Core.Map(abstractSignatures, ch.getOrCreateTypeFromSignature);
+            int count = GoRuntime.Len(callSigs) + GoRuntime.Len(ctorSigs) - abstractSignatures.Count + GoRuntime.Len(resolved.indexInfos) + ((ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0 ? Core.CountWhere(resolved.properties, property => (property.Flags & SymbolFlags.Prototype) == 0) : GoRuntime.Len(resolved.properties));
+            if (count != 0)
+                types.Add(getResolvedTypeWithoutAbstractConstructSignatures(resolved));
+            return typeToTypeNode(ch.getIntersectionType(types));
+        }
+
+        var restoreFlags = saveRestoreFlags();
+        ctx.flags |= NodeBuilderFlags.InObjectTypeLiteral;
         var members = createTypeNodesFromResolvedType(resolved);
-        inObjectTypeLiteral = saved;
+        restoreFlags();
+        var node = f.NewTypeLiteralNode(members);
         approximateLength += 2;
-        return f.NewTypeLiteralNode(members);
-    // EFSingleLine is a fixed diagnostic printer option, not general emit state.
+        e.SetEmitFlags(node, (ctx.flags & NodeBuilderFlags.MultilineObjectLiterals) != 0 ? 0 : TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+        return node;
     }
 
     // nodebuilderimpl.go:2897/2912. Anonymous records and callable objects retain mapping,
-    // cycles and alias fallback; class/mapped forms remain excluded.
+    // cycles, reverse-mapped forms and alias fallback; source classes remain excluded.
     private Node createAnonymousTypeNode(Type t) => createAnonymousTypeNodeEx(t, false, false);
     private Node createAnonymousTypeNodeEx(Type t, bool forceClassExpansion, bool forceExpansion)
     {
-        if ((t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference | ObjectFlags.Mapped | ObjectFlags.ReverseMapped | ObjectFlags.InstantiationExpressionType)) != 0)
-            throw Checker.unsupported("createAnonymousTypeNodeEx: named/mapped object");
-        if (t.symbol != null)
+        var typeId = t.id;
+        var symbol = t.symbol;
+        if (symbol != null)
         {
-            var(emitTypeOf, symbol) = shouldEmitTypeOfSymbol(forceExpansion, forceClassExpansion, SymbolFlags.Value, t.symbol, t.id);
+            if ((t.objectFlags & ObjectFlags.InstantiationExpressionType) != 0)
+                throw Checker.unsupported("createAnonymousTypeNodeEx: source instantiation expression");
+            if ((symbol.Flags & SymbolFlags.Class) != 0)
+                throw Checker.unsupported("createAnonymousTypeNodeEx: class instance/static side");
+            var(emitTypeOf, emittedSymbol) = shouldEmitTypeOfSymbol(forceExpansion, forceClassExpansion, SymbolFlags.Value, symbol, typeId);
             if (emitTypeOf)
-                return symbolToTypeNode(symbol, SymbolFlags.Value, null); // Fixed maxExpansionDepth=-1.
+            {
+                if (shouldExpandType(t, false))
+                    ctx.depth++;
+                else
+                    return symbolToTypeNode(emittedSymbol, SymbolFlags.Value, null);
+            }
+
+            if (visitedTypes.Contains(typeId))
+            {
+                var alias = getTypeAliasForTypeLiteral(ch, t);
+                return alias != null ? symbolToTypeNode(alias, SymbolFlags.Type, null) : createCyclicStructurePlaceholder();
+            }
+
+            return visitAndTransformType(t, createTypeNodeFromObjectType);
         }
 
-        if (t.symbol != null && visitedTypes.Contains(t.id))
+        if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0 && (ctx.flags & NodeBuilderFlags.AllowAnonymousIdentifier) == 0)
         {
-            var alias = getTypeAliasForTypeLiteral(ch, t);
-            return alias != null ? symbolToTypeNode(alias, SymbolFlags.Type, null) : createCyclicStructurePlaceholder();
+            if (visitedTypes.Contains(typeId))
+                return createCyclicStructurePlaceholder();
+            return visitAndTransformType(t, createTypeNodeFromObjectType);
         }
 
-        return t.symbol != null ? visitAndTransformType(t, createTypeNodeFromObjectType) : createTypeNodeFromObjectType(t);
+        return createTypeNodeFromObjectType(t);
     }
 
     // nodebuilderimpl.go:2859/2901. Ordinary nonlocal function symbols and recursive
@@ -1004,16 +1206,19 @@ internal sealed partial class NodeBuilderImpl
     }
 
     // nodebuilderimpl.go:3234. Selected diagnostic contexts retain original cache
-    // reads/writes, visited types and symbol recursion depth. Generic/array origins,
-    // arrays/source generics, external tracker APIs and verbosity are excluded.
+    // reads/writes, ordered infer parameters, array-cycle identities and reverse-mapped
+    // declaration depth. External tracker APIs and configured hover verbosity remain excluded.
     private Node visitAndTransformType(Type t, Func<Type, Node> transform)
     {
         if (checkTruncationLength())
             return createElidedInformationPlaceholder();
         uint typeId = t.id;
+        bool isArrayOrTuple = ch.isArrayOrTupleType(t);
+        if (isArrayOrTuple)
+            typeId = ch.createTypeReference(t.Target(), ch.getTypeArguments(t)).id;
         if (visitedTypes.Contains(typeId))
             return createCyclicStructurePlaceholder();
-        var key = new CompositeTypeCacheIdentity(typeId, useFullyQualifiedType, inObjectTypeLiteral, ctx.flags, ctx.internalFlags);
+        var key = new CompositeTypeCacheIdentity(typeId, useFullyQualifiedType, inObjectTypeLiteral, ctx.flags, ctx.internalFlags, GoRuntime.Len(ctx.inferTypeParameters) != 0 ? Checker.getTypeListKey(ctx.inferTypeParameters) : default);
         if (ctx.enclosingDeclaration != null && links.TryGetValue(ctx.enclosingDeclaration, out var existingLinks) && existingLinks.serializedTypes?.TryGetValue(key, out var cachedResult) == true)
         {
             foreach (var arg in cachedResult.trackedSymbols ?? [])
@@ -1024,37 +1229,60 @@ internal sealed partial class NodeBuilderImpl
             return f.DeepCloneNode(cachedResult.node);
         }
 
-        CompositeSymbolIdentity? symbolId = (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ? new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) : t.symbol != null ? new(false, Ast.GetSymbolId(t.symbol), 0) : null;
-        int depth = 0;
-        if (symbolId is { } id)
+        CompositeSymbolIdentity? symbolId = isArrayOrTuple ? null : (t.flags & TypeFlags.Conditional) != 0 ? new(false, 0, Ast.GetNodeId(t.AsConditionalType().root.node.AsNode())) : (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ? new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) : t.symbol != null ? new(false, Ast.GetSymbolId(t.symbol), 0) : null;
+        CompositeSymbolIdentity? reverseOrigin = null;
+        int reverseDepth = 0;
+        if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
         {
-            symbolDepth.TryGetValue(id, out depth);
-            if (depth > 10)
+            reverseOrigin = new(false, 0, Ast.GetNodeId(t.AsReverseMappedType().mappedType.AsMappedType().declaration.AsNode()));
+            symbolDepth.TryGetValue(reverseOrigin.Value, out reverseDepth);
+            if (reverseDepth >= 100)
             {
                 truncating = true;
                 return createElidedInformationPlaceholder();
             }
 
-            symbolDepth[id] = depth + 1;
+            symbolDepth[reverseOrigin.Value] = reverseDepth + 1;
         }
 
-        visitedTypes.Add(typeId);
-        var previousTrackedSymbols = ctx.trackedSymbols;
-        ctx.trackedSymbols = null;
-        int startLength = approximateLength;
-        var result = transform(t);
-        int addedLength = approximateLength - startLength;
-        if (!ctx.reportedDiagnostic && !encounteredError)
+        try
         {
-            var cell = getLinks(ctx.enclosingDeclaration);
-            (cell.serializedTypes ??= new())[key] = new(result, truncating, addedLength, ctx.trackedSymbols);
-        }
+            int depth = 0;
+            if (symbolId is { } id)
+            {
+                symbolDepth.TryGetValue(id, out depth);
+                if (depth > 10)
+                {
+                    truncating = true;
+                    return createElidedInformationPlaceholder();
+                }
 
-        visitedTypes.Remove(typeId);
-        if (symbolId is { } restoreId)
-            symbolDepth[restoreId] = depth;
-        ctx.trackedSymbols = previousTrackedSymbols;
-        return result;
+                symbolDepth[id] = depth + 1;
+            }
+
+            visitedTypes.Add(typeId);
+            var previousTrackedSymbols = ctx.trackedSymbols;
+            ctx.trackedSymbols = null;
+            int startLength = approximateLength;
+            var result = transform(t);
+            int addedLength = approximateLength - startLength;
+            if (!ctx.reportedDiagnostic && !encounteredError)
+            {
+                var cell = getLinks(ctx.enclosingDeclaration);
+                (cell.serializedTypes ??= new())[key] = new(result, truncating, addedLength, ctx.trackedSymbols);
+            }
+
+            visitedTypes.Remove(typeId);
+            if (symbolId is { } restoreId)
+                symbolDepth[restoreId] = depth;
+            ctx.trackedSymbols = previousTrackedSymbols;
+            return result;
+        }
+        finally
+        {
+            if (reverseOrigin is { } origin)
+                symbolDepth[origin] = reverseDepth;
+        }
     }
 
     // nodebuilderimpl.go:508/526. TS reference reuse retains resolved-target
@@ -1079,9 +1307,7 @@ internal sealed partial class NodeBuilderImpl
         if (target == null || target != t.AsTypeReference().target)
             return true;
         var parameters = t.AsTypeReference().target.AsInterfaceType().TypeParameters();
-        if (parameters is { Count: > 0 })
-            throw Checker.unsupported("existingTypeNodeIsNotReferenceOrIsReferenceWithCompatibleTypeArgumentCount: source generic parameters");
-        return (existing.TypeArguments()?.Count ?? 0) >= 0;
+        return (existing.TypeArguments()?.Count ?? 0) >= ch.getMinTypeArgumentCount(parameters);
     }
 
     private Node mostOriginal(Node node) => e.MostOriginal(node);
@@ -1181,7 +1407,7 @@ internal sealed partial class NodeBuilderImpl
         Node dotDotDotToken = default;
         if (isRest)
         {
-            throw Checker.unsupported("symbolToParameterDeclaration: rest parameter");
+            dotDotDotToken = f.NewToken(Kind.DotDotDotToken);
         }
 
         var name = this.parameterToParameterDeclarationName(parameterSymbol, parameterDeclaration);
@@ -1302,8 +1528,12 @@ internal sealed partial class NodeBuilderImpl
         var expandedParams = tuple1.Item1;
         var cleanup = tuple1.Item2;
         this.ctx.approximateLength += 3;
-        if (GoRuntime.Len(signature.typeParameters) != 0 || ((ctx.flags & NodeBuilderFlags.WriteTypeArgumentsOfSignature) != 0 && signature.target != null && signature.mapper != null && GoRuntime.Len(signature.target.typeParameters) != 0))
-            throw Checker.unsupported("signatureToSignatureDeclarationHelper: generic signature");
+        if ((ctx.flags & NodeBuilderFlags.WriteTypeArgumentsOfSignature) != 0 && signature.target != null && signature.mapper != null && GoRuntime.Len(signature.target.typeParameters) != 0)
+            foreach (var parameter in signature.target.typeParameters)
+                typeParameters = GoRuntime.Append(typeParameters, typeToTypeNode(ch.instantiateType(parameter, signature.mapper)));
+        else
+            foreach (var parameter in signature.typeParameters ?? [])
+                typeParameters = GoRuntime.Append(typeParameters, typeParameterToDeclaration(parameter));
         var restoreFlags = this.saveRestoreFlags();
         this.ctx.flags &= ~(NodeBuilderFlags.SuppressAnyReturnType);
         var parameters = Core.Map(Core.IfElse(Core.Some(expandedParams, (p) =>
@@ -1377,7 +1607,8 @@ internal sealed partial class NodeBuilderImpl
 
             case true when (kind == Kind.ConstructSignature):
             {
-                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+                node = f.NewConstructSignatureDeclaration(typeParamList, paramList, returnTypeNode);
+                break;
             }
 
             case true when (kind == Kind.MethodSignature):
@@ -1432,7 +1663,9 @@ internal sealed partial class NodeBuilderImpl
 
             case true when (kind == Kind.ConstructorType):
             {
-                throw Checker.unsupported("signatureToSignatureDeclarationHelper: constructor/accessor");
+                returnTypeNode ??= f.NewTypeReferenceNode(f.NewIdentifier(""), null);
+                node = f.NewConstructorTypeNode(modifierList, typeParamList, paramList, returnTypeNode);
+                break;
             }
 
             case true when (kind == Kind.FunctionDeclaration):
@@ -1578,7 +1811,820 @@ public sealed partial class Checker
     internal List<List<Symbol>> getExpandedParameters(Signature sig, bool skipUnionExpanding)
     {
         if (signatureHasRestParameter(sig))
-            throw unsupported("getExpandedParameters: tuple/rest parameters");
-        return[sig.parameters];
+        {
+            var restIndex = (GoRuntime.Len(sig.parameters) - 1);
+            var restSymbol = sig.parameters[restIndex];
+            var restType = this.getTypeOfSymbol(restSymbol);
+            Func<Type, Symbol, List<string>> getUniqAssociatedNamesFromTupleType = (t, restSymbol2) =>
+            {
+                var names = Core.MapIndex(t.Target().AsTupleType().elementInfos, (info, i) =>
+                {
+                    return this.getTupleElementLabel(info, restSymbol2, i);
+                });
+                if ((GoRuntime.Len(names) > 0))
+                {
+                    var duplicates = new List<int>
+                    {
+                    };
+                    var uniqueNames = new Dictionary<string, bool>();
+                    {
+                        foreach (var range7 in GoRuntime.Range(names))
+                        {
+                            var i2 = range7.Key;
+                            var name = range7.Value;
+                            var ok = uniqueNames.TryGetValue(name, out var _);
+                            if (ok)
+                            {
+                                duplicates = GoRuntime.Append(duplicates, i2);
+                            }
+                            else
+                            {
+                                uniqueNames[name] = true;
+                            }
+                        }
+                    }
+
+                    var counters = new Dictionary<string, int>();
+                    {
+                        foreach (var range8 in GoRuntime.Range(duplicates))
+                        {
+                            var _2 = range8.Key;
+                            var i3 = range8.Value;
+                            var ok2 = counters.TryGetValue(names[i3], out var counter);
+                            if (!ok2)
+                            {
+                                counter = 1;
+                            }
+
+                            string name2 = "";
+                            while (true)
+                            {
+                                name2 = (names[i3] + "_" + Strconv.Itoa(counter));
+                                var ok3 = uniqueNames.TryGetValue(name2, out var _3);
+                                if (ok3)
+                                {
+                                    counter++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    uniqueNames[name2] = true;
+                                    break;
+                                }
+                            }
+
+                            names[i3] = name2;
+                            counters[names[i3]] = (counter + 1);
+                        }
+                    }
+                }
+
+                return names;
+            };
+            Func<Type, int, Symbol, List<Symbol>> expandSignatureParametersWithTupleMembers = (restType2, restIndex2, restSymbol3) =>
+            {
+                var elementTypes = this.getTypeArguments(restType2);
+                var associatedNames = getUniqAssociatedNamesFromTupleType(restType2, restSymbol3);
+                var restParams = Core.MapIndex(elementTypes, (t2, i4) =>
+                {
+                    var name3 = associatedNames[i4];
+                    var flags = restType2.Target().AsTupleType().elementInfos[i4].flags;
+                    CheckFlags checkFlags = default;
+                    switch (true)
+                    {
+                        case true when ((flags & ElementFlags.Variable) != 0):
+                        {
+                            checkFlags = CheckFlags.RestParameter;
+                            break;
+                        }
+
+                        case true when ((flags & ElementFlags.Optional) != 0):
+                        {
+                            checkFlags = CheckFlags.OptionalParameter;
+                            break;
+                        }
+                    }
+
+                    var symbol = this.newSymbolEx(SymbolFlags.FunctionScopedVariable, name3, checkFlags);
+                    var links = this.valueSymbolLinks.Get(symbol);
+                    if (((flags & ElementFlags.Rest) != 0))
+                    {
+                        links.resolvedType = this.createArrayType(t2);
+                    }
+                    else
+                    {
+                        links.resolvedType = t2;
+                    }
+
+                    return symbol;
+                });
+                return Core.Concatenate(GoRuntime.Slice(sig.parameters, 0, restIndex2), restParams);
+            };
+            if (isTupleType(restType))
+            {
+                return new List<List<Symbol>>
+                {
+                    expandSignatureParametersWithTupleMembers(restType, restIndex, restSymbol)
+                };
+            }
+            else
+            {
+                if (((!skipUnionExpanding && ((restType.flags & TypeFlags.Union) != 0)) && Core.Every(restType.AsUnionType().types, isTupleType)))
+                {
+                    return Core.Map(restType.AsUnionType().types, (t3) =>
+                    {
+                        return expandSignatureParametersWithTupleMembers(t3, restIndex, restSymbol);
+                    });
+                }
+            }
+        }
+
+        return new List<List<Symbol>>
+        {
+            sig.parameters
+        };
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node typeParameterToDeclarationWithConstraint(Type typeParameter, Node constraintNode)
+    {
+        var restoreFlags = this.saveRestoreFlags();
+        this.ctx.flags &= ~(NodeBuilderFlags.WriteTypeParametersInQualifiedName);
+        var modifiers = Ast.CreateModifiersFromModifierFlags(this.ch.getTypeParameterModifiers(typeParameter), (nodeKind) => this.f.NewModifier(nodeKind));
+        ModifierList modifiersList = default;
+        if ((GoRuntime.Len(modifiers) > 0))
+        {
+            modifiersList = this.f.NewModifierList(modifiers);
+        }
+
+        var name = this.typeParameterToName(typeParameter);
+        var defaultParameter = this.ch.getDefaultFromTypeParameter(typeParameter);
+        Node defaultParameterDeclarationNode = default;
+        if ((defaultParameter != null))
+        {
+            defaultParameterDeclarationNode = this.typeToTypeNode(defaultParameter);
+        }
+
+        restoreFlags();
+        return this.f.NewTypeParameterDeclaration(modifiersList, name.AsNode(), constraintNode, null, defaultParameterDeclarationNode);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private bool isMappedTypeHomomorphic(Type mapped)
+    {
+        return (this.ch.getHomomorphicTypeVariable(mapped) != null);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private bool isHomomorphicMappedTypeWithNonHomomorphicInstantiation(MappedType mapped)
+    {
+        return (((mapped.target != null) && !this.isMappedTypeHomomorphic(mapped.AsType())) && this.isMappedTypeHomomorphic(mapped.target));
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node createMappedTypeNodeFromType(Type t)
+    {
+        Debug.Assert(((t.Flags() & TypeFlags.Object) != 0));
+        var mapped = t.AsMappedType();
+        Node @readonlyToken = default;
+        if ((mapped.declaration.ReadonlyToken != null))
+        {
+            @readonlyToken = this.f.NewToken(mapped.declaration.ReadonlyToken.Kind);
+        }
+
+        Node questionToken = default;
+        if ((mapped.declaration.QuestionToken != null))
+        {
+            questionToken = this.f.NewToken(mapped.declaration.QuestionToken.Kind);
+        }
+
+        Node appropriateConstraintTypeNode = default;
+        Node newTypeVariable = default;
+        var templateType = this.ch.getTemplateTypeFromMappedType(t);
+        var typeParameter = this.ch.getTypeParameterFromMappedType(t);
+        var needsModifierPreservingWrapper = (((!this.ch.isMappedTypeWithKeyofConstraintDeclaration(t) && ((this.ch.getModifiersTypeFromMappedType(t).flags & TypeFlags.Unknown) == 0)) && ((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0)) && !((((this.ch.getConstraintTypeFromMappedType(t).flags & TypeFlags.TypeParameter) != 0) && ((this.ch.getConstraintOfTypeParameter(this.ch.getConstraintTypeFromMappedType(t)).flags & TypeFlags.Index) != 0))));
+        if (this.ch.isMappedTypeWithKeyofConstraintDeclaration(t))
+        {
+            if ((((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0) && this.isHomomorphicMappedTypeWithNonHomomorphicInstantiation(mapped)))
+            {
+                var newConstraintParam = this.ch.newTypeParameter(this.ch.newSymbol(SymbolFlags.TypeParameter, "T"));
+                var name = this.typeParameterToName(newConstraintParam);
+                var target = t.Target();
+                newTypeVariable = this.f.NewTypeReferenceNode(name.AsNode(), null);
+                templateType = this.ch.instantiateType(this.ch.getTemplateTypeFromMappedType(target), Checker.newTypeMapper(new List<Type> { this.ch.getTypeParameterFromMappedType(target), this.ch.getModifiersTypeFromMappedType(target) }, new List<Type> { typeParameter, newConstraintParam }));
+            }
+
+            var indexTarget = newTypeVariable;
+            if ((indexTarget == null))
+            {
+                indexTarget = this.typeToTypeNode(this.ch.getModifiersTypeFromMappedType(t));
+            }
+
+            appropriateConstraintTypeNode = this.f.NewTypeOperatorNode(Kind.KeyOfKeyword, indexTarget);
+        }
+        else
+        {
+            if (needsModifierPreservingWrapper)
+            {
+                var newParam = this.ch.newTypeParameter(this.ch.newSymbol(SymbolFlags.TypeParameter, "T"));
+                var name2 = this.typeParameterToName(newParam);
+                newTypeVariable = this.f.NewTypeReferenceNode(name2.AsNode(), null);
+                appropriateConstraintTypeNode = newTypeVariable;
+            }
+            else
+            {
+                appropriateConstraintTypeNode = this.typeToTypeNode(this.ch.getConstraintTypeFromMappedType(t));
+            }
+        }
+
+        var cleanup = this.enterNewScope(mapped.declaration.AsNode(), null, new List<Type> { this.ch.getTypeParameterFromMappedType(t) }, null, null);
+        var typeParameterDeclarationNode = this.typeParameterToDeclarationWithConstraint(typeParameter, appropriateConstraintTypeNode);
+        Node nameTypeNode = default;
+        if ((mapped.declaration.NameType != null))
+        {
+            nameTypeNode = this.typeToTypeNode(this.ch.getNameTypeFromMappedType(t));
+        }
+
+        var templateTypeNode = this.typeToTypeNode(this.ch.removeMissingType(templateType, ((Checker.getMappedTypeModifiers(t) & Checker.MappedTypeModifiers.IncludeOptional) != 0)));
+        cleanup();
+        var result = this.f.NewMappedTypeNode(@readonlyToken, typeParameterDeclarationNode, nameTypeNode, questionToken, templateTypeNode, null);
+        this.ctx.approximateLength += 10;
+        this.e.AddEmitFlags(result, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+        if ((((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0) && this.isHomomorphicMappedTypeWithNonHomomorphicInstantiation(mapped)))
+        {
+            var rawConstraintTypeFromDeclaration = this.getTypeFromTypeNode(mapped.declaration.TypeParameter.AsTypeParameterDeclaration().Constraint.Type(), false);
+            if ((rawConstraintTypeFromDeclaration != null))
+            {
+                rawConstraintTypeFromDeclaration = this.ch.getConstraintOfTypeParameter(rawConstraintTypeFromDeclaration);
+            }
+
+            if ((rawConstraintTypeFromDeclaration == null))
+            {
+                rawConstraintTypeFromDeclaration = this.ch.unknownType;
+            }
+
+            var originalConstraint = this.ch.instantiateType(rawConstraintTypeFromDeclaration, mapped.mapper);
+            Node originalConstraintNode = default;
+            if (((originalConstraint.flags & TypeFlags.Unknown) == 0))
+            {
+                originalConstraintNode = this.typeToTypeNode(originalConstraint);
+            }
+
+            return this.f.NewConditionalTypeNode(this.typeToTypeNode(this.ch.getModifiersTypeFromMappedType(t)), this.f.NewInferTypeNode(this.f.NewTypeParameterDeclaration(null, newTypeVariable.AsTypeReferenceNode().TypeName.Clone(this.f), originalConstraintNode, null, null)), result, this.f.NewKeywordTypeNode(Kind.NeverKeyword));
+        }
+        else
+        {
+            if (needsModifierPreservingWrapper)
+            {
+                return this.f.NewConditionalTypeNode(this.typeToTypeNode(this.ch.getConstraintTypeFromMappedType(t)), this.f.NewInferTypeNode(this.f.NewTypeParameterDeclaration(null, newTypeVariable.AsTypeReferenceNode().TypeName.Clone(this.f), this.f.NewTypeOperatorNode(Kind.KeyOfKeyword, this.typeToTypeNode(this.ch.getModifiersTypeFromMappedType(t))), null, null)), result, this.f.NewKeywordTypeNode(Kind.NeverKeyword));
+            }
+        }
+
+        return result;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node typeParameterToDeclaration(Type parameter)
+    {
+        var constraint = this.ch.getConstraintOfTypeParameter(parameter);
+        Node constraintNode = default;
+        if ((constraint != null))
+        {
+            constraintNode = this.typeToTypeNodeHelperWithPossibleReusableTypeNode(constraint, this.ch.getConstraintDeclaration(parameter));
+        }
+
+        return this.typeParameterToDeclarationWithConstraint(parameter, constraintNode);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node typeToTypeNodeOrCircularityElision(Type t)
+    {
+        if (((t.flags & TypeFlags.Union) != 0))
+        {
+            if (this.ctx.visitedTypes.Contains(t.id))
+            {
+                return this.createCyclicStructurePlaceholder();
+            }
+
+            return this.visitAndTransformType(t, this.typeToTypeNode);
+        }
+
+        return this.typeToTypeNode(t);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node conditionalTypeToTypeNode(Type _t)
+    {
+        if (this.checkTruncationLength())
+        {
+            return this.createElidedInformationPlaceholder();
+        }
+
+        var t = _t.AsConditionalType();
+        var checkTypeNode = this.typeToTypeNode(t.checkType);
+        this.ctx.approximateLength += 15;
+        if (((((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0) && t.root.isDistributive) && ((t.checkType.flags & TypeFlags.TypeParameter) == 0)))
+        {
+            var newParam = this.ch.newTypeParameter(this.ch.newSymbol(SymbolFlags.TypeParameter, "T"));
+            var name = this.typeParameterToName(newParam);
+            var newTypeVariable = this.f.NewTypeReferenceNode(name.AsNode(), null);
+            this.ctx.approximateLength += 37;
+            var newMapper = Checker.prependTypeMapping(t.root.checkType, newParam, t.mapper);
+            var saveInferTypeParameters = this.ctx.inferTypeParameters;
+            this.ctx.inferTypeParameters = t.root.inferTypeParameters;
+            var extendsTypeNode = this.typeToTypeNode(this.ch.instantiateType(t.root.extendsType, newMapper));
+            this.ctx.inferTypeParameters = saveInferTypeParameters;
+            var trueTypeNode = this.typeToTypeNodeOrCircularityElision(this.ch.instantiateType(this.getTypeFromTypeNode(t.root.node.TrueType, false), newMapper));
+            var falseTypeNode = this.typeToTypeNodeOrCircularityElision(this.ch.instantiateType(this.getTypeFromTypeNode(t.root.node.FalseType, false), newMapper));
+            var newId = newTypeVariable.AsTypeReferenceNode().TypeName.AsIdentifier().Clone(this.f);
+            var syntheticExtendsNode = this.f.NewInferTypeNode(this.f.NewTypeParameterDeclaration(null, newId, null, null, null));
+            var innerCheckConditionalNode = this.f.NewConditionalTypeNode(newTypeVariable, extendsTypeNode, trueTypeNode, falseTypeNode);
+            var syntheticTrueNode = this.f.NewConditionalTypeNode(this.f.NewTypeReferenceNode(name.Clone(this.f), null), this.f.DeepCloneNode(checkTypeNode), innerCheckConditionalNode, this.f.NewKeywordTypeNode(Kind.NeverKeyword));
+            return this.f.NewConditionalTypeNode(checkTypeNode, syntheticExtendsNode, syntheticTrueNode, this.f.NewKeywordTypeNode(Kind.NeverKeyword));
+        }
+
+        var saveInferTypeParameters2 = this.ctx.inferTypeParameters;
+        this.ctx.inferTypeParameters = t.root.inferTypeParameters;
+        var extendsTypeNode2 = this.typeToTypeNode(t.extendsType);
+        this.ctx.inferTypeParameters = saveInferTypeParameters2;
+        var trueTypeNode2 = this.typeToTypeNodeOrCircularityElision(this.ch.getTrueTypeFromConditionalType(_t));
+        var falseTypeNode2 = this.typeToTypeNodeOrCircularityElision(this.ch.getFalseTypeFromConditionalType(_t));
+        return this.f.NewConditionalTypeNode(checkTypeNode, extendsTypeNode2, trueTypeNode2, falseTypeNode2);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Symbol getParentSymbolOfTypeParameter(TypeParameter typeParameter)
+    {
+        var tp = Ast.GetDeclarationOfKind(typeParameter.AsType().symbol, Kind.TypeParameter);
+        Node host = default;
+        host = tp.Parent;
+        if ((host == null))
+        {
+            return null;
+        }
+
+        return this.ch.getSymbolOfNode(host);
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node arrayOrTupleTypeToNode(Type t)
+    {
+        List<Type> typeArguments = this.ch.getTypeArguments(t);
+        if (((t.Target() == this.ch.globalArrayType) || (t.Target() == this.ch.globalReadonlyArrayType)))
+        {
+            if (((this.ctx.flags & NodeBuilderFlags.WriteArrayAsGenericType) != 0))
+            {
+                var typeArgumentNode = this.typeToTypeNode(typeArguments[0]);
+                return this.f.NewTypeReferenceNode(this.newIdentifier(Core.IfElse((t.Target() == this.ch.globalArrayType), "Array", "ReadonlyArray"), t.Target().symbol), this.f.NewNodeList(new List<Node> { typeArgumentNode }));
+            }
+
+            var elementType = this.typeToTypeNode(typeArguments[0]);
+            var arrayType = this.f.NewArrayTypeNode(elementType);
+            if ((t.Target() == this.ch.globalArrayType))
+            {
+                return arrayType;
+            }
+            else
+            {
+                return this.f.NewTypeOperatorNode(Kind.ReadonlyKeyword, arrayType);
+            }
+        }
+        else
+        {
+            Debug.Assert(((t.Target().objectFlags & ObjectFlags.Tuple) != 0));
+            typeArguments = Core.SameMapIndex(typeArguments, (arg, i) =>
+            {
+                var isOptional = false;
+                if ((i < GoRuntime.Len(t.Target().AsTupleType().elementInfos)))
+                {
+                    isOptional = ((t.Target().AsTupleType().elementInfos[i].flags & ElementFlags.Optional) != 0);
+                }
+
+                return this.ch.removeMissingType(arg, isOptional);
+            });
+            if ((GoRuntime.Len(typeArguments) > 0))
+            {
+                var arity = this.ch.getTypeReferenceArity(t);
+                var tupleConstituentNodes = this.mapToTypeNodes(GoRuntime.Slice(typeArguments, 0, arity), false);
+                if ((tupleConstituentNodes != null))
+                {
+                    {
+                        var i2 = 0;
+                        for (; (i2 < GoRuntime.Len(tupleConstituentNodes.Nodes)); i2++)
+                        {
+                            var flags = t.Target().AsTupleType().elementInfos[i2].flags;
+                            var labeledElementDeclaration = t.Target().AsTupleType().elementInfos[i2].labeledDeclaration;
+                            if ((labeledElementDeclaration != null))
+                            {
+                                tupleConstituentNodes.Nodes[i2] = this.f.NewNamedTupleMember(Core.IfElse(((flags & ElementFlags.Variable) != 0), this.f.NewToken(Kind.DotDotDotToken), null), this.newIdentifier(this.ch.getTupleElementLabel(t.Target().AsTupleType().elementInfos[i2], null, i2), null), Core.IfElse(((flags & ElementFlags.Optional) != 0), this.f.NewToken(Kind.QuestionToken), null), Core.IfElse(((flags & ElementFlags.Rest) != 0), this.f.NewArrayTypeNode(tupleConstituentNodes.Nodes[i2]), tupleConstituentNodes.Nodes[i2]));
+                            }
+                            else
+                            {
+                                switch (true)
+                                {
+                                    case true when ((flags & ElementFlags.Variable) != 0):
+                                    {
+                                        tupleConstituentNodes.Nodes[i2] = this.f.NewRestTypeNode(Core.IfElse(((flags & ElementFlags.Rest) != 0), this.f.NewArrayTypeNode(tupleConstituentNodes.Nodes[i2]), tupleConstituentNodes.Nodes[i2]));
+                                        break;
+                                    }
+
+                                    case true when ((flags & ElementFlags.Optional) != 0):
+                                    {
+                                        tupleConstituentNodes.Nodes[i2] = this.f.NewOptionalTypeNode(tupleConstituentNodes.Nodes[i2]);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var tupleTypeNode = this.f.NewTupleTypeNode(tupleConstituentNodes);
+                    this.e.SetEmitFlags(tupleTypeNode, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                    if (t.Target().AsTupleType().@readonly)
+                    {
+                        return this.f.NewTypeOperatorNode(Kind.ReadonlyKeyword, tupleTypeNode);
+                    }
+                    else
+                    {
+                        return tupleTypeNode;
+                    }
+                }
+            }
+
+            if ((this.ctx.encounteredError || (((this.ctx.flags & NodeBuilderFlags.AllowEmptyTuple) != 0))))
+            {
+                var tupleTypeNode2 = this.f.NewTupleTypeNode(this.f.NewNodeList(new List<Node> { }));
+                this.e.SetEmitFlags(tupleTypeNode2, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                if (t.Target().AsTupleType().@readonly)
+                {
+                    return this.f.NewTypeOperatorNode(Kind.ReadonlyKeyword, tupleTypeNode2);
+                }
+                else
+                {
+                    return tupleTypeNode2;
+                }
+            }
+
+            this.ctx.encounteredError = true;
+            return null;
+        }
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node appendReferenceToType(Node root, Node @ref)
+    {
+        if (Ast.IsImportTypeNode(root))
+        {
+            var imprt = root.AsImportTypeNode();
+            var ids = getAccessStack(@ref);
+            var qualifier = root.AsImportTypeNode().Qualifier;
+            {
+                foreach (var id in GoRuntime.RangeValues(ids))
+                {
+                    if ((qualifier != null))
+                    {
+                        qualifier = this.f.NewQualifiedName(qualifier, id);
+                    }
+                    else
+                    {
+                        qualifier = id;
+                    }
+                }
+            }
+
+            return this.f.UpdateImportTypeNode(root.AsImportTypeNode(), imprt.IsTypeOf, imprt.Argument, imprt.Attributes, qualifier, @ref.TypeArgumentList());
+        }
+        else
+        {
+            if (Ast.IsTypeReferenceNode(root))
+            {
+                var typeRef = root.AsTypeReferenceNode();
+                if (((((this.ctx.flags & NodeBuilderFlags.UseInstantiationExpressions) != 0) && (typeRef.TypeArguments != null)) && (GoRuntime.Len(typeRef.TypeArguments.Nodes) != 0)))
+                {
+                    var expr = this.createExpressionWithTypeArguments(this.createAccessExpression(typeRef.TypeName), typeRef.TypeArguments);
+                    {
+                        foreach (var range2 in GoRuntime.Range(getAccessStack(@ref)))
+                        {
+                            var _2 = range2.Key;
+                            var id2 = range2.Value;
+                            expr = this.f.NewPropertyAccessExpression(expr, null, id2, NodeFlags.None);
+                        }
+                    }
+
+                    return expr;
+                }
+
+                Node typeName = typeRef.TypeName;
+                {
+                    foreach (var range3 in GoRuntime.Range(getAccessStack(@ref)))
+                    {
+                        var _3 = range3.Key;
+                        var id3 = range3.Value;
+                        typeName = this.f.NewQualifiedName(typeName, id3);
+                    }
+                }
+
+                return this.f.UpdateTypeReferenceNode(root.AsTypeReferenceNode(), typeName, @ref.TypeArgumentList());
+            }
+        }
+
+        var expr2 = this.createAccessExpression(root);
+        {
+            foreach (var range4 in GoRuntime.Range(getAccessStack(@ref)))
+            {
+                var _4 = range4.Key;
+                var id4 = range4.Value;
+                expr2 = this.f.NewPropertyAccessExpression(expr2, null, id4, NodeFlags.None);
+            }
+        }
+
+        return expr2;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node symbolToName(Symbol symbol, SymbolFlags meaning, bool expectsIdentifier)
+    {
+        var chain = this.lookupSymbolChain(symbol, meaning, false);
+        if ((((expectsIdentifier && (GoRuntime.Len(chain) != 1)) && !this.ctx.encounteredError) && (((this.ctx.flags & NodeBuilderFlags.AllowQualifiedNameInPlaceOfIdentifier) != 0))))
+        {
+            this.ctx.encounteredError = true;
+        }
+
+        return this.createEntityNameFromSymbolChain(chain, (GoRuntime.Len(chain) - 1));
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node createEntityNameFromSymbolChain(List<Symbol> chain, int index)
+    {
+        var symbol = chain[index];
+        if ((index == 0))
+        {
+            this.ctx.flags |= NodeBuilderFlags.InInitialEntityName;
+        }
+
+        var symbolName = this.getNameOfSymbolAsWritten(symbol);
+        if ((index == 0))
+        {
+            this.ctx.flags ^= NodeBuilderFlags.InInitialEntityName;
+        }
+
+        var identifier = this.newIdentifier(symbolName, symbol);
+        this.e.AddEmitFlags(identifier, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+        if ((index > 0))
+        {
+            return this.f.NewQualifiedName(this.createEntityNameFromSymbolChain(chain, (index - 1)), identifier);
+        }
+
+        return identifier;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private bool typeParameterShadowsOtherTypeParameterInScope(string name, Type typeParameter)
+    {
+        var result = this.ch.nameResolver.Resolve(this.ctx.enclosingDeclaration, name, SymbolFlags.Type, null, false, false);
+        if (((result != null) && ((result.Flags & SymbolFlags.TypeParameter) != 0)))
+        {
+            return (result != typeParameter.symbol);
+        }
+
+        return false;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node typeParameterToName(Type typeParameter)
+    {
+        if (((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0))
+        {
+            {
+                var ok = this.ctx.typeParameterNames.TryGetValue(typeParameter.id, out var cached);
+                if (ok)
+                {
+                    return cached;
+                }
+            }
+        }
+
+        var result = this.symbolToName(typeParameter.symbol, SymbolFlags.Type, true);
+        if (!Ast.IsIdentifier(result))
+        {
+            return this.f.NewIdentifier("(Missing type parameter)");
+        }
+
+        if (((typeParameter.symbol != null) && (GoRuntime.Len(typeParameter.symbol.Declarations) > 0)))
+        {
+            var decl = typeParameter.symbol.Declarations[0];
+            if (((decl != null) && Ast.IsTypeParameterDeclaration(decl)))
+            {
+                result = this.setTextRange(result, decl.Name());
+            }
+        }
+
+        if (((this.ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0))
+        {
+            var rawText = result.Text();
+            this.ctx.typeParameterNamesByTextNextNameCount.TryGetValue(rawText, out var i);
+            var text = rawText;
+            while (true)
+            {
+                if ((!this.ctx.typeParameterNamesByText.Contains(text) && !this.typeParameterShadowsOtherTypeParameterInScope(text, typeParameter)))
+                {
+                    break;
+                }
+
+                i++;
+                text = (rawText + "_" + Strconv.Itoa(i));
+            }
+
+            if ((text != rawText))
+            {
+                result = this.newIdentifier(text, typeParameter.symbol);
+            }
+
+            this.ctx.typeParameterNamesByTextNextNameCount[rawText] = i;
+            this.ctx.typeParameterNames[typeParameter.id] = result;
+            this.ctx.typeParameterNamesByText.Add(text);
+        }
+
+        return result;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private static List<Node> getAccessStack(Node @ref)
+    {
+        Node state = @ref.AsTypeReferenceNode().TypeName;
+        var ids = new List<Node>
+        {
+        };
+        while (!Ast.IsIdentifier(state))
+        {
+            var entity = state.AsQualifiedName();
+            ids = GoRuntime.Append(new List<Node> { entity.Right }, ids);
+            state = entity.Left;
+        }
+
+        ids = GoRuntime.Append(new List<Node> { state }, ids);
+        return ids;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    private Node createAccessExpression(Node node)
+    {
+        switch (true)
+        {
+            case true when Ast.IsQualifiedName(node):
+            {
+                return this.f.NewPropertyAccessExpression(this.createAccessExpression(node.AsQualifiedName().Left), null, this.f.DeepCloneNode(node.AsQualifiedName().Right), NodeFlags.None);
+            }
+
+            case true when Ast.IsIdentifier(node):
+            case true when Ast.IsPropertyAccessExpression(node):
+            case true when Ast.IsExpressionWithTypeArguments(node):
+            {
+                return this.f.DeepCloneNode(node);
+            }
+
+            default:
+            {
+                throw new InvalidOperationException(("unexpected access node kind: " + node.Kind.ToString()));
+            }
+        }
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    // nodebuilderimpl.go:1669. Default diagnostics disable expansion depth.
+    private Node typeToTypeNodeHelperWithPossibleReusableTypeNode(Type t, Node typeNode)
+    {
+        if (t == null)
+            return f.NewKeywordTypeNode(Kind.AnyKeyword);
+        if (!isActivelyExpanding() && typeNode != null && getTypeFromTypeNode(typeNode, false) == t)
+        {
+            var reused = tryReuseExistingNodeHelper(typeNode);
+            if (reused != null)
+            {
+                checkTypeExpandability(t);
+                return reused;
+            }
+        }
+
+        return typeToTypeNode(t);
+    }
+
+    // nodebuilderimpl.go:240. No public selected API enables expansion depth.
+    private void checkTypeExpandability(Type t)
+    {
+        if (ctx.maxExpansionDepth < 0 || t == null)
+            return;
+        throw Checker.unsupported("checkTypeExpandability: configured expansion depth");
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    // nodebuilderimpl.go:565. Preserve the actual object-side cache when abstract
+    // constructor signatures are factored out of a diagnostic intersection.
+    private Type getResolvedTypeWithoutAbstractConstructSignatures(StructuredType t)
+    {
+        if (GoRuntime.Len(t.ConstructSignatures()) == 0)
+            return t.AsType();
+        if (t.objectTypeWithoutAbstractConstructSignatures != null)
+            return t.objectTypeWithoutAbstractConstructSignatures;
+        var constructors = Core.Filter(t.ConstructSignatures(), signature => (signature.flags & SignatureFlags.Abstract) == 0);
+        if (GoRuntime.Len(constructors) == GoRuntime.Len(t.ConstructSignatures()))
+        {
+            t.objectTypeWithoutAbstractConstructSignatures = t.AsType();
+            return t.AsType();
+        }
+
+        var copy = ch.newAnonymousType(t.AsType().symbol, t.members, t.CallSignatures(), GoRuntime.Len(constructors) > 0 ? constructors : new List<Signature>(), t.indexInfos);
+        t.objectTypeWithoutAbstractConstructSignatures = copy;
+        copy.AsStructuredType().objectTypeWithoutAbstractConstructSignatures = copy;
+        return copy;
+    }
+}
+
+internal sealed partial class NodeBuilderImpl
+{
+    // nodebuilderimpl.go:213. Configured hover expansion is not exposed by the
+    // default diagnostic APIs; retain the actual disabled early-return arm.
+    private bool shouldExpandType(Type t, bool isAlias)
+    {
+        if (ctx.maxExpansionDepth < 0)
+            return false;
+        throw Checker.unsupported("shouldExpandType: configured hover expansion");
+    }
+
+    // nodebuilderimpl.go:2372. Reverse-mapped placeholders are display-only.
+    private bool shouldUsePlaceholderForProperty(Symbol propertySymbol)
+    {
+        if ((ctx.flags & NodeBuilderFlags.AllowAnonymousIdentifier) == 0 || (propertySymbol.CheckFlags & CheckFlags.ReverseMapped) == 0)
+            return false;
+        if (GoSlices.Contains(ctx.reverseMappedStack, propertySymbol))
+            return true;
+        int length = GoRuntime.Len(ctx.reverseMappedStack);
+        if (length > 0)
+        {
+            var last = ctx.reverseMappedStack[length - 1];
+            if (ch.ReverseMappedSymbolLinks.Has(last))
+            {
+                var propertyType = ch.ReverseMappedSymbolLinks.TryGet(last).propertyType;
+                if (propertyType != null && (propertyType.objectFlags & ObjectFlags.Anonymous) == 0)
+                    return true;
+            }
+        }
+
+        const int maxDepth = 3;
+        if (length < maxDepth || !ch.ReverseMappedSymbolLinks.Has(propertySymbol))
+            return false;
+        var propMappedType = ch.ReverseMappedSymbolLinks.TryGet(propertySymbol).mappedType;
+        if (propMappedType?.symbol == null)
+            return false;
+        for (int i = 0; i < length; i++)
+        {
+            if (i > maxDepth)
+                break;
+            var prop = ctx.reverseMappedStack[length - 1 - i];
+            if (ch.ReverseMappedSymbolLinks.Has(prop))
+            {
+                var mappedType = ch.ReverseMappedSymbolLinks.TryGet(prop).mappedType;
+                if (mappedType != null && mappedType.symbol == propMappedType.symbol)
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

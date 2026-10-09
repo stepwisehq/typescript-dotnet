@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/tmp/collections-oracle",
+    "--support-projections"
+  ],
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceSha256": "d13fe8cb58f61d3da259cedecd8a20c6dd344a2ebe761a96f20caaec8d7be9e5",
+  "binarySha256": "cca91b8d18e50bd28524d99243aef5278bc23e1d6409c644591312d0cb846544",
+  "outputSha256": "cce29a500694f9e21782639ea28dfe2fc8bde421eb1003b45353dd63f1b9bce3",
+  "elapsedSeconds": 0.024,
+  "provenance": "Actual unmodified pinned core/collections/AST functions; authored bounded operation sequences. No compiler semantic instrumentation."
+}

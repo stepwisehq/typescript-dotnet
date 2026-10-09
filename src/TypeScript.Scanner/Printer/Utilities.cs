@@ -14,13 +14,18 @@ internal sealed partial class Printer
             return TypeScript.Scanner.Scanner.GetSourceTextOfNodeFromSourceFileByteString(currentSourceFile, node, false);
         if (node.Kind is Kind.NumericLiteral or Kind.BigIntLiteral)
             return node.Text();
-        if (node.Kind == Kind.NoSubstitutionTemplateLiteral)
+        if (node.Kind is Kind.NoSubstitutionTemplateLiteral or Kind.TemplateHead or Kind.TemplateMiddle or Kind.TemplateTail)
         {
-            var template = new StringBuilder();
-            template.Append('`');
-            escapeStringWorker(node.Text(), '`', template, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
-            template.Append('`');
-            return template.ToString();
+            var text = node.Text();
+            var rawText = node.TemplateLiteralLikeData().RawText;
+            var result = new StringBuilder();
+            result.Append(node.Kind is Kind.NoSubstitutionTemplateLiteral or Kind.TemplateHead ? '`' : '}');
+            if (rawText.Length > 0 || text.Length == 0)
+                result.Append(rawText);
+            else
+                escapeStringWorker(text, '`', result, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
+            result.Append(node.Kind is Kind.NoSubstitutionTemplateLiteral or Kind.TemplateTail ? "`" : "${");
+            return result.ToString();
         }
 
         if (node.Kind != Kind.StringLiteral)
@@ -55,6 +60,9 @@ internal sealed partial class Printer
             bool escape = ch is >= 0xD800 and <= 0xDFFF || ch == 0xFFFD && size == 1;
             switch (ch)
             {
+                case '$':
+                    escape = quote == '`' && i + 1 < s.Length && s[i + 1] == '{';
+                    break;
                 case '\\':
                     escape = true;
                     break;
@@ -62,8 +70,10 @@ internal sealed partial class Printer
                 case 0x2029:
                 case 0x85:
                 case '\r':
-                case '\n':
                     escape = true;
+                    break;
+                case '\n':
+                    escape = quote != '`';
                     break;
                 default:
                     if (ch == quote || ch <= 0x1F || !neverAsciiEscape && ch > 0x7F)
@@ -75,7 +85,12 @@ internal sealed partial class Printer
             {
                 if (pos < i)
                     b.Append(s.AsSpan(pos, i - pos));
-                if (ch > 0xFFFF)
+                if (ch == '\r' && quote == '`' && i + 1 < s.Length && s[i + 1] == '\n')
+                {
+                    size++;
+                    b.Append("\\r\\n");
+                }
+                else if (ch > 0xFFFF)
                 {
                     ch -= 0x10000;
                     encodeUtf16EscapeSequence(b, (ch >> 10) + 0xD800);
@@ -96,6 +111,8 @@ internal sealed partial class Printer
                         '\r' => "\\r",
                         '\n' => "\\n",
                         '\\' => "\\\\",
+                        '`' => "\\`",
+                        '$' => "\\$",
                         '"' => "\\\"",
                         '\'' => "\\'",
                         0x2028 => "\\u2028",

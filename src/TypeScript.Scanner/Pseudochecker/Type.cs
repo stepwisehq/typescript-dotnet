@@ -44,6 +44,8 @@ internal sealed class PseudoType
         return n;
     }
 
+    internal PseudoTypeTuple AsPseudoTypeTuple() => (PseudoTypeTuple)data;
+    internal static PseudoType NewPseudoTypeTuple(List<PseudoType> elements) => newPseudoType(PseudoTypeKind.Tuple, new PseudoTypeTuple { Elements = elements });
     internal PseudoTypeSingleCallSignature AsPseudoTypeSingleCallSignature() => (PseudoTypeSingleCallSignature)data;
     internal static PseudoType NewPseudoTypeSingleCallSignature(Node signature, List<PseudoParameter> parameters, List<TypeParameterDeclaration> typeParameters, PseudoType returnType) => newPseudoType(PseudoTypeKind.SingleCallSignature, new PseudoTypeSingleCallSignature { Signature = signature, Parameters = parameters, TypeParameters = typeParameters, ReturnType = returnType });
     internal PseudoTypeDirect AsPseudoTypeDirect() => (PseudoTypeDirect)data;
@@ -188,4 +190,10 @@ internal sealed class PseudoObjectMethod : PseudoObjectElement
     internal List<PseudoParameter> Parameters;
     internal List<TypeParameterDeclaration> TypeParameters;
     internal PseudoType ReturnType;
+}
+
+// pseudochecker/type.go:210. Actual syntactic const-tuple skeleton.
+internal sealed class PseudoTypeTuple : PseudoTypeBase
+{
+    internal List<PseudoType> Elements;
 }

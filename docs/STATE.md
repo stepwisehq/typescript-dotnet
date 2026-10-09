@@ -1,60 +1,74 @@
 # Current project state
 
-**No active implementation campaign. The fixed functions/callable-object contract is
-accepted and delivered in the commit containing this state.** No push or subsequent
-campaign is authorized. Start here after session loss; do not resume historical failed
-builds or regenerate hand-ported code from translation scaffolds.
+**Generic-collection contract accepted in the delivery commit containing this file.**
+Baseline `cfa6d2f`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
+No subsequent campaign is authorized automatically. If recovering before the delivery
+commit, inspect the saved uncommitted work, finish documentation review and commit it;
+do not discard it or regenerate the hand-reviewed port from historical scaffolding.
 
-## Accepted checkpoint
+## Accepted capability and evidence
 
-Read the [exact mandate](./CALLABLES-PROMPT.md), [contract](./CALLABLES-CONTRACT.md),
-[assessment](./CALLABLES-ASSESSMENT.md), [verification](./CALLABLES-VERIFICATION.md),
-[adaptations](./CALLABLES-DEPARTURES.md), [coverage](./callables-coverage.json) and
-[durable evidence](../validation/results/callables-verified.json).
-Baseline binder `de855ca`, foundation `2886d47`; upstream remains
-`fed0bf24149fb1ed36039212648bafdafc1ea10e`. Earlier binding state is preserved in
-[BINDING-COMPLETION-STATE.md](./BINDING-COMPLETION-STATE.md).
+Read the [exact mandate](./COLLECTIONS-PROMPT.md), fixed
+[contract](./COLLECTIONS-CONTRACT.md), [assessment](./COLLECTIONS-ASSESSMENT.md),
+[guide](./COLLECTIONS.md) and [durable proof](../validation/results/collections-verified.json).
+The explicit Collections profile checks one valid TS script with complete genuine
+ES5/decorators/decorators.legacy declarations, fixed options and authentic skipLibCheck
+policy. It supports the agreed generic inference, arrays/readonly/concrete tuples,
+selected collection APIs, rest/spread, keyed/mapped/conditional utilities and loops.
+Libraries are parsed/bound and demanded declarations remain real; whole-library body
+checking, full checker parity and project checking are not claimed.
 
-Source SHA: `32e043af7ec8419dbee4ce132be7cb72df84ef56a148d564c1a081dc989302df`.
-Verification-assets SHA: `3af53ddfe83af1841091aa73608fb2fe1460adfdc8b8ef5f08628ba668e06a95`.
-Final Native AOT gate: Linux x64, 512.357 seconds, all drift flags false.
-All 23,411 xUnit cases pass (3,838 scanner, 18,709 parser, 163 binder, 701 checker).
-All 89 actual-Go callable cases, 304 original numeric assertions, 43 admission controls,
-ten API assertions and 21 order observations per runtime pass. All retained foundation,
-binding and earlier semantic regressions pass; six native binary fingerprints match.
-Only Linux x64 is verified. Reproduction: `python3 tools/run-callables-gate.py`, then
-`python3 tools/record-callables-evidence.py` only after a complete successful run.
+Final gate: `python3 tools/run-collections-gate.py`, exit 0, **658.892 seconds**.
+Evidence recorded with `python3 tools/record-collections-evidence.py` after final
+independent review. No source, verification-asset or historical-asset drift.
 
-## Scope and preserved limitations
+- All **23,467 xUnit cases** pass, zero failures/skips: scanner 3,838, parser 18,709,
+  binder 163, checker 757 (701 retained +12 shared +44 collection oracle cases).
+- Actual **Linux x64 Native AOT**: all 44 rich collection comparisons, 12 shared checks,
+  and 18 order executions per runtime pass. Valid demo has zero applicable/missing-global
+  diagnostics; invalid demo retains all eight original diagnostics.
+- All 44 original ordinary outputs are byte-exact with/without observation metadata.
+  All 37 named members, 50 method overload declarations and three Array call declarations
+  have actual witnesses. All earlier scanner/parser/binder/checker native gates pass.
+- Seven native binaries, two Go oracles and 102 protected historical assets were checked.
+  Source SHA: `4b72bcbcae5b18e9322d2d45ecee624bc0d4b2f4d4b0ca109209fcf78f3fc9c3`.
+  Asset SHA: `5bfa508a7115d8b175af41cea303ba10c792656d7c025b53353b865a6655dda6`.
 
-Callable uses the real upstream checker with fixed noLib/noResolve ESNext,
-strictNullChecks/strictFunctionTypes/noImplicitAny/noImplicitThis. Legacy retains its
-accepted default behavior. Ordinary non-generic functions/arrows/methods/callable objects,
-overloads, contextual/inferred callbacks/returns, predicates, receivers and selected
-bodies/flow/operators are implemented. Arrays/rest/tuples/generics/async/classes/broader
-statements/libraries/modules/projects/emit remain excluded. Missing-library diagnostics
-remain exact and separate. Read the contract before interpreting successful checks.
+The final corpus is [manifest-driven](../validation/collections-corpus/manifest.json).
+Early snapshots are historical investigation, not extra acceptance cases. Test origin
+and exclusions are in [collections-tests.json](./collections-tests.json); API witnesses
+and observation limits are in [collections-coverage.json](./collections-coverage.json)
+and the [cache ledger](./progress/collections-retained-caches.md).
 
-All late review findings are closed: local interfaces, actual nonempty merged-interface
-anonymous instantiation caches, unique-symbol dependencies from caller declarations,
-interface/value merge handling and direct-if-body diagnostic 1156. Independent strict
-key/owner/cache observations and nine new cases preserve the original 80 expectations.
-The earlier 529.436-second pass is pre-closure evidence only, with six binaries and an
-87-file manifest under `artifacts/callables-validation/before-cache-closure-470449302c/`.
-Do not substitute its proof for the final corrected-source evidence.
+## Resumption, limitations and working lessons
 
-## Resumption and process
+Three explicit GPT-6.1 Sol owners were reused: [core](./progress/collections-core.md),
+[support](./progress/collections-support.md), [verification](./progress/collections-verification.md).
+Independent [source](./progress/review-collections-core.md) and
+[verification](./progress/review-collections-verification.md) reviews are closed for this
+contract. All source/tool/corpus owners stopped edits before the successful gate;
+subsequent changes were documentation and the recorded proof only.
 
-The same three explicitly selected GPT-6.1 Sol agents implemented and cross-reviewed:
-core owned Checker/GrammarChecks/Utilities/Exports and 24 central builds; verification
-owned Flow/admission/oracles/tests; support owned models/relations/formatters/numerics
-and final gates. Root owned scope, mapping, assessment and delivery. Main-session model
-metadata limitations remain disclosed; no model substitution was authorized. Token and
-cost telemetry are unavailable. No user clarification or package installation was needed.
+Direct Go-to-C# mapping and partial/authored distinctions remain in
+[source-map.json](../source-map.json). Code changes require affected verification and
+fresh native evidence as appropriate; do not reuse the proof for changed code/assets.
+Do not repeat completed broad audits without a new discrepancy or dependency.
 
-For a new authorized phase, use these state/contract/mapping records and file ownership
-instead of reconstructing old chat. Do not repeat broad foundation/binder audits without
-a concrete discrepancy. Source-reachability/cache-producing witnesses should be settled
-before expensive final gates. The recommended next substantial capability is generic
-collection checking with a bounded real library surface; it is a recommendation, not
-permission to start. Ordinary full application checking remains unavailable.
+Source destructuring, generic variadic tuples, classes/new, custom iterators/ES2015
+libraries, modules/projects/emit and other explicit contract exclusions remain.
+Whole private intern/formatter cache topology, untouched allocator backing and synthetic
+types absent from the selected observations are not inferred complete. Required internal
+library representations are distinct from excluded user syntax.
+
+Thirty numbered central build logs total 142.31 seconds of MSBuild-reported time;
+this excludes other builds, model/oracle/test effort and total campaign wall time.
+One comprehensive gate ran successfully. Token/cost telemetry is unavailable. No user
+installation or scope decision was needed beyond the mandate. A late cache-enum
+misclassification caused unnecessary metadata/build work; those hooks were removed.
+Detailed history and limitations remain in the assessment rather than being hidden.
+
+Recommended next campaign: bounded multi-file ES-module hosting and relative imports,
+exports/re-exports, cycles and cross-file generic calls/diagnostics. It needs a new
+mandate; package/Node resolution, broader libraries and common excluded syntax are
+separate limits. Prior callable state is in
+[CALLABLES-COMPLETION-STATE.md](./CALLABLES-COMPLETION-STATE.md).

@@ -851,12 +851,14 @@ public sealed partial class Checker
         var scope = flags & NodeFlags.BlockScoped;
         if (Ast.IsBindingPattern(node.Name()))
             throw unsupported("checkGrammarVariableDeclaration: binding pattern");
-        if (node.Parent.Parent.Kind != Kind.VariableStatement)
-            throw unsupported("checkGrammarVariableDeclaration: loop");
-        if ((flags & NodeFlags.Ambient) != 0)
-            checkAmbientInitializer(node);
-        else if (node.Initializer() == null && scope == NodeFlags.Const)
-            return grammarErrorOnNode(node, Diagnostics.X_0_declarations_must_be_initialized, "const");
+        if (node.Parent.Parent.Kind != Kind.ForInStatement && node.Parent.Parent.Kind != Kind.ForOfStatement)
+        {
+            if ((flags & NodeFlags.Ambient) != 0)
+                checkAmbientInitializer(node);
+            else if (node.Initializer() == null && scope == NodeFlags.Const)
+                return grammarErrorOnNode(node, Diagnostics.X_0_declarations_must_be_initialized, "const");
+        }
+
         var exclamation = node.AsVariableDeclaration().ExclamationToken;
         if (exclamation != null && (node.Parent.Parent.Kind != Kind.VariableStatement || node.Type() == null || node.Initializer() != null || (flags & NodeFlags.Ambient) != 0))
         {
@@ -1792,6 +1794,236 @@ public sealed partial class Checker
         if (Ast.IsElementAccessExpression(expr))
         {
             throw unsupported("isInitializerSimpleLiteralEnumReference: element access");
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarIndexSignatureParameters(IndexSignatureDeclaration node)
+    {
+        var paramNodes = node.Parameters.Nodes;
+        if ((GoRuntime.Len(paramNodes) == 0))
+        {
+            return this.grammarErrorOnNode(node.AsNode(), Diagnostics.An_index_signature_must_have_exactly_one_parameter);
+        }
+
+        var parameter = paramNodes[0].AsParameterDeclaration();
+        if ((GoRuntime.Len(paramNodes) != 1))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_must_have_exactly_one_parameter);
+        }
+
+        this.checkGrammarForDisallowedTrailingComma(node.Parameters, Diagnostics.An_index_signature_cannot_have_a_trailing_comma);
+        if ((parameter.DotDotDotToken != null))
+        {
+            return this.grammarErrorOnNode(parameter.DotDotDotToken, Diagnostics.An_index_signature_cannot_have_a_rest_parameter);
+        }
+
+        if ((parameter.Modifiers() != null))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_parameter_cannot_have_an_accessibility_modifier);
+        }
+
+        if ((parameter.QuestionToken != null))
+        {
+            return this.grammarErrorOnNode(parameter.QuestionToken, Diagnostics.An_index_signature_parameter_cannot_have_a_question_mark);
+        }
+
+        if ((parameter.Initializer != null))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_parameter_cannot_have_an_initializer);
+        }
+
+        var typeNode = parameter.Type;
+        if ((typeNode == null))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_parameter_must_have_a_type_annotation);
+        }
+
+        var t = this.getTypeFromTypeNode(typeNode);
+        if ((someType(t, (t2) =>
+        {
+            return ((t2.flags & TypeFlags.StringOrNumberLiteralOrUnique) != 0);
+        }) || this.isGenericType(t)))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_parameter_type_cannot_be_a_literal_type_or_generic_type_Consider_using_a_mapped_object_type_instead);
+        }
+
+        if (!everyType(t, this.isValidIndexKeyType))
+        {
+            return this.grammarErrorOnNode(parameter.Name(), Diagnostics.An_index_signature_parameter_type_must_be_string_number_symbol_or_a_template_literal_type);
+        }
+
+        if ((node.Type == null))
+        {
+            return this.grammarErrorOnNode(node.AsNode(), Diagnostics.An_index_signature_must_have_a_type_annotation);
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarIndexSignature(IndexSignatureDeclaration node)
+    {
+        return (this.checkGrammarModifiers(node.AsNode()) || this.checkGrammarIndexSignatureParameters(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarForInOrForOfStatement(ForInOrOfStatement forInOrOfStatement)
+    {
+        var asNode = forInOrOfStatement.AsNode();
+        if (this.checkGrammarStatementInAmbientContext(asNode))
+        {
+            return true;
+        }
+
+        if (forInOrOfStatement.Kind == Kind.ForOfStatement && forInOrOfStatement.AwaitModifier != null)
+            throw unsupported("checkGrammarForInOrForOfStatement: for-await outside Collections contract");
+        if ((((Ast.IsForOfStatement(asNode) && ((forInOrOfStatement.Flags & NodeFlags.AwaitContext) == 0)) && Ast.IsIdentifier(forInOrOfStatement.Initializer)) && (forInOrOfStatement.Initializer.Text() == "async")))
+        {
+            this.grammarErrorOnNode(forInOrOfStatement.Initializer, Diagnostics.The_left_hand_side_of_a_for_of_statement_may_not_be_async);
+            return false;
+        }
+
+        if ((forInOrOfStatement.Initializer.Kind == Kind.VariableDeclarationList))
+        {
+            var variableList = forInOrOfStatement.Initializer.AsVariableDeclarationList();
+            if (!this.checkGrammarVariableDeclarationList(variableList.AsNode()))
+            {
+                var declarations = variableList.Declarations;
+                if ((GoRuntime.Len(declarations.Nodes) == 0))
+                {
+                    return false;
+                }
+
+                if ((GoRuntime.Len(declarations.Nodes) > 1))
+                {
+                    Message diagnostic2 = default;
+                    if ((forInOrOfStatement.Kind == Kind.ForInStatement))
+                    {
+                        diagnostic2 = Diagnostics.Only_a_single_variable_declaration_is_allowed_in_a_for_in_statement;
+                    }
+                    else
+                    {
+                        diagnostic2 = Diagnostics.Only_a_single_variable_declaration_is_allowed_in_a_for_of_statement;
+                    }
+
+                    return this.grammarErrorOnFirstToken(declarations.Nodes[1], diagnostic2);
+                }
+
+                var firstVariableDeclaration = declarations.Nodes[0].AsVariableDeclaration();
+                if ((firstVariableDeclaration.Initializer != null))
+                {
+                    Message diagnostic3 = default;
+                    if ((forInOrOfStatement.Kind == Kind.ForInStatement))
+                    {
+                        diagnostic3 = Diagnostics.The_variable_declaration_of_a_for_in_statement_cannot_have_an_initializer;
+                    }
+                    else
+                    {
+                        diagnostic3 = Diagnostics.The_variable_declaration_of_a_for_of_statement_cannot_have_an_initializer;
+                    }
+
+                    return this.grammarErrorOnNode(firstVariableDeclaration.Name(), diagnostic3);
+                }
+
+                if ((firstVariableDeclaration.Type != null))
+                {
+                    Message diagnostic4 = default;
+                    if ((forInOrOfStatement.Kind == Kind.ForInStatement))
+                    {
+                        diagnostic4 = Diagnostics.The_left_hand_side_of_a_for_in_statement_cannot_use_a_type_annotation;
+                    }
+                    else
+                    {
+                        diagnostic4 = Diagnostics.The_left_hand_side_of_a_for_of_statement_cannot_use_a_type_annotation;
+                    }
+
+                    return this.grammarErrorOnNode(firstVariableDeclaration.AsNode(), diagnostic4);
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarBreakOrContinueStatement(Node node)
+    {
+        var targetLabel = node.Label();
+        if (targetLabel != null)
+            throw unsupported("checkGrammarBreakOrContinueStatement: labeled source jump");
+        Node current = node;
+        while ((current != null))
+        {
+            if (Ast.IsFunctionLikeOrClassStaticBlockDeclaration(current))
+            {
+                return this.grammarErrorOnNode(node, Diagnostics.Jump_target_cannot_cross_function_boundary);
+            }
+
+            switch (current.Kind)
+            {
+                case Kind.LabeledStatement:
+                    throw unsupported("checkGrammarBreakOrContinueStatement: source label");
+                case Kind.SwitchStatement:
+                    throw unsupported("checkGrammarBreakOrContinueStatement: source switch");
+                default:
+                {
+                    if ((Ast.IsIterationStatement(current, false) && (targetLabel == null)))
+                    {
+                        return false;
+                    }
+
+                    break;
+                }
+            }
+
+            current = current.Parent;
+        }
+
+        Message message2 = default;
+        if ((node.Kind == Kind.BreakStatement))
+        {
+            message2 = Diagnostics.A_break_statement_can_only_be_used_within_an_enclosing_iteration_or_switch_statement;
+        }
+        else
+        {
+            message2 = Diagnostics.A_continue_statement_can_only_be_used_within_an_enclosing_iteration_statement;
+        }
+
+        return this.grammarErrorOnNode(node, message2);
+    }
+}
+
+public sealed partial class Checker
+{
+    // grammarchecks.go:120.
+    private bool checkGrammarMappedType(MappedTypeNode node)
+    {
+        if (GoRuntime.Len(node.Members?.Nodes) > 0)
+            return grammarErrorOnNode(node.Members.Nodes[0], Diagnostics.A_mapped_type_may_not_declare_properties_or_methods);
+        return false;
+    }
+
+    // grammarchecks.go:1351 selected type operators. Written unique symbol is outside profile.
+    private bool checkGrammarTypeOperatorNode(TypeOperatorNode node)
+    {
+        if (node.Operator == Kind.UniqueKeyword)
+            throw unsupported("checkGrammarTypeOperatorNode: source unique symbol");
+        if (node.Operator == Kind.ReadonlyKeyword)
+        {
+            var innerType = node.Type;
+            if (innerType.Kind != Kind.ArrayType && innerType.Kind != Kind.TupleType)
+                return grammarErrorOnFirstToken(node.AsNode(), Diagnostics.X_readonly_type_modifier_is_only_permitted_on_array_and_tuple_literal_types, TypeScript.Scanner.Scanner.TokenToString(Kind.SymbolKeyword));
         }
 
         return false;

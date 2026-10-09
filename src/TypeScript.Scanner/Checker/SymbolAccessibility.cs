@@ -9,7 +9,8 @@ using TypeScript.DiagnosticPrinting;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
-    private readonly symbolArenaLinkStore<ContainingSymbolLinks> symbolContainerLinks = new();
+    // checker.go:700. Logical identity keys do not allocate SymbolIds on lookup.
+    private readonly LinkStore<Symbol, ContainingSymbolLinks> symbolContainerLinks = new();
     private readonly Dictionary<ulong, List<Symbol>> symbolTableAliasCache = new();
     internal bool IsValueSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Value, false, true).Accessibility == SymbolAccessibility.Accessible;
     internal bool IsTypeSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Type, false, true).Accessibility == SymbolAccessibility.Accessible;

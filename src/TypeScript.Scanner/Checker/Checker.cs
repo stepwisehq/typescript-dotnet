@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/checker.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Selected scalar declaration branches; omitted branches throw explicitly.
+// Selected scalar/data/callable/collection branches; omitted paths throw explicitly.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -9,6 +9,12 @@ namespace TypeScript.Checking;
 public sealed partial class Checker
 {
     internal SourceFile sourceFile;
+    // Authored profile state only for capability guards, never type semantics.
+    private bool authoredCollectionsProfile;
+    internal List<SourceFile> files;
+    internal Dictionary<SourceFile, int> fileIndexMap;
+    public IReadOnlyList<SourceFile> SourceFiles => files;
+
     internal CompilerOptions compilerOptions;
     internal readonly SymbolTable globals = new();
     internal Symbol undefinedSymbol, argumentsSymbol, requireSymbol, unknownSymbol, globalThisSymbol;
@@ -28,6 +34,42 @@ public sealed partial class Checker
     private readonly Dictionary<string, Type> stringLiteralTypes = new(StringComparer.Ordinal);
     private readonly Dictionary<JsNum.Number, Type> numberLiteralTypes = new();
     private readonly Dictionary<CacheHashKey, Type> unionTypes = new();
+    private readonly Dictionary<CacheHashKey, Type> tupleTypes = new();
+    private readonly Dictionary<CacheHashKey, Type> templateLiteralTypes = new();
+    private const int maxTemplateLiteralTypeLength = 50_000_000;
+    private const int maxTemplateLiteralTypeSpans = 100_000;
+    private List<VarianceFlags> arrayVariances = [VarianceFlags.Covariant];
+    private readonly record struct ReverseMappedTypeKey(uint sourceId, uint targetId, uint constraintId);
+    private readonly Dictionary<ReverseMappedTypeKey, Type> reverseMappedCache = new();
+    private readonly Dictionary<CacheHashKey, Type> indexedAccessTypes = new();
+    private readonly Dictionary<ReverseMappedTypeKey, Type> reverseHomomorphicMappedCache = new();
+    private HashSet<Node> skipDirectInferenceNodes = null;
+    private List<Type> reverseMappedSourceStack, reverseMappedTargetStack;
+    private ExpandingFlags reverseExpandingFlags;
+    private Type blockedStringType, numericStringType;
+    private int conditionalConstraintDepth;
+    private TypeMapper reportUnmeasurableMapper, restrictiveMapper;
+    private IndexInfo enumNumberIndexInfo;
+    private readonly record struct SubstitutionTypeKey(uint baseId, uint constraintId);
+    private readonly Dictionary<SubstitutionTypeKey, Type> substitutionTypes = new();
+    internal readonly LinkStore<Symbol, ReverseMappedSymbolLinks> ReverseMappedSymbolLinks = new();
+    [Flags]
+    internal enum MappedTypeModifiers : uint
+    {
+        None = 0,
+        IncludeReadonly = 1,
+        ExcludeReadonly = 2,
+        IncludeOptional = 4,
+        ExcludeOptional = 8
+    }
+
+    private enum MappedTypeNameTypeKind : int
+    {
+        None = 0,
+        Filtering = 1,
+        Remapping = 2
+    }
+
     private readonly Dictionary<(uint, uint, UnionReduction, CacheHashKey), Type> unionOfUnionTypes = new();
     // checker.go:118/147. Only this cache kind is selected; other users remain excluded.
     private enum CachedTypeKind
@@ -38,31 +80,54 @@ public sealed partial class Checker
         EquivalentBaseType = 3,
         ApparentType = 4,
         AwaitedType = 5,
+        EvolvingArrayType = 6,
+        ArrayLiteralType = 7,
+        PermissiveInstantiation = 8,
+        RestrictiveInstantiation = 9,
+        RestrictiveTypeParameter = 10,
+        IndexedAccessForReading = 11,
+        IndexedAccessForWriting = 12,
         Widened = 13,
         RegularObjectLiteral = 14,
-        PromisedTypeOfPromise = 15
+        PromisedTypeOfPromise = 15,
+        DefaultOnlyType = 16,
+        SyntheticType = 17,
+        DecoratorContext = 18,
+        DecoratorContextStatic = 19,
+        DecoratorContextPrivate = 20,
+        DecoratorContextPrivateStatic = 21
     }
 
     private readonly record struct CachedTypeKey(CachedTypeKind kind, uint typeId);
     private readonly Dictionary<CachedTypeKey, Type> cachedTypes = new();
+    private readonly NodeFactory factory = new();
+    internal readonly LinkStore<Node, ArrayLiteralLinks> arrayLiteralLinks = new();
     private Type nanType;
     private Node currentNode, lastGetCombinedNodeFlagsNode;
     private NodeFlags lastGetCombinedNodeFlagsResult;
     private readonly DiagnosticsCollection diagnostics = new();
     private DiagnosticsCollection globalDiagnostics => diagnostics;
 
-    // Scoped adaptation of NewChecker (913): fixed options, one script, no tracer/host.
-    // Omitted caches, signatures, iteration resolvers and module state are unreachable
-    // after admission; their semantic branches throw rather than use default values.
+    // Scoped adaptation of NewChecker (913): one user script and an explicit fixed
+    // declaration environment. General module/project discovery remains excluded.
     internal static Checker CreateCore(SourceFile file) => CreateCore(file, CheckerProfile.Legacy);
-    internal static Checker CreateCore(SourceFile file, CheckerProfile profile)
+    internal static Checker CreateCore(SourceFile file, CheckerProfile profile) => CreateCore(file, profile, null);
+    internal static Checker CreateCore(SourceFile file, CheckerProfile profile, IReadOnlyList<SourceFile> libraryFiles)
     {
-        Binder.BindSourceFile(file);
+        var files = new List<SourceFile>();
+        if (libraryFiles != null)
+            files.AddRange(libraryFiles);
+        files.Add(file);
+        foreach (var source in files)
+            Binder.BindSourceFile(source);
         var c = new Checker
         {
             sourceFile = file,
+            files = files,
+            fileIndexMap = createFileIndexMap(files),
             compilerOptions = new CompilerOptions()
         };
+        c.authoredCollectionsProfile = profile == CheckerProfile.Collections;
         c.initializeScalarOptions(profile);
         c.emitStandardClassFields = c.compilerOptions.GetEmitStandardClassFields();
         c.undefinedSymbol = c.newSymbol(SymbolFlags.Property, "undefined");
@@ -78,6 +143,7 @@ public sealed partial class Checker
         c.anyType = c.newIntrinsicType(TypeFlags.Any, "any");
         c.autoType = c.newIntrinsicTypeEx(TypeFlags.Any, "any", ObjectFlags.NonInferrableType);
         c.wildcardType = c.newIntrinsicType(TypeFlags.Any, "any");
+        c.blockedStringType = c.newIntrinsicType(TypeFlags.Any, "any");
         c.errorType = c.newIntrinsicType(TypeFlags.Any, "error");
         c.unresolvedType = c.newIntrinsicType(TypeFlags.Any, "unresolved");
         c.nonInferrableAnyType = c.newIntrinsicTypeEx(TypeFlags.Any, "any", ObjectFlags.ContainsWideningType);
@@ -114,10 +180,13 @@ public sealed partial class Checker
         c.uniqueLiteralMapper = newFunctionTypeMapper(c.getUniqueLiteralTypeForTypeParameter);
         c.permissiveMapper = newFunctionTypeMapper(c.permissiveMapperWorker);
         c.reportUnreliableMapper = newFunctionTypeMapper(c.reportUnreliableWorker);
+        c.reportUnmeasurableMapper = newFunctionTypeMapper(c.reportUnmeasurableWorker);
+        c.restrictiveMapper = newFunctionTypeMapper(c.restrictiveMapperWorker);
         c.emptyObjectType = c.newAnonymousType(null, null);
         c.emptyGenericType = c.newAnonymousType(null, null);
         c.unknownEmptyObjectType = c.newAnonymousType(null, null);
         c.unknownUnionType = c.createUnknownUnionType();
+        c.resolvingDefaultType = c.newAnonymousType(null, null);
         c.noConstraintType = c.newAnonymousType(null, null);
         c.circularConstraintType = c.newAnonymousType(null, null);
         c.emptyTypeLiteralType = c.newAnonymousType(c.newSymbol(SymbolFlags.TypeLiteral, Ast.InternalSymbolNameType), null);
@@ -125,6 +194,9 @@ public sealed partial class Checker
         c.markerSubType = c.newTypeParameter(null);
         c.markerSubType.AsTypeParameter().constraint = c.markerSuperType;
         c.markerOtherType = c.newTypeParameter(null);
+        c.markerSuperTypeForCheck = c.newTypeParameter(null);
+        c.markerSubTypeForCheck = c.newTypeParameter(null);
+        c.markerSubTypeForCheck.AsTypeParameter().constraint = c.markerSuperTypeForCheck;
         c.anyFunctionType = c.newAnonymousType(null, null);
         c.anyFunctionType.objectFlags |= ObjectFlags.NonInferrableType;
         c.noTypePredicate = new TypePredicate
@@ -143,28 +215,48 @@ public sealed partial class Checker
         c.zeroBigIntType = c.getBigIntLiteralType(new JsNum.PseudoBigInt());
         c.typeofType = c.getUnionType(typeofNEFacts.Keys.OrderBy(k => k, StringComparer.Ordinal).Select(c.getStringLiteralType).ToList());
         c.anyBaseTypeIndexInfo = c.newIndexInfo(c.stringType, c.anyType, false, null, null);
+        c.enumNumberIndexInfo = c.newIndexInfo(c.numberType, c.stringType, true, null, null);
         c.getGlobalESSymbolConstructorSymbolOrNil = c.getGlobalValueSymbolResolver("Symbol", false);
         c.getGlobalESSymbolConstructorTypeSymbolOrNil = c.getGlobalTypeSymbolResolver("SymbolConstructor", false);
         c.getGlobalNaNSymbolOrNil = c.getGlobalValueSymbolResolver("NaN", false);
         c.getGlobalAwaitedSymbol = memoize(() => c.getGlobalTypeAliasSymbol("Awaited", 1, true));
         c.getGlobalAwaitedSymbolOrNil = memoize(() => c.getGlobalTypeAliasSymbol("Awaited", 1, false));
         c.getGlobalPromiseTypeChecked = memoize(() => c.getGlobalType("Promise", 1, true));
+        if (profile == CheckerProfile.Collections)
+        {
+            c.numericStringType = c.getTemplateLiteralType(["", ""], [c.numberType]);
+            c.stringOrNumberType = c.getUnionType([c.stringType, c.numberType]);
+            c.stringNumberSymbolType = c.getUnionType([c.stringType, c.numberType, c.esSymbolType]);
+        }
+
+        c.initializeSyncIterationTypesResolver();
         c.initializeChecker();
         return c;
     }
 
-    // initializeChecker (1309), one global script, no augmentations or modules.
+    // checker.go:1128. Stable source-file order belongs to the checker environment.
+    private static Dictionary<SourceFile, int> createFileIndexMap(List<SourceFile> files)
+    {
+        var result = new Dictionary<SourceFile, int>(ReferenceEqualityComparer.Instance);
+        for (var i = 0; i < files.Count; i++)
+            result[files[i]] = i;
+        return result;
+    }
+
+    // initializeChecker (1309), actual ordered fixed-file globals; module loading excluded.
     private void initializeChecker()
     {
-        foreach (var(name, symbol)in sourceFile.Locals ?? new SymbolTable())
+        foreach (var file in files)
         {
-            if (name == globalThisSymbol.Name)
-                foreach (var declaration in symbol.Declarations)
-                    error(declaration, Diagnostics.Declaration_name_conflicts_with_built_in_global_identifier_0, name);
-            else if (globals.ContainsKey(name))
-                throw unsupported("initializeChecker: global symbol merging");
-            else
-                globals[name] = symbol;
+            // The fixed roots are scripts. Import/module augmentation and pattern
+            // ambient modules remain outside this explicit library environment.
+            if (Ast.IsExternalOrCommonJSModule(file) || (file.ModuleAugmentations?.Count ?? 0) != 0 || (file.PatternAmbientModules?.Count ?? 0) != 0)
+                throw unsupported("initializeChecker: module environment");
+            if (file.Locals?[globalThisSymbol.Name] is { } conflict)
+                foreach (var declaration in conflict.Declarations ?? [])
+                    error(declaration, Diagnostics.Declaration_name_conflicts_with_built_in_global_identifier_0, globalThisSymbol.Name);
+            foreach (var symbol in file.Locals?.Values.AsEnumerable() ?? [])
+                mergeGlobalSymbol(symbol);
         }
 
         addUndefinedToGlobalsOrErrorOnRedeclaration();
@@ -183,6 +275,16 @@ public sealed partial class Checker
         globalBooleanType = getGlobalType("Boolean", 0, true);
         getGlobalType("RegExp", 0, true);
         globalReadonlyArrayType = getGlobalType("ReadonlyArray", 1, false);
+        if (globalReadonlyArrayType == emptyGenericType)
+            globalReadonlyArrayType = globalArrayType;
+        if (files.Count > 1)
+        {
+            anyArrayType = createArrayType(anyType);
+            autoArrayType = createArrayType(autoType);
+            if (autoArrayType == emptyObjectType)
+                autoArrayType = newAnonymousType(null, null);
+            anyReadonlyArrayType = createTypeFromGenericGlobalType(globalReadonlyArrayType, [anyType]);
+        }
     }
 
     // getGlobalType (1210), missing built-ins in the fixed noLib environment.
@@ -221,7 +323,7 @@ public sealed partial class Checker
     }
 
     // newSymbol/newSymbolEx retain checker-owned transient symbols.
-    private Symbol newSymbol(SymbolFlags flags, string name) => newSymbolEx(flags, name, CheckFlags.None);
+    internal Symbol newSymbol(SymbolFlags flags, string name) => newSymbolEx(flags, name, CheckFlags.None);
     private Symbol newSymbolEx(SymbolFlags flags, string name, CheckFlags checkFlags)
     {
         SymbolCount++;
@@ -248,7 +350,7 @@ public sealed partial class Checker
         return diagnostics.GetGlobalDiagnostics();
     }
 
-    // checkSourceFile (2240): script-only; no deferred/unused nodes admitted.
+    // checkSourceFile (2240): user script checking with original deferred/registration work.
     private void checkSourceFile()
     {
         var links = sourceFileLinks.Get(sourceFile.AsNode());
@@ -294,6 +396,7 @@ public sealed partial class Checker
             case Kind.FunctionDeclaration:
                 checkFunctionDeclaration(node);
                 break;
+            case Kind.IndexSignature:
             case Kind.FunctionType:
             case Kind.CallSignature:
                 checkSignatureDeclaration(node);
@@ -301,6 +404,22 @@ public sealed partial class Checker
             case Kind.MethodDeclaration:
             case Kind.MethodSignature:
                 checkMethodDeclaration(node);
+                break;
+            case Kind.DoStatement:
+                checkDoStatement(node);
+                break;
+            case Kind.WhileStatement:
+                checkWhileStatement(node);
+                break;
+            case Kind.ForStatement:
+                checkForStatement(node);
+                break;
+            case Kind.ForOfStatement:
+                checkForOfStatement(node);
+                break;
+            case Kind.BreakStatement:
+            case Kind.ContinueStatement:
+                checkBreakOrContinueStatement(node);
                 break;
             case Kind.IfStatement:
                 checkIfStatement(node);
@@ -326,6 +445,9 @@ public sealed partial class Checker
             case Kind.VariableDeclaration:
                 checkVariableDeclaration(node);
                 break;
+            case Kind.TypeParameter:
+                checkTypeParameter(node);
+                break;
             case Kind.TypeAliasDeclaration:
                 checkTypeAliasDeclaration(node);
                 break;
@@ -346,6 +468,34 @@ public sealed partial class Checker
             case Kind.TypeLiteral:
                 checkTypeLiteral(node);
                 break;
+            case Kind.ArrayType:
+                checkArrayType(node);
+                break;
+            case Kind.TupleType:
+                checkTupleType(node);
+                break;
+            case Kind.NamedTupleMember:
+                checkNamedTupleMember(node);
+                break;
+            case Kind.OptionalType:
+            case Kind.RestType:
+                checkSourceElement(node.Type());
+                break;
+            case Kind.TypeOperator:
+                checkTypeOperator(node);
+                break;
+            case Kind.IndexedAccessType:
+                checkIndexedAccessType(node);
+                break;
+            case Kind.MappedType:
+                checkMappedType(node);
+                break;
+            case Kind.ConditionalType:
+                checkConditionalType(node);
+                break;
+            case Kind.InferType:
+                checkInferType(node);
+                break;
             case Kind.PropertySignature:
                 checkPropertySignature(node);
                 break;
@@ -362,6 +512,9 @@ public sealed partial class Checker
             case Kind.NeverKeyword:
             case Kind.LiteralType:
                 getTypeFromTypeNode(node);
+                break;
+            case Kind.TypePredicate:
+                checkTypePredicate(node);
                 break;
             case Kind.ParenthesizedType:
                 node.ForEachChild(child =>
@@ -492,7 +645,6 @@ public sealed partial class Checker
     }
 
     private readonly Dictionary<Symbol, Symbol> mergedSymbols = new();
-    internal Symbol getMergedSymbol(Symbol symbol) => symbol != null && mergedSymbols.TryGetValue(symbol, out var merged) ? merged : symbol;
     internal Symbol getSymbol(SymbolTable symbols, string name, SymbolFlags meaning)
     {
         if ((meaning & SymbolFlags.All) != 0)
@@ -552,7 +704,7 @@ public sealed partial class Checker
     }
 
     // newObjectType/newAnonymousType/setStructuredTypeMembers: initialization markers only.
-    private Type newAnonymousType(Symbol symbol, SymbolTable members, List<Signature> callSignatures = null, List<Signature> constructSignatures = null, List<IndexInfo> indexInfos = null)
+    internal Type newAnonymousType(Symbol symbol, SymbolTable members, List<Signature> callSignatures = null, List<Signature> constructSignatures = null, List<IndexInfo> indexInfos = null)
     {
         var t = newObjectType(ObjectFlags.Anonymous, symbol);
         setStructuredTypeMembers(t, members, callSignatures, constructSignatures, indexInfos);
@@ -740,8 +892,10 @@ public sealed partial class Checker
                 typeSet.RemoveAt(1);
             if ((includes & (TypeFlags.Enum | TypeFlags.Literal | TypeFlags.UniqueESSymbol | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 || (includes & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0)
                 typeSet = removeRedundantLiteralTypes(typeSet, includes, reduction == UnionReduction.Subtype);
-            if ((includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.IncludesConstrainedTypeVariable)) != 0)
-                throw unsupported("getUnionTypeWorker: template/constrained types");
+            if ((includes & TypeFlags.StringLiteral) != 0 && (includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
+                typeSet = removeStringLiteralsMatchedByTemplateLiterals(typeSet);
+            if ((includes & TypeFlags.IncludesConstrainedTypeVariable) != 0)
+                typeSet = removeConstrainedTypeVariables(typeSet);
             if (reduction == UnionReduction.Subtype)
             {
                 typeSet = removeSubtypes(typeSet, (includes & TypeFlags.Object) != 0);
@@ -800,6 +954,10 @@ public sealed partial class Checker
             if ((flags & TypeFlags.EnumLike) != 0)
                 throw unsupported("addTypesToUnion: nonscalar constituent");
             includes |= flags & TypeFlags.IncludesMask;
+            if ((flags & TypeFlags.Instantiable) != 0)
+                includes |= TypeFlags.IncludesInstantiable;
+            if ((flags & TypeFlags.Intersection) != 0 && (t.objectFlags & ObjectFlags.IsConstrainedTypeVariable) != 0)
+                includes |= TypeFlags.IncludesConstrainedTypeVariable;
             if (t == wildcardType)
                 includes |= TypeFlags.IncludesWildcard;
             if (isErrorType(t))
@@ -882,7 +1040,7 @@ public sealed partial class Checker
         return getUnionType([t, missingOrUndefined]);
     }
 
-    private Type convertAutoToAny(Type t) => t == autoType ? anyType : t;
+    private Type convertAutoToAny(Type t) => t == autoType ? anyType : t == autoArrayType ? anyArrayType : t;
     // checker.go:27172. Unresolved-name alias instances behave as error types.
     internal bool isErrorType(Type t) => t == errorType || (t.flags & TypeFlags.Any) != 0 && t.alias != null;
     private bool containsUndefinedType(Type t)
@@ -901,10 +1059,10 @@ public sealed partial class Checker
     internal readonly LinkStore<Node, NodeLinks> nodeLinks = new();
     internal readonly LinkStore<Node, SignatureLinks> signatureLinks = new();
     internal readonly nodeLinkStore<SymbolNodeLinks> symbolNodeLinks = new();
-    internal readonly symbolArenaLinkStore<MappedSymbolLinks> mappedSymbolLinks = new();
+    internal readonly LinkStore<Symbol, MappedSymbolLinks> mappedSymbolLinks = new();
     internal readonly LinkStore<Node, TypeNodeLinks> typeNodeLinks = new();
     internal readonly symbolArenaLinkStore<ValueSymbolLinks> valueSymbolLinks = new();
-    internal readonly symbolArenaLinkStore<SymbolReferenceLinks> symbolReferenceLinks = new();
+    internal readonly LinkStore<Symbol, SymbolReferenceLinks> symbolReferenceLinks = new();
     private enum TypeSystemPropertyName
     {
         Type,
@@ -928,9 +1086,9 @@ public sealed partial class Checker
 
     private readonly List<TypeResolution> typeResolutions = new();
     private int resolutionStart;
-    internal readonly symbolArenaLinkStore<TypeAliasLinks> typeAliasLinks = new();
-    internal readonly symbolArenaLinkStore<DeclaredTypeLinks> declaredTypeLinks = new();
-    internal readonly symbolArenaLinkStore<DeferredSymbolLinks> deferredSymbolLinks = new();
+    internal readonly LinkStore<Symbol, TypeAliasLinks> typeAliasLinks = new();
+    internal readonly LinkStore<Symbol, DeclaredTypeLinks> declaredTypeLinks = new();
+    internal readonly LinkStore<Symbol, DeferredSymbolLinks> deferredSymbolLinks = new();
     private readonly Dictionary<string, Symbol> unresolvedSymbols = new(StringComparer.Ordinal);
     private readonly Dictionary<CacheHashKey, Type> errorTypes = new();
     private void initializeScalarOptions(CheckerProfile profile)
@@ -939,11 +1097,18 @@ public sealed partial class Checker
         compilerOptions.NoLib = Tristate.True;
         compilerOptions.Strict = Tristate.False;
         compilerOptions.StrictNullChecks = Tristate.True;
-        noImplicitAny = noImplicitThis = strictFunctionTypes = profile == CheckerProfile.Callable;
+        noImplicitAny = noImplicitThis = strictFunctionTypes = profile != CheckerProfile.Legacy;
         compilerOptions.NoImplicitAny = noImplicitAny ? Tristate.True : Tristate.False;
         compilerOptions.NoImplicitThis = noImplicitThis ? Tristate.True : Tristate.False;
         compilerOptions.StrictFunctionTypes = strictFunctionTypes ? Tristate.True : Tristate.False;
         compilerOptions.StrictBindCallApply = Tristate.False;
+        if (profile == CheckerProfile.Collections)
+        {
+            compilerOptions.NoResolve = Tristate.True;
+            compilerOptions.SkipLibCheck = Tristate.True;
+            compilerOptions.DownlevelIteration = Tristate.False;
+            compilerOptions.NoUncheckedIndexedAccess = Tristate.False;
+        }
     }
 
     // createNameResolver (1510), actual callbacks retained; omitted feature hooks throw.
@@ -1229,13 +1394,25 @@ public sealed partial class Checker
         return false;
     }
 
-    private static bool isImmediatelyUsedInInitializerOfBlockScopedVariable(Node declaration, Node usage, Node container)
+    private static bool isImmediatelyUsedInInitializerOfBlockScopedVariable(Node declaration, Node usage, Node declContainer)
     {
-        if (declaration.Parent.Parent.Kind == Kind.VariableStatement && isSameScopeDescendentOf(usage, declaration, container))
-            return true;
-        if (declaration.Parent.Parent.Kind != Kind.VariableStatement)
-            throw unsupported("isImmediatelyUsedInInitializerOfBlockScopedVariable: loop declaration");
-        return false;
+        switch (declaration.Parent.Parent.Kind)
+        {
+            case Kind.VariableStatement:
+            case Kind.ForStatement:
+            case Kind.ForOfStatement:
+            {
+                if (isSameScopeDescendentOf(usage, declaration, declContainer))
+                {
+                    return true;
+                }
+
+                break;
+            }
+        }
+
+        var grandparent = declaration.Parent.Parent;
+        return (Ast.IsForInOrOfStatement(grandparent) && isSameScopeDescendentOf(usage, grandparent.Expression(), declContainer));
     }
 
     private static bool isSameScopeDescendentOf(Node initial, Node parent, Node stopAt)
@@ -1278,8 +1455,10 @@ public sealed partial class Checker
             return getTypeOfSymbolWithDeferredType(symbol);
         if ((symbol.CheckFlags & CheckFlags.Instantiated) != 0)
             return getTypeOfInstantiatedSymbol(symbol);
-        if ((symbol.CheckFlags & (CheckFlags.Mapped | CheckFlags.ReverseMapped)) != 0)
-            throw unsupported("getTypeOfSymbol: transformed symbol");
+        if ((symbol.CheckFlags & CheckFlags.Mapped) != 0)
+            return getTypeOfMappedSymbol(symbol);
+        if ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0)
+            return getTypeOfReverseMappedSymbol(symbol);
         if ((symbol.Flags & SymbolFlags.Accessor) != 0)
             throw unsupported("getTypeOfSymbol: accessor");
         if ((symbol.Flags & (SymbolFlags.Variable | SymbolFlags.Property)) != 0)
@@ -1491,13 +1670,18 @@ public sealed partial class Checker
     {
         if (Ast.IsVariableDeclaration(declaration))
         {
-            if (declaration.Parent.Parent.Kind is Kind.ForInStatement or Kind.ForOfStatement)
-                throw unsupported("getTypeForVariableLikeDeclaration: loop");
+            var grandParent = declaration.Parent.Parent;
+            if (grandParent.Kind == Kind.ForInStatement)
+                throw unsupported("getTypeForVariableLikeDeclaration: source for-in");
+            if (grandParent.Kind == Kind.ForOfStatement)
+                return checkRightHandSideOfForOf(grandParent);
         }
         else if (Ast.IsBindingElement(declaration))
             throw unsupported("getTypeForVariableLikeDeclaration: binding element");
         bool isProperty = Ast.IsPropertySignatureDeclaration(declaration), isOptional = includeOptionality && isOptionalDeclaration(declaration);
         var declaredType = tryGetTypeFromTypeNode(declaration);
+        if (Ast.IsParameterDeclaration(declaration) && hasDotDotDotToken(declaration))
+            validateCollectionsResolvedRestType(declaration, declaredType);
         if (Ast.IsCatchClauseVariableDeclarationOrBindingElement(declaration))
             throw unsupported("getTypeForVariableLikeDeclaration: catch");
         if (declaredType != null)
@@ -1507,8 +1691,8 @@ public sealed partial class Checker
             var initializer = declaration.Initializer();
             if ((getCombinedNodeFlagsCached(declaration) & NodeFlags.Constant) == 0 && (initializer == null || isNullOrUndefined(initializer)))
                 return autoType;
-            if (initializer?.Kind == Kind.ArrayLiteralExpression)
-                throw unsupported("getTypeForVariableLikeDeclaration: auto array");
+            if (initializer != null && Ast.IsEmptyArrayLiteral(initializer))
+                return autoArrayType;
         }
 
         if (Ast.IsParameterDeclaration(declaration))
@@ -1594,22 +1778,43 @@ public sealed partial class Checker
 
     private Type widenTypeForVariableLikeDeclaration(Type t, Node declaration, bool reportErrors)
     {
-        if (t != null)
+        if ((t != null))
         {
-            if ((t.flags & TypeFlags.ESSymbol) != 0 && isGlobalSymbolConstructor(declaration.Parent))
-                t = getESSymbolLikeTypeForNode(declaration);
+            if ((((t.flags & TypeFlags.ESSymbol) != 0) && this.isGlobalSymbolConstructor(declaration.Parent)))
+            {
+                t = this.getESSymbolLikeTypeForNode(declaration);
+            }
+
             if (reportErrors)
-                reportErrorsFromWidening(declaration, t, WideningKind.Normal);
-            if ((t.flags & TypeFlags.UniqueESSymbol) != 0 && (Ast.IsBindingElement(declaration) || declaration.Type() == null) && t.symbol != getSymbolOfDeclaration(declaration))
-                t = esSymbolType;
-            return getWidenedType(t);
+            {
+                this.reportErrorsFromWidening(declaration, t, WideningKind.Normal);
+            }
+
+            if (((((t.flags & TypeFlags.UniqueESSymbol) != 0) && ((Ast.IsBindingElement(declaration) || (declaration.Type() == null)))) && (t.symbol != this.getSymbolOfDeclaration(declaration))))
+            {
+                t = this.esSymbolType;
+            }
+
+            return this.getWidenedType(t);
         }
 
-        if (Ast.IsParameterDeclaration(declaration) && isRestParameter(declaration))
-            throw unsupported("widenTypeForVariableLikeDeclaration: rest");
-        t = anyType;
-        if (reportErrors && !declarationBelongsToPrivateAmbientMember(declaration))
-            reportImplicitAny(declaration, t, WideningKind.Normal);
+        if ((Ast.IsParameterDeclaration(declaration) && (declaration.AsParameterDeclaration().DotDotDotToken != null)))
+        {
+            t = this.anyArrayType;
+        }
+        else
+        {
+            t = this.anyType;
+        }
+
+        if (reportErrors)
+        {
+            if (!declarationBelongsToPrivateAmbientMember(declaration))
+            {
+                this.reportImplicitAny(declaration, t, WideningKind.Normal);
+            }
+        }
+
         return t;
     }
 
@@ -1620,13 +1825,16 @@ public sealed partial class Checker
         if (checkMode != CheckMode.Normal)
             return checkExpressionEx(node, checkMode);
         var links = typeNodeLinks.Get(node);
-        // No loops are admitted: flowLoopStack/flowTypeCache are always nil.
+        // checker.go:7719. Cached checks temporarily isolate ongoing loop inference.
         if (links.resolvedType == null)
         {
+            var savedFlowLoopStack = flowLoopStack;
             var savedFlowTypeCache = flowTypeCache;
+            flowLoopStack = null;
             flowTypeCache = null;
             links.resolvedType = checkExpressionEx(node, checkMode);
             flowTypeCache = savedFlowTypeCache;
+            flowLoopStack = savedFlowLoopStack;
         }
 
         return links.resolvedType;
@@ -1635,12 +1843,11 @@ public sealed partial class Checker
     private Type checkExpression(Node node) => checkExpressionEx(node, CheckMode.Normal);
     private Type checkExpressionEx(Node node, CheckMode checkMode)
     {
-        if ((checkMode & ~(CheckMode.Contextual | CheckMode.Inferential | CheckMode.SkipContextSensitive | CheckMode.SkipGenericFunctions | CheckMode.TypeOnly)) != 0)
-            throw unsupported("checkExpressionEx: inference/signature/tuple check mode");
         var saved = currentNode;
         currentNode = node;
         instantiationCount = 0;
-        var t = checkExpressionWorker(node, checkMode);
+        var uninstantiatedType = checkExpressionWorker(node, checkMode);
+        var t = instantiateTypeWithSingleGenericCallSignature(node, uninstantiatedType, checkMode);
         currentNode = saved;
         return t;
     }
@@ -1664,6 +1871,12 @@ public sealed partial class Checker
                 return falseType;
             case Kind.ParenthesizedExpression:
                 return checkExpressionEx(node.Expression(), checkMode);
+            case Kind.ArrayLiteralExpression:
+                return checkArrayLiteral(node, checkMode);
+            case Kind.SpreadElement:
+                return checkSpreadExpression(node, checkMode);
+            case Kind.SyntheticExpression:
+                return checkSyntheticExpression(node);
             case Kind.ObjectLiteralExpression:
                 return checkObjectLiteral(node, checkMode);
             case Kind.PropertyAccessExpression:
@@ -1672,6 +1885,10 @@ public sealed partial class Checker
                 return checkCallExpression(node, checkMode);
             case Kind.BinaryExpression:
                 return checkBinaryExpression(node, checkMode);
+            case Kind.ElementAccessExpression:
+                return checkIndexedAccess(node, checkMode);
+            case Kind.PostfixUnaryExpression:
+                return checkPostfixUnaryExpression(node);
             case Kind.PrefixUnaryExpression:
                 return checkPrefixUnaryExpression(node);
             case Kind.ConditionalExpression:
@@ -1692,8 +1909,7 @@ public sealed partial class Checker
 
     internal Type getTypeFromTypeNode(Node node)
     {
-        // Conditional type flow is unreachable: no conditional/type-parameter contexts.
-        return getTypeFromTypeNodeWorker(node);
+        return getConditionalFlowTypeOfType(getTypeFromTypeNodeWorker(node), node);
     }
 
     private Type getTypeFromTypeNodeWorker(Node node)
@@ -1735,7 +1951,34 @@ public sealed partial class Checker
                 return getTypeFromTypeNode(node.Type());
             case Kind.TypeLiteral:
             case Kind.FunctionType:
+            case Kind.ConstructorType:
                 return getTypeFromTypeLiteralOrFunctionOrConstructorTypeNode(node);
+            case Kind.IntrinsicKeyword:
+                return intrinsicMarkerType;
+            case Kind.ThisType:
+            case Kind.ThisKeyword:
+                return getTypeFromThisTypeNode(node);
+            case Kind.TypePredicate:
+                return node.AsTypePredicateNode().AssertsModifier != null ? voidType : booleanType;
+            case Kind.ArrayType:
+            case Kind.TupleType:
+                return getTypeFromArrayOrTupleTypeNode(node);
+            case Kind.OptionalType:
+                return getTypeFromOptionalTypeNode(node);
+            case Kind.RestType:
+                return getTypeFromRestTypeNode(node);
+            case Kind.NamedTupleMember:
+                return getTypeFromNamedTupleTypeNode(node);
+            case Kind.TypeOperator:
+                return getTypeFromTypeOperatorNode(node);
+            case Kind.IndexedAccessType:
+                return getTypeFromIndexedAccessTypeNode(node);
+            case Kind.MappedType:
+                return getTypeFromMappedTypeNode(node);
+            case Kind.ConditionalType:
+                return getTypeFromConditionalTypeNode(node);
+            case Kind.InferType:
+                return getTypeFromInferTypeNode(node);
             case Kind.LiteralType:
                 return getTypeFromLiteralTypeNode(node);
             case Kind.Identifier:
@@ -2145,15 +2388,15 @@ public sealed partial class Checker
         var isOuterVariable = (flowContainer != declarationContainer);
         var isSpreadDestructuringAssignmentTarget = ((((node.Parent != null) && (node.Parent.Parent != null)) && Ast.IsSpreadAssignment(node.Parent)) && throwUnsupportedDestructuring(node.Parent.Parent));
         var isModuleExports = ((symbol.Flags & SymbolFlags.ModuleExports) != 0);
-        var typeIsAutomatic = ((t == this.autoType) || (t == this.autoType));
+        var typeIsAutomatic = ((t == this.autoType) || (t == this.autoArrayType));
         var isAutomaticTypeInNonNull = (typeIsAutomatic && (node.Parent.Kind == Kind.NonNullExpression));
-        while ((((flowContainer != declarationContainer) && ((Ast.IsFunctionExpressionOrArrowFunction(flowContainer) || Ast.IsObjectLiteralOrClassExpressionMethodOrAccessor(flowContainer)))) && (((this.isConstantVariable(localOrExportSymbol) && (t != this.autoType)) || (this.isParameterOrMutableLocalVariable(localOrExportSymbol) && this.isPastLastAssignment(localOrExportSymbol, node))))))
+        while ((((flowContainer != declarationContainer) && ((Ast.IsFunctionExpressionOrArrowFunction(flowContainer) || Ast.IsObjectLiteralOrClassExpressionMethodOrAccessor(flowContainer)))) && (((this.isConstantVariable(localOrExportSymbol) && (t != this.autoArrayType)) || (this.isParameterOrMutableLocalVariable(localOrExportSymbol) && this.isPastLastAssignment(localOrExportSymbol, node))))))
         {
             flowContainer = this.getControlFlowContainer(flowContainer);
         }
 
         var isNeverInitialized = (((((((immediateDeclaration != null) && Ast.IsVariableDeclaration(immediateDeclaration)) && !Ast.IsForInOrOfStatement(immediateDeclaration.Parent.Parent)) && (immediateDeclaration.Initializer() == null)) && (immediateDeclaration.AsVariableDeclaration().ExclamationToken == null)) && this.isMutableLocalVariableDeclaration(immediateDeclaration)) && !this.isSymbolAssignedDefinitely(symbol));
-        var assumeInitialized = (((((((((isParameter || isAlias) || ((isOuterVariable && !isNeverInitialized))) || isSpreadDestructuringAssignmentTarget) || isModuleExports) || this.isSameScopedBindingElement(node, declaration)) || (((t != this.autoType) && (t != this.autoType)) && (((((!this.strictNullChecks || ((t.flags & ((TypeFlags.AnyOrUnknown | TypeFlags.Void))) != 0)) || IsInTypeQuery(node)) || this.isInAmbientOrTypeNode(node)) || (node.Parent.Kind == Kind.ExportSpecifier))))) || Ast.IsNonNullExpression(node.Parent)) || (Ast.IsVariableDeclaration(declaration) && (declaration.AsVariableDeclaration().ExclamationToken != null))) || ((declaration.Flags & NodeFlags.Ambient) != 0));
+        var assumeInitialized = (((((((((isParameter || isAlias) || ((isOuterVariable && !isNeverInitialized))) || isSpreadDestructuringAssignmentTarget) || isModuleExports) || this.isSameScopedBindingElement(node, declaration)) || (((t != this.autoType) && (t != this.autoArrayType)) && (((((!this.strictNullChecks || ((t.flags & ((TypeFlags.AnyOrUnknown | TypeFlags.Void))) != 0)) || IsInTypeQuery(node)) || this.isInAmbientOrTypeNode(node)) || (node.Parent.Kind == Kind.ExportSpecifier))))) || Ast.IsNonNullExpression(node.Parent)) || (Ast.IsVariableDeclaration(declaration) && (declaration.AsVariableDeclaration().ExclamationToken != null))) || ((declaration.Flags & NodeFlags.Ambient) != 0));
         Type initialType = default;
         switch (true)
         {
@@ -2198,9 +2441,9 @@ public sealed partial class Checker
             flowType = this.getFlowTypeOfReferenceEx(node, t, initialType, flowContainer, null);
         }
 
-        if ((!this.isEvolvingArrayOperationTarget(node) && (((t == this.autoType) || (t == this.autoType)))))
+        if ((!this.isEvolvingArrayOperationTarget(node) && (((t == this.autoType) || (t == this.autoArrayType)))))
         {
-            if (((flowType == this.autoType) || (flowType == this.autoType)))
+            if (((flowType == this.autoType) || (flowType == this.autoArrayType)))
             {
                 if (this.noImplicitAny)
                 {
@@ -2249,7 +2492,17 @@ public sealed partial class Checker
                         var contextualSignature = this.getContextualSignature(fn);
                         if ((((contextualSignature != null) && (GoRuntime.Len(contextualSignature.parameters) == 1)) && signatureHasRestParameter(contextualSignature)))
                         {
-                            throw unsupported("getNarrowedTypeOfSymbol: rest-correlated tuple");
+                            TypeMapper mapper = null;
+                            var context = this.getInferenceContext(fn);
+                            if (context != null)
+                                mapper = context.nonFixingMapper;
+                            var restType = this.getReducedApparentType(this.instantiateType(this.getTypeOfSymbol(contextualSignature.parameters[0]), mapper));
+                            if ((restType.flags & TypeFlags.Union) != 0 && everyType(restType, isTupleType) && !Core.Some(fn.Parameters(), this.isSomeSymbolAssigned))
+                            {
+                                var narrowedType = this.getFlowTypeOfReferenceEx(fn, restType, restType, null, getFlowNodeOfNode(location));
+                                var index = GoSlices.Index(fn.Parameters(), declaration) - (Ast.GetThisParameter(fn) != null ? 1 : 0);
+                                t = this.getIndexedAccessType(narrowedType, this.getNumberLiteralType(new JsNum.Number(index)));
+                            }
                         }
                     }
 
@@ -2263,8 +2516,8 @@ public sealed partial class Checker
 
     private Type getNarrowableTypeForReference(Type t, Node reference, CheckMode checkMode = CheckMode.Normal)
     {
-        if ((t.flags & TypeFlags.Substitution) != 0)
-            throw unsupported("getNarrowableTypeForReference: source NoInfer substitution");
+        if (isNoInferType(t))
+            t = t.AsSubstitutionType().baseType;
         bool substituteConstraints = (checkMode & CheckMode.Inferential) == 0 && (t.Distributed()?.Any(isGenericTypeWithUnionConstraint) ?? false) && (isConstraintPosition(t, reference) || hasContextualTypeWithNoGenericTypes(reference, checkMode));
         return substituteConstraints ? mapType(t, getBaseConstraintOrType) : t;
     }
@@ -2273,7 +2526,7 @@ public sealed partial class Checker
     {
         var parent = node.Parent;
         if (Ast.IsElementAccessExpression(parent))
-            throw unsupported("isConstraintPosition: source element access");
+            return parent.Expression() == node;
         return Ast.IsPropertyAccessExpression(parent) || Ast.IsQualifiedName(parent) || (Ast.IsCallExpression(parent) || Ast.IsNewExpression(parent)) && parent.Expression() == node;
     }
 
@@ -2293,15 +2546,13 @@ public sealed partial class Checker
 
     private bool hasContextualTypeWithNoGenericTypes(Node node, CheckMode checkMode)
     {
-        if ((checkMode & CheckMode.RestBindingElement) != 0)
-            throw unsupported("hasContextualTypeWithNoGenericTypes: source rest binding");
-        if (Ast.IsIdentifier(node) || Ast.IsPropertyAccessExpression(node) || Ast.IsElementAccessExpression(node))
+        if (((((Ast.IsIdentifier(node) || Ast.IsPropertyAccessExpression(node)) || Ast.IsElementAccessExpression(node))) && !((((Ast.IsJsxOpeningElement(node.Parent) || Ast.IsJsxSelfClosingElement(node.Parent))) && (node.Parent.TagName() == node)))))
         {
-            if (Ast.IsJsxOpeningElement(node.Parent) || Ast.IsJsxSelfClosingElement(node.Parent))
-                throw unsupported("hasContextualTypeWithNoGenericTypes: source JSX");
-            var contextualType = getContextualType(node);
-            if (contextualType != null)
-                return !isGenericType(contextualType);
+            var contextualType = this.getContextualType(node, Core.IfElse(((checkMode & CheckMode.RestBindingElement) != 0), ContextFlags.SkipBindingPatterns, ContextFlags.None));
+            if ((contextualType != null))
+            {
+                return !this.isGenericType(contextualType);
+            }
         }
 
         return false;
@@ -2451,14 +2702,22 @@ public sealed partial class Checker
     private Type newObjectType(ObjectFlags objectFlags, Symbol symbol)
     {
         TypeData data;
-        if ((objectFlags & ObjectFlags.ClassOrInterface) != 0)
+        if ((objectFlags & ObjectFlags.Tuple) != 0)
+            data = new TupleType();
+        else if ((objectFlags & ObjectFlags.ClassOrInterface) != 0)
             data = new InterfaceType();
         else if ((objectFlags & ObjectFlags.Reference) != 0)
             data = new TypeReference();
+        else if ((objectFlags & ObjectFlags.Mapped) != 0)
+            data = new MappedType();
+        else if ((objectFlags & ObjectFlags.ReverseMapped) != 0)
+            data = new ReverseMappedType();
+        else if ((objectFlags & ObjectFlags.EvolvingArray) != 0)
+            data = new EvolvingArrayType();
         else if ((objectFlags & ObjectFlags.Anonymous) != 0)
             data = new ObjectType();
         else
-            throw unsupported("newObjectType: tuple/mapped/reverse/evolving/callable payload");
+            throw unsupported("newObjectType: unselected object payload");
         var t = newType(TypeFlags.Object, objectFlags, data);
         t.symbol = symbol;
         return t;
@@ -2575,23 +2834,76 @@ public sealed partial class Checker
     {
         while (true)
         {
-            Type n;
-            if (isFreshLiteralType(t))
-                n = t.AsLiteralType().regularType;
-            else if (isGenericTupleType(t))
-                throw unsupported("getNormalizedType: source generic tuple");
-            else if ((t.objectFlags & ObjectFlags.Reference) != 0)
-                n = t.AsTypeReference().node != null ? createTypeReference(t.Target(), getTypeArguments(t)) : getSingleBaseForNonAugmentingSubtype(t) ?? t;
-            else if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-                n = getNormalizedUnionOrIntersectionType(t, writing);
-            else if ((t.flags & TypeFlags.Substitution) != 0)
-                throw unsupported("getNormalizedType: source substitution");
-            else if ((t.flags & TypeFlags.Simplifiable) != 0)
-                n = getSimplifiedType(t, writing);
-            else
-                return t;
-            if (n == t)
+            Type n = default;
+            switch (true)
+            {
+                case true when isFreshLiteralType(t):
+                {
+                    n = t.AsLiteralType().regularType;
+                    break;
+                }
+
+                case true when isGenericTupleType(t):
+                {
+                    n = this.getNormalizedTupleType(t, writing);
+                    break;
+                }
+
+                case true when ((t.objectFlags & ObjectFlags.Reference) != 0):
+                {
+                    if ((t.AsTypeReference().node != null))
+                    {
+                        n = this.createTypeReference(t.Target(), this.getTypeArguments(t));
+                    }
+                    else
+                    {
+                        n = this.getSingleBaseForNonAugmentingSubtype(t);
+                        if ((n == null))
+                        {
+                            n = t;
+                        }
+                    }
+
+                    break;
+                }
+
+                case true when ((t.flags & TypeFlags.UnionOrIntersection) != 0):
+                {
+                    n = this.getNormalizedUnionOrIntersectionType(t, writing);
+                    break;
+                }
+
+                case true when ((t.flags & TypeFlags.Substitution) != 0):
+                {
+                    if (writing)
+                    {
+                        n = t.AsSubstitutionType().baseType;
+                    }
+                    else
+                    {
+                        n = this.getSubstitutionIntersection(t);
+                    }
+
+                    break;
+                }
+
+                case true when ((t.flags & TypeFlags.Simplifiable) != 0):
+                {
+                    n = this.getSimplifiedType(t, writing);
+                    break;
+                }
+
+                default:
+                {
+                    return t;
+                }
+            }
+
+            if ((n == t))
+            {
                 return n;
+            }
+
             t = n;
         }
     }
@@ -2660,7 +2972,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private readonly symbolArenaLinkStore<MembersAndExportsLinks> membersAndExportsLinks = new();
+    private readonly LinkStore<Symbol, MembersAndExportsLinks> membersAndExportsLinks = new();
     // checker.go:16510. Anonymous type/object literals are late-binding containers
     // even when every admitted name is static.
     internal SymbolTable getMembersOfSymbol(Symbol symbol)
@@ -2685,8 +2997,10 @@ public sealed partial class Checker
                 foreach (var member in getMembersOfDeclaration(declaration) ?? [])
                     if (isStatic == Ast.HasStaticModifier(member))
                     {
-                        if (member.Name()?.Kind == Kind.ComputedPropertyName || member.Kind == Kind.IndexSignature)
-                            throw unsupported("getResolvedMembersOrExportsOfSymbol: late-bound/index member");
+                        if (hasLateBindableName(member))
+                            throw unsupported("getResolvedMembersOrExportsOfSymbol: computed late-bound member");
+                        if (hasLateBindableIndexSignature(member))
+                            throw unsupported("getResolvedMembersOrExportsOfSymbol: computed late-bound index member");
                     }
 
             if (isStatic && symbol.Exports?[Ast.InternalSymbolNameAssignmentDeclaration] != null)
@@ -2703,7 +3017,10 @@ public sealed partial class Checker
             return second;
         if ((second?.Count ?? 0) == 0)
             return first;
-        throw unsupported("combineSymbolTables: late-bound symbol merging");
+        var combined = new SymbolTable();
+        mergeSymbolTable(combined, first, false, null);
+        mergeSymbolTable(combined, second, false, null);
+        return combined;
     }
 
     internal StructuredType resolveStructuredTypeMembers(Type t)
@@ -2716,10 +3033,14 @@ public sealed partial class Checker
                     resolveTypeReferenceMembers(t);
                 else if ((t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
                     resolveClassOrInterfaceMembers(t);
+                else if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
+                    resolveReverseMappedTypeMembers(t);
                 else if ((t.objectFlags & ObjectFlags.Anonymous) != 0)
                     resolveAnonymousTypeMembers(t);
+                else if ((t.objectFlags & ObjectFlags.Mapped) != 0)
+                    resolveMappedTypeMembers(t);
                 else
-                    throw unsupported("resolveStructuredTypeMembers: mapped/reverse-mapped object");
+                    throw new InvalidOperationException("Unhandled object in resolveStructuredTypeMembers");
             }
             else if ((t.flags & TypeFlags.Union) != 0)
                 resolveUnionTypeMembers(t);
@@ -2786,7 +3107,7 @@ public sealed partial class Checker
         var indexSymbol = members3?[Ast.InternalSymbolNameIndex];
         if ((indexSymbol != null))
         {
-            throw unsupported("resolveAnonymousTypeMembers: written index signature");
+            indexInfos3 = getIndexInfosOfIndexSymbol(indexSymbol, members3?.Values.ToList());
         }
         else
         {
@@ -2833,7 +3154,7 @@ public sealed partial class Checker
         return symbol.Exports;
     }
 
-    private readonly symbolArenaLinkStore<ModuleSymbolLinks> moduleSymbolLinks = new();
+    private readonly LinkStore<Symbol, ModuleSymbolLinks> moduleSymbolLinks = new();
     private SymbolTable getExportsOfModule(Symbol moduleSymbol)
     {
         var links = moduleSymbolLinks.Get(moduleSymbol);
@@ -2927,8 +3248,27 @@ public sealed partial class Checker
 
     private bool isMappingOfSameObjectType(List<Type> types)
     {
-        if ((types?.Count ?? 0) != 0 && (types[0].objectFlags & ObjectFlags.Mapped) != 0)
-            throw unsupported("isMappingOfSameObjectType: source mapped types");
+        if (((GoRuntime.Len(types) != 0) && ((types[0].objectFlags & ObjectFlags.Mapped) != 0)))
+        {
+            {
+                var firstType = this.getModifiersTypeFromMappedType(types[0]);
+                if (((firstType.flags & TypeFlags.Object) != 0))
+                {
+                    {
+                        foreach (var t in GoRuntime.RangeValues(GoRuntime.Slice(types, 1)))
+                        {
+                            if ((((t.objectFlags & ObjectFlags.Mapped) == 0) || (this.getModifiersTypeFromMappedType(t) != firstType)))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -2968,7 +3308,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Instantiable) != 0)
             t = getBaseConstraintOfType(t) ?? unknownType;
         if ((t.objectFlags & ObjectFlags.Mapped) != 0)
-            throw unsupported("getApparentType: source mapped type");
+            return getApparentTypeOfMappedType(t);
         if ((t.objectFlags & ObjectFlags.Reference) != 0 && t != original)
             return getTypeWithThisArgument(t, original, false);
         if ((t.flags & TypeFlags.Intersection) != 0)
@@ -3153,6 +3493,7 @@ public sealed partial class Checker
         regular.flags = resolved.AsType().flags;
         regular.objectFlags |= resolved.AsType().objectFlags & ~ObjectFlags.FreshLiteral;
         cachedTypes[key] = regular;
+        verificationCollectionsCaptureRegularObject(regular, t);
         return regular;
     }
 
@@ -3275,7 +3616,12 @@ public sealed partial class Checker
 
             case Kind.ArrayLiteralExpression:
             {
-                throw unsupported("getContextualType: source ArrayLiteralExpression");
+                var t = this.getApparentTypeOfContextualType(parent, contextFlags);
+                var elementIndex = Ast.IndexOfNode(parent.Elements(), node);
+                if (elementIndex < 0)
+                    return null;
+                var spreadIndices = this.getSpreadIndices(parent);
+                return this.getContextualTypeForElementExpression(t, elementIndex, GoRuntime.Len(parent.Elements()), spreadIndices.Item1, spreadIndices.Item2);
             }
 
             case Kind.ConditionalExpression:
@@ -3404,8 +3750,13 @@ public sealed partial class Checker
             {
                 if ((memberType.flags & TypeFlags.Object) == 0)
                     continue;
-                if (isGenericMappedType(memberType))
-                    throw unsupported("getTypeOfPropertyOfContextualTypeEx: source mapped substitution");
+                if (isGenericMappedType(memberType) && getMappedTypeNameTypeKind(memberType) != MappedTypeNameTypeKind.Remapping)
+                {
+                    var substitutedType = getIndexedMappedTypeSubstitutedTypeOfContextualType(memberType, name, nameType);
+                    types = appendContextualPropertyTypeConstituent(types, substitutedType);
+                    continue;
+                }
+
                 var propertyType = getTypeOfConcretePropertyOfContextualType(memberType, name);
                 if (propertyType == null)
                 {
@@ -3430,8 +3781,8 @@ public sealed partial class Checker
 
         if ((constituent.flags & TypeFlags.Object) == 0)
             return null;
-        if (isGenericMappedType(constituent))
-            throw unsupported("getTypeOfPropertyOfContextualTypeEx: source mapped substitution");
+        if (isGenericMappedType(constituent) && getMappedTypeNameTypeKind(constituent) != MappedTypeNameTypeKind.Remapping)
+            return getIndexedMappedTypeSubstitutedTypeOfContextualType(constituent, name, nameType);
         return getTypeOfConcretePropertyOfContextualType(constituent, name) ?? getTypeFromIndexInfosOfContextualType(constituent, name, nameType);
     }, true);
     private Type getTypeOfConcretePropertyOfContextualType(Type t, string name)
@@ -3451,37 +3802,123 @@ public sealed partial class Checker
 
     private Type getTypeFromIndexInfosOfContextualType(Type t, string name, Type nameType)
     {
-        if ((t.objectFlags & ObjectFlags.Tuple) != 0)
-            throw unsupported("getTypeFromIndexInfosOfContextualType: source tuple");
-        nameType ??= getStringLiteralType(name);
-        return findApplicableIndexInfo(getIndexInfosOfStructuredType(t), nameType)?.valueType;
+        if (((isTupleType(t) && isNumericLiteralName(name)) && (JsNum.FromString(name) >= 0)))
+        {
+            var restType = this.getElementTypeOfSliceOfTupleType(t, t.TargetTupleType().fixedLength, 0, false, true);
+            if ((restType != null))
+            {
+                return restType;
+            }
+        }
+
+        if ((nameType == null))
+        {
+            nameType = this.getStringLiteralType(name);
+        }
+
+        var indexInfo = this.findApplicableIndexInfo(this.getIndexInfosOfStructuredType(t), nameType);
+        if ((indexInfo == null))
+        {
+            return null;
+        }
+
+        return indexInfo.valueType;
     }
 
     private List<Type> appendContextualPropertyTypeConstituent(List<Type> types, Type t) => t == null ? types : GoRuntime.Append(types, (t.flags & TypeFlags.Any) != 0 ? unknownType : t);
-    private Type instantiateContextualType(Type contextualType, Node node, ContextFlags contextFlags = ContextFlags.None)
+    private Type instantiateContextualType(Type contextualType, Node node, ContextFlags contextFlags)
     {
         if (((contextualType != null) && this.maybeTypeOfKind(contextualType, TypeFlags.Instantiable)))
         {
             var inferenceContext = this.getInferenceContext(node);
             if ((inferenceContext != null))
             {
-                throw unsupported("instantiateContextualType: source generic inference");
+                if ((((contextFlags & ContextFlags.Signature) != 0) && Core.Some(inferenceContext.inferences, hasInferenceCandidatesOrDefault)))
+                {
+                    var t = this.instantiateInstantiableTypes(contextualType, inferenceContext.nonFixingMapper);
+                    if (((t.flags & TypeFlags.AnyOrUnknown) == 0))
+                    {
+                        return t;
+                    }
+                }
+
+                if ((inferenceContext.returnMapper != null))
+                {
+                    var t2 = this.instantiateInstantiableTypes(contextualType, inferenceContext.returnMapper);
+                    if (((t2.flags & TypeFlags.AnyOrUnknown) == 0))
+                    {
+                        if (((((t2.flags & TypeFlags.Union) != 0) && containsType(t2.Types(), this.regularFalseType)) && containsType(t2.Types(), this.regularTrueType)))
+                        {
+                            return this.filterType(t2, (t3) =>
+                            {
+                                return ((t3 != this.regularFalseType) && (t3 != this.regularTrueType));
+                            });
+                        }
+
+                        return t2;
+                    }
+                }
             }
         }
 
         return contextualType;
     }
 
-    // checker.go:84/277/821/31514. Callable and source-generic inference contexts
-    // are never allocated in the admitted data-type syntax. The actual empty
-    // stack lookup remains selected for synthetic interface this-types.
-    private sealed class InferenceContext
+    // checker.go:265-325. Mutable inference state is shared by its fixing and
+    // nonfixing mappers; it is not a copied contextual-type snapshot.
+    [Flags]
+    internal enum InferenceFlags : uint
     {
+        None = 0,
+        NoDefault = 1,
+        AnyDefault = 2,
+        SkippedGenericFunction = 4,
+        NoConstraintChecks = 8
+    }
+
+    [Flags]
+    internal enum InferencePriority : int
+    {
+        None = 0,
+        NakedTypeVariable = 1,
+        SpeculativeTuple = 2,
+        SubstituteSource = 4,
+        HomomorphicMappedType = 8,
+        PartialHomomorphicMappedType = 16,
+        MappedTypeConstraint = 32,
+        ContravariantConditional = 64,
+        ReturnType = 128,
+        LiteralKeyof = 256,
+        NoConstraints = 512,
+        AlwaysStrict = 1024,
+        MaxValue = 2048,
+        Circularity = -1,
+        PriorityImpliesCombination = ReturnType | MappedTypeConstraint | LiteralKeyof
+    }
+
+    internal sealed class InferenceContext
+    {
+        internal List<InferenceInfo> inferences;
+        internal Signature signature;
+        internal InferenceFlags flags;
+        internal TypeComparer compareTypes;
         internal TypeMapper mapper = null;
         internal TypeMapper nonFixingMapper = null, returnMapper = null;
+        internal TypeMapper outerReturnMapper;
+        internal List<Type> inferredTypeParameters;
         internal List<IntraExpressionInferenceSite> intraExpressionInferenceSites = null;
     }
 
+    internal sealed class InferenceInfo
+    {
+        internal Type typeParameter, inferredType;
+        internal List<Type> candidates, contraCandidates;
+        internal InferencePriority priority;
+        internal bool topLevel, isFixed;
+        internal int impliedArity;
+    }
+
+    private InferenceState freeinferenceState;
     private sealed record InferenceContextInfo(Node node, InferenceContext context);
     private List<InferenceContextInfo> inferenceContextInfos = null;
     private InferenceContext getInferenceContext(Node node)
@@ -3571,7 +4008,7 @@ public sealed partial class Checker
         if (node.Kind is Kind.AsExpression or Kind.TypeAssertionExpression)
             throw unsupported("checkExpressionForMutableLocation: assertion/const context");
         var t = checkExpressionEx(node, checkMode);
-        return getWidenedLiteralLikeTypeForContextualType(t, instantiateContextualType(getContextualType(node), node));
+        return getWidenedLiteralLikeTypeForContextualType(t, instantiateContextualType(getContextualType(node), node, ContextFlags.None));
     }
 
     private Type checkPropertyAssignment(Node node, CheckMode checkMode = CheckMode.Normal)
@@ -3657,6 +4094,7 @@ public sealed partial class Checker
         popContextualType();
         var result = newAnonymousType(node.Symbol(), propertiesTable);
         result.objectFlags |= objectFlags | ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral;
+        verificationCollectionsCaptureObject(result, node, checkMode, contextualType);
         return result;
     }
 
@@ -3696,6 +4134,9 @@ public sealed partial class Checker
         instantiationCount = 0;
         switch (node.Kind)
         {
+            case Kind.TypeParameter:
+                checkTypeParameterDeferred(node);
+                break;
             case Kind.ObjectLiteralExpression:
                 checkContextualDeprecations(node);
                 break;
@@ -3766,6 +4207,9 @@ public sealed partial class Checker
     private sealed class keyBuilder
     {
         private readonly List<byte> bytes = new();
+        // Authored observation support: completed writer offset without hashing.
+        internal int Length => bytes.Count;
+
         internal void writeByte(byte value) => bytes.Add(value);
         internal void writeUint32(uint value)
         {
@@ -3866,7 +4310,7 @@ public sealed partial class Checker
         }
     }
 
-    private static CacheHashKey getTypeListKey(List<Type> types)
+    internal static CacheHashKey getTypeListKey(List<Type> types)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
@@ -3949,7 +4393,9 @@ public sealed partial class Checker
         }
 
         b.writeUint32((uint)intersectionState);
-        return (b.hash(), constrained);
+        var key = b.hash();
+        (source.checker ?? target.checker)?.verificationCollectionsCaptureRelationInputs(source, target, key);
+        return (key, constrained);
     }
 
     private static bool isNonDeferredTypeReference(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node == null;
@@ -4004,7 +4450,11 @@ public sealed partial class Checker
             else if (isArrayOrTupleType(t))
                 result = createTypeReference(t.Target(), instantiateList(getTypeArguments(t), null, (u, _) => getWidenedType(u)));
             if (result != null && context == null)
+            {
                 cachedTypes[key] = result;
+                verificationCollectionsCaptureWidenedOwner(t, result);
+            }
+
             return result ?? t;
         }
 
@@ -4013,22 +4463,57 @@ public sealed partial class Checker
 
     private Type getWidenedTypeOfObjectLiteral(Type t, WideningContext context)
     {
-        if (context?.widenedTypes != null && context.widenedTypes.TryGetValue(t, out var cached))
-            return cached;
+        if ((context != null))
+        {
+            {
+                if (context.widenedTypes != null && context.widenedTypes.TryGetValue(t, out var cached) && cached != null)
+                {
+                    return cached;
+                }
+            }
+        }
+
         var members = new SymbolTable();
-        foreach (var property in getPropertiesOfObjectType(t) ?? [])
-            members[property.Name] = getWidenedProperty(property, context);
-        if (context != null)
-            foreach (var property in getPropertiesOfContext(context))
-                if (!members.ContainsKey(property.Name))
-                    members[property.Name] = getUndefinedProperty(property);
-        var resolved = resolveStructuredTypeMembers(t);
-        if ((resolved.indexInfos?.Count ?? 0) != 0)
-            throw unsupported("getWidenedTypeOfObjectLiteral: index infos");
-        var result = newAnonymousType(t.symbol, members);
-        result.objectFlags |= t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.NonInferrableType);
-        if (context?.parent != null)
-            (context.widenedTypes ??= new())[t] = result;
+        {
+            foreach (var prop in GoRuntime.RangeValues(this.getPropertiesOfObjectType(t)))
+            {
+                members[prop.Name] = this.getWidenedProperty(prop, context);
+            }
+        }
+
+        if ((context != null))
+        {
+            {
+                foreach (var range2 in GoRuntime.Range(this.getPropertiesOfContext(context)))
+                {
+                    var _2 = range2.Key;
+                    var prop2 = range2.Value;
+                    {
+                        var ok = members.TryGetValue(prop2.Name, out var _3);
+                        if (!ok)
+                        {
+                            members[prop2.Name] = this.getUndefinedProperty(prop2);
+                        }
+                    }
+                }
+            }
+        }
+
+        var result = this.newAnonymousType(t.symbol, members, null, null, Core.SameMap(this.getIndexInfosOfType(t), (info) =>
+        {
+            return this.newIndexInfo(info.keyType, this.getWidenedType(info.valueType), info.isReadonly, info.declaration, info.components);
+        }));
+        result.objectFlags |= (t.objectFlags & ((ObjectFlags.JSLiteral | ObjectFlags.NonInferrableType)));
+        if (((context != null) && (context.parent != null)))
+        {
+            if ((context.widenedTypes == null))
+            {
+                context.widenedTypes = new Dictionary<Type, Type>();
+            }
+
+            context.widenedTypes[t] = result;
+        }
+
         return result;
     }
 
@@ -4091,19 +4576,29 @@ public sealed partial class Checker
     private bool isEmptyResolvedType(StructuredType t) => (t.properties?.Count ?? 0) == 0 && (t.signatures?.Count ?? 0) == 0 && (t.indexInfos?.Count ?? 0) == 0;
     private bool isEmptyObjectType(Type t)
     {
-        if ((t.flags & TypeFlags.Object) != 0)
+        switch (true)
         {
-            if ((t.objectFlags & ObjectFlags.Mapped) != 0)
-                throw unsupported("isEmptyObjectType: mapped type");
-            return isEmptyResolvedType(resolveStructuredTypeMembers(t));
+            case true when ((t.flags & TypeFlags.Object) != 0):
+            {
+                return (!this.isGenericMappedType(t) && this.isEmptyResolvedType(this.resolveStructuredTypeMembers(t)));
+            }
+
+            case true when ((t.flags & TypeFlags.NonPrimitive) != 0):
+            {
+                return true;
+            }
+
+            case true when ((t.flags & TypeFlags.Union) != 0):
+            {
+                return Core.Some(t.Types(), this.isEmptyObjectType);
+            }
+
+            case true when ((t.flags & TypeFlags.Intersection) != 0):
+            {
+                return Core.Every(t.Types(), this.isEmptyObjectType);
+            }
         }
 
-        if ((t.flags & TypeFlags.NonPrimitive) != 0)
-            return true;
-        if ((t.flags & TypeFlags.Union) != 0)
-            return t.Types().Any(isEmptyObjectType);
-        if ((t.flags & TypeFlags.Intersection) != 0)
-            return t.Types().All(isEmptyObjectType);
         return false;
     }
 }
@@ -4113,7 +4608,6 @@ public sealed partial class Checker
     private RelationComparisonResult reliabilityFlags;
     private Relater freeRelater;
     private string getSuggestionForNonexistentProperty(string name, Type containingType) => getSpellingSuggestionForName(name, getPropertiesOfType(containingType) ?? [], SymbolFlags.Value)?.Name ?? "";
-    internal Symbol getParentOfSymbol(Symbol symbol) => symbol.Parent != null ? getMergedSymbol(getLateBoundSymbol(symbol.Parent)) : null;
     private Symbol getLateBoundSymbol(Symbol symbol)
     {
         foreach (var declaration in symbol.Declarations ?? [])
@@ -4162,7 +4656,7 @@ public sealed partial class Checker
                 checkIndexConstraintForIndexSignature(t, info);
     }
 
-    private List<IndexInfo> getApplicableIndexInfos(Type t, Type keyType) => getIndexInfosOfType(t)?.Where(info => isApplicableIndexType(keyType, info.keyType)).ToList();
+    private List<IndexInfo> getApplicableIndexInfos(Type t, Type keyType) => Core.Filter(getIndexInfosOfType(t), info => isApplicableIndexType(keyType, info.keyType));
     private void checkIndexConstraintForProperty(Type t, Symbol prop, Type propNameType, Type propType)
     {
         var declaration = prop.ValueDeclaration;
@@ -4214,38 +4708,88 @@ public sealed partial class Checker
 
     private void checkTypeForDuplicateIndexSignatures(Node node)
     {
-        var indexSymbol = getIndexSymbol(getSymbolOfDeclaration(node));
-        if (indexSymbol == null || (indexSymbol.Declarations?.Count ?? 0) <= 1)
+        var indexSymbol = this.getIndexSymbol(this.getSymbolOfDeclaration(node));
+        if (((indexSymbol == null) || (GoRuntime.Len(indexSymbol.Declarations) <= 1)))
+        {
             return;
-        throw unsupported("checkTypeForDuplicateIndexSignatures: index signatures");
+        }
+
+        var indexSignatureMap = new Dictionary<Type, List<Node>>();
+        {
+            foreach (var declaration in GoRuntime.RangeValues(indexSymbol.Declarations))
+            {
+                if (Ast.IsIndexSignatureDeclaration(declaration))
+                {
+                    var parameters = declaration.Parameters();
+                    if (((GoRuntime.Len(parameters) == 1) && (parameters[0].Type() != null)))
+                    {
+                        {
+                            foreach (var range2 in GoRuntime.Range(this.getTypeFromTypeNode(parameters[0].Type()).Distributed()))
+                            {
+                                var _2 = range2.Key;
+                                var t = range2.Value;
+                                indexSignatureMap.TryGetValue(t, out var declarationsForType);
+                                indexSignatureMap[t] = GoRuntime.Append(declarationsForType, declaration);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        {
+            foreach (var range3 in GoRuntime.Range(indexSignatureMap))
+            {
+                var t2 = range3.Key;
+                var declarations = range3.Value;
+                if ((GoRuntime.Len(declarations) > 1))
+                {
+                    {
+                        foreach (var range4 in GoRuntime.Range(declarations))
+                        {
+                            var _3 = range4.Key;
+                            var declaration2 = range4.Value;
+                            this.error(declaration2, Diagnostics.Duplicate_index_signature_for_type_0, this.typeToStringByteString(t2));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void checkObjectTypeForDuplicateDeclarations(Node node, bool checkPrivateNames)
     {
-        Dictionary<string, int> instanceNames = null;
+        Dictionary<string, int> instanceNames = null, staticNames = null;
+        bool ambient = (node.Flags & NodeFlags.Ambient) != 0;
         foreach (var member in node.Members() ?? [])
         {
-            // checker.go:3238. Methods/call signatures do not run data-property duplicate checks.
-            if (!Ast.IsPropertySignatureDeclaration(member))
-            {
-                if (Ast.IsMethodSignatureDeclaration(member) || Ast.IsCallSignatureDeclaration(member))
-                    continue;
-                throw unsupported("checkObjectTypeForDuplicateDeclarations: class/accessor member");
-            }
-
+            if (Ast.IsConstructorDeclaration(member))
+                throw unsupported("checkObjectTypeForDuplicateDeclarations: source constructor");
             var symbol = getSymbolOfDeclaration(member);
-            if ((symbol.Declarations?.Count ?? 0) > 1)
+            bool isStatic = Ast.HasStaticModifier(member);
+            if (!ambient && isStatic && symbol != null && symbol.Name == "prototype")
+                error(member.Name(), Diagnostics.Static_property_0_conflicts_with_built_in_property_Function_0_of_constructor_function_1, symbol.Name, symbolToString(getSymbolOfDeclaration(node)));
+            if (Ast.IsPropertyDeclaration(member) || Ast.IsAccessor(member))
+                throw unsupported("checkObjectTypeForDuplicateDeclarations: class/accessor member");
+            if (Ast.IsPropertySignatureDeclaration(member) && GoRuntime.Len(symbol.Declarations) > 1)
             {
-                instanceNames ??= new(StringComparer.Ordinal);
-                instanceNames.TryGetValue(symbol.Name, out int state);
+                Dictionary<string, int> names;
+                if (isStatic)
+                    names = staticNames ??= new(StringComparer.Ordinal);
+                else
+                    names = instanceNames ??= new(StringComparer.Ordinal);
+                names.TryGetValue(symbol.Name, out int state);
                 if (state == 0)
-                    instanceNames[symbol.Name] = 1;
+                    names[symbol.Name] = 1;
                 else if (state == 1)
                 {
-                    reportDuplicateMemberErrors(node, symbol.Name, true, false, Diagnostics.Duplicate_identifier_0);
-                    instanceNames[symbol.Name] = 3;
+                    reportDuplicateMemberErrors(node, symbol.Name, true, isStatic, Diagnostics.Duplicate_identifier_0);
+                    names[symbol.Name] = 3;
                 }
             }
+
+            if (checkPrivateNames && member.Name() != null && Ast.IsPrivateIdentifier(member.Name()))
+                throw unsupported("checkObjectTypeForDuplicateDeclarations: class private member");
         }
     }
 
@@ -4481,10 +5025,13 @@ public sealed partial class Checker
     private Type recombineUnknownType(Type t) => t == unknownUnionType ? unknownType : t;
     private Type getGlobalNonNullableTypeInstantiation(Type t)
     {
-        var alias = getGlobalNonNullableTypeAliasOrNil();
-        if (alias != null)
-            throw unsupported("getGlobalNonNullableTypeInstantiation: source generic library alias");
-        return getIntersectionType([t, emptyObjectType]);
+        var alias = this.getGlobalNonNullableTypeAliasOrNil();
+        if ((alias != null))
+        {
+            return this.getTypeAliasInstantiation(alias, new List<Type> { t }, null);
+        }
+
+        return this.getIntersectionType(new List<Type> { t, this.emptyObjectType });
     }
 
     private Symbol globalNonNullableTypeAlias;
@@ -4500,7 +5047,7 @@ public sealed partial class Checker
         return globalNonNullableTypeAlias;
     }
 
-    private Symbol getGlobalTypeAliasSymbol(string name, int arity, bool reportErrors)
+    internal Symbol getGlobalTypeAliasSymbol(string name, int arity, bool reportErrors)
     {
         var symbol = getGlobalSymbol(name, SymbolFlags.TypeAlias, reportErrors ? Diagnostics.Cannot_find_global_type_0 : null);
         if (symbol == null)
@@ -5256,10 +5803,40 @@ public sealed partial class Checker
 
     private List<Signature> getArrayMemberCallSignatures(Type t)
     {
-        foreach (var u in t.Types())
-            if ((u.objectFlags & ObjectFlags.Instantiated) == 0 || u.symbol == null || u.symbol.Parent == null || !isArrayOrTupleSymbol(u.symbol.Parent))
-                return null;
-        throw unsupported("getArrayMemberCallSignatures: source array member");
+        string memberName = "";
+        {
+            foreach (var range3 in GoRuntime.Range(t.Types()))
+            {
+                var i = range3.Key;
+                var t2 = range3.Value;
+                if ((((((t2.objectFlags & ObjectFlags.Instantiated) == 0) || (t2.symbol == null)) || (t2.symbol.Parent == null)) || !this.isArrayOrTupleSymbol(t2.symbol.Parent)))
+                {
+                    return null;
+                }
+
+                if ((i == 0))
+                {
+                    memberName = t2.symbol.Name;
+                }
+                else
+                {
+                    if ((memberName != t2.symbol.Name))
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        var arrayArg = this.mapType(t, (t3) =>
+        {
+            return getMappedType(Core.IfElse(this.isReadonlyArraySymbol(t3.symbol.Parent), this.globalReadonlyArrayType, this.globalArrayType).AsInterfaceType().TypeParameters()[0], t3.Mapper());
+        });
+        var arrayType = this.createArrayTypeEx(arrayArg, someType(t, (t4) =>
+        {
+            return this.isReadonlyArraySymbol(t4.symbol.Parent);
+        }));
+        return this.getSignaturesOfType(this.getTypeOfPropertyOfType(arrayType, memberName), SignatureKind.Call);
     }
 
     private bool isArrayOrTupleSymbol(Symbol symbol)
@@ -5398,7 +5975,7 @@ public sealed partial class Checker
                 checkFlags |= CheckFlags.ContainsPublic | CheckFlags.ContainsWritePublic;
                 if ((modifiers & ModifierFlags.Static) != 0)
                     checkFlags |= CheckFlags.ContainsStatic;
-                if ((prop.Flags & SymbolFlags.Prototype) == 0)
+                if (!isPrototypeProperty(prop))
                     syntheticFlag = CheckFlags.SyntheticProperty;
             }
             else if (isUnion)
@@ -5408,9 +5985,10 @@ public sealed partial class Checker
                 {
                     propFlags = propFlags & ~SymbolFlags.Accessor | SymbolFlags.Property;
                     checkFlags |= CheckFlags.WritePartial | (indexInfo.isReadonly ? CheckFlags.Readonly : 0);
-                    if ((t.objectFlags & ObjectFlags.Tuple) != 0)
-                        throw unsupported("createUnionOrIntersectionProperty: source tuple");
-                    (indexTypes ??= []).Add(indexInfo.valueType);
+                    if (isTupleType(t))
+                        (indexTypes ??= []).Add(getRestTypeOfTupleType(t) ?? undefinedType);
+                    else
+                        (indexTypes ??= []).Add(indexInfo.valueType);
                 }
                 else if ((t.objectFlags & ObjectFlags.ObjectLiteral) != 0 && (t.objectFlags & ObjectFlags.ContainsSpread) == 0)
                 {
@@ -5678,7 +6256,7 @@ public sealed partial class Checker
     // The selected complete cache preimage is ordered type IDs + flags. Aliases
     // and retained intersection payloads are excluded explicitly below.
     private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
-    private Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
+    internal Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
     private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
         var orderedTypes = new List<Type>(types.Count);
@@ -5689,13 +6267,19 @@ public sealed partial class Checker
             return typeSet.Contains(silentNeverType) ? silentNeverType : neverType;
         if (strictNullChecks && (includes & TypeFlags.Nullable) != 0 && (includes & (TypeFlags.Object | TypeFlags.NonPrimitive | TypeFlags.IncludesEmptyObject)) != 0 || (includes & TypeFlags.NonPrimitive) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NonPrimitive)) != 0 || (includes & TypeFlags.StringLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.StringLike)) != 0 || (includes & TypeFlags.NumberLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NumberLike)) != 0 || (includes & TypeFlags.BigIntLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.BigIntLike)) != 0 || (includes & TypeFlags.ESSymbolLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.ESSymbolLike)) != 0 || (includes & TypeFlags.VoidLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.VoidLike)) != 0)
             return neverType;
-        if ((includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
-            throw unsupported("getIntersectionTypeEx: template/string mapping");
+        if ((includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 && (includes & TypeFlags.StringLiteral) != 0)
+        {
+            var extracted = extractRedundantTemplateLiterals(typeSet);
+            typeSet = extracted.Item1;
+            if (extracted.Item2)
+                return neverType;
+        }
+
         if ((includes & TypeFlags.Any) != 0)
             return (includes & TypeFlags.IncludesWildcard) != 0 ? wildcardType : (includes & TypeFlags.IncludesError) != 0 ? errorType : anyType;
         if (!strictNullChecks && (includes & TypeFlags.Nullable) != 0)
             return (includes & TypeFlags.IncludesEmptyObject) != 0 ? neverType : (includes & TypeFlags.Undefined) != 0 ? undefinedType : nullType;
-        if ((includes & TypeFlags.String) != 0 && (includes & TypeFlags.StringLiteral) != 0 || (includes & TypeFlags.Number) != 0 && (includes & TypeFlags.NumberLiteral) != 0 || (includes & TypeFlags.BigInt) != 0 && (includes & TypeFlags.BigIntLiteral) != 0 || (includes & TypeFlags.ESSymbol) != 0 && (includes & TypeFlags.UniqueESSymbol) != 0 || (includes & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0 || (includes & TypeFlags.IncludesEmptyObject) != 0 && (includes & TypeFlags.DefinitelyNonNullable) != 0)
+        if ((includes & TypeFlags.String) != 0 && (includes & (TypeFlags.StringLiteral | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 || (includes & TypeFlags.Number) != 0 && (includes & TypeFlags.NumberLiteral) != 0 || (includes & TypeFlags.BigInt) != 0 && (includes & TypeFlags.BigIntLiteral) != 0 || (includes & TypeFlags.ESSymbol) != 0 && (includes & TypeFlags.UniqueESSymbol) != 0 || (includes & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0 || (includes & TypeFlags.IncludesEmptyObject) != 0 && (includes & TypeFlags.DefinitelyNonNullable) != 0)
             if ((flags & IntersectionFlags.NoSupertypeReduction) == 0)
                 typeSet = removeRedundantSupertypes(typeSet, includes);
         if ((includes & TypeFlags.IncludesMissingType) != 0)
@@ -5965,28 +6549,60 @@ public sealed partial class Checker
     private Type getIndexType(Type t) => getIndexTypeEx(t, IndexFlags.None);
     private Type getIndexTypeEx(Type t, IndexFlags indexFlags)
     {
-        t = getReducedType(t);
-        if ((t.flags & TypeFlags.Substitution) != 0)
-            throw unsupported("getIndexTypeEx: source NoInfer substitution");
-        if (shouldDeferIndexType(t, indexFlags))
-            return getIndexTypeForGenericType(t, indexFlags);
-        if ((t.objectFlags & ObjectFlags.Mapped) != 0)
-            throw unsupported("getIndexTypeEx: source mapped index");
-        if ((t.flags & TypeFlags.Union) != 0)
-            return getIntersectionType(t.Types().Select(part => getIndexTypeEx(part, indexFlags)).ToList());
-        if ((t.flags & TypeFlags.Intersection) != 0)
-            return getUnionType(t.Types().Select(part => getIndexTypeEx(part, indexFlags)).ToList());
-        if (t == wildcardType)
-            return wildcardType;
-        if ((t.flags & TypeFlags.Unknown) != 0)
-            return neverType;
-        if ((t.flags & (TypeFlags.Any | TypeFlags.Never)) != 0)
-            return stringNumberSymbolType ??= getUnionType([stringType, numberType, esSymbolType]);
-        var include = ((indexFlags & IndexFlags.NoIndexSignatures) != 0 ? TypeFlags.StringLiteral : TypeFlags.StringLike) | ((indexFlags & IndexFlags.StringsOnly) != 0 ? TypeFlags.None : TypeFlags.NumberLike | TypeFlags.ESSymbolLike);
-        return getLiteralTypeFromProperties(t, include, indexFlags == IndexFlags.None);
+        t = this.getReducedType(t);
+        switch (true)
+        {
+            case true when this.isNoInferType(t):
+            {
+                return this.getNoInferType(this.getIndexTypeEx(t.AsSubstitutionType().baseType, indexFlags));
+            }
+
+            case true when this.shouldDeferIndexType(t, indexFlags):
+            {
+                return this.getIndexTypeForGenericType(t, indexFlags);
+            }
+
+            case true when ((t.flags & TypeFlags.Union) != 0):
+            {
+                return this.getIntersectionType(Core.Map(t.Types(), (t2) =>
+                {
+                    return this.getIndexTypeEx(t2, indexFlags);
+                }));
+            }
+
+            case true when ((t.flags & TypeFlags.Intersection) != 0):
+            {
+                return this.getUnionType(Core.Map(t.Types(), (t3) =>
+                {
+                    return this.getIndexTypeEx(t3, indexFlags);
+                }));
+            }
+
+            case true when ((t.objectFlags & ObjectFlags.Mapped) != 0):
+            {
+                return this.getIndexTypeForMappedType(t, indexFlags);
+            }
+
+            case true when (t == this.wildcardType):
+            {
+                return this.wildcardType;
+            }
+
+            case true when ((t.flags & TypeFlags.Unknown) != 0):
+            {
+                return this.neverType;
+            }
+
+            case true when ((t.flags & ((TypeFlags.Any | TypeFlags.Never))) != 0):
+            {
+                return this.stringNumberSymbolType;
+            }
+        }
+
+        var include = (Core.IfElse(((indexFlags & IndexFlags.NoIndexSignatures) != 0), TypeFlags.StringLiteral, TypeFlags.StringLike) | Core.IfElse(((indexFlags & IndexFlags.StringsOnly) != 0), TypeFlags.None, (TypeFlags.NumberLike | TypeFlags.ESSymbolLike)));
+        return this.getLiteralTypeFromProperties(t, include, (indexFlags == IndexFlags.None));
     }
 
-    private bool shouldDeferIndexType(Type t, IndexFlags indexFlags) => (t.flags & TypeFlags.InstantiableNonPrimitive) != 0 || isGenericTupleType(t) || isGenericMappedType(t) || (t.flags & TypeFlags.Union) != 0 && (indexFlags & IndexFlags.NoReducibleCheck) == 0 && isGenericReducibleType(t) || (t.flags & TypeFlags.Intersection) != 0 && maybeTypeOfKind(t, TypeFlags.Instantiable) && t.Types().Any(IsEmptyAnonymousObjectType);
     private Type getIndexTypeForGenericType(Type t, IndexFlags indexFlags)
     {
         var key = new CachedTypeKey((indexFlags & IndexFlags.StringsOnly) != 0 ? CachedTypeKind.StringIndexType : CachedTypeKind.IndexType, t.id);
@@ -5998,37 +6614,73 @@ public sealed partial class Checker
 
     private Type getLiteralTypeFromProperties(Type t, TypeFlags include, bool includeOrigin)
     {
-        var key = new PropertiesTypesKey(t.id, include, includeOrigin);
-        if (propertiesTypes.TryGetValue(key, out var cached))
-            return cached;
-        Type origin = null;
-        if (includeOrigin && (t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0 || t.alias != null)
-            origin = newIndexType(t, IndexFlags.None);
-        var props = getPropertiesOfType(t);
-        var indexInfos = getIndexInfosOfType(t);
-        var types = new List<Type>((props?.Count ?? 0) + (indexInfos?.Count ?? 0));
-        foreach (var prop in props ?? [])
-            types.Add(getLiteralTypeFromProperty(prop, include, false));
-        foreach (var info in indexInfos ?? [])
-            if (isKeyTypeIncluded(info.keyType, include))
-                types.Add(info.keyType == stringType && (include & TypeFlags.Number) != 0 ? stringOrNumberType ??= getUnionType([stringType, numberType]) : info.keyType);
-        var result = getUnionTypeEx(types, UnionReduction.Literal, null, origin);
-        propertiesTypes[key] = result;
+        var key = new PropertiesTypesKey
+        {
+            typeId = t.id,
+            include = include,
+            includeOrigin = includeOrigin
+        };
+        {
+            var ok = this.propertiesTypes.TryGetValue(key, out var cached);
+            if (ok)
+            {
+                return cached;
+            }
+        }
+
+        Type origin = default;
+        if (((includeOrigin && ((t.objectFlags & ((ObjectFlags.ClassOrInterface | ObjectFlags.Reference))) != 0)) || (t.alias != null)))
+        {
+            origin = this.newIndexType(t, IndexFlags.None);
+        }
+
+        var props = this.getPropertiesOfType(t);
+        var indexInfos = this.getIndexInfosOfType(t);
+        var types = GoRuntime.MakeSlice<Type>(0);
+        {
+            foreach (var prop in GoRuntime.RangeValues(props))
+            {
+                types = GoRuntime.Append(types, this.getLiteralTypeFromProperty(prop, include, false));
+            }
+        }
+
+        {
+            foreach (var range2 in GoRuntime.Range(indexInfos))
+            {
+                var _2 = range2.Key;
+                var info = range2.Value;
+                if (((info != this.enumNumberIndexInfo) && this.isKeyTypeIncluded(info.keyType, include)))
+                {
+                    if (((info.keyType == this.stringType) && ((include & TypeFlags.Number) != 0)))
+                    {
+                        types = GoRuntime.Append(types, this.stringOrNumberType);
+                    }
+                    else
+                    {
+                        types = GoRuntime.Append(types, info.keyType);
+                    }
+                }
+            }
+        }
+
+        var result = this.getUnionTypeEx(types, UnionReduction.Literal, null, origin);
+        this.propertiesTypes[key] = result;
         return result;
     }
 
     private bool shouldDeferIndexedAccessType(Type objectType, Type indexType, Node accessNode)
     {
-        if (isGenericIndexType(indexType))
-            return true;
-        if (accessNode != null && !Ast.IsIndexedAccessTypeNode(accessNode))
+        if (this.isGenericIndexType(indexType))
         {
-            if (isGenericTupleType(objectType))
-                throw unsupported("shouldDeferIndexedAccessType: source generic tuple");
-            return false;
+            return true;
         }
 
-        return isGenericObjectType(objectType) || isGenericReducibleType(objectType);
+        if (((accessNode != null) && !Ast.IsIndexedAccessTypeNode(accessNode)))
+        {
+            return (isGenericTupleType(objectType) && !indexTypeLessThan(indexType, getTotalFixedElementCount(objectType.TargetTupleType())));
+        }
+
+        return ((this.isGenericObjectType(objectType) && !((isTupleType(objectType) && indexTypeLessThan(indexType, getTotalFixedElementCount(objectType.TargetTupleType()))))) || this.isGenericReducibleType(objectType));
     }
 
     private bool isGenericIndexType(Type t) => (getGenericObjectFlags(t) & ObjectFlags.IsGenericIndexType) != 0;
@@ -6043,79 +6695,438 @@ public sealed partial class Checker
     private Type getUniqueLiteralTypeForTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 ? uniqueLiteralType : t;
     private Type getIndexedAccessTypeOrUndefined(Type objectType, Type indexType, AccessFlags accessFlags, Node accessNode, TypeAlias alias)
     {
-        if (alias != null)
-            throw unsupported("getIndexedAccessTypeOrUndefined: alias");
-        if (objectType == wildcardType || indexType == wildcardType)
-            return wildcardType;
-        objectType = getReducedType(objectType);
-        if (shouldDeferIndexedAccessType(objectType, indexType, accessNode))
-            throw unsupported("getIndexedAccessTypeOrUndefined: deferred generic/tuple index");
-        var apparentObjectType = getReducedApparentType(objectType);
-        if ((indexType.flags & TypeFlags.Union) != 0 && (indexType.flags & TypeFlags.Boolean) == 0)
+        if (((objectType == this.wildcardType) || (indexType == this.wildcardType)))
         {
-            List<Type> propTypes = null;
-            bool wasMissing = false;
-            foreach (var t in indexType.Types())
-            {
-                var propType = getPropertyTypeForIndexType(objectType, apparentObjectType, t, indexType, accessNode, accessFlags | (wasMissing ? AccessFlags.SuppressNoImplicitAnyError : 0));
-                if (propType != null)
-                    (propTypes ??= []).Add(propType);
-                else if (accessNode == null)
-                    return null;
-                else
-                    wasMissing = true;
-            }
-
-            if (wasMissing)
-                return null;
-            if ((accessFlags & AccessFlags.Writing) != 0)
-                throw unsupported("getIndexedAccessTypeOrUndefined: write position");
-            return getUnionTypeEx(propTypes ?? [], UnionReduction.Literal, null, null);
+            return this.wildcardType;
         }
 
-        return getPropertyTypeForIndexType(objectType, apparentObjectType, indexType, indexType, accessNode, accessFlags | AccessFlags.CacheSymbol | AccessFlags.ReportDeprecated);
+        objectType = this.getReducedType(objectType);
+        if (((this.isStringIndexSignatureOnlyType(objectType) && ((indexType.flags & TypeFlags.Nullable) == 0)) && this.isTypeAssignableToKind(indexType, (TypeFlags.String | TypeFlags.Number))))
+        {
+            indexType = this.stringType;
+        }
+
+        if (((this.compilerOptions.NoUncheckedIndexedAccess == Tristate.True) && ((accessFlags & AccessFlags.ExpressionPosition) != 0)))
+        {
+            accessFlags |= AccessFlags.IncludeUndefined;
+        }
+
+        if (this.shouldDeferIndexedAccessType(objectType, indexType, accessNode))
+        {
+            if (((objectType.flags & TypeFlags.AnyOrUnknown) != 0))
+            {
+                return objectType;
+            }
+
+            var persistentAccessFlags = (accessFlags & AccessFlags.Persistent);
+            var key = getIndexedAccessKey(objectType, indexType, accessFlags, alias);
+            this.indexedAccessTypes.TryGetValue(key, out var t);
+            if ((t == null))
+            {
+                t = this.newIndexedAccessType(objectType, indexType, persistentAccessFlags);
+                t.alias = alias;
+                this.indexedAccessTypes[key] = t;
+            }
+
+            return t;
+        }
+
+        var apparentObjectType = this.getReducedApparentType(objectType);
+        if ((((indexType.flags & TypeFlags.Union) != 0) && ((indexType.flags & TypeFlags.Boolean) == 0)))
+        {
+            List<Type> propTypes = default;
+            var wasMissingProp = false;
+            {
+                foreach (var t2 in GoRuntime.RangeValues(indexType.Types()))
+                {
+                    var propType = this.getPropertyTypeForIndexType(objectType, apparentObjectType, t2, indexType, accessNode, (accessFlags | Core.IfElse(wasMissingProp, AccessFlags.SuppressNoImplicitAnyError, AccessFlags.None)));
+                    if ((propType != null))
+                    {
+                        propTypes = GoRuntime.Append(propTypes, propType);
+                    }
+                    else
+                    {
+                        if ((accessNode == null))
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            wasMissingProp = true;
+                        }
+                    }
+                }
+            }
+
+            if (wasMissingProp)
+            {
+                return null;
+            }
+
+            if (((accessFlags & AccessFlags.Writing) != 0))
+            {
+                return this.getIntersectionTypeEx(propTypes, IntersectionFlags.None, alias);
+            }
+
+            return this.getUnionTypeEx(propTypes, UnionReduction.Literal, alias, null);
+        }
+
+        return this.getPropertyTypeForIndexType(objectType, apparentObjectType, indexType, indexType, accessNode, ((accessFlags | AccessFlags.CacheSymbol) | AccessFlags.ReportDeprecated));
     }
 
     private Type getPropertyTypeForIndexType(Type originalObjectType, Type objectType, Type indexType, Type fullIndexType, Node accessNode, AccessFlags accessFlags)
     {
-        if (accessNode?.Kind is Kind.ElementAccessExpression or Kind.IndexedAccessType or Kind.PrivateIdentifier)
-            throw unsupported("getPropertyTypeForIndexType: source indexed/private access");
-        var propName = getPropertyNameFromIndex(indexType, accessNode);
-        if (propName != Ast.InternalSymbolNameMissing)
+        Node accessExpression = default;
+        if (((accessNode != null) && Ast.IsElementAccessExpression(accessNode)))
         {
-            if ((accessFlags & AccessFlags.Contextual) != 0)
-                return getTypeOfPropertyOfContextualTypeEx(objectType, propName, null) ?? anyType;
-            var prop = getPropertyOfType(objectType, propName);
-            if (prop != null)
+            accessExpression = accessNode;
+        }
+
+        string propName = "";
+        bool hasPropName = default;
+        if (!(((accessNode != null) && Ast.IsPrivateIdentifier(accessNode))))
+        {
+            propName = this.getPropertyNameFromIndex(indexType, accessNode);
+            hasPropName = (propName != Ast.InternalSymbolNameMissing);
+        }
+
+        if (hasPropName)
+        {
+            if (((accessFlags & AccessFlags.Contextual) != 0))
             {
-                if ((accessFlags & AccessFlags.ReportDeprecated) != 0 && accessNode != null && (prop.Declarations?.Count ?? 0) != 0 && isDeprecatedSymbol(prop))
-                    throw unsupported("getPropertyTypeForIndexType: deprecated tag");
-                if ((accessFlags & AccessFlags.Writing) != 0)
-                    throw unsupported("getPropertyTypeForIndexType: write position");
-                return getTypeOfSymbol(prop);
+                var t = this.getTypeOfPropertyOfContextualType(objectType, propName);
+                if ((t == null))
+                {
+                    t = this.anyType;
+                }
+
+                return t;
+            }
+
+            var prop = this.getPropertyOfType(objectType, propName);
+            if ((prop != null))
+            {
+                if (((((((accessFlags & AccessFlags.ReportDeprecated) != 0) && (accessNode != null)) && (GoRuntime.Len(prop.Declarations) != 0)) && this.isDeprecatedSymbol(prop)) && this.isUncalledFunctionReference(accessNode, prop)))
+                {
+                    Node deprecatedNode = default;
+                    if ((accessExpression != null))
+                    {
+                        deprecatedNode = accessExpression.AsElementAccessExpression().ArgumentExpression;
+                    }
+                    else
+                    {
+                        if (Ast.IsIndexedAccessTypeNode(accessNode))
+                        {
+                            deprecatedNode = accessNode.AsIndexedAccessTypeNode().IndexType;
+                        }
+                        else
+                        {
+                            deprecatedNode = accessNode;
+                        }
+                    }
+
+                    this.addDeprecatedSuggestion(deprecatedNode, prop.Declarations, propName);
+                }
+
+                if ((accessExpression != null))
+                {
+                    this.markPropertyAsReferenced(prop, accessExpression, this.isSelfTypeAccess(accessExpression.Expression(), objectType.symbol));
+                    if (this.isAssignmentToReadonlyEntity(accessExpression, prop, getAssignmentTargetKind(accessExpression)))
+                    {
+                        this.error(accessExpression.AsElementAccessExpression().ArgumentExpression, Diagnostics.Cannot_assign_to_0_because_it_is_a_read_only_property, this.symbolToString(prop));
+                        return null;
+                    }
+
+                    if (((accessFlags & AccessFlags.CacheSymbol) != 0))
+                    {
+                        this.symbolNodeLinks.Get(accessNode).resolvedSymbol = prop;
+                    }
+
+                    if (this.isThisPropertyAccessInConstructor(accessExpression, prop))
+                    {
+                        return this.autoType;
+                    }
+                }
+
+                Type propType = default;
+                if (((accessFlags & AccessFlags.Writing) != 0))
+                {
+                    propType = this.getWriteTypeOfSymbol(prop);
+                }
+                else
+                {
+                    propType = this.getTypeOfSymbol(prop);
+                }
+
+                switch (true)
+                {
+                    case true when ((accessExpression != null) && (getAssignmentTargetKind(accessExpression) != AssignmentKind.Definite)):
+                    {
+                        return this.getFlowTypeOfReference(accessExpression, propType);
+                    }
+
+                    case true when (((accessNode != null) && Ast.IsIndexedAccessTypeNode(accessNode)) && this.containsMissingType(propType)):
+                    {
+                        return this.getUnionType(new List<Type> { propType, this.undefinedType });
+                    }
+
+                    default:
+                    {
+                        return propType;
+                    }
+                }
+            }
+
+            if ((everyType(objectType, isTupleType) && isNumericLiteralName(propName)))
+            {
+                var index = JsNum.FromString(propName);
+                if ((((accessNode != null) && everyType(objectType, (t2) =>
+                {
+                    return ((t2.TargetTupleType().combinedFlags & ElementFlags.Variable) == 0);
+                })) && ((accessFlags & AccessFlags.AllowMissing) == 0)))
+                {
+                    var indexNode = getIndexNodeForAccessExpression(accessNode);
+                    if (isTupleType(objectType))
+                    {
+                        if ((index < 0))
+                        {
+                            this.error(indexNode, Diagnostics.A_tuple_type_cannot_be_indexed_with_a_negative_value);
+                            return this.undefinedType;
+                        }
+
+                        this.error(indexNode, Diagnostics.Tuple_type_0_of_length_1_has_no_element_at_index_2, this.typeToStringByteString(objectType), this.getTypeReferenceArity(objectType), propName);
+                    }
+                    else
+                    {
+                        this.error(indexNode, Diagnostics.Property_0_does_not_exist_on_type_1, propName, this.typeToStringByteString(objectType));
+                    }
+                }
+
+                if ((index >= 0))
+                {
+                    this.errorIfWritingToReadonlyIndex(this.getIndexInfoOfType(objectType, this.numberType), objectType, accessExpression);
+                    return this.getTupleElementTypeOutOfStartCount(objectType, index, Core.IfElse(((accessFlags & AccessFlags.IncludeUndefined) != 0), this.missingType, null));
+                }
             }
         }
 
-        if ((indexType.flags & TypeFlags.Nullable) == 0 && isTypeAssignableToKind(indexType, TypeFlags.StringLike | TypeFlags.NumberLike | TypeFlags.ESSymbolLike))
+        if ((((indexType.flags & TypeFlags.Nullable) == 0) && this.isTypeAssignableToKind(indexType, ((TypeFlags.StringLike | TypeFlags.NumberLike) | TypeFlags.ESSymbolLike))))
         {
-            if ((objectType.flags & (TypeFlags.Any | TypeFlags.Never)) != 0)
-                return objectType;
-            var info = getApplicableIndexInfo(objectType, indexType) ?? getIndexInfoOfType(objectType, stringType);
-            if (info != null)
+            if (((objectType.flags & ((TypeFlags.Any | TypeFlags.Never))) != 0))
             {
-                if ((accessFlags & AccessFlags.NoIndexSignatures) != 0 && info.keyType != numberType)
-                    return null;
-                if (accessNode != null && info.keyType == stringType && !isTypeAssignableToKind(indexType, TypeFlags.String | TypeFlags.Number))
-                    throw unsupported("getPropertyTypeForIndexType: source nonstatic index diagnostic");
-                if ((accessFlags & AccessFlags.Writing) != 0 && info.isReadonly)
-                    throw unsupported("getPropertyTypeForIndexType: source index write");
-                return (accessFlags & AccessFlags.IncludeUndefined) != 0 ? getUnionType([info.valueType, missingType]) : info.valueType;
+                return objectType;
             }
 
-            if ((indexType.flags & TypeFlags.Never) != 0)
-                return neverType;
-            if (accessNode != null)
-                throw unsupported("getPropertyTypeForIndexType: source missing indexed property diagnostic");
+            var indexInfo = this.getApplicableIndexInfo(objectType, indexType);
+            if ((indexInfo == null))
+            {
+                indexInfo = this.getIndexInfoOfType(objectType, this.stringType);
+            }
+
+            if ((indexInfo != null))
+            {
+                if ((((accessFlags & AccessFlags.NoIndexSignatures) != 0) && (indexInfo.keyType != this.numberType)))
+                {
+                    if ((accessExpression != null))
+                    {
+                        if (((accessFlags & AccessFlags.Writing) != 0))
+                        {
+                            this.error(accessExpression, Diagnostics.Type_0_is_generic_and_can_only_be_indexed_for_reading, this.typeToStringByteString(originalObjectType));
+                        }
+                        else
+                        {
+                            this.error(accessExpression, Diagnostics.Type_0_cannot_be_used_to_index_type_1, this.typeToStringByteString(indexType), this.typeToStringByteString(originalObjectType));
+                        }
+                    }
+
+                    return null;
+                }
+
+                if ((((accessNode != null) && (indexInfo.keyType == this.stringType)) && !this.isTypeAssignableToKind(indexType, (TypeFlags.String | TypeFlags.Number))))
+                {
+                    var indexNode2 = getIndexNodeForAccessExpression(accessNode);
+                    this.error(indexNode2, Diagnostics.Type_0_cannot_be_used_as_an_index_type, this.typeToStringByteString(indexType));
+                    if (((accessFlags & AccessFlags.IncludeUndefined) != 0))
+                    {
+                        return this.getUnionType(new List<Type> { indexInfo.valueType, this.missingType });
+                    }
+                    else
+                    {
+                        return indexInfo.valueType;
+                    }
+                }
+
+                this.errorIfWritingToReadonlyIndex(indexInfo, objectType, accessExpression);
+                if ((((accessFlags & AccessFlags.IncludeUndefined) != 0) && !((((objectType.symbol != null) && ((objectType.symbol.Flags & ((SymbolFlags.RegularEnum | SymbolFlags.ConstEnum))) != 0)) && ((((indexType.symbol != null) && ((indexType.flags & TypeFlags.EnumLiteral) != 0)) && (this.getParentOfSymbol(indexType.symbol) == objectType.symbol)))))))
+                {
+                    return this.getUnionType(new List<Type> { indexInfo.valueType, this.missingType });
+                }
+
+                return indexInfo.valueType;
+            }
+
+            if (((indexType.flags & TypeFlags.Never) != 0))
+            {
+                return this.neverType;
+            }
+
+            if (this.isJSLiteralType(objectType))
+            {
+                return this.anyType;
+            }
+
+            if (((accessExpression != null) && !isConstEnumObjectType(objectType)))
+            {
+                if (isObjectLiteralType(objectType))
+                {
+                    if ((this.noImplicitAny && ((indexType.flags & ((TypeFlags.StringLiteral | TypeFlags.NumberLiteral))) != 0)))
+                    {
+                        this.addDiagnostic(createDiagnosticForNode(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, indexType.AsLiteralType().value, this.typeToStringByteString(objectType)));
+                        return this.undefinedType;
+                    }
+                    else
+                    {
+                        if (((indexType.flags & ((TypeFlags.Number | TypeFlags.String))) != 0))
+                        {
+                            var types = Core.Map(objectType.AsStructuredType().properties, (prop2) =>
+                            {
+                                return this.getTypeOfSymbol(prop2);
+                            });
+                            return this.getUnionType(GoRuntime.Append(types, this.undefinedType));
+                        }
+                    }
+                }
+
+                if (((((objectType.symbol == this.globalThisSymbol) && hasPropName) && (this.globalThisSymbol.Exports[propName] != null)) && ((this.globalThisSymbol.Exports[propName].Flags & SymbolFlags.BlockScoped) != 0)))
+                {
+                    this.error(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, propName, this.typeToStringByteString(objectType));
+                }
+                else
+                {
+                    if ((this.noImplicitAny && ((accessFlags & AccessFlags.SuppressNoImplicitAnyError) == 0)))
+                    {
+                        if ((hasPropName && this.typeHasStaticProperty(propName, objectType)))
+                        {
+                            var typeName = this.typeToStringByteString(objectType);
+                            this.error(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1_Did_you_mean_to_access_the_static_member_2_instead, propName, typeName, (((typeName + "[") + TypeScript.Scanner.Scanner.GetTextOfNodeByteString(accessExpression.AsElementAccessExpression().ArgumentExpression)) + "]"));
+                        }
+                        else
+                        {
+                            if ((this.getIndexTypeOfType(objectType, this.numberType) != null))
+                            {
+                                this.error(accessExpression.AsElementAccessExpression().ArgumentExpression, Diagnostics.Element_implicitly_has_an_any_type_because_index_expression_is_not_of_type_number);
+                            }
+                            else
+                            {
+                                string suggestion = "";
+                                if (hasPropName)
+                                {
+                                    suggestion = this.getSuggestionForNonexistentProperty(propName, objectType);
+                                }
+
+                                if ((suggestion != ""))
+                                {
+                                    this.error(accessExpression.AsElementAccessExpression().ArgumentExpression, Diagnostics.Property_0_does_not_exist_on_type_1_Did_you_mean_2, propName, this.typeToStringByteString(objectType), suggestion);
+                                }
+                                else
+                                {
+                                    suggestion = this.getSuggestionForNonexistentIndexSignature(objectType, accessExpression, indexType);
+                                    if ((suggestion != ""))
+                                    {
+                                        this.error(accessExpression, Diagnostics.Element_implicitly_has_an_any_type_because_type_0_has_no_index_signature_Did_you_mean_to_call_1, this.typeToStringByteString(objectType), suggestion);
+                                    }
+                                    else
+                                    {
+                                        Diagnostic diagnostic = default;
+                                        switch (true)
+                                        {
+                                            case true when ((indexType.flags & TypeFlags.EnumLiteral) != 0):
+                                            {
+                                                diagnostic = NewDiagnosticForNode(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, (("[" + this.typeToStringByteString(indexType)) + "]"), this.typeToStringByteString(objectType));
+                                                break;
+                                            }
+
+                                            case true when ((indexType.flags & TypeFlags.UniqueESSymbol) != 0):
+                                            {
+                                                var symbolName = this.getFullyQualifiedName(indexType.symbol, accessExpression);
+                                                diagnostic = NewDiagnosticForNode(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, (("[" + symbolName) + "]"), this.typeToStringByteString(objectType));
+                                                break;
+                                            }
+
+                                            case true when ((indexType.flags & TypeFlags.StringLiteral) != 0):
+                                            {
+                                                diagnostic = NewDiagnosticForNode(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, indexType.AsLiteralType().value, this.typeToStringByteString(objectType));
+                                                break;
+                                            }
+
+                                            case true when ((indexType.flags & TypeFlags.NumberLiteral) != 0):
+                                            {
+                                                diagnostic = NewDiagnosticForNode(accessExpression, Diagnostics.Property_0_does_not_exist_on_type_1, indexType.AsLiteralType().value, this.typeToStringByteString(objectType));
+                                                break;
+                                            }
+
+                                            case true when ((indexType.flags & ((TypeFlags.Number | TypeFlags.String))) != 0):
+                                            {
+                                                diagnostic = NewDiagnosticForNode(accessExpression, Diagnostics.No_index_signature_with_a_parameter_of_type_0_was_found_on_type_1, this.typeToStringByteString(indexType), this.typeToStringByteString(objectType));
+                                                break;
+                                            }
+                                        }
+
+                                        this.addDiagnostic(NewDiagnosticChainForNode(diagnostic, accessExpression, Diagnostics.Element_implicitly_has_an_any_type_because_expression_of_type_0_can_t_be_used_to_index_type_1, this.typeToStringByteString(fullIndexType), this.typeToStringByteString(objectType)));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        if ((((accessFlags & AccessFlags.AllowMissing) != 0) && isObjectLiteralType(objectType)))
+        {
+            return this.undefinedType;
+        }
+
+        if (this.isJSLiteralType(objectType))
+        {
+            return this.anyType;
+        }
+
+        if ((accessNode != null))
+        {
+            var indexNode3 = getIndexNodeForAccessExpression(accessNode);
+            if (((indexNode3.Kind != Kind.BigIntLiteral) && ((indexType.flags & ((TypeFlags.StringLiteral | TypeFlags.NumberLiteral))) != 0)))
+            {
+                this.error(indexNode3, Diagnostics.Property_0_does_not_exist_on_type_1, indexType.AsLiteralType().value, this.typeToStringByteString(objectType));
+            }
+            else
+            {
+                if (((indexType.flags & ((TypeFlags.String | TypeFlags.Number))) != 0))
+                {
+                    this.error(indexNode3, Diagnostics.Type_0_has_no_matching_index_signature_for_type_1, this.typeToStringByteString(objectType), this.typeToStringByteString(indexType));
+                }
+                else
+                {
+                    string typeString = "";
+                    if ((indexNode3.Kind == Kind.BigIntLiteral))
+                    {
+                        typeString = "bigint";
+                    }
+                    else
+                    {
+                        typeString = this.typeToStringByteString(indexType);
+                    }
+
+                    this.error(indexNode3, Diagnostics.Type_0_cannot_be_used_as_an_index_type, typeString);
+                }
+            }
+        }
+
+        if (IsTypeAny(indexType))
+        {
+            return indexType;
         }
 
         return null;
@@ -6177,7 +7188,7 @@ public sealed partial class Checker
 
             case Kind.ArrayLiteralExpression:
             {
-                throw unsupported("isContextSensitive: source ArrayLiteralExpression");
+                return Core.Some(node.Elements(), this.isContextSensitive);
             }
 
             case Kind.ConditionalExpression:
@@ -6289,14 +7300,68 @@ public sealed partial class Checker
 
     private bool isConstTypeVariable(Type t, int depth)
     {
-        if (depth >= 5 || t == null)
+        if (((depth >= 5) || (t == null)))
+        {
             return false;
-        if ((t.flags & TypeFlags.TypeParameter) != 0)
-            return t.symbol != null && (t.symbol.Declarations?.Any(d => Ast.HasSyntacticModifier(d, ModifierFlags.Const)) ?? false);
-        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-            return t.Types().Any(s => isConstTypeVariable(s, depth));
-        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional | TypeFlags.Substitution)) != 0 || (t.objectFlags & ObjectFlags.Mapped) != 0 || isGenericTupleType(t))
-            throw unsupported("isConstTypeVariable: source generic type operator");
+        }
+
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.TypeParameter) != 0):
+            {
+                return ((t.symbol != null) && Core.Some(t.symbol.Declarations, (d) =>
+                {
+                    return Ast.HasSyntacticModifier(d, ModifierFlags.Const);
+                }));
+            }
+
+            case true when ((t.flags & TypeFlags.UnionOrIntersection) != 0):
+            {
+                return Core.Some(t.Types(), (s) =>
+                {
+                    return this.isConstTypeVariable(s, depth);
+                });
+            }
+
+            case true when ((t.flags & TypeFlags.IndexedAccess) != 0):
+            {
+                return this.isConstTypeVariable(t.AsIndexedAccessType().objectType, (depth + 1));
+            }
+
+            case true when ((t.flags & TypeFlags.Conditional) != 0):
+            {
+                return this.isConstTypeVariable(this.getConstraintOfConditionalType(t), (depth + 1));
+            }
+
+            case true when ((t.flags & TypeFlags.Substitution) != 0):
+            {
+                return this.isConstTypeVariable(t.AsSubstitutionType().baseType, depth);
+            }
+
+            case true when ((t.objectFlags & ObjectFlags.Mapped) != 0):
+            {
+                var typeVariable = this.getHomomorphicTypeVariable(t);
+                return ((typeVariable != null) && this.isConstTypeVariable(typeVariable, depth));
+            }
+
+            case true when isGenericTupleType(t):
+            {
+                {
+                    foreach (var range1 in GoRuntime.Range(this.getElementTypes(t)))
+                    {
+                        var i = range1.Key;
+                        var s2 = range1.Value;
+                        if ((((t.TargetTupleType().elementInfos[i].flags & ElementFlags.Variadic) != 0) && this.isConstTypeVariable(s2, depth)))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
         return false;
     }
 }
@@ -6315,37 +7380,59 @@ public sealed partial class Checker
     {
         if ((symbol.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) != 0)
             return getDeclaredTypeOfClassOrInterface(symbol);
+        if ((symbol.Flags & SymbolFlags.TypeParameter) != 0)
+            return getDeclaredTypeOfTypeParameter(symbol);
         if ((symbol.Flags & SymbolFlags.TypeAlias) != 0)
             return getDeclaredTypeOfTypeAlias(symbol);
-        if ((symbol.Flags & (SymbolFlags.TypeParameter | SymbolFlags.Enum | SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
+        if ((symbol.Flags & (SymbolFlags.Enum | SymbolFlags.EnumMember | SymbolFlags.Alias)) != 0)
             throw unsupported("tryGetDeclaredTypeOfSymbol: enum/source parameter/module alias");
         return null;
     }
 
     private Type getDeclaredTypeOfTypeAlias(Symbol symbol)
     {
-        var links = typeAliasLinks.Get(symbol);
-        if (links.declaredType == null)
+        var links = this.typeAliasLinks.Get(symbol);
+        if ((links.declaredType == null))
         {
-            if (!pushTypeResolution(symbol, TypeSystemPropertyName.DeclaredType))
-                return errorType;
-            var declaration = symbol.Declarations.Find(Ast.IsTypeAliasDeclaration);
-            var t = getTypeFromTypeNode(declaration.Type());
-            if (popTypeResolution())
+            if (!this.pushTypeResolution(symbol, TypeSystemPropertyName.DeclaredType))
             {
-                var parameters = getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol);
-                if ((parameters?.Count ?? 0) != 0)
-                    throw unsupported("getDeclaredTypeOfTypeAlias: source generic alias");
-                if (t == intrinsicMarkerType && symbol.Name == "BuiltinIteratorReturn")
-                    throw unsupported("getDeclaredTypeOfTypeAlias: library intrinsic");
+                return this.errorType;
+            }
+
+            var declaration = Core.Find(symbol.Declarations, Ast.IsTypeOrJSTypeAliasDeclaration);
+            var typeNode = declaration.Type();
+            var t = this.getTypeFromTypeNode(typeNode);
+            if (this.popTypeResolution())
+            {
+                var typeParameters = this.getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol);
+                if ((GoRuntime.Len(typeParameters) != 0))
+                {
+                    links.typeParameters = typeParameters;
+                    links.instantiations = new Dictionary<CacheHashKey, Type>();
+                    links.instantiations[getTypeListKey(typeParameters)] = t;
+                }
+
+                if (((t == this.intrinsicMarkerType) && (symbol.Name == "BuiltinIteratorReturn")))
+                {
+                    t = this.getBuiltinIteratorReturnType();
+                }
             }
             else
             {
-                error(declaration.Name() ?? declaration, Diagnostics.Type_alias_0_circularly_references_itself, symbolToString(symbol));
-                t = errorType;
+                var errorNode = declaration.Name();
+                if ((errorNode == null))
+                {
+                    errorNode = declaration;
+                }
+
+                this.error(errorNode, Diagnostics.Type_alias_0_circularly_references_itself, this.symbolToString(symbol));
+                t = this.errorType;
             }
 
-            links.declaredType ??= t;
+            if ((links.declaredType == null))
+            {
+                links.declaredType = t;
+            }
         }
 
         return links.declaredType;
@@ -6372,7 +7459,7 @@ public sealed partial class Checker
         return types;
     }
 
-    private Type getDeclaredTypeOfTypeParameter(Symbol symbol)
+    internal Type getDeclaredTypeOfTypeParameter(Symbol symbol)
     {
         var links = declaredTypeLinks.Get(symbol);
         return links.declaredType ??= newTypeParameter(symbol);
@@ -6414,8 +7501,26 @@ public sealed partial class Checker
 
     private Type getDistributedTypeParameter(Node node, Type t)
     {
-        if ((t.flags & TypeFlags.TypeParameter) != 0 && !t.AsTypeParameter().isDistributed)
-            throw unsupported("getDistributedTypeParameter: source conditional parameter");
+        if ((((t.flags & TypeFlags.TypeParameter) != 0) && !t.AsTypeParameter().isDistributed))
+        {
+            {
+                var n = node.Parent;
+                for (; ((n != null) && !Ast.IsStatement(n)); n = n.Parent)
+                {
+                    if (Ast.IsConditionalTypeNode(n))
+                    {
+                        {
+                            var checkTypeNode = n.AsConditionalTypeNode().CheckType;
+                            if ((isSimpleIdentifierTypeReference(checkTypeNode) && (this.getSymbolFromTypeReference(checkTypeNode) == t.symbol)))
+                            {
+                                return this.getDistributedTypeFromTypeParameter(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return t;
     }
 
@@ -6475,29 +7580,87 @@ public sealed partial class Checker
 
     private Type getTypeFromTypeAliasReference(Node node, Symbol symbol)
     {
-        var arguments = node.TypeArguments();
-        if ((symbol.CheckFlags & CheckFlags.Unresolved) != 0)
+        var typeArguments = node.TypeArguments();
+        if (((symbol.CheckFlags & CheckFlags.Unresolved) != 0))
         {
             var alias = new TypeAlias
             {
                 symbol = symbol,
-                typeArguments = arguments?.Select(getTypeFromTypeNode).ToList()
+                typeArguments = Core.Map(typeArguments, this.getTypeFromTypeNode)
             };
             var key = getAliasKey(alias);
-            if (!errorTypes.TryGetValue(key, out var t))
+            this.errorTypes.TryGetValue(key, out var errorType);
+            if ((errorType == null))
             {
-                t = newIntrinsicType(TypeFlags.Any, "error");
-                t.alias = alias;
-                errorTypes[key] = t;
+                errorType = this.newIntrinsicType(TypeFlags.Any, "error");
+                errorType.alias = alias;
+                this.errorTypes[key] = errorType;
             }
 
+            return errorType;
+        }
+
+        var t = this.getDeclaredTypeOfSymbol(symbol);
+        var typeParameters = this.typeAliasLinks.Get(symbol).typeParameters;
+        if ((GoRuntime.Len(typeParameters) != 0))
+        {
+            var numTypeArguments = GoRuntime.Len(typeArguments);
+            var minTypeArgumentCount = this.getMinTypeArgumentCount(typeParameters);
+            if (((numTypeArguments < minTypeArgumentCount) || (numTypeArguments > GoRuntime.Len(typeParameters))))
+            {
+                var message = Core.IfElse((minTypeArgumentCount == GoRuntime.Len(typeParameters)), Diagnostics.Generic_type_0_requires_1_type_argument_s, Diagnostics.Generic_type_0_requires_between_1_and_2_type_arguments);
+                this.error(node, message, this.symbolToString(symbol), minTypeArgumentCount, GoRuntime.Len(typeParameters));
+                return this.errorType;
+            }
+
+            var aliasSymbol = this.getAliasSymbolForTypeNode(node);
+            Symbol newAliasSymbol = default;
+            if (((aliasSymbol != null) && ((isLocalTypeAlias(symbol) || !isLocalTypeAlias(aliasSymbol)))))
+            {
+                newAliasSymbol = aliasSymbol;
+            }
+
+            List<Type> aliasTypeArguments = default;
+            if ((newAliasSymbol != null))
+            {
+                aliasTypeArguments = this.getTypeArgumentsForAliasSymbol(newAliasSymbol);
+            }
+            else
+            {
+                if (Ast.IsTypeReferenceType(node))
+                {
+                    var aliasSymbol2 = this.resolveTypeReferenceName(node, SymbolFlags.Alias, true);
+                    if (((aliasSymbol2 != null) && (aliasSymbol2 != this.unknownSymbol)))
+                    {
+                        var resolved = this.resolveAlias(aliasSymbol2);
+                        if (((resolved != null) && ((resolved.Flags & SymbolFlags.TypeAlias) != 0)))
+                        {
+                            newAliasSymbol = resolved;
+                            aliasTypeArguments = this.getTypeArgumentsFromNode(node);
+                        }
+                    }
+                }
+            }
+
+            TypeAlias newAlias = default;
+            if ((newAliasSymbol != null))
+            {
+                newAlias = new TypeAlias
+                {
+                    symbol = newAliasSymbol,
+                    typeArguments = aliasTypeArguments
+                };
+            }
+
+            return this.getTypeAliasInstantiation(symbol, this.getTypeArgumentsFromNode(node), newAlias);
+        }
+
+        if (this.checkNoTypeArguments(node, symbol))
+        {
             return t;
         }
 
-        var declared = getDeclaredTypeOfSymbol(symbol);
-        if ((typeAliasLinks.Get(symbol).typeParameters?.Count ?? 0) != 0)
-            throw unsupported("getTypeFromTypeAliasReference: source generic alias");
-        return checkNoTypeArguments(node, symbol) ? declared : errorType;
+        return this.errorType;
     }
 
     private bool checkNoTypeArguments(Node node, Symbol symbol)
@@ -6518,8 +7681,7 @@ public sealed partial class Checker
         if (!containerAllowsBlockScopedVariable(node.Parent))
             grammarErrorOnNode(node, Diagnostics.X_0_declarations_can_only_be_declared_inside_a_block, "type");
         checkExportsOnMergedDeclarations(node);
-        if ((node.TypeParameters()?.Count ?? 0) != 0)
-            throw unsupported("checkTypeAliasDeclaration: source generic");
+        checkTypeParameters(node.TypeParameters());
         if (node.Type()?.Kind == Kind.IntrinsicKeyword)
             throw unsupported("checkTypeAliasDeclaration: library intrinsic");
         checkSourceElement(node.Type());
@@ -6535,8 +7697,6 @@ public sealed partial class Checker
     private void checkTypeReferenceNode(Node node)
     {
         checkGrammarTypeArguments(node, node.TypeArgumentList());
-        if (node.TypeArguments() != null)
-            throw unsupported("checkTypeReferenceNode: written generic arguments");
         checkSourceElements(node.TypeArguments());
         checkTypeReferenceOrImport(node);
     }
@@ -6547,7 +7707,12 @@ public sealed partial class Checker
         if (!isErrorType(t))
         {
             if ((node.TypeArguments()?.Count ?? 0) != 0)
-                throw unsupported("checkTypeReferenceOrImport: written generic constraints");
+            {
+                var parameters = getTypeParametersForTypeReferenceOrImport(node);
+                if ((parameters?.Count ?? 0) != 0)
+                    checkTypeArgumentConstraints(node, parameters);
+            }
+
             var symbol = getResolvedSymbolOrNil(node);
             if (symbol != null && (symbol.Declarations?.Any(IsDeprecatedDeclaration) ?? false))
                 throw unsupported("checkTypeReferenceOrImport: tagged JSDoc declaration");
@@ -6633,7 +7798,7 @@ public sealed partial class Checker
         });
     }
 
-    private Type newTypeParameter(Symbol symbol)
+    internal Type newTypeParameter(Symbol symbol)
     {
         var t = newType(TypeFlags.TypeParameter, ObjectFlags.None, new TypeParameter());
         t.symbol = symbol;
@@ -6642,13 +7807,63 @@ public sealed partial class Checker
 
     private Type getTypeFromClassOrInterfaceReference(Node node, Symbol symbol)
     {
-        var t = getDeclaredTypeOfClassOrInterface(getMergedSymbol(symbol));
-        if ((t.AsInterfaceType().LocalTypeParameters()?.Count ?? 0) != 0)
-            throw unsupported("getTypeFromClassOrInterfaceReference: source generic");
-        return checkNoTypeArguments(node, symbol) ? t : errorType;
+        var t = this.getDeclaredTypeOfClassOrInterface(this.getMergedSymbol(symbol));
+        var d = t.AsInterfaceType();
+        var typeParameters = d.LocalTypeParameters();
+        if ((GoRuntime.Len(typeParameters) != 0))
+        {
+            var numTypeArguments = GoRuntime.Len(node.TypeArguments());
+            var minTypeArgumentCount = this.getMinTypeArgumentCount(typeParameters);
+            var isJs = Ast.IsInJSFile(node);
+            var isJsImplicitAny = (!this.noImplicitAny && isJs);
+            if ((!isJsImplicitAny && (((numTypeArguments < minTypeArgumentCount) || (numTypeArguments > GoRuntime.Len(typeParameters))))))
+            {
+                Message message = default;
+                var missingAugmentsTag = ((isJs && Ast.IsExpressionWithTypeArguments(node)) && !Ast.IsJSDocAugmentsTag(node.Parent));
+                if (missingAugmentsTag)
+                {
+                    message = Diagnostics.Expected_0_type_arguments_provide_these_with_an_extends_tag;
+                    if ((minTypeArgumentCount < GoRuntime.Len(typeParameters)))
+                    {
+                        message = Diagnostics.Expected_0_1_type_arguments_provide_these_with_an_extends_tag;
+                    }
+                }
+                else
+                {
+                    message = Diagnostics.Generic_type_0_requires_1_type_argument_s;
+                    if ((minTypeArgumentCount < GoRuntime.Len(typeParameters)))
+                    {
+                        message = Diagnostics.Generic_type_0_requires_between_1_and_2_type_arguments;
+                    }
+                }
+
+                var typeStr = this.typeToStringWriteArrayAsGenericType(t);
+                this.error(node, message, typeStr, minTypeArgumentCount, GoRuntime.Len(typeParameters));
+                if (!isJs)
+                {
+                    return this.errorType;
+                }
+            }
+
+            if (((node.Kind == Kind.TypeReference) && this.isDeferredTypeReferenceNode(node, (numTypeArguments != GoRuntime.Len(typeParameters)))))
+            {
+                return this.createDeferredTypeReference(t, node, null, null);
+            }
+
+            var localTypeArguments = this.fillMissingTypeArguments(this.getTypeArgumentsFromNode(node), typeParameters, minTypeArgumentCount, isJs);
+            var typeArguments = GoRuntime.Append(d.OuterTypeParameters(), localTypeArguments);
+            return this.createTypeReferenceEx(t, typeArguments, ObjectFlags.FromTypeNode);
+        }
+
+        if (this.checkNoTypeArguments(node, symbol))
+        {
+            return t;
+        }
+
+        return this.errorType;
     }
 
-    private Type createTypeReference(Type target, List<Type> arguments) => createTypeReferenceEx(target, arguments, ObjectFlags.None);
+    internal Type createTypeReference(Type target, List<Type> arguments) => createTypeReferenceEx(target, arguments, ObjectFlags.None);
     private Type createTypeReferenceEx(Type target, List<Type> arguments, ObjectFlags objectFlags)
     {
         var key = getTypeListKey(arguments);
@@ -6666,20 +7881,71 @@ public sealed partial class Checker
     internal List<Type> getTypeArguments(Type t)
     {
         var d = t.AsTypeReference();
-        if (d.resolvedTypeArguments == null)
+        if ((d.resolvedTypeArguments == null))
         {
             var n = d.target.AsInterfaceType();
-            if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedTypeArguments))
-                return Enumerable.Repeat(errorType, n.TypeParameters()?.Count ?? 0).ToList();
-            List<Type> arguments = null;
-            if (d.node != null)
-                throw unsupported("getTypeArguments: deferred explicit source generic/tuple/array");
-            if (popTypeResolution())
-                d.resolvedTypeArguments ??= instantiateTypes(arguments, d.mapper);
+            if (!this.pushTypeResolution(t, TypeSystemPropertyName.ResolvedTypeArguments))
+            {
+                return Enumerable.Repeat(this.errorType, GoRuntime.Len(n.TypeParameters())).ToList();
+            }
+
+            List<Type> typeArguments = default;
+            var node = t.AsTypeReference().node;
+            if ((node != null))
+            {
+                switch (node.Kind)
+                {
+                    case Kind.TypeReference:
+                    {
+                        typeArguments = GoRuntime.Append(n.OuterTypeParameters(), this.getEffectiveTypeArguments(node, n.LocalTypeParameters()));
+                        break;
+                    }
+
+                    case Kind.ArrayType:
+                    {
+                        typeArguments = new List<Type>
+                        {
+                            this.getTypeFromTypeNode(node.AsArrayTypeNode().ElementType)
+                        };
+                        break;
+                    }
+
+                    case Kind.TupleType:
+                    {
+                        typeArguments = Core.Map(node.Elements(), this.getTypeFromTypeNode);
+                        break;
+                    }
+
+                    default:
+                    {
+                        throw new InvalidOperationException("Unhandled case in getTypeArguments");
+                    }
+                }
+            }
+
+            if (this.popTypeResolution())
+            {
+                if ((d.resolvedTypeArguments == null))
+                {
+                    d.resolvedTypeArguments = this.instantiateTypes(typeArguments, d.mapper);
+                }
+            }
             else
             {
-                d.resolvedTypeArguments ??= Enumerable.Repeat(errorType, n.TypeParameters()?.Count ?? 0).ToList();
-                error(d.node ?? currentNode, Diagnostics.Type_arguments_for_0_circularly_reference_themselves, symbolToString(d.target.symbol));
+                if ((d.resolvedTypeArguments == null))
+                {
+                    d.resolvedTypeArguments = Enumerable.Repeat(this.errorType, GoRuntime.Len(n.TypeParameters())).ToList();
+                }
+
+                var errorNode = Core.IfElse((node != null), node, this.currentNode);
+                if ((d.target.symbol != null))
+                {
+                    this.error(errorNode, Diagnostics.Type_arguments_for_0_circularly_reference_themselves, this.symbolToString(d.target.symbol));
+                }
+                else
+                {
+                    this.error(errorNode, Diagnostics.Tuple_type_arguments_circularly_reference_themselves);
+                }
             }
         }
 
@@ -6719,9 +7985,11 @@ public sealed partial class Checker
         {
             if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedBaseTypes))
                 return d.resolvedBaseTypes;
-            if ((t.objectFlags & ObjectFlags.Tuple) != 0 || (t.symbol.Flags & SymbolFlags.Class) != 0)
-                throw unsupported("getBaseTypes: tuple/class");
-            if ((t.symbol.Flags & SymbolFlags.Interface) != 0)
+            if ((t.objectFlags & ObjectFlags.Tuple) != 0)
+                d.resolvedBaseTypes = [getTupleBaseType(t)];
+            else if ((t.symbol.Flags & SymbolFlags.Class) != 0)
+                throw unsupported("getBaseTypes: source class");
+            else if ((t.symbol.Flags & SymbolFlags.Interface) != 0)
                 resolveBaseTypesOfInterface(t);
             else
                 throw new InvalidOperationException("Unhandled case in getBaseTypes");
@@ -6801,8 +8069,12 @@ public sealed partial class Checker
 
     private List<IndexInfo> getIndexInfosOfSymbol(Symbol symbol)
     {
-        if (getMembersOfSymbol(symbol)?[Ast.InternalSymbolNameIndex] != null)
-            throw unsupported("getIndexInfosOfSymbol: source index signature");
+        var indexSymbol = this.getIndexSymbol(symbol);
+        if ((indexSymbol != null))
+        {
+            return this.getIndexInfosOfIndexSymbol(indexSymbol, (this.getMembersOfSymbol(symbol)?.Values.ToList()));
+        }
+
         return null;
     }
 
@@ -6890,8 +8162,7 @@ public sealed partial class Checker
             checkGrammarInterfaceDeclaration(node.AsInterfaceDeclaration());
         if (!containerAllowsBlockScopedVariable(node.Parent))
             grammarErrorOnNode(node, Diagnostics.X_0_declarations_can_only_be_declared_inside_a_block, "interface");
-        if ((node.TypeParameters()?.Count ?? 0) != 0)
-            throw unsupported("checkInterfaceDeclaration: source parameters");
+        checkTypeParameters(node.TypeParameters());
         checkTypeNameIsReserved(node.Name(), Diagnostics.Interface_name_cannot_be_0);
         checkExportsOnMergedDeclarations(node);
         var symbol = getSymbolOfDeclaration(node);
@@ -6931,32 +8202,75 @@ public sealed partial class Checker
 
     private void checkTypeParameterListsIdentical(Symbol symbol)
     {
-        if ((symbol.Declarations?.Count ?? 0) == 1)
+        if ((GoRuntime.Len(symbol.Declarations) == 1))
+        {
             return;
-        var links = declaredTypeLinks.Get(symbol);
+        }
+
+        var links = this.declaredTypeLinks.Get(symbol);
         if (!links.typeParametersChecked)
         {
             links.typeParametersChecked = true;
-            var declarations = symbol.Declarations.Where(Ast.IsInterfaceDeclaration).ToList();
-            if (declarations.Count <= 1)
+            var declarations = this.getClassOrInterfaceDeclarationsOfSymbol(symbol);
+            if ((GoRuntime.Len(declarations) <= 1))
+            {
                 return;
-            var t = getDeclaredTypeOfSymbol(symbol);
-            if (!areTypeParametersIdentical(declarations, t.AsInterfaceType().LocalTypeParameters()))
-                foreach (var declaration in declarations)
-                    error(declaration.Name(), Diagnostics.All_declarations_of_0_must_have_identical_type_parameters, symbolToString(symbol));
+            }
+
+            var t = this.getDeclaredTypeOfSymbol(symbol);
+            if (!this.areTypeParametersIdentical(declarations, t.AsInterfaceType().LocalTypeParameters(), (n) => n.TypeParameters()))
+            {
+                var name = this.symbolToString(symbol);
+                {
+                    foreach (var declaration in GoRuntime.RangeValues(declarations))
+                    {
+                        this.error(declaration.Name(), Diagnostics.All_declarations_of_0_must_have_identical_type_parameters, name);
+                    }
+                }
+            }
         }
     }
 
-    private bool areTypeParametersIdentical(List<Node> declarations, List<Type> parameters)
+    private bool areTypeParametersIdentical(List<Node> declarations, List<Type> targetParameters, Func<Node, List<Node>> getTypeParameterDeclarations)
     {
-        int maximum = parameters?.Count ?? 0;
-        if (maximum != 0)
-            throw unsupported("areTypeParametersIdentical: source parameters");
-        foreach (var declaration in declarations)
+        var maxTypeArgumentCount = GoRuntime.Len(targetParameters);
+        var minTypeArgumentCount = this.getMinTypeArgumentCount(targetParameters);
         {
-            int length = declaration.TypeParameters()?.Count ?? 0;
-            if (length < maximum || length > maximum)
-                return false;
+            foreach (var declaration in GoRuntime.RangeValues(declarations))
+            {
+                var sourceParameters = getTypeParameterDeclarations(declaration);
+                if (((GoRuntime.Len(sourceParameters) < minTypeArgumentCount) || (GoRuntime.Len(sourceParameters) > maxTypeArgumentCount)))
+                {
+                    return false;
+                }
+
+                {
+                    foreach (var range3 in GoRuntime.Range(sourceParameters))
+                    {
+                        var i = range3.Key;
+                        var source = range3.Value;
+                        var target = targetParameters[i];
+                        if ((source.Name().Text() != target.symbol.Name))
+                        {
+                            return false;
+                        }
+
+                        var constraintNode = source.AsTypeParameterDeclaration().Constraint;
+                        var targetConstraint = this.getConstraintOfTypeParameter(target);
+                        if ((((constraintNode != null) && (targetConstraint != null)) && !this.isTypeIdenticalTo(this.getTypeFromTypeNode(constraintNode), targetConstraint)))
+                        {
+                            return false;
+                        }
+
+                        var defaultNode = source.AsTypeParameterDeclaration().DefaultType;
+                        var targetDefault = this.getDefaultFromTypeParameter(target);
+                        if ((((defaultNode != null) && (targetDefault != null)) && !this.isTypeIdenticalTo(this.getTypeFromTypeNode(defaultNode), targetDefault)))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
         }
 
         return true;
@@ -7035,6 +8349,26 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     internal Type noConstraintType, circularConstraintType;
+    private Type resolvingDefaultType;
+    private bool strictBuiltinIteratorReturn = false;
+    // Written module aliases remain excluded. The generic type-alias-reference
+    // branch retains this boundary rather than resolving arbitrary foreign imports.
+    private Symbol resolveAlias(Symbol symbol) => throw unsupported("resolveAlias: source import/export alias");
+    // checker.go:2673. Explicit variance annotations remain outside Collections
+    // admission; demanded library type parameters carry no in/out modifiers.
+    private void checkTypeParameterDeferred(Node node)
+    {
+        if (Ast.IsInterfaceDeclaration(node.Parent) || Ast.IsClassLike(node.Parent) || Ast.IsTypeOrJSTypeAliasDeclaration(node.Parent))
+        {
+            var typeParameter = getDeclaredTypeOfTypeParameter(getSymbolOfDeclaration(node));
+            ModifierFlags modifiers = ModifierFlags.None;
+            foreach (var declaration in typeParameter.symbol?.Declarations ?? [])
+                modifiers |= Ast.GetCombinedModifierFlags(declaration);
+            if ((modifiers & (ModifierFlags.In | ModifierFlags.Out)) != 0)
+                throw unsupported("checkTypeParameterDeferred: source variance annotation");
+        }
+    }
+
     private int instantiationCount;
     public int TotalInstantiationCount { get; private set; }
 
@@ -7140,44 +8474,135 @@ public sealed partial class Checker
         return false;
     }
 
-    private Type instantiateTypeWorker(Type t, TypeMapper mapper, TypeAlias alias)
+    private Type instantiateTypeWorker(Type t, TypeMapper m, TypeAlias alias)
     {
-        if ((t.flags & TypeFlags.TypeParameter) != 0)
-            return getMappedType(t, mapper);
-        if ((t.flags & TypeFlags.Object) != 0)
+        var flags = t.flags;
+        switch (true)
         {
-            if ((t.objectFlags & (ObjectFlags.Reference | ObjectFlags.Anonymous | ObjectFlags.Mapped)) != 0)
+            case true when ((flags & TypeFlags.TypeParameter) != 0):
             {
-                if ((t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node == null)
-                {
-                    var arguments = t.AsTypeReference().resolvedTypeArguments;
-                    var mapped = instantiateTypes(arguments, mapper);
-                    return mapped == arguments ? t : createTypeReference(t.Target(), mapped);
-                }
-
-                if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
-                    throw unsupported("instantiateTypeWorker: reverse mapped");
-                return getObjectTypeInstantiation(t, mapper, alias);
+                return getMappedType(t, m);
             }
 
-            return t;
-        }
+            case true when ((flags & TypeFlags.Object) != 0):
+            {
+                var objectFlags = t.objectFlags;
+                if (((objectFlags & (((ObjectFlags.Reference | ObjectFlags.Anonymous) | ObjectFlags.Mapped))) != 0))
+                {
+                    if ((((objectFlags & ObjectFlags.Reference) != 0) && (t.AsTypeReference().node == null)))
+                    {
+                        var resolvedTypeArguments = t.AsTypeReference().resolvedTypeArguments;
+                        var newTypeArguments = this.instantiateTypes(resolvedTypeArguments, m);
+                        if (Core.Same(newTypeArguments, resolvedTypeArguments))
+                        {
+                            return t;
+                        }
 
-        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-        {
-            var source = t;
-            if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin is { } origin && (origin.flags & TypeFlags.UnionOrIntersection) != 0)
-                source = origin;
-            var types = source.Types();
-            var mapped = instantiateTypes(types, mapper);
-            if (mapped == types && alias?.symbol == t.alias?.symbol)
+                        return this.createNormalizedTypeReference(t.Target(), newTypeArguments);
+                    }
+
+                    if (((objectFlags & ObjectFlags.ReverseMapped) != 0))
+                    {
+                        return this.instantiateReverseMappedType(t, m);
+                    }
+
+                    return this.getObjectTypeInstantiation(t, m, alias);
+                }
+
                 return t;
-            alias ??= instantiateTypeAlias(t.alias, mapper);
-            return (source.flags & TypeFlags.Intersection) != 0 ? getIntersectionTypeEx(mapped, IntersectionFlags.None, alias) : getUnionTypeEx(mapped, UnionReduction.Literal, alias, null);
+            }
+
+            case true when ((flags & TypeFlags.UnionOrIntersection) != 0):
+            {
+                var source = t;
+                if (((t.flags & TypeFlags.Union) != 0))
+                {
+                    var origin = t.AsUnionType().origin;
+                    if (((origin != null) && ((origin.flags & TypeFlags.UnionOrIntersection) != 0)))
+                    {
+                        source = origin;
+                    }
+                }
+
+                var types = source.Types();
+                var newTypes = this.instantiateTypes(types, m);
+                if ((Core.Same(newTypes, types) && (alias?.symbol == t.alias?.symbol)))
+                {
+                    return t;
+                }
+
+                if ((alias == null))
+                {
+                    alias = this.instantiateTypeAlias(t.alias, m);
+                }
+
+                if (((source.flags & TypeFlags.Intersection) != 0))
+                {
+                    return this.getIntersectionTypeEx(newTypes, IntersectionFlags.None, alias);
+                }
+
+                return this.getUnionTypeEx(newTypes, UnionReduction.Literal, alias, null);
+            }
+
+            case true when ((flags & TypeFlags.Index) != 0):
+            {
+                return this.getIndexType(this.instantiateType(t.Target(), m));
+            }
+
+            case true when ((flags & TypeFlags.IndexedAccess) != 0):
+            {
+                if ((alias == null))
+                {
+                    alias = this.instantiateTypeAlias(t.alias, m);
+                }
+
+                var d = t.AsIndexedAccessType();
+                return this.getIndexedAccessTypeEx(this.instantiateType(d.objectType, m), this.instantiateType(d.indexType, m), d.accessFlags, null, alias);
+            }
+
+            case true when ((flags & TypeFlags.TemplateLiteral) != 0):
+            {
+                return this.getTemplateLiteralType(t.AsTemplateLiteralType().texts, this.instantiateTypes(t.AsTemplateLiteralType().types, m));
+            }
+
+            case true when ((flags & TypeFlags.StringMapping) != 0):
+            {
+                throw unsupported("instantiateTypeWorker: intrinsic string mapping");
+            }
+
+            case true when ((flags & TypeFlags.Conditional) != 0):
+            {
+                return this.getConditionalTypeInstantiation(t, this.combineTypeMappers(t.AsConditionalType().mapper, m), false, alias);
+            }
+
+            case true when ((flags & TypeFlags.Substitution) != 0):
+            {
+                var newBaseType = this.instantiateType(t.AsSubstitutionType().baseType, m);
+                if (this.isNoInferType(t))
+                {
+                    return this.getNoInferType(newBaseType);
+                }
+
+                var newConstraint = this.instantiateType(t.AsSubstitutionType().constraint, m);
+                if ((((newBaseType.flags & TypeFlags.TypeVariable) != 0) && this.isGenericType(newConstraint)))
+                {
+                    return this.getSubstitutionType(newBaseType, newConstraint);
+                }
+
+                if ((((newConstraint.flags & TypeFlags.AnyOrUnknown) != 0) || this.isTypeAssignableTo(this.getRestrictiveInstantiation(newBaseType), this.getRestrictiveInstantiation(newConstraint))))
+                {
+                    return newBaseType;
+                }
+
+                if (((newBaseType.flags & TypeFlags.TypeVariable) != 0))
+                {
+                    return this.getSubstitutionType(newBaseType, newConstraint);
+                }
+
+                return this.getIntersectionType(new List<Type> { newConstraint, newBaseType });
+            }
         }
 
-        if ((t.flags & TypeFlags.Instantiable) != 0)
-            throw unsupported("instantiateTypeWorker: source indexed/template/conditional/substitution");
         return t;
     }
 
@@ -7314,7 +8739,8 @@ public sealed partial class Checker
 
                 case true when ((target.objectFlags & ObjectFlags.Mapped) != 0):
                 {
-                    throw unsupported("getObjectTypeInstantiation: mapped type");
+                    result = this.instantiateMappedType(target, newMapper, newAlias);
+                    break;
                 }
 
                 default:
@@ -7438,7 +8864,7 @@ public sealed partial class Checker
         if (alias == null)
             return null;
         var arguments = instantiateTypes(alias.typeArguments, mapper);
-        return arguments == alias.typeArguments ? alias : new()
+        return new()
         {
             symbol = alias.symbol,
             typeArguments = arguments
@@ -7555,29 +8981,82 @@ public sealed partial class Checker
 {
     private Type getConstraintOfType(Type t)
     {
-        if ((t.flags & TypeFlags.TypeParameter) != 0)
-            return getConstraintOfTypeParameter(t);
-        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional)) != 0)
-            throw unsupported("getConstraintOfType: indexed/conditional");
-        return getBaseConstraintOfType(t);
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.TypeParameter) != 0):
+            {
+                return this.getConstraintOfTypeParameter(t);
+            }
+
+            case true when ((t.flags & TypeFlags.IndexedAccess) != 0):
+            {
+                return this.getConstraintOfIndexedAccess(t);
+            }
+
+            case true when ((t.flags & TypeFlags.Conditional) != 0):
+            {
+                return this.getConstraintOfConditionalType(t);
+            }
+        }
+
+        return this.getBaseConstraintOfType(t);
     }
 
-    private Type getConstraintOfTypeParameter(Type t) => hasNonCircularBaseConstraint(t) ? getConstraintFromTypeParameter(t) : null;
+    internal Type getConstraintOfTypeParameter(Type t) => hasNonCircularBaseConstraint(t) ? getConstraintFromTypeParameter(t) : null;
     private bool hasNonCircularBaseConstraint(Type t) => getResolvedBaseConstraint(t, null) != circularConstraintType;
     private Type getConstraintFromTypeParameter(Type t)
     {
-        if ((t.flags & TypeFlags.TypeParameter) == 0)
-            return null;
-        var d = t.AsTypeParameter();
-        if (d.constraint == null)
+        if (((t.flags & TypeFlags.TypeParameter) == 0))
         {
-            if (d.target != null)
-                d.constraint = instantiateType(getConstraintOfTypeParameter(d.target), d.mapper) ?? noConstraintType;
-            else
-                throw unsupported("getConstraintFromTypeParameter: source parameter/inference constraint");
+            return null;
         }
 
-        return d.constraint == noConstraintType ? null : d.constraint;
+        var tp = t.AsTypeParameter();
+        if ((tp.constraint == null))
+        {
+            Type constraint = default;
+            if ((tp.target != null))
+            {
+                constraint = this.instantiateType(this.getConstraintOfTypeParameter(tp.target), tp.mapper);
+            }
+            else
+            {
+                var constraintDeclaration = this.getConstraintDeclaration(t);
+                if ((constraintDeclaration != null))
+                {
+                    constraint = this.getTypeFromTypeNode(constraintDeclaration);
+                    if ((((constraint.flags & TypeFlags.Any) != 0) && !this.isErrorType(constraint)))
+                    {
+                        if (Ast.IsMappedTypeNode(constraintDeclaration.Parent.Parent))
+                        {
+                            constraint = this.stringNumberSymbolType;
+                        }
+                        else
+                        {
+                            constraint = this.unknownType;
+                        }
+                    }
+                }
+                else
+                {
+                    constraint = this.getInferredTypeParameterConstraint(t, false);
+                }
+            }
+
+            if ((constraint == null))
+            {
+                constraint = this.noConstraintType;
+            }
+
+            tp.constraint = constraint;
+        }
+
+        if ((tp.constraint != this.noConstraintType))
+        {
+            return tp.constraint;
+        }
+
+        return null;
     }
 
     private Type getBaseConstraintOfType(Type t)
@@ -7593,72 +9072,237 @@ public sealed partial class Checker
 
     private Type getResolvedBaseConstraint(Type t, List<RecursionId> stack)
     {
-        var d = t.AsConstrainedType();
-        if (d == null)
-            return t;
-        if (d.resolvedBaseConstraint != null)
-            return d.resolvedBaseConstraint;
-        if (!pushTypeResolution(t, TypeSystemPropertyName.ResolvedBaseConstraint))
-            return circularConstraintType;
-        Type constraint = null;
-        var identity = getRecursionIdentity(t);
-        if ((stack?.Count ?? 0) < 10 || (stack?.Count ?? 0) < 50 && !(stack?.Contains(identity) ?? false))
-            constraint = computeBaseConstraint(getSimplifiedType(t, false), GoRuntime.Append(stack, identity));
-        if (!popTypeResolution())
+        var constrained = t.AsConstrainedType();
+        if ((constrained == null))
         {
-            if ((t.flags & TypeFlags.TypeParameter) != 0 && !t.AsTypeParameter().isThisType)
-                throw unsupported("getResolvedBaseConstraint: source circular constraint");
-            constraint = circularConstraintType;
+            return t;
         }
 
-        constraint ??= noConstraintType;
-        return d.resolvedBaseConstraint ??= constraint;
+        if ((constrained.resolvedBaseConstraint != null))
+        {
+            return constrained.resolvedBaseConstraint;
+        }
+
+        if (!this.pushTypeResolution(t, TypeSystemPropertyName.ResolvedBaseConstraint))
+        {
+            return this.circularConstraintType;
+        }
+
+        Type constraint = default;
+        var identity = getRecursionIdentity(t);
+        if (((GoRuntime.Len(stack) < 10) || ((GoRuntime.Len(stack) < 50) && !GoSlices.Contains(stack, identity))))
+        {
+            constraint = this.computeBaseConstraint(this.getSimplifiedType(t, false), GoRuntime.Append(stack, identity));
+        }
+
+        if (!this.popTypeResolution())
+        {
+            if (((t.flags & TypeFlags.TypeParameter) != 0))
+            {
+                var errorNode = this.getConstraintDeclaration(t);
+                if ((errorNode != null))
+                {
+                    var diagnostic = this.error(errorNode, Diagnostics.Type_parameter_0_has_a_circular_constraint, this.typeToStringByteString(t));
+                    if ((((this.currentNode != null) && !isNodeDescendantOf(errorNode, this.currentNode)) && !isNodeDescendantOf(this.currentNode, errorNode)))
+                    {
+                        diagnostic.AddRelatedInfo(NewDiagnosticForNode(this.currentNode, Diagnostics.Circularity_originates_in_type_at_this_location));
+                    }
+                }
+            }
+
+            constraint = this.circularConstraintType;
+        }
+
+        if ((constraint == null))
+        {
+            constraint = this.noConstraintType;
+        }
+
+        if ((constrained.resolvedBaseConstraint == null))
+        {
+            constrained.resolvedBaseConstraint = constraint;
+        }
+
+        return constraint;
     }
 
     private Type computeBaseConstraint(Type t, List<RecursionId> stack)
     {
-        if ((t.flags & TypeFlags.TypeParameter) != 0)
+        switch (true)
         {
-            var constraint = getConstraintFromTypeParameter(t);
-            return t.AsTypeParameter().isThisType ? constraint : getNextBaseConstraint(constraint, stack);
-        }
-
-        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-        {
-            var types = t.Types();
-            List<Type> constraints = new(types.Count);
-            bool different = false;
-            foreach (var source in types)
+            case true when ((t.flags & TypeFlags.TypeParameter) != 0):
             {
-                var constraint = getNextBaseConstraint(source, stack);
-                if (constraint != null)
+                var constraint = this.getConstraintFromTypeParameter(t);
+                if (t.AsTypeParameter().isThisType)
                 {
-                    if (constraint != source)
-                        different = true;
-                    constraints.Add(constraint);
+                    return constraint;
                 }
-                else
-                    different = true;
+
+                return this.getNextBaseConstraint(constraint, stack);
             }
 
-            if (!different)
-                return t;
-            if ((t.flags & TypeFlags.Union) != 0 && constraints.Count == types.Count)
-                return getUnionType(constraints);
-            if ((t.flags & TypeFlags.Intersection) != 0 && constraints.Count > 0)
-                return getIntersectionType(constraints);
-            return null;
+            case true when ((t.flags & TypeFlags.UnionOrIntersection) != 0):
+            {
+                var types = t.Types();
+                var constraints = GoRuntime.MakeSlice<Type>(0);
+                var different = false;
+                {
+                    foreach (var s in GoRuntime.RangeValues(types))
+                    {
+                        var constraint2 = this.getNextBaseConstraint(s, stack);
+                        if ((constraint2 != null))
+                        {
+                            if ((constraint2 != s))
+                            {
+                                different = true;
+                            }
+
+                            constraints = GoRuntime.Append(constraints, constraint2);
+                        }
+                        else
+                        {
+                            different = true;
+                        }
+                    }
+                }
+
+                if (!different)
+                {
+                    return t;
+                }
+
+                switch (true)
+                {
+                    case true when (((t.flags & TypeFlags.Union) != 0) && (GoRuntime.Len(constraints) == GoRuntime.Len(types))):
+                    {
+                        return this.getUnionType(constraints);
+                    }
+
+                    case true when (((t.flags & TypeFlags.Intersection) != 0) && (GoRuntime.Len(constraints) != 0)):
+                    {
+                        return this.getIntersectionType(constraints);
+                    }
+                }
+
+                return null;
+            }
+
+            case true when ((t.flags & TypeFlags.Index) != 0):
+            {
+                if (this.isGenericMappedType(t.AsIndexType().target))
+                {
+                    var mappedType = t.AsIndexType().target;
+                    if (((this.getNameTypeFromMappedType(mappedType) != null) && !this.isMappedTypeWithKeyofConstraintDeclaration(mappedType)))
+                    {
+                        return this.getNextBaseConstraint(this.getIndexTypeForMappedType(mappedType, IndexFlags.None), stack);
+                    }
+                }
+
+                return this.stringNumberSymbolType;
+            }
+
+            case true when ((t.flags & TypeFlags.TemplateLiteral) != 0):
+            {
+                var types2 = t.Types();
+                var constraints2 = GoRuntime.MakeSlice<Type>(0);
+                {
+                    foreach (var range2 in GoRuntime.Range(types2))
+                    {
+                        var _2 = range2.Key;
+                        var s2 = range2.Value;
+                        var constraint3 = this.getNextBaseConstraint(s2, stack);
+                        if ((constraint3 != null))
+                        {
+                            constraints2 = GoRuntime.Append(constraints2, constraint3);
+                        }
+                    }
+                }
+
+                if ((GoRuntime.Len(constraints2) == GoRuntime.Len(types2)))
+                {
+                    return this.getTemplateLiteralType(t.AsTemplateLiteralType().texts, constraints2);
+                }
+
+                return this.stringType;
+            }
+
+            case true when ((t.flags & TypeFlags.StringMapping) != 0):
+            {
+                var constraint4 = this.getNextBaseConstraint(t.Target(), stack);
+                if (((constraint4 != null) && (constraint4 != t.Target())))
+                {
+                    throw unsupported("computeBaseConstraint: intrinsic string mapping");
+                }
+
+                return this.stringType;
+            }
+
+            case true when ((t.flags & TypeFlags.IndexedAccess) != 0):
+            {
+                if (this.isMappedTypeGenericIndexedAccess(t))
+                {
+                    return this.getNextBaseConstraint(this.substituteIndexedMappedType(t.AsIndexedAccessType().objectType, t.AsIndexedAccessType().indexType), stack);
+                }
+
+                var baseObjectType = this.getNextBaseConstraint(t.AsIndexedAccessType().objectType, stack);
+                var baseIndexType = this.getNextBaseConstraint(t.AsIndexedAccessType().indexType, stack);
+                if (((baseObjectType == null) || (baseIndexType == null)))
+                {
+                    return null;
+                }
+
+                return this.getNextBaseConstraint(this.getIndexedAccessTypeOrUndefined(baseObjectType, baseIndexType, t.AsIndexedAccessType().accessFlags, null, null), stack);
+            }
+
+            case true when ((t.flags & TypeFlags.Conditional) != 0):
+            {
+                if ((this.conditionalConstraintDepth >= 100))
+                {
+                    return null;
+                }
+
+                this.conditionalConstraintDepth++;
+                var constraint5 = this.getConstraintFromConditionalType(t);
+                this.conditionalConstraintDepth--;
+                return this.getNextBaseConstraint(constraint5, stack);
+            }
+
+            case true when ((t.flags & TypeFlags.Substitution) != 0):
+            {
+                return this.getNextBaseConstraint(this.getSubstitutionIntersection(t), stack);
+            }
+
+            case true when isGenericTupleType(t):
+            {
+                var elementTypes = this.getElementTypes(t);
+                var elementInfos = t.TargetTupleType().elementInfos;
+                var newElements = GoRuntime.MakeSlice<Type>(0);
+                {
+                    foreach (var range3 in GoRuntime.Range(elementTypes))
+                    {
+                        var i = range3.Key;
+                        var v = range3.Value;
+                        var newElement = v;
+                        if ((((v.flags & TypeFlags.TypeParameter) != 0) && ((elementInfos[i].flags & ElementFlags.Variadic) != 0)))
+                        {
+                            var constraint6 = this.getNextBaseConstraint(v, stack);
+                            if ((((constraint6 != null) && (constraint6 != v)) && everyType(constraint6, (n) =>
+                            {
+                                return (this.isArrayOrTupleType(n) && !isGenericTupleType(n));
+                            })))
+                            {
+                                newElement = constraint6;
+                            }
+                        }
+
+                        newElements = GoRuntime.Append(newElements, newElement);
+                    }
+                }
+
+                return this.createTupleTypeEx(newElements, elementInfos, t.TargetTupleType().@readonly);
+            }
         }
 
-        if ((t.flags & TypeFlags.Index) != 0)
-        {
-            if (isGenericMappedType(t.AsIndexType().target))
-                throw unsupported("computeBaseConstraint: source remapped index");
-            return stringNumberSymbolType ??= getUnionType([stringType, numberType, esSymbolType]);
-        }
-
-        if ((t.flags & TypeFlags.Instantiable) != 0 || (t.objectFlags & ObjectFlags.Tuple) != 0)
-            throw unsupported("computeBaseConstraint: source generic/index/tuple");
         return t;
     }
 
@@ -7672,8 +9316,19 @@ public sealed partial class Checker
 
     private Type getSimplifiedType(Type t, bool writing)
     {
-        if ((t.flags & (TypeFlags.IndexedAccess | TypeFlags.Conditional)) != 0)
-            throw unsupported("getSimplifiedType: source indexed/conditional");
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.IndexedAccess) != 0):
+            {
+                return this.getSimplifiedIndexedAccessType(t, writing);
+            }
+
+            case true when ((t.flags & TypeFlags.Conditional) != 0):
+            {
+                return this.getSimplifiedConditionalType(t, writing);
+            }
+        }
+
         return t;
     }
 
@@ -7722,29 +9377,39 @@ public sealed partial class Checker
 {
     internal readonly HashSet<Type> markerTypes = new();
     private int compareSymbols(Symbol left, Symbol right) => compareSymbolsWorker(left, right);
-    private Type globalArrayType, globalReadonlyArrayType;
+    internal Type globalArrayType, globalReadonlyArrayType;
+    private Type anyArrayType, autoArrayType, anyReadonlyArrayType;
     private Type globalIterableType, globalIterableIteratorType, globalAsyncIterableType, globalAsyncIterableIteratorType;
     internal Type getGlobalIterableType() => globalIterableType ??= getGlobalType("Iterable", 3, false);
     internal Type getGlobalIterableIteratorType() => globalIterableIteratorType ??= getGlobalType("IterableIterator", 3, false);
     internal Type getGlobalAsyncIterableType() => globalAsyncIterableType ??= getGlobalType("AsyncIterable", 3, false);
     internal Type getGlobalAsyncIterableIteratorType() => globalAsyncIterableIteratorType ??= getGlobalType("AsyncIterableIterator", 3, false);
     internal bool isReferenceToType(Type t, Type target) => t != null && (t.objectFlags & ObjectFlags.Reference) != 0 && t.Target() == target;
-    private bool isArrayType(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 && (t.Target() == globalArrayType || t.Target() == globalReadonlyArrayType);
-    private bool isArrayOrTupleType(Type t) => isArrayType(t) || (t.objectFlags & ObjectFlags.Tuple) != 0;
     private bool isNonGenericObjectType(Type t) => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t);
     private bool isGenericObjectType(Type t) => (getGenericObjectFlags(t) & ObjectFlags.IsGenericObjectType) != 0;
-    private bool isGenericMappedType(Type t)
+    internal bool isGenericMappedType(Type t)
     {
-        if ((t.objectFlags & ObjectFlags.Mapped) != 0)
-            throw unsupported("isGenericMappedType: source mapped type");
+        if (((t.objectFlags & ObjectFlags.Mapped) != 0))
+        {
+            var constraint = this.getConstraintTypeFromMappedType(t);
+            if (this.isGenericIndexType(constraint))
+            {
+                return true;
+            }
+
+            var nameType = this.getNameTypeFromMappedType(t);
+            if (((nameType != null) && this.isGenericIndexType(this.instantiateType(nameType, newSimpleTypeMapper(this.getTypeParameterFromMappedType(t), constraint)))))
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
-    private bool isGenericTupleType(Type t)
+    private static bool isGenericTupleType(Type t)
     {
-        if ((t.objectFlags & ObjectFlags.Tuple) != 0)
-            throw unsupported("isGenericTupleType: source tuple");
-        return false;
+        return (isTupleType(t) && ((t.TargetTupleType().combinedFlags & ElementFlags.Variadic) != 0));
     }
 
     private ObjectFlags getGenericObjectFlags(Type t)
@@ -7758,7 +9423,7 @@ public sealed partial class Checker
                     foreach (var type in t.Types())
                         combined |= getGenericObjectFlags(type);
                 else
-                    throw unsupported("getGenericObjectFlags: source substitution");
+                    combined = getGenericObjectFlags(t.AsSubstitutionType().baseType) | getGenericObjectFlags(t.AsSubstitutionType().constraint);
                 t.objectFlags |= ObjectFlags.IsGenericTypeComputed | combined;
             }
 
@@ -7767,10 +9432,8 @@ public sealed partial class Checker
 
         if ((t.flags & TypeFlags.InstantiableNonPrimitive) != 0 || isGenericMappedType(t) || isGenericTupleType(t))
             combined |= ObjectFlags.IsGenericObjectType;
-        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.Index)) != 0)
+        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.Index)) != 0 || isGenericStringLikeType(t))
             combined |= ObjectFlags.IsGenericIndexType;
-        if ((t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
-            throw unsupported("getGenericObjectFlags: source generic string type");
         return combined;
     }
 
@@ -7808,7 +9471,7 @@ public sealed partial class Checker
         return newIndexInfo(unknownType, getIntersectionType(applicable.Select(info => info.valueType).ToList()), applicable.All(info => info.isReadonly), null, null);
     }
 
-    private bool isApplicableIndexType(Type source, Type target) => isTypeAssignableTo(source, target) || target == stringType && isTypeAssignableTo(source, numberType) || target == numberType && (source.flags & TypeFlags.StringLiteral) != 0 && isNumericLiteralName(getStringLiteralValue(source));
+    private bool isApplicableIndexType(Type source, Type target) => isTypeAssignableTo(source, target) || target == stringType && isTypeAssignableTo(source, numberType) || target == numberType && (source == numericStringType || (source.flags & TypeFlags.StringLiteral) != 0 && isNumericLiteralName(getStringLiteralValue(source)));
     private Type getSingleBaseForNonAugmentingSubtype(Type t)
     {
         if ((t.objectFlags & ObjectFlags.Reference) == 0 || (t.Target().objectFlags & ObjectFlags.ClassOrInterface) == 0)
@@ -7987,7 +9650,14 @@ public sealed partial class Checker
         var signatures = getSignaturesOfType(t, SignatureKind.Construct);
         if ((signatures?.Count ?? 0) != 1)
             return false;
-        throw unsupported("isMixinConstructorType: source constructor signature");
+        var signature = signatures[0];
+        if (GoRuntime.Len(signature.typeParameters) == 0 && GoRuntime.Len(signature.parameters) == 1 && signatureHasRestParameter(signature))
+        {
+            var parameterType = getTypeOfParameter(signature.parameters[0]);
+            return IsTypeAny(parameterType) || getElementTypeOfArrayType(parameterType) == anyType;
+        }
+
+        return false;
     }
 
     private List<Signature> appendSignatures(List<Signature> signatures, List<Signature> newSignatures)
@@ -8008,20 +9678,35 @@ public sealed partial class Checker
         return signatures;
     }
 
-    private List<IndexInfo> appendIndexInfo(List<IndexInfo> infos, IndexInfo newInfo, bool union)
+    private List<IndexInfo> appendIndexInfo(List<IndexInfo> indexInfos, IndexInfo newInfo, bool union)
     {
-        for (int i = 0; i < (infos?.Count ?? 0); i++)
         {
-            var info = infos[i];
-            if (info.keyType == newInfo.keyType)
+            foreach (var range2 in GoRuntime.Range(indexInfos))
             {
-                var value = union ? getUnionType([info.valueType, newInfo.valueType]) : getIntersectionType([info.valueType, newInfo.valueType]);
-                infos[i] = newIndexInfo(info.keyType, value, union ? info.isReadonly || newInfo.isReadonly : info.isReadonly && newInfo.isReadonly, null, null);
-                return infos;
+                var i = range2.Key;
+                var info = range2.Value;
+                if ((info.keyType == newInfo.keyType))
+                {
+                    Type valueType = default;
+                    bool isReadonly = default;
+                    if (union)
+                    {
+                        valueType = this.getUnionType(new List<Type> { info.valueType, newInfo.valueType });
+                        isReadonly = (info.isReadonly || newInfo.isReadonly);
+                    }
+                    else
+                    {
+                        valueType = this.getIntersectionType(new List<Type> { info.valueType, newInfo.valueType });
+                        isReadonly = (info.isReadonly && newInfo.isReadonly);
+                    }
+
+                    indexInfos[i] = this.newIndexInfo(info.keyType, valueType, isReadonly, null, null);
+                    return indexInfos;
+                }
             }
         }
 
-        return GoRuntime.Append(infos, newInfo);
+        return GoRuntime.Append(indexInfos, newInfo);
     }
 
     private Diagnostic elaborateNeverIntersection(Diagnostic chain, Node node, Type t)
@@ -8233,9 +9918,7 @@ public sealed partial class Checker
     private bool isPrimitiveOrObjectOrEmptyType(Type t) => (t.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 || IsEmptyAnonymousObjectType(t);
     private bool isGenericStringLikeType(Type t)
     {
-        if ((t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
-            throw unsupported("isGenericStringLikeType: source template/string mapping");
-        return false;
+        return (((t.flags & ((TypeFlags.TemplateLiteral | TypeFlags.StringMapping))) != 0) && !this.isPatternLiteralType(t));
     }
 }
 
@@ -8362,11 +10045,15 @@ public sealed partial class Checker
             }
         }
 
-        if (Ast.IsGetAccessorDeclaration(declaration) || Ast.IsSetAccessorDeclaration(declaration) || Ast.IsConstructorDeclaration(declaration) || Ast.IsConstructorTypeNode(declaration) || Ast.IsConstructSignatureDeclaration(declaration))
-            throw unsupported("getSignatureFromDeclaration: accessor/constructor");
+        if (Ast.IsGetAccessorDeclaration(declaration) || Ast.IsSetAccessorDeclaration(declaration) || Ast.IsConstructorDeclaration(declaration))
+            throw unsupported("getSignatureFromDeclaration: accessor/source class constructor");
         var typeParameters = this.getTypeParametersFromDeclaration(declaration);
         if (hasRestParameter(declaration))
-            throw unsupported("getSignatureFromDeclaration: rest parameter");
+            flags |= SignatureFlags.HasRestParameter;
+        if (Ast.IsConstructorTypeNode(declaration) || Ast.IsConstructSignatureDeclaration(declaration))
+            flags |= SignatureFlags.Construct;
+        if (Ast.IsConstructorTypeNode(declaration) && Ast.HasSyntacticModifier(declaration, ModifierFlags.Abstract))
+            flags |= SignatureFlags.Abstract;
         links.resolvedSignature = this.newSignature(flags, declaration, typeParameters, thisParameter, parameters, null, null, minArgumentCount);
         return links.resolvedSignature;
     }
@@ -8615,7 +10302,7 @@ public sealed partial class Checker
                 var contextualSignature = getContextualSignatureForFunctionLikeDeclaration(fn);
                 Type contextualType = null;
                 if (contextualSignature != null)
-                    contextualType = contextualSignature == getSignatureFromDeclaration(fn) ? returnType : instantiateContextualType(getReturnTypeOfSignature(contextualSignature), fn);
+                    contextualType = contextualSignature == getSignatureFromDeclaration(fn) ? returnType : instantiateContextualType(getReturnTypeOfSignature(contextualSignature), fn, ContextFlags.None);
                 returnType = getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded(returnType, contextualType, false);
             }
 
@@ -9419,7 +11106,7 @@ public sealed partial class Checker
             var indexOfParameter = GoSlices.Index(fn.Parameters(), parameter);
             if (hasDotDotDotToken(parameter))
             {
-                throw unsupported("getContextuallyTypedParameterType: rest");
+                return this.getSpreadArgumentType(args, indexOfParameter, GoRuntime.Len(args), this.anyType, null, CheckMode.Normal);
             }
 
             var links = this.signatureLinks.Get(iife);
@@ -9457,7 +11144,7 @@ public sealed partial class Checker
             var index = (GoSlices.Index(fn.Parameters(), parameter) - Core.IfElse((Ast.GetThisParameter(fn) != null), 1, 0));
             if ((hasDotDotDotToken(parameter) && (Core.LastOrNil(fn.Parameters()) == parameter)))
             {
-                throw unsupported("getContextuallyTypedParameterType: rest");
+                return this.getRestTypeAtPosition(contextualSignature, index, false);
             }
 
             return this.tryGetTypeAtPosition(contextualSignature, index);
@@ -9479,13 +11166,20 @@ public sealed partial class Checker
 {
     private Type getParameterTypeOfFullSignature(Node node, Node parameter)
     {
-        var signature = getSignatureOfFullSignatureType(node);
-        if (signature != null)
         {
-            int pos = node.Parameters().IndexOf(parameter);
-            if (isRestParameter(parameter))
-                throw unsupported("getParameterTypeOfFullSignature: rest");
-            return getTypeAtPosition(signature, pos);
+            var signature = this.getSignatureOfFullSignatureType(node);
+            if ((signature != null))
+            {
+                var pos = GoSlices.Index(node.Parameters(), parameter);
+                if ((parameter.AsParameterDeclaration().DotDotDotToken != null))
+                {
+                    return this.getRestTypeAtPosition(signature, pos, false);
+                }
+                else
+                {
+                    return this.getTypeAtPosition(signature, pos);
+                }
+            }
         }
 
         return null;
@@ -9510,16 +11204,46 @@ public sealed partial class Checker
     // checker.go:19800/19813: nongeneric signatures require no erasure/canonical cache.
     private Signature getErasedSignature(Signature signature)
     {
-        if ((signature.typeParameters?.Count ?? 0) == 0)
+        if ((GoRuntime.Len(signature.typeParameters) == 0))
+        {
             return signature;
-        throw unsupported("getErasedSignature: source-generic signature");
+        }
+
+        var key = new CachedSignatureKey
+        {
+            sig = signature,
+            key = SignatureKeyErased
+        };
+        this.cachedSignatures.TryGetValue(key, out var erased);
+        if ((erased == null))
+        {
+            erased = this.instantiateSignatureEx(signature, newArrayToSingleTypeMapper(signature.typeParameters, this.anyType), true);
+            this.cachedSignatures[key] = erased;
+        }
+
+        return erased;
     }
 
     private Signature getCanonicalSignature(Signature signature)
     {
-        if ((signature.typeParameters?.Count ?? 0) == 0)
+        if ((GoRuntime.Len(signature.typeParameters) == 0))
+        {
             return signature;
-        throw unsupported("getCanonicalSignature: source-generic signature");
+        }
+
+        var key = new CachedSignatureKey
+        {
+            sig = signature,
+            key = SignatureKeyCanonical
+        };
+        this.cachedSignatures.TryGetValue(key, out var canonical);
+        if ((canonical == null))
+        {
+            canonical = this.createCanonicalSignature(signature);
+            this.cachedSignatures[key] = canonical;
+        }
+
+        return canonical;
     }
 
     private Signature cloneSignature(Signature sig)
@@ -9641,8 +11365,10 @@ public sealed partial class Checker
             }
         }
 
-        if (hasDotDotDotToken(node))
-            throw unsupported("checkParameter: rest");
+        if (((hasDotDotDotToken(node) && !Ast.IsBindingPattern(node.Name())) && !this.isTypeAssignableTo(this.getReducedType(this.getTypeOfSymbol(node.Symbol())), this.anyReadonlyArrayType)))
+        {
+            this.error(node, Diagnostics.A_rest_parameter_must_be_of_an_array_type);
+        }
     }
 }
 
@@ -9654,7 +11380,8 @@ public sealed partial class Checker
         {
             case Kind.IndexSignature:
             {
-                throw unsupported("checkSignatureDeclaration: index signature");
+                this.checkGrammarIndexSignature(node.AsIndexSignatureDeclaration());
+                break;
             }
 
             case Kind.FunctionType:
@@ -10422,16 +12149,46 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void checkTypeParameters(List<Node> declarations)
+    private void checkTypeParameters(List<Node> typeParameterDeclarations)
     {
-        if (declarations != null && declarations.Count != 0)
-            throw unsupported("checkTypeParameters: source generic parameters");
+        var seenDefault = false;
+        {
+            foreach (var range2 in GoRuntime.Range(typeParameterDeclarations))
+            {
+                var i = range2.Key;
+                var node = range2.Value;
+                this.checkTypeParameter(node);
+                var defaultTypeNode = node.AsTypeParameterDeclaration().DefaultType;
+                if ((defaultTypeNode != null))
+                {
+                    seenDefault = true;
+                    this.checkTypeParametersNotReferenced(defaultTypeNode, typeParameterDeclarations, i);
+                }
+                else
+                {
+                    if (seenDefault)
+                    {
+                        this.error(node, Diagnostics.Required_type_parameters_may_not_follow_optional_type_parameters);
+                    }
+                }
+
+                {
+                    foreach (var j in GoRuntime.RangeKeys(i))
+                    {
+                        if ((typeParameterDeclarations[j].Symbol() == node.Symbol()))
+                        {
+                            this.error(node.Name(), Diagnostics.Duplicate_identifier_0, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.Name()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 public sealed partial class Checker
 {
-    private Node getEffectiveCheckNode(Node argument)
+    internal Node getEffectiveCheckNode(Node argument)
     {
         var flags = Core.IfElse(Ast.IsInJSFile(argument), ((OuterExpressionKinds.Parentheses | OuterExpressionKinds.Satisfies) | OuterExpressionKinds.ExcludeJSDocTypeAssertion), (OuterExpressionKinds.Parentheses | OuterExpressionKinds.Satisfies));
         return Ast.SkipOuterExpressions(argument, flags);
@@ -10804,8 +12561,7 @@ public sealed partial class Checker
                 result = links.resolvedSignature;
             }
 
-            // Source loops are excluded; this is the original zero-flowLoopStack cache arm.
-            links.resolvedSignature = result;
+            links.resolvedSignature = (flowLoopStack?.Count ?? 0) == 0 ? result : cached;
         }
 
         return result;
@@ -10899,9 +12655,10 @@ public sealed partial class Checker
             return this.resolveErrorCall(node);
         }
 
-        if (((((checkMode & CheckMode.SkipGenericFunctions) != 0) && (GoRuntime.Len(node.TypeArguments()) == 0)) && Core.Some(callSignatures, s => GoRuntime.Len(s.typeParameters) != 0)))
+        if ((checkMode & CheckMode.SkipGenericFunctions) != 0 && GoRuntime.Len(node.TypeArguments()) == 0 && Core.Some(callSignatures, isGenericFunctionReturningFunction))
         {
-            throw unsupported("resolveCallExpression: source generic return");
+            skippedGenericFunction(node, checkMode);
+            return resolvingSignature;
         }
 
         return this.resolveCall(node, callSignatures, candidatesOutArray, checkMode, callChainFlags, null);
@@ -11056,6 +12813,7 @@ public sealed partial class Checker
 {
     private Signature chooseOverload(CallState s, Relation relation)
     {
+        using var collectionsOverloadScope = verificationCollectionsOverloadScope(s.node, relation, s.argCheckMode);
         s.candidatesForArgumentError = null;
         s.candidateForArgumentArityError = null;
         s.candidateForTypeArgumentError = null;
@@ -11080,10 +12838,10 @@ public sealed partial class Checker
         }
 
         {
-            foreach (var range3 in GoRuntime.Range(s.candidates))
+            foreach (var range1 in GoRuntime.Range(s.candidates))
             {
-                var candidateIndex = range3.Key;
-                var candidate2 = range3.Value;
+                var candidateIndex = range1.Key;
+                var candidate2 = range1.Value;
                 if ((!this.hasCorrectTypeArgumentArity(candidate2, s.typeArguments) || !this.hasCorrectArity(s.node, s.args, candidate2, s.signatureHelpTrailingComma)))
                 {
                     continue;
@@ -11093,7 +12851,39 @@ public sealed partial class Checker
                 InferenceContext inferenceContext = default;
                 if ((GoRuntime.Len(candidate2.typeParameters) != 0))
                 {
-                    throw unsupported("chooseOverload: source generic candidate");
+                    List<Type> typeArgumentTypes = default;
+                    if ((GoRuntime.Len(s.typeArguments) != 0))
+                    {
+                        typeArgumentTypes = this.checkTypeArguments(candidate2, s.typeArguments, false, null);
+                        if ((typeArgumentTypes == null))
+                        {
+                            s.candidateForTypeArgumentError = candidate2;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        var inferenceFlags = (Core.IfElse((s.recursiveResolution && (GoRuntime.Len(s.candidates) == 1)), InferenceFlags.NoConstraintChecks, InferenceFlags.None) | Core.IfElse(Ast.IsInJSFile(s.node), InferenceFlags.AnyDefault, InferenceFlags.None));
+                        inferenceContext = this.newInferenceContext(candidate2.typeParameters, candidate2, inferenceFlags, null);
+                        typeArgumentTypes = this.inferTypeArguments(s.node, candidate2, s.args, (s.argCheckMode | CheckMode.SkipGenericFunctions), inferenceContext);
+                        if (((inferenceContext.flags & InferenceFlags.SkippedGenericFunction) != 0))
+                        {
+                            s.argCheckMode |= CheckMode.SkipGenericFunctions;
+                        }
+                    }
+
+                    List<Type> inferredTypeParameters = default;
+                    if ((inferenceContext != null))
+                    {
+                        inferredTypeParameters = inferenceContext.inferredTypeParameters;
+                    }
+
+                    checkCandidate = this.getSignatureInstantiation(candidate2, typeArgumentTypes, Ast.IsInJSFile(candidate2.declaration), inferredTypeParameters);
+                    if (((this.getNonArrayRestType(candidate2) != null) && !this.hasCorrectArity(s.node, s.args, checkCandidate, s.signatureHelpTrailingComma)))
+                    {
+                        s.candidateForArgumentArityError = checkCandidate;
+                        continue;
+                    }
                 }
                 else
                 {
@@ -11111,7 +12901,13 @@ public sealed partial class Checker
                     s.argCheckMode = CheckMode.Normal;
                     if ((inferenceContext != null))
                     {
-                        throw unsupported("chooseOverload: generic inference");
+                        var typeArgumentTypes2 = this.inferTypeArguments(s.node, candidate2, s.args, s.argCheckMode, inferenceContext);
+                        checkCandidate = this.getSignatureInstantiation(candidate2, typeArgumentTypes2, Ast.IsInJSFile(candidate2.declaration), inferenceContext.inferredTypeParameters);
+                        if (((this.getNonArrayRestType(candidate2) != null) && !this.hasCorrectArity(s.node, s.args, checkCandidate, s.signatureHelpTrailingComma)))
+                        {
+                            s.candidateForArgumentArityError = checkCandidate;
+                            continue;
+                        }
                     }
 
                     if (!this.isSignatureApplicable(s.node, s.args, checkCandidate, relation, s.argCheckMode, false, null))
@@ -11185,7 +12981,7 @@ public sealed partial class Checker
                 var spreadArgIndex = this.getSpreadArgumentIndex(args);
                 if ((spreadArgIndex >= 0))
                 {
-                    throw unsupported("hasCorrectArity: spread");
+                    return spreadArgIndex >= this.getMinArgumentCount(signature) && (this.hasEffectiveRestParameter(signature) || spreadArgIndex < this.getParameterCount(signature));
                 }
 
                 break;
@@ -11222,9 +13018,10 @@ public sealed partial class Checker
 {
     private bool isSignatureApplicable(Node node, List<Node> args, Signature signature, Relation relation, CheckMode checkMode, bool reportErrors, List<Diagnostic> diagnosticOutput)
     {
+        using var collectionsApplicabilityScope = verificationCollectionsApplicabilityScope(node, signature, relation, checkMode, reportErrors);
         if (Ast.IsJsxCallLike(node))
         {
-            throw unsupported("isSignatureApplicable: JSX");
+            throw unsupported("isSignatureApplicable: source JSX");
         }
 
         var thisType = this.getThisTypeOfSignature(signature);
@@ -11291,7 +13088,39 @@ public sealed partial class Checker
 
         if ((restType != null))
         {
-            throw unsupported("isSignatureApplicable: non-array rest");
+            var spreadType = this.getSpreadArgumentType(args, argCount, GoRuntime.Len(args), restType, null, checkMode);
+            var restArgCount = (GoRuntime.Len(args) - argCount);
+            Node errorNode2 = default;
+            if (reportErrors)
+            {
+                switch (restArgCount)
+                {
+                    case 0:
+                    {
+                        errorNode2 = node;
+                        break;
+                    }
+
+                    case 1:
+                    {
+                        errorNode2 = this.getEffectiveCheckNode(args[argCount]);
+                        break;
+                    }
+
+                    default:
+                    {
+                        errorNode2 = this.createSyntheticExpression(node, spreadType, false, null);
+                        errorNode2.Loc = Core.NewTextRange(args[argCount].Pos(), args[(GoRuntime.Len(args) - 1)].End());
+                        break;
+                    }
+                }
+            }
+
+            if (!this.checkTypeRelatedToEx(spreadType, restType, relation, errorNode2, headMessage2, diagnosticOutput))
+            {
+                this.maybeAddMissingAwaitInfo(errorNode2, spreadType, restType, relation, reportErrors, diagnosticOutput);
+                return false;
+            }
         }
 
         return true;
@@ -11333,7 +13162,24 @@ public sealed partial class Checker
             return candidate;
         }
 
-        throw unsupported("pickLongestCandidateSignature: source generic candidate");
+        List<Node> typeArgumentNodes = default;
+        if (this.callLikeExpressionMayHaveTypeArguments(node))
+        {
+            typeArgumentNodes = node.TypeArguments();
+        }
+
+        Signature instantiated = default;
+        if ((GoRuntime.Len(typeArgumentNodes) != 0))
+        {
+            instantiated = this.createSignatureInstantiation(candidate, this.getTypeArgumentsFromNodes(typeArgumentNodes, typeParameters));
+        }
+        else
+        {
+            instantiated = this.inferSignatureInstantiationForOverloadFailure(node, typeParameters, candidate, args, checkMode);
+        }
+
+        candidates[bestIndex] = instantiated;
+        return instantiated;
     }
 }
 
@@ -11351,9 +13197,9 @@ public sealed partial class Checker
             thisParameter = this.createCombinedSymbolFromTypes(thisParameters, Core.Map(thisParameters, this.getTypeOfParameter));
         }
 
-        var tuple5 = minAndMax(candidates, getNonRestParameterCount);
-        var minArgumentCount = tuple5.Item1;
-        var maxNonRestParam = tuple5.Item2;
+        var tuple2 = minAndMax(candidates, getNonRestParameterCount);
+        var minArgumentCount = tuple2.Item1;
+        var maxNonRestParam = tuple2.Item2;
         var parameters = GoRuntime.MakeSlice<Symbol>(0);
         {
             foreach (var i in GoRuntime.RangeKeys(maxNonRestParam))
@@ -11396,7 +13242,9 @@ public sealed partial class Checker
         var flags = SignatureFlags.IsSignatureCandidateForOverloadFailure;
         if ((GoRuntime.Len(restParameterSymbols) != 0))
         {
-            throw unsupported("createUnionOfSignaturesForOverloadFailure: source rest");
+            var t = this.createArrayType(this.getUnionTypeEx(Core.MapNonNil(candidates, this.tryGetRestTypeOfSignature), UnionReduction.Subtype, null, null));
+            parameters = GoRuntime.Append(parameters, this.createCombinedSymbolForOverloadFailure(restParameterSymbols, t));
+            flags |= SignatureFlags.HasRestParameter;
         }
 
         if (Core.Some(candidates, signatureHasLiteralTypes))
@@ -11442,12 +13290,78 @@ public sealed partial class Checker
 {
     private List<Node> getEffectiveCallArguments(Node node)
     {
-        if (node.Kind != Kind.CallExpression)
-            throw unsupported("getEffectiveCallArguments: non-call");
-        var args = node.Arguments();
-        if (getSpreadArgumentIndex(args) >= 0)
-            throw unsupported("getEffectiveCallArguments: spread");
-        return args;
+        switch (true)
+        {
+            case true when Ast.IsJsxOpeningFragment(node) || Ast.IsTaggedTemplateExpression(node) || Ast.IsDecorator(node):
+                throw unsupported("getEffectiveCallArguments: source JSX/template/decorator");
+            case true when Ast.IsBinaryExpression(node):
+            {
+                return new List<Node>
+                {
+                    node.AsBinaryExpression().Left
+                };
+            }
+
+            case true when Ast.IsJsxOpeningLikeElement(node):
+                throw unsupported("getEffectiveCallArguments: source JSX");
+            default:
+            {
+                var args2 = node.Arguments();
+                var spreadIndex = this.getSpreadArgumentIndex(args2);
+                if ((spreadIndex >= 0))
+                {
+                    var effectiveArgs = GoRuntime.Slice(args2, 0, spreadIndex);
+                    {
+                        var i2 = spreadIndex;
+                        for (; (i2 < GoRuntime.Len(args2)); i2++)
+                        {
+                            var arg = args2[i2];
+                            Type spreadType = default;
+                            if (Ast.IsSpreadElement(arg))
+                            {
+                                if ((GoRuntime.Len(this.flowLoopStack) != 0))
+                                {
+                                    spreadType = this.checkExpression(arg.Expression());
+                                }
+                                else
+                                {
+                                    spreadType = this.checkExpressionCached(arg.Expression());
+                                }
+                            }
+
+                            if (((spreadType != null) && isTupleType(spreadType)))
+                            {
+                                {
+                                    foreach (var range7 in GoRuntime.Range(this.getElementTypes(spreadType)))
+                                    {
+                                        var i3 = range7.Key;
+                                        var t = range7.Value;
+                                        var elementInfos = spreadType.TargetTupleType().elementInfos;
+                                        var flags = elementInfos[i3].flags;
+                                        var syntheticType = t;
+                                        if (((flags & ElementFlags.Rest) != 0))
+                                        {
+                                            syntheticType = this.createArrayType(t);
+                                        }
+
+                                        var syntheticArg = this.createSyntheticExpression(arg, syntheticType, ((flags & ElementFlags.Variable) != 0), elementInfos[i3].labeledDeclaration);
+                                        effectiveArgs = GoRuntime.Append(effectiveArgs, syntheticArg);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                effectiveArgs = GoRuntime.Append(effectiveArgs, arg);
+                            }
+                        }
+                    }
+
+                    return effectiveArgs;
+                }
+
+                return args2;
+            }
+        }
     }
 }
 
@@ -11464,7 +13378,7 @@ public sealed partial class Checker
             inferenceContext.intraExpressionInferenceSites = null;
         }
 
-        if ((this.maybeTypeOfKind(t, TypeFlags.Literal) && this.isLiteralOfContextualType(t, this.instantiateContextualType(contextualType, node))))
+        if ((this.maybeTypeOfKind(t, TypeFlags.Literal) && this.isLiteralOfContextualType(t, this.instantiateContextualType(contextualType, node, ContextFlags.None))))
         {
             t = this.getRegularTypeOfLiteralType(t);
         }
@@ -11511,7 +13425,8 @@ public sealed partial class Checker
         var globalPromiseType = this.getGlobalPromiseTypeChecked();
         if ((globalPromiseType != this.emptyGenericType))
         {
-            throw unsupported("createPromiseType: supplied generic Promise library type");
+            promisedType = this.getAwaitedTypeNoAlias(this.unwrapAwaitedType(promisedType)) ?? this.unknownType;
+            return this.createTypeReference(globalPromiseType, [promisedType]);
         }
 
         return this.unknownType;
@@ -11741,7 +13656,7 @@ public sealed partial class Checker
             case true when (GoRuntime.Len(s.candidatesForArgumentError) != 0):
             {
                 var last = s.candidatesForArgumentError[(GoRuntime.Len(s.candidatesForArgumentError) - 1)];
-                List<Diagnostic> diags = new();
+                var diags = new List<Diagnostic>();
                 this.isSignatureApplicable(s.node, s.args, last, this.assignableRelation, CheckMode.Normal, true, diags);
                 {
                     foreach (var diagnosticValue in GoRuntime.RangeValues(diags))
@@ -11779,7 +13694,8 @@ public sealed partial class Checker
 
             case true when (s.candidateForTypeArgumentError != null):
             {
-                throw unsupported("reportCallResolutionErrors: source type arguments");
+                this.checkTypeArguments(s.candidateForTypeArgumentError, s.node.TypeArguments(), true, headMessage);
+                break;
             }
 
             case true when !Ast.IsJsxOpeningFragment(node):
@@ -11790,7 +13706,7 @@ public sealed partial class Checker
                 });
                 if ((GoRuntime.Len(signaturesWithCorrectTypeArgumentArity) == 0))
                 {
-                    throw unsupported("reportCallResolutionErrors: source type argument arity");
+                    this.addDiagnostic(this.getTypeArgumentArityError(s.node, signatures, s.typeArguments, headMessage));
                 }
                 else
                 {
@@ -12185,7 +14101,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private sealed record IntraExpressionInferenceSite(Node node, Type type);
+    internal sealed record IntraExpressionInferenceSite(Node node, Type t);
 }
 
 public sealed partial class Checker
@@ -12303,7 +14219,10 @@ public sealed partial class Checker
                         Signature instantiatedContextualSignature = default;
                         if (((checkMode & CheckMode.Inferential) != 0))
                         {
-                            throw unsupported("contextuallyCheckFunctionExpressionOrObjectLiteralMethod: generic inference");
+                            this.inferFromAnnotatedParametersAndReturn(signature, contextualSignature, inferenceContext);
+                            var restType = this.getEffectiveRestType(contextualSignature);
+                            if (restType != null && (restType.flags & TypeFlags.TypeParameter) != 0)
+                                instantiatedContextualSignature = this.instantiateSignature(contextualSignature, inferenceContext.nonFixingMapper);
                         }
 
                         if ((instantiatedContextualSignature == null))
@@ -12332,7 +14251,7 @@ public sealed partial class Checker
                         var inferenceContext2 = this.getInferenceContext(node);
                         if (((checkMode & CheckMode.Inferential) != 0))
                         {
-                            throw unsupported("generic inference from annotated signature");
+                            this.inferFromAnnotatedParametersAndReturn(signature, contextualSignature, inferenceContext2);
                         }
                     }
                 }
@@ -12573,7 +14492,7 @@ public sealed partial class Checker
         var restIndex = (GoRuntime.Len(signature.parameters) - 1);
         if ((signatureHasRestParameter(signature) && (argIndex >= restIndex)))
         {
-            throw unsupported("getContextualTypeForArgumentAtIndex: rest");
+            return this.getIndexedAccessTypeEx(this.getTypeOfSymbol(signature.parameters[restIndex]), this.getNumberLiteralType(new JsNum.Number(argIndex - restIndex)), AccessFlags.Contextual, null, null);
         }
 
         return this.getTypeAtPosition(signature, argIndex);
@@ -12777,7 +14696,8 @@ public sealed partial class Checker
 
         if (((t.flags & TypeFlags.TypeVariable) != 0))
         {
-            throw unsupported("isConstructorType: source mixin constraint");
+            var constraint = getBaseConstraintOfType(t);
+            return constraint != null && isMixinConstructorType(constraint);
         }
 
         return false;
@@ -12809,9 +14729,7 @@ public sealed partial class Checker
 {
     private static bool isSpreadArgument(Node arg)
     {
-        if (Ast.IsSyntheticExpression(arg))
-            throw unsupported("compiler-only synthetic expression");
-        return Ast.IsSpreadElement(arg);
+        return Ast.IsSpreadElement(arg) || Ast.IsSyntheticExpression(arg) && arg.AsSyntheticExpression().IsSpread;
     }
 }
 
@@ -12934,7 +14852,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Symbol getSymbolOfNode(Node node)
+    internal Symbol getSymbolOfNode(Node node)
     {
         var data = node.DeclarationData();
         if (((data != null) && (data.Symbol != null)))
@@ -12975,7 +14893,7 @@ public sealed partial class Checker
 {
     private Node lastGetCombinedModifierFlagsNode;
     private ModifierFlags lastGetCombinedModifierFlagsResult;
-    private Type markerSuperType, markerSubType, markerOtherType, globalThisType;
+    private Type markerSuperType, markerSubType, markerOtherType, markerSuperTypeForCheck, markerSubTypeForCheck, globalThisType;
     private enum PredicateSemantics
     {
         None = 0,
@@ -13006,9 +14924,7 @@ public sealed partial class Checker
         }
 
         var uninstantiatedType = this.checkFunctionExpressionOrObjectLiteralMethod(node, checkMode);
-        if (Core.Some(getSignaturesOfType(uninstantiatedType, SignatureKind.Call), s => GoRuntime.Len(s.typeParameters) != 0))
-            throw unsupported("checkObjectLiteralMethod: source generic signature");
-        return uninstantiatedType;
+        return instantiateTypeWithSingleGenericCallSignature(node, uninstantiatedType, checkMode);
     }
 }
 
@@ -13302,7 +15218,6 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // inference.go:1426; selected contextual calls preserve nil inference contexts.
-    private TypeMapper getMapperFromContext(InferenceContext n) => n?.mapper;
     // jsdoc.go:9; only ordinary documentation without semantic tags is admitted.
     private void checkUnmatchedJSDocParameters(Node node)
     {
@@ -13463,7 +15378,7 @@ public sealed partial class Checker
                 var links = this.valueSymbolLinks.Get(paramSymbol);
                 if (isRestParam)
                 {
-                    throw unsupported("combineUnionOrIntersectionParameters: source rest");
+                    links.resolvedType = this.createArrayType(combinedParamType);
                 }
                 else
                 {
@@ -13476,7 +15391,15 @@ public sealed partial class Checker
 
         if (needsExtraRestElement)
         {
-            throw unsupported("combineUnionOrIntersectionParameters: source rest tuple");
+            var restParamSymbol = this.newSymbolEx(SymbolFlags.FunctionScopedVariable, "args", CheckFlags.RestParameter);
+            var links2 = this.valueSymbolLinks.Get(restParamSymbol);
+            links2.resolvedType = this.createArrayType(this.getTypeAtPosition(shorter, longestCount));
+            if ((shorter == right))
+            {
+                links2.resolvedType = this.instantiateType(links2.resolvedType, mapper);
+            }
+
+            @params[longestCount] = restParamSymbol;
         }
 
         return @params;
@@ -14007,8 +15930,6 @@ public sealed partial class Checker
     private Type getContextualTypeForAssignmentExpression(BinaryExpression binary)
     {
         var left = binary.Left;
-        if (Ast.IsElementAccessExpression(left))
-            throw unsupported("contextual assignment: element access");
         if (Ast.IsAccessExpression(left))
         {
             var expr = left.Expression();
@@ -14344,12 +16265,30 @@ public sealed partial class Checker
 {
     // The fixed profile does not enable strictPropertyInitialization; source classes excluded.
     private readonly bool strictPropertyInitialization = false;
-    // checker.go:24165 selected diagnostic-library guard. A one-parameter Awaited alias
-    // can only be supplied by excluded source generics/library environments.
+    // checker.go:24165. Generic aliases retain the actual cache and NoInfer intrinsic arm.
     private Type getTypeAliasInstantiation(Symbol symbol, List<Type> typeArguments, TypeAlias alias)
     {
-        var t = getDeclaredTypeOfSymbol(symbol);
-        throw unsupported("type alias generic instantiation");
+        var t = this.getDeclaredTypeOfSymbol(symbol);
+        if (t == intrinsicMarkerType && (typeArguments?.Count ?? 0) == 1)
+        {
+            if (symbol.Name == "NoInfer")
+                return getNoInferType(typeArguments[0]);
+            if (symbol.Name is "Uppercase" or "Lowercase" or "Capitalize" or "Uncapitalize")
+                throw unsupported("getTypeAliasInstantiation: intrinsic string mapping");
+        }
+
+        var links = this.typeAliasLinks.Get(symbol);
+        var typeParameters = links.typeParameters;
+        var key = getTypeAliasInstantiationKey(typeArguments, alias);
+        links.instantiations.TryGetValue(key, out var instantiation);
+        if ((instantiation == null))
+        {
+            var mapper = newTypeMapper(typeParameters, this.fillMissingTypeArguments(typeArguments, typeParameters, this.getMinTypeArgumentCount(typeParameters), Ast.IsInJSFile(symbol.ValueDeclaration)));
+            instantiation = this.instantiateTypeWithAlias(t, mapper, alias);
+            links.instantiations[key] = instantiation;
+        }
+
+        return instantiation;
     }
 
     private Type getTypeOfPropertyOfContextualType(Type t, string name) => getTypeOfPropertyOfContextualTypeEx(t, name, null);
@@ -14492,7 +16431,10 @@ public sealed partial class Checker
             case Kind.PlusPlusToken:
             case Kind.MinusMinusToken:
             {
-                throw unsupported("prefix unary: increment/decrement");
+                var ok = this.checkArithmeticOperandType(expr.Operand, this.checkNonNullType(operandType, expr.Operand), Diagnostics.An_arithmetic_operand_must_be_of_type_any_number_bigint_or_an_enum_type, false);
+                if (ok)
+                    this.checkReferenceExpression(expr.Operand, Diagnostics.The_operand_of_an_increment_or_decrement_operator_must_be_a_variable_or_a_property_access, Diagnostics.The_operand_of_an_increment_or_decrement_operator_may_not_be_an_optional_property_access);
+                return this.getUnaryResultType(operandType);
             }
         }
 
@@ -14985,7 +16927,7 @@ public sealed partial class Checker
 
             if ((Ast.IsCompoundAssignment(@operator) && Ast.IsPropertyAccessExpression(left)))
             {
-                throw unsupported("compound assignment");
+                leftType = this.checkPropertyAccessExpression(left, CheckMode.Normal, true);
             }
 
             if (this.checkReferenceExpression(left, Diagnostics.The_left_hand_side_of_an_assignment_expression_must_be_a_variable_or_a_property_access, Diagnostics.The_left_hand_side_of_an_assignment_expression_may_not_be_an_optional_property_access))
@@ -16146,9 +18088,10 @@ public sealed partial class Checker
                 }
             }
 
-            if ((isArrayOrTupleType(t)))
+            if (isEmptyArrayLiteralType(t) && !hasParentWithTypeAnnotation(node.Symbol()))
             {
-                throw unsupported("empty array assignment declaration");
+                reportImplicitAny(node, anyArrayType, WideningKind.Normal);
+                return anyArrayType;
             }
 
             return t;
@@ -16480,7 +18423,13 @@ public sealed partial class Checker
         {
             case true when ((t.objectFlags & ObjectFlags.Mapped) != 0):
             {
-                throw unsupported("instantiateAnonymousType: mapped type");
+                result.AsMappedType().declaration = t.AsMappedType().declaration;
+                var originalTypeParameter = this.getTypeParameterFromMappedType(t);
+                var freshTypeParameter = this.cloneTypeParameter(originalTypeParameter);
+                result.AsMappedType().typeParameter = freshTypeParameter;
+                m = this.combineTypeMappers(newSimpleTypeMapper(originalTypeParameter, freshTypeParameter), m);
+                freshTypeParameter.AsTypeParameter().mapper = m;
+                break;
             }
 
             case true when ((t.objectFlags & ObjectFlags.InstantiationExpressionType) != 0):
@@ -16545,18 +18494,18 @@ public sealed partial class Checker
                         var signature = Core.FirstOrNil(this.getSignaturesOfType(this.getTypeOfSymbol(this.getSymbolOfDeclaration(node)), SignatureKind.Call));
                         if (((signature != null) && (GoRuntime.Len(signature.typeParameters) != 0)))
                         {
-                            throw unsupported("getOuterTypeParameters: contextual generic signature");
+                            return GoRuntime.Append(outerTypeParameters, signature.typeParameters);
                         }
                     }
 
                     if ((kind == Kind.MappedType))
                     {
-                        throw unsupported("getOuterTypeParameters: mapped type");
+                        return GoRuntime.Append(outerTypeParameters, this.getDeclaredTypeOfTypeParameter(this.getSymbolOfDeclaration(node.AsMappedTypeNode().TypeParameter)));
                     }
 
                     if ((kind == Kind.ConditionalType))
                     {
-                        throw unsupported("getOuterTypeParameters: conditional inference");
+                        return GoRuntime.Append(outerTypeParameters, this.getInferTypeParameters(node));
                     }
 
                     var outerAndOwnTypeParameters = this.appendTypeParameters(outerTypeParameters, node.TypeParameters());
@@ -16654,4 +18603,7585 @@ public sealed partial class Checker
     // checker.go:20206. Only the original index member's declarations enter
     // duplicate checking; merged value/function declarations are not members.
     private Symbol getIndexSymbol(Symbol symbol) => getMembersOfSymbol(symbol)?[Ast.InternalSymbolNameIndex];
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getTypeParametersForTypeReferenceOrImport(Node node)
+    {
+        var t = this.getTypeFromTypeNode(node);
+        if (!this.isErrorType(t))
+        {
+            var symbol = this.getResolvedSymbolOrNil(node);
+            if ((symbol != null))
+            {
+                return this.getTypeParametersForTypeAndSymbol(t, symbol);
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getTypeParametersForTypeAndSymbol(Type t, Symbol symbol)
+    {
+        if (!this.isErrorType(t))
+        {
+            if (((symbol.Flags & SymbolFlags.TypeAlias) != 0))
+            {
+                {
+                    var typeParameters = this.typeAliasLinks.Get(symbol).typeParameters;
+                    if ((GoRuntime.Len(typeParameters) != 0))
+                    {
+                        return typeParameters;
+                    }
+                }
+            }
+
+            if (((t.objectFlags & ObjectFlags.Reference) != 0))
+            {
+                return t.Target().AsInterfaceType().LocalTypeParameters();
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getEffectiveTypeArgumentAtIndex(Node node, List<Type> typeParameters, int index)
+    {
+        var typeArguments = node.TypeArguments();
+        if ((index < GoRuntime.Len(typeArguments)))
+        {
+            return this.getTypeFromTypeNode(typeArguments[index]);
+        }
+
+        return this.getEffectiveTypeArguments(node, typeParameters)[index];
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getEffectiveTypeArguments(Node node, List<Type> typeParameters)
+    {
+        return this.fillMissingTypeArguments(Core.Map(node.TypeArguments(), this.getTypeFromTypeNode), typeParameters, this.getMinTypeArgumentCount(typeParameters), Ast.IsInJSFile(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    internal int getMinTypeArgumentCount(List<Type> typeParameters)
+    {
+        var minTypeArgumentCount = 0;
+        {
+            foreach (var range1 in GoRuntime.Range(typeParameters))
+            {
+                var i = range1.Key;
+                var typeParameter = range1.Value;
+                if (!this.hasTypeParameterDefault(typeParameter))
+                {
+                    minTypeArgumentCount = (i + 1);
+                }
+            }
+        }
+
+        return minTypeArgumentCount;
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> fillMissingTypeArguments(List<Type> typeArguments, List<Type> typeParameters, int minTypeArgumentCount, bool isJavaScriptImplicitAny)
+    {
+        var numTypeParameters = GoRuntime.Len(typeParameters);
+        if ((numTypeParameters == 0))
+        {
+            return null;
+        }
+
+        var numTypeArguments = GoRuntime.Len(typeArguments);
+        if ((isJavaScriptImplicitAny || (numTypeArguments < numTypeParameters)))
+        {
+            var result = GoRuntime.MakeSlice<Type>(numTypeParameters);
+            if (typeArguments != null)
+                for (int copied = 0; copied < Math.Min(result.Count, typeArguments.Count); copied++)
+                    result[copied] = typeArguments[copied];
+            {
+                var i = numTypeArguments;
+                for (; (i < numTypeParameters); i++)
+                {
+                    result[i] = this.errorType;
+                }
+            }
+
+            var baseDefaultType = this.getDefaultTypeArgumentType(isJavaScriptImplicitAny);
+            {
+                var i2 = numTypeArguments;
+                for (; (i2 < numTypeParameters); i2++)
+                {
+                    var defaultType = this.getDefaultFromTypeParameter(typeParameters[i2]);
+                    if (((isJavaScriptImplicitAny && (defaultType != null)) && ((this.isTypeIdenticalTo(defaultType, this.unknownType) || this.isTypeIdenticalTo(defaultType, this.emptyObjectType)))))
+                    {
+                        defaultType = this.anyType;
+                    }
+
+                    if ((defaultType != null))
+                    {
+                        result[i2] = this.instantiateType(defaultType, newTypeMapper(typeParameters, result));
+                    }
+                    else
+                    {
+                        result[i2] = baseDefaultType;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        return typeArguments;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getDefaultTypeArgumentType(bool isInJavaScriptFile)
+    {
+        if (isInJavaScriptFile)
+        {
+            return this.anyType;
+        }
+
+        return this.unknownType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getDefaultFromTypeParameter(Type t)
+    {
+        if (((t.flags & TypeFlags.TypeParameter) == 0))
+        {
+            return null;
+        }
+
+        var defaultType = this.getResolvedTypeParameterDefault(t);
+        if (((defaultType != this.noConstraintType) && (defaultType != this.circularConstraintType)))
+        {
+            return defaultType;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getResolvedTypeParameterDefault(Type t)
+    {
+        var d = t.AsTypeParameter();
+        if ((d.resolvedDefaultType == null))
+        {
+            if ((d.target != null))
+            {
+                var targetDefault = this.getResolvedTypeParameterDefault(d.target);
+                if ((targetDefault != null))
+                {
+                    d.resolvedDefaultType = this.instantiateType(targetDefault, d.mapper);
+                }
+                else
+                {
+                    d.resolvedDefaultType = this.noConstraintType;
+                }
+            }
+            else
+            {
+                d.resolvedDefaultType = this.resolvingDefaultType;
+                var defaultType = this.noConstraintType;
+                if ((t.symbol != null))
+                {
+                    var defaultDeclaration = Core.FirstNonNil(t.symbol.Declarations, (decl) =>
+                    {
+                        if (Ast.IsTypeParameterDeclaration(decl))
+                        {
+                            return decl.AsTypeParameterDeclaration().DefaultType;
+                        }
+
+                        return null;
+                    });
+                    if ((defaultDeclaration != null))
+                    {
+                        defaultType = this.getTypeFromTypeNode(defaultDeclaration);
+                    }
+                }
+
+                if ((d.resolvedDefaultType == this.resolvingDefaultType))
+                {
+                    d.resolvedDefaultType = defaultType;
+                }
+            }
+        }
+        else
+        {
+            if ((d.resolvedDefaultType == this.resolvingDefaultType))
+            {
+                d.resolvedDefaultType = this.circularConstraintType;
+            }
+        }
+
+        return d.resolvedDefaultType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getDefaultOrUnknownFromTypeParameter(Type t)
+    {
+        var result = this.getDefaultFromTypeParameter(t);
+        return Core.IfElse((result != null), result, this.unknownType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getDistributedTypeFromTypeParameter(Type t)
+    {
+        var tp = t.AsTypeParameter();
+        if ((tp.distributedType == null))
+        {
+            tp.distributedType = this.newTypeParameter(t.symbol);
+            tp.distributedType.AsTypeParameter().isDistributed = true;
+            tp.distributedType.AsTypeParameter().constraint = t;
+        }
+
+        return tp.distributedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isSimpleIdentifierTypeReference(Node node)
+    {
+        return ((Ast.IsTypeReferenceNode(node) && Ast.IsIdentifier(node.AsTypeReferenceNode().TypeName)) && (node.TypeArgumentList() == null));
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getTypeArgumentsFromNode(Node node)
+    {
+        return Core.Map(node.TypeArguments(), this.getTypeFromTypeNode);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isDeferredTypeReferenceNode(Node node, bool hasDefaultTypeArguments)
+    {
+        if ((this.getAliasSymbolForTypeNode(node) != null))
+        {
+            return true;
+        }
+
+        if (this.isResolvedByTypeAlias(node))
+        {
+            switch (node.Kind)
+            {
+                case Kind.ArrayType:
+                {
+                    return this.mayResolveTypeAlias(node.AsArrayTypeNode().ElementType);
+                }
+
+                case Kind.TupleType:
+                {
+                    return Core.Some(node.Elements(), this.mayResolveTypeAlias);
+                }
+
+                case Kind.TypeReference:
+                {
+                    return (hasDefaultTypeArguments || Core.Some(node.TypeArguments(), this.mayResolveTypeAlias));
+                }
+            }
+
+            throw new InvalidOperationException("Unhandled case in isDeferredTypeReferenceNode");
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isResolvedByTypeAlias(Node node)
+    {
+        var parent = node.Parent;
+        switch (parent.Kind)
+        {
+            case Kind.ParenthesizedType:
+            case Kind.NamedTupleMember:
+            case Kind.TypeReference:
+            case Kind.UnionType:
+            case Kind.IntersectionType:
+            case Kind.IndexedAccessType:
+            case Kind.ConditionalType:
+            case Kind.TypeOperator:
+            case Kind.ArrayType:
+            case Kind.TupleType:
+            {
+                return this.isResolvedByTypeAlias(parent);
+            }
+
+            case Kind.TypeAliasDeclaration:
+            case Kind.JSTypeAliasDeclaration:
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool mayResolveTypeAlias(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.TypeReference:
+            {
+                return ((this.resolveTypeReferenceName(node, SymbolFlags.Type, false).Flags & SymbolFlags.TypeAlias) != 0);
+            }
+
+            case Kind.TypeQuery:
+            {
+                return true;
+            }
+
+            case Kind.TypeOperator:
+            {
+                return ((node.AsTypeOperatorNode().Operator != Kind.UniqueKeyword) && this.mayResolveTypeAlias(node.Type()));
+            }
+
+            case Kind.ParenthesizedType:
+            case Kind.OptionalType:
+            case Kind.NamedTupleMember:
+            {
+                return this.mayResolveTypeAlias(node.Type());
+            }
+
+            case Kind.RestType:
+            {
+                return ((node.Type().Kind != Kind.ArrayType) || this.mayResolveTypeAlias(node.Type().AsArrayTypeNode().ElementType));
+            }
+
+            case Kind.UnionType:
+            {
+                return Core.Some(node.AsUnionTypeNode().Types.Nodes, this.mayResolveTypeAlias);
+            }
+
+            case Kind.IntersectionType:
+            {
+                return Core.Some(node.AsIntersectionTypeNode().Types.Nodes, this.mayResolveTypeAlias);
+            }
+
+            case Kind.IndexedAccessType:
+            {
+                return (this.mayResolveTypeAlias(node.AsIndexedAccessTypeNode().ObjectType) || this.mayResolveTypeAlias(node.AsIndexedAccessTypeNode().IndexType));
+            }
+
+            case Kind.ConditionalType:
+            {
+                return (((this.mayResolveTypeAlias(node.AsConditionalTypeNode().CheckType) || this.mayResolveTypeAlias(node.AsConditionalTypeNode().ExtendsType)) || this.mayResolveTypeAlias(node.AsConditionalTypeNode().TrueType)) || this.mayResolveTypeAlias(node.AsConditionalTypeNode().FalseType));
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Node getConstraintDeclaration(Type t)
+    {
+        if ((t.symbol != null))
+        {
+            {
+                foreach (var d in GoRuntime.RangeValues(t.symbol.Declarations))
+                {
+                    if (Ast.IsTypeParameterDeclaration(d))
+                    {
+                        {
+                            var constraint = d.AsTypeParameterDeclaration().Constraint;
+                            if ((constraint != null))
+                            {
+                                return constraint;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void mergeGlobalSymbol(Symbol symbol)
+    {
+        var globalSymbol = this.globals[symbol.Name];
+        Symbol merged = default;
+        if ((globalSymbol != null))
+        {
+            merged = this.mergeSymbol(globalSymbol, symbol, false);
+        }
+        else
+        {
+            merged = this.getMergedSymbol(symbol);
+        }
+
+        this.globals[symbol.Name] = merged;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void mergeSymbolTable(SymbolTable target, SymbolTable source, bool unidirectional, Symbol mergedParent)
+    {
+        {
+            foreach (var range1 in GoRuntime.Range(source))
+            {
+                var id = range1.Key;
+                var sourceSymbol = range1.Value;
+                var targetSymbol = target[id];
+                Symbol merged = default;
+                if ((targetSymbol != null))
+                {
+                    merged = this.mergeSymbol(targetSymbol, sourceSymbol, unidirectional);
+                }
+                else
+                {
+                    merged = this.getMergedSymbol(sourceSymbol);
+                }
+
+                if (((mergedParent != null) && (targetSymbol != null)))
+                {
+                    if (((merged.Flags & SymbolFlags.Transient) != 0))
+                    {
+                        merged.Parent = mergedParent;
+                    }
+                }
+
+                target[id] = merged;
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol mergeSymbol(Symbol target, Symbol source, bool unidirectional)
+    {
+        if ((((target.Flags & getExcludedSymbolFlags(source.Flags)) == 0) || ((((source.Flags | target.Flags)) & SymbolFlags.Assignment) != 0)))
+        {
+            if ((source == target))
+            {
+                return target;
+            }
+
+            if (((target.Flags & SymbolFlags.Transient) == 0))
+            {
+                var resolvedTarget = this.resolveSymbol(target);
+                if ((resolvedTarget == this.unknownSymbol))
+                {
+                    return source;
+                }
+
+                if ((((resolvedTarget.Flags & getExcludedSymbolFlags(source.Flags)) == 0) || ((((source.Flags | resolvedTarget.Flags)) & SymbolFlags.Assignment) != 0)))
+                {
+                    target = this.cloneSymbol(resolvedTarget);
+                }
+                else
+                {
+                    this.reportMergeSymbolError(target, source);
+                    return source;
+                }
+            }
+
+            if ((((((source.Flags & SymbolFlags.ValueModule) != 0) && ((target.Flags & SymbolFlags.ValueModule) != 0)) && ((target.Flags & SymbolFlags.ConstEnumOnlyModule) != 0)) && ((source.Flags & SymbolFlags.ConstEnumOnlyModule) == 0)))
+            {
+                target.Flags &= ~(SymbolFlags.ConstEnumOnlyModule);
+            }
+
+            var sourceFlags = source.Flags;
+            if (((target.Flags & SymbolFlags.ConstEnumOnlyModule) == 0))
+            {
+                sourceFlags &= ~(SymbolFlags.ConstEnumOnlyModule);
+            }
+
+            target.Flags |= sourceFlags;
+            if ((source.ValueDeclaration != null))
+            {
+                Binder.SetValueDeclaration(target, source.ValueDeclaration);
+            }
+
+            target.Declarations = GoRuntime.Append(target.Declarations, source.Declarations);
+            if ((source.Members != null))
+            {
+                this.mergeSymbolTable(Ast.GetSymbolTable(new GoRef<SymbolTable>(() => target.Members, value => target.Members = value)), source.Members, unidirectional, null);
+            }
+
+            if ((source.Exports != null))
+            {
+                this.mergeSymbolTable(Ast.GetSymbolTable(new GoRef<SymbolTable>(() => target.Exports, value => target.Exports = value)), source.Exports, unidirectional, target);
+            }
+
+            if (!unidirectional)
+            {
+                this.recordMergedSymbol(target, source);
+            }
+        }
+        else
+        {
+            if (((target.Flags & SymbolFlags.NamespaceModule) != 0))
+            {
+                if ((target != this.globalThisSymbol))
+                {
+                    this.error(Ast.GetNameOfDeclaration(getFirstDeclaration(source)), Diagnostics.Cannot_augment_module_0_with_value_exports_because_it_resolves_to_a_non_module_entity, this.symbolToString(target));
+                }
+            }
+            else
+            {
+                this.reportMergeSymbolError(target, source);
+            }
+        }
+
+        return target;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void reportMergeSymbolError(Symbol target, Symbol source)
+    {
+        var isEitherEnum = (((target.Flags & SymbolFlags.Enum) != 0) || ((source.Flags & SymbolFlags.Enum) != 0));
+        var isEitherBlockScoped = (((target.Flags & SymbolFlags.BlockScopedVariable) != 0) || ((source.Flags & SymbolFlags.BlockScopedVariable) != 0));
+        Message message = default;
+        switch (true)
+        {
+            case true when isEitherEnum:
+            {
+                message = Diagnostics.Enum_declarations_can_only_merge_with_namespace_or_other_enum_declarations;
+                break;
+            }
+
+            case true when isEitherBlockScoped:
+            {
+                message = Diagnostics.Cannot_redeclare_block_scoped_variable_0;
+                break;
+            }
+
+            default:
+            {
+                message = Diagnostics.Duplicate_identifier_0;
+                break;
+            }
+        }
+
+        var sourceSymbolFile = Ast.GetSourceFileOfNode(getFirstDeclaration(source));
+        var targetSymbolFile = Ast.GetSourceFileOfNode(getFirstDeclaration(target));
+        var isSourcePlainJS = Ast.IsPlainJSFile(sourceSymbolFile, this.compilerOptions.CheckJs);
+        var isTargetPlainJS = Ast.IsPlainJSFile(targetSymbolFile, this.compilerOptions.CheckJs);
+        var symbolName = this.symbolToString(source);
+        if (!isSourcePlainJS)
+        {
+            this.addDuplicateDeclarationErrorsForSymbols(source, message, symbolName, target);
+        }
+
+        if (!isTargetPlainJS)
+        {
+            this.addDuplicateDeclarationErrorsForSymbols(target, message, symbolName, source);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void addDuplicateDeclarationErrorsForSymbols(Symbol target, Message message, string symbolName, Symbol source)
+    {
+        {
+            foreach (var node in GoRuntime.RangeValues(target.Declarations))
+            {
+                this.addDuplicateDeclarationError(node, message, symbolName, source.Declarations);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void addDuplicateDeclarationError(Node node, Message message, string symbolName, List<Node> relatedNodes)
+    {
+        var errorNode = getAdjustedNodeForError(node);
+        if ((errorNode == null))
+        {
+            errorNode = node;
+        }
+
+        var err = this.lookupOrIssueError(errorNode, message, symbolName);
+        {
+            foreach (var relatedNode in GoRuntime.RangeValues(relatedNodes))
+            {
+                var adjustedNode = getAdjustedNodeForError(relatedNode);
+                if ((adjustedNode == errorNode))
+                {
+                    continue;
+                }
+
+                var leadingMessage = createDiagnosticForNode(adjustedNode, Diagnostics.X_0_was_also_declared_here, symbolName);
+                var followOnMessage = createDiagnosticForNode(adjustedNode, Diagnostics.X_and_here);
+                if (((GoRuntime.Len(err.RelatedInformation()) >= 5) || Core.Some(err.RelatedInformation(), (d) =>
+                {
+                    return ((Ast.CompareDiagnostics(d, followOnMessage) == 0) || (Ast.CompareDiagnostics(d, leadingMessage) == 0));
+                })))
+                {
+                    continue;
+                }
+
+                if ((GoRuntime.Len(err.RelatedInformation()) == 0))
+                {
+                    err.AddRelatedInfo(leadingMessage);
+                }
+                else
+                {
+                    err.AddRelatedInfo(followOnMessage);
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getAdjustedNodeForError(Node node)
+    {
+        var name = Ast.GetNameOfDeclaration(node);
+        if ((name != null))
+        {
+            return name;
+        }
+
+        return node;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Diagnostic lookupOrIssueError(Node location, Message message, params object[] args)
+    {
+        return this.addDiagnostic(NewDiagnosticForNode(location, message, args));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getFirstDeclaration(Symbol symbol)
+    {
+        if ((GoRuntime.Len(symbol.Declarations) > 0))
+        {
+            return symbol.Declarations[0];
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static SymbolFlags getExcludedSymbolFlags(SymbolFlags flags)
+    {
+        SymbolFlags result = default;
+        if (((flags & SymbolFlags.BlockScopedVariable) != 0))
+        {
+            result |= SymbolFlags.BlockScopedVariableExcludes;
+        }
+
+        if (((flags & SymbolFlags.FunctionScopedVariable) != 0))
+        {
+            result |= SymbolFlags.FunctionScopedVariableExcludes;
+        }
+
+        if (((flags & SymbolFlags.Property) != 0))
+        {
+            result |= SymbolFlags.PropertyExcludes;
+        }
+
+        if (((flags & SymbolFlags.EnumMember) != 0))
+        {
+            result |= SymbolFlags.EnumMemberExcludes;
+        }
+
+        if (((flags & SymbolFlags.Function) != 0))
+        {
+            result |= SymbolFlags.FunctionExcludes;
+        }
+
+        if (((flags & SymbolFlags.Class) != 0))
+        {
+            result |= SymbolFlags.ClassExcludes;
+        }
+
+        if (((flags & SymbolFlags.Interface) != 0))
+        {
+            result |= SymbolFlags.InterfaceExcludes;
+        }
+
+        if (((flags & SymbolFlags.RegularEnum) != 0))
+        {
+            result |= SymbolFlags.RegularEnumExcludes;
+        }
+
+        if (((flags & SymbolFlags.ConstEnum) != 0))
+        {
+            result |= SymbolFlags.ConstEnumExcludes;
+        }
+
+        if (((flags & SymbolFlags.ValueModule) != 0))
+        {
+            result |= SymbolFlags.ValueModuleExcludes;
+        }
+
+        if (((flags & SymbolFlags.Method) != 0))
+        {
+            result |= SymbolFlags.MethodExcludes;
+        }
+
+        if (((flags & SymbolFlags.GetAccessor) != 0))
+        {
+            result |= SymbolFlags.GetAccessorExcludes;
+        }
+
+        if (((flags & SymbolFlags.SetAccessor) != 0))
+        {
+            result |= SymbolFlags.SetAccessorExcludes;
+        }
+
+        if (((flags & SymbolFlags.TypeParameter) != 0))
+        {
+            result |= SymbolFlags.TypeParameterExcludes;
+        }
+
+        if (((flags & SymbolFlags.TypeAlias) != 0))
+        {
+            result |= SymbolFlags.TypeAliasExcludes;
+        }
+
+        if (((flags & SymbolFlags.Alias) != 0))
+        {
+            result |= SymbolFlags.AliasExcludes;
+        }
+
+        if (((flags & SymbolFlags.ReplaceableByMethod) != 0))
+        {
+            result &= ~(SymbolFlags.Method);
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol cloneSymbol(Symbol symbol)
+    {
+        var result = this.newSymbol(symbol.Flags, symbol.Name);
+        // Go full-slice capacity clamps future append; copy the managed list header/storage.
+        result.Declarations = GoSlices.Clone(symbol.Declarations);
+        result.Parent = symbol.Parent;
+        result.ValueDeclaration = symbol.ValueDeclaration;
+        result.Members = cloneMergeSymbolTable(symbol.Members);
+        result.Exports = cloneMergeSymbolTable(symbol.Exports);
+        this.recordMergedSymbol(result, symbol);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Symbol getMergedSymbol(Symbol symbol)
+    {
+        if ((symbol != null))
+        {
+            this.mergedSymbols.TryGetValue(symbol, out var merged);
+            if ((merged != null))
+            {
+                return merged;
+            }
+        }
+
+        return symbol;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Symbol getParentOfSymbol(Symbol symbol)
+    {
+        if ((symbol.Parent != null))
+        {
+            return this.getMergedSymbol(this.getLateBoundSymbol(symbol.Parent));
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void recordMergedSymbol(Symbol target, Symbol source)
+    {
+        this.mergedSymbols[source] = target;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static SymbolTable cloneMergeSymbolTable(SymbolTable table)
+    {
+        if (table == null)
+            return null;
+        var clone = new SymbolTable(table.Count);
+        foreach (var entry in table)
+            clone[entry.Key] = entry.Value;
+        return clone;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getBuiltinIteratorReturnType()
+    {
+        return Core.IfElse(this.strictBuiltinIteratorReturn, this.undefinedType, this.anyType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasTypeParameterDefault(Type t)
+    {
+        return ((t.symbol != null) && Core.Some(t.symbol.Declarations, (d) =>
+        {
+            return (Ast.IsTypeParameterDeclaration(d) && (d.AsTypeParameterDeclaration().DefaultType != null));
+        }));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isLocalTypeAlias(Symbol symbol)
+    {
+        var declaration = Core.Find(symbol.Declarations, isTypeAlias);
+        return ((declaration != null) && (Ast.GetContainingFunction(declaration) != null));
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTypeParameter(Node node)
+    {
+        this.checkGrammarModifiers(node);
+        {
+            var expr = node.AsTypeParameterDeclaration().Expression;
+            if ((expr != null))
+            {
+                this.grammarErrorOnFirstToken(expr, Diagnostics.Type_expected);
+            }
+        }
+
+        var tpNode = node.AsTypeParameterDeclaration();
+        this.checkSourceElement(tpNode.Constraint);
+        this.checkSourceElement(tpNode.DefaultType);
+        var typeParameter = this.getDeclaredTypeOfTypeParameter(this.getSymbolOfDeclaration(node));
+        this.getBaseConstraintOfType(typeParameter);
+        if ((this.getResolvedTypeParameterDefault(typeParameter) == this.circularConstraintType))
+        {
+            this.error(tpNode.DefaultType, Diagnostics.Type_parameter_0_has_a_circular_default, this.typeToStringByteString(typeParameter));
+        }
+
+        var constraintType = this.getConstraintOfTypeParameter(typeParameter);
+        var defaultType = this.getDefaultFromTypeParameter(typeParameter);
+        if (((constraintType != null) && (defaultType != null)))
+        {
+            this.checkTypeAssignableTo(defaultType, this.getTypeWithThisArgument(this.instantiateType(constraintType, newSimpleTypeMapper(typeParameter, defaultType)), defaultType, false), tpNode.DefaultType, Diagnostics.Type_0_does_not_satisfy_the_constraint_1);
+        }
+
+        this.checkTypeNameIsReserved(node.Name(), Diagnostics.Type_parameter_name_cannot_be_0);
+        this.checkNodeDeferred(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkTypeArgumentConstraints(Node node, List<Type> typeParameters)
+    {
+        List<Type> typeArguments = default;
+        TypeMapper mapper = default;
+        var result = true;
+        {
+            foreach (var range1 in GoRuntime.Range(typeParameters))
+            {
+                var i = range1.Key;
+                var typeParameter = range1.Value;
+                var constraint = this.getConstraintOfTypeParameter(typeParameter);
+                if ((constraint != null))
+                {
+                    if ((typeArguments == null))
+                    {
+                        typeArguments = this.getEffectiveTypeArguments(node, typeParameters);
+                        mapper = newTypeMapper(typeParameters, typeArguments);
+                    }
+
+                    result = (result && this.checkTypeAssignableTo(typeArguments[i], this.instantiateType(constraint, mapper), Core.ElementOrNil(node.TypeArguments(), i), Diagnostics.Type_0_does_not_satisfy_the_constraint_1));
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTypeParametersNotReferenced(Node root, List<Node> typeParameters, int index)
+    {
+        Func<Node, bool> visit = default;
+        visit = (node) =>
+        {
+            if (Ast.IsTypeReferenceNode(node))
+            {
+                var t = this.getTypeFromTypeReference(node);
+                if (((t.flags & TypeFlags.TypeParameter) != 0))
+                {
+                    {
+                        var i = index;
+                        for (; (i < GoRuntime.Len(typeParameters)); i++)
+                        {
+                            if ((t.symbol == this.getSymbolOfDeclaration(typeParameters[i])))
+                            {
+                                this.error(node, Diagnostics.Type_parameter_defaults_can_only_reference_previously_declared_type_parameters);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return node.ForEachChild(n => visit(n));
+        };
+        visit(root);
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getInferredTypeParameterConstraint(Type t, bool omitTypeReferences)
+    {
+        List<Type> inferences = default;
+        if (((t.symbol != null) && (GoRuntime.Len(t.symbol.Declarations) != 0)))
+        {
+            {
+                foreach (var declaration in GoRuntime.RangeValues(t.symbol.Declarations))
+                {
+                    if (Ast.IsInferTypeNode(declaration.Parent))
+                    {
+                        var child = declaration.Parent;
+                        var parent = child.Parent;
+                        while (((parent != null) && Ast.IsParenthesizedTypeNode(parent)))
+                        {
+                            child = parent;
+                            parent = child.Parent;
+                        }
+
+                        switch (true)
+                        {
+                            case true when (Ast.IsTypeReferenceNode(parent) && !omitTypeReferences):
+                            {
+                                var typeParameters = this.getTypeParametersForTypeReferenceOrImport(parent);
+                                if ((typeParameters != null))
+                                {
+                                    var index = GoSlices.Index(parent.TypeArguments(), child);
+                                    if (((index >= 0) && (index < GoRuntime.Len(typeParameters))))
+                                    {
+                                        var declaredConstraint = this.getConstraintOfTypeParameter(typeParameters[index]);
+                                        if ((declaredConstraint != null))
+                                        {
+                                            var mapper = newDeferredTypeMapper(typeParameters, Core.MapIndex<Type, Func<Type>>(typeParameters, (_2, index2) =>
+                                            {
+                                                return newInferredConstraintDeferredTarget(parent, typeParameters, index2);
+                                            }));
+                                            var constraint = this.instantiateType(declaredConstraint, mapper);
+                                            if ((constraint != t))
+                                            {
+                                                inferences = GoRuntime.Append(inferences, constraint);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case true when (((Ast.IsParameterDeclaration(parent) && (parent.AsParameterDeclaration().DotDotDotToken != null)) || Ast.IsRestTypeNode(parent)) || (Ast.IsNamedTupleMember(parent) && (parent.AsNamedTupleMember().DotDotDotToken != null))):
+                            {
+                                inferences = GoRuntime.Append(inferences, this.createArrayType(this.unknownType));
+                                break;
+                            }
+
+                            case true when Ast.IsTemplateLiteralTypeSpan(parent):
+                            {
+                                inferences = GoRuntime.Append(inferences, this.stringType);
+                                break;
+                            }
+
+                            case true when (Ast.IsTypeParameterDeclaration(parent) && Ast.IsMappedTypeNode(parent.Parent)):
+                            {
+                                inferences = GoRuntime.Append(inferences, this.stringNumberSymbolType);
+                                break;
+                            }
+
+                            case true when ((((((Ast.IsMappedTypeNode(parent) && (parent.Type() != null)) && (Ast.SkipParentheses(parent.Type()) == declaration.Parent)) && Ast.IsConditionalTypeNode(parent.Parent)) && (parent.Parent.AsConditionalTypeNode().ExtendsType == parent)) && Ast.IsMappedTypeNode(parent.Parent.AsConditionalTypeNode().CheckType)) && (parent.Parent.AsConditionalTypeNode().CheckType.Type() != null)):
+                            {
+                                var checkMappedType = parent.Parent.AsConditionalTypeNode().CheckType;
+                                var nodeType = this.getTypeFromTypeNode(checkMappedType.Type());
+                                var checkMappedTypeParameter = checkMappedType.AsMappedTypeNode().TypeParameter;
+                                var mapper2 = newSimpleTypeMapper(this.getDeclaredTypeOfTypeParameter(this.getSymbolOfDeclaration(checkMappedTypeParameter)), Core.IfElse((checkMappedTypeParameter.AsTypeParameterDeclaration().Constraint != null), this.getTypeFromTypeNode(checkMappedTypeParameter.AsTypeParameterDeclaration().Constraint), this.stringNumberSymbolType));
+                                inferences = GoRuntime.Append(inferences, this.instantiateType(nodeType, mapper2));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if ((GoRuntime.Len(inferences) != 0))
+        {
+            return this.getIntersectionType(inferences);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createTypeFromGenericGlobalType(Type genericGlobalType, List<Type> typeArguments)
+    {
+        if ((genericGlobalType != this.emptyGenericType))
+        {
+            return this.createTypeReference(genericGlobalType, typeArguments);
+        }
+
+        return this.emptyObjectType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createArrayType(Type elementType)
+    {
+        return this.createArrayTypeEx(elementType, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createArrayTypeEx(Type elementType, bool @readonly)
+    {
+        return this.createTypeFromGenericGlobalType(Core.IfElse(@readonly, this.globalReadonlyArrayType, this.globalArrayType), new List<Type> { elementType });
+    }
+}
+
+public sealed partial class Checker
+{
+    private static CacheHashKey getTupleKey(List<TupleElementInfo> elementInfos, bool @readonly)
+    {
+        var b = new keyBuilder();
+        {
+            foreach (var e in GoRuntime.RangeValues(elementInfos))
+            {
+                switch (true)
+                {
+                    case true when ((e.flags & ElementFlags.Required) != 0):
+                    {
+                        b.writeByte((byte)'#');
+                        break;
+                    }
+
+                    case true when ((e.flags & ElementFlags.Optional) != 0):
+                    {
+                        b.writeByte((byte)'?');
+                        break;
+                    }
+
+                    case true when ((e.flags & ElementFlags.Rest) != 0):
+                    {
+                        b.writeByte((byte)'.');
+                        break;
+                    }
+
+                    default:
+                    {
+                        b.writeByte((byte)'*');
+                        break;
+                    }
+                }
+
+                if ((e.labeledDeclaration != null))
+                {
+                    b.writeNode(e.labeledDeclaration);
+                }
+            }
+        }
+
+        if (@readonly)
+        {
+            b.writeByte((byte)'!');
+        }
+
+        return b.hash();
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTupleBaseType(Type t)
+    {
+        var typeParameters = t.AsTupleType().TypeParameters();
+        var elementInfos = t.AsTupleType().elementInfos;
+        var elementTypes = GoRuntime.MakeSlice<Type>(GoRuntime.Len(typeParameters));
+        {
+            foreach (var range2 in GoRuntime.Range(typeParameters))
+            {
+                var i = range2.Key;
+                var tp = range2.Value;
+                if (((elementInfos[i].flags & ElementFlags.Variadic) != 0))
+                {
+                    elementTypes[i] = this.getIndexedAccessType(tp, this.numberType);
+                }
+                else
+                {
+                    elementTypes[i] = tp;
+                }
+            }
+        }
+
+        return this.createArrayTypeEx(this.getUnionType(elementTypes), t.AsTupleType().@readonly);
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getTypeParametersForMapper(Signature sig)
+    {
+        return Core.SameMap(sig.typeParameters, (tp) =>
+        {
+            return this.instantiateType(tp, tp.Mapper());
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature instantiateSignatureInContextOf(Signature signature, Signature contextualSignature, InferenceContext inferenceContext, TypeComparer compareTypes)
+    {
+        var context = this.newInferenceContext(this.getTypeParametersForMapper(signature), signature, InferenceFlags.None, compareTypes);
+        var restType = this.getEffectiveRestType(contextualSignature);
+        TypeMapper mapper = default;
+        if ((inferenceContext != null))
+        {
+            if (((restType != null) && ((restType.flags & TypeFlags.TypeParameter) != 0)))
+            {
+                mapper = inferenceContext.nonFixingMapper;
+            }
+            else
+            {
+                mapper = inferenceContext.mapper;
+            }
+        }
+
+        Signature sourceSignature = default;
+        if ((mapper != null))
+        {
+            sourceSignature = this.instantiateSignature(contextualSignature, mapper);
+        }
+        else
+        {
+            sourceSignature = contextualSignature;
+        }
+
+        this.applyToParameterTypes(sourceSignature, signature, (source, target) =>
+        {
+            this.inferTypes(context.inferences, source, target, InferencePriority.None, false);
+        });
+        if ((inferenceContext == null))
+        {
+            this.applyToReturnTypes(contextualSignature, signature, (source2, target2) =>
+            {
+                this.inferTypes(context.inferences, source2, target2, InferencePriority.ReturnType, false);
+            });
+        }
+
+        return this.getSignatureInstantiation(signature, this.getInferredTypes(context), Ast.IsInJSFile(contextualSignature.declaration), null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createNormalizedTypeReference(Type target, List<Type> typeArguments)
+    {
+        if (((target.objectFlags & ObjectFlags.Tuple) != 0))
+        {
+            return this.createNormalizedTupleType(target, typeArguments);
+        }
+
+        return this.createTypeReference(target, typeArguments);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createNormalizedTupleTypeEx(Type target, List<Type> elementTypes, ObjectFlags objectFlags)
+    {
+        var d = target.AsTupleType();
+        if (((d.combinedFlags & ElementFlags.NonRequired) == 0))
+        {
+            return this.createTypeReferenceEx(target, elementTypes, objectFlags);
+        }
+
+        if (((d.combinedFlags & ElementFlags.Variadic) != 0))
+        {
+            {
+                foreach (var range3 in GoRuntime.Range(elementTypes))
+                {
+                    var i = range3.Key;
+                    var e = range3.Value;
+                    if ((((i < GoRuntime.Len(d.elementInfos)) && ((d.elementInfos[i].flags & ElementFlags.Variadic) != 0)) && ((e.flags & ((TypeFlags.Never | TypeFlags.Union))) != 0)))
+                    {
+                        var checkTypes = Core.MapIndex(elementTypes, (t, i2) =>
+                        {
+                            if (((i2 < GoRuntime.Len(d.elementInfos)) && ((d.elementInfos[i2].flags & ElementFlags.Variadic) != 0)))
+                            {
+                                return t;
+                            }
+
+                            return this.unknownType;
+                        });
+                        if (this.checkCrossProductUnion(checkTypes))
+                        {
+                            return this.mapType(e, (t2) =>
+                            {
+                                return this.createNormalizedTupleTypeEx(target, Core.ReplaceElement(elementTypes, i, t2), objectFlags);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        var n = new TupleNormalizer
+        {
+        };
+        if (!n.normalize(this, GoRuntime.Slice(elementTypes, 0, GoRuntime.Len(d.elementInfos)), d.elementInfos))
+        {
+            return this.errorType;
+        }
+
+        if ((GoRuntime.Len(elementTypes) > GoRuntime.Len(d.elementInfos)))
+        {
+            n.types = GoRuntime.Append(n.types, elementTypes[GoRuntime.Len(d.elementInfos)]);
+        }
+
+        var tupleTarget = this.getTupleTargetType(n.infos, d.@readonly);
+        switch (true)
+        {
+            case true when (tupleTarget == this.emptyGenericType):
+            {
+                return this.emptyObjectType;
+            }
+
+            case true when (GoRuntime.Len(n.types) != 0):
+            {
+                return this.createTypeReferenceEx(tupleTarget, n.types, objectFlags);
+            }
+        }
+
+        return tupleTarget;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createNormalizedTupleType(Type target, List<Type> elementTypes)
+    {
+        return this.createNormalizedTupleTypeEx(target, elementTypes, ObjectFlags.None);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int getStartElementCount(TupleType t, ElementFlags flags)
+    {
+        {
+            foreach (var range4 in GoRuntime.Range(t.elementInfos))
+            {
+                var i = range4.Key;
+                var info = range4.Value;
+                if (((info.flags & flags) == 0))
+                {
+                    return i;
+                }
+            }
+        }
+
+        return GoRuntime.Len(t.elementInfos);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int getEndElementCount(TupleType t, ElementFlags flags)
+    {
+        {
+            var i = GoRuntime.Len(t.elementInfos);
+            for (; (i > 0); i--)
+            {
+                if (((t.elementInfos[(i - 1)].flags & flags) == 0))
+                {
+                    return (GoRuntime.Len(t.elementInfos) - i);
+                }
+            }
+        }
+
+        return GoRuntime.Len(t.elementInfos);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int getTotalFixedElementCount(TupleType t)
+    {
+        return (t.fixedLength + getEndElementCount(t, ElementFlags.Fixed));
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getElementTypes(Type t)
+    {
+        var typeArguments = this.getTypeArguments(t);
+        var arity = this.getTypeReferenceArity(t);
+        if ((GoRuntime.Len(typeArguments) == arity))
+        {
+            return typeArguments;
+        }
+
+        return GoRuntime.Slice(typeArguments, 0, arity);
+    }
+}
+
+public sealed partial class Checker
+{
+    internal int getTypeReferenceArity(Type t)
+    {
+        return GoRuntime.Len(t.TargetInterfaceType().TypeParameters());
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isArrayType(Type t)
+    {
+        return (((t.objectFlags & ObjectFlags.Reference) != 0) && (((t.Target() == this.globalArrayType) || (t.Target() == this.globalReadonlyArrayType))));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isReadonlyArrayType(Type t)
+    {
+        return (((t.objectFlags & ObjectFlags.Reference) != 0) && (t.Target() == this.globalReadonlyArrayType));
+    }
+}
+
+public sealed partial class Checker
+{
+    internal static bool isTupleType(Type t)
+    {
+        return (((t.objectFlags & ObjectFlags.Reference) != 0) && ((t.Target().objectFlags & ObjectFlags.Tuple) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isMutableTupleType(Type t)
+    {
+        return (isTupleType(t) && !t.TargetTupleType().@readonly);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isSingleElementGenericTupleType(Type t)
+    {
+        return (isGenericTupleType(t) && (GoRuntime.Len(t.TargetTupleType().elementInfos) == 1));
+    }
+}
+
+public sealed partial class Checker
+{
+    internal bool isArrayOrTupleType(Type t)
+    {
+        return (this.isArrayType(t) || isTupleType(t));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isMutableArrayOrTuple(Type t)
+    {
+        return ((this.isArrayType(t) && !this.isReadonlyArrayType(t)) || (isTupleType(t) && !t.TargetTupleType().@readonly));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getElementTypeOfArrayType(Type t)
+    {
+        if (this.isArrayType(t))
+        {
+            return this.getTypeArguments(t)[0];
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isArrayLikeType(Type t)
+    {
+        return (this.isArrayType(t) || (((t.flags & TypeFlags.Nullable) == 0) && this.isTypeAssignableTo(t, this.anyReadonlyArrayType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isMutableArrayLikeType(Type t)
+    {
+        return (this.isMutableArrayOrTuple(t) || (((t.flags & (((TypeFlags.Any | TypeFlags.Nullable) | TypeFlags.Never))) == 0) && this.isTypeAssignableTo(t, this.anyArrayType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isEmptyArrayLiteralType(Type t)
+    {
+        var elementType = this.getElementTypeOfArrayType(t);
+        return ((elementType != null) && this.isEmptyLiteralType(elementType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isEmptyLiteralType(Type t)
+    {
+        if (this.strictNullChecks)
+        {
+            return (t == this.implicitNeverType);
+        }
+
+        return (t == this.undefinedWideningType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private ElementFlags getTupleElementFlags(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.OptionalType:
+            {
+                return ElementFlags.Optional;
+            }
+
+            case Kind.RestType:
+            {
+                return Core.IfElse((this.getArrayElementTypeNode(node.Type()) != null), ElementFlags.Rest, ElementFlags.Variadic);
+            }
+
+            case Kind.NamedTupleMember:
+            {
+                var named = node.AsNamedTupleMember();
+                switch (true)
+                {
+                    case true when (named.QuestionToken != null):
+                    {
+                        return ElementFlags.Optional;
+                    }
+
+                    case true when (named.DotDotDotToken != null):
+                    {
+                        return Core.IfElse((this.getArrayElementTypeNode(named.Type) != null), ElementFlags.Rest, ElementFlags.Variadic);
+                    }
+                }
+
+                return ElementFlags.Required;
+            }
+        }
+
+        return ElementFlags.Required;
+    }
+}
+
+public sealed partial class Checker
+{
+    private TupleElementInfo getTupleElementInfo(Node node)
+    {
+        return new TupleElementInfo
+        {
+            flags = this.getTupleElementFlags(node),
+            labeledDeclaration = Core.IfElse((Ast.IsNamedTupleMember(node) || Ast.IsParameterDeclaration(node)), node, null)
+        };
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createTupleType(List<Type> elementTypes)
+    {
+        var elementInfos = Core.Map(elementTypes, (_) =>
+        {
+            return new TupleElementInfo
+            {
+                flags = ElementFlags.Required
+            };
+        });
+        return this.createTupleTypeEx(elementTypes, elementInfos, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createTupleTypeEx(List<Type> elementTypes, List<TupleElementInfo> elementInfos, bool @readonly)
+    {
+        var tupleTarget = this.getTupleTargetType(elementInfos, @readonly);
+        switch (true)
+        {
+            case true when (tupleTarget == this.emptyGenericType):
+            {
+                return this.emptyObjectType;
+            }
+
+            case true when (GoRuntime.Len(elementTypes) != 0):
+            {
+                return this.createNormalizedTypeReference(tupleTarget, elementTypes);
+            }
+        }
+
+        return tupleTarget;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTupleTargetType(List<TupleElementInfo> elementInfos, bool @readonly)
+    {
+        if (((GoRuntime.Len(elementInfos) == 1) && ((elementInfos[0].flags & ElementFlags.Rest) != 0)))
+        {
+            if (@readonly)
+            {
+                return this.globalReadonlyArrayType;
+            }
+
+            return this.globalArrayType;
+        }
+
+        var key = getTupleKey(elementInfos, @readonly);
+        this.tupleTypes.TryGetValue(key, out var t);
+        if ((t == null))
+        {
+            t = this.createTupleTargetType(elementInfos, @readonly);
+            this.tupleTypes[key] = t;
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createTupleTargetType(List<TupleElementInfo> elementInfos, bool @readonly)
+    {
+        var arity = GoRuntime.Len(elementInfos);
+        var minLength = Core.CountWhere(elementInfos, (e) =>
+        {
+            return ((e.flags & ((ElementFlags.Required | ElementFlags.Variadic))) != 0);
+        });
+        List<Type> typeParameters = default;
+        var members = new SymbolTable();
+        var combinedFlags = ElementFlags.None;
+        if ((arity != 0))
+        {
+            typeParameters = GoRuntime.MakeSlice<Type>(0);
+            {
+                foreach (var i in GoRuntime.RangeKeys(arity))
+                {
+                    var typeParameter = this.newTypeParameter(null);
+                    typeParameters = GoRuntime.Append(typeParameters, typeParameter);
+                    var flags = elementInfos[i].flags;
+                    combinedFlags |= flags;
+                    if (((combinedFlags & ElementFlags.Variable) == 0))
+                    {
+                        var property = this.newSymbolEx((SymbolFlags.Property | Core.IfElse(((flags & ElementFlags.Optional) != 0), SymbolFlags.Optional, SymbolFlags.None)), i.ToString(System.Globalization.CultureInfo.InvariantCulture), Core.IfElse(@readonly, CheckFlags.Readonly, CheckFlags.None));
+                        this.valueSymbolLinks.Get(property).resolvedType = typeParameter;
+                        members[property.Name] = property;
+                    }
+                }
+            }
+        }
+
+        var fixedLength = GoRuntime.Len(members);
+        var lengthSymbol = this.newSymbolEx(SymbolFlags.Property, "length", Core.IfElse(@readonly, CheckFlags.Readonly, CheckFlags.None));
+        if (((combinedFlags & ElementFlags.Variable) != 0))
+        {
+            this.valueSymbolLinks.Get(lengthSymbol).resolvedType = this.numberType;
+        }
+        else
+        {
+            List<Type> literalTypes = default;
+            {
+                var i2 = minLength;
+                for (; (i2 <= arity); i2++)
+                {
+                    literalTypes = GoRuntime.Append(literalTypes, this.getNumberLiteralType(new JsNum.Number(i2)));
+                }
+            }
+
+            this.valueSymbolLinks.Get(lengthSymbol).resolvedType = this.getUnionType(literalTypes);
+        }
+
+        members[lengthSymbol.Name] = lengthSymbol;
+        var t = this.newObjectType((ObjectFlags.Tuple | ObjectFlags.Reference), null);
+        var d = t.AsTupleType();
+        d.thisType = this.newTypeParameter(null);
+        d.thisType.AsTypeParameter().isThisType = true;
+        d.thisType.AsTypeParameter().constraint = t;
+        d.allTypeParameters = GoRuntime.Append(typeParameters, d.thisType);
+        d.instantiations = new Dictionary<CacheHashKey, Type>();
+        d.instantiations[getTypeListKey(d.TypeParameters())] = t;
+        d.target = t;
+        d.resolvedTypeArguments = d.TypeParameters();
+        d.declaredMembersResolved = true;
+        d.declaredMembers = members;
+        d.elementInfos = elementInfos;
+        d.minLength = minLength;
+        d.fixedLength = fixedLength;
+        d.combinedFlags = combinedFlags;
+        d.@readonly = @readonly;
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getElementTypeOfSliceOfTupleType(Type t, int index, int endSkipCount, bool writing, bool noReductions)
+    {
+        var length = (this.getTypeReferenceArity(t) - endSkipCount);
+        var elementInfos = t.TargetTupleType().elementInfos;
+        if ((index < length))
+        {
+            var typeArguments = this.getTypeArguments(t);
+            List<Type> elementTypes = default;
+            {
+                var i = index;
+                for (; (i < length); i++)
+                {
+                    var e = typeArguments[i];
+                    if (((elementInfos[i].flags & ElementFlags.Variadic) != 0))
+                    {
+                        e = this.getIndexedAccessType(e, this.numberType);
+                    }
+
+                    elementTypes = GoRuntime.Append(elementTypes, e);
+                }
+            }
+
+            if (writing)
+            {
+                return this.getIntersectionType(elementTypes);
+            }
+
+            return this.getUnionTypeEx(elementTypes, Core.IfElse(noReductions, UnionReduction.None, UnionReduction.Literal), null, null);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getRestTypeOfTupleType(Type t)
+    {
+        return this.getElementTypeOfSliceOfTupleType(t, t.TargetTupleType().fixedLength, 0, false, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTupleElementTypeOutOfStartCount(Type t, JsNum.Number index, Type undefinedLikeType)
+    {
+        return this.mapType(t, (t2) =>
+        {
+            var restType = this.getRestTypeOfTupleType(t2);
+            if ((restType == null))
+            {
+                return this.undefinedType;
+            }
+
+            if (((undefinedLikeType != null) && (index >= new JsNum.Number(getTotalFixedElementCount(t2.TargetTupleType())))))
+            {
+                return this.getUnionType(new List<Type> { restType, undefinedLikeType });
+            }
+
+            return restType;
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+}
+
+public sealed partial class Checker
+{
+}
+
+public sealed partial class Checker
+{
+    // checker.go:23879. Required internal variadic normalization is retained even
+    // though source generic variadic tuple composition is outside admission.
+    private sealed class TupleNormalizer
+    {
+        internal Checker c;
+        internal List<Type> types;
+        internal List<TupleElementInfo> infos;
+        private int lastRequiredIndex, firstRestIndex, lastOptionalOrRestIndex;
+        internal bool normalize(Checker c, List<Type> elementTypes, List<TupleElementInfo> elementInfos)
+        {
+            this.c = c;
+            this.lastRequiredIndex = -1;
+            this.firstRestIndex = -1;
+            this.lastOptionalOrRestIndex = -1;
+            {
+                foreach (var range1 in GoRuntime.Range(elementTypes))
+                {
+                    var i = range1.Key;
+                    var t = range1.Value;
+                    var info = elementInfos[i];
+                    if (((info.flags & ElementFlags.Variadic) != 0))
+                    {
+                        if (((t.flags & TypeFlags.Any) != 0))
+                        {
+                            this.add(t, new TupleElementInfo { flags = ElementFlags.Rest, labeledDeclaration = info.labeledDeclaration });
+                        }
+                        else
+                        {
+                            if ((((t.flags & TypeFlags.InstantiableNonPrimitive) != 0) || c.isGenericMappedType(t)))
+                            {
+                                this.add(t, info);
+                            }
+                            else
+                            {
+                                if (isTupleType(t))
+                                {
+                                    var spreadTypes = c.getElementTypes(t);
+                                    if (((GoRuntime.Len(spreadTypes) + GoRuntime.Len(this.types)) >= 10_000))
+                                    {
+                                        var message = Core.IfElse(Ast.IsPartOfTypeNode(c.currentNode), Diagnostics.Type_produces_a_tuple_type_that_is_too_large_to_represent, Diagnostics.Expression_produces_a_tuple_type_that_is_too_large_to_represent);
+                                        c.error(c.currentNode, message);
+                                        return false;
+                                    }
+
+                                    var spreadInfos = t.TargetTupleType().elementInfos;
+                                    {
+                                        foreach (var range2 in GoRuntime.Range(spreadTypes))
+                                        {
+                                            var j = range2.Key;
+                                            var s = range2.Value;
+                                            this.add(s, spreadInfos[j]);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Type s2 = default;
+                                    if (c.isArrayLikeType(t))
+                                    {
+                                        s2 = c.getIndexTypeOfType(t, c.numberType);
+                                    }
+
+                                    if ((s2 == null))
+                                    {
+                                        s2 = c.errorType;
+                                    }
+
+                                    this.add(s2, new TupleElementInfo { flags = ElementFlags.Rest, labeledDeclaration = info.labeledDeclaration });
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this.add(t, info);
+                    }
+                }
+            }
+
+            {
+                foreach (var i2 in GoRuntime.RangeKeys(this.lastRequiredIndex))
+                {
+                    if (((this.infos[i2].flags & ElementFlags.Optional) != 0))
+                    {
+                        var info = this.infos[i2];
+                        info.flags = ElementFlags.Required;
+                        this.infos[i2] = info;
+                    }
+                }
+            }
+
+            if (((this.firstRestIndex >= 0) && (this.firstRestIndex < this.lastOptionalOrRestIndex)))
+            {
+                List<Type> types = default;
+                {
+                    var i3 = this.firstRestIndex;
+                    for (; (i3 <= this.lastOptionalOrRestIndex); i3++)
+                    {
+                        var t2 = this.types[i3];
+                        if (((this.infos[i3].flags & ElementFlags.Variadic) != 0))
+                        {
+                            t2 = c.getIndexedAccessType(t2, c.numberType);
+                        }
+
+                        types = GoRuntime.Append(types, t2);
+                    }
+                }
+
+                this.types[this.firstRestIndex] = c.getUnionType(types);
+                this.types = GoSlices.Delete(this.types, (this.firstRestIndex + 1), (this.lastOptionalOrRestIndex + 1));
+                this.infos = GoSlices.Delete(this.infos, (this.firstRestIndex + 1), (this.lastOptionalOrRestIndex + 1));
+            }
+
+            return true;
+        }
+
+        private void add(Type t, TupleElementInfo info)
+        {
+            if (((info.flags & ElementFlags.Required) != 0))
+            {
+                this.lastRequiredIndex = GoRuntime.Len(this.types);
+            }
+
+            if ((((info.flags & ElementFlags.Rest) != 0) && (this.firstRestIndex < 0)))
+            {
+                this.firstRestIndex = GoRuntime.Len(this.types);
+            }
+
+            if (((info.flags & ((ElementFlags.Optional | ElementFlags.Rest))) != 0))
+            {
+                this.lastOptionalOrRestIndex = GoRuntime.Len(this.types);
+            }
+
+            this.types = GoRuntime.Append(this.types, this.c.addOptionalityEx(t, true, ((info.flags & ElementFlags.Optional) != 0)));
+            this.infos = GoRuntime.Append(this.infos, info);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Node> getClassOrInterfaceDeclarationsOfSymbol(Symbol symbol)
+    {
+        return Core.Filter(symbol.Declarations, (d) =>
+        {
+            return (Ast.IsClassDeclaration(d) || Ast.IsInterfaceDeclaration(d));
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type reportUnmeasurableWorker(Type t)
+    {
+        if ((((t == this.markerSuperType) || (t == this.markerSubType)) || (t == this.markerOtherType)))
+        {
+            this.reliabilityFlags |= RelationComparisonResult.ReportsUnmeasurable;
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintOrUnknownFromTypeParameter(Type t)
+    {
+        var result = this.getConstraintFromTypeParameter(t);
+        return Core.IfElse((result != null), result, this.unknownType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getDefaultConstraintOfConditionalType(Type t)
+    {
+        var d = t.AsConditionalType();
+        if ((d.resolvedDefaultConstraint == null))
+        {
+            var trueConstraint = this.getInferredTrueTypeFromConditionalType(t);
+            var falseConstraint = this.getFalseTypeFromConditionalType(t);
+            switch (true)
+            {
+                case true when IsTypeAny(trueConstraint):
+                {
+                    d.resolvedDefaultConstraint = falseConstraint;
+                    break;
+                }
+
+                case true when IsTypeAny(falseConstraint):
+                {
+                    d.resolvedDefaultConstraint = trueConstraint;
+                    break;
+                }
+
+                default:
+                {
+                    d.resolvedDefaultConstraint = this.getUnionType(new List<Type> { trueConstraint, falseConstraint });
+                    break;
+                }
+            }
+        }
+
+        return d.resolvedDefaultConstraint;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintOfDistributiveConditionalType(Type t)
+    {
+        var d = t.AsConditionalType();
+        if ((d.resolvedConstraintOfDistributive == null))
+        {
+            if ((d.root.isDistributive && (this.cachedTypes.GetValueOrDefault(new CachedTypeKey { kind = CachedTypeKind.RestrictiveInstantiation, typeId = t.id }) != t)))
+            {
+                var constraint = this.getSimplifiedType(d.checkType, false);
+                if ((constraint == d.checkType))
+                {
+                    constraint = this.getConstraintOfType(constraint);
+                }
+
+                if (((constraint != null) && (constraint != d.checkType)))
+                {
+                    var instantiated = this.getConditionalTypeInstantiation(t, prependTypeMapping(d.root.checkType, constraint, d.mapper), true, null);
+                    if (((instantiated.flags & TypeFlags.Never) == 0))
+                    {
+                        d.resolvedConstraintOfDistributive = instantiated;
+                        return instantiated;
+                    }
+                }
+            }
+
+            d.resolvedConstraintOfDistributive = this.noConstraintType;
+        }
+
+        if ((d.resolvedConstraintOfDistributive != this.noConstraintType))
+        {
+            return d.resolvedConstraintOfDistributive;
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getNullableType(Type t, TypeFlags flags)
+    {
+        var missing = (((flags & ~t.flags)) & ((TypeFlags.Undefined | TypeFlags.Null)));
+        switch (true)
+        {
+            case true when (missing == 0):
+            {
+                return t;
+            }
+
+            case true when (missing == TypeFlags.Undefined):
+            {
+                return this.getUnionType(new List<Type> { t, this.undefinedType });
+            }
+
+            case true when (missing == TypeFlags.Null):
+            {
+                return this.getUnionType(new List<Type> { t, this.nullType });
+            }
+        }
+
+        return this.getUnionType(new List<Type> { t, this.undefinedType, this.nullType });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexTypeOfTypeEx(Type t, Type keyType, Type defaultType)
+    {
+        {
+            var result = this.getIndexTypeOfType(t, keyType);
+            if ((result != null))
+            {
+                return result;
+            }
+        }
+
+        return defaultType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isMappedTypeGenericIndexedAccess(Type t)
+    {
+        if (((t.flags & TypeFlags.IndexedAccess) != 0))
+        {
+            var objectType = t.AsIndexedAccessType().objectType;
+            return ((((((objectType.objectFlags & ObjectFlags.Mapped) != 0) && !this.isGenericMappedType(objectType)) && this.isGenericIndexType(t.AsIndexedAccessType().indexType)) && ((getMappedTypeModifiers(objectType) & MappedTypeModifiers.ExcludeOptional) == 0)) && (objectType.AsMappedType().declaration.NameType == null));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void clearActiveMapperCaches()
+    {
+        {
+            foreach (var cache in GoRuntime.RangeValues(this.activeTypeMappersCaches))
+            {
+                cache.Clear();
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConditionalTypeInstantiation(Type t, TypeMapper mapper, bool forConstraint, TypeAlias alias)
+    {
+        var root = t.AsConditionalType().root;
+        if ((GoRuntime.Len(root.outerTypeParameters) != 0))
+        {
+            var typeArguments = Core.Map(root.outerTypeParameters, mapper.Map);
+            var key = getConditionalTypeKey(typeArguments, alias, forConstraint);
+            root.instantiations.TryGetValue(key, out var result);
+            if ((result == null))
+            {
+                var newMapper = newTypeMapper(root.outerTypeParameters, typeArguments);
+                var checkType = root.checkType;
+                Type distributionType = default;
+                if (root.isDistributive)
+                {
+                    distributionType = this.getReducedType(getMappedType(checkType, newMapper));
+                }
+
+                if ((((distributionType != null) && (checkType != distributionType)) && ((distributionType.flags & ((TypeFlags.Union | TypeFlags.Never))) != 0)))
+                {
+                    result = this.mapTypeWithAlias(distributionType, (t2) =>
+                    {
+                        return this.getConditionalType(root, prependTypeMapping(checkType, t2, newMapper), forConstraint, null);
+                    }, alias);
+                }
+                else
+                {
+                    result = this.getConditionalType(root, newMapper, forConstraint, alias);
+                }
+
+                root.instantiations[key] = result;
+            }
+
+            return result;
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getHomomorphicTypeVariable(Type t)
+    {
+        var constraintType = this.getConstraintTypeFromMappedType(t);
+        if (((constraintType.flags & TypeFlags.Index) != 0))
+        {
+            var typeVariable = this.getActualTypeVariable(constraintType.AsIndexType().target);
+            if (((typeVariable.flags & TypeFlags.TypeParameter) != 0))
+            {
+                return typeVariable;
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasArrayOrTypeTypeConstraint(Type typeVariable)
+    {
+        var constraint = this.getConstraintOfTypeParameter(typeVariable);
+        return ((constraint != null) && everyType(constraint, this.isArrayOrTupleType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool getModifiedReadonlyState(bool state, MappedTypeModifiers modifiers)
+    {
+        switch (true)
+        {
+            case true when ((modifiers & MappedTypeModifiers.IncludeReadonly) != 0):
+            {
+                return true;
+            }
+
+            case true when ((modifiers & MappedTypeModifiers.ExcludeReadonly) != 0):
+            {
+                return false;
+            }
+        }
+
+        return state;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getTypeParameterFromMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.typeParameter == null))
+        {
+            m.typeParameter = this.getDeclaredTypeOfTypeParameter(this.getSymbolOfDeclaration(m.declaration.TypeParameter));
+        }
+
+        return m.typeParameter;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getConstraintTypeFromMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.constraintType == null))
+        {
+            m.constraintType = Core.OrElse(this.getConstraintOfTypeParameter(this.getTypeParameterFromMappedType(t)), this.errorType);
+        }
+
+        return m.constraintType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getNameTypeFromMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.declaration.NameType == null))
+        {
+            return null;
+        }
+
+        if ((m.nameType == null))
+        {
+            m.nameType = this.instantiateType(this.getTypeFromTypeNode(m.declaration.NameType), m.mapper);
+        }
+
+        return m.nameType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getTemplateTypeFromMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.templateType == null))
+        {
+            if ((m.declaration.Type != null))
+            {
+                m.templateType = this.instantiateType(this.addOptionalityEx(this.getTypeFromTypeNode(m.declaration.Type), true, ((getMappedTypeModifiers(t) & MappedTypeModifiers.IncludeOptional) != 0)), m.mapper);
+            }
+            else
+            {
+                m.templateType = this.errorType;
+            }
+        }
+
+        return m.templateType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal bool isMappedTypeWithKeyofConstraintDeclaration(Type t)
+    {
+        var constraintDeclaration = this.getConstraintDeclarationForMappedType(t);
+        return (Ast.IsTypeOperatorNode(constraintDeclaration) && (constraintDeclaration.AsTypeOperatorNode().Operator == Kind.KeyOfKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getConstraintDeclarationForMappedType(Type t)
+    {
+        return t.AsMappedType().declaration.TypeParameter.AsTypeParameterDeclaration().Constraint;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getApparentMappedTypeKeys(Type nameType, Type targetType)
+    {
+        var modifiersType = this.getApparentType(this.getModifiersTypeFromMappedType(targetType));
+        List<Type> mappedKeys = default;
+        this.forEachMappedTypePropertyKeyTypeAndIndexSignatureKeyType(modifiersType, TypeFlags.StringOrNumberLiteralOrUnique, false, (t) =>
+        {
+            mappedKeys = GoRuntime.Append(mappedKeys, this.instantiateType(nameType, appendTypeMapping(targetType.Mapper(), this.getTypeParameterFromMappedType(targetType), t)));
+        });
+        return this.getUnionType(mappedKeys);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void forEachMappedTypePropertyKeyTypeAndIndexSignatureKeyType(Type t, TypeFlags include, bool stringsOnly, Action<Type> cb)
+    {
+        {
+            foreach (var prop in GoRuntime.RangeValues(this.getPropertiesOfType(t)))
+            {
+                cb(this.getLiteralTypeFromProperty(prop, include, false));
+            }
+        }
+
+        if (((t.flags & TypeFlags.Any) != 0))
+        {
+            cb(this.stringType);
+        }
+        else
+        {
+            {
+                foreach (var range3 in GoRuntime.Range(this.getIndexInfosOfType(t)))
+                {
+                    var _2 = range3.Key;
+                    var info = range3.Value;
+                    if ((!stringsOnly || ((info.keyType.flags & ((TypeFlags.String | TypeFlags.TemplateLiteral))) != 0)))
+                    {
+                        cb(info.keyType);
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getArrayElementTypeNode(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.ParenthesizedType:
+            {
+                return this.getArrayElementTypeNode(node.Type());
+            }
+
+            case Kind.TupleType:
+            {
+                if ((GoRuntime.Len(node.Elements()) == 1))
+                {
+                    node = node.Elements()[0];
+                    if ((node.Kind == Kind.RestType))
+                    {
+                        return this.getArrayElementTypeNode(node.Type());
+                    }
+
+                    if (((node.Kind == Kind.NamedTupleMember) && (node.AsNamedTupleMember().DotDotDotToken != null)))
+                    {
+                        return this.getArrayElementTypeNode(node.Type());
+                    }
+                }
+
+                break;
+            }
+
+            case Kind.ArrayType:
+            {
+                return node.AsArrayTypeNode().ElementType;
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromConditionalTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            var checkType = this.getTypeFromTypeNode(node.AsConditionalTypeNode().CheckType);
+            var alias = this.getAliasForTypeNode(node);
+            var allOuterTypeParameters = this.getOuterTypeParameters(node, true);
+            List<Type> outerTypeParameters = default;
+            if (((alias != null) && (GoRuntime.Len(alias.typeArguments) != 0)))
+            {
+                outerTypeParameters = allOuterTypeParameters;
+            }
+            else
+            {
+                outerTypeParameters = Core.Filter(allOuterTypeParameters, (tp) =>
+                {
+                    return this.isTypeParameterPossiblyReferenced(tp, node);
+                });
+            }
+
+            var root = new ConditionalRoot
+            {
+                node = node.AsConditionalTypeNode(),
+                checkType = checkType,
+                extendsType = this.getTypeFromTypeNode(node.AsConditionalTypeNode().ExtendsType),
+                isDistributive = ((checkType.flags & TypeFlags.TypeParameter) != 0),
+                inferTypeParameters = this.getInferTypeParameters(node),
+                outerTypeParameters = outerTypeParameters,
+                instantiations = null,
+                alias = alias
+            };
+            links.resolvedType = this.getConditionalType(root, null, false, null);
+            if ((outerTypeParameters != null))
+            {
+                root.instantiations = new Dictionary<CacheHashKey, Type>();
+                root.instantiations[getConditionalTypeKey(outerTypeParameters, null, false)] = links.resolvedType;
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConditionalType(ConditionalRoot root, TypeMapper mapper, bool forConstraint, TypeAlias alias)
+    {
+        Type result = default;
+        List<Type> extraTypes = default;
+        var tailCount = 0;
+        while (true)
+        {
+            if ((tailCount == 1000))
+            {
+                this.error(this.currentNode, Diagnostics.Type_instantiation_is_excessively_deep_and_possibly_infinite);
+                return this.errorType;
+            }
+
+            var checkType = this.instantiateType(this.getActualTypeVariable(root.checkType), mapper);
+            var extendsType = this.instantiateType(root.extendsType, mapper);
+            if (((checkType == this.errorType) || (extendsType == this.errorType)))
+            {
+                return this.errorType;
+            }
+
+            if (((checkType == this.wildcardType) || (extendsType == this.wildcardType)))
+            {
+                return this.wildcardType;
+            }
+
+            var checkTypeNode = Ast.SkipTypeParentheses(root.node.CheckType);
+            var extendsTypeNode = Ast.SkipTypeParentheses(root.node.ExtendsType);
+            var checkTuples = ((this.isSimpleTupleType(checkTypeNode) && this.isSimpleTupleType(extendsTypeNode)) && (GoRuntime.Len(checkTypeNode.Elements()) == GoRuntime.Len(extendsTypeNode.Elements())));
+            var checkTypeDeferred = this.isDeferredType(checkType, checkTuples);
+            TypeMapper combinedMapper = default;
+            if ((GoRuntime.Len(root.inferTypeParameters) != 0))
+            {
+                var context = this.newInferenceContext(root.inferTypeParameters, null, InferenceFlags.None, null);
+                if ((mapper != null))
+                {
+                    context.nonFixingMapper = this.combineTypeMappers(context.nonFixingMapper, mapper);
+                }
+
+                if (!checkTypeDeferred)
+                {
+                    this.inferTypes(context.inferences, checkType, extendsType, (InferencePriority.NoConstraints | InferencePriority.AlwaysStrict), false);
+                }
+
+                if ((mapper != null))
+                {
+                    combinedMapper = this.combineTypeMappers(context.mapper, mapper);
+                }
+                else
+                {
+                    combinedMapper = context.mapper;
+                }
+            }
+
+            Type inferredExtendsType = default;
+            if ((combinedMapper != null))
+            {
+                inferredExtendsType = this.instantiateType(root.extendsType, combinedMapper);
+            }
+            else
+            {
+                inferredExtendsType = extendsType;
+            }
+
+            if ((!checkTypeDeferred && !this.isDeferredType(inferredExtendsType, checkTuples)))
+            {
+                if ((((inferredExtendsType.flags & TypeFlags.AnyOrUnknown) == 0) && ((((checkType.flags & TypeFlags.Any) != 0) || !this.isTypeAssignableTo(this.getPermissiveInstantiation(checkType), this.getPermissiveInstantiation(inferredExtendsType))))))
+                {
+                    if ((((checkType.flags & TypeFlags.Any) != 0) || ((forConstraint && ((inferredExtendsType.flags & TypeFlags.Never) == 0)) && someType(this.getPermissiveInstantiation(inferredExtendsType), (t) =>
+                    {
+                        return this.isTypeAssignableTo(t, this.getPermissiveInstantiation(checkType));
+                    }))))
+                    {
+                        extraTypes = GoRuntime.Append(extraTypes, this.instantiateType(this.getTypeFromTypeNode(root.node.TrueType), Core.OrElse(combinedMapper, mapper)));
+                    }
+
+                    var falseType = this.getTypeFromTypeNode(root.node.FalseType);
+                    if (((falseType.flags & TypeFlags.Conditional) != 0))
+                    {
+                        var newRoot = falseType.AsConditionalType().root;
+                        if (((newRoot.node.Parent == root.node.AsNode()) && ((!newRoot.isDistributive || (newRoot.checkType == root.checkType)))))
+                        {
+                            root = newRoot;
+                            continue;
+                        }
+
+                        {
+                            var tuple4 = this.getTailRecursionRoot(falseType, mapper);
+                            var newRoot2 = tuple4.Item1;
+                            var newRootMapper = tuple4.Item2;
+                            if ((newRoot2 != null))
+                            {
+                                root = newRoot2;
+                                mapper = newRootMapper;
+                                alias = null;
+                                if ((newRoot2.alias != null))
+                                {
+                                    tailCount++;
+                                }
+
+                                continue;
+                            }
+                        }
+                    }
+
+                    result = this.instantiateType(falseType, mapper);
+                    break;
+                }
+
+                if ((((inferredExtendsType.flags & TypeFlags.AnyOrUnknown) != 0) || this.isTypeAssignableTo(this.getRestrictiveInstantiation(checkType), this.getRestrictiveInstantiation(inferredExtendsType))))
+                {
+                    var trueType = this.getTypeFromTypeNode(root.node.TrueType);
+                    var trueMapper = Core.OrElse(combinedMapper, mapper);
+                    {
+                        var tuple5 = this.getTailRecursionRoot(trueType, trueMapper);
+                        var newRoot3 = tuple5.Item1;
+                        var newRootMapper2 = tuple5.Item2;
+                        if ((newRoot3 != null))
+                        {
+                            root = newRoot3;
+                            mapper = newRootMapper2;
+                            alias = null;
+                            if ((newRoot3.alias != null))
+                            {
+                                tailCount++;
+                            }
+
+                            continue;
+                        }
+                    }
+
+                    result = this.instantiateType(trueType, trueMapper);
+                    break;
+                }
+            }
+
+            result = this.newConditionalType(root, mapper, combinedMapper);
+            if ((alias != null))
+            {
+                result.alias = alias;
+            }
+            else
+            {
+                result.alias = this.instantiateTypeAlias(root.alias, mapper);
+            }
+
+            break;
+        }
+
+        if ((extraTypes != null))
+        {
+            return this.getUnionType(GoRuntime.Append(extraTypes, result));
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private (ConditionalRoot, TypeMapper) getTailRecursionRoot(Type newType, TypeMapper newMapper)
+    {
+        if ((((newType.flags & TypeFlags.Conditional) != 0) && (newMapper != null)))
+        {
+            var newRoot = newType.AsConditionalType().root;
+            if ((GoRuntime.Len(newRoot.outerTypeParameters) != 0))
+            {
+                var typeParamMapper = this.combineTypeMappers(newType.AsConditionalType().mapper, newMapper);
+                var typeArguments = Core.Map(newRoot.outerTypeParameters, typeParamMapper.Map);
+                var newRootMapper = newTypeMapper(newRoot.outerTypeParameters, typeArguments);
+                Type newCheckType = default;
+                if (newRoot.isDistributive)
+                {
+                    newCheckType = getMappedType(newRoot.checkType, newRootMapper);
+                }
+
+                if ((((newCheckType == null) || (newCheckType == newRoot.checkType)) || ((newCheckType.flags & ((TypeFlags.Union | TypeFlags.Never))) == 0)))
+                {
+                    return (newRoot, newRootMapper);
+                }
+            }
+        }
+
+        return (null, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSimpleTupleType(Node node)
+    {
+        return ((Ast.IsTupleTypeNode(node) && (GoRuntime.Len(node.Elements()) > 0)) && !Core.Some(node.Elements(), (e) =>
+        {
+            return ((Ast.IsOptionalTypeNode(e) || Ast.IsRestTypeNode(e)) || (Ast.IsNamedTupleMember(e) && (((e.QuestionToken() != null) || (e.AsNamedTupleMember().DotDotDotToken != null)))));
+        }));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isDeferredType(Type t, bool checkTuples)
+    {
+        return (this.isGenericType(t) || ((checkTuples && isTupleType(t)) && Core.Some(this.getElementTypes(t), this.isGenericType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getPermissiveInstantiation(Type t)
+    {
+        if (((t.flags & (((TypeFlags.Primitive | TypeFlags.AnyOrUnknown) | TypeFlags.Never))) != 0))
+        {
+            return t;
+        }
+
+        var key = new CachedTypeKey
+        {
+            kind = CachedTypeKind.PermissiveInstantiation,
+            typeId = t.id
+        };
+        {
+            this.cachedTypes.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+
+        var result = this.instantiateType(t, this.permissiveMapper);
+        this.cachedTypes[key] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getRestrictiveInstantiation(Type t)
+    {
+        if (((t.flags & (((TypeFlags.Primitive | TypeFlags.AnyOrUnknown) | TypeFlags.Never))) != 0))
+        {
+            return t;
+        }
+
+        var key = new CachedTypeKey
+        {
+            kind = CachedTypeKind.RestrictiveInstantiation,
+            typeId = t.id
+        };
+        {
+            this.cachedTypes.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+
+        var result = this.instantiateType(t, this.restrictiveMapper);
+        this.cachedTypes[key] = result;
+        this.cachedTypes[new CachedTypeKey { kind = CachedTypeKind.RestrictiveInstantiation, typeId = result.id }] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getRestrictiveTypeParameter(Type t)
+    {
+        if ((((t.AsTypeParameter().constraint == null) && (this.getConstraintDeclaration(t) == null)) || (t.AsTypeParameter().constraint == this.noConstraintType)))
+        {
+            return t;
+        }
+
+        var key = new CachedTypeKey
+        {
+            kind = CachedTypeKind.RestrictiveTypeParameter,
+            typeId = t.id
+        };
+        {
+            this.cachedTypes.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+
+        var result = this.newTypeParameter(t.symbol);
+        result.AsTypeParameter().constraint = this.noConstraintType;
+        this.cachedTypes[key] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type restrictiveMapperWorker(Type t)
+    {
+        if (((t.flags & TypeFlags.TypeParameter) != 0))
+        {
+            return this.getRestrictiveTypeParameter(t);
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getTrueTypeFromConditionalType(Type t)
+    {
+        var d = t.AsConditionalType();
+        if ((d.resolvedTrueType == null))
+        {
+            d.resolvedTrueType = this.instantiateType(this.getTypeFromTypeNode(d.root.node.TrueType), d.mapper);
+        }
+
+        return d.resolvedTrueType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getFalseTypeFromConditionalType(Type t)
+    {
+        var d = t.AsConditionalType();
+        if ((d.resolvedFalseType == null))
+        {
+            d.resolvedFalseType = this.instantiateType(this.getTypeFromTypeNode(d.root.node.FalseType), d.mapper);
+        }
+
+        return d.resolvedFalseType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type newConditionalType(ConditionalRoot root, TypeMapper mapper, TypeMapper combinedMapper)
+    {
+        var data = new ConditionalType
+        {
+        };
+        data.root = root;
+        data.checkType = this.instantiateType(root.checkType, mapper);
+        data.extendsType = this.instantiateType(root.extendsType, mapper);
+        data.mapper = mapper;
+        data.combinedMapper = combinedMapper;
+        return this.newType(TypeFlags.Conditional, ObjectFlags.None, data);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type intersectTypes(Type type1, Type type2)
+    {
+        switch (true)
+        {
+            case true when (type1 == null):
+            {
+                return type2;
+            }
+
+            case true when (type2 == null):
+            {
+                return type1;
+            }
+        }
+
+        return this.getIntersectionType(new List<Type> { type1, type2 });
+    }
+}
+
+public sealed partial class Checker
+{
+    internal bool isNoInferType(Type t)
+    {
+        return (((t.flags & TypeFlags.Substitution) != 0) && ((t.AsSubstitutionType().constraint.flags & TypeFlags.Unknown) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSubstitutionIntersection(Type t)
+    {
+        if (this.isNoInferType(t))
+        {
+            return t.AsSubstitutionType().baseType;
+        }
+
+        return this.getIntersectionType(new List<Type> { t.AsSubstitutionType().constraint, t.AsSubstitutionType().baseType });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSubstitutionType(Type baseType, Type constraint)
+    {
+        if (((((constraint.flags & TypeFlags.AnyOrUnknown) != 0) || (constraint == baseType)) || ((baseType.flags & TypeFlags.Any) != 0)))
+        {
+            return baseType;
+        }
+
+        return this.getOrCreateSubstitutionType(baseType, constraint);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type distributeIndexOverObjectType(Type objectType, Type indexType, bool writing)
+    {
+        if ((((objectType.flags & TypeFlags.Union) != 0) || (((objectType.flags & TypeFlags.Intersection) != 0) && !this.shouldDeferIndexType(objectType, IndexFlags.None))))
+        {
+            var types = Core.Map(objectType.Types(), (t) =>
+            {
+                return this.getSimplifiedType(this.getIndexedAccessType(t, indexType), writing);
+            });
+            if ((((objectType.flags & TypeFlags.Intersection) != 0) || writing))
+            {
+                return this.getIntersectionType(types);
+            }
+
+            return this.getUnionType(types);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSimplifiedTypeOrConstraint(Type t)
+    {
+        {
+            var simplified = this.getSimplifiedType(t, false);
+            if ((simplified != t))
+            {
+                return simplified;
+            }
+        }
+
+        return this.getConstraintOfType(t);
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getModifiersTypeFromMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.modifiersType == null))
+        {
+            if (this.isMappedTypeWithKeyofConstraintDeclaration(t))
+            {
+                m.modifiersType = this.instantiateType(this.getTypeFromTypeNode(this.getConstraintDeclarationForMappedType(t).Type()), m.mapper);
+            }
+            else
+            {
+                var declaredType = this.getTypeFromMappedTypeNode(m.declaration.AsNode());
+                var constraint = this.getConstraintTypeFromMappedType(declaredType);
+                var extendedConstraint = constraint;
+                if (((constraint != null) && ((constraint.flags & TypeFlags.TypeParameter) != 0)))
+                {
+                    extendedConstraint = this.getConstraintOfTypeParameter(getNonDistributedTypeParameter(constraint));
+                }
+
+                if (((extendedConstraint != null) && ((extendedConstraint.flags & TypeFlags.Index) != 0)))
+                {
+                    m.modifiersType = this.instantiateType(extendedConstraint.AsIndexType().target, m.mapper);
+                }
+                else
+                {
+                    m.modifiersType = this.unknownType;
+                }
+            }
+        }
+
+        return m.modifiersType;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal static MappedTypeModifiers getMappedTypeModifiers(Type t)
+    {
+        var declaration = t.AsMappedType().declaration;
+        MappedTypeModifiers modifiers = default;
+        if ((declaration.ReadonlyToken != null))
+        {
+            modifiers |= Core.IfElse((declaration.ReadonlyToken.Kind == Kind.MinusToken), MappedTypeModifiers.ExcludeReadonly, MappedTypeModifiers.IncludeReadonly);
+        }
+
+        if ((declaration.QuestionToken != null))
+        {
+            modifiers |= Core.IfElse((declaration.QuestionToken.Kind == Kind.MinusToken), MappedTypeModifiers.ExcludeOptional, MappedTypeModifiers.IncludeOptional);
+        }
+
+        return modifiers;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int getMappedTypeOptionality(Type t)
+    {
+        var modifiers = getMappedTypeModifiers(t);
+        switch (true)
+        {
+            case true when ((modifiers & MappedTypeModifiers.ExcludeOptional) != 0):
+            {
+                return -1;
+            }
+
+            case true when ((modifiers & MappedTypeModifiers.IncludeOptional) != 0):
+            {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+}
+
+public sealed partial class Checker
+{
+    private int getCombinedMappedTypeOptionality(Type t)
+    {
+        if (((t.objectFlags & ObjectFlags.Mapped) != 0))
+        {
+            var optionality = getMappedTypeOptionality(t);
+            if ((optionality != 0))
+            {
+                return optionality;
+            }
+
+            return this.getCombinedMappedTypeOptionality(this.getModifiersTypeFromMappedType(t));
+        }
+
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            var optionality2 = this.getCombinedMappedTypeOptionality(t.Types()[0]);
+            {
+                foreach (var t2 in GoRuntime.RangeValues(GoRuntime.Slice(t.Types(), 1)))
+                {
+                    if ((this.getCombinedMappedTypeOptionality(t2) != optionality2))
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+            return optionality2;
+        }
+
+        return 0;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isPartialMappedType(Type t)
+    {
+        return (((t.objectFlags & ObjectFlags.Mapped) != 0) && ((getMappedTypeModifiers(t) & MappedTypeModifiers.IncludeOptional) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type removeMissingOrUndefinedType(Type t)
+    {
+        if (this.exactOptionalPropertyTypes)
+        {
+            return this.removeType(t, this.missingType);
+        }
+
+        return this.getTypeWithFacts(t, TypeFacts.NEUndefined);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getActualTypeVariable(Type t)
+    {
+        if (((t.flags & TypeFlags.Substitution) != 0))
+        {
+            return this.getActualTypeVariable(t.AsSubstitutionType().baseType);
+        }
+
+        if (((t.flags & TypeFlags.IndexedAccess) != 0))
+        {
+            var objectType = this.getActualTypeVariable(t.AsIndexedAccessType().objectType);
+            var indexType = this.getActualTypeVariable(t.AsIndexedAccessType().indexType);
+            if (((objectType != t.AsIndexedAccessType().objectType) || (indexType != t.AsIndexedAccessType().indexType)))
+            {
+                return this.getIndexedAccessType(objectType, indexType);
+            }
+        }
+
+        return getNonDistributedTypeParameter(t);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static CacheHashKey getConditionalTypeKey(List<Type> typeArguments, TypeAlias alias, bool forConstraint)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(typeArguments);
+        b.writeAlias(alias);
+        if (forConstraint)
+        {
+            b.writeByte((byte)'!');
+        }
+
+        return b.hash();
+    }
+}
+
+public sealed partial class Checker
+{
+    internal List<Type> getInferTypeParameters(Node node)
+    {
+        List<Type> result = default;
+        {
+            foreach (var symbol in GoRuntime.RangeValues(node.Locals()))
+            {
+                if (((symbol.Flags & SymbolFlags.TypeParameter) != 0))
+                {
+                    result = GoRuntime.Append(result, this.getDeclaredTypeOfSymbol(symbol));
+                }
+            }
+        }
+
+        GoSlices.SortFunc(result, CompareTypes);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromMappedTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            var t = this.newObjectType(ObjectFlags.Mapped, node.Symbol());
+            t.AsMappedType().declaration = node.AsMappedTypeNode();
+            t.alias = this.getAliasForTypeNode(node);
+            links.resolvedType = t;
+            this.getConstraintTypeFromMappedType(t);
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getInferredTrueTypeFromConditionalType(Type t)
+    {
+        var d = t.AsConditionalType();
+        if ((d.resolvedInferredTrueType == null))
+        {
+            if ((d.combinedMapper != null))
+            {
+                d.resolvedInferredTrueType = this.instantiateType(this.getTypeFromTypeNode(d.root.node.TrueType), d.combinedMapper);
+            }
+            else
+            {
+                d.resolvedInferredTrueType = this.getTrueTypeFromConditionalType(t);
+            }
+        }
+
+        return d.resolvedInferredTrueType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type newSubstitutionType(Type baseType, Type constraint)
+    {
+        var data = new SubstitutionType
+        {
+        };
+        data.baseType = baseType;
+        data.constraint = constraint;
+        return this.newType(TypeFlags.Substitution, ObjectFlags.None, data);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getOrCreateSubstitutionType(Type baseType, Type constraint)
+    {
+        var key = new SubstitutionTypeKey
+        {
+            baseId = baseType.id,
+            constraintId = constraint.id
+        };
+        {
+            this.substitutionTypes.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+
+        var result = this.newSubstitutionType(baseType, constraint);
+        this.substitutionTypes[key] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static CacheHashKey getIndexedAccessKey(Type objectType, Type indexType, AccessFlags accessFlags, TypeAlias alias)
+    {
+        var b = new keyBuilder();
+        b.writeType(objectType);
+        b.writeType(indexType);
+        b.writeUint32((uint)(accessFlags));
+        b.writeAlias(alias);
+        return b.hash();
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isValidIndexKeyType(Type t)
+    {
+        return ((((t.flags & (((TypeFlags.String | TypeFlags.Number) | TypeFlags.ESSymbol))) != 0) || this.isPatternLiteralType(t)) || ((((t.flags & TypeFlags.Intersection) != 0) && !this.isGenericType(t)) && Core.Some(t.Types(), this.isValidIndexKeyType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type newIndexedAccessType(Type objectType, Type indexType, AccessFlags accessFlags)
+    {
+        var data = new IndexedAccessType
+        {
+        };
+        data.objectType = objectType;
+        data.indexType = indexType;
+        data.accessFlags = accessFlags;
+        return this.newType(TypeFlags.IndexedAccess, ObjectFlags.None, data);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool shouldDeferIndexType(Type t, IndexFlags indexFlags)
+    {
+        return ((((((t.flags & TypeFlags.InstantiableNonPrimitive) != 0) || isGenericTupleType(t)) || (this.isGenericMappedType(t) && (this.getNameTypeFromMappedType(t) != null))) || ((((t.flags & TypeFlags.Union) != 0) && ((indexFlags & IndexFlags.NoReducibleCheck) == 0)) && this.isGenericReducibleType(t))) || ((((t.flags & TypeFlags.Intersection) != 0) && this.maybeTypeOfKind(t, TypeFlags.Instantiable)) && Core.Some(t.Types(), this.IsEmptyAnonymousObjectType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private MappedTypeNameTypeKind getMappedTypeNameTypeKind(Type t)
+    {
+        var nameType = this.getNameTypeFromMappedType(t);
+        if ((nameType == null))
+        {
+            return MappedTypeNameTypeKind.None;
+        }
+
+        if (this.isTypeAssignableTo(nameType, this.getTypeParameterFromMappedType(t)))
+        {
+            return MappedTypeNameTypeKind.Filtering;
+        }
+
+        return MappedTypeNameTypeKind.Remapping;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexTypeForMappedType(Type t, IndexFlags indexFlags)
+    {
+        var typeParameter = this.getTypeParameterFromMappedType(t);
+        var constraintType = this.getConstraintTypeFromMappedType(t);
+        var nameType = this.getNameTypeFromMappedType(Core.OrElse(t.AsMappedType().target, t));
+        if (((nameType == null) && ((indexFlags & IndexFlags.NoIndexSignatures) == 0)))
+        {
+            return constraintType;
+        }
+
+        List<Type> keyTypes = default;
+        Action<Type> addMemberForKeyType = (keyType) =>
+        {
+            var propNameType = keyType;
+            if ((nameType != null))
+            {
+                propNameType = this.instantiateType(nameType, appendTypeMapping(t.AsMappedType().mapper, typeParameter, keyType));
+            }
+
+            keyTypes = GoRuntime.Append(keyTypes, Core.IfElse((propNameType == this.stringType), this.stringOrNumberType, propNameType));
+        };
+        if (this.isGenericIndexType(constraintType))
+        {
+            if (this.isMappedTypeWithKeyofConstraintDeclaration(t))
+            {
+                return this.getIndexTypeForGenericType(t, indexFlags);
+            }
+
+            forEachType(constraintType, addMemberForKeyType);
+        }
+        else
+        {
+            if (this.isMappedTypeWithKeyofConstraintDeclaration(t))
+            {
+                var modifiersType = this.getApparentType(this.getModifiersTypeFromMappedType(t));
+                this.forEachMappedTypePropertyKeyTypeAndIndexSignatureKeyType(modifiersType, TypeFlags.StringOrNumberLiteralOrUnique, ((indexFlags & IndexFlags.StringsOnly) != 0), addMemberForKeyType);
+            }
+            else
+            {
+                forEachType(this.getLowerBoundOfKeyType(constraintType), addMemberForKeyType);
+            }
+        }
+
+        Type result = default;
+        if (((indexFlags & IndexFlags.NoIndexSignatures) != 0))
+        {
+            result = this.filterType(this.getUnionType(keyTypes), (t2) =>
+            {
+                return ((t2.flags & ((TypeFlags.Any | TypeFlags.String))) == 0);
+            });
+        }
+        else
+        {
+            result = this.getUnionType(keyTypes);
+        }
+
+        if (((((result.flags & TypeFlags.Union) != 0) && ((constraintType.flags & TypeFlags.Union) != 0)) && (getTypeListKey(result.Types()) == getTypeListKey(constraintType.Types()))))
+        {
+            return constraintType;
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexedAccessType(Type objectType, Type indexType)
+    {
+        return this.getIndexedAccessTypeEx(objectType, indexType, AccessFlags.None, null, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexedAccessTypeEx(Type objectType, Type indexType, AccessFlags accessFlags, Node accessNode, TypeAlias alias)
+    {
+        var result = this.getIndexedAccessTypeOrUndefined(objectType, indexType, accessFlags, accessNode, alias);
+        if ((result == null))
+        {
+            result = Core.IfElse((accessNode != null), this.errorType, this.unknownType);
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isStringIndexSignatureOnlyTypeWorker(Type t)
+    {
+        return (((((((t.flags & TypeFlags.Object) != 0) && !this.isGenericMappedType(t)) && (GoRuntime.Len(this.getPropertiesOfType(t)) == 0)) && (GoRuntime.Len(this.getIndexInfosOfType(t)) == 1)) && (this.getIndexInfoOfType(t, this.stringType) != null)) || (((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(t.Types(), this.isStringIndexSignatureOnlyType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getNoInferType(Type t)
+    {
+        if (this.isNoInferTargetType(t))
+        {
+            return this.getOrCreateSubstitutionType(t, this.unknownType);
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isNoInferTargetType(Type t)
+    {
+        return ((((((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Some(t.AsUnionOrIntersectionType().types, this.isNoInferTargetType)) || ((((t.flags & TypeFlags.Substitution) != 0) && !this.isNoInferType(t)) && this.isNoInferTargetType(t.AsSubstitutionType().baseType))) || (((t.flags & TypeFlags.Object) != 0) && !IsEmptyAnonymousObjectType(t))) || (((t.flags & ((TypeFlags.Instantiable & ~TypeFlags.Substitution))) != 0) && !this.isPatternLiteralType(t)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSimplifiedIndexedAccessType(Type t, bool writing)
+    {
+        var key = new CachedTypeKey
+        {
+            kind = Core.IfElse(writing, CachedTypeKind.IndexedAccessForWriting, CachedTypeKind.IndexedAccessForReading),
+            typeId = t.id
+        };
+        {
+            this.cachedTypes.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return Core.IfElse((cached == this.circularConstraintType), t, cached);
+            }
+        }
+
+        this.cachedTypes[key] = t;
+        var result = this.getSimplifiedIndexedAccessTypeWorker(t, writing);
+        if ((result != t))
+        {
+            result = this.removeType(result, t);
+            this.cachedTypes[key] = result;
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSimplifiedIndexedAccessTypeWorker(Type t, bool writing)
+    {
+        var objectType = this.getSimplifiedType(t.AsIndexedAccessType().objectType, writing);
+        var indexType = this.getSimplifiedType(t.AsIndexedAccessType().indexType, writing);
+        var distributedOverIndex = this.distributeObjectOverIndexType(objectType, indexType, writing);
+        if ((distributedOverIndex != null))
+        {
+            return distributedOverIndex;
+        }
+
+        if (((indexType.flags & TypeFlags.Instantiable) == 0))
+        {
+            var distributedOverObject = this.distributeIndexOverObjectType(objectType, indexType, writing);
+            if ((distributedOverObject != null))
+            {
+                return distributedOverObject;
+            }
+        }
+
+        if ((isGenericTupleType(objectType) && ((indexType.flags & TypeFlags.NumberLike) != 0)))
+        {
+            var elementType = this.getElementTypeOfSliceOfTupleType(objectType, Core.IfElse(((indexType.flags & TypeFlags.Number) != 0), 0, objectType.TargetTupleType().fixedLength), 0, writing, false);
+            if ((elementType != null))
+            {
+                return elementType;
+            }
+        }
+
+        if (this.isGenericMappedType(objectType))
+        {
+            if ((this.getMappedTypeNameTypeKind(objectType) != MappedTypeNameTypeKind.Remapping))
+            {
+                return this.mapType(this.substituteIndexedMappedType(objectType, t.AsIndexedAccessType().indexType), (t2) =>
+                {
+                    return this.getSimplifiedType(t2, writing);
+                });
+            }
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type distributeObjectOverIndexType(Type objectType, Type indexType, bool writing)
+    {
+        if (((indexType.flags & TypeFlags.Union) != 0))
+        {
+            var types = Core.Map(indexType.Types(), (t) =>
+            {
+                return this.getSimplifiedType(this.getIndexedAccessType(objectType, t), writing);
+            });
+            if (writing)
+            {
+                return this.getIntersectionType(types);
+            }
+
+            return this.getUnionType(types);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSimplifiedConditionalType(Type t, bool writing)
+    {
+        var checkType = t.AsConditionalType().checkType;
+        var extendsType = t.AsConditionalType().extendsType;
+        var trueType = this.getTrueTypeFromConditionalType(t);
+        var falseType = this.getFalseTypeFromConditionalType(t);
+        if ((((falseType.flags & TypeFlags.Never) != 0) && (this.getActualTypeVariable(trueType) == this.getActualTypeVariable(checkType))))
+        {
+            if ((((checkType.flags & TypeFlags.Any) != 0) || this.isTypeAssignableTo(this.getRestrictiveInstantiation(checkType), this.getRestrictiveInstantiation(extendsType))))
+            {
+                return this.getSimplifiedType(trueType, writing);
+            }
+            else
+            {
+                if (this.isIntersectionEmpty(checkType, extendsType))
+                {
+                    return this.neverType;
+                }
+            }
+        }
+        else
+        {
+            if ((((trueType.flags & TypeFlags.Never) != 0) && (this.getActualTypeVariable(falseType) == this.getActualTypeVariable(checkType))))
+            {
+                if ((((checkType.flags & TypeFlags.Any) == 0) && this.isTypeAssignableTo(this.getRestrictiveInstantiation(checkType), this.getRestrictiveInstantiation(extendsType))))
+                {
+                    return this.neverType;
+                }
+                else
+                {
+                    if ((((checkType.flags & TypeFlags.Any) != 0) || this.isIntersectionEmpty(checkType, extendsType)))
+                    {
+                        return this.getSimplifiedType(falseType, writing);
+                    }
+                }
+            }
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isIntersectionEmpty(Type type1, Type type2)
+    {
+        return ((this.getUnionType(new List<Type> { this.intersectTypes(type1, type2), this.neverType }).flags & TypeFlags.Never) != 0);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type substituteIndexedMappedType(Type objectType, Type index)
+    {
+        var mapper = newSimpleTypeMapper(this.getTypeParameterFromMappedType(objectType), index);
+        var templateMapper = this.combineTypeMappers(objectType.AsMappedType().mapper, mapper);
+        var instantiatedTemplateType = this.instantiateType(this.getTemplateTypeFromMappedType(Core.OrElse(objectType.AsMappedType().target, objectType)), templateMapper);
+        var isOptional = (getMappedTypeOptionality(objectType) > 0);
+        if (!isOptional)
+        {
+            if (this.isGenericType(objectType))
+            {
+                isOptional = (this.getCombinedMappedTypeOptionality(this.getModifiersTypeFromMappedType(objectType)) > 0);
+            }
+            else
+            {
+                isOptional = this.couldAccessOptionalProperty(objectType, index);
+            }
+        }
+
+        return this.addOptionalityEx(instantiatedTemplateType, true, isOptional);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void resolveMappedTypeMembers(Type t)
+    {
+        var members = new SymbolTable();
+        List<IndexInfo> indexInfos = default;
+        this.setStructuredTypeMembers(t, null, null, null, null);
+        var typeParameter = this.getTypeParameterFromMappedType(t);
+        var constraintType = this.getConstraintTypeFromMappedType(t);
+        var mappedType = Core.OrElse(t.AsMappedType().target, t);
+        var nameType = this.getNameTypeFromMappedType(mappedType);
+        var shouldLinkPropDeclarations = (this.getMappedTypeNameTypeKind(mappedType) != MappedTypeNameTypeKind.Remapping);
+        var templateType = this.getTemplateTypeFromMappedType(mappedType);
+        var modifiersType = this.getApparentType(this.getModifiersTypeFromMappedType(t));
+        var templateModifiers = getMappedTypeModifiers(t);
+        var include = TypeFlags.StringOrNumberLiteralOrUnique;
+        Action<Type, Type> addMemberForKeyTypeWorker = (keyType, propNameType) =>
+        {
+            if (isTypeUsableAsPropertyName(propNameType))
+            {
+                var propName = getPropertyNameFromType(propNameType);
+                {
+                    var existingProp = members[propName];
+                    if ((existingProp != null))
+                    {
+                        var valueLinks = this.valueSymbolLinks.Get(existingProp);
+                        valueLinks.nameType = this.getUnionType(new List<Type> { valueLinks.nameType, propNameType });
+                        var mappedLinks = this.mappedSymbolLinks.Get(existingProp);
+                        mappedLinks.keyType = this.getUnionType(new List<Type> { mappedLinks.keyType, keyType });
+                    }
+                    else
+                    {
+                        Symbol modifiersProp = default;
+                        if (isTypeUsableAsPropertyName(keyType))
+                        {
+                            modifiersProp = this.getPropertyOfType(modifiersType, getPropertyNameFromType(keyType));
+                        }
+
+                        var isOptional = (((templateModifiers & MappedTypeModifiers.IncludeOptional) != 0) || ((((templateModifiers & MappedTypeModifiers.ExcludeOptional) == 0) && (modifiersProp != null)) && ((modifiersProp.Flags & SymbolFlags.Optional) != 0)));
+                        var isReadonly = (((templateModifiers & MappedTypeModifiers.IncludeReadonly) != 0) || ((((templateModifiers & MappedTypeModifiers.ExcludeReadonly) == 0) && (modifiersProp != null)) && this.isReadonlySymbol(modifiersProp)));
+                        var stripOptional = (((this.strictNullChecks && !isOptional) && (modifiersProp != null)) && ((modifiersProp.Flags & SymbolFlags.Optional) != 0));
+                        CheckFlags lateFlag = default;
+                        if ((modifiersProp != null))
+                        {
+                            lateFlag = (modifiersProp.CheckFlags & CheckFlags.Late);
+                        }
+
+                        var prop = this.newSymbol((SymbolFlags.Property | Core.IfElse(isOptional, SymbolFlags.Optional, SymbolFlags.None)), propName);
+                        prop.CheckFlags = (((lateFlag | CheckFlags.Mapped) | Core.IfElse(isReadonly, CheckFlags.Readonly, CheckFlags.None)) | Core.IfElse(stripOptional, CheckFlags.StripOptional, CheckFlags.None));
+                        var valueLinks2 = this.valueSymbolLinks.Get(prop);
+                        valueLinks2.containingType = t;
+                        valueLinks2.nameType = propNameType;
+                        var mappedLinks2 = this.mappedSymbolLinks.Get(prop);
+                        mappedLinks2.keyType = keyType;
+                        if ((modifiersProp != null))
+                        {
+                            mappedLinks2.syntheticOrigin = modifiersProp;
+                            if (shouldLinkPropDeclarations)
+                            {
+                                prop.Declarations = modifiersProp.Declarations;
+                            }
+                        }
+
+                        members[propName] = prop;
+                    }
+                }
+            }
+            else
+            {
+                if ((this.isValidIndexKeyType(propNameType) || ((propNameType.flags & ((TypeFlags.Any | TypeFlags.Enum))) != 0)))
+                {
+                    var indexKeyType = propNameType;
+                    switch (true)
+                    {
+                        case true when ((propNameType.flags & ((TypeFlags.Any | TypeFlags.String))) != 0):
+                        {
+                            indexKeyType = this.stringType;
+                            break;
+                        }
+
+                        case true when ((propNameType.flags & ((TypeFlags.Number | TypeFlags.Enum))) != 0):
+                        {
+                            indexKeyType = this.numberType;
+                            break;
+                        }
+                    }
+
+                    var propType = this.instantiateType(templateType, appendTypeMapping(t.AsMappedType().mapper, typeParameter, keyType));
+                    var modifiersIndexInfo = this.getApplicableIndexInfo(modifiersType, propNameType);
+                    var isReadonly2 = (((templateModifiers & MappedTypeModifiers.IncludeReadonly) != 0) || ((((templateModifiers & MappedTypeModifiers.ExcludeReadonly) == 0) && (modifiersIndexInfo != null)) && modifiersIndexInfo.isReadonly));
+                    var indexInfo = this.newIndexInfo(indexKeyType, propType, isReadonly2, null, null);
+                    indexInfos = this.appendIndexInfo(indexInfos, indexInfo, true);
+                }
+            }
+        };
+        Action<Type> addMemberForKeyType = (keyType2) =>
+        {
+            var propNameType2 = keyType2;
+            if ((nameType != null))
+            {
+                propNameType2 = this.instantiateType(nameType, appendTypeMapping(t.AsMappedType().mapper, typeParameter, keyType2));
+            }
+
+            forEachType(propNameType2, (t2) =>
+            {
+                addMemberForKeyTypeWorker(keyType2, t2);
+            });
+        };
+        if (this.isMappedTypeWithKeyofConstraintDeclaration(t))
+        {
+            this.forEachMappedTypePropertyKeyTypeAndIndexSignatureKeyType(modifiersType, include, false, addMemberForKeyType);
+        }
+        else
+        {
+            forEachType(this.getLowerBoundOfKeyType(constraintType), addMemberForKeyType);
+        }
+
+        this.setStructuredTypeMembers(t, members, null, null, indexInfos);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeOfMappedSymbol(Symbol symbol)
+    {
+        var links = this.valueSymbolLinks.Get(symbol);
+        if ((links.resolvedType == null))
+        {
+            var mappedType = links.containingType;
+            if (!this.pushTypeResolution(symbol, TypeSystemPropertyName.Type))
+            {
+                mappedType.AsMappedType().containsError = true;
+                return this.errorType;
+            }
+
+            var templateType = this.getTemplateTypeFromMappedType(Core.OrElse(mappedType.AsMappedType().target, mappedType));
+            var mapper = appendTypeMapping(mappedType.AsMappedType().mapper, this.getTypeParameterFromMappedType(mappedType), this.mappedSymbolLinks.Get(symbol).keyType);
+            var propType = this.instantiateType(templateType, mapper);
+            switch (true)
+            {
+                case true when ((this.strictNullChecks && ((symbol.Flags & SymbolFlags.Optional) != 0)) && !this.maybeTypeOfKind(propType, (TypeFlags.Undefined | TypeFlags.Void))):
+                {
+                    propType = this.getOptionalType(propType, true);
+                    break;
+                }
+
+                case true when ((symbol.CheckFlags & CheckFlags.StripOptional) != 0):
+                {
+                    propType = this.removeMissingOrUndefinedType(propType);
+                    break;
+                }
+            }
+
+            if (this.popTypeResolution())
+            {
+                if ((links.resolvedType == null))
+                {
+                    links.resolvedType = propType;
+                }
+            }
+            else
+            {
+                if ((links.resolvedType == null))
+                {
+                    links.resolvedType = this.errorType;
+                }
+
+                this.error(this.currentNode, Diagnostics.Type_of_property_0_circularly_references_itself_in_mapped_type_1, this.symbolToString(symbol), this.typeToStringByteString(mappedType));
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getLowerBoundOfKeyType(Type t)
+    {
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.Index) != 0):
+            {
+                var t2 = this.getApparentType(t.AsIndexType().target);
+                if (isGenericTupleType(t2))
+                {
+                    return this.getKnownKeysOfTupleType(t2);
+                }
+
+                return this.getIndexType(t2);
+            }
+
+            case true when ((t.flags & TypeFlags.Conditional) != 0):
+            {
+                if (t.AsConditionalType().root.isDistributive)
+                {
+                    var checkType = t.AsConditionalType().checkType;
+                    var constraint = this.getLowerBoundOfKeyType(checkType);
+                    if ((constraint != checkType))
+                    {
+                        return this.getConditionalTypeInstantiation(t, prependTypeMapping(t.AsConditionalType().root.checkType, constraint, t.AsConditionalType().mapper), false, null);
+                    }
+                }
+
+                return t;
+            }
+
+            case true when ((t.flags & TypeFlags.Union) != 0):
+            {
+                return this.mapTypeEx(t, this.getLowerBoundOfKeyType, true);
+            }
+
+            case true when ((t.flags & TypeFlags.Intersection) != 0):
+            {
+                var types = t.Types();
+                if ((((GoRuntime.Len(types) == 2) && ((types[0].flags & (((TypeFlags.String | TypeFlags.Number) | TypeFlags.BigInt))) != 0)) && (types[1] == this.emptyTypeLiteralType)))
+                {
+                    return t;
+                }
+
+                return this.getIntersectionType(Core.SameMap(t.Types(), this.getLowerBoundOfKeyType));
+            }
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature getSignatureInstantiation(Signature sig, List<Type> typeArguments, bool isJavaScript, List<Type> inferredTypeParameters)
+    {
+        var instantiatedSignature = this.getSignatureInstantiationWithoutFillingInTypeArguments(sig, this.fillMissingTypeArguments(typeArguments, sig.typeParameters, this.getMinTypeArgumentCount(sig.typeParameters), isJavaScript));
+        if ((GoRuntime.Len(inferredTypeParameters) != 0))
+        {
+            var returnSignature = this.getSingleCallOrConstructSignature(this.getReturnTypeOfSignature(instantiatedSignature));
+            if ((returnSignature != null))
+            {
+                var newReturnSignature = this.cloneSignature(returnSignature);
+                newReturnSignature.typeParameters = inferredTypeParameters;
+                var newReturnType = this.getOrCreateTypeFromSignature(newReturnSignature);
+                newReturnType.AsObjectType().mapper = instantiatedSignature.mapper;
+                var newInstantiatedSignature = this.cloneSignature(instantiatedSignature);
+                newInstantiatedSignature.resolvedReturnType = newReturnType;
+                return newInstantiatedSignature;
+            }
+        }
+
+        return instantiatedSignature;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature getSignatureInstantiationWithoutFillingInTypeArguments(Signature sig, List<Type> typeArguments)
+    {
+        var key = new CachedSignatureKey
+        {
+            sig = sig,
+            key = getTypeListKey(typeArguments)
+        };
+        this.cachedSignatures.TryGetValue(key, out var instantiation);
+        if ((instantiation == null))
+        {
+            instantiation = this.createSignatureInstantiation(sig, typeArguments);
+            this.cachedSignatures[key] = instantiation;
+        }
+
+        return instantiation;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature createSignatureInstantiation(Signature sig, List<Type> typeArguments)
+    {
+        return this.instantiateSignatureEx(sig, this.createSignatureTypeMapper(sig, typeArguments), true);
+    }
+}
+
+public sealed partial class Checker
+{
+    private TypeMapper createSignatureTypeMapper(Signature sig, List<Type> typeArguments)
+    {
+        return newTypeMapper(this.getTypeParametersForMapper(sig), typeArguments);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature createCanonicalSignature(Signature signature)
+    {
+        var typeArguments = Core.Map(signature.typeParameters, (tp) =>
+        {
+            if (((tp.Target() != null) && (this.getConstraintOfTypeParameter(tp.Target()) == null)))
+            {
+                return tp.Target();
+            }
+
+            return tp;
+        });
+        return this.getSignatureInstantiation(signature, typeArguments, Ast.IsInJSFile(signature.declaration), null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature getBaseSignature(Signature signature)
+    {
+        var typeParameters = signature.typeParameters;
+        if ((GoRuntime.Len(typeParameters) == 0))
+        {
+            return signature;
+        }
+
+        var key = new CachedSignatureKey
+        {
+            sig = signature,
+            key = SignatureKeyBase
+        };
+        {
+            this.cachedSignatures.TryGetValue(key, out var cached);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+
+        var baseConstraintMapper = newTypeMapper(typeParameters, Core.Map(typeParameters, (tp) =>
+        {
+            return Core.OrElse(this.getConstraintOfTypeParameter(tp), this.unknownType);
+        }));
+        var baseConstraints = Core.Map(typeParameters, (tp2) =>
+        {
+            return this.instantiateType(tp2, baseConstraintMapper);
+        });
+        {
+            for (int ignored1 = 0; ignored1 < GoRuntime.Len(typeParameters) - 1; ignored1++)
+            {
+                baseConstraints = this.instantiateTypes(baseConstraints, baseConstraintMapper);
+            }
+        }
+
+        baseConstraints = this.instantiateTypes(baseConstraints, newArrayToSingleTypeMapper(typeParameters, this.anyType));
+        var result = this.instantiateSignatureEx(signature, newTypeMapper(typeParameters, baseConstraints), true);
+        this.cachedSignatures[key] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private string getSuggestionForNonexistentIndexSignature(Type objectType, Node expr, Type keyedType)
+    {
+        Func<string, bool> hasProp = (name) =>
+        {
+            var prop = this.getPropertyOfObjectType(objectType, name);
+            if ((prop != null))
+            {
+                var s = this.getSingleCallSignature(this.getTypeOfSymbol(prop));
+                return (((s != null) && (this.getMinArgumentCount(s) >= 1)) && this.isTypeAssignableTo(keyedType, this.getTypeAtPosition(s, 0)));
+            }
+
+            return false;
+        };
+        var suggestedMethod = Core.IfElse(Ast.IsAssignmentTarget(expr), "set", "get");
+        if (!hasProp(suggestedMethod))
+        {
+            return "";
+        }
+
+        var suggestion = tryGetPropertyAccessOrIdentifierToString(expr.Expression());
+        if ((suggestion == ""))
+        {
+            return suggestedMethod;
+        }
+
+        return ((suggestion + ".") + suggestedMethod);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getIndexNodeForAccessExpression(Node accessNode)
+    {
+        switch (accessNode.Kind)
+        {
+            case Kind.ElementAccessExpression:
+            {
+                return accessNode.AsElementAccessExpression().ArgumentExpression;
+            }
+
+            case Kind.IndexedAccessType:
+            {
+                return accessNode.AsIndexedAccessTypeNode().IndexType;
+            }
+
+            case Kind.ComputedPropertyName:
+            {
+                return accessNode.Expression();
+            }
+        }
+
+        return accessNode;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void errorIfWritingToReadonlyIndex(IndexInfo indexInfo, Type objectType, Node accessExpression)
+    {
+        if (((((indexInfo != null) && indexInfo.isReadonly) && (accessExpression != null)) && ((Ast.IsAssignmentTarget(accessExpression) || isDeleteTarget(accessExpression)))))
+        {
+            this.error(accessExpression, Diagnostics.Index_signature_in_type_0_only_permits_reading, this.typeToStringByteString(objectType));
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool indexTypeLessThan(Type indexType, int limit)
+    {
+        return everyType(indexType, (t) =>
+        {
+            if (((t.flags & TypeFlags.StringOrNumberLiteral) != 0))
+            {
+                var propName = getPropertyNameFromType(t);
+                if (isNumericLiteralName(propName))
+                {
+                    var index = JsNum.FromString(propName);
+                    return ((index >= 0) && (index < new JsNum.Number(limit)));
+                }
+            }
+
+            return false;
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateMappedType(Type t, TypeMapper m, TypeAlias alias)
+    {
+        var d = t.AsMappedType();
+        var typeVariable = this.getHomomorphicTypeVariable(t);
+        Func<Type, Type> instantiateConstituent = default;
+        instantiateConstituent = (s) =>
+        {
+            if (((((s.flags & ((((TypeFlags.AnyOrUnknown | TypeFlags.InstantiableNonPrimitive) | TypeFlags.Object) | TypeFlags.Intersection))) == 0) || (s == this.wildcardType)) || this.isErrorType(s)))
+            {
+                return s;
+            }
+
+            if ((d.declaration.NameType == null))
+            {
+                if ((this.isArrayType(s) || ((((s.flags & TypeFlags.Any) != 0) && (this.findResolutionCycleStartIndex(typeVariable, TypeSystemPropertyName.ResolvedBaseConstraint) < 0)) && this.hasArrayOrTypeTypeConstraint(typeVariable))))
+                {
+                    return this.instantiateMappedArrayType(s, t, prependTypeMapping(typeVariable, s, m));
+                }
+
+                if (isTupleType(s))
+                {
+                    return this.instantiateMappedTupleType(s, t, typeVariable, m);
+                }
+
+                if (this.isArrayOrTupleOrIntersection(s))
+                {
+                    return this.getIntersectionType(Core.Map(s.Types(), instantiateConstituent));
+                }
+            }
+
+            return this.instantiateAnonymousType(t, prependTypeMapping(typeVariable, s, m), null);
+        };
+        if ((typeVariable != null))
+        {
+            var mappedTypeVariable = this.instantiateType(typeVariable, m);
+            if ((typeVariable != mappedTypeVariable))
+            {
+                return this.mapTypeWithAlias(this.getReducedType(mappedTypeVariable), instantiateConstituent, alias);
+            }
+        }
+
+        if ((this.instantiateType(this.getConstraintTypeFromMappedType(t), m) == this.wildcardType))
+        {
+            return this.wildcardType;
+        }
+
+        return this.instantiateAnonymousType(t, m, alias);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateMappedArrayType(Type arrayType, Type mappedType, TypeMapper m)
+    {
+        var elementType = this.instantiateMappedTypeTemplate(mappedType, this.numberType, true, m);
+        if (this.isErrorType(elementType))
+        {
+            return this.errorType;
+        }
+
+        return this.createArrayTypeEx(elementType, getModifiedReadonlyState(this.isReadonlyArrayType(arrayType), getMappedTypeModifiers(mappedType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateMappedTupleType(Type tupleType, Type mappedType, Type typeVariable, TypeMapper m)
+    {
+        var elementInfos = tupleType.TargetTupleType().elementInfos;
+        var fixedLength = tupleType.TargetTupleType().fixedLength;
+        var fixedMapper = m;
+        if ((fixedLength != 0))
+        {
+            fixedMapper = prependTypeMapping(typeVariable, tupleType, m);
+        }
+
+        var modifiers = getMappedTypeModifiers(mappedType);
+        var elementTypes = this.getElementTypes(tupleType);
+        var newElementTypes = GoRuntime.MakeSlice<Type>(GoRuntime.Len(elementTypes));
+        var newElementInfos = GoSlices.Clone(elementInfos);
+        {
+            foreach (var range1 in GoRuntime.Range(elementTypes))
+            {
+                var i = range1.Key;
+                var e = range1.Value;
+                var flags = elementInfos[i].flags;
+                Type mapped = default;
+                switch (true)
+                {
+                    case true when (i < fixedLength):
+                    {
+                        mapped = this.instantiateMappedTypeTemplate(mappedType, this.getStringLiteralType(i.ToString(System.Globalization.CultureInfo.InvariantCulture)), ((flags & ElementFlags.Optional) != 0), fixedMapper);
+                        break;
+                    }
+
+                    case true when ((flags & ElementFlags.Variadic) != 0):
+                    {
+                        mapped = this.instantiateType(mappedType, prependTypeMapping(typeVariable, e, m));
+                        break;
+                    }
+
+                    default:
+                    {
+                        mapped = this.getElementTypeOfArrayType(this.instantiateType(mappedType, prependTypeMapping(typeVariable, this.createArrayType(e), m)));
+                        if ((mapped == null))
+                        {
+                            mapped = this.unknownType;
+                        }
+
+                        break;
+                    }
+                }
+
+                switch (true)
+                {
+                    case true when ((modifiers & MappedTypeModifiers.IncludeOptional) != 0):
+                    {
+                        if (((flags & ElementFlags.Required) != 0))
+                        {
+                            var elementInfo = newElementInfos[i];
+                            elementInfo.flags = ElementFlags.Optional;
+                            newElementInfos[i] = elementInfo;
+                        }
+
+                        break;
+                    }
+
+                    case true when ((modifiers & MappedTypeModifiers.ExcludeOptional) != 0):
+                    {
+                        if (((flags & ElementFlags.Optional) != 0))
+                        {
+                            var elementInfo = newElementInfos[i];
+                            elementInfo.flags = ElementFlags.Required;
+                            newElementInfos[i] = elementInfo;
+                        }
+
+                        break;
+                    }
+                }
+
+                newElementTypes[i] = mapped;
+            }
+        }
+
+        var newReadonly = getModifiedReadonlyState(tupleType.TargetTupleType().@readonly, getMappedTypeModifiers(mappedType));
+        if (GoSlices.Contains(newElementTypes, this.errorType))
+        {
+            return this.errorType;
+        }
+
+        return this.createTupleTypeEx(newElementTypes, newElementInfos, newReadonly);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateMappedTypeTemplate(Type t, Type key, bool isOptional, TypeMapper m)
+    {
+        var templateMapper = appendTypeMapping(m, this.getTypeParameterFromMappedType(t), key);
+        var propType = this.instantiateType(this.getTemplateTypeFromMappedType(Core.OrElse(t.AsMappedType().target, t)), templateMapper);
+        var modifiers = getMappedTypeModifiers(t);
+        switch (true)
+        {
+            case true when ((this.strictNullChecks && ((modifiers & MappedTypeModifiers.IncludeOptional) != 0)) && !this.maybeTypeOfKind(propType, (TypeFlags.Undefined | TypeFlags.Void))):
+            {
+                return this.getOptionalType(propType, true);
+            }
+
+            case true when ((this.strictNullChecks && ((modifiers & MappedTypeModifiers.ExcludeOptional) != 0)) && isOptional):
+            {
+                return this.removeMissingOrUndefinedType(propType);
+            }
+
+            default:
+            {
+                return propType;
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateReverseMappedType(Type t, TypeMapper m)
+    {
+        var r = t.AsReverseMappedType();
+        var innerMappedType = this.instantiateType(r.mappedType, m);
+        if (((innerMappedType.objectFlags & ObjectFlags.Mapped) == 0))
+        {
+            return t;
+        }
+
+        var innerIndexType = this.instantiateType(r.constraintType, m);
+        if (((innerIndexType.flags & TypeFlags.Index) == 0))
+        {
+            return t;
+        }
+
+        var instantiated = this.inferTypeForHomomorphicMappedType(this.instantiateType(r.source, m), innerMappedType, innerIndexType);
+        if ((instantiated != null))
+        {
+            return instantiated;
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromTypeOperatorNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            var argType = node.Type();
+            switch (node.AsTypeOperatorNode().Operator)
+            {
+                case Kind.KeyOfKeyword:
+                {
+                    links.resolvedType = this.getIndexType(this.getTypeFromTypeNode(argType));
+                    break;
+                }
+
+                case Kind.UniqueKeyword:
+                {
+                    if ((argType.Kind == Kind.SymbolKeyword))
+                    {
+                        links.resolvedType = this.getESSymbolLikeTypeForNode(Ast.WalkUpParenthesizedTypes(node.Parent));
+                    }
+                    else
+                    {
+                        links.resolvedType = this.errorType;
+                    }
+
+                    break;
+                }
+
+                case Kind.ReadonlyKeyword:
+                {
+                    links.resolvedType = this.getTypeFromTypeNode(argType);
+                    break;
+                }
+
+                default:
+                {
+                    throw new InvalidOperationException("Unhandled case in getTypeFromTypeOperatorNode");
+                }
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromArrayOrTupleTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            var target = this.getArrayOrTupleTargetType(node);
+            if ((target == this.emptyGenericType))
+            {
+                links.resolvedType = this.emptyObjectType;
+            }
+            else
+            {
+                if ((!(((node.Kind == Kind.TupleType) && Core.Some(node.Elements(), this.isVariadicTupleElement))) && this.isDeferredTypeReferenceNode(node, false)))
+                {
+                    if (((node.Kind == Kind.TupleType) && (GoRuntime.Len(node.Elements()) == 0)))
+                    {
+                        links.resolvedType = target;
+                    }
+                    else
+                    {
+                        links.resolvedType = this.createDeferredTypeReference(target, node, null, null);
+                    }
+                }
+                else
+                {
+                    List<Type> elementTypes = default;
+                    if ((node.Kind == Kind.ArrayType))
+                    {
+                        elementTypes = new List<Type>
+                        {
+                            this.getTypeFromTypeNode(node.AsArrayTypeNode().ElementType)
+                        };
+                    }
+                    else
+                    {
+                        elementTypes = Core.Map(node.Elements(), this.getTypeFromTypeNode);
+                    }
+
+                    if (((target.objectFlags & ObjectFlags.Tuple) != 0))
+                    {
+                        links.resolvedType = this.createNormalizedTupleTypeEx(target, elementTypes, ObjectFlags.FromTypeNode);
+                    }
+                    else
+                    {
+                        links.resolvedType = this.createTypeReferenceEx(target, elementTypes, ObjectFlags.FromTypeNode);
+                    }
+                }
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isVariadicTupleElement(Node node)
+    {
+        return ((this.getTupleElementFlags(node) & ElementFlags.Variadic) != 0);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getArrayOrTupleTargetType(Node node)
+    {
+        var @readonly = this.isReadonlyTypeOperator(node.Parent);
+        var elementType = this.getArrayElementTypeNode(node);
+        if ((elementType != null))
+        {
+            if (@readonly)
+            {
+                return this.globalReadonlyArrayType;
+            }
+
+            return this.globalArrayType;
+        }
+
+        return this.getTupleTargetType(Core.Map(node.Elements(), this.getTupleElementInfo), @readonly);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isReadonlyTypeOperator(Node node)
+    {
+        return (Ast.IsTypeOperatorNode(node) && (node.AsTypeOperatorNode().Operator == Kind.ReadonlyKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromNamedTupleTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            if ((node.AsNamedTupleMember().DotDotDotToken != null))
+            {
+                links.resolvedType = this.getTypeFromRestTypeNode(node);
+            }
+            else
+            {
+                links.resolvedType = this.addOptionalityEx(this.getTypeFromTypeNode(node.Type()), true, (node.QuestionToken() != null));
+            }
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromRestTypeNode(Node node)
+    {
+        var typeNode = node.Type();
+        var elementTypeNode = this.getArrayElementTypeNode(typeNode);
+        if ((elementTypeNode != null))
+        {
+            typeNode = elementTypeNode;
+        }
+
+        var result = this.getTypeFromTypeNode(typeNode);
+        if (elementTypeNode == null)
+            validateCollectionsResolvedRestType(node, result);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromOptionalTypeNode(Node node)
+    {
+        return this.addOptionalityEx(this.getTypeFromTypeNode(node.Type()), true, true);
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<IndexInfo> getIndexInfosOfIndexSymbol(Symbol indexSymbol, List<Symbol> siblingSymbols)
+    {
+        List<IndexInfo> indexInfos = default;
+        var hasComputedStringProperty = false;
+        var hasComputedNumberProperty = false;
+        var hasComputedSymbolProperty = false;
+        var readonlyComputedStringProperty = true;
+        var readonlyComputedNumberProperty = true;
+        var readonlyComputedSymbolProperty = true;
+        List<Symbol> propertySymbols = default;
+        {
+            foreach (var declaration in GoRuntime.RangeValues(indexSymbol.Declarations))
+            {
+                if (Ast.IsIndexSignatureDeclaration(declaration))
+                {
+                    var parameters = declaration.Parameters();
+                    var returnTypeNode = declaration.Type();
+                    if ((GoRuntime.Len(parameters) == 1))
+                    {
+                        var typeNode = parameters[0].Type();
+                        if ((typeNode != null))
+                        {
+                            var valueType = this.anyType;
+                            if ((returnTypeNode != null))
+                            {
+                                valueType = this.getTypeFromTypeNode(returnTypeNode);
+                            }
+
+                            forEachType(this.getTypeFromTypeNode(typeNode), (keyType) =>
+                            {
+                                if ((this.isValidIndexKeyType(keyType) && (findIndexInfo(indexInfos, keyType) == null)))
+                                {
+                                    var indexInfo = this.newIndexInfo(keyType, valueType, Ast.HasModifier(declaration, ModifierFlags.Readonly), declaration, null);
+                                    indexInfos = GoRuntime.Append(indexInfos, indexInfo);
+                                }
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    if (this.hasLateBindableIndexSignature(declaration))
+                    {
+                        Node declName = default;
+                        if (Ast.IsBinaryExpression(declaration))
+                        {
+                            declName = declaration.AsBinaryExpression().Left;
+                        }
+                        else
+                        {
+                            declName = declaration.Name();
+                        }
+
+                        Type keyType2 = default;
+                        if (Ast.IsElementAccessExpression(declName))
+                        {
+                            keyType2 = this.checkExpressionCached(declName.AsElementAccessExpression().ArgumentExpression);
+                        }
+                        else
+                        {
+                            keyType2 = this.checkComputedPropertyName(declName);
+                        }
+
+                        if ((findIndexInfo(indexInfos, keyType2) != null))
+                        {
+                            continue;
+                        }
+
+                        if (this.isTypeAssignableTo(keyType2, this.stringNumberSymbolType))
+                        {
+                            if (this.isTypeAssignableTo(keyType2, this.numberType))
+                            {
+                                hasComputedNumberProperty = true;
+                                if (!hasReadonlyModifier(declaration))
+                                {
+                                    readonlyComputedNumberProperty = false;
+                                }
+                            }
+                            else
+                            {
+                                if (this.isTypeAssignableTo(keyType2, this.esSymbolType))
+                                {
+                                    hasComputedSymbolProperty = true;
+                                    if (!hasReadonlyModifier(declaration))
+                                    {
+                                        readonlyComputedSymbolProperty = false;
+                                    }
+                                }
+                                else
+                                {
+                                    hasComputedStringProperty = true;
+                                    if (!hasReadonlyModifier(declaration))
+                                    {
+                                        readonlyComputedStringProperty = false;
+                                    }
+                                }
+                            }
+
+                            propertySymbols = GoRuntime.Append(propertySymbols, declaration.Symbol());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (((hasComputedStringProperty || hasComputedNumberProperty) || hasComputedSymbolProperty))
+        {
+            {
+                foreach (var range2 in GoRuntime.Range(siblingSymbols))
+                {
+                    var _2 = range2.Key;
+                    var sym = range2.Value;
+                    if ((sym != indexSymbol))
+                    {
+                        propertySymbols = GoRuntime.Append(propertySymbols, sym);
+                    }
+                }
+            }
+
+            if ((hasComputedStringProperty && (findIndexInfo(indexInfos, this.stringType) == null)))
+            {
+                indexInfos = GoRuntime.Append(indexInfos, this.getObjectLiteralIndexInfo(readonlyComputedStringProperty, propertySymbols, this.stringType));
+            }
+
+            if ((hasComputedNumberProperty && (findIndexInfo(indexInfos, this.numberType) == null)))
+            {
+                indexInfos = GoRuntime.Append(indexInfos, this.getObjectLiteralIndexInfo(readonlyComputedNumberProperty, propertySymbols, this.numberType));
+            }
+
+            if ((hasComputedSymbolProperty && (findIndexInfo(indexInfos, this.esSymbolType) == null)))
+            {
+                indexInfos = GoRuntime.Append(indexInfos, this.getObjectLiteralIndexInfo(readonlyComputedSymbolProperty, propertySymbols, this.esSymbolType));
+            }
+        }
+
+        return indexInfos;
+    }
+}
+
+public sealed partial class Checker
+{
+    private IndexInfo getObjectLiteralIndexInfo(bool isReadonly, List<Symbol> properties, Type keyType)
+    {
+        List<Type> propTypes = default;
+        List<Node> components = default;
+        {
+            foreach (var prop in GoRuntime.RangeValues(properties))
+            {
+                if (((((keyType == this.stringType) && !this.isSymbolWithSymbolName(prop)) || ((keyType == this.numberType) && this.isSymbolWithNumericName(prop))) || ((keyType == this.esSymbolType) && this.isSymbolWithSymbolName(prop))))
+                {
+                    propTypes = GoRuntime.Append(propTypes, this.getTypeOfSymbol(prop));
+                    if (this.isSymbolWithComputedName(prop))
+                    {
+                        components = GoRuntime.Append(components, prop.Declarations[0]);
+                    }
+                }
+            }
+        }
+
+        var unionType = this.undefinedType;
+        if ((GoRuntime.Len(propTypes) != 0))
+        {
+            unionType = this.getUnionTypeEx(propTypes, UnionReduction.Subtype, null, null);
+        }
+
+        return this.newIndexInfo(keyType, unionType, isReadonly, null, components);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSymbolWithSymbolName(Symbol symbol)
+    {
+        if (IsKnownSymbol(symbol))
+        {
+            return true;
+        }
+
+        if ((GoRuntime.Len(symbol.Declarations) != 0))
+        {
+            var name = symbol.Declarations[0].Name();
+            return (((name != null) && Ast.IsComputedPropertyName(name)) && this.isTypeAssignableToKind(this.checkComputedPropertyName(name), TypeFlags.ESSymbol));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSymbolWithNumericName(Symbol symbol)
+    {
+        if (isNumericLiteralName(symbol.Name))
+        {
+            return true;
+        }
+
+        if ((GoRuntime.Len(symbol.Declarations) != 0))
+        {
+            var name = symbol.Declarations[0].Name();
+            return ((name != null) && this.isNumericName(name));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasLateBindableIndexSignature(Node node)
+    {
+        var name = Ast.GetNameOfDeclaration(node);
+        return ((name != null) && this.isLateBindableIndexSignature(name));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromThisTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            links.resolvedType = this.getThisType(node);
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getThisType(Node node)
+    {
+        var container = Ast.GetThisContainer(node, false, false);
+        if ((container != null))
+        {
+            var parent = container.Parent;
+            if (((parent != null) && ((Ast.IsClassLike(parent) || Ast.IsInterfaceDeclaration(parent)))))
+            {
+                if ((!Ast.IsStatic(container) && ((!Ast.IsConstructorDeclaration(container) || isNodeDescendantOf(node, container.Body())))))
+                {
+                    return (this.getDeclaredTypeOfClassOrInterface(this.getSymbolOfDeclaration(parent)).AsInterfaceType().thisType ?? this.errorType);
+                }
+            }
+        }
+
+        this.error(node, Diagnostics.A_this_type_is_available_only_in_a_non_static_member_of_a_class_or_interface);
+        return this.errorType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromIndexedAccessTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            var objectType = this.getTypeFromTypeNode(node.AsIndexedAccessTypeNode().ObjectType);
+            var indexType = this.getTypeFromTypeNode(node.AsIndexedAccessTypeNode().IndexType);
+            var potentialAlias = this.getAliasForTypeNode(node);
+            links.resolvedType = this.getIndexedAccessTypeEx(objectType, indexType, AccessFlags.None, node, potentialAlias);
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromInferTypeNode(Node node)
+    {
+        var links = this.typeNodeLinks.Get(node);
+        if ((links.resolvedType == null))
+        {
+            links.resolvedType = this.getDeclaredTypeOfTypeParameter(this.getSymbolOfDeclaration(node.AsInferTypeNode().TypeParameter));
+        }
+
+        return links.resolvedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSymbolWithComputedName(Symbol symbol)
+    {
+        if ((GoRuntime.Len(symbol.Declarations) != 0))
+        {
+            var name = symbol.Declarations[0].Name();
+            return ((name != null) && Ast.IsComputedPropertyName(name));
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isNumericName(Node name)
+    {
+        switch (name.Kind)
+        {
+            case Kind.ComputedPropertyName:
+            {
+                return this.isNumericComputedName(name);
+            }
+
+            case Kind.Identifier:
+            case Kind.NumericLiteral:
+            case Kind.StringLiteral:
+            {
+                return isNumericLiteralName(name.Text());
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isLateBindableIndexSignature(Node node)
+    {
+        if (!isLateBindableAST(node))
+        {
+            return false;
+        }
+
+        if (Ast.IsComputedPropertyName(node))
+        {
+            return this.isTypeUsableAsIndexSignatureDeclaration(this.checkComputedPropertyName(node));
+        }
+
+        return this.isTypeUsableAsIndexSignatureDeclaration(this.checkExpressionCached(node.AsElementAccessExpression().ArgumentExpression));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isTypeUsableAsIndexSignatureDeclaration(Type t)
+    {
+        return this.isTypeAssignableTo(t, this.stringNumberSymbolType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isLateBindableAST(Node node)
+    {
+        Node expr = default;
+        switch (true)
+        {
+            case true when Ast.IsComputedPropertyName(node):
+            {
+                expr = node.Expression();
+                break;
+            }
+
+            case true when Ast.IsElementAccessExpression(node):
+            {
+                expr = node.AsElementAccessExpression().ArgumentExpression;
+                break;
+            }
+        }
+
+        return ((expr != null) && Ast.IsEntityNameExpression(expr));
+    }
+}
+
+public sealed partial class Checker
+{
+    internal Type getOrCreateTypeFromSignature(Signature sig)
+    {
+        if ((sig.isolatedSignatureType == null))
+        {
+            Kind kind = default;
+            if ((sig.declaration != null))
+            {
+                kind = sig.declaration.Kind;
+            }
+
+            var isConstructor = ((((kind == Kind.Unknown) || (kind == Kind.Constructor)) || (kind == Kind.ConstructSignature)) || (kind == Kind.ConstructorType));
+            Symbol symbol = default;
+            if ((sig.declaration != null))
+            {
+                symbol = sig.declaration.Symbol();
+            }
+
+            var t = this.newObjectType((ObjectFlags.Anonymous | ObjectFlags.SingleSignatureType), symbol);
+            if (isConstructor)
+            {
+                this.setStructuredTypeMembers(t, null, null, new List<Signature> { sig }, null);
+            }
+            else
+            {
+                this.setStructuredTypeMembers(t, null, new List<Signature> { sig }, null, null);
+            }
+
+            sig.isolatedSignatureType = t;
+        }
+
+        return sig.isolatedSignatureType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isNumericComputedName(Node name)
+    {
+        return this.isTypeAssignableToKind(this.checkComputedPropertyName(name), TypeFlags.NumberLike);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConditionalFlowTypeOfType(Type t, Node node)
+    {
+        List<Type> constraints = default;
+        var covariant = true;
+        while ((((node != null) && !Ast.IsStatement(node)) && (node.Kind != Kind.JSDoc)))
+        {
+            var parent = node.Parent;
+            if (Ast.IsParameterDeclaration(parent))
+            {
+                covariant = !covariant;
+            }
+
+            if (((((covariant || ((t.flags & TypeFlags.TypeVariable) != 0))) && Ast.IsConditionalTypeNode(parent)) && (node == parent.AsConditionalTypeNode().TrueType)))
+            {
+                var constraint = this.getImpliedConstraint(t, parent.AsConditionalTypeNode().CheckType, parent.AsConditionalTypeNode().ExtendsType);
+                if ((constraint != null))
+                {
+                    constraints = GoRuntime.Append(constraints, constraint);
+                }
+            }
+            else
+            {
+                if ((((((t.flags & TypeFlags.TypeParameter) != 0) && Ast.IsMappedTypeNode(parent)) && (parent.AsMappedTypeNode().NameType == null)) && (node == parent.Type())))
+                {
+                    var mappedType = this.getTypeFromTypeNode(parent);
+                    if ((this.getTypeParameterFromMappedType(mappedType) == this.getActualTypeVariable(t)))
+                    {
+                        var typeParameter = this.getHomomorphicTypeVariable(mappedType);
+                        if ((typeParameter != null))
+                        {
+                            var constraint2 = this.getConstraintOfTypeParameter(typeParameter);
+                            if (((constraint2 != null) && everyType(constraint2, isArrayOrTupleType)))
+                            {
+                                constraints = GoRuntime.Append(constraints, this.getUnionType(new List<Type> { this.numberType, this.numericStringType }));
+                            }
+                        }
+                    }
+                }
+            }
+
+            node = parent;
+        }
+
+        if ((GoRuntime.Len(constraints) != 0))
+        {
+            return this.getSubstitutionType(t, this.getIntersectionType(constraints));
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getImpliedConstraint(Type t, Node checkNode, Node extendsNode)
+    {
+        switch (true)
+        {
+            case true when (isUnaryTupleTypeNode(checkNode) && isUnaryTupleTypeNode(extendsNode)):
+            {
+                return this.getImpliedConstraint(t, checkNode.Elements()[0], extendsNode.Elements()[0]);
+            }
+
+            case true when (this.getActualTypeVariable(this.getTypeFromTypeNode(checkNode)) == this.getActualTypeVariable(t)):
+            {
+                return this.getTypeFromTypeNode(extendsNode);
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static CacheHashKey getTemplateTypeKey(List<string> texts, List<Type> types)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(types);
+        b.writeByte((byte)'|');
+        {
+            foreach (var s in GoRuntime.RangeValues(texts))
+            {
+                b.writeInt(GoRuntime.Len(s));
+            }
+        }
+
+        b.writeByte((byte)'|');
+        {
+            foreach (var range2 in GoRuntime.Range(texts))
+            {
+                var _2 = range2.Key;
+                var s2 = range2.Value;
+                b.writeString(s2);
+            }
+        }
+
+        return b.hash();
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type newTemplateLiteralType(List<string> texts, List<Type> types)
+    {
+        var data = new TemplateLiteralType
+        {
+        };
+        data.texts = texts;
+        data.types = types;
+        return this.newType(TypeFlags.TemplateLiteral, ObjectFlags.None, data);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isPatternLiteralPlaceholderType(Type t)
+    {
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            var seenPlaceholder = false;
+            {
+                foreach (var s in GoRuntime.RangeValues(t.Types()))
+                {
+                    if ((((s.flags & ((TypeFlags.Literal | TypeFlags.Nullable))) != 0) || this.isPatternLiteralPlaceholderType(s)))
+                    {
+                        seenPlaceholder = true;
+                    }
+                    else
+                    {
+                        if (((s.flags & TypeFlags.Object) == 0))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return seenPlaceholder;
+        }
+
+        return (((t.flags & ((((TypeFlags.Any | TypeFlags.String) | TypeFlags.Number) | TypeFlags.BigInt))) != 0) || this.isPatternLiteralType(t));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isPatternLiteralType(Type t)
+    {
+        return ((((t.flags & TypeFlags.TemplateLiteral) != 0) && Core.Every(t.AsTemplateLiteralType().types, this.isPatternLiteralPlaceholderType)) || (((t.flags & TypeFlags.StringMapping) != 0) && this.isPatternLiteralPlaceholderType(t.Target())));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTemplateLiteralType(List<string> texts, List<Type> types)
+    {
+        var unionIndex = Core.FindIndex(types, (t) =>
+        {
+            return ((t.flags & ((TypeFlags.Never | TypeFlags.Union))) != 0);
+        });
+        if ((unionIndex >= 0))
+        {
+            if (!this.checkCrossProductUnion(types))
+            {
+                return this.errorType;
+            }
+
+            return this.mapType(types[unionIndex], (t2) =>
+            {
+                return this.getTemplateLiteralType(texts, Core.ReplaceElement(types, unionIndex, t2));
+            });
+        }
+
+        if (GoSlices.Contains(types, this.wildcardType))
+        {
+            return this.wildcardType;
+        }
+
+        List<Type> newTypes = default;
+        List<string> newTexts = default;
+        GoBuilder sb = new GoBuilder();
+        sb.WriteString(texts[0]);
+        var textLength = 0;
+        var tooLarge = false;
+        Func<List<string>, List<Type>, bool> addSpans = default;
+        addSpans = (texts2, types2) =>
+        {
+            {
+                foreach (var range4 in GoRuntime.Range(types2))
+                {
+                    var i = range4.Key;
+                    var t3 = range4.Value;
+                    switch (true)
+                    {
+                        case true when ((t3.flags & (((TypeFlags.Literal | TypeFlags.Null) | TypeFlags.Undefined))) != 0):
+                        {
+                            sb.WriteString(this.getTemplateStringForType(t3));
+                            sb.WriteString(texts2[(i + 1)]);
+                            break;
+                        }
+
+                        case true when ((t3.flags & TypeFlags.TemplateLiteral) != 0):
+                        {
+                            sb.WriteString(t3.AsTemplateLiteralType().texts[0]);
+                            if (!addSpans(t3.AsTemplateLiteralType().texts, t3.AsTemplateLiteralType().types))
+                            {
+                                return false;
+                            }
+
+                            sb.WriteString(texts2[(i + 1)]);
+                            break;
+                        }
+
+                        case true when (this.isGenericIndexType(t3) || this.isPatternLiteralPlaceholderType(t3)):
+                        {
+                            newTypes = GoRuntime.Append(newTypes, t3);
+                            newTexts = GoRuntime.Append(newTexts, StringUtil.CombineSurrogatePairs(sb.String()));
+                            textLength += sb.Len();
+                            sb = new GoBuilder();
+                            sb.WriteString(texts2[(i + 1)]);
+                            break;
+                        }
+
+                        default:
+                        {
+                            return false;
+                        }
+                    }
+
+                    if ((((textLength + sb.Len()) > maxTemplateLiteralTypeLength) || (GoRuntime.Len(newTypes) > maxTemplateLiteralTypeSpans)))
+                    {
+                        tooLarge = true;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        };
+        if (!addSpans(texts, types))
+        {
+            if (tooLarge)
+            {
+                this.error(this.currentNode, Diagnostics.Type_instantiation_is_excessively_deep_and_possibly_infinite);
+                return this.errorType;
+            }
+
+            return this.stringType;
+        }
+
+        if ((GoRuntime.Len(newTypes) == 0))
+        {
+            return this.getStringLiteralType(StringUtil.CombineSurrogatePairs(sb.String()));
+        }
+
+        newTexts = GoRuntime.Append(newTexts, StringUtil.CombineSurrogatePairs(sb.String()));
+        if (Core.Every(newTexts, (t4) =>
+        {
+            return (t4 == "");
+        }))
+        {
+            if (Core.Every(newTypes, (t5) =>
+            {
+                return ((t5.flags & TypeFlags.String) != 0);
+            }))
+            {
+                return this.stringType;
+            }
+
+            if (((GoRuntime.Len(newTypes) == 1) && this.isPatternLiteralType(newTypes[0])))
+            {
+                return newTypes[0];
+            }
+        }
+
+        var key = getTemplateTypeKey(newTexts, newTypes);
+        this.templateLiteralTypes.TryGetValue(key, out var t6);
+        if ((t6 == null))
+        {
+            t6 = this.newTemplateLiteralType(newTexts, newTypes);
+            this.templateLiteralTypes[key] = t6;
+        }
+
+        return t6;
+    }
+}
+
+public sealed partial class Checker
+{
+    private string getTemplateStringForType(Type t)
+    {
+        switch (true)
+        {
+            case true when ((t.flags & ((((TypeFlags.StringLiteral | TypeFlags.NumberLiteral) | TypeFlags.BooleanLiteral) | TypeFlags.BigIntLiteral))) != 0):
+            {
+                return Evaluator.AnyToString(t.AsLiteralType().value);
+            }
+
+            case true when ((t.flags & TypeFlags.Nullable) != 0):
+            {
+                return t.AsIntrinsicType().intrinsicName;
+            }
+        }
+
+        return "";
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type parseBigIntLiteralType(string text)
+    {
+        return this.getBigIntLiteralType(JsNum.ParseValidBigInt(text));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkIteratedTypeOrElementType(IterationUse use, Type inputType, Type sentType, Node errorNode)
+    {
+        if (IsTypeAny(inputType))
+        {
+            return inputType;
+        }
+
+        var t = this.getIteratedTypeOrElementType(use, inputType, sentType, errorNode, true);
+        if ((t != null))
+        {
+            return t;
+        }
+
+        return this.anyType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIteratedTypeOrElementType(IterationUse use, Type inputType, Type sentType, Node errorNode, bool checkAssignability)
+    {
+        var allowAsyncIterables = (((use & IterationUse.AllowsAsyncIterablesFlag)) != 0);
+        if ((inputType == this.neverType))
+        {
+            if ((errorNode != null))
+            {
+                this.reportTypeNotIterableError(errorNode, inputType, allowAsyncIterables);
+            }
+
+            return null;
+        }
+
+        var iterableExists = (this.getGlobalIterableType() != this.emptyGenericType);
+        var possibleOutOfBounds = ((this.compilerOptions.NoUncheckedIndexedAccess == Tristate.True) && ((use & IterationUse.PossiblyOutOfBounds) != 0));
+        if (iterableExists || allowAsyncIterables)
+            throw unsupported("getIteratedTypeOrElementType: custom sync/async iterator environment");
+        var arrayType = inputType;
+        var hasStringConstituent = false;
+        if (((use & IterationUse.AllowsStringInputFlag) != 0))
+        {
+            if (((arrayType.flags & TypeFlags.Union) != 0))
+            {
+                var arrayTypes = inputType.Types();
+                var filteredTypes = Core.Filter(arrayTypes, (t) =>
+                {
+                    return ((t.flags & TypeFlags.StringLike) == 0);
+                });
+                if (!Core.Same(filteredTypes, arrayTypes))
+                {
+                    arrayType = this.getUnionTypeEx(filteredTypes, UnionReduction.Subtype, null, null);
+                }
+            }
+            else
+            {
+                if (((arrayType.flags & TypeFlags.StringLike) != 0))
+                {
+                    arrayType = this.neverType;
+                }
+            }
+
+            hasStringConstituent = (arrayType != inputType);
+            if (hasStringConstituent)
+            {
+                if (((arrayType.flags & TypeFlags.Never) != 0))
+                {
+                    if (possibleOutOfBounds)
+                    {
+                        return this.includeUndefinedInIndexSignature(this.stringType);
+                    }
+
+                    return this.stringType;
+                }
+            }
+        }
+
+        if (!this.isArrayLikeType(arrayType))
+        {
+            if ((errorNode != null))
+            {
+                var allowsStrings = (((use & IterationUse.AllowsStringInputFlag) != 0) && !hasStringConstituent);
+                var tuple1 = this.getIterationDiagnosticDetails(use, inputType, allowsStrings);
+                var defaultDiagnostic = tuple1.Item1;
+                var maybeMissingAwait = tuple1.Item2;
+                this.errorAndMaybeSuggestAwait(errorNode, (maybeMissingAwait && (this.getAwaitedTypeOfPromise(arrayType) != null)), defaultDiagnostic, this.typeToStringByteString(arrayType));
+            }
+
+            if (hasStringConstituent)
+            {
+                if (possibleOutOfBounds)
+                {
+                    return this.includeUndefinedInIndexSignature(this.stringType);
+                }
+
+                return this.stringType;
+            }
+
+            return null;
+        }
+
+        var arrayElementType = this.getIndexTypeOfType(arrayType, this.numberType);
+        if ((hasStringConstituent && (arrayElementType != null)))
+        {
+            if ((((arrayElementType.flags & TypeFlags.StringLike) != 0) && (this.compilerOptions.NoUncheckedIndexedAccess != Tristate.True)))
+            {
+                return this.stringType;
+            }
+
+            if (possibleOutOfBounds)
+            {
+                return this.getUnionTypeEx(new List<Type> { arrayElementType, this.stringType, this.undefinedType }, UnionReduction.Subtype, null, null);
+            }
+
+            return this.getUnionTypeEx(new List<Type> { arrayElementType, this.stringType }, UnionReduction.Subtype, null, null);
+        }
+
+        if (((use & IterationUse.PossiblyOutOfBounds) != 0))
+        {
+            return this.includeUndefinedInIndexSignature(arrayElementType);
+        }
+
+        return arrayElementType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Diagnostic reportTypeNotIterableError(Node errorNode, Type t, bool allowAsyncIterables)
+    {
+        Message message = default;
+        if (allowAsyncIterables)
+        {
+            message = Diagnostics.Type_0_must_have_a_Symbol_asyncIterator_method_that_returns_an_async_iterator;
+        }
+        else
+        {
+            message = Diagnostics.Type_0_must_have_a_Symbol_iterator_method_that_returns_an_iterator;
+        }
+
+        var suggestAwait = ((this.getAwaitedTypeOfPromise(t) != null) || (((((!allowAsyncIterables && Ast.IsForOfStatement(errorNode.Parent)) && (errorNode.Parent.Expression() == errorNode)) && (this.getGlobalAsyncIterableType() != this.emptyGenericType)) && this.isTypeAssignableTo(t, this.createTypeFromGenericGlobalType(this.getGlobalAsyncIterableType(), new List<Type> { this.anyType, this.anyType, this.anyType })))));
+        return this.errorAndMaybeSuggestAwait(errorNode, suggestAwait, message, this.typeToStringByteString(t));
+    }
+}
+
+public sealed partial class Checker
+{
+    private (Message, bool) getIterationDiagnosticDetails(IterationUse use, Type inputType, bool allowsStrings)
+    {
+        var yieldType = this.getIterationTypesOfIterable(inputType, use, null).yieldType;
+        if ((yieldType != null))
+        {
+            return (Diagnostics.Type_0_can_only_be_iterated_through_when_using_the_downlevelIteration_flag_or_with_a_target_of_es2015_or_higher, false);
+        }
+
+        if (((inputType.symbol != null) && isES2015OrLaterIterable(inputType.symbol.Name)))
+        {
+            return (Diagnostics.Type_0_can_only_be_iterated_through_when_using_the_downlevelIteration_flag_or_with_a_target_of_es2015_or_higher, true);
+        }
+
+        if (allowsStrings)
+        {
+            return (Diagnostics.Type_0_is_not_an_array_type_or_a_string_type, true);
+        }
+
+        return (Diagnostics.Type_0_is_not_an_array_type, true);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkRightHandSideOfForOf(Node statement)
+    {
+        var use = Core.IfElse((statement.AsForInOrOfStatement().AwaitModifier != null), IterationUse.ForAwaitOf, IterationUse.ForOf);
+        return this.checkIteratedTypeOrElementType(use, this.checkNonNullExpression(statement.Expression()), this.undefinedType, statement.Expression());
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getNonNullableTypeIfNeeded(Type t)
+    {
+        if (this.IsNullableType(t))
+        {
+            return this.GetNonNullableType(t);
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature getSingleCallOrConstructSignature(Type t)
+    {
+        var callSig = this.getSingleSignature(t, SignatureKind.Call, false);
+        if ((callSig != null))
+        {
+            return callSig;
+        }
+
+        return this.getSingleSignature(t, SignatureKind.Construct, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isArrayOrTupleOrIntersection(Type t)
+    {
+        return (((t.flags & TypeFlags.Intersection) != 0) && Core.Every(t.Types(), this.isArrayOrTupleType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool getBooleanLiteralValue(Type t)
+    {
+        return ((bool)t.AsLiteralType().value);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type mapTypeWithAlias(Type t, Func<Type, Type> f, TypeAlias alias)
+    {
+        if ((((t.flags & TypeFlags.Union) != 0) && (alias != null)))
+        {
+            return this.getUnionTypeEx(Core.Map(t.Types(), f), UnionReduction.Literal, alias, null);
+        }
+
+        return this.mapType(t, f);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isStringIndexSignatureOnlyType(Type t)
+    {
+        return (((((((t.flags & TypeFlags.Object) != 0) && !this.isGenericMappedType(t)) && (GoRuntime.Len(this.getPropertiesOfType(t)) == 0)) && (GoRuntime.Len(this.getIndexInfosOfType(t)) == 1)) && (this.getIndexInfoOfType(t, this.stringType) != null)) || (((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(t.Types(), this.isStringIndexSignatureOnlyType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool couldAccessOptionalProperty(Type objectType, Type indexType)
+    {
+        var indexConstraint = this.getBaseConstraintOfType(indexType);
+        return ((indexConstraint != null) && Core.Some(this.getPropertiesOfType(objectType), (p) =>
+        {
+            return (((p.Flags & SymbolFlags.Optional) != 0) && this.isTypeAssignableTo(this.getLiteralTypeFromProperty(p, TypeFlags.StringOrNumberLiteralOrUnique, false), indexConstraint));
+        }));
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:484. Keep original use bit preimages, including library-only flags.
+    [Flags]
+    private enum IterationUse : uint
+    {
+        None = 0,
+        AllowsSyncIterablesFlag = 1,
+        AllowsAsyncIterablesFlag = 2,
+        AllowsStringInputFlag = 4,
+        ForOfFlag = 8,
+        YieldStarFlag = 16,
+        SpreadFlag = 32,
+        DestructuringFlag = 64,
+        PossiblyOutOfBounds = 128,
+        Element = AllowsSyncIterablesFlag,
+        Spread = AllowsSyncIterablesFlag | SpreadFlag,
+        Destructuring = AllowsSyncIterablesFlag | DestructuringFlag,
+        ForOf = AllowsSyncIterablesFlag | AllowsStringInputFlag | ForOfFlag,
+        ForAwaitOf = AllowsSyncIterablesFlag | AllowsAsyncIterablesFlag | AllowsStringInputFlag | ForOfFlag,
+        YieldStar = AllowsSyncIterablesFlag | YieldStarFlag,
+        AsyncYieldStar = AllowsSyncIterablesFlag | AllowsAsyncIterablesFlag | YieldStarFlag,
+        GeneratorReturnType = AllowsSyncIterablesFlag,
+        AsyncGeneratorReturnType = AllowsAsyncIterablesFlag,
+        CacheFlags = AllowsSyncIterablesFlag | AllowsAsyncIterablesFlag | ForOfFlag
+    }
+
+    // checker.go:511/160. The original cache key is a constituent value record.
+    private readonly record struct IterationTypesKey(uint typeId, IterationUse use);
+    private readonly Dictionary<IterationTypesKey, IterationTypes> iterationTypesCache = new();
+    private readonly record struct IterationTypes(Type yieldType, Type returnType, Type nextType)
+    {
+        internal bool hasTypes() => yieldType != null || returnType != null || nextType != null;
+    }
+
+    // checker.go:524. Selected resolver fields used by synchronous absence probing.
+    // Nonempty custom iterators and async iteration retain explicit boundaries.
+    private sealed class IterationTypesResolver
+    {
+        internal string iteratorSymbolName;
+        internal Func<Type> getGlobalIterableType, getGlobalIteratorObjectType, getGlobalIterableIteratorType, getGlobalGeneratorType;
+        internal Func<List<Type>> getGlobalBuiltinIteratorTypes;
+    }
+
+    private IterationTypesResolver syncIterationTypesResolver;
+    private void initializeSyncIterationTypesResolver()
+    {
+        syncIterationTypesResolver = new IterationTypesResolver
+        {
+            iteratorSymbolName = "iterator",
+            getGlobalIterableType = getGlobalIterableType,
+            getGlobalIteratorObjectType = memoize(() => getGlobalType("IteratorObject", 3, false)),
+            getGlobalIterableIteratorType = getGlobalIterableIteratorType,
+            getGlobalGeneratorType = memoize(() => getGlobalType("Generator", 3, false)),
+            getGlobalBuiltinIteratorTypes = memoize(() => Core.Map(new List<string> { "ArrayIterator", "MapIterator", "SetIterator", "StringIterator" }, name => getGlobalType(name, 1, false)))
+        };
+    }
+
+    // checker.go:6466. Cache even the actual all-nil iteration result; diagnostics
+    // bypass negative cache entries without publishing new results for that call.
+    private IterationTypes getIterationTypesOfIterable(Type t, IterationUse use, Node errorNode)
+    {
+        t = getReducedType(t);
+        if (IsTypeAny(t))
+            return new IterationTypes(anyType, anyType, anyType);
+        var key = new IterationTypesKey(t.id, use & IterationUse.CacheFlags);
+        bool noCache = false;
+        if (iterationTypesCache.TryGetValue(key, out var cached))
+        {
+            if (errorNode == null || cached.hasTypes())
+                return cached;
+            noCache = true;
+        }
+
+        var result = getIterationTypesOfIterableWorker(t, use, errorNode, noCache);
+        if (!noCache)
+            iterationTypesCache[key] = result;
+        return result;
+    }
+
+    // checker.go:6488. Preserve union decomposition and deferred diagnostics.
+    private IterationTypes getIterationTypesOfIterableWorker(Type t, IterationUse use, Node errorNode, bool noCache)
+    {
+        if ((t.flags & TypeFlags.Union) != 0)
+        {
+            var all = new List<IterationTypes>(t.Types().Count);
+            foreach (var constituent in GoRuntime.RangeValues(t.Types()))
+            {
+                var types = getIterationTypesOfIterableWorker(constituent, use, null, noCache);
+                if (!types.hasTypes())
+                {
+                    if (errorNode != null)
+                        addDeferredDiagnostic(() => reportTypeNotIterableError(errorNode, t, (use & IterationUse.AllowsAsyncIterablesFlag) != 0));
+                    return default;
+                }
+
+                all.Add(types);
+            }
+
+            return combineIterationTypes(all);
+        }
+
+        if ((use & IterationUse.AllowsAsyncIterablesFlag) != 0)
+            throw unsupported("getIterationTypesOfIterableWorker: async iterator environment");
+        if ((use & IterationUse.AllowsSyncIterablesFlag) != 0)
+        {
+            var types = getIterationTypesOfIterableFast(t, syncIterationTypesResolver);
+            if (types.hasTypes())
+                return types;
+            types = getIterationTypesOfIterableSlow(t, syncIterationTypesResolver, errorNode);
+            if (types.hasTypes())
+                return types;
+        }
+
+        if (errorNode != null)
+            addDeferredDiagnostic(() => reportTypeNotIterableError(errorNode, t, (use & IterationUse.AllowsAsyncIterablesFlag) != 0));
+        return default;
+    }
+
+    // checker.go:6558. Preserve all original global lookup calls in fast-path order.
+    private IterationTypes getIterationTypesOfIterableFast(Type t, IterationTypesResolver resolver)
+    {
+        if (isReferenceToType(t, resolver.getGlobalIterableType()) || isReferenceToType(t, resolver.getGlobalIteratorObjectType()) || isReferenceToType(t, resolver.getGlobalIterableIteratorType()) || isReferenceToType(t, resolver.getGlobalGeneratorType()))
+        {
+            var arguments = getTypeArguments(t);
+            return new IterationTypes(arguments[0], arguments[1], arguments[2]);
+        }
+
+        if (isReferenceToSomeType(t, resolver.getGlobalBuiltinIteratorTypes()))
+            return new IterationTypes(getTypeArguments(t)[0], getBuiltinIteratorReturnType(), unknownType);
+        return default;
+    }
+
+    // checker.go:6661. Real absence/optional-member arm. Any-valued methods retain
+    // the original any result; concrete custom iterator payloads are source-excluded.
+    private IterationTypes getIterationTypesOfIterableSlow(Type t, IterationTypesResolver resolver, Node errorNode)
+    {
+        var method = getPropertyOfType(t, getPropertyNameForKnownSymbolName(resolver.iteratorSymbolName));
+        if (method != null && (method.Flags & SymbolFlags.Optional) == 0)
+        {
+            var methodType = getTypeOfSymbol(method);
+            if (IsTypeAny(methodType))
+                return new IterationTypes(anyType, anyType, anyType);
+            var allSignatures = getSignaturesOfType(methodType, SignatureKind.Call);
+            var valid = Core.Filter(allSignatures, signature => getMinArgumentCount(signature) == 0);
+            if ((valid?.Count ?? 0) != 0)
+            {
+                var iterator = getIntersectionType(Core.Map(valid, getReturnTypeOfSignature));
+                throw unsupported("getIterationTypesOfIteratorWorker: custom iterator payload");
+            }
+
+            if (errorNode != null && (allSignatures?.Count ?? 0) != 0)
+                throw unsupported("getIterationTypesOfIterableSlow: custom iterator diagnostic");
+        }
+
+        return default;
+    }
+
+    // checker.go:6617. Preserve nil-filtering and constituent union order.
+    private IterationTypes combineIterationTypes(List<IterationTypes> types) => new(getIterationTypeUnion(types, item => item.yieldType), getIterationTypeUnion(types, item => item.returnType), getIterationTypeUnion(types, item => item.nextType));
+    private Type getIterationTypeUnion(List<IterationTypes> types, Func<IterationTypes, Type> select)
+    {
+        var values = Core.MapNonNil(types, select);
+        return (values?.Count ?? 0) == 0 ? null : getUnionType(values);
+    }
+
+    // checker.go:6602.
+    private static bool isReferenceToSomeType(Type t, List<Type> targets) => t != null && (t.objectFlags & ObjectFlags.Reference) != 0 && GoSlices.Contains(targets, t.Target());
+    // checker.go:6930. These names receive the original target-version diagnostic.
+    private static bool isES2015OrLaterIterable(string name) => name is "Float32Array" or "Float64Array" or "Int16Array" or "Int32Array" or "Int8Array" or "NodeList" or "Uint16Array" or "Uint32Array" or "Uint8Array" or "Uint8ClampedArray";
+}
+
+public sealed partial class Checker
+{
+    private List<Type> checkTypeArguments(Signature signature, List<Node> typeArgumentNodes, bool reportErrors, Message headMessage)
+    {
+        var isJavaScript = Ast.IsInJSFile(signature.declaration);
+        var typeParameters = signature.typeParameters;
+        var typeArgumentTypes = this.fillMissingTypeArguments(Core.Map(typeArgumentNodes, this.getTypeFromTypeNode), typeParameters, this.getMinTypeArgumentCount(typeParameters), isJavaScript);
+        TypeMapper mapper = default;
+        {
+            foreach (var i in GoRuntime.RangeKeys(typeArgumentNodes))
+            {
+                Debug.Assert((typeParameters[i] != null), "Should not call checkTypeArguments with too many type arguments");
+                var constraint = this.getConstraintOfTypeParameter(typeParameters[i]);
+                if ((constraint != null))
+                {
+                    var typeArgumentHeadMessage = Core.OrElse(headMessage, Diagnostics.Type_0_does_not_satisfy_the_constraint_1);
+                    if ((mapper == null))
+                    {
+                        mapper = newTypeMapper(typeParameters, typeArgumentTypes);
+                    }
+
+                    var typeArgument = typeArgumentTypes[i];
+                    Node errorNode = default;
+                    if (reportErrors)
+                    {
+                        errorNode = typeArgumentNodes[i];
+                    }
+
+                    var diags = new List<Diagnostic>();
+                    if (!this.checkTypeAssignableToEx(typeArgument, this.getTypeWithThisArgument(this.instantiateType(constraint, mapper), typeArgument, false), errorNode, typeArgumentHeadMessage, diags))
+                    {
+                        if ((GoRuntime.Len(diags) != 0))
+                        {
+                            var diagnostic = diags[0];
+                            if ((headMessage != null))
+                            {
+                                diagnostic = Ast.NewDiagnosticChain(diagnostic, Diagnostics.Type_0_does_not_satisfy_the_constraint_1);
+                            }
+
+                            this.addDiagnostic(diagnostic);
+                        }
+
+                        return null;
+                    }
+                }
+            }
+        }
+
+        return typeArgumentTypes;
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> inferTypeArguments(Node node, Signature signature, List<Node> args, CheckMode checkMode, InferenceContext context)
+    {
+        if (Ast.IsJsxOpeningLikeElement(node))
+        {
+            throw unsupported("inferTypeArguments: JSX");
+        }
+
+        if ((!Ast.IsDecorator(node) && !Ast.IsBinaryExpression(node)))
+        {
+            var skipBindingPatterns = Core.Every(signature.typeParameters, (p) =>
+            {
+                return (this.getDefaultFromTypeParameter(p) != null);
+            });
+            var contextualType = this.getContextualType(node, Core.IfElse(skipBindingPatterns, ContextFlags.SkipBindingPatterns, ContextFlags.None));
+            if ((contextualType != null))
+            {
+                var inferenceTargetType = this.getReturnTypeOfSignature(signature);
+                if (this.couldContainTypeVariables(inferenceTargetType))
+                {
+                    var outerContext = this.getInferenceContext(node);
+                    var isFromBindingPattern = (!skipBindingPatterns && (this.getContextualType(node, ContextFlags.SkipBindingPatterns) != contextualType));
+                    if (!isFromBindingPattern)
+                    {
+                        var outerMapper = this.getMapperFromContext(this.cloneInferenceContext(outerContext, InferenceFlags.NoDefault));
+                        var instantiatedType = this.instantiateType(contextualType, outerMapper);
+                        var contextualSignature = this.getSingleCallSignature(instantiatedType);
+                        Type inferenceSourceType = default;
+                        if (((contextualSignature != null) && (GoRuntime.Len(contextualSignature.typeParameters) != 0)))
+                        {
+                            inferenceSourceType = this.getOrCreateTypeFromSignature(this.getSignatureInstantiationWithoutFillingInTypeArguments(contextualSignature, contextualSignature.typeParameters));
+                        }
+                        else
+                        {
+                            inferenceSourceType = instantiatedType;
+                        }
+
+                        this.inferTypes(context.inferences, inferenceSourceType, inferenceTargetType, InferencePriority.ReturnType, false);
+                    }
+
+                    var returnContext = this.newInferenceContext(signature.typeParameters, signature, context.flags, null);
+                    TypeMapper outerReturnMapper = default;
+                    if ((outerContext != null))
+                    {
+                        outerReturnMapper = this.createOuterReturnMapper(outerContext);
+                    }
+
+                    var returnSourceType = this.instantiateType(contextualType, outerReturnMapper);
+                    this.inferTypes(returnContext.inferences, returnSourceType, inferenceTargetType, InferencePriority.None, false);
+                    if (Core.Some(returnContext.inferences, hasInferenceCandidates))
+                    {
+                        context.returnMapper = this.getMapperFromContext(this.cloneInferredPartOfContext(returnContext));
+                    }
+                    else
+                    {
+                        context.returnMapper = null;
+                    }
+                }
+            }
+        }
+
+        var restType = this.getNonArrayRestType(signature);
+        var argCount = GoRuntime.Len(args);
+        if ((restType != null))
+        {
+            argCount = Math.Min((this.getParameterCount(signature) - 1), argCount);
+        }
+
+        if (((restType != null) && ((restType.flags & TypeFlags.TypeParameter) != 0)))
+        {
+            var info = Core.Find(context.inferences, (info2) =>
+            {
+                return (info2.typeParameter == restType);
+            });
+            if ((info != null))
+            {
+                if ((Core.FindIndex(GoRuntime.Slice(args, argCount), isSpreadArgument) < 0))
+                {
+                    info.impliedArity = (GoRuntime.Len(args) - argCount);
+                }
+            }
+        }
+
+        var thisType = this.getThisTypeOfSignature(signature);
+        if (((thisType != null) && this.couldContainTypeVariables(thisType)))
+        {
+            var thisArgumentNode = this.getThisArgumentOfCall(node);
+            this.inferTypes(context.inferences, this.getThisArgumentType(thisArgumentNode), thisType, InferencePriority.None, false);
+        }
+
+        {
+            foreach (var i in GoRuntime.RangeKeys(argCount))
+            {
+                var arg = args[i];
+                if ((arg.Kind != Kind.OmittedExpression))
+                {
+                    var paramType = this.getTypeAtPosition(signature, i);
+                    if (this.couldContainTypeVariables(paramType))
+                    {
+                        var argType = this.checkExpressionWithContextualType(arg, paramType, context, checkMode);
+                        this.inferTypes(context.inferences, argType, paramType, InferencePriority.None, false);
+                    }
+                }
+            }
+        }
+
+        if (((restType != null) && this.couldContainTypeVariables(restType)))
+        {
+            var spreadType = this.getSpreadArgumentType(args, argCount, GoRuntime.Len(args), restType, context, checkMode);
+            this.inferTypes(context.inferences, spreadType, restType, InferencePriority.None, false);
+        }
+
+        return this.getInferredTypes(context);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isGenericFunctionReturningFunction(Signature signature)
+    {
+        return ((GoRuntime.Len(signature.typeParameters) != 0) && this.isFunctionType(this.getReturnTypeOfSignature(signature)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private void skippedGenericFunction(Node node, CheckMode checkMode)
+    {
+        if (((checkMode & CheckMode.Inferential) != 0))
+        {
+            var context = this.getInferenceContext(node);
+            context.flags |= InferenceFlags.SkippedGenericFunction;
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSpreadArgumentType(List<Node> args, int index, int argCount, Type restType, InferenceContext context, CheckMode checkMode)
+    {
+        var inConstContext = this.isConstTypeVariable(restType, 0);
+        if (((argCount > 0) && (index >= (argCount - 1))))
+        {
+            var arg = args[(argCount - 1)];
+            if (isSpreadArgument(arg))
+            {
+                Type spreadType = default;
+                if (Ast.IsSyntheticExpression(arg))
+                {
+                    spreadType = ((Type)arg.AsSyntheticExpression().Type);
+                }
+                else
+                {
+                    spreadType = this.checkExpressionWithContextualType(arg.Expression(), restType, context, checkMode);
+                }
+
+                if (this.isArrayLikeType(spreadType))
+                {
+                    return this.getMutableArrayOrTupleType(spreadType);
+                }
+
+                if (Ast.IsSpreadElement(arg))
+                {
+                    arg = arg.Expression();
+                }
+
+                return this.createArrayTypeEx(this.checkIteratedTypeOrElementType(IterationUse.Spread, spreadType, this.undefinedType, arg), inConstContext);
+            }
+        }
+
+        List<Type> types = default;
+        List<TupleElementInfo> infos = default;
+        {
+            var i = index;
+            for (; (i < argCount); i++)
+            {
+                var arg2 = args[i];
+                Type t = default;
+                TupleElementInfo info = default;
+                if (isSpreadArgument(arg2))
+                {
+                    Type spreadType2 = default;
+                    if (Ast.IsSyntheticExpression(arg2))
+                    {
+                        spreadType2 = ((Type)arg2.AsSyntheticExpression().Type);
+                    }
+                    else
+                    {
+                        spreadType2 = this.checkExpression(arg2.Expression());
+                    }
+
+                    if (this.isArrayLikeType(spreadType2))
+                    {
+                        t = spreadType2;
+                        info.flags = ElementFlags.Variadic;
+                    }
+                    else
+                    {
+                        if (Ast.IsSpreadElement(arg2))
+                        {
+                            t = this.checkIteratedTypeOrElementType(IterationUse.Spread, spreadType2, this.undefinedType, arg2.Expression());
+                        }
+                        else
+                        {
+                            t = this.checkIteratedTypeOrElementType(IterationUse.Spread, spreadType2, this.undefinedType, arg2);
+                        }
+
+                        info.flags = ElementFlags.Rest;
+                    }
+                }
+                else
+                {
+                    Type contextualType = default;
+                    if (isTupleType(restType))
+                    {
+                        contextualType = Core.OrElse(this.getContextualTypeForElementExpression(restType, (i - index), (argCount - index), -1, -1), this.unknownType);
+                    }
+                    else
+                    {
+                        contextualType = this.getIndexedAccessTypeEx(restType, this.getNumberLiteralType(new JsNum.Number(i - index)), AccessFlags.Contextual, null, null);
+                    }
+
+                    var argType = this.checkExpressionWithContextualType(arg2, contextualType, context, checkMode);
+                    var hasPrimitiveContextualType = (inConstContext || this.maybeTypeOfKind(contextualType, (((TypeFlags.Primitive | TypeFlags.Index) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping)));
+                    if (hasPrimitiveContextualType)
+                    {
+                        t = this.getRegularTypeOfLiteralType(argType);
+                    }
+                    else
+                    {
+                        t = this.getWidenedLiteralType(argType);
+                    }
+
+                    info.flags = ElementFlags.Required;
+                }
+
+                if ((Ast.IsSyntheticExpression(arg2) && (arg2.AsSyntheticExpression().TupleNameSource != null)))
+                {
+                    info.labeledDeclaration = arg2.AsSyntheticExpression().TupleNameSource;
+                }
+
+                types = GoRuntime.Append(types, t);
+                infos = GoRuntime.Append(infos, info);
+            }
+        }
+
+        return this.createTupleTypeEx(types, infos, (inConstContext && !someType(restType, this.isMutableArrayLikeType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getMutableArrayOrTupleType(Type t)
+    {
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.Union) != 0):
+            {
+                return this.mapType(t, this.getMutableArrayOrTupleType);
+            }
+
+            case true when (((t.flags & TypeFlags.Any) != 0) || this.isMutableArrayOrTuple(this.getBaseConstraintOrType(t))):
+            {
+                return t;
+            }
+
+            case true when isTupleType(t):
+            {
+                return this.createTupleTypeEx(this.getElementTypes(t), t.TargetTupleType().elementInfos, false);
+            }
+        }
+
+        return this.createTupleTypeEx(new List<Type> { t }, new List<TupleElementInfo> { new TupleElementInfo { flags = ElementFlags.Variadic } }, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateInstantiableTypes(Type t, TypeMapper mapper)
+    {
+        if (((t.flags & TypeFlags.Instantiable) != 0))
+        {
+            return this.instantiateType(t, mapper);
+        }
+
+        if (((t.flags & TypeFlags.Union) != 0))
+        {
+            return this.getUnionTypeEx(Core.Map(t.Types(), (t2) =>
+            {
+                return this.instantiateInstantiableTypes(t2, mapper);
+            }), UnionReduction.None, null, null);
+        }
+
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            return this.getIntersectionType(Core.Map(t.Types(), (t3) =>
+            {
+                return this.instantiateInstantiableTypes(t3, mapper);
+            }));
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getTypeArgumentsFromNodes(List<Node> typeArgumentNodes, List<Type> typeParameters)
+    {
+        if ((GoRuntime.Len(typeArgumentNodes) > GoRuntime.Len(typeParameters)))
+        {
+            typeArgumentNodes = GoRuntime.Slice(typeArgumentNodes, 0, GoRuntime.Len(typeParameters));
+        }
+
+        var typeArguments = Core.Map(typeArgumentNodes, this.getTypeFromTypeNode);
+        while ((GoRuntime.Len(typeArguments) < GoRuntime.Len(typeParameters)))
+        {
+            var t = this.getDefaultFromTypeParameter(typeParameters[GoRuntime.Len(typeArguments)]);
+            if ((t == null))
+            {
+                t = this.getConstraintOfTypeParameter(typeParameters[GoRuntime.Len(typeArguments)]);
+                if ((t == null))
+                {
+                    t = this.unknownType;
+                }
+            }
+
+            typeArguments = GoRuntime.Append(typeArguments, t);
+        }
+
+        return typeArguments;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature inferSignatureInstantiationForOverloadFailure(Node node, List<Type> typeParameters, Signature candidate, List<Node> args, CheckMode checkMode)
+    {
+        var inferenceContext = this.newInferenceContext(typeParameters, candidate, Core.IfElse(Ast.IsInJSFile(node), InferenceFlags.AnyDefault, InferenceFlags.None), null);
+        var typeArgumentTypes = this.inferTypeArguments(node, candidate, args, ((checkMode | CheckMode.SkipContextSensitive) | CheckMode.SkipGenericFunctions), inferenceContext);
+        return this.createSignatureInstantiation(candidate, typeArgumentTypes);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getApparentTypeOfMappedType(Type t)
+    {
+        var m = t.AsMappedType();
+        if ((m.resolvedApparentType == null))
+        {
+            m.resolvedApparentType = this.getResolvedApparentTypeOfMappedType(t);
+        }
+
+        return m.resolvedApparentType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getResolvedApparentTypeOfMappedType(Type t)
+    {
+        var target = Core.OrElse(t.AsMappedType().target, t);
+        var typeVariable = this.getHomomorphicTypeVariable(target);
+        if (((typeVariable != null) && (target.AsMappedType().declaration.NameType == null)))
+        {
+            var modifiersType = this.getModifiersTypeFromMappedType(t);
+            Type baseConstraint = default;
+            if (this.isGenericMappedType(modifiersType))
+            {
+                baseConstraint = this.getApparentTypeOfMappedType(modifiersType);
+            }
+            else
+            {
+                baseConstraint = this.getBaseConstraintOfType(modifiersType);
+            }
+
+            if (((baseConstraint != null) && everyType(baseConstraint, (t2) =>
+            {
+                return (this.isArrayOrTupleType(t2) || this.isArrayOrTupleOrIntersection(t2));
+            })))
+            {
+                return this.instantiateType(target, prependTypeMapping(typeVariable, baseConstraint, t.AsMappedType().mapper));
+            }
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualTypeForElementExpression(Type t, int index, int length, int firstSpreadIndex, int lastSpreadIndex)
+    {
+        if ((t == null))
+        {
+            return null;
+        }
+
+        return this.mapTypeEx(t, (t2) =>
+        {
+            if (isTupleType(t2))
+            {
+                if (((((firstSpreadIndex < 0) || (index < firstSpreadIndex))) && (index < t2.TargetTupleType().fixedLength)))
+                {
+                    return this.removeMissingType(this.getTypeArguments(t2)[index], ((t2.TargetTupleType().elementInfos[index].flags & ElementFlags.Optional) != 0));
+                }
+
+                var offset = 0;
+                if (((length >= 0) && (((lastSpreadIndex < 0) || (index > lastSpreadIndex)))))
+                {
+                    offset = (length - index);
+                }
+
+                var fixedEndLength = 0;
+                if (((offset > 0) && ((t2.TargetTupleType().combinedFlags & ElementFlags.Variable) != 0)))
+                {
+                    fixedEndLength = getEndElementCount(t2.TargetTupleType(), ElementFlags.Fixed);
+                }
+
+                if (((offset > 0) && (offset <= fixedEndLength)))
+                {
+                    return this.getTypeArguments(t2)[(this.getTypeReferenceArity(t2) - offset)];
+                }
+
+                var tupleIndex = t2.TargetTupleType().fixedLength;
+                if ((firstSpreadIndex >= 0))
+                {
+                    tupleIndex = Math.Min(tupleIndex, firstSpreadIndex);
+                }
+
+                var endSkipCount = fixedEndLength;
+                if (((length >= 0) && (lastSpreadIndex >= 0)))
+                {
+                    endSkipCount = Math.Min(fixedEndLength, (length - lastSpreadIndex));
+                }
+
+                return this.getElementTypeOfSliceOfTupleType(t2, tupleIndex, endSkipCount, false, true);
+            }
+
+            if (((firstSpreadIndex < 0) || (index < firstSpreadIndex)))
+            {
+                var propType = this.getTypeOfPropertyOfContextualType(t2, Strconv.Itoa(index));
+                if ((propType != null))
+                {
+                    return propType;
+                }
+            }
+
+            return this.getIteratedTypeOrElementType(IterationUse.Element, t2, this.undefinedType, null, false);
+        }, true);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type instantiateTypeWithSingleGenericCallSignature(Node node, Type t, CheckMode checkMode)
+    {
+        if (((checkMode & ((CheckMode.Inferential | CheckMode.SkipGenericFunctions))) == 0))
+        {
+            return t;
+        }
+
+        var callSignature = this.getSingleSignature(t, SignatureKind.Call, true);
+        var constructSignature = this.getSingleSignature(t, SignatureKind.Construct, true);
+        var signature = Core.OrElse(callSignature, constructSignature);
+        if (((signature == null) || (GoRuntime.Len(signature.typeParameters) == 0)))
+        {
+            return t;
+        }
+
+        var contextualType = this.getApparentTypeOfContextualType(node, ContextFlags.NoConstraints);
+        if ((contextualType == null))
+        {
+            return t;
+        }
+
+        var contextualSignature = this.getSingleSignature(this.GetNonNullableType(contextualType), Core.IfElse((callSignature != null), SignatureKind.Call, SignatureKind.Construct), false);
+        if (((contextualSignature == null) || (GoRuntime.Len(contextualSignature.typeParameters) != 0)))
+        {
+            return t;
+        }
+
+        if (((checkMode & CheckMode.SkipGenericFunctions) != 0))
+        {
+            this.skippedGenericFunction(node, checkMode);
+            return this.anyFunctionType;
+        }
+
+        var context = this.getInferenceContext(node);
+        Signature returnSignature = default;
+        if ((context.signature != null))
+        {
+            var returnType = this.getReturnTypeOfSignature(context.signature);
+            if ((returnType != null))
+            {
+                returnSignature = this.getSingleCallOrConstructSignature(returnType);
+            }
+        }
+
+        if ((((returnSignature != null) && (GoRuntime.Len(returnSignature.typeParameters) == 0)) && !Core.Every(context.inferences, hasInferenceCandidates)))
+        {
+            var uniqueTypeParameters = this.getUniqueTypeParameters(context, signature.typeParameters);
+            var instantiatedSignature = this.getSignatureInstantiationWithoutFillingInTypeArguments(signature, uniqueTypeParameters);
+            var inferences = Core.Map(context.inferences, (info) =>
+            {
+                return newInferenceInfo(info.typeParameter);
+            });
+            this.applyToParameterTypes(instantiatedSignature, contextualSignature, (source, target) =>
+            {
+                this.inferTypes(inferences, source, target, InferencePriority.None, true);
+            });
+            if (Core.Some(inferences, hasInferenceCandidates))
+            {
+                this.applyToReturnTypes(instantiatedSignature, contextualSignature, (source2, target2) =>
+                {
+                    this.inferTypes(inferences, source2, target2, InferencePriority.None, false);
+                });
+                if (!hasOverlappingInferences(context.inferences, inferences))
+                {
+                    this.mergeInferences(context.inferences, inferences);
+                    context.inferredTypeParameters = Core.Concatenate(context.inferredTypeParameters, uniqueTypeParameters);
+                    return this.getOrCreateTypeFromSignature(instantiatedSignature);
+                }
+            }
+        }
+
+        return this.getOrCreateTypeFromSignature(this.instantiateSignatureInContextOf(signature, contextualSignature, context, null));
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getOuterInferenceTypeParameters()
+    {
+        List<Type> result = default;
+        {
+            foreach (var i in GoRuntime.RangeKeys(this.inferenceContextInfos))
+            {
+                var context = this.inferenceContextInfos[i].context;
+                if ((context != null))
+                {
+                    {
+                        foreach (var info in GoRuntime.RangeValues(context.inferences))
+                        {
+                            result = GoRuntime.Append(result, info.typeParameter);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> getUniqueTypeParameters(InferenceContext context, List<Type> typeParameters)
+    {
+        List<Type> oldTypeParameters = default;
+        List<Type> newTypeParameters = default;
+        var result = GoRuntime.MakeSlice<Type>(0);
+        {
+            foreach (var tp in GoRuntime.RangeValues(typeParameters))
+            {
+                var name = tp.symbol.Name;
+                if ((hasTypeParameterByName(context.inferredTypeParameters, name) || hasTypeParameterByName(result, name)))
+                {
+                    var newName = getUniqueTypeParameterName(Core.Concatenate(context.inferredTypeParameters, result), name);
+                    var symbol = this.newSymbol(SymbolFlags.TypeParameter, newName);
+                    var newTypeParameter = this.newTypeParameter(symbol);
+                    newTypeParameter.AsTypeParameter().target = tp;
+                    oldTypeParameters = GoRuntime.Append(oldTypeParameters, tp);
+                    newTypeParameters = GoRuntime.Append(newTypeParameters, newTypeParameter);
+                    result = GoRuntime.Append(result, newTypeParameter);
+                }
+                else
+                {
+                    result = GoRuntime.Append(result, tp);
+                }
+            }
+        }
+
+        if ((GoRuntime.Len(newTypeParameters) != 0))
+        {
+            var mapper = newTypeMapper(oldTypeParameters, newTypeParameters);
+            {
+                foreach (var range4 in GoRuntime.Range(newTypeParameters))
+                {
+                    var _2 = range4.Key;
+                    var tp2 = range4.Value;
+                    tp2.AsTypeParameter().mapper = mapper;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool hasTypeParameterByName(List<Type> typeParameters, string name)
+    {
+        return Core.Some(typeParameters, (tp) =>
+        {
+            return (tp.symbol.Name == name);
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private static string getUniqueTypeParameterName(List<Type> typeParameters, string baseName)
+    {
+        while ((((GoRuntime.Len(baseName) > 1) && (baseName[(GoRuntime.Len(baseName) - 1)] >= '0')) && (baseName[(GoRuntime.Len(baseName) - 1)] <= '9')))
+        {
+            baseName = GoRuntime.Slice(baseName, 0, (GoRuntime.Len(baseName) - 1));
+        }
+
+        var index = 1;
+        while (true)
+        {
+            var augmentedName = (baseName + Strconv.Itoa(index));
+            if (!hasTypeParameterByName(typeParameters, augmentedName))
+            {
+                return augmentedName;
+            }
+
+            index++;
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintOfIndexedAccess(Type t)
+    {
+        if (this.hasNonCircularBaseConstraint(t))
+        {
+            return this.getConstraintFromIndexedAccess(t);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintFromIndexedAccess(Type t)
+    {
+        var d = t.AsIndexedAccessType();
+        if (this.isMappedTypeGenericIndexedAccess(t))
+        {
+            return this.substituteIndexedMappedType(d.objectType, d.indexType);
+        }
+
+        var indexConstraint = this.getSimplifiedTypeOrConstraint(d.indexType);
+        if (((indexConstraint != null) && (indexConstraint != d.indexType)))
+        {
+            var indexedAccess = this.getIndexedAccessTypeOrUndefined(d.objectType, indexConstraint, d.accessFlags, null, null);
+            if ((indexedAccess != null))
+            {
+                return indexedAccess;
+            }
+        }
+
+        var objectConstraint = this.getSimplifiedTypeOrConstraint(d.objectType);
+        if (((objectConstraint != null) && (objectConstraint != d.objectType)))
+        {
+            return this.getIndexedAccessTypeOrUndefined(objectConstraint, d.indexType, d.accessFlags, null, null);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintOfConditionalType(Type t)
+    {
+        if (this.hasNonCircularBaseConstraint(t))
+        {
+            return this.getConstraintFromConditionalType(t);
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getConstraintFromConditionalType(Type t)
+    {
+        var constraint = this.getConstraintOfDistributiveConditionalType(t);
+        if ((constraint != null))
+        {
+            return constraint;
+        }
+
+        return this.getDefaultConstraintOfConditionalType(t);
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:28607. Preserve unchanged element-list identity during normalization.
+    private Type getNormalizedTupleType(Type t, bool writing)
+    {
+        var elements = getElementTypes(t);
+        var normalizedElements = Core.SameMap(elements, element => (element.flags & TypeFlags.Simplifiable) != 0 ? getSimplifiedType(element, writing) : element);
+        if (!Core.Same(elements, normalizedElements))
+            return createNormalizedTupleType(t.Target(), normalizedElements);
+        return t;
+    }
+
+    // Fixed explicit-root noLib host: no file is a Program default library.
+    // This differs from declaration-file skipping and fixed library ownership.
+    internal bool isSourceFileDefaultLibrary(SourceFile file) => false;
+}
+
+public sealed partial class Checker
+{
+    internal Type checkArrayLiteral(Node node, CheckMode checkMode)
+    {
+        var elements = node.Elements();
+        var elementTypes = GoRuntime.MakeSlice<Type>(GoRuntime.Len(elements));
+        var elementInfos = GoRuntime.MakeSlice<TupleElementInfo>(GoRuntime.Len(elements));
+        this.pushCachedContextualType(node);
+        var inDestructuringPattern = Ast.IsAssignmentTarget(node);
+        var inConstContext = this.isConstContext(node);
+        var contextualType = this.getApparentTypeOfContextualType(node, ContextFlags.None);
+        var inTupleContext = (isSpreadIntoCallOrNew(node) || ((contextualType != null) && someType(contextualType, (t) =>
+        {
+            return (this.isTupleLikeType(t) || ((this.isGenericMappedType(t) && (t.AsMappedType().nameType == null)) && (this.getHomomorphicTypeVariable(Core.OrElse(t.AsMappedType().target, t)) != null)));
+        })));
+        var hasOmittedExpression = false;
+        {
+            foreach (var range1 in GoRuntime.Range(elements))
+            {
+                var i = range1.Key;
+                var e = range1.Value;
+                switch (true)
+                {
+                    case true when Ast.IsSpreadElement(e):
+                    {
+                        var spreadType = this.checkExpressionEx(e.Expression(), checkMode);
+                        switch (true)
+                        {
+                            case true when this.isArrayLikeType(spreadType):
+                            {
+                                elementTypes[i] = spreadType;
+                                elementInfos[i] = new TupleElementInfo
+                                {
+                                    flags = ElementFlags.Variadic
+                                };
+                                break;
+                            }
+
+                            case true when inDestructuringPattern:
+                            {
+                                var restElementType = this.getIndexTypeOfType(spreadType, this.numberType);
+                                if ((restElementType == null))
+                                {
+                                    restElementType = this.getIteratedTypeOrElementType(IterationUse.Destructuring, spreadType, this.undefinedType, null, false);
+                                    if ((restElementType == null))
+                                    {
+                                        restElementType = this.unknownType;
+                                    }
+                                }
+
+                                elementTypes[i] = restElementType;
+                                elementInfos[i] = new TupleElementInfo
+                                {
+                                    flags = ElementFlags.Rest
+                                };
+                                break;
+                            }
+
+                            default:
+                            {
+                                elementTypes[i] = this.checkIteratedTypeOrElementType(IterationUse.Spread, spreadType, this.undefinedType, e.Expression());
+                                elementInfos[i] = new TupleElementInfo
+                                {
+                                    flags = ElementFlags.Rest
+                                };
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case true when (this.exactOptionalPropertyTypes && Ast.IsOmittedExpression(e)):
+                    {
+                        hasOmittedExpression = true;
+                        elementTypes[i] = this.undefinedOrMissingType;
+                        elementInfos[i] = new TupleElementInfo
+                        {
+                            flags = ElementFlags.Optional
+                        };
+                        break;
+                    }
+
+                    default:
+                    {
+                        var t2 = this.checkExpressionForMutableLocation(e, checkMode);
+                        elementTypes[i] = this.addOptionalityEx(t2, true, hasOmittedExpression);
+                        elementInfos[i] = new TupleElementInfo
+                        {
+                            flags = Core.IfElse(hasOmittedExpression, ElementFlags.Optional, ElementFlags.Required)
+                        };
+                        if ((((inTupleContext && ((checkMode & CheckMode.Inferential) != 0)) && ((checkMode & CheckMode.SkipContextSensitive) == 0)) && this.isContextSensitive(e)))
+                        {
+                            var inferenceContext = this.getInferenceContext(node);
+                            this.addIntraExpressionInferenceSite(inferenceContext, e, t2);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        this.popContextualType();
+        if (inDestructuringPattern)
+        {
+            return this.createTupleTypeEx(elementTypes, elementInfos, false);
+        }
+
+        if (((((checkMode & CheckMode.ForceTuple) != 0) || inConstContext) || inTupleContext))
+        {
+            return this.createArrayLiteralType(this.createTupleTypeEx(elementTypes, elementInfos, (inConstContext && !(((contextualType != null) && someType(contextualType, this.isMutableArrayLikeType))))));
+        }
+
+        Type elementType = default;
+        if ((GoRuntime.Len(elementTypes) != 0))
+        {
+            {
+                foreach (var range2 in GoRuntime.Range(elementTypes))
+                {
+                    var i2 = range2.Key;
+                    var e2 = range2.Value;
+                    if (((elementInfos[i2].flags & ElementFlags.Variadic) != 0))
+                    {
+                        elementTypes[i2] = Core.OrElse(this.getIndexedAccessTypeOrUndefined(e2, this.numberType, AccessFlags.None, null, null), this.anyType);
+                    }
+                }
+            }
+
+            elementType = this.getUnionTypeEx(elementTypes, UnionReduction.Subtype, null, null);
+        }
+        else
+        {
+            elementType = Core.IfElse(this.strictNullChecks, this.implicitNeverType, this.undefinedWideningType);
+        }
+
+        return this.createArrayLiteralType(this.createArrayTypeEx(elementType, inConstContext));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createArrayLiteralType(Type t)
+    {
+        if (((t.objectFlags & ObjectFlags.Reference) == 0))
+        {
+            return t;
+        }
+
+        var key = new CachedTypeKey(CachedTypeKind.ArrayLiteralType, t.id);
+        {
+            var ok = this.cachedTypes.TryGetValue(key, out var cached);
+            if (ok)
+            {
+                return cached;
+            }
+        }
+
+        var literalType = this.cloneTypeReference(t);
+        literalType.objectFlags |= (ObjectFlags.ArrayLiteral | ObjectFlags.ContainsObjectOrArrayLiteral);
+        this.cachedTypes[key] = literalType;
+        return literalType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isSpreadIntoCallOrNew(Node node)
+    {
+        var parent = Ast.WalkUpParenthesizedExpressions(node.Parent);
+        return (Ast.IsSpreadElement(parent) && Ast.IsCallOrNewExpression(parent.Parent));
+    }
+}
+
+public sealed partial class Checker
+{
+    private void inferFromAnnotatedParametersAndReturn(Signature sig, Signature context, InferenceContext inferenceContext)
+    {
+        var length = (GoRuntime.Len(sig.parameters) - Core.IfElse(signatureHasRestParameter(sig), 1, 0));
+        {
+            for (var i = 0; i < length; i++)
+            {
+                var declaration = sig.parameters[i].ValueDeclaration;
+                var typeNode = declaration.Type();
+                if ((typeNode != null))
+                {
+                    var source = this.addOptionalityEx(this.getTypeFromTypeNode(typeNode), false, isOptionalDeclaration(declaration));
+                    var target = this.getTypeAtPosition(context, i);
+                    this.inferTypes(inferenceContext.inferences, source, target, InferencePriority.None, false);
+                }
+            }
+        }
+
+        {
+            var declaration2 = sig.Declaration();
+            if ((declaration2 != null))
+            {
+                {
+                    var returnTypeNode = declaration2.Type();
+                    if ((returnTypeNode != null))
+                    {
+                        var source2 = this.getTypeFromTypeNode(returnTypeNode);
+                        var target2 = this.getReturnTypeOfSignature(context);
+                        this.inferTypes(inferenceContext.inferences, source2, target2, InferencePriority.None, false);
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkSyntheticExpression(Node node)
+    {
+        var t = ((Type)node.AsSyntheticExpression().Type);
+        if (node.AsSyntheticExpression().IsSpread)
+        {
+            return this.getIndexedAccessType(t, this.numberType);
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal bool isTupleLikeType(Type t)
+    {
+        if ((isTupleType(t) || (this.getPropertyOfType(t, "0") != null)))
+        {
+            return true;
+        }
+
+        if (this.isArrayLikeType(t))
+        {
+            {
+                var lengthType = this.getTypeOfPropertyOfType(t, "length");
+                if ((lengthType != null))
+                {
+                    return everyType(lengthType, (t2) =>
+                    {
+                        return ((t2.flags & TypeFlags.NumberLiteral) != 0);
+                    });
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type cloneTypeReference(Type source)
+    {
+        var t = this.newObjectType(ObjectFlags.Reference, source.symbol);
+        t.objectFlags = (source.objectFlags & ~ObjectFlags.MembersResolved);
+        t.AsTypeReference().target = source.AsTypeReference().target;
+        t.AsTypeReference().resolvedTypeArguments = source.AsTypeReference().resolvedTypeArguments;
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node createSyntheticExpression(Node parent, Type t, bool isSpread, Node tupleNameSource)
+    {
+        var result = this.factory.NewSyntheticExpression(t, isSpread, tupleNameSource);
+        result.Loc = parent.Loc;
+        result.Parent = parent;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:30672. Cache raw literal spread indices in their real link cell.
+    private (int, int) getSpreadIndices(Node node)
+    {
+        var links = arrayLiteralLinks.Get(node);
+        if (!links.indicesComputed)
+        {
+            int first = -1, last = -1;
+            var elements = node.Elements();
+            int length = GoRuntime.Len(elements);
+            for (int i = 0; i < length; i++)
+            {
+                if (Ast.IsSpreadElement(elements[i]))
+                {
+                    if (first < 0)
+                        first = i;
+                    last = i;
+                }
+            }
+
+            links.firstSpreadIndex = first;
+            links.lastSpreadIndex = last;
+            links.indicesComputed = true;
+        }
+
+        return (links.firstSpreadIndex, links.lastSpreadIndex);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type tryGetRestTypeOfSignature(Signature signature)
+    {
+        if (!signatureHasRestParameter(signature))
+        {
+            return null;
+        }
+
+        var restType = this.getTypeOfSymbol(signature.parameters[(GoRuntime.Len(signature.parameters) - 1)]);
+        if (isTupleType(restType))
+        {
+            restType = this.getRestTypeOfTupleType(restType);
+            if ((restType == null))
+            {
+                return null;
+            }
+        }
+
+        return this.getIndexTypeOfType(restType, this.numberType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Diagnostic getTypeArgumentArityError(Node node, List<Signature> signatures, List<Node> typeArguments, Message headMessage)
+    {
+        Diagnostic diagnostic = default;
+        var argCount = GoRuntime.Len(typeArguments);
+        var sourceFile = Ast.GetSourceFileOfNode(node);
+        var typeArgumentList = node.TypeArgumentList();
+        var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeArgumentList.Loc.Pos()), typeArgumentList.Loc.End());
+        if ((GoRuntime.Len(signatures) == 1))
+        {
+            var sig = signatures[0];
+            var minCount = this.getMinTypeArgumentCount(sig.typeParameters);
+            var maxCount = GoRuntime.Len(sig.typeParameters);
+            var expected = Strconv.Itoa(minCount);
+            if ((minCount < maxCount))
+            {
+                expected = ((expected + "-") + Strconv.Itoa(maxCount));
+            }
+
+            diagnostic = Ast.NewDiagnostic(sourceFile, loc, Diagnostics.Expected_0_type_arguments_but_got_1, expected, argCount);
+        }
+        else
+        {
+            var belowArgCount = int.MinValue;
+            var aboveArgCount = int.MaxValue;
+            {
+                foreach (var sig2 in GoRuntime.RangeValues(signatures))
+                {
+                    var minCount2 = this.getMinTypeArgumentCount(sig2.typeParameters);
+                    var maxCount2 = GoRuntime.Len(sig2.typeParameters);
+                    if ((minCount2 > argCount))
+                    {
+                        aboveArgCount = Math.Min(aboveArgCount, minCount2);
+                    }
+                    else
+                    {
+                        if ((maxCount2 < argCount))
+                        {
+                            belowArgCount = Math.Max(belowArgCount, maxCount2);
+                        }
+                    }
+                }
+            }
+
+            if (((belowArgCount != int.MinValue) && (aboveArgCount != int.MaxValue)))
+            {
+                diagnostic = Ast.NewDiagnostic(sourceFile, loc, Diagnostics.No_overload_expects_0_type_arguments_but_overloads_do_exist_that_expect_either_1_or_2_type_arguments, argCount, belowArgCount, aboveArgCount);
+            }
+            else
+            {
+                diagnostic = Ast.NewDiagnostic(sourceFile, loc, Diagnostics.Expected_0_type_arguments_but_got_1, Core.IfElse((belowArgCount == int.MinValue), aboveArgCount, belowArgCount), argCount);
+            }
+        }
+
+        if ((headMessage != null))
+        {
+            diagnostic = Ast.NewDiagnosticChain(diagnostic, headMessage);
+        }
+
+        return diagnostic;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkArrayType(Node node)
+    {
+        this.checkSourceElement(node.AsArrayTypeNode().ElementType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTupleType(Node node)
+    {
+        var seenOptionalElement = false;
+        var seenRestElement = false;
+        var elements = node.Elements();
+        {
+            foreach (var e in GoRuntime.RangeValues(elements))
+            {
+                var flags = this.getTupleElementFlags(e);
+                if (((flags & ElementFlags.Variadic) != 0))
+                {
+                    var t = this.getTypeFromTypeNode(e.Type());
+                    if (!this.isArrayLikeType(t))
+                    {
+                        this.error(e, Diagnostics.A_rest_element_type_must_be_an_array_type);
+                        break;
+                    }
+
+                    if ((this.isArrayType(t) || (isTupleType(t) && ((t.TargetTupleType().combinedFlags & ElementFlags.Rest) != 0))))
+                    {
+                        flags |= ElementFlags.Rest;
+                    }
+                }
+
+                if (((flags & ElementFlags.Rest) != 0))
+                {
+                    if (seenRestElement)
+                    {
+                        this.grammarErrorOnNode(e, Diagnostics.A_rest_element_cannot_follow_another_rest_element);
+                        break;
+                    }
+
+                    seenRestElement = true;
+                }
+                else
+                {
+                    if (((flags & ElementFlags.Optional) != 0))
+                    {
+                        if (seenRestElement)
+                        {
+                            this.grammarErrorOnNode(e, Diagnostics.An_optional_element_cannot_follow_a_rest_element);
+                            break;
+                        }
+
+                        seenOptionalElement = true;
+                    }
+                    else
+                    {
+                        if ((((flags & ElementFlags.Required) != 0) && seenOptionalElement))
+                        {
+                            this.grammarErrorOnNode(e, Diagnostics.A_required_element_cannot_follow_an_optional_element);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        this.checkSourceElements(elements);
+        this.getTypeFromTypeNode(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTypeOperator(Node node)
+    {
+        this.checkGrammarTypeOperatorNode(node.AsTypeOperatorNode());
+        this.checkSourceElement(node.Type());
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkConditionalType(Node node)
+    {
+        node.ForEachChild(child =>
+        {
+            this.checkSourceElement(child);
+            return false;
+        });
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkInferType(Node node)
+    {
+        if ((Ast.FindAncestor(node, (n) =>
+        {
+            return (((n.Parent != null) && (n.Parent.Kind == Kind.ConditionalType)) && (n.Parent.AsConditionalTypeNode().ExtendsType == n));
+        }) == null))
+        {
+            this.grammarErrorOnNode(node, Diagnostics.X_infer_declarations_are_only_permitted_in_the_extends_clause_of_a_conditional_type);
+        }
+
+        var typeParameterDeclarationNode = node.AsInferTypeNode().TypeParameter;
+        this.checkSourceElement(typeParameterDeclarationNode);
+        var symbol = this.getSymbolOfDeclaration(typeParameterDeclarationNode);
+        if ((GoRuntime.Len(symbol.Declarations) > 1))
+        {
+            var links = this.declaredTypeLinks.Get(symbol);
+            if (!links.typeParametersChecked)
+            {
+                links.typeParametersChecked = true;
+                var typeParameter = this.getDeclaredTypeOfTypeParameter(symbol);
+                var declarations = getDeclarationsOfKind(symbol, Kind.TypeParameter);
+                if (!this.areTypeParametersIdentical(declarations, new List<Type> { typeParameter }, (decl) =>
+                {
+                    return new List<Node>
+                    {
+                        decl
+                    };
+                }))
+                {
+                    var name = this.symbolToString(symbol);
+                    {
+                        foreach (var declaration in GoRuntime.RangeValues(declarations))
+                        {
+                            this.error(declaration.Name(), Diagnostics.All_declarations_of_0_must_have_identical_constraints, name);
+                        }
+                    }
+                }
+            }
+        }
+
+        this.registerForUnusedIdentifiersCheck(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkNamedTupleMember(Node node)
+    {
+        var tupleMember = node.AsNamedTupleMember();
+        if (((tupleMember.DotDotDotToken != null) && (tupleMember.QuestionToken != null)))
+        {
+            this.grammarErrorOnNode(node, Diagnostics.A_tuple_member_cannot_be_both_optional_and_rest);
+        }
+
+        if ((tupleMember.Type.Kind == Kind.OptionalType))
+        {
+            this.grammarErrorOnNode(tupleMember.Type, Diagnostics.A_labeled_tuple_element_is_declared_as_optional_with_a_question_mark_after_the_name_and_before_the_colon_rather_than_after_the_type);
+        }
+
+        if ((tupleMember.Type.Kind == Kind.RestType))
+        {
+            this.grammarErrorOnNode(tupleMember.Type, Diagnostics.A_labeled_tuple_element_is_declared_as_rest_with_a_before_the_name_rather_than_before_the_type);
+        }
+
+        this.checkSourceElement(node.Type());
+        this.getTypeFromTypeNode(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkIndexedAccessType(Node node)
+    {
+        node.ForEachChild(child =>
+        {
+            this.checkSourceElement(child);
+            return false;
+        });
+        this.checkIndexedAccessIndexType(this.getTypeFromIndexedAccessTypeNode(node), node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkMappedType(Node node)
+    {
+        var mappedTypeNode = node.AsMappedTypeNode();
+        this.checkGrammarMappedType(mappedTypeNode);
+        this.checkSourceElement(mappedTypeNode.TypeParameter);
+        this.checkSourceElement(mappedTypeNode.NameType);
+        this.checkSourceElement(mappedTypeNode.Type);
+        if ((mappedTypeNode.Type == null))
+        {
+            this.reportImplicitAny(node, this.anyType, WideningKind.Normal);
+        }
+
+        var t = this.getTypeFromMappedTypeNode(node);
+        var nameType = this.getNameTypeFromMappedType(t);
+        if ((nameType != null))
+        {
+            this.checkTypeAssignableTo(nameType, this.stringNumberSymbolType, mappedTypeNode.NameType, null);
+        }
+        else
+        {
+            var constraintType = this.getConstraintTypeFromMappedType(t);
+            this.checkTypeAssignableTo(constraintType, this.stringNumberSymbolType, mappedTypeNode.TypeParameter.AsTypeParameterDeclaration().Constraint, null);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkDoStatement(Node node)
+    {
+        this.checkGrammarStatementInAmbientContext(node);
+        this.checkSourceElement(node.Statement());
+        this.checkTruthinessExpression(node.Expression(), CheckMode.Normal);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkWhileStatement(Node node)
+    {
+        this.checkGrammarStatementInAmbientContext(node);
+        this.checkTruthinessExpression(node.Expression(), CheckMode.Normal);
+        this.checkSourceElement(node.Statement());
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkForStatement(Node node)
+    {
+        if (!this.checkGrammarStatementInAmbientContext(node))
+        {
+            {
+                var init = node.Initializer();
+                if (((init != null) && (init.Kind == Kind.VariableDeclarationList)))
+                {
+                    this.checkGrammarVariableDeclarationList(init);
+                }
+            }
+        }
+
+        var data = node.AsForStatement();
+        if ((data.Initializer != null))
+        {
+            if (Ast.IsVariableDeclarationList(data.Initializer))
+            {
+                this.checkVariableDeclarationList(data.Initializer);
+            }
+            else
+            {
+                this.checkExpression(data.Initializer);
+            }
+        }
+
+        if ((data.Condition != null))
+        {
+            this.checkTruthinessExpression(data.Condition, CheckMode.Normal);
+        }
+
+        if ((data.Incrementor != null))
+        {
+            this.checkExpression(data.Incrementor);
+        }
+
+        this.checkSourceElement(data.Statement);
+        if ((node.Locals() != null))
+        {
+            this.registerForUnusedIdentifiersCheck(node);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkForOfStatement(Node node)
+    {
+        var data = node.AsForInOrOfStatement();
+        this.checkGrammarForInOrForOfStatement(data);
+        if (data.AwaitModifier != null)
+            throw unsupported("checkForOfStatement: for-await");
+        if (Ast.IsVariableDeclarationList(data.Initializer))
+        {
+            this.checkVariableDeclarationList(data.Initializer);
+        }
+        else
+        {
+            var varExpr = data.Initializer;
+            var iteratedType = this.checkRightHandSideOfForOf(node);
+            if ((Ast.IsArrayLiteralExpression(varExpr) || Ast.IsObjectLiteralExpression(varExpr)))
+            {
+                throw unsupported("checkForOfStatement: source destructuring");
+            }
+            else
+            {
+                var leftType = this.checkExpression(varExpr);
+                this.checkReferenceExpression(varExpr, Diagnostics.The_left_hand_side_of_a_for_of_statement_must_be_a_variable_or_a_property_access, Diagnostics.The_left_hand_side_of_a_for_of_statement_may_not_be_an_optional_property_access);
+                if ((iteratedType != null))
+                {
+                    this.checkTypeAssignableToAndOptionallyElaborate(iteratedType, leftType, varExpr, data.Expression, null, null);
+                }
+            }
+        }
+
+        this.checkSourceElement(data.Statement);
+        if ((node.Locals() != null))
+        {
+            this.registerForUnusedIdentifiersCheck(node);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkBreakOrContinueStatement(Node node)
+    {
+        if (!this.checkGrammarStatementInAmbientContext(node))
+        {
+            this.checkGrammarBreakOrContinueStatement(node);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkIndexedAccess(Node node, CheckMode checkMode)
+    {
+        if (((node.Flags & NodeFlags.OptionalChain) != 0))
+        {
+            throw unsupported("checkIndexedAccess: optional chain");
+        }
+
+        return this.checkElementAccessExpression(node, this.checkNonNullExpression(node.Expression()), checkMode);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkElementAccessExpression(Node node, Type exprType, CheckMode checkMode)
+    {
+        var objectType = exprType;
+        if (((getAssignmentTargetKind(node) != AssignmentKind.None) || this.isMethodAccessForCall(node)))
+        {
+            objectType = this.getWidenedType(objectType);
+        }
+
+        var indexExpression = node.AsElementAccessExpression().ArgumentExpression;
+        var indexType = this.checkExpression(indexExpression);
+        if ((this.isErrorType(objectType) || (objectType == this.silentNeverType)))
+        {
+            return objectType;
+        }
+
+        if ((isConstEnumObjectType(objectType) && !Ast.IsStringLiteralLike(indexExpression)))
+        {
+            this.error(indexExpression, Diagnostics.A_const_enum_member_can_only_be_accessed_using_a_string_literal);
+            return this.errorType;
+        }
+
+        var effectiveIndexType = indexType;
+        if (this.isForInVariableForNumericPropertyNames(indexExpression))
+        {
+            effectiveIndexType = this.numberType;
+        }
+
+        var assignmentTargetKind = getAssignmentTargetKind(node);
+        AccessFlags accessFlags = default;
+        if ((assignmentTargetKind == AssignmentKind.None))
+        {
+            accessFlags = AccessFlags.ExpressionPosition;
+        }
+        else
+        {
+            accessFlags = ((AccessFlags.Writing | Core.IfElse((assignmentTargetKind == AssignmentKind.Compound), AccessFlags.ExpressionPosition, AccessFlags.None)) | Core.IfElse((this.isGenericObjectType(objectType) && !isThisTypeParameter(objectType)), AccessFlags.NoIndexSignatures, AccessFlags.None));
+        }
+
+        var indexedAccessType = Core.OrElse(this.getIndexedAccessTypeOrUndefined(objectType, effectiveIndexType, accessFlags, node, null), this.errorType);
+        return this.checkIndexedAccessIndexType(this.getFlowTypeOfAccessExpression(node, this.getResolvedSymbolOrNil(node), indexedAccessType, indexExpression, checkMode), node);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkPostfixUnaryExpression(Node node)
+    {
+        var expr = node.AsPostfixUnaryExpression();
+        var operandType = this.checkExpression(expr.Operand);
+        if ((operandType == this.silentNeverType))
+        {
+            return this.silentNeverType;
+        }
+
+        var ok = this.checkArithmeticOperandType(expr.Operand, this.checkNonNullType(operandType, expr.Operand), Diagnostics.An_arithmetic_operand_must_be_of_type_any_number_bigint_or_an_enum_type, false);
+        if (ok)
+        {
+            this.checkReferenceExpression(expr.Operand, Diagnostics.The_operand_of_an_increment_or_decrement_operator_must_be_a_variable_or_a_property_access, Diagnostics.The_operand_of_an_increment_or_decrement_operator_may_not_be_an_optional_property_access);
+        }
+
+        return this.getUnaryResultType(operandType);
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:8381 selected source for-in producer is outside Collections.
+    private bool isForInVariableForNumericPropertyNames(Node expr)
+    {
+        var e = Ast.SkipParentheses(expr);
+        if (Ast.IsIdentifier(e))
+        {
+            var symbol = getResolvedSymbol(e);
+            if ((symbol.Flags & SymbolFlags.Variable) != 0)
+            {
+                var child = expr;
+                var node = expr.Parent;
+                while (node != null)
+                {
+                    if (Ast.IsForInStatement(node) && child == node.AsForInOrOfStatement().Statement)
+                        throw unsupported("isForInVariableForNumericPropertyNames: source for-in");
+                    child = node;
+                    node = node.Parent;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasLateBindableName(Node node)
+    {
+        var name = Ast.GetNameOfDeclaration(node);
+        return ((name != null) && this.isLateBindableName(name));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isLateBindableName(Node node)
+    {
+        if (!isLateBindableAST(node))
+        {
+            return false;
+        }
+
+        if (Ast.IsComputedPropertyName(node))
+        {
+            return isTypeUsableAsPropertyName(this.checkComputedPropertyName(node));
+        }
+
+        return isTypeUsableAsPropertyName(this.checkExpressionCached(node.AsElementAccessExpression().ArgumentExpression));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexedMappedTypeSubstitutedTypeOfContextualType(Type t, string name, Type nameType)
+    {
+        var propertyNameType = nameType;
+        if ((propertyNameType == null))
+        {
+            propertyNameType = this.getStringLiteralType(name);
+        }
+
+        var constraint = this.getConstraintTypeFromMappedType(t);
+        if ((((t.AsMappedType().nameType != null) && this.isExcludedMappedPropertyName(t.AsMappedType().nameType, propertyNameType)) || this.isExcludedMappedPropertyName(constraint, propertyNameType)))
+        {
+            return null;
+        }
+
+        var constraintOfConstraint = this.getBaseConstraintOrType(constraint);
+        if (!this.isTypeAssignableTo(propertyNameType, constraintOfConstraint))
+        {
+            return null;
+        }
+
+        return this.substituteIndexedMappedType(t, propertyNameType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isExcludedMappedPropertyName(Type t, Type propertyNameType)
+    {
+        if (((t.flags & TypeFlags.Conditional) != 0))
+        {
+            return ((((this.getReducedType(this.getTrueTypeFromConditionalType(t)).flags & TypeFlags.Never) != 0) && (this.getActualTypeVariable(this.getFalseTypeFromConditionalType(t)) == this.getActualTypeVariable(t.AsConditionalType().checkType))) && this.isTypeAssignableTo(propertyNameType, t.AsConditionalType().extendsType));
+        }
+
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            return Core.Some(t.Types(), (t2) =>
+            {
+                return this.isExcludedMappedPropertyName(t2, propertyNameType);
+            });
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkIndexedAccessIndexType(Type t, Node accessNode)
+    {
+        if (((t.flags & TypeFlags.IndexedAccess) == 0))
+        {
+            return t;
+        }
+
+        var objectType = t.AsIndexedAccessType().objectType;
+        var indexType = t.AsIndexedAccessType().indexType;
+        Type objectIndexType = default;
+        if ((this.isGenericMappedType(objectType) && (this.getMappedTypeNameTypeKind(objectType) == MappedTypeNameTypeKind.Remapping)))
+        {
+            objectIndexType = this.getIndexTypeForMappedType(objectType, IndexFlags.None);
+        }
+        else
+        {
+            objectIndexType = this.getIndexTypeEx(objectType, IndexFlags.None);
+        }
+
+        var hasNumberIndexInfo = (this.getIndexInfoOfType(objectType, this.numberType) != null);
+        if (everyType(indexType, (t2) =>
+        {
+            return (this.isTypeAssignableTo(t2, objectIndexType) || (hasNumberIndexInfo && this.isApplicableIndexType(t2, this.numberType)));
+        }))
+        {
+            if (((((accessNode.Kind == Kind.ElementAccessExpression) && Ast.IsAssignmentTarget(accessNode)) && ((objectType.objectFlags & ObjectFlags.Mapped) != 0)) && ((getMappedTypeModifiers(objectType) & MappedTypeModifiers.IncludeReadonly) != 0)))
+            {
+                this.error(accessNode, Diagnostics.Index_signature_in_type_0_only_permits_reading, this.typeToStringByteString(objectType));
+            }
+
+            return t;
+        }
+
+        if (this.isGenericObjectType(objectType))
+        {
+            var propertyName = this.getPropertyNameFromIndex(indexType, accessNode);
+            if ((propertyName != Ast.InternalSymbolNameMissing))
+            {
+                var propertySymbol = this.getConstituentProperty(objectType, propertyName);
+                if (((propertySymbol != null) && ((getDeclarationModifierFlagsFromSymbol(propertySymbol) & ModifierFlags.NonPublicAccessibilityModifier) != 0)))
+                {
+                    this.error(accessNode, Diagnostics.Private_or_protected_member_0_cannot_be_accessed_on_a_type_parameter, propertyName);
+                    return this.errorType;
+                }
+            }
+        }
+
+        this.error(accessNode, Diagnostics.Type_0_cannot_be_used_to_index_type_1, this.typeToStringByteString(indexType), this.typeToStringByteString(objectType));
+        return this.errorType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getConstituentProperty(Type objectType, string propertyName)
+    {
+        {
+            foreach (var t in GoRuntime.RangeValues(this.getApparentType(objectType).Distributed()))
+            {
+                var prop = this.getPropertyOfType(t, propertyName);
+                if ((prop != null))
+                {
+                    return prop;
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasParentWithTypeAnnotation(Symbol symbol)
+    {
+        if ((((symbol.Parent != null) && (symbol.Parent.ValueDeclaration != null)) && Ast.IsFunctionExpressionOrArrowFunction(symbol.Parent.ValueDeclaration)))
+        {
+            {
+                var possiblyAnnotatedSymbol = this.getSymbolOfNode(symbol.Parent.ValueDeclaration.Parent);
+                if (((possiblyAnnotatedSymbol != null) && (possiblyAnnotatedSymbol.ValueDeclaration != null)))
+                {
+                    return (possiblyAnnotatedSymbol.ValueDeclaration.Type() != null);
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isReadonlyArraySymbol(Symbol symbol)
+    {
+        if (((symbol == null) || (this.globalReadonlyArrayType.symbol == null)))
+        {
+            return false;
+        }
+
+        return (this.getSymbolIfSameReference(symbol, this.globalReadonlyArrayType.symbol) != null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> removeStringLiteralsMatchedByTemplateLiterals(List<Type> types)
+    {
+        var templates = Core.Filter(types, this.isPatternLiteralType);
+        if ((GoRuntime.Len(templates) != 0))
+        {
+            var i = GoRuntime.Len(types);
+            while ((i > 0))
+            {
+                i--;
+                var t = types[i];
+                if ((((t.flags & TypeFlags.StringLiteral) != 0) && Core.Some(templates, (template) =>
+                {
+                    return this.isTypeMatchedByTemplateLiteralOrStringMapping(t, template);
+                })))
+                {
+                    types = GoSlices.Delete(types, i, (i + 1));
+                }
+            }
+        }
+
+        return types;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isTypeMatchedByTemplateLiteralOrStringMapping(Type t, Type template)
+    {
+        if (((template.flags & TypeFlags.TemplateLiteral) != 0))
+        {
+            return this.isTypeMatchedByTemplateLiteralType(t, template.AsTemplateLiteralType(), this.compareTypesAssignable);
+        }
+
+        return this.isMemberOfStringMapping(t, template);
+    }
+}
+
+public sealed partial class Checker
+{
+    private List<Type> removeConstrainedTypeVariables(List<Type> types)
+    {
+        List<Type> typeVariables = default;
+        {
+            foreach (var t in GoRuntime.RangeValues(types))
+            {
+                if ((((t.flags & TypeFlags.Intersection) != 0) && ((t.objectFlags & ObjectFlags.IsConstrainedTypeVariable) != 0)))
+                {
+                    var index = 0;
+                    if (((t.AsIntersectionType().types[0].flags & TypeFlags.TypeVariable) == 0))
+                    {
+                        index = 1;
+                    }
+
+                    typeVariables = Core.AppendIfUnique(typeVariables, t.AsIntersectionType().types[index]);
+                }
+            }
+        }
+
+        {
+            foreach (var range2 in GoRuntime.Range(typeVariables))
+            {
+                var _2 = range2.Key;
+                var typeVariable = range2.Value;
+                List<Type> primitives = default;
+                {
+                    foreach (var range3 in GoRuntime.Range(types))
+                    {
+                        var _3 = range3.Key;
+                        var t2 = range3.Value;
+                        if ((((t2.flags & TypeFlags.Intersection) != 0) && ((t2.objectFlags & ObjectFlags.IsConstrainedTypeVariable) != 0)))
+                        {
+                            var index2 = 0;
+                            if (((t2.AsIntersectionType().types[0].flags & TypeFlags.TypeVariable) == 0))
+                            {
+                                index2 = 1;
+                            }
+
+                            if ((t2.AsIntersectionType().types[index2] == typeVariable))
+                            {
+                                (primitives, _) = insertType(primitives, t2.AsIntersectionType().types[(1 - index2)]);
+                            }
+                        }
+                    }
+                }
+
+                var constraint = this.getBaseConstraintOfType(typeVariable);
+                if (everyType(constraint, (t3) =>
+                {
+                    return containsType(primitives, t3);
+                }))
+                {
+                    var i = GoRuntime.Len(types);
+                    while ((i > 0))
+                    {
+                        i--;
+                        var t4 = types[i];
+                        if ((((t4.flags & TypeFlags.Intersection) != 0) && ((t4.objectFlags & ObjectFlags.IsConstrainedTypeVariable) != 0)))
+                        {
+                            var index3 = 0;
+                            if (((t4.AsIntersectionType().types[0].flags & TypeFlags.TypeVariable) == 0))
+                            {
+                                index3 = 1;
+                            }
+
+                            if (((t4.AsIntersectionType().types[index3] == typeVariable) && containsType(primitives, t4.AsIntersectionType().types[(1 - index3)])))
+                            {
+                                types = GoSlices.Delete(types, i, (i + 1));
+                            }
+                        }
+                    }
+
+                    (types, _) = insertType(types, typeVariable);
+                }
+            }
+        }
+
+        return types;
+    }
+}
+
+public sealed partial class Checker
+{
+    private (List<Type>, bool) extractRedundantTemplateLiterals(List<Type> types)
+    {
+        var literals = Core.Filter(types, t => (t.flags & TypeFlags.StringLiteral) != 0);
+        int i = GoRuntime.Len(types);
+        while (i > 0)
+        {
+            i--;
+            var template = types[i];
+            if ((template.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) == 0)
+                continue;
+            foreach (var literal in literals ?? [])
+            {
+                if (isTypeSubtypeOf(literal, template))
+                {
+                    types = GoSlices.Delete(types, i, i + 1);
+                    break;
+                }
+
+                if (isPatternLiteralType(template))
+                    return (types, true);
+            }
+        }
+
+        return (types, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:27155. Insert into the sorted local type-set header.
+    private static (List<Type>, bool) insertType(List<Type> types, Type t)
+    {
+        var position = GoSlices.BinarySearchFunc(types, t, CompareTypes);
+        if (!position.Found)
+        {
+            types ??= [];
+            types.Insert(position.Index, t);
+            return (types, true);
+        }
+
+        return (types, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:32020. Parameter assignment checks retain declaration identity.
+    private bool isSomeSymbolAssigned(Node rootDeclaration)
+    {
+        return isSomeSymbolAssignedWorker(rootDeclaration.Name());
+    }
+
+    private bool isSomeSymbolAssignedWorker(Node node)
+    {
+        if (node.Kind == Kind.Identifier)
+        {
+            return isSymbolAssigned(getSymbolOfDeclaration(node.Parent));
+        }
+
+        return Core.Some(node.Elements(), element => element.Name() != null && isSomeSymbolAssignedWorker(element.Name()));
+    }
+}
+
+public sealed partial class Checker
+{
+    // checker.go:22100. Prototype membership is represented by method flags.
+    private static bool isPrototypeProperty(Symbol symbol) => (symbol.Flags & SymbolFlags.Method) != 0 || (symbol.CheckFlags & CheckFlags.SyntheticMethod) != 0;
+}
+
+public sealed partial class Checker
+{
+    // checker.go:11183. Spread operands use the actual iteration environment.
+    private Type checkSpreadExpression(Node node, CheckMode checkMode)
+    {
+        var arrayOrIterableType = checkExpressionEx(node.Expression(), checkMode);
+        return checkIteratedTypeOrElementType(IterationUse.Spread, arrayOrIterableType, undefinedType, node.Expression());
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTypePredicate(Node node)
+    {
+        this.checkSourceElement(node.Type());
+        var parent = this.getTypePredicateParent(node);
+        if ((parent == null))
+        {
+            this.error(node, Diagnostics.A_type_predicate_is_only_allowed_in_return_type_position_for_functions_and_methods);
+            return;
+        }
+
+        var signature = this.getSignatureFromDeclaration(parent);
+        var typePredicate = this.getTypePredicateOfSignature(signature);
+        if ((typePredicate == null))
+        {
+            return;
+        }
+
+        var parameterName = node.AsTypePredicateNode().ParameterName;
+        if (((typePredicate.kind != TypePredicateKind.This) && (typePredicate.kind != TypePredicateKind.AssertsThis)))
+        {
+            if ((typePredicate.parameterIndex >= 0))
+            {
+                if ((signatureHasRestParameter(signature) && ((int)(typePredicate.parameterIndex) == (GoRuntime.Len(signature.parameters) - 1))))
+                {
+                    this.error(parameterName, Diagnostics.A_type_predicate_cannot_reference_a_rest_parameter);
+                }
+                else
+                {
+                    if ((typePredicate.t != null))
+                    {
+                        List<Diagnostic> diags = new();
+                        if (!this.checkTypeAssignableToEx(typePredicate.t, this.getTypeOfSymbol(signature.parameters[typePredicate.parameterIndex]), node.Type(), null, diags))
+                        {
+                            this.addDiagnostic(Ast.NewDiagnosticChain(diags[0], Diagnostics.A_type_predicate_s_type_must_be_assignable_to_its_parameter_s_type));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if ((parameterName != null))
+                {
+                    var hasReportedError = false;
+                    {
+                        foreach (var param in GoRuntime.RangeValues(parent.Parameters()))
+                        {
+                            var name = param.Name();
+                            if ((Ast.IsBindingPattern(name) && this.checkIfTypePredicateVariableIsDeclaredInBindingPattern(name, parameterName, typePredicate.parameterName)))
+                            {
+                                hasReportedError = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!hasReportedError)
+                    {
+                        this.error(parameterName, Diagnostics.Cannot_find_parameter_0, typePredicate.parameterName);
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Node getTypePredicateParent(Node node)
+    {
+        var parent = node.Parent;
+        switch (parent.Kind)
+        {
+            case Kind.ArrowFunction:
+            case Kind.CallSignature:
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.FunctionType:
+            case Kind.MethodDeclaration:
+            case Kind.MethodSignature:
+            {
+                if ((node == parent.Type()))
+                {
+                    return parent;
+                }
+
+                break;
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkIfTypePredicateVariableIsDeclaredInBindingPattern(Node pattern, Node predicateVariableNode, string predicateVariableName)
+    {
+        {
+            foreach (var element in GoRuntime.RangeValues(pattern.Elements()))
+            {
+                var name = element.Name();
+                if ((name == null))
+                {
+                    continue;
+                }
+
+                if ((Ast.IsIdentifier(name) && (name.Text() == predicateVariableName)))
+                {
+                    this.error(predicateVariableNode, Diagnostics.A_type_predicate_cannot_reference_element_0_in_a_binding_pattern, predicateVariableName);
+                    return true;
+                }
+
+                if ((Ast.IsArrayBindingPattern(name) || Ast.IsObjectBindingPattern(name)))
+                {
+                    if (this.checkIfTypePredicateVariableIsDeclaredInBindingPattern(name, predicateVariableNode, predicateVariableName))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    // Authored Collections capability guard. Resolve through aliases using the
+    // actual checker; do not guard library/inferred-rest algorithms or T[] elements.
+    private void validateCollectionsResolvedRestType(Node node, Type type)
+    {
+        if (!authoredCollectionsProfile || type == null || Ast.GetSourceFileOfNode(node) != sourceFile)
+            return;
+        var visited = new HashSet<Type>();
+        bool hasExcludedRestParameter(Type candidate)
+        {
+            if (!visited.Add(candidate))
+                return false;
+            if ((candidate.flags & TypeFlags.Substitution) != 0)
+                return hasExcludedRestParameter(candidate.AsSubstitutionType().baseType);
+            if ((candidate.flags & TypeFlags.UnionOrIntersection) != 0)
+                return Core.Some(candidate.Types(), hasExcludedRestParameter);
+            return (candidate.flags & TypeFlags.TypeParameter) != 0 && Core.Some(candidate.symbol?.Declarations, declaration => Ast.IsTypeParameterDeclaration(declaration) && declaration.Parent?.Kind != Kind.InferType);
+        }
+
+        if (hasExcludedRestParameter(type))
+            throw new UnsupportedSemanticFeatureException(sourceFile, node, Ast.IsParameterDeclaration(node) ? "genericTupleRestParameter" : "genericVariadicTuple");
+    }
 }

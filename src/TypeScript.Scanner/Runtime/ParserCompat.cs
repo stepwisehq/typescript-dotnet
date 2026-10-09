@@ -88,6 +88,36 @@ internal static class GoRuntime
 internal static class GoSlices
 {
     public static int Index<T>(List<T> values, T target) => values?.IndexOf(target) ?? -1;
+    public static bool Contains<T>(List<T> values, T target) => Index(values, target) >= 0;
+    public static bool Equal<T>(List<T> left, List<T> right)
+    {
+        int length = left?.Count ?? 0;
+        if (length != (right?.Count ?? 0))
+            return false;
+        for (int i = 0; i < length; i++)
+            if (!EqualityComparer<T>.Default.Equals(left[i], right[i]))
+                return false;
+        return true;
+    }
+
+    // slices.Delete keeps the caller's captured header length, shifts the
+    // backing values and clears the abandoned tail. The returned List owns
+    // the shorter header, as with the existing managed Slice adapter.
+    public static List<T> Delete<T>(List<T> values, int start, int end)
+    {
+        int length = values?.Count ?? 0;
+        if (start < 0 || start > end || end > length)
+            throw new ArgumentOutOfRangeException(nameof(start));
+        if (start == end)
+            return values;
+        int count = end - start;
+        for (int i = start; i < length - count; i++)
+            values[i] = values[i + count];
+        for (int i = length - count; i < length; i++)
+            values[i] = default;
+        return values.GetRange(0, length - count);
+    }
+
     public static (int Index, bool Found) BinarySearchFunc<T>(List<T> values, T target, Comparison<T> compare)
     {
         int low = 0, high = values?.Count ?? 0;
@@ -113,6 +143,5 @@ internal static class ParserPaths
 {
     public static string AsString(this string value) => value ?? "";
     // RootedFilePath.IsDeclarationFile forwards to the normalized-path extension algorithm.
-    public static bool IsDeclarationFile(this string value) =>
-        TsPath.getDeclarationFileExtensionFromNormalized(value ?? "") != "";
+    public static bool IsDeclarationFile(this string value) => TsPath.getDeclarationFileExtensionFromNormalized(value ?? "") != "";
 }

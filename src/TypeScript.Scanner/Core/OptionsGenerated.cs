@@ -57,7 +57,9 @@ public sealed partial class CompilerOptions
 {
     public ScriptTarget Target;
     public ModuleKind Module;
+    public Tristate NoResolve, SkipLibCheck, DownlevelIteration, NoUncheckedIndexedAccess;
     public Tristate NoLib, Strict, StrictNullChecks, NoImplicitAny, NoImplicitThis, NoImplicitReturns;
+    public Tristate CheckJs;
     public Tristate StrictFunctionTypes, StrictBindCallApply, StrictPropertyInitialization;
     public Tristate StrictBuiltinIteratorReturn, UseUnknownInCatchVariables;
     public Tristate AllowUnreachableCode;

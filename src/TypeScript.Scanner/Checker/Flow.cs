@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/flow.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Selected branch, assignment, capture, predicate-call and reachability paths; source loops/arrays excluded.
+// Original selected branch, assignment, capture, predicate-call, array evolution and loop flow paths.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -31,6 +31,12 @@ public sealed partial class Checker
         internal FlowState next;
     }
 
+    // flow.go1651: exact original raw "?" preimage replaces its opaque hash.
+    private static readonly CacheHashKey nonDottedNameCacheKey = new("Pw==");
+    private readonly record struct FlowLoopKey(FlowNode flowNode, CacheHashKey refKey);
+    private readonly record struct FlowLoopInfo(FlowLoopKey key, List<Type> types);
+    private readonly Dictionary<FlowLoopKey, Type> flowLoopCache = new();
+    private List<FlowLoopInfo> flowLoopStack;
     private readonly record struct SharedFlow(FlowNode flow, FlowType flowType);
     private readonly List<SharedFlow> sharedFlows = new();
     private FlowState freeFlowState;
@@ -64,31 +70,48 @@ public sealed partial class Checker
     }
 
     private static FlowNode getFlowNodeOfNode(Node node) => node.FlowNodeData()?.FlowNode;
-    // getFlowTypeOfReferenceEx (82), scalar result; evolving arrays/non-null syntax excluded.
+    // getFlowTypeOfReferenceEx (82), including authentic evolving-array finalization.
     private Type getFlowTypeOfReferenceEx(Node reference, Type declaredType, Type initialType, Node flowContainer, FlowNode flowNode)
     {
-        if (flowAnalysisDisabled)
-            return errorType;
-        if (flowNode == null)
+        if (this.flowAnalysisDisabled)
         {
-            flowNode = getFlowNodeOfNode(reference);
-            if (flowNode == null)
-                return declaredType;
+            return this.errorType;
         }
 
-        var f = getFlowState();
+        if ((flowNode == null))
+        {
+            flowNode = getFlowNodeOfNode(reference);
+            if ((flowNode == null))
+            {
+                return declaredType;
+            }
+        }
+
+        var f = this.getFlowState();
         f.reference = reference;
         f.declaredType = declaredType;
         f.initialType = initialType ?? declaredType;
         f.flowContainer = flowContainer;
-        f.sharedFlowStart = sharedFlows.Count;
-        flowInvocationCount++;
-        var evolvedType = getTypeAtFlowNode(f, flowNode).t;
-        sharedFlows.RemoveRange(f.sharedFlowStart, sharedFlows.Count - f.sharedFlowStart);
-        putFlowState(f);
-        var resultType = finalizeEvolvingArrayType(evolvedType);
-        if (resultType == unreachableNeverType || reference.Parent != null && Ast.IsNonNullExpression(reference.Parent) && (resultType.flags & TypeFlags.Never) == 0 && (getTypeWithFacts(resultType, TypeFacts.NEUndefinedOrNull).flags & TypeFlags.Never) != 0)
+        f.sharedFlowStart = GoRuntime.Len(this.sharedFlows);
+        this.flowInvocationCount++;
+        var evolvedType = this.getTypeAtFlowNode(f, flowNode).t;
+        this.sharedFlows.RemoveRange(f.sharedFlowStart, this.sharedFlows.Count - f.sharedFlowStart);
+        this.putFlowState(f);
+        Type resultType = default;
+        if ((((evolvedType.objectFlags & ObjectFlags.EvolvingArray) != 0) && this.isEvolvingArrayOperationTarget(reference)))
+        {
+            resultType = this.autoArrayType;
+        }
+        else
+        {
+            resultType = this.finalizeEvolvingArrayType(evolvedType);
+        }
+
+        if (((resultType == this.unreachableNeverType) || ((((reference.Parent != null) && Ast.IsNonNullExpression(reference.Parent)) && ((resultType.flags & TypeFlags.Never) == 0)) && ((this.getTypeWithFacts(resultType, TypeFacts.NEUndefinedOrNull).flags & TypeFlags.Never) != 0))))
+        {
             return declaredType;
+        }
+
         return resultType;
     }
 
@@ -159,8 +182,27 @@ public sealed partial class Checker
                 t = getTypeAtFlowNode(f, flow.Antecedent);
                 f.reduceLabels.RemoveAt(f.reduceLabels.Count - 1);
             }
-            else if ((flags & (FlowFlags.SwitchClause | FlowFlags.LoopLabel | FlowFlags.ArrayMutation)) != 0)
-                throw unsupported("getTypeAtFlowNode: excluded switch/loop/array flow");
+            else if ((flags & FlowFlags.LoopLabel) != 0)
+            {
+                if (flow.Antecedents.Next == null)
+                {
+                    flow = flow.Antecedents.Flow;
+                    continue;
+                }
+
+                t = getTypeAtFlowLoopLabel(f, flow);
+            }
+            else if ((flags & FlowFlags.ArrayMutation) != 0)
+            {
+                t = getTypeAtFlowArrayMutation(f, flow);
+                if (t.isNil())
+                {
+                    flow = flow.Antecedent;
+                    continue;
+                }
+            }
+            else if ((flags & FlowFlags.SwitchClause) != 0)
+                throw unsupported("getTypeAtFlowNode: excluded switch flow");
             else if ((flags & FlowFlags.Start) != 0)
             {
                 var container = flow.Node;
@@ -190,54 +232,86 @@ public sealed partial class Checker
     private FlowType getTypeAtFlowAssignment(FlowState f, FlowNode flow)
     {
         var node = flow.Node;
-        if (isMatchingReference(f.reference, node))
+        if (this.isMatchingReference(f.reference, node))
         {
-            if (!isReachableFlowNode(flow))
+            if (!this.isReachableFlowNode(flow))
+            {
                 return new FlowType
                 {
-                    t = unreachableNeverType
+                    t = this.unreachableNeverType
                 };
-            if (getAssignmentTargetKind(node) == AssignmentKind.Compound)
-                throw unsupported("getTypeAtFlowAssignment: excluded compound assignment");
-            if (f.declaredType == autoType)
+            }
+
+            if ((getAssignmentTargetKind(node) == AssignmentKind.Compound))
             {
-                if (isEmptyArrayAssignment(node))
-                    throw unsupported("getTypeAtFlowAssignment: excluded empty array");
-                var assignedType = getWidenedLiteralType(getInitialOrAssignedType(f, flow));
-                if (isTypeAssignableTo(assignedType, f.declaredType))
+                var flowType = this.getTypeAtFlowNode(f, flow.Antecedent);
+                return this.newFlowType(this.getBaseTypeOfLiteralType(flowType.t), flowType.incomplete);
+            }
+
+            if (((f.declaredType == this.autoType) || (f.declaredType == this.autoArrayType)))
+            {
+                if (this.isEmptyArrayAssignment(node))
+                {
+                    return new FlowType
+                    {
+                        t = this.getEvolvingArrayType(this.neverType)
+                    };
+                }
+
+                var assignedType = this.getWidenedLiteralType(this.getInitialOrAssignedType(f, flow));
+                if (this.isTypeAssignableTo(assignedType, f.declaredType))
+                {
                     return new FlowType
                     {
                         t = assignedType
                     };
-                throw unsupported("getTypeAtFlowAssignment: excluded array fallback");
+                }
+
+                return new FlowType
+                {
+                    t = this.anyArrayType
+                };
             }
 
             var t = f.declaredType;
             if (isInCompoundLikeAssignment(node))
-                t = getBaseTypeOfLiteralType(t);
-            if ((t.flags & TypeFlags.Union) != 0)
+            {
+                t = this.getBaseTypeOfLiteralType(t);
+            }
+
+            if (((t.flags & TypeFlags.Union) != 0))
+            {
                 return new FlowType
                 {
-                    t = getAssignmentReducedType(t, getInitialOrAssignedType(f, flow))
+                    t = this.getAssignmentReducedType(t, this.getInitialOrAssignedType(f, flow))
                 };
+            }
+
             return new FlowType
             {
                 t = t
             };
         }
 
-        if (containsMatchingReference(f.reference, node))
+        if (this.containsMatchingReference(f.reference, node))
         {
-            if (!isReachableFlowNode(flow))
+            if (!this.isReachableFlowNode(flow))
+            {
                 return new FlowType
                 {
-                    t = unreachableNeverType
+                    t = this.unreachableNeverType
                 };
-            if (Ast.IsVariableDeclaration(node) && (Ast.IsInJSFile(node) || Ast.IsVarConstLike(node)))
+            }
+
+            if ((Ast.IsVariableDeclaration(node) && ((Ast.IsInJSFile(node) || Ast.IsVarConstLike(node)))))
             {
-                var init = node.Initializer();
-                if (init != null && Ast.IsFunctionExpressionOrArrowFunction(init))
-                    return getTypeAtFlowNode(f, flow.Antecedent);
+                {
+                    var init = node.Initializer();
+                    if (((init != null) && Ast.IsFunctionExpressionOrArrowFunction(init)))
+                    {
+                        return this.getTypeAtFlowNode(f, flow.Antecedent);
+                    }
+                }
             }
 
             return new FlowType
@@ -246,9 +320,17 @@ public sealed partial class Checker
             };
         }
 
-        if (Ast.IsVariableDeclaration(node) && Ast.IsForInStatement(node.Parent.Parent))
-            throw unsupported("getTypeAtFlowAssignment: excluded for-in");
-        return default;
+        if (((Ast.IsVariableDeclaration(node) && Ast.IsForInStatement(node.Parent.Parent)) && ((this.isMatchingReference(f.reference, node.Parent.Parent.Expression()) || this.optionalChainContainsReference(node.Parent.Parent.Expression(), f.reference)))))
+        {
+            return new FlowType
+            {
+                t = this.getNonNullableTypeIfNeeded(this.finalizeEvolvingArrayType(this.getTypeAtFlowNode(f, flow.Antecedent).t))
+            };
+        }
+
+        return new FlowType
+        {
+        };
     }
 
     private bool isMatchingReference(Node source, Node target)
@@ -306,17 +388,17 @@ public sealed partial class Checker
             case Kind.ElementAccessExpression:
             {
                 {
-                    var tuple1 = this.getAccessedPropertyName(source);
-                    var sourcePropertyName = tuple1.Item1;
-                    var ok = tuple1.Item2;
+                    var tuple4 = this.getAccessedPropertyName(source);
+                    var sourcePropertyName = tuple4.Item1;
+                    var ok = tuple4.Item2;
                     if (ok)
                     {
                         if (Ast.IsAccessExpression(target))
                         {
                             {
-                                var tuple2 = this.getAccessedPropertyName(target);
-                                var targetPropertyName = tuple2.Item1;
-                                var ok2 = tuple2.Item2;
+                                var tuple5 = this.getAccessedPropertyName(target);
+                                var targetPropertyName = tuple5.Item1;
+                                var ok2 = tuple5.Item2;
                                 if (ok2)
                                 {
                                     return ((targetPropertyName == sourcePropertyName) && this.isMatchingReference(source.Expression(), target.Expression()));
@@ -348,9 +430,9 @@ public sealed partial class Checker
                 if (Ast.IsAccessExpression(target))
                 {
                     {
-                        var tuple3 = this.getAccessedPropertyName(target);
-                        var targetPropertyName2 = tuple3.Item1;
-                        var ok3 = tuple3.Item2;
+                        var tuple6 = this.getAccessedPropertyName(target);
+                        var targetPropertyName2 = tuple6.Item1;
+                        var ok3 = tuple6.Item2;
                         if (ok3)
                         {
                             return ((source.AsQualifiedName().Right.Text() == targetPropertyName2) && this.isMatchingReference(source.AsQualifiedName().Left, target.Expression()));
@@ -391,11 +473,26 @@ public sealed partial class Checker
 
     private Type getInitialTypeOfVariableDeclaration(Node node)
     {
-        if (node.Initializer() != null)
-            return getTypeOfInitializer(node.Initializer());
-        if (Ast.IsForInOrOfStatement(node.Parent.Parent))
-            throw unsupported("getInitialTypeOfVariableDeclaration: excluded for-in/of");
-        return errorType;
+        if ((node.Initializer() != null))
+        {
+            return this.getTypeOfInitializer(node.Initializer());
+        }
+
+        if (Ast.IsForInStatement(node.Parent.Parent))
+        {
+            return this.stringType;
+        }
+
+        if (Ast.IsForOfStatement(node.Parent.Parent))
+        {
+            var t = this.checkRightHandSideOfForOf(node.Parent.Parent);
+            if ((t != null))
+            {
+                return t;
+            }
+        }
+
+        return this.errorType;
     }
 
     private Type getTypeOfInitializer(Node node)
@@ -599,7 +696,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private readonly symbolArenaLinkStore<MarkedAssignmentSymbolLinks> markedAssignmentSymbolLinks = new();
+    private readonly LinkStore<Symbol, MarkedAssignmentSymbolLinks> markedAssignmentSymbolLinks = new();
     private bool isSymbolAssignedDefinitely(Symbol symbol)
     {
         this.ensureAssignmentsMarked(symbol);
@@ -1898,7 +1995,7 @@ public sealed partial class Checker
 
         if (Ast.IsElementAccessExpression(access))
         {
-            throw unsupported("getAccessedPropertyName: excluded element access");
+            return this.tryGetElementAccessExpressionName(access.AsElementAccessExpression());
         }
 
         if (Ast.IsBindingElement(access))
@@ -2077,7 +2174,7 @@ public sealed partial class Checker
                         return this.extractTypesOfKind(typeWithLiterals, (((TypeFlags.String | TypeFlags.StringLiteral) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping));
                     }
 
-                    case true when (isPatternLiteralTypeForFlow(t) && !this.maybeTypeOfKind(typeWithLiterals, ((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping))):
+                    case true when (this.isPatternLiteralType(t) && !this.maybeTypeOfKind(typeWithLiterals, ((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping))):
                     {
                         return this.extractTypesOfKind(typeWithLiterals, TypeFlags.StringLiteral);
                     }
@@ -2468,18 +2565,20 @@ public sealed partial class Checker
 {
     private bool isEvolvingArrayOperationTarget(Node node)
     {
-        var root = getReferenceRoot(node);
+        var root = this.getReferenceRoot(node);
         var parent = root.Parent;
-        var isLengthPushOrUnshift = Ast.IsPropertyAccessExpression(parent) && (parent.Name().Text() == "length" || Ast.IsCallExpression(parent.Parent) && Ast.IsIdentifier(parent.Name()) && Ast.IsPushOrUnshiftIdentifier(parent.Name()));
-        if (Ast.IsElementAccessExpression(parent) && parent.Expression() == root && Ast.IsBinaryExpression(parent.Parent) && parent.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken && parent.Parent.AsBinaryExpression().Left == parent && !Ast.IsAssignmentTarget(parent.Parent))
-            throw unsupported("isEvolvingArrayOperationTarget: excluded element assignment");
-        return isLengthPushOrUnshift;
+        var isLengthPushOrUnshift = (Ast.IsPropertyAccessExpression(parent) && (((parent.Name().Text() == "length") || ((Ast.IsCallExpression(parent.Parent) && Ast.IsIdentifier(parent.Name())) && Ast.IsPushOrUnshiftIdentifier(parent.Name())))));
+        var isElementAssignment = ((((((Ast.IsElementAccessExpression(parent) && (parent.Expression() == root)) && Ast.IsBinaryExpression(parent.Parent)) && (parent.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)) && (parent.Parent.AsBinaryExpression().Left == parent)) && !Ast.IsAssignmentTarget(parent.Parent)) && this.isTypeAssignableToKind(this.getTypeOfExpression(parent.AsElementAccessExpression().ArgumentExpression), TypeFlags.NumberLike));
+        return (isLengthPushOrUnshift || isElementAssignment);
     }
 
     private Type finalizeEvolvingArrayType(Type t)
     {
-        if ((t.objectFlags & ObjectFlags.EvolvingArray) != 0)
-            throw unsupported("finalizeEvolvingArrayType: excluded evolving array");
+        if (((t.objectFlags & ObjectFlags.EvolvingArray) != 0))
+        {
+            return this.getFinalArrayType(t.AsEvolvingArrayType());
+        }
+
         return t;
     }
 }
@@ -2488,13 +2587,17 @@ public sealed partial class Checker
 {
     private Type getUnionOrEvolvingArrayType(FlowState f, List<Type> types, UnionReduction subtypeReduction)
     {
-        // Source arrays are rejected at admission; retain the original finalization and equality steps.
-        foreach (var type in types ?? [])
-            finalizeEvolvingArrayType(type);
-        // Finalization preserves every admitted type reference, so SameMap returns the original list.
-        var result = recombineUnknownType(getUnionTypeEx(types, subtypeReduction, null, null));
-        if (result != f.declaredType && (result.flags & f.declaredType.flags & TypeFlags.Union) != 0 && result.AsUnionType().types.SequenceEqual(f.declaredType.AsUnionType().types))
+        if (isEvolvingArrayTypeList(types))
+        {
+            return this.getEvolvingArrayType(this.getUnionType(Core.Map(types, this.getElementTypeOfEvolvingArrayType)));
+        }
+
+        var result = this.recombineUnknownType(this.getUnionTypeEx(Core.SameMap(types, this.finalizeEvolvingArrayType), subtypeReduction, null, null));
+        if ((((result != f.declaredType) && (((result.flags & f.declaredType.flags) & TypeFlags.Union) != 0)) && GoSlices.Equal(result.AsUnionType().types, f.declaredType.AsUnionType().types)))
+        {
             return f.declaredType;
+        }
+
         return result;
     }
 }
@@ -2525,7 +2628,17 @@ public sealed partial class Checker
                     if (isDeclarationWithExplicitTypeAnnotation(declaration))
                         return getTypeOfSymbol(symbol);
                     if (Ast.IsVariableDeclaration(declaration) && Ast.IsForOfStatement(declaration.Parent.Parent))
-                        throw unsupported("getExplicitTypeOfSymbol: excluded for-of");
+                    {
+                        var statement = declaration.Parent.Parent;
+                        var expressionType = getTypeOfDottedName(statement.Expression(), null);
+                        if (expressionType != null)
+                        {
+                            if (statement.AsForInOrOfStatement().AwaitModifier != null)
+                                throw unsupported("getExplicitTypeOfSymbol: excluded for-await-of");
+                            return checkIteratedTypeOrElementType(IterationUse.ForOf, expressionType, undefinedType, null);
+                        }
+                    }
+
                     if (diagnostic != null)
                         diagnostic.AddRelatedInfo(createDiagnosticForNode(declaration, Diagnostics.X_0_needs_an_explicit_type_annotation, symbolToString(symbol)));
                 }
@@ -2644,10 +2757,533 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool isPatternLiteralTypeForFlow(Type t)
+    private FlowType getTypeAtFlowLoopLabel(FlowState f, FlowNode flow)
     {
-        if ((t.flags & TypeFlags.TemplateLiteral) != 0)
-            throw unsupported("isPatternLiteralType: excluded template types");
+        if (f.refKey.preimage is null)
+        {
+            f.refKey = this.getFlowReferenceKey(f);
+        }
+
+        if ((f.refKey == nonDottedNameCacheKey))
+        {
+            return new FlowType
+            {
+                t = f.declaredType
+            };
+        }
+
+        var key = new FlowLoopKey
+        {
+            flowNode = flow,
+            refKey = f.refKey
+        };
+        {
+            var cached = this.flowLoopCache.GetValueOrDefault(key);
+            if ((cached != null))
+            {
+                return new FlowType
+                {
+                    t = cached
+                };
+            }
+        }
+
+        {
+            foreach (var loopInfo in GoRuntime.RangeValues(this.flowLoopStack))
+            {
+                if (((loopInfo.key == key) && (GoRuntime.Len(loopInfo.types) != 0)))
+                {
+                    return this.newFlowType(this.getUnionOrEvolvingArrayType(f, loopInfo.types, UnionReduction.Literal), true);
+                }
+            }
+        }
+
+        var antecedentTypes = GoRuntime.MakeSlice<Type>(0);
+        var subtypeReduction = false;
+        FlowType firstAntecedentType = default;
+        {
+            var list = flow.Antecedents;
+            for (; (list != null); list = list.Next)
+            {
+                FlowType flowType = default;
+                if (firstAntecedentType.isNil())
+                {
+                    firstAntecedentType = this.getTypeAtFlowNode(f, list.Flow);
+                    flowType = firstAntecedentType;
+                }
+                else
+                {
+                    this.flowLoopStack = GoRuntime.Append(this.flowLoopStack, new FlowLoopInfo(key, new List<Type>(antecedentTypes)));
+                    var saveFlowTypeCache = this.flowTypeCache;
+                    this.flowTypeCache = null;
+                    flowType = this.getTypeAtFlowNode(f, list.Flow);
+                    this.flowTypeCache = saveFlowTypeCache;
+                    this.flowLoopStack = GoRuntime.Slice(this.flowLoopStack, 0, (GoRuntime.Len(this.flowLoopStack) - 1));
+                    {
+                        var cached2 = this.flowLoopCache.GetValueOrDefault(key);
+                        if ((cached2 != null))
+                        {
+                            return new FlowType
+                            {
+                                t = cached2
+                            };
+                        }
+                    }
+                }
+
+                antecedentTypes = Core.AppendIfUnique(antecedentTypes, flowType.t);
+                if (!this.isTypeSubsetOf(flowType.t, f.initialType))
+                {
+                    subtypeReduction = true;
+                }
+
+                if ((flowType.t == f.declaredType))
+                {
+                    break;
+                }
+            }
+        }
+
+        var result = this.getUnionOrEvolvingArrayType(f, antecedentTypes, Core.IfElse(subtypeReduction, UnionReduction.Subtype, UnionReduction.Literal));
+        if (firstAntecedentType.incomplete)
+        {
+            return this.newFlowType(result, true);
+        }
+
+        this.flowLoopCache[key] = result;
+        return new FlowType
+        {
+            t = result
+        };
+    }
+}
+
+public sealed partial class Checker
+{
+    private FlowType getTypeAtFlowArrayMutation(FlowState f, FlowNode flow)
+    {
+        if (((f.declaredType == this.autoType) || (f.declaredType == this.autoArrayType)))
+        {
+            var node = flow.Node;
+            Node expr = default;
+            if (Ast.IsCallExpression(node))
+            {
+                expr = node.Expression().Expression();
+            }
+            else
+            {
+                expr = node.AsBinaryExpression().Left.Expression();
+            }
+
+            if (this.isMatchingReference(f.reference, this.getReferenceCandidate(expr)))
+            {
+                var flowType = this.getTypeAtFlowNode(f, flow.Antecedent);
+                if (((flowType.t.objectFlags & ObjectFlags.EvolvingArray) != 0))
+                {
+                    var evolvedType = flowType.t;
+                    if (Ast.IsCallExpression(node))
+                    {
+                        {
+                            foreach (var arg in GoRuntime.RangeValues(node.Arguments()))
+                            {
+                                evolvedType = this.addEvolvingArrayElementType(evolvedType, arg);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var indexType = this.getContextFreeTypeOfExpression(node.AsBinaryExpression().Left.AsElementAccessExpression().ArgumentExpression);
+                        if (this.isTypeAssignableToKind(indexType, TypeFlags.NumberLike))
+                        {
+                            evolvedType = this.addEvolvingArrayElementType(evolvedType, node.AsBinaryExpression().Right);
+                        }
+                    }
+
+                    return this.newFlowType(evolvedType, flowType.incomplete);
+                }
+
+                return flowType;
+            }
+        }
+
+        return new FlowType
+        {
+        };
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getEvolvingArrayType(Type elementType)
+    {
+        var key = new CachedTypeKey(CachedTypeKind.EvolvingArrayType, elementType.id);
+        var result = this.cachedTypes.GetValueOrDefault(key);
+        if ((result == null))
+        {
+            result = this.newObjectType(ObjectFlags.EvolvingArray, null);
+            result.AsEvolvingArrayType().elementType = elementType;
+            this.cachedTypes[key] = result;
+        }
+
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getElementTypeOfEvolvingArrayType(Type t)
+    {
+        if (((t.objectFlags & ObjectFlags.EvolvingArray) != 0))
+        {
+            return t.AsEvolvingArrayType().elementType;
+        }
+
+        return this.neverType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isEvolvingArrayTypeList(List<Type> types)
+    {
+        var hasEvolvingArrayType = false;
+        {
+            foreach (var t in GoRuntime.RangeValues(types))
+            {
+                if (((t.flags & TypeFlags.Never) == 0))
+                {
+                    if (((t.objectFlags & ObjectFlags.EvolvingArray) == 0))
+                    {
+                        return false;
+                    }
+
+                    hasEvolvingArrayType = true;
+                }
+            }
+        }
+
+        return hasEvolvingArrayType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type addEvolvingArrayElementType(Type evolvingArrayType, Node node)
+    {
+        var newElementType = this.getRegularTypeOfObjectLiteral(this.getBaseTypeOfLiteralType(this.getContextFreeTypeOfExpression(node)));
+        var elementType = evolvingArrayType.AsEvolvingArrayType().elementType;
+        if (this.isTypeSubsetOf(newElementType, elementType))
+        {
+            return evolvingArrayType;
+        }
+
+        return this.getEvolvingArrayType(this.getUnionType(new List<Type> { elementType, newElementType }));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getFinalArrayType(EvolvingArrayType t)
+    {
+        if ((t.finalArrayType == null))
+        {
+            t.finalArrayType = this.createFinalArrayType(t.elementType);
+        }
+
+        return t.finalArrayType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createFinalArrayType(Type elementType)
+    {
+        switch (true)
+        {
+            case true when ((elementType.flags & TypeFlags.Never) != 0):
+            {
+                return this.autoArrayType;
+            }
+
+            case true when ((elementType.flags & TypeFlags.Union) != 0):
+            {
+                return this.createArrayType(this.getUnionTypeEx(elementType.Types(), UnionReduction.Subtype, null, null));
+            }
+        }
+
+        return this.createArrayType(elementType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private CacheHashKey getFlowReferenceKey(FlowState f)
+    {
+        var b = new keyBuilder();
+        verificationCollectionsFlowStart(b);
+        if (this.writeFlowCacheKey(b, f.reference, f.declaredType, f.initialType, f.flowContainer))
+        {
+            var key = b.hash();
+            verificationCollectionsFlowEnd(b, key, true);
+            return key;
+        }
+
+        verificationCollectionsFlowEnd(b, nonDottedNameCacheKey, false);
+        return nonDottedNameCacheKey;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool writeFlowCacheKey(keyBuilder b, Node node, Type declaredType, Type initialType, Node flowContainer)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+            {
+                if (!Ast.IsThisInTypeQuery(node))
+                {
+                    var symbol = this.getResolvedSymbol(node);
+                    if ((symbol == this.unknownSymbol))
+                    {
+                        return false;
+                    }
+
+                    b.writeSymbol(symbol);
+                    verificationCollectionsFlowSlot(b, "symbol", symbol, 8);
+                }
+
+                goto case Kind.ThisKeyword;
+            }
+
+            case Kind.ThisKeyword:
+            {
+                b.writeByte((byte)':');
+                b.writeType(declaredType);
+                verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                if ((initialType != declaredType))
+                {
+                    b.writeByte((byte)'=');
+                    b.writeType(initialType);
+                    verificationCollectionsFlowSlot(b, "type", initialType, 4);
+                }
+
+                if ((flowContainer != null))
+                {
+                    b.writeByte((byte)'@');
+                    b.writeNode(flowContainer);
+                    verificationCollectionsFlowSlot(b, "node", flowContainer, 8);
+                }
+
+                return true;
+            }
+
+            case Kind.NonNullExpression:
+            case Kind.ParenthesizedExpression:
+            {
+                return this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer);
+            }
+
+            case Kind.QualifiedName:
+            {
+                if (!this.writeFlowCacheKey(b, node.AsQualifiedName().Left, declaredType, initialType, flowContainer))
+                {
+                    return false;
+                }
+
+                b.writeByte((byte)'.');
+                b.writeString(node.AsQualifiedName().Right.Text());
+                return true;
+            }
+
+            case Kind.PropertyAccessExpression:
+            case Kind.ElementAccessExpression:
+            {
+                {
+                    var tuple1 = this.getAccessedPropertyName(node);
+                    var propName = tuple1.Item1;
+                    var ok = tuple1.Item2;
+                    if (ok)
+                    {
+                        if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                        {
+                            return false;
+                        }
+
+                        b.writeByte((byte)'.');
+                        b.writeString(propName);
+                        return true;
+                    }
+                }
+
+                if ((Ast.IsElementAccessExpression(node) && Ast.IsIdentifier(node.AsElementAccessExpression().ArgumentExpression)))
+                {
+                    var symbol2 = this.getResolvedSymbol(node.AsElementAccessExpression().ArgumentExpression);
+                    if ((this.isConstantVariable(symbol2) || (this.isParameterOrMutableLocalVariable(symbol2) && !this.isSymbolAssigned(symbol2))))
+                    {
+                        if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                        {
+                            return false;
+                        }
+
+                        b.writeString(".@");
+                        b.writeSymbol(symbol2);
+                        verificationCollectionsFlowSlot(b, "symbol", symbol2, 8);
+                        return true;
+                    }
+                }
+
+                break;
+            }
+
+            case Kind.ObjectBindingPattern:
+            case Kind.ArrayBindingPattern:
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+            case Kind.MethodDeclaration:
+            {
+                b.writeNode(node);
+                verificationCollectionsFlowSlot(b, "node", node, 8);
+                b.writeByte((byte)'#');
+                b.writeType(declaredType);
+                verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                return true;
+            }
+        }
+
         return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private (string, bool) tryGetElementAccessExpressionName(ElementAccessExpression node)
+    {
+        switch (true)
+        {
+            case true when Ast.IsStringOrNumericLiteralLike(node.ArgumentExpression):
+            {
+                return (node.ArgumentExpression.Text(), true);
+            }
+
+            case true when Ast.IsEntityNameExpression(node.ArgumentExpression):
+            {
+                return this.tryGetNameFromEntityNameExpression(node.ArgumentExpression);
+            }
+        }
+
+        return ("", false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private (string, bool) tryGetNameFromEntityNameExpression(Node node)
+    {
+        var symbol = this.resolveEntityName(node, SymbolFlags.Value, true, false, null);
+        if (((symbol == null) || !((this.isConstantVariable(symbol) || (((symbol.Flags & SymbolFlags.EnumMember) != 0))))))
+        {
+            return ("", false);
+        }
+
+        var declaration = symbol.ValueDeclaration;
+        if ((declaration == null))
+        {
+            return ("", false);
+        }
+
+        var t = this.tryGetTypeFromTypeNode(declaration);
+        if ((t != null))
+        {
+            {
+                var tuple1 = tryGetNameFromType(t);
+                var name = tuple1.Item1;
+                var ok = tuple1.Item2;
+                if (ok)
+                {
+                    return (name, true);
+                }
+            }
+        }
+
+        if (((hasOnlyExpressionInitializer(declaration) && !Ast.IsBindingElement(declaration)) && this.isBlockScopedNameDeclaredBeforeUse(declaration, node)))
+        {
+            {
+                var initializer = declaration.Initializer();
+                if ((initializer != null))
+                {
+                    {
+                        var initializerType = this.getTypeOfExpression(initializer);
+                        if ((initializerType != null))
+                        {
+                            return tryGetNameFromType(initializerType);
+                        }
+                    }
+                }
+                else
+                {
+                    if (Ast.IsEnumMember(declaration))
+                    {
+                        return Ast.TryGetTextOfPropertyName(declaration.Name());
+                    }
+                }
+            }
+        }
+
+        return ("", false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static (string, bool) tryGetNameFromType(Type t)
+    {
+        switch (true)
+        {
+            case true when ((t.flags & TypeFlags.UniqueESSymbol) != 0):
+            {
+                return (t.AsUniqueESSymbolType().name, true);
+            }
+
+            case true when ((t.flags & TypeFlags.StringOrNumberLiteral) != 0):
+            {
+                return (Evaluator.AnyToString(t.AsLiteralType().value), true);
+            }
+        }
+
+        return ("", false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private string getPropertyNameForKnownSymbolName(string symbolName)
+    {
+        var ctorType = this.getGlobalESSymbolConstructorSymbolOrNil();
+        if ((ctorType != null))
+        {
+            var uniqueType = this.getTypeOfPropertyOfType(this.getTypeOfSymbol(ctorType), symbolName);
+            if (((uniqueType != null) && isTypeUsableAsPropertyName(uniqueType)))
+            {
+                return getPropertyNameFromType(uniqueType);
+            }
+        }
+
+        return ((Ast.InternalSymbolNamePrefix + "@") + symbolName);
+    }
+}
+
+public sealed partial class Checker
+{
+    // flow.go:2339. The fixed profile currently leaves the option false, but the
+    // original helper retains the genuine missing-type edge when enabled.
+    private Type includeUndefinedInIndexSignature(Type t)
+    {
+        if (t == null)
+            return null;
+        if (compilerOptions.NoUncheckedIndexedAccess == Tristate.True)
+            return getUnionType(new List<Type> { t, missingType });
+        return t;
     }
 }

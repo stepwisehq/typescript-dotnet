@@ -1,0 +1,299 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "cfa6d2f",
+  "status": "accepted-bounded-collections-contract",
+  "definitions": {
+    "original-assertion-preserving": "All applicable original behavioral assertions and helper preconditions retained; representation-only adaptation documented.",
+    "adapted": "Changed setup or retained subset that changes what original test establishes; record every omission.",
+    "input-only": "Original compiler input parsed/checked by independent differential protocol, not original full compiler expected assertions.",
+    "additional-differential": "Authored actual-Go versus managed/native semantic/model observation.",
+    "excluded": "Source-based contract or performance reason, never silently dropped."
+  },
+  "functions": [
+    {
+      "origin": "original-upstream",
+      "file": "internal/checker/checker_test.go",
+      "function": "TestGetSymbolAtLocation",
+      "kind": "test",
+      "disposition": "adapted-host-assertions",
+      "reason": "Original three nonnil symbol assertions applicable; fixed-profile adaptation of bundled/default-config host must be explicitly labelled. Original config parser precondition is outside this profile API.",
+      "executionStatus": "passed-managed-and-native-bounded-shared-body",
+      "preservedAssertions": 3,
+      "managedEvidence": "artifacts/collections-validation/build19/collections-build19-controls.trx",
+      "nativeStatus": "passed",
+      "sharedBody": "validation/Collections.Validation/Controls.cs",
+      "adaptation": "Original source and three nonnil selections retained. Fixed full ES5 Collections host replaces original config/default-library host; config parser helper assertion is not claimed.",
+      "acceptanceEvidence": "validation/results/collections-verified.json"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/checker/checker_test.go",
+      "function": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Two source files/import resolution excluded by fixed single-user script contract.",
+      "executionStatus": "not-run-this-campaign"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/checker/checker_test.go",
+      "function": "BenchmarkNewChecker",
+      "kind": "benchmark",
+      "disposition": "excluded",
+      "reason": "Performance benchmark, not executable correctness assertions for acceptance.",
+      "executionStatus": "not-run-this-campaign"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/checker/tracer_test.go",
+      "function": "TestTracerPushPreservesEndArgMutations",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Tracing machinery excluded from semantic checking contract.",
+      "executionStatus": "not-run-this-campaign"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMapEqualFunc",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No general OrderedMap managed counterpart is selected. Actual widening-name/property-error producers use native OrderedDictionary for bounded set/get/first-insertion iteration, while deferred-node iteration uses the explicit ordered-node adapter. Original TestOrderedMapEqualFunc establishes general EqualFunc including nil/order/custom equality behavior not exposed by those ported APIs; do not label BCL-only tests an assertion-preserving original port.",
+      "executionStatus": "not-run-excluded",
+      "producerEvidence": [
+        "internal/checker/checker.go:18871 (widening names)",
+        "internal/checker/checker.go:22285 (property diagnostic counts)",
+        "internal/checker/types.go:414 (deferred node ordered set)"
+      ]
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMap",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No general OrderedMap managed counterpart is selected. Actual widening-name/property-error producers use native OrderedDictionary for bounded set/get/first-insertion iteration, while deferred-node iteration uses the explicit ordered-node adapter. Original TestOrderedMap establishes general set/get/entry iteration plus Delete/repeated-delete behavior not exposed by those ported APIs; do not label BCL-only tests an assertion-preserving original port.",
+      "executionStatus": "not-run-excluded",
+      "producerEvidence": [
+        "internal/checker/checker.go:18871 (widening names)",
+        "internal/checker/checker.go:22285 (property diagnostic counts)",
+        "internal/checker/types.go:414 (deferred node ordered set)"
+      ]
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMapClone",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No general OrderedMap managed counterpart is selected. Actual widening-name/property-error producers use native OrderedDictionary for bounded set/get/first-insertion iteration, while deferred-node iteration uses the explicit ordered-node adapter. Original TestOrderedMapClone establishes general Clone identity and delete-isolation behavior not exposed by those ported APIs; do not label BCL-only tests an assertion-preserving original port.",
+      "executionStatus": "not-run-excluded",
+      "producerEvidence": [
+        "internal/checker/checker.go:18871 (widening names)",
+        "internal/checker/checker.go:22285 (property diagnostic counts)",
+        "internal/checker/types.go:414 (deferred node ordered set)"
+      ]
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMapClear",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No general OrderedMap managed counterpart is selected. Actual widening-name/property-error producers use native OrderedDictionary for bounded set/get/first-insertion iteration, while deferred-node iteration uses the explicit ordered-node adapter. Original TestOrderedMapClear establishes general Clear behavior not exposed by those ported APIs; do not label BCL-only tests an assertion-preserving original port.",
+      "executionStatus": "not-run-excluded",
+      "producerEvidence": [
+        "internal/checker/checker.go:18871 (widening names)",
+        "internal/checker/checker.go:22285 (property diagnostic counts)",
+        "internal/checker/types.go:414 (deferred node ordered set)"
+      ]
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMapWithSizeHint",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Original asserts allocation count below 10 for size-hint constructors; allocation/platform performance is outside fixed semantic contract and no selected managed size-hint API is claimed.",
+      "executionStatus": "not-run-excluded"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_map_test.go",
+      "function": "TestOrderedMapUnmarshalJSON",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Original OrderedMap JSON decoding/type-error adapter is unselected by explicit embedded-library semantic host; JSON configuration/project loading is excluded.",
+      "executionStatus": "not-run-excluded"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_set_test.go",
+      "function": "TestOrderedSet",
+      "kind": "test",
+      "disposition": "adapted",
+      "reason": "Actual selected GoOrderedNodeSet adapter retains Add/Has/Values/Size only. Preserve original Add(1,2,3) and three Has assertions with distinct Node identity values; original Delete/Clear/Clone and resulting sortedness/size assertions are explicitly omitted. No full OrderedSet test or private OrderedMap backing parity claimed.",
+      "executionStatus": "passed-managed-and-native-bounded-shared-body",
+      "evidence": [
+        {
+          "path": "validation/Collections.Validation/CollectionSupportChecks.cs",
+          "name": "ordered-set-original-prefix-adapted",
+          "notes": "Three original behavioral assertions retained; int values translated to distinct Node identities."
+        },
+        {
+          "path": "tests/Checker.Tests/CollectionsSupportTests.cs",
+          "name": "ExplicitlyLabelledSelectedSupportAssertionsAreSharedWithNative",
+          "notes": "Thin xUnit wrapper over the same shared body; managed passed build19, native pending."
+        }
+      ],
+      "preservedAssertions": 3,
+      "omittedOperations": [
+        "Delete",
+        "Clear",
+        "Clone"
+      ],
+      "adaptationNotes": [
+        "Node identity element type matches actual deferred-node producer.",
+        "Original assertions after Delete are not simulated by an unrelated collection."
+      ],
+      "managedEvidence": "artifacts/collections-validation/build19/collections-build19-controls.trx",
+      "provenanceNotes": "Original Add(1), Add(2), Add(3) setup and all three Has(1/2/3) assertions preserved using distinct Node identities. Remaining original delete/iteration/size/clear/clone assertions are not claimed preserved. Additional live-iteration/helper controls are authored actual-Go projections, not a full original OrderedSet port.",
+      "nativeStatus": "passed",
+      "acceptanceEvidence": "validation/results/collections-verified.json"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/ordered_set_test.go",
+      "function": "TestOrderedSetWithSizeHint",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "Original asserts allocation count below 10 for size-hint constructors; allocation/platform performance is outside fixed semantic contract and no selected managed size-hint API is claimed.",
+      "executionStatus": "not-run-excluded"
+    },
+    {
+      "origin": "original-upstream",
+      "file": "internal/collections/syncmap_test.go",
+      "function": "TestSyncMapWithNil",
+      "kind": "test",
+      "disposition": "excluded",
+      "reason": "No SyncMap caller exists in selected checker/inference source closure. Load/Store/LoadOrStore(nil)/Range API is not provided; no unrelated Dictionary assertions are substituted.",
+      "executionStatus": "not-run-excluded"
+    }
+  ],
+  "functionCounts": {
+    "checkerTest": 3,
+    "checkerBenchmark": 1,
+    "inferenceDirectTest": 0,
+    "collectionsTest": 9
+  },
+  "currentDifferential": {
+    "stage": "accepted-bounded-managed-and-native-rich",
+    "canonicalCases": 44,
+    "storedObservations": true,
+    "queries": 260,
+    "records": 17932,
+    "storedStateCells": 12385,
+    "managedExact": 44,
+    "managedEvidence": "artifacts/collections-validation/build30/canonical-managed/report.json",
+    "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+    "orderCases": 8,
+    "orderExecutionsPerRuntime": 18,
+    "originalGoOrderExact": 18,
+    "managedOrderExact": 18,
+    "orderEvidence": "artifacts/collections-validation/build30/order/report.json",
+    "originalOverlayBehaviorCases": 44,
+    "originalOverlayBehaviorExact": 44,
+    "originalOverlayEvidence": "artifacts/collections-validation/original-go-provenance/report.json",
+    "nativeStatus": "passed-final-frozen-gate",
+    "corpusTheoryXUnitStatus": "passed-44-final-frozen-gate",
+    "accepted": true,
+    "nativeExact": 44,
+    "nativeEvidence": "validation/results/collections-verified.json",
+    "originalGoNativeOrderExact": 18,
+    "nativeOrderExact": 18,
+    "nativeOrderEvidence": "artifacts/collections-validation/native-order/report.json",
+    "acceptanceEvidence": "validation/results/collections-verified.json"
+  },
+  "compilerInputReuse": "Final 44 collection differential inputs are authored from selected upstream algorithms/declarations. Zero newly reused whole upstream compiler input units. The unchanged historical foundation/compiler input corpus remains separately exercised by the single retained regression cascade; that is not new collection input or original full compiler assertion coverage.",
+  "requiredCoreHelperTestInventory": {
+    "searched": "all tracked upstream/TypeScript/tsc/internal/core/*_test.go",
+    "originalFunctions": [
+      "TestBreadthFirstSearchParallel",
+      "TestPatternOverlappingMatch"
+    ],
+    "newlySelectedHelpers": [
+      "SameMapIndex",
+      "SameMap",
+      "Same",
+      "Concatenate",
+      "MapIndex",
+      "CountWhere",
+      "ReplaceElement",
+      "GoSlices.Equal",
+      "GoSlices.Contains",
+      "GoSlices.Delete"
+    ],
+    "matchingOriginalTestFunctions": 0,
+    "disposition": "eight authored shared source-derived controls plus independent actual-Go operation projections; no matching original direct test functions for these helpers; historical BFS/pattern assertions remain separate retained cascade evidence"
+  },
+  "selectedSupportControls": {
+    "origin": "mixed-one-adapted-upstream-prefix-seven-authored-source-derived",
+    "source": "validation/Collections.Validation/CollectionSupportChecks.cs",
+    "xunit": "tests/Checker.Tests/CollectionsSupportTests.cs",
+    "sharedCases": 8,
+    "executionStatus": "passed-managed-and-native-bounded-shared-body",
+    "originalGoFixtureStatus": "executed-exact-requested-projections",
+    "operations": [
+      "ordered node identity/duplicate suppression/live insertion/early stop",
+      "MapIndex nil/empty and captured length",
+      "SameMap nil/whole-list identity/changed copy/captured mutation",
+      "CountWhere nil and captured length",
+      "Concatenate empty identity and Same whole-list storage",
+      "ReplaceElement clone and Delete old-header/tail state",
+      "Equal/Contains nil and ordered values"
+    ],
+    "limitations": [
+      "Original TestOrderedSet is adapted prefix only; the other eight original collection functions have explicit exclusions.",
+      "Managed Same applies to whole owning lists; shared backing subviews are not represented.",
+      "Mutation prefix copies and Delete returned list do not claim later Go backing write-through.",
+      "Private OrderedMap backing/allocator topology, Delete/Clear/Clone on ordered-node adapter are unverified/unimplemented."
+    ],
+    "originalGoEvidence": {
+      "source": "tools/collections-oracle/support_projections.go",
+      "output": "validation/collections-corpus/support-projections-actual-go.json",
+      "provenance": "validation/collections-corpus/support-projections-provenance.json",
+      "notes": "Independent pinned Go operations replayed during the final gate with exact durable output/provenance. All eight managed/native support bodies pass; the original OrderedSet prefix remains adapted. No full collection API or private backing topology parity claim."
+    },
+    "managedEvidence": "artifacts/collections-validation/build19/collections-build19-controls.trx",
+    "combinedRegistryCount": 12,
+    "adaptedUpstreamCases": 1,
+    "authoredCases": 7,
+    "currentManagedDispatcherEvidence": "artifacts/collections-validation/build30/shared-controls/report.json",
+    "nativeEvidence": "validation/results/collections-verified.json"
+  },
+  "executionSummary": {
+    "sharedRegistryCases": 12,
+    "profileAndAdaptedCheckerCases": 4,
+    "authoredSupportCases": 7,
+    "latestSavedSharedExecution": "artifacts/collections-validation/build19/collections-build19-controls.trx",
+    "latestSavedSharedExecutionCases": 11,
+    "newResolvedRestBoundaryGroup": "passed-managed-build30-shared-dispatcher",
+    "nativeStatus": "passed-final-frozen-gate",
+    "notes": "Actual final gate executes all12 shared native bodies and44 corpus xUnit theories; all23,467 xUnit cases pass with no skips. Two shared bodies are adapted upstream tests and10 are authored. Earlier build19/current managed dispatcher checkpoints remain separate historical evidence.",
+    "currentSharedDispatcherCases": 12,
+    "currentSharedDispatcherExitCode": 0,
+    "currentSharedDispatcherRuntime": "managed-build30",
+    "totalSupportCases": 8,
+    "adaptedSupportCases": 1,
+    "adaptedUpstreamSharedCases": 2,
+    "authoredSharedCases": 10,
+    "currentSharedDispatcherEvidence": "artifacts/collections-validation/build30/shared-controls/report.json",
+    "nativeSharedCases": 12,
+    "corpusTheoryXUnitCases": 44,
+    "checkerXUnitCases": 757,
+    "allXUnitCases": 23467,
+    "acceptanceEvidence": "validation/results/collections-verified.json",
+    "elapsedSeconds": 658.892
+  },
+  "acceptanceEvidence": "validation/results/collections-verified.json"
+}

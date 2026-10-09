@@ -145,15 +145,21 @@ internal sealed partial class NodeBuilderImpl
                 return f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.TrueKeyword));
             case PseudoTypeKind.SingleCallSignature:
                 var single = t.AsPseudoTypeSingleCallSignature();
-                if (GoRuntime.Len(single.TypeParameters) != 0)
-                    throw Checker.unsupported("pseudoTypeToNode: source generic signature");
                 var singleSignature = ch.getSignatureFromDeclaration(single.Signature);
                 var expanded = ch.getExpandedParameters(singleSignature, true)[0];
                 var cleanupSingle = enterNewScope(single.Signature, expanded, singleSignature.typeParameters, singleSignature.parameters, singleSignature.mapper);
+                NodeList singleTypeParameters = null;
+                if (GoRuntime.Len(single.TypeParameters) != 0)
+                    singleTypeParameters = f.NewNodeList(Core.Map(single.TypeParameters, parameter => reuseNode(parameter.AsNode())));
                 var singleParameters = pseudoParametersToNodeList(single.Parameters);
                 var singleReturn = pseudoTypeToNode(single.ReturnType);
                 cleanupSingle();
-                return f.NewFunctionTypeNode(null, singleParameters, singleReturn);
+                return f.NewFunctionTypeNode(singleTypeParameters, singleParameters, singleReturn);
+            case PseudoTypeKind.Tuple:
+                var tupleElements = Core.Map(t.AsPseudoTypeTuple().Elements, pseudoTypeToNode);
+                var tupleNode = f.NewTupleTypeNode(f.NewNodeList(tupleElements));
+                e.AddEmitFlags(tupleNode, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                return f.NewTypeOperatorNode(Kind.ReadonlyKeyword, tupleNode);
             case PseudoTypeKind.ObjectLiteral:
                 var elements = t.AsPseudoTypeObjectLiteral().Elements;
                 if (elements is not { Count: > 0 })
@@ -178,9 +184,10 @@ internal sealed partial class NodeBuilderImpl
                     {
                         case PseudoObjectElementKind.Method:
                             var method = e.AsPseudoObjectMethod();
+                            NodeList methodTypeParameters = null;
                             if (GoRuntime.Len(method.TypeParameters) != 0)
-                                throw Checker.unsupported("pseudoTypeToNode: source generic method");
-                            newProperty = isConstObject ? f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, f.NewFunctionTypeNode(null, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType)), null) : f.NewMethodSignatureDeclaration(modifiers, reuseName(e.Name, true), null, null, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType));
+                                methodTypeParameters = f.NewNodeList(Core.Map(method.TypeParameters, parameter => reuseNode(parameter.AsNode())));
+                            newProperty = isConstObject ? f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, f.NewFunctionTypeNode(methodTypeParameters, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType)), null) : f.NewMethodSignatureDeclaration(modifiers, reuseName(e.Name, true), null, methodTypeParameters, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType));
                             break;
                         case PseudoObjectElementKind.PropertyAssignment:
                             var data = e.AsPseudoPropertyAssignment();
@@ -356,7 +363,18 @@ internal sealed partial class NodeBuilderImpl
                     return false;
                 return true;
             case PseudoTypeKind.Tuple:
-                throw Checker.unsupported("pseudoTypeEquivalentToType: tuple");
+                if (undefinedStripped == null || !Checker.isTupleType(undefinedStripped))
+                    return false;
+                if ((undefinedStripped.TargetTupleType().combinedFlags & ElementFlags.NonRequired) != 0)
+                    return false;
+                var pseudoElements = t.AsPseudoTypeTuple().Elements;
+                var elementTypes = ch.getTypeArguments(undefinedStripped);
+                if (GoRuntime.Len(pseudoElements) != GoRuntime.Len(elementTypes))
+                    return false;
+                for (int i = 0; i < GoRuntime.Len(pseudoElements); i++)
+                    if (!pseudoTypeEquivalentToType(pseudoElements[i], elementTypes[i], false, reportErrors))
+                        return false;
+                return true;
             default:
                 return false;
         }
@@ -430,6 +448,7 @@ internal sealed partial class NodeBuilderImpl
                 return ch.getRegularTypeOfExpression(t.AsPseudoTypeLiteral().Node);
             case PseudoTypeKind.ObjectLiteral:
             case PseudoTypeKind.SingleCallSignature:
+            case PseudoTypeKind.Tuple:
                 return null;
             default:
                 throw Checker.unsupported("pseudoTypeToType: tuple/signature");

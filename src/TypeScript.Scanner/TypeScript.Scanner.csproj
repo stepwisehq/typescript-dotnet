@@ -6,4 +6,10 @@
     <IsAotCompatible>true</IsAotCompatible>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Checker/Libraries/lib.es5.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.es5.d.ts" />
+    <EmbeddedResource Include="Checker/Libraries/lib.decorators.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.decorators.d.ts" />
+    <EmbeddedResource Include="Checker/Libraries/lib.decorators.legacy.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.decorators.legacy.d.ts" />
+    <EmbeddedResource Include="Checker/Libraries/manifest.json" LogicalName="TypeScript.Checking.Libraries.Manifest.json" />
+  </ItemGroup>
 </Project>

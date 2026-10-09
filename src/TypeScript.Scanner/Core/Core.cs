@@ -87,6 +87,68 @@ internal static partial class Core
     public static bool Every<T>(List<T>? values, Func<T, bool> predicate) => values?.All(predicate) ?? true;
     public static T? LastOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[^1];
     public static List<U>? Map<T, U>(List<T>? values, Func<T, U> map) => values?.Select(map).ToList();
+    public static List<U>? MapIndex<T, U>(List<T>? values, Func<T, int, U> map)
+    {
+        if (values is null)
+            return null;
+        int count = values.Count;
+        var result = new List<U>(count);
+        for (int i = 0; i < count; i++)
+            result.Add(map(values[i], i));
+        return result;
+    }
+
+    public static List<T>? SameMapIndex<T>(List<T>? values, Func<T, int, T> map)
+    {
+        int count = values?.Count ?? 0;
+        for (int i = 0; i < count; i++)
+        {
+            T value = values![i];
+            T mapped = map(value, i);
+            if (!EqualityComparer<T>.Default.Equals(mapped, value))
+            {
+                var result = values.GetRange(0, i);
+                result.Add(mapped);
+                for (int j = i + 1; j < count; j++)
+                    result.Add(map(values[j], j));
+                return result;
+            }
+        }
+
+        return values is not null && values.Count != count ? values.GetRange(0, count) : values;
+    }
+
+    public static List<T>? SameMap<T>(List<T>? values, Func<T, T> map) => SameMapIndex(values, (value, _) => map(value));
+    // Go compares slice length and the address of the first element; empty
+    // slices compare alike. Managed slices retain their owning list identity.
+    public static bool Same<T>(List<T>? left, List<T>? right) => (left?.Count ?? 0) == (right?.Count ?? 0) && ((left?.Count ?? 0) == 0 || ReferenceEquals(left, right));
+    public static List<T>? Concatenate<T>(List<T>? left, List<T>? right)
+    {
+        if ((right?.Count ?? 0) == 0)
+            return left;
+        if ((left?.Count ?? 0) == 0)
+            return right;
+        var result = new List<T>(left!);
+        result.AddRange(right!);
+        return result;
+    }
+
+    public static int CountWhere<T>(List<T>? values, Func<T, bool> predicate)
+    {
+        int count = 0, length = values?.Count ?? 0;
+        for (int i = 0; i < length; i++)
+            if (predicate(values![i]))
+                count++;
+        return count;
+    }
+
+    public static List<T> ReplaceElement<T>(List<T> values, int index, T value)
+    {
+        var result = GoSlices.Clone(values);
+        result[index] = value;
+        return result;
+    }
+
     public static ScriptKind GetScriptKindFromFileName(string name) => Path.GetExtension(name).ToLowerInvariant() switch
     {
         ".js" or ".mjs" or ".cjs" => ScriptKind.JS,

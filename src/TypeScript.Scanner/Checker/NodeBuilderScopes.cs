@@ -138,7 +138,12 @@ internal sealed partial class NodeBuilderImpl
             }
 
             if ((ctx.flags & TypeScript.NodeBuilding.Flags.GenerateNamesForShadowedTypeParams) != 0 && typeParameters != null && Core.Some(typeParameters, p => p != null))
-                throw Checker.unsupported("enterNewScope: written signature type parameters");
+                cleanupTypeParams = pushFakeScope("typeParams", add =>
+                {
+                    foreach (var typeParameter in typeParameters)
+                        if (typeParameter != null)
+                            add(typeParameterToName(typeParameter).Text(), typeParameter.symbol);
+                });
         }
 
         return () =>

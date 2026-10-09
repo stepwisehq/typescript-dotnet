@@ -141,9 +141,16 @@ internal sealed partial class NodeBuilderImpl
             {
                 if (current == leftmost)
                 {
-                    if (symbol != null && (symbol.Flags & SymbolFlags.TypeParameter) != 0)
-                        throw Checker.unsupported("attachSymbolToLeftmostIdentifier: source type parameter");
-                    var name = setTextRange(newIdentifier(current.Text(), symbol), current);
+                    Node name = null;
+                    if (symbol != null)
+                    {
+                        var type = ch.getDeclaredTypeOfSymbol(symbol);
+                        if ((symbol.Flags & SymbolFlags.TypeParameter) != 0)
+                            name = typeParameterToName(type);
+                    }
+
+                    name ??= newIdentifier(current.Text(), symbol);
+                    name = setTextRange(name, current);
                     e.AddEmitFlags(name, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
                     return name;
                 }
@@ -176,6 +183,9 @@ internal sealed partial class NodeBuilderImpl
 
             if (symbol != null)
             {
+                // A parameter resolved in this context is already visible.
+                if ((symbol.Flags & SymbolFlags.FunctionScopedVariable) != 0 && symbol.ValueDeclaration != null && (Ast.IsPartOfParameterDeclaration(symbol.ValueDeclaration) || Ast.IsJSDocParameterTag(symbol.ValueDeclaration)))
+                    return (false, attachSymbolToLeftmostIdentifier(leftmost, node, symbol), null);
                 bool introducesError = (symbol.Flags & SymbolFlags.TypeParameter) == 0 && !Ast.IsDeclarationName(node) && ch.IsSymbolAccessible(symbol, ctx.enclosingDeclaration, meaning, false).Accessibility != TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible;
                 if (introducesError)
                     ctx.tracker.ReportInferenceFallback(node);
@@ -206,9 +216,47 @@ internal sealed partial class NodeBuilderImpl
             return serialized != null ? setTextRange(serialized, node.AsTypeReferenceNode().TypeName) : null;
         }
 
+        Node tryVisitSimpleTypeNode(Node node)
+        {
+            var inner = Ast.SkipParentheses(node);
+            if (inner.Kind == Kind.TypeReference)
+                return tryVisitTypeReference(inner);
+            if (inner.Kind == Kind.TypeQuery)
+                return tryVisitTypeQuery(inner);
+            if (inner.Kind == Kind.IndexedAccessType)
+                return tryVisitIndexedAccess(inner);
+            if (inner.Kind == Kind.TypeOperator && inner.AsTypeOperatorNode().Operator == Kind.KeyOfKeyword)
+                return tryVisitKeyOf(inner);
+            return visitor.VisitNode(node);
+        }
+
+        Node tryVisitIndexedAccess(Node node)
+        {
+            var data = node.AsIndexedAccessTypeNode();
+            var objectType = tryVisitSimpleTypeNode(data.ObjectType);
+            return objectType == null ? null : setTextRange(f.UpdateIndexedAccessTypeNode(data, objectType, visitor.VisitNode(data.IndexType)), node);
+        }
+
+        Node tryVisitKeyOf(Node node)
+        {
+            var data = node.AsTypeOperatorNode();
+            var type = tryVisitSimpleTypeNode(data.Type);
+            return type == null ? null : setTextRange(f.UpdateTypeOperatorNode(data, data.Operator, type), node);
+        }
+
+        Node tryVisitTypeQuery(Node node)
+        {
+            var data = node.AsTypeQueryNode();
+            var(error, name, _) = trackExistingEntityName(data.ExprName);
+            if (!error)
+                return setTextRange(f.UpdateTypeQueryNode(data, name, visitor.VisitNodes(data.TypeArguments)), node);
+            var serialized = serializeTypeName(data.ExprName, true, visitor.VisitNodes(data.TypeArguments));
+            return serialized == null ? null : setTextRange(serialized, data.ExprName);
+        }
+
         Node worker(Node node)
         {
-            if (Ast.IsKeywordTypeNode(node) || node.Kind is Kind.Identifier or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ReadonlyKeyword or Kind.QuestionToken or Kind.MinusToken or Kind.PlusToken)
+            if (Ast.IsKeywordTypeNode(node) || node.Kind is Kind.Identifier or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ReadonlyKeyword or Kind.QuestionToken or Kind.MinusToken or Kind.PlusToken or Kind.DotDotDotToken or Kind.InKeyword or Kind.OutKeyword or Kind.ConstKeyword or Kind.AbstractKeyword)
                 return visitor.VisitEachChild(node);
             if (node.Kind == Kind.PropertySignature)
             {
@@ -242,6 +290,15 @@ internal sealed partial class NodeBuilderImpl
                     case Kind.CallSignature:
                         var call = visited.AsCallSignatureDeclaration();
                         return f.UpdateCallSignatureDeclaration(call, call.TypeParameters, call.Parameters, anyType);
+                    case Kind.ConstructSignature:
+                        var construct = visited.AsConstructSignatureDeclaration();
+                        return f.UpdateConstructSignatureDeclaration(construct, construct.TypeParameters, construct.Parameters, anyType);
+                    case Kind.IndexSignature:
+                        var index = visited.AsIndexSignatureDeclaration();
+                        return f.UpdateIndexSignatureDeclaration(index, visited.Modifiers(), index.Parameters, anyType);
+                    case Kind.ConstructorType:
+                        var constructor = visited.AsConstructorTypeNode();
+                        return f.UpdateConstructorTypeNode(constructor, visited.Modifiers(), constructor.TypeParameters, constructor.Parameters, anyType);
                     case Kind.FunctionType:
                         var function = visited.AsFunctionTypeNode();
                         return f.UpdateFunctionTypeNode(function, function.TypeParameters, function.Parameters, anyType);
@@ -266,15 +323,62 @@ internal sealed partial class NodeBuilderImpl
                 return f.UpdateTypePredicateNode(predicate, visitor.VisitNode(predicate.AssertsModifier), parameterName, visitor.VisitNode(predicate.Type));
             }
 
-            if (node.Kind == Kind.TypeLiteral)
+            if (Ast.IsTypeParameterDeclaration(node))
+            {
+                var(_, name, _) = trackExistingEntityName(node.Name());
+                var parameter = node.AsTypeParameterDeclaration();
+                return f.UpdateTypeParameterDeclaration(parameter, visitor.VisitModifiers(node.Modifiers()), name, visitor.VisitNode(parameter.Constraint), visitor.VisitNode(parameter.Expression), visitor.VisitNode(parameter.DefaultType));
+            }
+
+            if (Ast.IsConditionalTypeNode(node))
+            {
+                var conditional = node.AsConditionalTypeNode();
+                var check = visitor.VisitNode(conditional.CheckType);
+                var dispose = enterNewScope(node, null, ch.getInferTypeParameters(node), null, null);
+                var extendsType = visitor.VisitNode(conditional.ExtendsType);
+                var trueType = visitor.VisitNode(conditional.TrueType);
+                dispose();
+                var falseType = visitor.VisitNode(conditional.FalseType);
+                return f.UpdateConditionalTypeNode(conditional, check, extendsType, trueType, falseType);
+            }
+
+            if (Ast.IsIndexedAccessTypeNode(node))
+            {
+                var indexed = tryVisitIndexedAccess(node);
+                if (indexed != null)
+                    return indexed;
+                bound.markError(null);
+                return node;
+            }
+
+            if (Ast.IsTypeQueryNode(node))
+            {
+                var query = tryVisitTypeQuery(node);
+                if (query != null)
+                    return query;
+                bound.markError(null);
+                return node;
+            }
+
+            if (Ast.IsTypeOperatorNode(node) && node.AsTypeOperatorNode().Operator == Kind.KeyOfKeyword)
+            {
+                var key = tryVisitKeyOf(node);
+                if (key != null)
+                    return key;
+                bound.markError(null);
+                return node;
+            }
+
+            if (Ast.IsTupleTypeNode(node) || (ctx.flags & TypeScript.NodeBuilding.Flags.MultilineObjectLiterals) == 0 && Ast.IsTypeLiteralNode(node) || Ast.IsMappedTypeNode(node))
             {
                 var res = visitor.VisitEachChild(node);
                 if (res == node)
                     res = setTextRange(res.Clone(f), node);
-                return res; // EFSingleLine is fixed on diagnostic type literal emission.
+                e.AddEmitFlags(res, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                return res;
             }
 
-            if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral)
+            if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral or Kind.TemplateHead or Kind.TemplateMiddle or Kind.TemplateTail)
             {
                 var clone = node.Clone(f);
                 e.AddEmitFlags(clone, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
@@ -299,7 +403,7 @@ internal sealed partial class NodeBuilderImpl
                 return node;
             }
 
-            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType or Kind.FunctionType or Kind.CallSignature or Kind.MethodSignature or Kind.Parameter)
+            if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType or Kind.FunctionType or Kind.CallSignature or Kind.MethodSignature or Kind.Parameter or Kind.ArrayType or Kind.TupleType or Kind.OptionalType or Kind.RestType or Kind.NamedTupleMember or Kind.ConditionalType or Kind.InferType or Kind.IndexedAccessType or Kind.TypeOperator or Kind.TypeParameter or Kind.MappedType or Kind.ConstructSignature or Kind.ConstructorType or Kind.TemplateLiteralType or Kind.TemplateLiteralTypeSpan or Kind.IndexSignature)
                 return visitor.VisitEachChild(node);
             throw Checker.unsupported("getExistingNodeTreeVisitor: references/signatures/indexes/JS/dynamic syntax");
         }
@@ -310,10 +414,19 @@ internal sealed partial class NodeBuilderImpl
                 return node;
             var recovery = bound.startRecoveryScope();
             Action exit = null;
-            if (Ast.IsFunctionLike(node))
+            if (Ast.IsFunctionLike(node) || Ast.IsMappedTypeNode(node))
             {
-                var signature = ch.getSignatureFromDeclaration(node);
-                exit = enterNewScope(node, signature.parameters, signature.typeParameters, null, null);
+                List<Symbol> parameters = null;
+                List<Type> typeParameters;
+                if (Ast.IsFunctionLike(node))
+                {
+                    var signature = ch.getSignatureFromDeclaration(node);
+                    parameters = signature.parameters;
+                    typeParameters = signature.typeParameters;
+                }
+                else
+                    typeParameters = [ch.getDeclaredTypeOfTypeParameter(ch.getSymbolOfDeclaration(node.AsMappedTypeNode().TypeParameter))];
+                exit = enterNewScope(node, parameters, typeParameters, null, null);
             }
 
             var result = worker(node);

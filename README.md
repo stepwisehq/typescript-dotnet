@@ -1,10 +1,10 @@
 # TypeScript port feasibility study
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
-and bounded scalar/object/data-type and non-generic callable checking, pinned to maintained
+and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained
 [microsoft/TypeScript source](./UPSTREAM.md). The defined scanner/parser/syntax-AST
 foundation contract, source-file binding completion contract and six earlier bounded
-checkpoints, plus the fixed callable contract, passed actual **Linux x64 Native AOT** verification. See the
+checkpoints, plus the fixed callable and generic-collection contracts, passed actual **Linux x64 Native AOT** verification. See the
 [current state](./docs/STATE.md), [binding assessment](./docs/BINDING-COMPLETION-ASSESSMENT.md),
 [foundation assessment](./docs/FOUNDATION-ASSESSMENT.md),
 [completion contract](./docs/FOUNDATION-CONTRACT.md) and
@@ -30,6 +30,34 @@ for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Val
 [binder](./validation/Binder.Validation) and [checker](./validation/Checker.Validation)
 support Native AOT; xUnit compares stored pinned-Go results. No Go process is
 needed to use the C# implementation.
+
+## Generic-collection capability and verification
+
+The explicit `Collections` profile adds generic inference, arrays/readonly arrays,
+concrete tuples, rest/spread, mapped/conditional utilities and loops using complete,
+unmodified pinned ES5/decorators/decorators.legacy declarations. It checks one user TS
+script with fixed options and genuine `skipLibCheck` policy; no fake library signatures.
+The native [grouped-record example](./examples/collections/grouped-records.ts) has zero
+applicable or missing-global diagnostics, and its invalid variant preserves all 8 errors.
+
+The fixed [contract](./docs/COLLECTIONS-CONTRACT.md) passes 44 rich original-Go/native
+comparisons,12 shared checks and 18 order executions per runtime. All 23,467 xUnit tests
+and retained native regressions pass. See [usage and reproduction](./docs/COLLECTIONS.md),
+[assessment/limitations](./docs/COLLECTIONS-ASSESSMENT.md),
+[source mapping](./source-map.json) and [durable proof](./validation/results/collections-verified.json).
+Classes/new, destructuring, generic variadic tuples, custom iterators/ES2015 libraries,
+modules and multi-file project checking remain prominent exclusions.
+
+```sh
+python3 tools/run-collections-gate.py
+# Only after a successful complete gate:
+python3 tools/record-collections-evidence.py
+```
+
+The gate performs the retained callable/binding/foundation cascade once, reproduces
+pinned-Go expectations, freshly publishes the collection Linux x64 Native AOT target,
+and checks complete observations, order, binary/source/assets and historical preservation.
+Ordinary use loads embedded libraries and needs no Go process or upstream checkout.
 
 ## Callable campaign verification
 

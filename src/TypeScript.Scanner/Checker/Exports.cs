@@ -31,7 +31,7 @@ public sealed partial class Checker
         if (symbol == null)
             throw new ArgumentNullException(nameof(symbol));
         foreach (var declaration in symbol.Declarations ?? [])
-            SemanticAdmission.ValidateOwnedNode(sourceFile, declaration);
+            validateOwnedDeclaration(declaration);
         return getDeclaredTypeOfSymbol(symbol);
     }
 
@@ -59,7 +59,7 @@ public sealed partial class Checker
             if (declarations == null || declarations.Count == 0)
                 throw new ArgumentException("Symbol has no owned declaration", nameof(symbol));
             foreach (var declaration in declarations)
-                SemanticAdmission.ValidateOwnedNode(sourceFile, declaration);
+                validateOwnedDeclaration(declaration);
         }
 
         return getTypeOfSymbol(symbol);
@@ -71,6 +71,15 @@ public sealed partial class Checker
             throw new ArgumentNullException(nameof(t));
         if (t.checker != this)
             throw new ArgumentException("Type belongs to a different checker", nameof(t));
+    }
+
+    // Authored ownership boundary: binder declarations may belong to any actual
+    // source in this checker's fixed environment; node queries still use the user AST.
+    private void validateOwnedDeclaration(Node declaration)
+    {
+        var root = Ast.GetSourceFileOfNode(declaration);
+        if (root == null || !fileIndexMap.ContainsKey(root))
+            throw new ArgumentException("Declaration belongs to a different checker environment", nameof(declaration));
     }
 }
 
@@ -106,4 +115,10 @@ public sealed partial class Checker
         if (!authoredOwnedSignatures.Contains(signature))
             throw new ArgumentException("Signature belongs to a different checker", nameof(signature));
     }
+}
+
+public sealed partial class Checker
+{
+    // exports.go:410.
+    public static bool IsDistributedTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isDistributed;
 }

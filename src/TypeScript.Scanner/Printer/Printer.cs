@@ -18,6 +18,7 @@ internal sealed partial class Printer
     }
 
     private TextWriter writer;
+    private bool inExtends;
     private SourceFile currentSourceFile;
     // Write (5076): diagnostic data nodes and selected source reuse; source comments/maps excluded.
     internal void Write(Node node, TextWriter output, SourceFile sourceFile = null)
@@ -67,6 +68,9 @@ internal sealed partial class Printer
             case Kind.NullKeyword:
                 emitKeywordNode(node);
                 return;
+            case Kind.Identifier:
+                emitIdentifierReference(node.AsIdentifier());
+                return;
             case Kind.PrefixUnaryExpression:
                 var unary = node.AsPrefixUnaryExpression();
                 if (unary.Operator is not (Kind.MinusToken or Kind.PlusToken))
@@ -106,13 +110,20 @@ internal sealed partial class Printer
     {
         if (node == null)
             return;
-        // Conditional extends/infer scopes are excluded by diagnostic admission.
+        if (inExtends && precedence <= TypePrecedence.Conditional)
+            precedence = TypePrecedence.Function;
+        bool savedInExtends = inExtends;
         bool parens = Ast.GetTypeNodePrecedence(node) < precedence;
         if (parens)
+        {
+            inExtends = false;
             writePunctuation("(");
+        }
+
         emitTypeNodeWorker(node);
         if (parens)
             writePunctuation(")");
+        inExtends = savedInExtends;
     }
 
     // printer.go:5473/5483/5515/5522. Selected single-line synthesized block
@@ -161,7 +172,7 @@ internal sealed partial class Printer
         {
             case Kind.ParenthesizedType:
                 writePunctuation("(");
-                emitTypeNode(node.AsParenthesizedTypeNode().Type);
+                emitTypeNodeOutsideExtends(node.AsParenthesizedTypeNode().Type);
                 writePunctuation(")");
                 return;
             case Kind.LiteralType:
@@ -184,12 +195,47 @@ internal sealed partial class Printer
                 return;
             case Kind.TypeReference:
                 var reference = node.AsTypeReferenceNode();
-                if (reference.TypeArguments?.Nodes is { Count: > 0 })
-                    throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeNode: named/generic reference");
                 emitEntityName(reference.TypeName);
+                emitTypeArguments(node, reference.TypeArguments);
                 return;
             case Kind.FunctionType:
                 emitFunctionType(node.AsFunctionTypeNode());
+                return;
+            case Kind.ConstructorType:
+                emitConstructorType(node.AsConstructorTypeNode());
+                return;
+            case Kind.ConstructSignature:
+                emitConstructSignature(node.AsConstructSignatureDeclaration());
+                return;
+            case Kind.ArrayType:
+                emitArrayType(node.AsArrayTypeNode());
+                return;
+            case Kind.TupleType:
+                emitTupleType(node.AsTupleTypeNode());
+                return;
+            case Kind.OptionalType:
+                emitOptionalType(node.AsOptionalTypeNode());
+                return;
+            case Kind.RestType:
+                emitRestType(node.AsRestTypeNode());
+                return;
+            case Kind.NamedTupleMember:
+                emitNamedTupleMember(node.AsNamedTupleMember());
+                return;
+            case Kind.TemplateLiteralType:
+                emitTemplateType(node.AsTemplateLiteralTypeNode());
+                return;
+            case Kind.ConditionalType:
+                emitConditionalType(node.AsConditionalTypeNode());
+                return;
+            case Kind.InferType:
+                emitInferType(node.AsInferTypeNode());
+                return;
+            case Kind.IndexedAccessType:
+                emitIndexedAccessType(node.AsIndexedAccessTypeNode());
+                return;
+            case Kind.MappedType:
+                emitMappedType(node.AsMappedTypeNode());
                 return;
             case Kind.TypePredicate:
                 emitTypePredicate(node.AsTypePredicateNode());
@@ -217,18 +263,17 @@ internal sealed partial class Printer
         writer.Write("typeof");
         writeSpace();
         emitEntityName(node.ExprName);
-        if (node.TypeArguments?.Nodes is { Count: > 0 })
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeQuery: source generic arguments");
+        emitTypeArguments(node.AsNode(), node.TypeArguments);
     }
 
     // printer.go:2125. Selected internal finite-key and unique-symbol operators.
     private void emitTypeOperator(TypeOperatorNode node)
     {
-        if (node.Operator is not (Kind.KeyOfKeyword or Kind.UniqueKeyword))
+        if (node.Operator is not (Kind.KeyOfKeyword or Kind.UniqueKeyword or Kind.ReadonlyKeyword))
             throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeOperator: unselected operator");
-        writer.Write(node.Operator == Kind.KeyOfKeyword ? "keyof" : "unique");
+        writeTokenText(node.Operator);
         writeSpace();
-        emitTypeNode(node.Type, TypePrecedence.TypeOperator);
+        emitTypeNode(node.Type, node.Operator == Kind.ReadonlyKeyword ? TypePrecedence.Postfix : TypePrecedence.TypeOperator);
     }
 
     // printer.go:1657. Only readonly static data-property modifiers are admitted.
@@ -247,7 +292,7 @@ internal sealed partial class Printer
             return;
         foreach (var modifier in modifiers.Nodes)
         {
-            if (modifier.Kind != Kind.ReadonlyKeyword)
+            if (modifier.Kind is not (Kind.ReadonlyKeyword or Kind.AbstractKeyword or Kind.InKeyword or Kind.OutKeyword or Kind.ConstKeyword))
                 throw TypeScript.Checking.Checker.unsupported("Printer.emitModifierList: modifier");
             emitKeywordNode(modifier);
             writeSpace();
@@ -260,8 +305,18 @@ internal sealed partial class Printer
             emitIdentifierReference(node.AsIdentifier());
         else if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral)
             emitLiteral(node);
+        else if (node.Kind == Kind.ComputedPropertyName)
+            emitComputedPropertyName(node.AsComputedPropertyName());
         else
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitPropertyName: dynamic/private name");
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitPropertyName: private name");
+    }
+
+    // printer.go:1218. Required internal mapped literal/unique-symbol names.
+    private void emitComputedPropertyName(ComputedPropertyName node)
+    {
+        writePunctuation("[");
+        emitExpression(node.Expression);
+        writePunctuation("]");
     }
 
     private void emitTokenNode(Node node)
@@ -277,7 +332,7 @@ internal sealed partial class Printer
             return;
         writePunctuation(":");
         writeSpace();
-        emitTypeNode(node);
+        emitTypeNodeOutsideExtends(node);
     }
 
     // printer.go:1979. NodeBuilder sets EFSingleLine for default diagnostic output.
@@ -296,6 +351,8 @@ internal sealed partial class Printer
             emitMethodSignature(node.AsMethodSignatureDeclaration());
         else if (node.Kind == Kind.CallSignature)
             emitCallSignature(node.AsCallSignatureDeclaration());
+        else if (node.Kind == Kind.ConstructSignature)
+            emitConstructSignature(node.AsConstructSignatureDeclaration());
         else if (node.Kind == Kind.IndexSignature)
             emitIndexSignature(node.AsIndexSignatureDeclaration());
         else
@@ -447,12 +504,11 @@ internal sealed partial class Printer
         writePunctuation(")");
     }
 
-    // printer.go:1586. Written generic parameters remain outside admission.
+    // printer.go:1586. Signature generic parameters, parameters and return annotation.
     private void emitSignature(Node node)
     {
         var signature = node.FunctionLikeData();
-        if (signature.TypeParameters != null)
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitSignature: generic parameters");
+        emitTypeParameters(node, signature.TypeParameters);
         emitParameters(node, signature.Parameters);
         emitTypeAnnotation(signature.Type);
     }
@@ -499,26 +555,273 @@ internal sealed partial class Printer
             writeSpace();
             writer.WriteKeyword("is");
             writeSpace();
-            emitTypeNode(node.Type);
+            emitTypeNodeOutsideExtends(node.Type);
         }
     }
 
-    // printer.go:1919/1937. Conditional/infer extends context is excluded.
+    // printer.go:1919/1937. Preserve constrained-infer ambiguity rules in returns.
     private void emitReturnType(Node node)
     {
         if (node == null)
             return;
         writePunctuation("=>");
         writeSpace();
-        emitTypeNode(node);
+        emitTypeNode(node, inExtends && node.Kind == Kind.InferType && node.AsInferTypeNode().TypeParameter.AsTypeParameterDeclaration().Constraint != null ? TypePrecedence.Highest : TypePrecedence.Lowest);
     }
 
     private void emitFunctionType(FunctionTypeNode node)
     {
-        if (node.TypeParameters != null)
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitFunctionType: generic parameters");
+        emitTypeParameters(node.AsNode(), node.TypeParameters);
         emitParameters(node.AsNode(), node.Parameters);
         writeSpace();
         emitReturnType(node.Type);
+    }
+
+    // printer.go:2271/2279. Conditional extends scope is independent of emit bookkeeping.
+    private void emitTypeNodeInExtends(Node node)
+    {
+        var saved = inExtends;
+        inExtends = true;
+        emitTypeNode(node);
+        inExtends = saved;
+    }
+
+    private void emitTypeNodeOutsideExtends(Node node)
+    {
+        var saved = inExtends;
+        inExtends = false;
+        emitTypeNode(node);
+        inExtends = saved;
+    }
+
+    // printer.go:1443/1463/1513/1904. Diagnostic signature lists can contain
+    // declarations or instantiated type arguments, exactly as the original printer.
+    private void emitTypeParameter(TypeParameterDeclaration node)
+    {
+        emitModifierList(node.Modifiers());
+        emitIdentifierReference(node.Name().AsIdentifier());
+        if (node.Constraint != null)
+        {
+            writeSpace();
+            writer.WriteKeyword("extends");
+            writeSpace();
+            emitTypeNodeOutsideExtends(node.Constraint);
+        }
+
+        if (node.DefaultType != null)
+        {
+            writeSpace();
+            writer.WriteOperator("=");
+            writeSpace();
+            emitTypeNodeOutsideExtends(node.DefaultType);
+        }
+    }
+
+    private void emitTypeParameterDeclarationNode(Node node)
+    {
+        if (Ast.IsTypeParameterDeclaration(node))
+            emitTypeParameter(node.AsTypeParameterDeclaration());
+        else
+            emitTypeNodeOutsideExtends(node);
+    }
+
+    private void emitTypeParameters(Node parent, NodeList nodes)
+    {
+        if (nodes == null)
+            return;
+        writePunctuation("<");
+        emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);
+        // The diagnostic builder does not synthesize ArrowFunction declarations.
+        if (Ast.IsArrowFunction(parent) && nodes.HasTrailingComma())
+            writePunctuation(",");
+        writePunctuation(">");
+    }
+
+    private void emitTypeArguments(Node parent, NodeList nodes)
+    {
+        if (nodes == null)
+            return;
+        writePunctuation("<");
+        emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);
+        writePunctuation(">");
+    }
+
+    // printer.go:1944/1766. Internal library construct storage is printable;
+    // user constructor/class/new syntax remains outside the semantic profile.
+    private void emitConstructorType(ConstructorTypeNode node)
+    {
+        emitModifierList(node.Modifiers());
+        writer.WriteKeyword("new");
+        writeSpace();
+        emitTypeParameters(node.AsNode(), node.TypeParameters);
+        emitParameters(node.AsNode(), node.Parameters);
+        writeSpace();
+        emitReturnType(node.Type);
+    }
+
+    private void emitConstructSignature(ConstructSignatureDeclaration node)
+    {
+        writer.WriteKeyword("new");
+        writeSpace();
+        emitSignature(node.AsNode());
+        writeTrailingSemicolon();
+    }
+
+    // printer.go:1991/2004. Parsed typeof postfix operands retain source precedence.
+    private void emitArrayType(ArrayTypeNode node)
+    {
+        emitPostfixTypeOperand(node.ElementType, node.AsNode());
+        writePunctuation("[");
+        writePunctuation("]");
+    }
+
+    private void emitPostfixTypeOperand(Node operand, Node parent)
+    {
+        emitTypeNode(operand, Ast.IsParseTreeNode(parent) && operand.Kind == Kind.TypeQuery ? TypePrecedence.TypeOperator : TypePrecedence.Postfix);
+    }
+
+    // printer.go:2014/2018/2027/2034/2042. Fixed single-line diagnostic list mode.
+    private void emitTupleType(TupleTypeNode node)
+    {
+        writePunctuation("[");
+        emitList(emitTypeNodeOutsideExtends, node.AsNode(), node.Elements, ListFormat.Parameters);
+        writePunctuation("]");
+    }
+
+    private void emitRestType(RestTypeNode node)
+    {
+        writePunctuation("...");
+        emitTypeNodeOutsideExtends(node.Type);
+    }
+
+    private void emitOptionalType(OptionalTypeNode node)
+    {
+        emitPostfixTypeOperand(node.Type, node.AsNode());
+        writePunctuation("?");
+    }
+
+    private void emitNamedTupleMember(NamedTupleMember node)
+    {
+        emitTokenNode(node.DotDotDotToken);
+        emitIdentifierReference(node.Name().AsIdentifier());
+        emitTokenNode(node.QuestionToken);
+        writePunctuation(":");
+        writeSpace();
+        emitTypeNodeOutsideExtends(node.Type);
+    }
+
+    // printer.go:2073/2091/2103/2133/2142/2152. Retained conditional/mapped syntax.
+    private void emitConditionalType(ConditionalTypeNode node)
+    {
+        emitTypeNode(node.CheckType, TypePrecedence.Union);
+        writeSpace();
+        writer.WriteKeyword("extends");
+        writeSpace();
+        emitTypeNodeInExtends(node.ExtendsType);
+        writeSpace();
+        writePunctuation("?");
+        writeSpace();
+        emitTypeNodeOutsideExtends(node.TrueType);
+        writeSpace();
+        writePunctuation(":");
+        writeSpace();
+        emitTypeNodeOutsideExtends(node.FalseType);
+    }
+
+    private void emitInferTypeParameter(TypeParameterDeclaration node)
+    {
+        emitIdentifierReference(node.Name().AsIdentifier());
+        if (node.Constraint != null)
+        {
+            writeSpace();
+            writer.WriteKeyword("extends");
+            writeSpace();
+            emitTypeNodeInExtends(node.Constraint);
+        }
+    }
+
+    private void emitInferType(InferTypeNode node)
+    {
+        writer.WriteKeyword("infer");
+        writeSpace();
+        emitInferTypeParameter(node.TypeParameter.AsTypeParameterDeclaration());
+    }
+
+    private void emitIndexedAccessType(IndexedAccessTypeNode node)
+    {
+        emitPostfixTypeOperand(node.ObjectType, node.AsNode());
+        writePunctuation("[");
+        emitTypeNodeOutsideExtends(node.IndexType);
+        writePunctuation("]");
+    }
+
+    private void emitMappedTypeParameter(TypeParameterDeclaration node)
+    {
+        emitIdentifierReference(node.Name().AsIdentifier());
+        writeSpace();
+        writer.WriteKeyword("in");
+        writeSpace();
+        emitTypeNodeOutsideExtends(node.Constraint);
+    }
+
+    private void emitMappedType(MappedTypeNode node)
+    {
+        writePunctuation("{");
+        writeSpace();
+        if (node.ReadonlyToken != null)
+        {
+            emitTokenNode(node.ReadonlyToken);
+            if (node.ReadonlyToken.Kind != Kind.ReadonlyKeyword)
+                writer.WriteKeyword("readonly");
+            writeSpace();
+        }
+
+        writePunctuation("[");
+        emitMappedTypeParameter(node.TypeParameter.AsTypeParameterDeclaration());
+        if (node.NameType != null)
+        {
+            writeSpace();
+            writer.WriteKeyword("as");
+            writeSpace();
+            emitTypeNodeOutsideExtends(node.NameType);
+        }
+
+        writePunctuation("]");
+        if (node.QuestionToken != null)
+        {
+            emitTokenNode(node.QuestionToken);
+            if (node.QuestionToken.Kind != Kind.QuestionToken)
+                writePunctuation("?");
+        }
+
+        if (node.Type != null)
+        {
+            writePunctuation(":");
+            writeSpace();
+            emitTypeNodeOutsideExtends(node.Type);
+        }
+
+        writeTrailingSemicolon();
+        if (node.Members?.Nodes is { Count: > 0 })
+        {
+            writeSpace();
+            emitList(emitTypeElement, node.AsNode(), node.Members, ListFormat.SpaceBetweenSiblings);
+        }
+
+        writeSpace();
+        writePunctuation("}");
+    }
+
+    // printer.go:2217/2229. Internal template type spans preserve outside-extends scope.
+    private void emitTemplateTypeSpan(TemplateLiteralTypeSpan node)
+    {
+        emitTypeNodeOutsideExtends(node.Type);
+        emitLiteral(node.Literal);
+    }
+
+    private void emitTemplateType(TemplateLiteralTypeNode node)
+    {
+        emitLiteral(node.Head);
+        emitList(n => emitTemplateTypeSpan(n.AsTemplateLiteralTypeSpan()), node.AsNode(), node.TemplateSpans, ListFormat.SingleLine);
     }
 }

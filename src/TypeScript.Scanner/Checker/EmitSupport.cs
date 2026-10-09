@@ -42,10 +42,15 @@ public sealed partial class Checker
                     return false;
                 return isDeclarationVisible(node.Parent);
             case Kind.CallSignature:
+            case Kind.ConstructSignature:
+            case Kind.IndexSignature:
             case Kind.Parameter:
             case Kind.FunctionType:
             case Kind.TypeLiteral:
             case Kind.TypeReference:
+            case Kind.ArrayType:
+            case Kind.TupleType:
+            case Kind.NamedTupleMember:
             case Kind.UnionType:
             case Kind.IntersectionType:
             case Kind.ParenthesizedType:
@@ -56,6 +61,9 @@ public sealed partial class Checker
             case Kind.Block:
             case Kind.VariableStatement:
             case Kind.VariableDeclarationList:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+            case Kind.TypePredicate:
                 return false; // Original switch default, not a manufactured visibility.
             default:
                 throw unsupported("determineIfDeclarationIsVisible: unselected declaration syntax");

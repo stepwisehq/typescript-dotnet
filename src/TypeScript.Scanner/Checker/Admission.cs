@@ -34,7 +34,8 @@ public sealed class UnsupportedSemanticFeatureException : NotSupportedException
 public enum CheckerProfile
 {
     Legacy,
-    Callable
+    Callable,
+    Collections
 }
 
 public sealed partial class Checker
@@ -43,8 +44,14 @@ public sealed partial class Checker
     public static Checker Create(SourceFile file, CheckerProfile profile)
     {
         ArgumentNullException.ThrowIfNull(file);
-        if (profile is not (CheckerProfile.Legacy or CheckerProfile.Callable))
+        if (profile is not (CheckerProfile.Legacy or CheckerProfile.Callable or CheckerProfile.Collections))
             throw new ArgumentOutOfRangeException(nameof(profile));
+        if (profile == CheckerProfile.Collections)
+        {
+            CollectionAdmission.Validate(file);
+            return CreateCore(file, profile, FixedLibraryEnvironment.Load());
+        }
+
         SemanticAdmission.Validate(file, profile == CheckerProfile.Callable);
         return CreateCore(file, profile);
     }

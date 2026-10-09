@@ -1,0 +1,5949 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "librarySHA256": "45cc92f8dd3df7cb07b7d19e2b2ca34e78bc005c910c1e53ee1cf9bf37910215",
+  "observation": "Actual original-Go empty environment passive bound member tables; no type resolution to enumerate. Internal FE index symbol is recorded separately from named instance APIs. Type parameter T is binder table scope metadata, not an instance member API.",
+  "interfaces": [
+    {
+      "name": "Array",
+      "source": "lib.es5.d.ts",
+      "ownMemberCount": 24,
+      "members": [
+        {
+          "name": "T",
+          "rawNameBase64": "VA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2773,
+              "kind": 170,
+              "pos": 57544,
+              "end": 57545,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 3048,
+                  "pos": 66086,
+                  "end": 66088
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 3056,
+                  "pos": 66111,
+                  "end": 66113
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3048,
+                  "pos": 66086,
+                  "end": 66088
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3056,
+                  "pos": 66111,
+                  "end": 66113
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3131,
+                  "pos": 67855,
+                  "end": 67857
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3156,
+                  "pos": 67958,
+                  "end": 67960
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3176,
+                  "pos": 68036,
+                  "end": 68038
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3191,
+                  "pos": 68715,
+                  "end": 68717
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3199,
+                  "pos": 68747,
+                  "end": 68749
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G1-array-global-augmentation",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G1-array-merge-parameter-conflict",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2787,
+                  "pos": 58129,
+                  "end": 58131
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2806,
+                  "pos": 58587,
+                  "end": 58588
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2820,
+                  "pos": 58834,
+                  "end": 58835
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2823,
+                  "pos": 58850,
+                  "end": 58851
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2827,
+                  "pos": 58857,
+                  "end": 58859
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2839,
+                  "pos": 59352,
+                  "end": 59354
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2844,
+                  "pos": 59532,
+                  "end": 59534
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2858,
+                  "pos": 60178,
+                  "end": 60180
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2868,
+                  "pos": 60720,
+                  "end": 60722
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2872,
+                  "pos": 60726,
+                  "end": 60728
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2886,
+                  "pos": 61478,
+                  "end": 61480
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2900,
+                  "pos": 62207,
+                  "end": 62209
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2903,
+                  "pos": 62213,
+                  "end": 62215
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2911,
+                  "pos": 62417,
+                  "end": 62419
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2918,
+                  "pos": 62762,
+                  "end": 62764
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2929,
+                  "pos": 63166,
+                  "end": 63168
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2940,
+                  "pos": 63753,
+                  "end": 63755
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2947,
+                  "pos": 63775,
+                  "end": 63777
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2955,
+                  "pos": 63800,
+                  "end": 63802
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2977,
+                  "pos": 64413,
+                  "end": 64415
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2985,
+                  "pos": 64438,
+                  "end": 64440
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3000,
+                  "pos": 65059,
+                  "end": 65061
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3008,
+                  "pos": 65084,
+                  "end": 65086
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3023,
+                  "pos": 65547,
+                  "end": 65549
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3031,
+                  "pos": 65572,
+                  "end": 65574
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3048,
+                  "pos": 66086,
+                  "end": 66088
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3056,
+                  "pos": 66111,
+                  "end": 66113
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3071,
+                  "pos": 66591,
+                  "end": 66593
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3078,
+                  "pos": 66613,
+                  "end": 66615
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3086,
+                  "pos": 66638,
+                  "end": 66640
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3106,
+                  "pos": 67136,
+                  "end": 67138
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3114,
+                  "pos": 67161,
+                  "end": 67163
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3122,
+                  "pos": 67194,
+                  "end": 67196
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3131,
+                  "pos": 67855,
+                  "end": 67857
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3135,
+                  "pos": 67872,
+                  "end": 67874
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3143,
+                  "pos": 67904,
+                  "end": 67906
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3145,
+                  "pos": 67912,
+                  "end": 67914
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3147,
+                  "pos": 67916,
+                  "end": 67918
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3156,
+                  "pos": 67958,
+                  "end": 67960
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3160,
+                  "pos": 67975,
+                  "end": 67977
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3168,
+                  "pos": 68007,
+                  "end": 68009
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3170,
+                  "pos": 68015,
+                  "end": 68017
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3174,
+                  "pos": 68032,
+                  "end": 68034
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3176,
+                  "pos": 68036,
+                  "end": 68038
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3216,
+                  "pos": 69466,
+                  "end": 69468
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3241,
+                  "pos": 69574,
+                  "end": 69576
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3245,
+                  "pos": 69591,
+                  "end": 69593
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3253,
+                  "pos": 69623,
+                  "end": 69625
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3255,
+                  "pos": 69631,
+                  "end": 69633
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3259,
+                  "pos": 69648,
+                  "end": 69650
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3261,
+                  "pos": 69652,
+                  "end": 69654
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2858,
+                  "pos": 60178,
+                  "end": 60180
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2787,
+                  "pos": 58129,
+                  "end": 58131
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2806,
+                  "pos": 58587,
+                  "end": 58588
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2820,
+                  "pos": 58834,
+                  "end": 58835
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2823,
+                  "pos": 58850,
+                  "end": 58851
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2827,
+                  "pos": 58857,
+                  "end": 58859
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2839,
+                  "pos": 59352,
+                  "end": 59354
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2844,
+                  "pos": 59532,
+                  "end": 59534
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2858,
+                  "pos": 60178,
+                  "end": 60180
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2868,
+                  "pos": 60720,
+                  "end": 60722
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2872,
+                  "pos": 60726,
+                  "end": 60728
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2886,
+                  "pos": 61478,
+                  "end": 61480
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2900,
+                  "pos": 62207,
+                  "end": 62209
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2903,
+                  "pos": 62213,
+                  "end": 62215
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2911,
+                  "pos": 62417,
+                  "end": 62419
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2918,
+                  "pos": 62762,
+                  "end": 62764
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2929,
+                  "pos": 63166,
+                  "end": 63168
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2940,
+                  "pos": 63753,
+                  "end": 63755
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2947,
+                  "pos": 63775,
+                  "end": 63777
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2955,
+                  "pos": 63800,
+                  "end": 63802
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2977,
+                  "pos": 64413,
+                  "end": 64415
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2985,
+                  "pos": 64438,
+                  "end": 64440
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3000,
+                  "pos": 65059,
+                  "end": 65061
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3008,
+                  "pos": 65084,
+                  "end": 65086
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3023,
+                  "pos": 65547,
+                  "end": 65549
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3031,
+                  "pos": 65572,
+                  "end": 65574
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3048,
+                  "pos": 66086,
+                  "end": 66088
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3056,
+                  "pos": 66111,
+                  "end": 66113
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3071,
+                  "pos": 66591,
+                  "end": 66593
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3078,
+                  "pos": 66613,
+                  "end": 66615
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3086,
+                  "pos": 66638,
+                  "end": 66640
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3106,
+                  "pos": 67136,
+                  "end": 67138
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3114,
+                  "pos": 67161,
+                  "end": 67163
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3122,
+                  "pos": 67194,
+                  "end": 67196
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3131,
+                  "pos": 67855,
+                  "end": 67857
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3135,
+                  "pos": 67872,
+                  "end": 67874
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3143,
+                  "pos": 67904,
+                  "end": 67906
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3145,
+                  "pos": 67912,
+                  "end": 67914
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3147,
+                  "pos": 67916,
+                  "end": 67918
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3156,
+                  "pos": 67958,
+                  "end": 67960
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3160,
+                  "pos": 67975,
+                  "end": 67977
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3168,
+                  "pos": 68007,
+                  "end": 68009
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3170,
+                  "pos": 68015,
+                  "end": 68017
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3174,
+                  "pos": 68032,
+                  "end": 68034
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3176,
+                  "pos": 68036,
+                  "end": 68038
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3191,
+                  "pos": 68715,
+                  "end": 68717
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3199,
+                  "pos": 68747,
+                  "end": 68749
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3216,
+                  "pos": 69466,
+                  "end": 69468
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3241,
+                  "pos": 69574,
+                  "end": 69576
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3245,
+                  "pos": 69591,
+                  "end": 69593
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3253,
+                  "pos": 69623,
+                  "end": 69625
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3255,
+                  "pos": 69631,
+                  "end": 69633
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3259,
+                  "pos": 69648,
+                  "end": 69650
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3261,
+                  "pos": 69652,
+                  "end": 69654
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G2-default-constraint-success",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2787,
+                  "pos": 58129,
+                  "end": 58131
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2806,
+                  "pos": 58587,
+                  "end": 58588
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2839,
+                  "pos": 59352,
+                  "end": 59354
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2844,
+                  "pos": 59532,
+                  "end": 59534
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2858,
+                  "pos": 60178,
+                  "end": 60180
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2868,
+                  "pos": 60720,
+                  "end": 60722
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2886,
+                  "pos": 61478,
+                  "end": 61480
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2911,
+                  "pos": 62417,
+                  "end": 62419
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2918,
+                  "pos": 62762,
+                  "end": 62764
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2929,
+                  "pos": 63166,
+                  "end": 63168
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 2940,
+                  "pos": 63753,
+                  "end": 63755
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3000,
+                  "pos": 65059,
+                  "end": 65061
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3023,
+                  "pos": 65547,
+                  "end": 65549
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3048,
+                  "pos": 66086,
+                  "end": 66088
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3056,
+                  "pos": 66111,
+                  "end": 66113
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3071,
+                  "pos": 66591,
+                  "end": 66593
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3131,
+                  "pos": 67855,
+                  "end": 67857
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3216,
+                  "pos": 69466,
+                  "end": 69468
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2868,
+                  "pos": 60720,
+                  "end": 60722
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2872,
+                  "pos": 60726,
+                  "end": 60728
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2940,
+                  "pos": 63753,
+                  "end": 63755
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2947,
+                  "pos": 63775,
+                  "end": 63777
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2955,
+                  "pos": 63800,
+                  "end": 63802
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 2796,
+                  "pos": 58326,
+                  "end": 58328
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G5-loop-narrowing-and-writes",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G2-noinfer-callback-default",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-array-constructor-generic-intersection",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3131,
+                  "pos": 67855,
+                  "end": 67857
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3135,
+                  "pos": 67872,
+                  "end": 67874
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3143,
+                  "pos": 67904,
+                  "end": 67906
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3145,
+                  "pos": 67912,
+                  "end": 67914
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3147,
+                  "pos": 67916,
+                  "end": 67918
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3156,
+                  "pos": 67958,
+                  "end": 67960
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3160,
+                  "pos": 67975,
+                  "end": 67977
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3168,
+                  "pos": 68007,
+                  "end": 68009
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3170,
+                  "pos": 68015,
+                  "end": 68017
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3174,
+                  "pos": 68032,
+                  "end": 68034
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3176,
+                  "pos": 68036,
+                  "end": 68038
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3191,
+                  "pos": 68715,
+                  "end": 68717
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3199,
+                  "pos": 68747,
+                  "end": 68749
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3216,
+                  "pos": 69466,
+                  "end": 69468
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3220,
+                  "pos": 69483,
+                  "end": 69485
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3228,
+                  "pos": 69515,
+                  "end": 69517
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3230,
+                  "pos": 69523,
+                  "end": 69525
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3232,
+                  "pos": 69527,
+                  "end": 69529
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3241,
+                  "pos": 69574,
+                  "end": 69576
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3245,
+                  "pos": 69591,
+                  "end": 69593
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3253,
+                  "pos": 69623,
+                  "end": 69625
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3255,
+                  "pos": 69631,
+                  "end": 69633
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3259,
+                  "pos": 69648,
+                  "end": 69650
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3261,
+                  "pos": 69652,
+                  "end": 69654
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3276,
+                  "pos": 70362,
+                  "end": 70364
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3284,
+                  "pos": 70394,
+                  "end": 70396
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2806,
+                  "pos": 58587,
+                  "end": 58588
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2810,
+                  "pos": 58593,
+                  "end": 58595
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2820,
+                  "pos": 58834,
+                  "end": 58835
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2823,
+                  "pos": 58850,
+                  "end": 58851
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2827,
+                  "pos": 58857,
+                  "end": 58859
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2858,
+                  "pos": 60178,
+                  "end": 60180
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2886,
+                  "pos": 61478,
+                  "end": 61480
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2900,
+                  "pos": 62207,
+                  "end": 62209
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2903,
+                  "pos": 62213,
+                  "end": 62215
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3071,
+                  "pos": 66591,
+                  "end": 66593
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3078,
+                  "pos": 66613,
+                  "end": 66615
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3086,
+                  "pos": 66638,
+                  "end": 66640
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3106,
+                  "pos": 67136,
+                  "end": 67138
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3114,
+                  "pos": 67161,
+                  "end": 67163
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 3298,
+                  "pos": 70444,
+                  "end": 70446
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G1-array-global-augmentation",
+            "G1-array-merge-parameter-conflict",
+            "G2-contextual-generic-overloads",
+            "G2-default-constraint-success",
+            "G2-noinfer-callback-default",
+            "G3-array-api-invalid-interactions",
+            "G3-array-constructor-generic-intersection",
+            "G3-array-instance-apis",
+            "G3-array-relationships-and-bounds",
+            "G3-array-rest-alias-and-infer",
+            "G3-concat-splice-array-call-overloads",
+            "G3-filter-predicate-overloads",
+            "G3-mutable-reduction-overloads",
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads",
+            "G3-receiver-predicate-and-this-return",
+            "G3-shadowed-array-alias-rest",
+            "G3-tuple-optional-rest-and-readonly",
+            "G3-union-array-synthetic-method",
+            "G4-utility-array-tuple-preservation",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid",
+            "G5-loop-evolving-array-and-capture",
+            "G5-loop-narrowing-and-writes"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "type-parameter-scope"
+        },
+        {
+          "name": "concat",
+          "rawNameBase64": "Y29uY2F0",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2799,
+              "kind": 175,
+              "pos": 58340,
+              "end": 58598,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10910,
+                  "pos": 103,
+                  "end": 138,
+                  "resolvedSignature": 426
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10927,
+                  "pos": 150,
+                  "end": 164
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10927,
+                  "pos": 150,
+                  "end": 164
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10911,
+                  "pos": 103,
+                  "end": 117
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10922,
+                  "pos": 160,
+                  "end": 174
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2812,
+              "kind": 175,
+              "pos": 58598,
+              "end": 58862,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10926,
+                  "pos": 150,
+                  "end": 175,
+                  "resolvedSignature": 677
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10926,
+                  "pos": 150,
+                  "end": 175,
+                  "resolvedSignature": 751
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10921,
+                  "pos": 160,
+                  "end": 182,
+                  "resolvedSignature": 427
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10927,
+                  "pos": 150,
+                  "end": 164
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10927,
+                  "pos": 150,
+                  "end": 164
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10911,
+                  "pos": 103,
+                  "end": 117
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10922,
+                  "pos": 160,
+                  "end": 174
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-concat-splice-array-call-overloads"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "every",
+          "rawNameBase64": "ZXZlcnk=",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2936,
+              "kind": 175,
+              "pos": 63198,
+              "end": 63849,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10917,
+                  "pos": 77,
+                  "end": 139,
+                  "resolvedSignature": 282
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11048,
+                  "pos": 609,
+                  "end": 622
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11048,
+                  "pos": 609,
+                  "end": 622
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10918,
+                  "pos": 77,
+                  "end": 89
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2970,
+              "kind": 175,
+              "pos": 63849,
+              "end": 64480,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11047,
+                  "pos": 609,
+                  "end": 642,
+                  "resolvedSignature": 690
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11047,
+                  "pos": 609,
+                  "end": 642,
+                  "resolvedSignature": 764
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11048,
+                  "pos": 609,
+                  "end": 622
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11048,
+                  "pos": 609,
+                  "end": 622
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10918,
+                  "pos": 77,
+                  "end": 89
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-receiver-predicate-and-this-return"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "filter",
+          "rawNameBase64": "ZmlsdGVy",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 3067,
+              "kind": 175,
+              "pos": 66143,
+              "end": 66679,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10916,
+                  "pos": 123,
+                  "end": 192,
+                  "resolvedSignature": 286
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10936,
+                  "pos": 210,
+                  "end": 260,
+                  "resolvedSignature": 286
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10990,
+                  "pos": 462,
+                  "end": 518,
+                  "resolvedSignature": 293
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11112,
+                  "pos": 819,
+                  "end": 833
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11112,
+                  "pos": 819,
+                  "end": 833
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10917,
+                  "pos": 123,
+                  "end": 137
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10937,
+                  "pos": 210,
+                  "end": 224
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10991,
+                  "pos": 462,
+                  "end": 476
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 3099,
+              "kind": 175,
+              "pos": 66679,
+              "end": 67199,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11111,
+                  "pos": 819,
+                  "end": 853,
+                  "resolvedSignature": 699
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11111,
+                  "pos": 819,
+                  "end": 853,
+                  "resolvedSignature": 773
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11112,
+                  "pos": 819,
+                  "end": 833
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11112,
+                  "pos": 819,
+                  "end": 833
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10917,
+                  "pos": 123,
+                  "end": 137
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10937,
+                  "pos": 210,
+                  "end": 224
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10991,
+                  "pos": 462,
+                  "end": 476
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-filter-predicate-overloads"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "forEach",
+          "rawNameBase64": "Zm9yRWFjaA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 3016,
+              "kind": 175,
+              "pos": 65126,
+              "end": 65608,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11076,
+                  "pos": 696,
+                  "end": 753,
+                  "resolvedSignature": 695
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11076,
+                  "pos": 696,
+                  "end": 753,
+                  "resolvedSignature": 769
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11077,
+                  "pos": 696,
+                  "end": 711
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11077,
+                  "pos": 696,
+                  "end": 711
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "indexOf",
+          "rawNameBase64": "aW5kZXhPZg==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2914,
+              "kind": 175,
+              "pos": 62431,
+              "end": 62794,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11029,
+                  "pos": 529,
+                  "end": 547,
+                  "resolvedSignature": 688
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11029,
+                  "pos": 529,
+                  "end": 547,
+                  "resolvedSignature": 762
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11030,
+                  "pos": 529,
+                  "end": 544
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11030,
+                  "pos": 529,
+                  "end": 544
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "join",
+          "rawNameBase64": "am9pbg==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2829,
+              "kind": 175,
+              "pos": 58862,
+              "end": 59190,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10938,
+                  "pos": 191,
+                  "end": 208,
+                  "resolvedSignature": 678
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10938,
+                  "pos": 191,
+                  "end": 208,
+                  "resolvedSignature": 752
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10939,
+                  "pos": 191,
+                  "end": 203
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10939,
+                  "pos": 191,
+                  "end": 203
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "lastIndexOf",
+          "rawNameBase64": "bGFzdEluZGV4T2Y=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2925,
+              "kind": 175,
+              "pos": 62794,
+              "end": 63198,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11038,
+                  "pos": 566,
+                  "end": 588,
+                  "resolvedSignature": 689
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11038,
+                  "pos": 566,
+                  "end": 588,
+                  "resolvedSignature": 763
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11039,
+                  "pos": 566,
+                  "end": 585
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11039,
+                  "pos": 566,
+                  "end": 585
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "length",
+          "rawNameBase64": "bGVuZ3Ro",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2775,
+              "kind": 173,
+              "pos": 57548,
+              "end": 57694,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10901,
+                  "pos": 35,
+                  "end": 49
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10901,
+                  "pos": 35,
+                  "end": 49
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "nodeId": 10924,
+                  "pos": 143,
+                  "end": 156
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "nodeId": 10909,
+                  "pos": 66,
+                  "end": 78
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "nodeId": 10906,
+                  "pos": 69,
+                  "end": 81
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-array-relationships-and-bounds",
+            "G3-array-rest-alias-and-infer",
+            "G3-shadowed-array-alias-rest"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "map",
+          "rawNameBase64": "bWFw",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 3039,
+              "kind": 175,
+              "pos": 65608,
+              "end": 66143,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11033,
+                  "pos": 785,
+                  "end": 819,
+                  "resolvedSignature": 775
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11209,
+                  "pos": 1529,
+                  "end": 1568,
+                  "resolvedSignature": 775
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11033,
+                  "pos": 785,
+                  "end": 819,
+                  "resolvedSignature": 932
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11209,
+                  "pos": 1529,
+                  "end": 1568,
+                  "resolvedSignature": 932
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11306,
+                  "pos": 2081,
+                  "end": 2110,
+                  "resolvedSignature": 950
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11095,
+                  "pos": 770,
+                  "end": 801,
+                  "resolvedSignature": 697
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11095,
+                  "pos": 770,
+                  "end": 801,
+                  "resolvedSignature": 771
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 10910,
+                  "pos": 62,
+                  "end": 74,
+                  "resolvedSignature": 238
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11034,
+                  "pos": 785,
+                  "end": 802
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11210,
+                  "pos": 1529,
+                  "end": 1551
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11034,
+                  "pos": 785,
+                  "end": 802
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11210,
+                  "pos": 1529,
+                  "end": 1551
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11307,
+                  "pos": 2081,
+                  "end": 2090
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11096,
+                  "pos": 770,
+                  "end": 781
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11096,
+                  "pos": 770,
+                  "end": 781
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 10903,
+                  "pos": 42,
+                  "end": 48
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "nodeId": 10911,
+                  "pos": 62,
+                  "end": 68
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-union-array-synthetic-method",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "pop",
+          "rawNameBase64": "cG9w",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2784,
+              "kind": 175,
+              "pos": 57957,
+              "end": 58144,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10983,
+                  "pos": 352,
+                  "end": 365,
+                  "resolvedSignature": 683
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10983,
+                  "pos": 352,
+                  "end": 365,
+                  "resolvedSignature": 757
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10984,
+                  "pos": 352,
+                  "end": 363
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10984,
+                  "pos": 352,
+                  "end": 363
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "push",
+          "rawNameBase64": "cHVzaA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2790,
+              "kind": 175,
+              "pos": 58144,
+              "end": 58340,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11000,
+                  "pos": 583,
+                  "end": 613,
+                  "resolvedSignature": 772
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11000,
+                  "pos": 583,
+                  "end": 613,
+                  "resolvedSignature": 929
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10973,
+                  "pos": 318,
+                  "end": 336,
+                  "resolvedSignature": 682
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10973,
+                  "pos": 318,
+                  "end": 336,
+                  "resolvedSignature": 756
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11199,
+                  "pos": 1134,
+                  "end": 1155,
+                  "resolvedSignature": 756
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10903,
+                  "pos": 52,
+                  "end": 63,
+                  "resolvedSignature": 182
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10926,
+                  "pos": 84,
+                  "end": 97,
+                  "resolvedSignature": 182
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10963,
+                  "pos": 176,
+                  "end": 201,
+                  "resolvedSignature": 182
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11001,
+                  "pos": 583,
+                  "end": 607
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11001,
+                  "pos": 583,
+                  "end": 607
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10974,
+                  "pos": 318,
+                  "end": 330
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10974,
+                  "pos": 318,
+                  "end": 330
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11200,
+                  "pos": 1134,
+                  "end": 1146
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10904,
+                  "pos": 52,
+                  "end": 60
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10927,
+                  "pos": 84,
+                  "end": 92
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "nodeId": 10964,
+                  "pos": 176,
+                  "end": 190
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid",
+            "G5-loop-evolving-array-and-capture"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "reduce",
+          "rawNameBase64": "cmVkdWNl",
+          "internal": false,
+          "declarationCount": 3,
+          "declarations": [
+            {
+              "nodeId": 3124,
+              "kind": 175,
+              "pos": 67199,
+              "end": 67919,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11165,
+                  "pos": 1014,
+                  "end": 1059,
+                  "resolvedSignature": 705
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11165,
+                  "pos": 1014,
+                  "end": 1059,
+                  "resolvedSignature": 779
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10902,
+                  "pos": 50,
+                  "end": 95,
+                  "resolvedSignature": 293
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11331,
+                  "pos": 2172,
+                  "end": 2184
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11209,
+                  "pos": 1168,
+                  "end": 1182
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10903,
+                  "pos": 50,
+                  "end": 64
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10921,
+                  "pos": 116,
+                  "end": 130
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10940,
+                  "pos": 182,
+                  "end": 196
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10960,
+                  "pos": 257,
+                  "end": 271
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 3149,
+              "kind": 175,
+              "pos": 67919,
+              "end": 68039,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11330,
+                  "pos": 2172,
+                  "end": 2219,
+                  "resolvedSignature": 952
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11127,
+                  "pos": 868,
+                  "end": 914,
+                  "resolvedSignature": 701
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11127,
+                  "pos": 868,
+                  "end": 914,
+                  "resolvedSignature": 775
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11208,
+                  "pos": 1168,
+                  "end": 1218,
+                  "resolvedSignature": 775
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10920,
+                  "pos": 116,
+                  "end": 164,
+                  "resolvedSignature": 295
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11331,
+                  "pos": 2172,
+                  "end": 2184
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11209,
+                  "pos": 1168,
+                  "end": 1182
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10903,
+                  "pos": 50,
+                  "end": 64
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10921,
+                  "pos": 116,
+                  "end": 130
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10940,
+                  "pos": 182,
+                  "end": 196
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10960,
+                  "pos": 257,
+                  "end": 271
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 3178,
+              "kind": 175,
+              "pos": 68039,
+              "end": 68779,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10939,
+                  "pos": 182,
+                  "end": 239,
+                  "resolvedSignature": 297
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10959,
+                  "pos": 257,
+                  "end": 306,
+                  "resolvedSignature": 297
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11331,
+                  "pos": 2172,
+                  "end": 2184
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11128,
+                  "pos": 868,
+                  "end": 882
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11166,
+                  "pos": 1014,
+                  "end": 1028
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11209,
+                  "pos": 1168,
+                  "end": 1182
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10903,
+                  "pos": 50,
+                  "end": 64
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10921,
+                  "pos": 116,
+                  "end": 130
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10940,
+                  "pos": 182,
+                  "end": 196
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10960,
+                  "pos": 257,
+                  "end": 271
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-mutable-reduction-overloads",
+            "G5-grouped-records-invalid"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "reduceRight",
+          "rawNameBase64": "cmVkdWNlUmlnaHQ=",
+          "internal": false,
+          "declarationCount": 3,
+          "declarations": [
+            {
+              "nodeId": 3209,
+              "kind": 175,
+              "pos": 68779,
+              "end": 69530,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10978,
+                  "pos": 330,
+                  "end": 380,
+                  "resolvedSignature": 300
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10979,
+                  "pos": 330,
+                  "end": 349
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10997,
+                  "pos": 406,
+                  "end": 425
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11016,
+                  "pos": 482,
+                  "end": 501
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11036,
+                  "pos": 567,
+                  "end": 586
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 3234,
+              "kind": 175,
+              "pos": 69530,
+              "end": 69655,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11146,
+                  "pos": 936,
+                  "end": 987,
+                  "resolvedSignature": 703
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11146,
+                  "pos": 936,
+                  "end": 987,
+                  "resolvedSignature": 777
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10996,
+                  "pos": 406,
+                  "end": 459,
+                  "resolvedSignature": 302
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10979,
+                  "pos": 330,
+                  "end": 349
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10997,
+                  "pos": 406,
+                  "end": 425
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11016,
+                  "pos": 482,
+                  "end": 501
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11036,
+                  "pos": 567,
+                  "end": 586
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 3263,
+              "kind": 175,
+              "pos": 69655,
+              "end": 70426,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11015,
+                  "pos": 482,
+                  "end": 544,
+                  "resolvedSignature": 304
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11035,
+                  "pos": 567,
+                  "end": 621,
+                  "resolvedSignature": 304
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11147,
+                  "pos": 936,
+                  "end": 955
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10979,
+                  "pos": 330,
+                  "end": 349
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 10997,
+                  "pos": 406,
+                  "end": 425
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11016,
+                  "pos": 482,
+                  "end": 501
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "nodeId": 11036,
+                  "pos": 567,
+                  "end": 586
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-mutable-reduction-overloads"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "reverse",
+          "rawNameBase64": "cmV2ZXJzZQ==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2836,
+              "kind": 175,
+              "pos": 59190,
+              "end": 59357,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10947,
+                  "pos": 226,
+                  "end": 243,
+                  "resolvedSignature": 679
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10947,
+                  "pos": 226,
+                  "end": 243,
+                  "resolvedSignature": 753
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10948,
+                  "pos": 226,
+                  "end": 241
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10948,
+                  "pos": 226,
+                  "end": 241
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "shift",
+          "rawNameBase64": "c2hpZnQ=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2841,
+              "kind": 175,
+              "pos": 59357,
+              "end": 59547,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10991,
+                  "pos": 382,
+                  "end": 397,
+                  "resolvedSignature": 684
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10991,
+                  "pos": 382,
+                  "end": 397,
+                  "resolvedSignature": 758
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10992,
+                  "pos": 382,
+                  "end": 395
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10992,
+                  "pos": 382,
+                  "end": 395
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "slice",
+          "rawNameBase64": "c2xpY2U=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2847,
+              "kind": 175,
+              "pos": 59547,
+              "end": 60183,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11019,
+                  "pos": 490,
+                  "end": 509,
+                  "resolvedSignature": 687
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11019,
+                  "pos": 490,
+                  "end": 509,
+                  "resolvedSignature": 761
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11020,
+                  "pos": 490,
+                  "end": 503
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11020,
+                  "pos": 490,
+                  "end": 503
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "some",
+          "rawNameBase64": "c29tZQ==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2993,
+              "kind": 175,
+              "pos": 64480,
+              "end": 65126,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11063,
+                  "pos": 663,
+                  "end": 695,
+                  "resolvedSignature": 692
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11063,
+                  "pos": 663,
+                  "end": 695,
+                  "resolvedSignature": 766
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11064,
+                  "pos": 663,
+                  "end": 675
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11064,
+                  "pos": 663,
+                  "end": 675
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "sort",
+          "rawNameBase64": "c29ydA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2860,
+              "kind": 175,
+              "pos": 60183,
+              "end": 60747,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10955,
+                  "pos": 259,
+                  "end": 302,
+                  "resolvedSignature": 680
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10955,
+                  "pos": 259,
+                  "end": 302,
+                  "resolvedSignature": 754
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10905,
+                  "pos": 52,
+                  "end": 73,
+                  "resolvedSignature": 280
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10956,
+                  "pos": 259,
+                  "end": 271
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10956,
+                  "pos": 259,
+                  "end": 271
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10906,
+                  "pos": 52,
+                  "end": 63
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-receiver-predicate-and-this-return"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "splice",
+          "rawNameBase64": "c3BsaWNl",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2876,
+              "kind": 175,
+              "pos": 60747,
+              "end": 61483,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10954,
+                  "pos": 331,
+                  "end": 348,
+                  "resolvedSignature": 430
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10963,
+                  "pos": 372,
+                  "end": 392,
+                  "resolvedSignature": 430
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11009,
+                  "pos": 451,
+                  "end": 465
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11009,
+                  "pos": 451,
+                  "end": 465
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10955,
+                  "pos": 331,
+                  "end": 345
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10964,
+                  "pos": 372,
+                  "end": 386
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10974,
+                  "pos": 413,
+                  "end": 427
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2888,
+              "kind": 175,
+              "pos": 61483,
+              "end": 62218,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11008,
+                  "pos": 451,
+                  "end": 474,
+                  "resolvedSignature": 686
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11008,
+                  "pos": 451,
+                  "end": 474,
+                  "resolvedSignature": 760
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10973,
+                  "pos": 413,
+                  "end": 439,
+                  "resolvedSignature": 431
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11009,
+                  "pos": 451,
+                  "end": 465
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11009,
+                  "pos": 451,
+                  "end": 465
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10955,
+                  "pos": 331,
+                  "end": 345
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10964,
+                  "pos": 372,
+                  "end": 386
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10974,
+                  "pos": 413,
+                  "end": 427
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-concat-splice-array-call-overloads"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "toLocaleString",
+          "rawNameBase64": "dG9Mb2NhbGVTdHJpbmc=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2781,
+              "kind": 175,
+              "pos": 57786,
+              "end": 57957,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10918,
+                  "pos": 108,
+                  "end": 132,
+                  "resolvedSignature": 676
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10918,
+                  "pos": 108,
+                  "end": 132,
+                  "resolvedSignature": 750
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10919,
+                  "pos": 108,
+                  "end": 130
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10919,
+                  "pos": 108,
+                  "end": 130
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "toString",
+          "rawNameBase64": "dG9TdHJpbmc=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2778,
+              "kind": 175,
+              "pos": 57694,
+              "end": 57786,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10910,
+                  "pos": 71,
+                  "end": 89,
+                  "resolvedSignature": 675
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10910,
+                  "pos": 71,
+                  "end": 89,
+                  "resolvedSignature": 749
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10911,
+                  "pos": 71,
+                  "end": 87
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10911,
+                  "pos": 71,
+                  "end": 87
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "unshift",
+          "rawNameBase64": "dW5zaGlmdA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2905,
+              "kind": 175,
+              "pos": 62218,
+              "end": 62431,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 10999,
+                  "pos": 416,
+                  "end": 434,
+                  "resolvedSignature": 685
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 10999,
+                  "pos": 416,
+                  "end": 434,
+                  "resolvedSignature": 759
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 11000,
+                  "pos": 416,
+                  "end": 431
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 11000,
+                  "pos": 416,
+                  "end": 431
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "\u00feindex",
+          "rawNameBase64": "/mluZGV4",
+          "internal": true,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 3294,
+              "kind": 183,
+              "pos": 70426,
+              "end": 70447,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [],
+              "storedIndexInfoWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 21
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 23
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 28
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 31
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 52
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 113
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 116
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 120
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 121
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 23
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 25
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 30
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 33
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 55
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 125
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 127
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 130
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 131
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 135
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 136
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1281
+                },
+                {
+                  "case": "G1-array-global-augmentation",
+                  "recordId": 2
+                },
+                {
+                  "case": "G1-array-global-augmentation",
+                  "recordId": 9
+                },
+                {
+                  "case": "G1-array-merge-parameter-conflict",
+                  "recordId": 106
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 5
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 12
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 38
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 39
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 808
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 17
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 42
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 43
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 661
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 6
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 15
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 45
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 46
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 887
+                },
+                {
+                  "case": "G2-default-constraint-success",
+                  "recordId": 5
+                },
+                {
+                  "case": "G2-default-constraint-success",
+                  "recordId": 13
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 141
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 146
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 157
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 158
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 159
+                },
+                {
+                  "case": "G2-contextual-generic-overloads",
+                  "recordId": 263
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "recordId": 10
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "recordId": 12
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "recordId": 25
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "recordId": 34
+                },
+                {
+                  "case": "G3-union-array-synthetic-method",
+                  "recordId": 42
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 5
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 25
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 30
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 58
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 60
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "recordId": 3
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "recordId": 9
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 4
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 11
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 32
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "recordId": 376
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "recordId": 378
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "recordId": 383
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "recordId": 2
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "recordId": 7
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "recordId": 16
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "recordId": 17
+                },
+                {
+                  "case": "G5-loop-evolving-array-and-capture",
+                  "recordId": 18
+                },
+                {
+                  "case": "G5-loop-narrowing-and-writes",
+                  "recordId": 93
+                },
+                {
+                  "case": "G5-loop-narrowing-and-writes",
+                  "recordId": 97
+                },
+                {
+                  "case": "G2-noinfer-callback-default",
+                  "recordId": 162
+                },
+                {
+                  "case": "G2-noinfer-callback-default",
+                  "recordId": 174
+                },
+                {
+                  "case": "G2-noinfer-callback-default",
+                  "recordId": 190
+                },
+                {
+                  "case": "G2-noinfer-callback-default",
+                  "recordId": 264
+                },
+                {
+                  "case": "G3-array-constructor-generic-intersection",
+                  "recordId": 13
+                },
+                {
+                  "case": "G3-array-constructor-generic-intersection",
+                  "recordId": 26
+                },
+                {
+                  "case": "G3-array-constructor-generic-intersection",
+                  "recordId": 30
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 133
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 144
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 163
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 170
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 174
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 176
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 177
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "recordId": 107
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "recordId": 110
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "recordId": 123
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "recordId": 3
+                },
+                {
+                  "case": "G3-mutable-reduction-overloads",
+                  "recordId": 7
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "recordId": 364
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "recordId": 372
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 4
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 10
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 14
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 42
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 43
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 45
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 475
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "recordId": 4
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "recordId": 13
+                }
+              ]
+            }
+          ],
+          "semanticWitnesses": [
+            "G1-array-global-augmentation",
+            "G1-array-merge-parameter-conflict",
+            "G2-contextual-generic-overloads",
+            "G2-default-constraint-success",
+            "G2-noinfer-callback-default",
+            "G3-array-api-invalid-interactions",
+            "G3-array-constructor-generic-intersection",
+            "G3-array-instance-apis",
+            "G3-array-relationships-and-bounds",
+            "G3-array-rest-alias-and-infer",
+            "G3-concat-splice-array-call-overloads",
+            "G3-filter-predicate-overloads",
+            "G3-mutable-reduction-overloads",
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads",
+            "G3-receiver-predicate-and-this-return",
+            "G3-shadowed-array-alias-rest",
+            "G3-tuple-optional-rest-and-readonly",
+            "G3-union-array-synthetic-method",
+            "G4-utility-array-tuple-preservation",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid",
+            "G5-loop-evolving-array-and-capture",
+            "G5-loop-narrowing-and-writes"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "numeric-index-signature"
+        }
+      ],
+      "requiredNamedInstanceMembers": 22
+    },
+    {
+      "name": "ReadonlyArray",
+      "source": "lib.es5.d.ts",
+      "ownMemberCount": 17,
+      "members": [
+        {
+          "name": "T",
+          "rawNameBase64": "VA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2273,
+              "kind": 170,
+              "pos": 47907,
+              "end": 47908,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2498,
+                  "pos": 53415,
+                  "end": 53417
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2505,
+                  "pos": 53437,
+                  "end": 53439
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2514,
+                  "pos": 53471,
+                  "end": 53473
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2534,
+                  "pos": 53969,
+                  "end": 53971
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2543,
+                  "pos": 54003,
+                  "end": 54005
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2551,
+                  "pos": 54036,
+                  "end": 54038
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2560,
+                  "pos": 54697,
+                  "end": 54699
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2586,
+                  "pos": 54809,
+                  "end": 54811
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2605,
+                  "pos": 54892,
+                  "end": 54894
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2622,
+                  "pos": 55575,
+                  "end": 55577
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2631,
+                  "pos": 55616,
+                  "end": 55618
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2498,
+                  "pos": 53415,
+                  "end": 53417
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2505,
+                  "pos": 53437,
+                  "end": 53439
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2514,
+                  "pos": 53471,
+                  "end": 53473
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2534,
+                  "pos": 53969,
+                  "end": 53971
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2543,
+                  "pos": 54003,
+                  "end": 54005
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2551,
+                  "pos": 54036,
+                  "end": 54038
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2560,
+                  "pos": 54697,
+                  "end": 54699
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2586,
+                  "pos": 54809,
+                  "end": 54811
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2605,
+                  "pos": 54892,
+                  "end": 54894
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2622,
+                  "pos": 55575,
+                  "end": 55577
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2631,
+                  "pos": 55616,
+                  "end": 55618
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2292,
+                  "pos": 48482,
+                  "end": 48483
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2306,
+                  "pos": 48634,
+                  "end": 48635
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2309,
+                  "pos": 48650,
+                  "end": 48651
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2313,
+                  "pos": 48657,
+                  "end": 48659
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2333,
+                  "pos": 49260,
+                  "end": 49262
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2339,
+                  "pos": 49568,
+                  "end": 49570
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2350,
+                  "pos": 49936,
+                  "end": 49938
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2361,
+                  "pos": 50523,
+                  "end": 50525
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2368,
+                  "pos": 50545,
+                  "end": 50547
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2377,
+                  "pos": 50579,
+                  "end": 50581
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2400,
+                  "pos": 51201,
+                  "end": 51203
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2409,
+                  "pos": 51235,
+                  "end": 51237
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2424,
+                  "pos": 51856,
+                  "end": 51858
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2433,
+                  "pos": 51890,
+                  "end": 51892
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2448,
+                  "pos": 52353,
+                  "end": 52355
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2457,
+                  "pos": 52387,
+                  "end": 52389
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2474,
+                  "pos": 52901,
+                  "end": 52903
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2483,
+                  "pos": 52935,
+                  "end": 52937
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2498,
+                  "pos": 53415,
+                  "end": 53417
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2505,
+                  "pos": 53437,
+                  "end": 53439
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2514,
+                  "pos": 53471,
+                  "end": 53473
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2534,
+                  "pos": 53969,
+                  "end": 53971
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2543,
+                  "pos": 54003,
+                  "end": 54005
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2551,
+                  "pos": 54036,
+                  "end": 54038
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2560,
+                  "pos": 54697,
+                  "end": 54699
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2586,
+                  "pos": 54809,
+                  "end": 54811
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2590,
+                  "pos": 54826,
+                  "end": 54828
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2599,
+                  "pos": 54867,
+                  "end": 54869
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2601,
+                  "pos": 54875,
+                  "end": 54877
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2605,
+                  "pos": 54892,
+                  "end": 54894
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2607,
+                  "pos": 54896,
+                  "end": 54898
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2648,
+                  "pos": 56335,
+                  "end": 56337
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2674,
+                  "pos": 56452,
+                  "end": 56454
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2678,
+                  "pos": 56469,
+                  "end": 56471
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2687,
+                  "pos": 56510,
+                  "end": 56512
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2689,
+                  "pos": 56518,
+                  "end": 56520
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2693,
+                  "pos": 56535,
+                  "end": 56537
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2695,
+                  "pos": 56539,
+                  "end": 56541
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2361,
+                  "pos": 50523,
+                  "end": 50525
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2368,
+                  "pos": 50545,
+                  "end": 50547
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2377,
+                  "pos": 50579,
+                  "end": 50581
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G5-invalid-loop-iteration-and-control",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2560,
+                  "pos": 54697,
+                  "end": 54699
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2564,
+                  "pos": 54714,
+                  "end": 54716
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2573,
+                  "pos": 54755,
+                  "end": 54757
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2575,
+                  "pos": 54763,
+                  "end": 54765
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2577,
+                  "pos": 54767,
+                  "end": 54769
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2586,
+                  "pos": 54809,
+                  "end": 54811
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2590,
+                  "pos": 54826,
+                  "end": 54828
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2599,
+                  "pos": 54867,
+                  "end": 54869
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2601,
+                  "pos": 54875,
+                  "end": 54877
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2605,
+                  "pos": 54892,
+                  "end": 54894
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2607,
+                  "pos": 54896,
+                  "end": 54898
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2622,
+                  "pos": 55575,
+                  "end": 55577
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2631,
+                  "pos": 55616,
+                  "end": 55618
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2648,
+                  "pos": 56335,
+                  "end": 56337
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2652,
+                  "pos": 56352,
+                  "end": 56354
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2661,
+                  "pos": 56393,
+                  "end": 56395
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2663,
+                  "pos": 56401,
+                  "end": 56403
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2665,
+                  "pos": 56405,
+                  "end": 56407
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2674,
+                  "pos": 56452,
+                  "end": 56454
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2678,
+                  "pos": 56469,
+                  "end": 56471
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2687,
+                  "pos": 56510,
+                  "end": 56512
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2689,
+                  "pos": 56518,
+                  "end": 56520
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2693,
+                  "pos": 56535,
+                  "end": 56537
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2695,
+                  "pos": 56539,
+                  "end": 56541
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2710,
+                  "pos": 57249,
+                  "end": 57251
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2719,
+                  "pos": 57290,
+                  "end": 57292
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2292,
+                  "pos": 48482,
+                  "end": 48483
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2296,
+                  "pos": 48488,
+                  "end": 48490
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2306,
+                  "pos": 48634,
+                  "end": 48635
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2309,
+                  "pos": 48650,
+                  "end": 48651
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2313,
+                  "pos": 48657,
+                  "end": 48659
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2333,
+                  "pos": 49260,
+                  "end": 49262
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2498,
+                  "pos": 53415,
+                  "end": 53417
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2505,
+                  "pos": 53437,
+                  "end": 53439
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2514,
+                  "pos": 53471,
+                  "end": 53473
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2534,
+                  "pos": 53969,
+                  "end": 53971
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2543,
+                  "pos": 54003,
+                  "end": 54005
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 2734,
+                  "pos": 57349,
+                  "end": 57351
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-array-relationships-and-bounds",
+            "G3-array-rest-alias-and-infer",
+            "G3-concat-splice-array-call-overloads",
+            "G3-filter-predicate-overloads",
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads",
+            "G3-receiver-predicate-and-this-return",
+            "G3-shadowed-array-alias-rest",
+            "G3-tuple-optional-rest-and-readonly",
+            "G4-utility-array-tuple-preservation",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid",
+            "G5-invalid-loop-iteration-and-control"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "type-parameter-scope"
+        },
+        {
+          "name": "concat",
+          "rawNameBase64": "Y29uY2F0",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2285,
+              "kind": 175,
+              "pos": 48330,
+              "end": 48493,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10932,
+                  "pos": 212,
+                  "end": 247,
+                  "resolvedSignature": 428
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10928,
+                  "pos": 170,
+                  "end": 184
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10933,
+                  "pos": 212,
+                  "end": 234
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10944,
+                  "pos": 277,
+                  "end": 299
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2298,
+              "kind": 175,
+              "pos": 48493,
+              "end": 48662,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10927,
+                  "pos": 170,
+                  "end": 195,
+                  "resolvedSignature": 563
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10943,
+                  "pos": 277,
+                  "end": 307,
+                  "resolvedSignature": 429
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10928,
+                  "pos": 170,
+                  "end": 184
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10933,
+                  "pos": 212,
+                  "end": 234
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "nodeId": 10944,
+                  "pos": 277,
+                  "end": 299
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-concat-splice-array-call-overloads",
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "every",
+          "rawNameBase64": "ZXZlcnk=",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2357,
+              "kind": 175,
+              "pos": 49968,
+              "end": 50637,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10953,
+                  "pos": 221,
+                  "end": 291,
+                  "resolvedSignature": 284
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10977,
+                  "pos": 363,
+                  "end": 376
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10954,
+                  "pos": 221,
+                  "end": 241
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2393,
+              "kind": 175,
+              "pos": 50637,
+              "end": 51277,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10976,
+                  "pos": 363,
+                  "end": 396,
+                  "resolvedSignature": 567
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10977,
+                  "pos": 363,
+                  "end": 376
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "nodeId": 10954,
+                  "pos": 221,
+                  "end": 241
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis",
+            "G3-receiver-predicate-and-this-return"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "filter",
+          "rawNameBase64": "ZmlsdGVy",
+          "internal": false,
+          "declarationCount": 2,
+          "declarations": [
+            {
+              "nodeId": 2494,
+              "kind": 175,
+              "pos": 52967,
+              "end": 53512,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10953,
+                  "pos": 286,
+                  "end": 363,
+                  "resolvedSignature": 290
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10973,
+                  "pos": 389,
+                  "end": 447,
+                  "resolvedSignature": 290
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 11008,
+                  "pos": 541,
+                  "end": 605,
+                  "resolvedSignature": 296
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 10934,
+                  "pos": 309,
+                  "end": 322
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 10934,
+                  "pos": 309,
+                  "end": 322
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11041,
+                  "pos": 573,
+                  "end": 587
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10954,
+                  "pos": 286,
+                  "end": 308
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10974,
+                  "pos": 389,
+                  "end": 411
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 11009,
+                  "pos": 541,
+                  "end": 563
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2527,
+              "kind": 175,
+              "pos": 53512,
+              "end": 54041,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 10933,
+                  "pos": 309,
+                  "end": 343,
+                  "resolvedSignature": 764
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 10933,
+                  "pos": 309,
+                  "end": 343,
+                  "resolvedSignature": 921
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11040,
+                  "pos": 573,
+                  "end": 607,
+                  "resolvedSignature": 576
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 10934,
+                  "pos": 309,
+                  "end": 322
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 10934,
+                  "pos": 309,
+                  "end": 322
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11041,
+                  "pos": 573,
+                  "end": 587
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10954,
+                  "pos": 286,
+                  "end": 308
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 10974,
+                  "pos": 389,
+                  "end": 411
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "nodeId": 11009,
+                  "pos": 541,
+                  "end": 563
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-filter-predicate-overloads",
+            "G3-readonly-array-instance-apis",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "forEach",
+          "rawNameBase64": "Zm9yRWFjaA==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2441,
+              "kind": 175,
+              "pos": 51932,
+              "end": 52423,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11005,
+                  "pos": 450,
+                  "end": 507,
+                  "resolvedSignature": 572
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11006,
+                  "pos": 450,
+                  "end": 465
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "indexOf",
+          "rawNameBase64": "aW5kZXhPZg==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2335,
+              "kind": 175,
+              "pos": 49265,
+              "end": 49600,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10958,
+                  "pos": 283,
+                  "end": 301,
+                  "resolvedSignature": 565
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10959,
+                  "pos": 283,
+                  "end": 298
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "join",
+          "rawNameBase64": "am9pbg==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2315,
+              "kind": 175,
+              "pos": 48662,
+              "end": 48974,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10939,
+                  "pos": 211,
+                  "end": 228,
+                  "resolvedSignature": 519
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10940,
+                  "pos": 211,
+                  "end": 223
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "lastIndexOf",
+          "rawNameBase64": "bGFzdEluZGV4T2Y=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2346,
+              "kind": 175,
+              "pos": 49600,
+              "end": 49968,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10967,
+                  "pos": 320,
+                  "end": 342,
+                  "resolvedSignature": 566
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10968,
+                  "pos": 320,
+                  "end": 339
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "length",
+          "rawNameBase64": "bGVuZ3Ro",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2275,
+              "kind": 173,
+              "pos": 47911,
+              "end": 48067,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10904,
+                  "pos": 59,
+                  "end": 73
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "map",
+          "rawNameBase64": "bWFw",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2465,
+              "kind": 175,
+              "pos": 52423,
+              "end": 52967,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11024,
+                  "pos": 524,
+                  "end": 555,
+                  "resolvedSignature": 574
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11025,
+                  "pos": 524,
+                  "end": 535
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "reduce",
+          "rawNameBase64": "cmVkdWNl",
+          "internal": false,
+          "declarationCount": 3,
+          "declarations": [
+            {
+              "nodeId": 2553,
+              "kind": 175,
+              "pos": 54041,
+              "end": 54770,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10903,
+                  "pos": 59,
+                  "end": 104,
+                  "resolvedSignature": 310
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11057,
+                  "pos": 622,
+                  "end": 636
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10904,
+                  "pos": 59,
+                  "end": 73
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10922,
+                  "pos": 125,
+                  "end": 139
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10941,
+                  "pos": 191,
+                  "end": 205
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10961,
+                  "pos": 266,
+                  "end": 280
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2579,
+              "kind": 175,
+              "pos": 54770,
+              "end": 54899,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11056,
+                  "pos": 622,
+                  "end": 668,
+                  "resolvedSignature": 578
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10921,
+                  "pos": 125,
+                  "end": 173,
+                  "resolvedSignature": 312
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11057,
+                  "pos": 622,
+                  "end": 636
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10904,
+                  "pos": 59,
+                  "end": 73
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10922,
+                  "pos": 125,
+                  "end": 139
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10941,
+                  "pos": 191,
+                  "end": 205
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10961,
+                  "pos": 266,
+                  "end": 280
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2609,
+              "kind": 175,
+              "pos": 54899,
+              "end": 55648,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11050,
+                  "pos": 838,
+                  "end": 884,
+                  "resolvedSignature": 778
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11050,
+                  "pos": 838,
+                  "end": 884,
+                  "resolvedSignature": 935
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10940,
+                  "pos": 191,
+                  "end": 248,
+                  "resolvedSignature": 314
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10960,
+                  "pos": 266,
+                  "end": 315,
+                  "resolvedSignature": 314
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "nodeId": 11051,
+                  "pos": 838,
+                  "end": 850
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11057,
+                  "pos": 622,
+                  "end": 636
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10904,
+                  "pos": 59,
+                  "end": 73
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10922,
+                  "pos": 125,
+                  "end": 139
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10941,
+                  "pos": 191,
+                  "end": 205
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10961,
+                  "pos": 266,
+                  "end": 280
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "reduceRight",
+          "rawNameBase64": "cmVkdWNlUmlnaHQ=",
+          "internal": false,
+          "declarationCount": 3,
+          "declarations": [
+            {
+              "nodeId": 2641,
+              "kind": 175,
+              "pos": 55648,
+              "end": 56408,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10979,
+                  "pos": 339,
+                  "end": 389,
+                  "resolvedSignature": 317
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11076,
+                  "pos": 690,
+                  "end": 709
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10980,
+                  "pos": 339,
+                  "end": 358
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10998,
+                  "pos": 415,
+                  "end": 434
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11017,
+                  "pos": 491,
+                  "end": 510
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11037,
+                  "pos": 576,
+                  "end": 595
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2667,
+              "kind": 175,
+              "pos": 56408,
+              "end": 56542,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11075,
+                  "pos": 690,
+                  "end": 741,
+                  "resolvedSignature": 580
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10997,
+                  "pos": 415,
+                  "end": 468,
+                  "resolvedSignature": 319
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11076,
+                  "pos": 690,
+                  "end": 709
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10980,
+                  "pos": 339,
+                  "end": 358
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10998,
+                  "pos": 415,
+                  "end": 434
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11017,
+                  "pos": 491,
+                  "end": 510
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11037,
+                  "pos": 576,
+                  "end": 595
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            },
+            {
+              "nodeId": 2697,
+              "kind": 175,
+              "pos": 56542,
+              "end": 57322,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11016,
+                  "pos": 491,
+                  "end": 553,
+                  "resolvedSignature": 321
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11036,
+                  "pos": 576,
+                  "end": 630,
+                  "resolvedSignature": 321
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 11076,
+                  "pos": 690,
+                  "end": 709
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10980,
+                  "pos": 339,
+                  "end": 358
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 10998,
+                  "pos": 415,
+                  "end": 434
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11017,
+                  "pos": 491,
+                  "end": 510
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "nodeId": 11037,
+                  "pos": 576,
+                  "end": 595
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "slice",
+          "rawNameBase64": "c2xpY2U=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2322,
+              "kind": 175,
+              "pos": 48974,
+              "end": 49265,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10948,
+                  "pos": 244,
+                  "end": 263,
+                  "resolvedSignature": 564
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10949,
+                  "pos": 244,
+                  "end": 257
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "some",
+          "rawNameBase64": "c29tZQ==",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2417,
+              "kind": 175,
+              "pos": 51277,
+              "end": 51932,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10992,
+                  "pos": 417,
+                  "end": 449,
+                  "resolvedSignature": 569
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10993,
+                  "pos": 417,
+                  "end": 429
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "toLocaleString",
+          "rawNameBase64": "dG9Mb2NhbGVTdHJpbmc=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2282,
+              "kind": 175,
+              "pos": 48159,
+              "end": 48330,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10919,
+                  "pos": 128,
+                  "end": 152,
+                  "resolvedSignature": 516
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10920,
+                  "pos": 128,
+                  "end": 150
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "toString",
+          "rawNameBase64": "dG9TdHJpbmc=",
+          "internal": false,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2279,
+              "kind": 175,
+              "pos": 48067,
+              "end": 48159,
+              "resolvedCallWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10911,
+                  "pos": 91,
+                  "end": 109,
+                  "resolvedSignature": 515
+                }
+              ],
+              "resolvedMemberWitnesses": [
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "nodeId": 10912,
+                  "pos": 91,
+                  "end": 107
+                }
+              ],
+              "storedIndexInfoWitnesses": []
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-readonly-array-instance-apis"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "instance-member"
+        },
+        {
+          "name": "\u00feindex",
+          "rawNameBase64": "/mluZGV4",
+          "internal": true,
+          "declarationCount": 1,
+          "declarations": [
+            {
+              "nodeId": 2729,
+              "kind": 183,
+              "pos": 57322,
+              "end": 57352,
+              "resolvedCallWitnesses": [],
+              "resolvedMemberWitnesses": [],
+              "storedIndexInfoWitnesses": [
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 847
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 859
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 860
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 863
+                },
+                {
+                  "case": "G5-grouped-records",
+                  "recordId": 886
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1019
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1035
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1036
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1039
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1071
+                },
+                {
+                  "case": "G5-grouped-records-invalid",
+                  "recordId": 1072
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 836
+                },
+                {
+                  "case": "G3-array-instance-apis",
+                  "recordId": 886
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 5
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 12
+                },
+                {
+                  "case": "G3-readonly-array-instance-apis",
+                  "recordId": 39
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 11
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 40
+                },
+                {
+                  "case": "G3-array-api-invalid-interactions",
+                  "recordId": 48
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 8
+                },
+                {
+                  "case": "G3-tuple-optional-rest-and-readonly",
+                  "recordId": 49
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "recordId": 5
+                },
+                {
+                  "case": "G3-array-relationships-and-bounds",
+                  "recordId": 16
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 7
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 23
+                },
+                {
+                  "case": "G3-receiver-predicate-and-this-return",
+                  "recordId": 33
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "recordId": 13
+                },
+                {
+                  "case": "G4-utility-array-tuple-preservation",
+                  "recordId": 88
+                },
+                {
+                  "case": "G5-invalid-loop-iteration-and-control",
+                  "recordId": 69
+                },
+                {
+                  "case": "G5-invalid-loop-iteration-and-control",
+                  "recordId": 74
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 158
+                },
+                {
+                  "case": "G3-array-rest-alias-and-infer",
+                  "recordId": 178
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "recordId": 117
+                },
+                {
+                  "case": "G3-shadowed-array-alias-rest",
+                  "recordId": 124
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "recordId": 3
+                },
+                {
+                  "case": "G3-readonly-reduction-overloads",
+                  "recordId": 7
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 7
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 38
+                },
+                {
+                  "case": "G3-concat-splice-array-call-overloads",
+                  "recordId": 46
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "recordId": 7
+                },
+                {
+                  "case": "G3-filter-predicate-overloads",
+                  "recordId": 28
+                }
+              ]
+            }
+          ],
+          "semanticWitnesses": [
+            "G3-array-api-invalid-interactions",
+            "G3-array-instance-apis",
+            "G3-array-relationships-and-bounds",
+            "G3-array-rest-alias-and-infer",
+            "G3-concat-splice-array-call-overloads",
+            "G3-filter-predicate-overloads",
+            "G3-readonly-array-instance-apis",
+            "G3-readonly-reduction-overloads",
+            "G3-receiver-predicate-and-this-return",
+            "G3-shadowed-array-alias-rest",
+            "G3-tuple-optional-rest-and-readonly",
+            "G4-utility-array-tuple-preservation",
+            "G5-grouped-records",
+            "G5-grouped-records-invalid",
+            "G5-invalid-loop-iteration-and-control"
+          ],
+          "status": "original-go-rich-observed-managed-and-linux-x64-native-exact",
+          "role": "numeric-index-signature"
+        }
+      ],
+      "requiredNamedInstanceMembers": 15
+    }
+  ],
+  "contractFamilies": [
+    {
+      "family": "G1",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "Fixed bytes/order/global merges/collisions/ownership/skip policy/fresh isolation"
+    },
+    {
+      "family": "G2",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "Constraints/defaults/inference priorities/context fixing/recursion/overloads/cache identities"
+    },
+    {
+      "family": "G3",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "All listed Array/ReadonlyArray instance members plus constructor calls/isArray, mutable/readonly/tuple/index/rest/spread/evolving flows"
+    },
+    {
+      "family": "G4",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "Keyof/indexed/index signatures/mapped/conditional/infer/reverse mapping and genuine utility aliases"
+    },
+    {
+      "family": "G5",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "Loops/assignment/capture/narrowing/real grouped demo/invalid interactions"
+    },
+    {
+      "family": "G6",
+      "status": "fixed-contract-reviewed-managed-and-linux-x64-native-verified",
+      "required": "Independent omission review/actual xUnit/Native AOT/order/retained regression evidence"
+    }
+  ],
+  "resolvedOverloadObservation": {
+    "policy": "Actual post-query SignatureLinks.resolvedSignature declaration refs for call-expression nodes. No declaration inferred from method names or rendered types. Source call/member locations and stored signature identities retained. Numeric indexes use actual IndexInfo.declaration; type-parameter scope metadata is not an API.",
+    "expectedSha256": "a5257a178167ec20a85c07a5ddfe6821873879e77bda090f6cf16d1da8fdb849",
+    "libraryResolvedCallDeclarations": 55,
+    "arrayConstructorCalls": [
+      {
+        "nodeId": 3330,
+        "kind": 181,
+        "pos": 70590,
+        "end": 70625,
+        "witnesses": [
+          {
+            "case": "G3-concat-splice-array-call-overloads",
+            "callNodeId": 10985,
+            "pos": 463,
+            "end": 471,
+            "resolvedSignature": 421
+          },
+          {
+            "case": "G3-concat-splice-array-call-overloads",
+            "callNodeId": 10991,
+            "pos": 486,
+            "end": 495,
+            "resolvedSignature": 421
+          }
+        ]
+      },
+      {
+        "nodeId": 3337,
+        "kind": 181,
+        "pos": 70625,
+        "end": 70660,
+        "witnesses": [
+          {
+            "case": "G3-concat-splice-array-call-overloads",
+            "callNodeId": 10998,
+            "pos": 518,
+            "end": 535,
+            "resolvedSignature": 432
+          }
+        ]
+      },
+      {
+        "nodeId": 3346,
+        "kind": 181,
+        "pos": 70660,
+        "end": 70689,
+        "witnesses": [
+          {
+            "case": "G3-concat-splice-array-call-overloads",
+            "callNodeId": 11006,
+            "pos": 550,
+            "end": 566,
+            "resolvedSignature": 433
+          },
+          {
+            "case": "G3-concat-splice-array-call-overloads",
+            "callNodeId": 11014,
+            "pos": 589,
+            "end": 609,
+            "resolvedSignature": 434
+          }
+        ]
+      }
+    ],
+    "missingNamedMembers": [],
+    "missingNamedMethodOverloads": []
+  },
+  "currentRichObservations": {
+    "cases": 44,
+    "queries": 260,
+    "records": 17932,
+    "states": 12385,
+    "syntheticTypes": 0,
+    "payloadFamilies": [
+      "ArrayLiteralLinks",
+      "ArrayToSingleTypeMapper",
+      "ArrayTypeMapper",
+      "CompositeSignature",
+      "CompositeTypeMapper",
+      "ConditionalRoot",
+      "ConditionalType",
+      "DeclaredTypeLinks",
+      "EvolvingArrayType",
+      "IndexInfo",
+      "IndexType",
+      "IndexedAccessType",
+      "InferenceContext",
+      "InferenceInfo",
+      "InferenceTypeMapper",
+      "InterfaceType",
+      "IntersectionType",
+      "IntrinsicType",
+      "LiteralType",
+      "MappedSymbolLinks",
+      "MappedType",
+      "MarkedAssignmentSymbolLinks",
+      "MembersAndExportsLinks",
+      "MergedTypeMapper",
+      "NodeLinks",
+      "ObjectType",
+      "ReverseMappedSymbolLinks",
+      "ReverseMappedType",
+      "Signature",
+      "SignatureLinks",
+      "SimpleTypeMapper",
+      "SourceFileLinks",
+      "SubstitutionType",
+      "SymbolReferenceLinks",
+      "TemplateLiteralType",
+      "TupleType",
+      "TypeAlias",
+      "TypeAliasLinks",
+      "TypeNodeLinks",
+      "TypeParameter",
+      "TypePredicate",
+      "TypeReference",
+      "UnionType",
+      "ValueSymbolLinks",
+      "VarianceLinks"
+    ],
+    "nativeStatus": "passed-linux-x64-native-aot-44-of-44",
+    "managedStatus": "passed-build30-44-of-44",
+    "managedReport": "artifacts/collections-validation/build30/canonical-managed/report.json",
+    "instrumentationParity": {
+      "cases": 44,
+      "exact": 44,
+      "report": "artifacts/collections-validation/build30/metadata-parity-canonical/report.json"
+    },
+    "orderControls": {
+      "cases": 8,
+      "sequencesPerRuntime": 2,
+      "originalGoExact": 18,
+      "managedExact": 18,
+      "report": "artifacts/collections-validation/build30/order/report.json"
+    },
+    "sharedManagedChecks": {
+      "passed": 12,
+      "skipped": 0,
+      "snapshot": "build30"
+    },
+    "nativeReport": "artifacts/collections-validation/native/canonical/report.json",
+    "nativeElapsedSeconds": 11.789,
+    "nativeSharedChecks": 12,
+    "nativeOrderControls": {
+      "cases": 8,
+      "sequencesPerRuntime": 2,
+      "originalGoExact": 18,
+      "nativeExact": 18
+    },
+    "corpusTheoryXUnit": {
+      "passed": 44,
+      "skipped": 0,
+      "class": "CollectionsOracleTests",
+      "trx": "artifacts/data-types-validation/checker.trx"
+    },
+    "finalCascadeXUnitCases": 23467,
+    "checkerXUnitCases": 757,
+    "finalInstrumentationParity": {
+      "cases": 44,
+      "exact": 44,
+      "elapsedSeconds": 16.768
+    },
+    "proof": "validation/results/collections-verified.json",
+    "sourceSha256": "4b72bcbcae5b18e9322d2d45ecee624bc0d4b2f4d4b0ca109209fcf78f3fc9c3",
+    "verificationAssetsSha256": "5bfa508a7115d8b175af41cea303ba10c792656d7c025b53353b865a6655dda6",
+    "sourceDrift": false,
+    "assetDrift": false,
+    "historicalAssetDrift": false
+  },
+  "observationLimits": [
+    "All 44 final cases request rich stored observations. Each request retains the whole passive four-file binding graph and user/reached semantic records; unused library semantic types are not eagerly resolved.",
+    "SyntheticTypes=0 describes retained graph roots in these cases. Checker-generated spread argument nodes are implemented but may be transient; this count does not establish that synthetic producers are unreachable. Whole logical-store owner guards reject unknown retained synthetic owners.",
+    "Union/intersection normal and NoConstraintReduction membership is checked for reached objects only; neither whole intern-map census nor interned status of every composite is claimed.",
+    "Selected generic, object, alias, conditional, tuple, signature, reverse-mapped, indexed, template, substitution, relation, flow, expression, iteration and properties cache associations retain actual key preimages, identity membership, nullable values and cardinality. Unchanged private literal/merge/error/formatter cache topology is limited to reviewed source plus reached identity/output/order evidence.",
+    "Direct stored Type/Signature slots are nonregistering known-ID lookup inputs. Different original and managed memoization representations are not asserted to have equal slot counts.",
+    "Original OrderedSet coverage preserves only its three Has assertions with adapted Node identities; Delete/Clear/Clone, general OrderedMap/SyncMap APIs and collection backing topology are not claimed.",
+    "The canonical manifest is the sole final corpus registry. Archived bootstrap/vertical and former raw checker-only Program projections are investigation-only and are not acceptance cases."
+  ]
+}

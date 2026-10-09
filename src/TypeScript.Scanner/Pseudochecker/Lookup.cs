@@ -100,9 +100,10 @@ internal sealed partial class PseudoChecker
             case Kind.ArrowFunction:
             case Kind.FunctionExpression:
                 return typeFromFunctionLikeExpression(node);
+            case Kind.ArrayLiteralExpression:
+                return typeFromArrayLiteral(node.AsArrayLiteralExpression());
             case Kind.TypeAssertionExpression:
             case Kind.AsExpression:
-            case Kind.ArrayLiteralExpression:
             case Kind.ClassExpression:
             case Kind.TemplateExpression:
                 throw TypeScript.Checking.Checker.unsupported("PseudoChecker.typeFromExpression: asserted/array/class/template expression");
@@ -634,4 +635,28 @@ internal sealed partial class PseudoChecker
             return true;
         return Ast.IsJsxElement(n) || Ast.IsJsxExpression(n);
     }) != null;
+    // lookup.go:438/457. Ordinary arrays deliberately return the original inferred
+    // skeleton/error-node state; syntactic const tuples retain all elements.
+    private PseudoType typeFromArrayLiteral(ArrayLiteralExpression node)
+    {
+        var errors = canGetTypeFromArrayLiteral(node);
+        if (errors != null)
+            return NewPseudoTypeInferredWithErrors(node.AsNode(), false, errors);
+        if (IsInConstContext(node.AsNode()) && isContextuallyTyped(node.AsNode()))
+            return NewPseudoTypeInferred(node.AsNode(), false);
+        var results = new List<PseudoType>(node.Elements.Nodes.Count);
+        foreach (var element in node.Elements.Nodes)
+            results.Add(typeFromExpression(element));
+        return NewPseudoTypeTuple(results);
+    }
+
+    private static List<Node> canGetTypeFromArrayLiteral(ArrayLiteralExpression node)
+    {
+        if (!IsInConstContext(node.AsNode()))
+            return[node.AsNode()];
+        foreach (var element in node.Elements.Nodes)
+            if (element.Kind == Kind.SpreadElement)
+                return[element];
+        return null;
+    }
 }

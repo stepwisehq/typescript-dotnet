@@ -16,130 +16,442 @@ public sealed partial class Checker
         return false;
     }
 
-    // CompareTypes (414): intrinsic, scalar literal and unnamed union branches.
+    // CompareTypes (414): original selected scalar/generic/object ordering families.
     public static int CompareTypes(Type t1, Type t2)
     {
-        if (t1 == t2)
+        if ((t1 == t2))
+        {
             return 0;
-        if (t1 == null)
-            return -1;
-        if (t2 == null)
-            return 1;
-        if (t1.checker != t2.checker)
-            throw new InvalidOperationException("Cannot compare types from different checkers");
-        int c = getSortOrderFlags(t1) - getSortOrderFlags(t2);
-        if (c != 0)
-            return c;
-        c = compareTypeNames(t1, t2);
-        if (c != 0)
-            return c;
-        if ((t1.flags & TypeFlags.Singleton) != 0)
-        {
         }
-        else if ((t1.flags & TypeFlags.Object) != 0)
+
+        if ((t1 == null))
         {
-            if ((t1.objectFlags & ObjectFlags.InstantiationExpressionType) != 0 && (t2.objectFlags & ObjectFlags.InstantiationExpressionType) != 0)
-                throw unsupported("CompareTypes: source instantiation expression");
-            c = t1.checker.compareSymbols(t1.symbol, t2.symbol);
-            if (c != 0)
-                return c;
-            if ((t1.objectFlags & ObjectFlags.Reference) != 0 && (t2.objectFlags & ObjectFlags.Reference) != 0)
+            return -1;
+        }
+
+        if ((t2 == null))
+        {
+            return 1;
+        }
+
+        if ((t1.checker != t2.checker))
+        {
+            throw new InvalidOperationException("Cannot compare types from different checkers");
+        }
+
+        {
+            var c = (getSortOrderFlags(t1) - getSortOrderFlags(t2));
+            if ((c != 0))
             {
-                var r1 = t1.AsTypeReference();
-                var r2 = t2.AsTypeReference();
-                if ((r1.target.objectFlags & r2.target.objectFlags & ObjectFlags.Tuple) != 0)
-                    throw unsupported("CompareTypes: source tuple reference");
-                if (r1.node == null && r2.node == null)
-                    c = compareTypeLists(r1.resolvedTypeArguments, r2.resolvedTypeArguments);
+                return c;
+            }
+        }
+
+        {
+            var c2 = compareTypeNames(t1, t2);
+            if ((c2 != 0))
+            {
+                return c2;
+            }
+        }
+
+        switch (true)
+        {
+            case true when ((t1.flags & ((((((((((((TypeFlags.Any | TypeFlags.Unknown) | TypeFlags.String) | TypeFlags.Number) | TypeFlags.Boolean) | TypeFlags.BigInt) | TypeFlags.ESSymbol) | TypeFlags.Void) | TypeFlags.Undefined) | TypeFlags.Null) | TypeFlags.Never) | TypeFlags.NonPrimitive))) != 0):
+            {
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.Object) != 0):
+            {
+                if ((((t1.objectFlags & ObjectFlags.InstantiationExpressionType) != 0) && ((t2.objectFlags & ObjectFlags.InstantiationExpressionType) != 0)))
+                {
+                    throw unsupported("CompareTypes: source instantiation expression");
+                }
                 else
                 {
-                    c = t1.checker.compareNodes(r1.node, r2.node);
-                    if (c == 0)
-                        c = compareTypeMappers(t1.AsObjectType().mapper, t2.AsObjectType().mapper);
+                    {
+                        var c5 = t1.checker.compareSymbols(t1.symbol, t2.symbol);
+                        if ((c5 != 0))
+                        {
+                            return c5;
+                        }
+                    }
                 }
 
-                if (c != 0)
-                    return c;
+                if ((((t1.objectFlags & ObjectFlags.Reference) != 0) && ((t2.objectFlags & ObjectFlags.Reference) != 0)))
+                {
+                    var r1 = t1.AsTypeReference();
+                    var r2 = t2.AsTypeReference();
+                    if ((((r1.target.objectFlags & ObjectFlags.Tuple) != 0) && ((r2.target.objectFlags & ObjectFlags.Tuple) != 0)))
+                    {
+                        {
+                            var c6 = compareTupleTypes(r1.target.AsTupleType(), r2.target.AsTupleType());
+                            if ((c6 != 0))
+                            {
+                                return c6;
+                            }
+                        }
+                    }
+
+                    if (((r1.node == null) && (r2.node == null)))
+                    {
+                        {
+                            var c7 = compareTypeLists(t1.AsTypeReference().resolvedTypeArguments, t2.AsTypeReference().resolvedTypeArguments);
+                            if ((c7 != 0))
+                            {
+                                return c7;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        {
+                            var c8 = t1.checker.compareNodes(r1.node, r2.node);
+                            if ((c8 != 0))
+                            {
+                                return c8;
+                            }
+                        }
+
+                        {
+                            var c9 = compareTypeMappers(t1.AsObjectType().mapper, t2.AsObjectType().mapper);
+                            if ((c9 != 0))
+                            {
+                                return c9;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (((t1.objectFlags & ObjectFlags.Reference) != 0))
+                    {
+                        return -1;
+                    }
+                    else
+                    {
+                        if (((t2.objectFlags & ObjectFlags.Reference) != 0))
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            {
+                                var c10 = ((int)((t1.objectFlags & ObjectFlags.ObjectTypeKindMask)) - (int)((t2.objectFlags & ObjectFlags.ObjectTypeKindMask)));
+                                if ((c10 != 0))
+                                {
+                                    return c10;
+                                }
+                            }
+
+                            if (((t1.objectFlags & ObjectFlags.ReverseMapped) != 0))
+                            {
+                                var r12 = t1.AsReverseMappedType();
+                                var r22 = t2.AsReverseMappedType();
+                                {
+                                    var c11 = CompareTypes(r12.source, r22.source);
+                                    if ((c11 != 0))
+                                    {
+                                        return c11;
+                                    }
+                                }
+
+                                {
+                                    var c12 = CompareTypes(r12.mappedType, r22.mappedType);
+                                    if ((c12 != 0))
+                                    {
+                                        return c12;
+                                    }
+                                }
+
+                                {
+                                    var c13 = CompareTypes(r12.constraintType, r22.constraintType);
+                                    if ((c13 != 0))
+                                    {
+                                        return c13;
+                                    }
+                                }
+                            }
+
+                            var m1 = t1.AsObjectType().mapper;
+                            var m2 = t2.AsObjectType().mapper;
+                            if (((t1.objectFlags & ObjectFlags.Mapped) != 0))
+                            {
+                                if ((m1 != null))
+                                {
+                                    m1 = ((CompositeTypeMapper)m1.data).m2;
+                                }
+
+                                if ((m2 != null))
+                                {
+                                    m2 = ((CompositeTypeMapper)m2.data).m2;
+                                }
+                            }
+
+                            {
+                                var c14 = compareTypeMappers(m1, m2);
+                                if ((c14 != 0))
+                                {
+                                    return c14;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                break;
             }
-            else if ((t1.objectFlags & ObjectFlags.Reference) != 0)
-                return -1;
-            else if ((t2.objectFlags & ObjectFlags.Reference) != 0)
-                return 1;
-            else
+
+            case true when ((t1.flags & TypeFlags.Union) != 0):
             {
-                c = (int)(t1.objectFlags & ObjectFlags.ObjectTypeKindMask) - (int)(t2.objectFlags & ObjectFlags.ObjectTypeKindMask);
-                if (c != 0)
-                    return c;
-                if ((t1.objectFlags & (ObjectFlags.ReverseMapped | ObjectFlags.Mapped)) != 0)
-                    throw unsupported("CompareTypes: source mapped object");
-                c = compareTypeMappers(t1.AsObjectType().mapper, t2.AsObjectType().mapper);
-                if (c != 0)
-                    return c;
+                var o1 = t1.AsUnionType().origin;
+                var o2 = t2.AsUnionType().origin;
+                if (((o1 == null) && (o2 == null)))
+                {
+                    {
+                        var c15 = compareTypeLists(t1.Types(), t2.Types());
+                        if ((c15 != 0))
+                        {
+                            return c15;
+                        }
+                    }
+                }
+                else
+                {
+                    if ((o1 == null))
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        if ((o2 == null))
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            {
+                                var c16 = CompareTypes(o1, o2);
+                                if ((c16 != 0))
+                                {
+                                    return c16;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.Intersection) != 0):
+            {
+                {
+                    var c17 = compareTypeLists(t1.Types(), t2.Types());
+                    if ((c17 != 0))
+                    {
+                        return c17;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & (((TypeFlags.Enum | TypeFlags.EnumLiteral) | TypeFlags.UniqueESSymbol))) != 0):
+            {
+                {
+                    var c18 = t1.checker.compareSymbols(t1.symbol, t2.symbol);
+                    if ((c18 != 0))
+                    {
+                        return c18;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.StringLiteral) != 0):
+            {
+                {
+                    var c19 = string.CompareOrdinal(((string)t1.AsLiteralType().value), ((string)t2.AsLiteralType().value));
+                    if ((c19 != 0))
+                    {
+                        return c19;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.NumberLiteral) != 0):
+            {
+                {
+                    var c20 = ((JsNum.Number)t1.AsLiteralType().value).Value.CompareTo(((JsNum.Number)t2.AsLiteralType().value).Value);
+                    if ((c20 != 0))
+                    {
+                        return c20;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.BigIntLiteral) != 0):
+            {
+                {
+                    var c21 = getBigIntLiteralValue(t1).Compare(getBigIntLiteralValue(t2));
+                    if ((c21 != 0))
+                    {
+                        return c21;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.BooleanLiteral) != 0):
+            {
+                var b1 = ((bool)t1.AsLiteralType().value);
+                var b2 = ((bool)t2.AsLiteralType().value);
+                if ((b1 != b2))
+                {
+                    if (b1)
+                    {
+                        return 1;
+                    }
+
+                    return -1;
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.TypeParameter) != 0):
+            {
+                {
+                    var c22 = t1.checker.compareSymbols(t1.symbol, t2.symbol);
+                    if ((c22 != 0))
+                    {
+                        return c22;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.Index) != 0):
+            {
+                {
+                    var c23 = CompareTypes(t1.AsIndexType().target, t2.AsIndexType().target);
+                    if ((c23 != 0))
+                    {
+                        return c23;
+                    }
+                }
+
+                {
+                    var c24 = ((int)(t1.AsIndexType().indexFlags) - (int)(t2.AsIndexType().indexFlags));
+                    if ((c24 != 0))
+                    {
+                        return c24;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.IndexedAccess) != 0):
+            {
+                {
+                    var c25 = CompareTypes(t1.AsIndexedAccessType().objectType, t2.AsIndexedAccessType().objectType);
+                    if ((c25 != 0))
+                    {
+                        return c25;
+                    }
+                }
+
+                {
+                    var c26 = CompareTypes(t1.AsIndexedAccessType().indexType, t2.AsIndexedAccessType().indexType);
+                    if ((c26 != 0))
+                    {
+                        return c26;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.Conditional) != 0):
+            {
+                {
+                    var c27 = t1.checker.compareNodes(t1.AsConditionalType().root.node.AsNode(), t2.AsConditionalType().root.node.AsNode());
+                    if ((c27 != 0))
+                    {
+                        return c27;
+                    }
+                }
+
+                {
+                    var c28 = compareTypeMappers(t1.AsConditionalType().mapper, t2.AsConditionalType().mapper);
+                    if ((c28 != 0))
+                    {
+                        return c28;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.Substitution) != 0):
+            {
+                {
+                    var c29 = CompareTypes(t1.AsSubstitutionType().baseType, t2.AsSubstitutionType().baseType);
+                    if ((c29 != 0))
+                    {
+                        return c29;
+                    }
+                }
+
+                {
+                    var c30 = CompareTypes(t1.AsSubstitutionType().constraint, t2.AsSubstitutionType().constraint);
+                    if ((c30 != 0))
+                    {
+                        return c30;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.TemplateLiteral) != 0):
+            {
+                {
+                    var c31 = compareTemplateTexts(t1.AsTemplateLiteralType().texts, t2.AsTemplateLiteralType().texts);
+                    if ((c31 != 0))
+                    {
+                        return c31;
+                    }
+                }
+
+                {
+                    var c32 = compareTypeLists(t1.AsTemplateLiteralType().types, t2.AsTemplateLiteralType().types);
+                    if ((c32 != 0))
+                    {
+                        return c32;
+                    }
+                }
+
+                break;
+            }
+
+            case true when ((t1.flags & TypeFlags.StringMapping) != 0):
+            {
+                throw unsupported("CompareTypes: intrinsic string mapping");
             }
         }
-        else if ((t1.flags & TypeFlags.Union) != 0)
-        {
-            var o1 = t1.AsUnionType().origin;
-            var o2 = t2.AsUnionType().origin;
-            if (o1 == null && o2 == null)
-                c = compareTypeLists(t1.Types(), t2.Types());
-            else if (o1 == null)
-                c = 1;
-            else if (o2 == null)
-                c = -1;
-            else
-                c = CompareTypes(o1, o2);
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.Intersection) != 0)
-        {
-            c = compareTypeLists(t1.Types(), t2.Types());
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.TypeParameter) != 0)
-        {
-            c = t1.checker.compareSymbols(t1.symbol, t2.symbol);
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.Index) != 0)
-        {
-            c = CompareTypes(t1.AsIndexType().target, t2.AsIndexType().target);
-            if (c != 0)
-                return c;
-            c = (int)t1.AsIndexType().indexFlags - (int)t2.AsIndexType().indexFlags;
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.UniqueESSymbol) != 0)
-        {
-            c = t1.checker.compareSymbols(t1.symbol, t2.symbol);
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.StringLiteral) != 0)
-        {
-            c = string.CompareOrdinal((string)t1.AsLiteralType().value, (string)t2.AsLiteralType().value);
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.NumberLiteral) != 0)
-        {
-            c = ((JsNum.Number)t1.AsLiteralType().value).Value.CompareTo(((JsNum.Number)t2.AsLiteralType().value).Value);
-            if (c != 0)
-                return c;
-        }
-        else if ((t1.flags & TypeFlags.BooleanLiteral) != 0)
-        {
-            bool b1 = (bool)t1.AsLiteralType().value, b2 = (bool)t2.AsLiteralType().value;
-            if (b1 != b2)
-                return b1 ? 1 : -1;
-        }
-        else
-            throw unsupported("CompareTypes: nonscalar payload");
-        return unchecked((int)t1.id - (int)t2.id);
+
+        return ((int)(t1.id) - (int)(t2.id));
     }
 
     // utilities.go:716.
@@ -259,10 +571,18 @@ public sealed partial class Checker
             return 1;
         if (right == null)
             return -1;
-        if (Ast.GetSourceFileOfNode(left) != Ast.GetSourceFileOfNode(right))
-            throw unsupported("compareNodes: multi-file checker");
+        var leftFile = Ast.GetSourceFileOfNode(left);
+        var rightFile = Ast.GetSourceFileOfNode(right);
+        if (leftFile != rightFile)
+            return fileIndexMap.GetValueOrDefault(leftFile) - fileIndexMap.GetValueOrDefault(rightFile);
         return left.Pos() - right.Pos();
     }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:260.
+    private static bool isTypeAlias(Node node) => node.Kind is Kind.TypeAliasDeclaration or Kind.JSTypeAliasDeclaration;
 }
 
 public sealed partial class Checker
@@ -398,7 +718,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // utilities.go:941. ECMAScript numeric property-name round trip.
-    private static bool isNumericLiteralName(string name) => JsNum.FromString(name).String() == name;
+    internal static bool isNumericLiteralName(string name) => JsNum.FromString(name).String() == name;
 }
 
 public sealed partial class Checker
@@ -933,4 +1253,203 @@ public sealed partial class Checker
     private static bool isVariableDeclarationInVariableStatement(Node node) => Ast.IsVariableDeclarationList(node.Parent) && Ast.IsVariableStatement(node.Parent.Parent);
     // utilities.go:67.
     private static bool hasReadonlyModifier(Node node) => Ast.HasModifier(node, ModifierFlags.Readonly);
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1033. Array literals carry the same inference-candidate marker
+    // semantics as object literals.
+    private static bool isObjectOrArrayLiteralType(Type t) => (t.objectFlags & (ObjectFlags.ObjectLiteral | ObjectFlags.ArrayLiteral)) != 0;
+}
+
+public sealed partial class Checker
+{
+    // upstream checker.go:27061. Preserve the union-only constituent callback boundary.
+    private static void forEachType(Type t, Action<Type> callback)
+    {
+        if ((t.flags & TypeFlags.Union) != 0)
+        {
+            foreach (var constituent in GoRuntime.RangeValues(t.Types()))
+                callback(constituent);
+        }
+        else
+            callback(t);
+    }
+
+    // upstream checker.go:25054. Concrete unary tuple wrapper used by implied constraints.
+    private static bool isUnaryTupleTypeNode(Node node) => Ast.IsTupleTypeNode(node) && (node.Elements()?.Count ?? 0) == 1;
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:970. Numeric placeholder validation retains the actual JS-number coercion.
+    private static bool isValidNumberString(string text, bool roundTripOnly)
+    {
+        if (text == "")
+            return false;
+        var number = JsNum.FromString(text);
+        return !number.IsNaN() && !number.IsInf() && (!roundTripOnly || number.String() == text);
+    }
+
+    // utilities.go:978. Validate full raw byte-string bigint spelling through the original scanner.
+    private static bool isValidBigIntString(string text, bool roundTripOnly)
+    {
+        if (text == "")
+            return false;
+        var scanner = new TypeScript.Scanner.Scanner();
+        scanner.SetSkipTrivia(false);
+        bool success = true;
+        scanner.SetOnError((message, start, length, args) => success = false);
+        scanner.SetText(GoString.Bytes(text + "n"));
+        var result = scanner.Scan();
+        bool negative = result == Kind.MinusToken;
+        if (negative)
+            result = scanner.Scan();
+        var flags = scanner.TokenFlags();
+        return success && result == Kind.BigIntLiteral && scanner.TokenEnd() == text.Length + 1 && (flags & TokenFlags.ContainsSeparator) == 0 && (!roundTripOnly || text == pseudoBigIntToString(JsNum.NewPseudoBigInt(JsNum.ParsePseudoBigInt(GoString.FromBytes(scanner.TokenValueBytes())), negative)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static string tryGetPropertyAccessOrIdentifierToString(Node expr)
+    {
+        switch (true)
+        {
+            case true when Ast.IsPropertyAccessExpression(expr):
+            {
+                var baseStr = tryGetPropertyAccessOrIdentifierToString(expr.Expression());
+                if ((baseStr != ""))
+                {
+                    return ((baseStr + ".") + entityNameToString(expr.Name()));
+                }
+
+                break;
+            }
+
+            case true when Ast.IsElementAccessExpression(expr):
+            {
+                var baseStr2 = tryGetPropertyAccessOrIdentifierToString(expr.Expression());
+                if (((baseStr2 != "") && Ast.IsPropertyName(expr.AsElementAccessExpression().ArgumentExpression)))
+                {
+                    return ((baseStr2 + ".") + Ast.GetPropertyNameForPropertyNameNode(expr.AsElementAccessExpression().ArgumentExpression));
+                }
+
+                break;
+            }
+
+            case true when Ast.IsIdentifier(expr):
+            {
+                return expr.Text();
+            }
+
+            case true when Ast.IsJsxNamespacedName(expr):
+            {
+                return entityNameToString(expr);
+            }
+        }
+
+        return "";
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:264. Binding-element cases are demanded by original library declarations.
+    private static bool hasOnlyExpressionInitializer(Node node) => node.Kind is Kind.VariableDeclaration or Kind.Parameter or Kind.BindingElement or Kind.PropertyDeclaration or Kind.PropertyAssignment or Kind.EnumMember;
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1304.
+    private static List<Node> getDeclarationsOfKind(Symbol symbol, Kind kind) => Core.Filter(symbol.Declarations, declaration => declaration.Kind == kind);
+}
+
+public sealed partial class Checker
+{
+    private static int compareTupleTypes(TupleType t1, TupleType t2)
+    {
+        if ((t1 == t2))
+        {
+            return 0;
+        }
+
+        if ((t1.@readonly != t2.@readonly))
+        {
+            return Core.IfElse(t1.@readonly, 1, -1);
+        }
+
+        if ((GoRuntime.Len(t1.elementInfos) != GoRuntime.Len(t2.elementInfos)))
+        {
+            return (GoRuntime.Len(t1.elementInfos) - GoRuntime.Len(t2.elementInfos));
+        }
+
+        {
+            foreach (var i in GoRuntime.RangeKeys(t1.elementInfos))
+            {
+                {
+                    var c = ((int)(t1.elementInfos[i].flags) - (int)(t2.elementInfos[i].flags));
+                    if ((c != 0))
+                    {
+                        return c;
+                    }
+                }
+            }
+        }
+
+        {
+            foreach (var i2 in GoRuntime.RangeKeys(t1.elementInfos))
+            {
+                {
+                    var c2 = compareElementLabels(t1.elementInfos[i2].labeledDeclaration, t2.elementInfos[i2].labeledDeclaration);
+                    if ((c2 != 0))
+                    {
+                        return c2;
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static int compareElementLabels(Node n1, Node n2)
+    {
+        if ((n1 == n2))
+        {
+            return 0;
+        }
+
+        if ((n1 == null))
+        {
+            return -1;
+        }
+
+        if ((n2 == null))
+        {
+            return 1;
+        }
+
+        return string.CompareOrdinal(n1.Name().Text(), n2.Name().Text());
+    }
+}
+
+public sealed partial class Checker
+{
+    // slices.Compare adaptation: lexicographic raw-string comparison.
+    private static int compareTemplateTexts(List<string> left, List<string> right)
+    {
+        int count = Math.Min(GoRuntime.Len(left), GoRuntime.Len(right));
+        for (int i = 0; i < count; i++)
+        {
+            int result = string.CompareOrdinal(left[i], right[i]);
+            if (result != 0)
+                return result;
+        }
+
+        return GoRuntime.Len(left) - GoRuntime.Len(right);
+    }
 }

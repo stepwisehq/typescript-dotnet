@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "baseline": "cfa6d2f",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "groups": [
+    {
+      "group": "canonical",
+      "requests": "validation/collections-corpus/canonical-requests.jsonl",
+      "expected": "validation/collections-corpus/canonical-expected.jsonl.gz",
+      "cases": 44,
+      "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+      "expectedSha256": "a5257a178167ec20a85c07a5ddfe6821873879e77bda090f6cf16d1da8fdb849",
+      "storedObservations": true
+    }
+  ],
+  "cases": 44,
+  "sharedChecks": {
+    "count": 12,
+    "xUnitClassCounts": {
+      "CollectionsControlsTests": 4,
+      "CollectionsSupportTests": 8
+    }
+  },
+  "corpusXUnitClassCounts": {
+    "CollectionsOracleTests": 44
+  },
+  "orderControls": {
+    "requests": "validation/collections-corpus/order-requests.jsonl",
+    "requestsSha256": "115872cef511fbfe4a1340a630774af76a90ec3b185ff3132f2027ae08ff0e89",
+    "cases": 8,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 18
+  },
+  "instrumentationParity": {
+    "requests": "validation/collections-corpus/canonical-requests.jsonl",
+    "requestsSha256": "8132ea79a8d542d9d8fcb789448f80dc87bca6bbc5e1c318e27824f2bf29605c",
+    "cases": 44
+  },
+  "supportProjections": {
+    "expected": "validation/collections-corpus/support-projections-actual-go.json",
+    "provenance": "validation/collections-corpus/support-projections-provenance.json",
+    "expectedSha256": "cce29a500694f9e21782639ea28dfe2fc8bde421eb1003b45353dd63f1b9bce3",
+    "provenanceSha256": "e102cea1ed6eda8192ff6db97a239b1512d605ad3554f98be93796a5c5afc70c",
+    "groups": 7,
+    "sharedCases": 8
+  },
+  "provenance": "Manifest assembly only; independently produced expected bytes are hashed and never regenerated or normalized."
+}

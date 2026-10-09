@@ -156,6 +156,18 @@ Later user directions, in chronological order:
     [proof](./validation/results/callables-verified.json) record fixed C1–C6 acceptance.
     No subsequent campaign is automatically authorized.
 
+19. The user authorized the **generic-collection checking campaign** atop `cfa6d2f`.
+    Read the [exact mandate](./docs/COLLECTIONS-PROMPT.md), fixed
+    [contract](./docs/COLLECTIONS-CONTRACT.md) and [current state](./docs/STATE.md).
+    Include genuine bounded upstream libraries, generic/array/tuple/utility/loop behavior,
+    a realistic single-file demonstration with invalid variants, independent review,
+    actual Linux x64 Native AOT and all prior regressions. Complete autonomously through
+    clean committed delivery; do not silently expand into broad modules/projects/emit.
+    Direction 18 is complete. This collection contract is now satisfied; read the
+    [assessment](./docs/COLLECTIONS-ASSESSMENT.md) and
+    [durable proof](./validation/results/collections-verified.json). No subsequent
+    module/project campaign is automatically authorized.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -172,7 +184,8 @@ Later user directions, in chronological order:
    Recheck results after changes; a prior publish does not establish current success.
 
 Source-file binding completion is accepted at `de855ca`; the callable contract is also accepted
-in the delivery commit containing this entry. No active implementation campaign remains. A checkpoint can
+at `cfa6d2f`. The generic-collection contract is accepted in the delivery commit
+containing this entry. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

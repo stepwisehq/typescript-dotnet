@@ -1,0 +1,4 @@
+{"name":"G1-array-global-augmentation","text":"interface Array<T> { campaignTag?: string }\ndeclare const rows: number[];\nconst tag = rows.campaignTag;\n","profile":"Collections"}
+{"name":"G1-array-merge-parameter-conflict","text":"interface Array<T, U> { campaignItem: U }\n","profile":"Collections"}
+{"name":"G1-global-variable-collision","text":"declare var Array: number;\n","profile":"Collections"}
+{"name":"G1-object-global-augmentation","text":"interface Object { campaignFlag?: boolean }\ndeclare const value: Object;\nconst flag = value.campaignFlag;\n","profile":"Collections"}

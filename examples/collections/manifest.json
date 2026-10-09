@@ -1,0 +1,15 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "provenance": "Authored application examples selected before checker implementation; independent original-Go investigation established valid and invalid behavior.",
+  "checkingOnly": true,
+  "files": [
+    {
+      "file": "grouped-records-invalid.ts",
+      "sha256": "07f46dcba90b8c78d43cf719155836fb0cb19235e6489fcecdebc941ebd6f1de"
+    },
+    {
+      "file": "grouped-records.ts",
+      "sha256": "067abaeb3702c17488ae2364636aa275348801830b6197170f7e40b6b517e29a"
+    }
+  ]
+}

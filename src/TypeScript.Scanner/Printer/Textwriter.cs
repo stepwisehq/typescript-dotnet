@@ -66,6 +66,7 @@ internal class TextWriter
     }
 
     internal virtual void WriteKeyword(string text) => Write(text);
+    internal virtual void WriteOperator(string text) => Write(text);
     internal virtual void WriteStringLiteral(string text) => Write(text);
     // textwriter.go: token-category methods all forward to Write in this writer.
     internal virtual void WriteSpace(string text) => Write(text);

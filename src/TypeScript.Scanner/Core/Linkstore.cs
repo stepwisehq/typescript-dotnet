@@ -20,6 +20,10 @@ internal sealed class LinkStore<K, V>
 
     public bool Has(K key) => entries?.ContainsKey(key) == true;
     public V? TryGet(K key) => entries is not null && entries.TryGetValue(key, out var value) ? value : null;
+
+    // Authored read-only validation support: actual key snapshot, preserving
+    // absent versus allocated-empty storage without Get or entity ID effects.
+    internal List<K>? VerificationKeys() => entries?.Keys.ToList();
 }
 
 // One managed cell represents the stable address of one Go page slot. Value may

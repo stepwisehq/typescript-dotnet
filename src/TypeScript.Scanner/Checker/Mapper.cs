@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/mapper.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Original selected mapper models/factories, including hidden-this signature instantiation.
-// Inference mapper allocation occurs through guarded generic/conditional inference branches.
+// Original selected mapper models/factories, including generic, hidden-this and
+// fixing/nonfixing inference instantiation. Checker owns the inference state.
 #nullable disable
 namespace TypeScript.Checking;
 internal enum TypeMapperKind : int
@@ -116,8 +116,41 @@ internal sealed class CompositeTypeMapper : TypeMapperBase
 
 public sealed partial class Checker
 {
+    // Authored explicit representation of the sole checker.go:17530 deferred
+    // target closure. Invocation preserves the original captured inputs; the
+    // verification accessor below observes them without invoking the function.
+    private sealed class InferredConstraintDeferredTarget
+    {
+        internal Checker checker;
+        internal TypeScript.Scanner.Node parent;
+        internal List<Type> typeParameters;
+        internal int index;
+        internal Type Resolve() => checker.getEffectiveTypeArgumentAtIndex(parent, typeParameters, index);
+    }
+
+    private Func<Type> newInferredConstraintDeferredTarget(TypeScript.Scanner.Node parent, List<Type> typeParameters, int index)
+    {
+        var closure = new InferredConstraintDeferredTarget
+        {
+            checker = this,
+            parent = parent,
+            typeParameters = typeParameters,
+            index = index
+        };
+        return closure.Resolve;
+    }
+
+    internal (TypeScript.Scanner.Node Parent, List<Type> TypeParameters, int Index) VerificationCollectionsDeferredTarget(Func<Type> target)
+    {
+        if (target?.Target is not InferredConstraintDeferredTarget closure || target != closure.Resolve)
+            throw new InvalidOperationException("Unknown deferred target closure provenance");
+        if (!ReferenceEquals(closure.checker, this) || closure.parent == null || closure.typeParameters == null || closure.index < 0 || closure.index >= closure.typeParameters.Count)
+            throw new InvalidOperationException("Absent, foreign or inconsistent deferred target captures");
+        return (closure.parent, closure.typeParameters, closure.index);
+    }
+
     internal static bool isThisTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isThisType;
-    private static Type getNonDistributedTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isDistributed ? t.AsTypeParameter().constraint : t;
+    internal static Type getNonDistributedTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isDistributed ? t.AsTypeParameter().constraint : t;
     internal static Type getMappedType(Type t, TypeMapper mapper) => mapper.Map(getNonDistributedTypeParameter(t));
     private static TypeMapper newSimpleTypeMapper(Type source, Type target) => new SimpleTypeMapper
     {
@@ -154,7 +187,7 @@ public sealed partial class Checker
         m1 = m1,
         m2 = m2
     }.mapper;
-    private static TypeMapper newTypeMapper(List<Type> sources, List<Type> targets) => sources?.Count == 1 ? newSimpleTypeMapper(sources[0], targets[0]) : newArrayTypeMapper(sources, targets);
+    internal static TypeMapper newTypeMapper(List<Type> sources, List<Type> targets) => sources?.Count == 1 ? newSimpleTypeMapper(sources[0], targets[0]) : newArrayTypeMapper(sources, targets);
     internal TypeMapper combineTypeMappers(TypeMapper m1, TypeMapper m2) => m1 != null ? newCompositeTypeMapper(this, m1, m2) : m2;
     private Type mapTypeWithCompositeMapper(Type t, TypeMapper m1, TypeMapper m2)
     {
@@ -167,6 +200,55 @@ public sealed partial class Checker
     }
 
     private static TypeMapper mergeTypeMappers(TypeMapper m1, TypeMapper m2) => m1 != null ? newMergedTypeMapper(m1, m2) : m2;
-    private static TypeMapper prependTypeMapping(Type source, Type target, TypeMapper mapper) => mapper == null ? newSimpleTypeMapper(getNonDistributedTypeParameter(source), target) : newMergedTypeMapper(newSimpleTypeMapper(getNonDistributedTypeParameter(source), target), mapper);
+    internal static TypeMapper prependTypeMapping(Type source, Type target, TypeMapper mapper) => mapper == null ? newSimpleTypeMapper(getNonDistributedTypeParameter(source), target) : newMergedTypeMapper(newSimpleTypeMapper(getNonDistributedTypeParameter(source), target), mapper);
     private static TypeMapper appendTypeMapping(TypeMapper mapper, Type source, Type target) => mapper == null ? newSimpleTypeMapper(getNonDistributedTypeParameter(source), target) : newMergedTypeMapper(mapper, newSimpleTypeMapper(getNonDistributedTypeParameter(source), target));
+}
+
+// mapper.go:300/317. Fixing first consumes intra-expression sites before locking
+// an inference; the nonfixing mapper must leave its candidate set open.
+internal sealed class InferenceTypeMapper : TypeMapperBase
+{
+    internal Checker c;
+    internal Checker.InferenceContext n;
+    internal bool fixing;
+    internal override Type Map(Type t)
+    {
+        int count = TypeScript.Scanner.GoRuntime.Len(n.inferences);
+        for (int i = 0; i < count; i++)
+        {
+            var inference = n.inferences[i];
+            if (t == inference.typeParameter)
+            {
+                if (fixing && !inference.isFixed)
+                {
+                    c.inferFromIntraExpressionSites(n);
+                    Checker.clearCachedInferences(n.inferences);
+                    inference.isFixed = true;
+                }
+
+                return c.getInferredType(n, i);
+            }
+        }
+
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    // mapper.go:92. Later default-parameter references map to unknown during inference.
+    private TypeMapper newBackreferenceMapper(InferenceContext context, int index)
+    {
+        var forwardInferences = TypeScript.Scanner.GoRuntime.Slice(context.inferences, index);
+        var typeParameters = TypeScript.Scanner.Core.Map(forwardInferences, inference => inference.typeParameter);
+        return newArrayToSingleTypeMapper(typeParameters, unknownType);
+    }
+
+    // mapper.go:307. Both mappers share the real mutable inference context.
+    private TypeMapper newInferenceTypeMapper(InferenceContext n, bool fixing) => new InferenceTypeMapper
+    {
+        c = this,
+        n = n,
+        fixing = fixing
+    }.mapper;
 }

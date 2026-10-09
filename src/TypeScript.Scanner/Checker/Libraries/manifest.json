@@ -1,0 +1,24 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "fileOrder": "These library roots in this order, then the user script.",
+  "files": [
+    {
+      "fileName": "/lib/lib.es5.d.ts",
+      "resourceName": "TypeScript.Checking.Libraries.lib.es5.d.ts",
+      "sha256": "45cc92f8dd3df7cb07b7d19e2b2ca34e78bc005c910c1e53ee1cf9bf37910215",
+      "bytes": 218855
+    },
+    {
+      "fileName": "/lib/lib.decorators.d.ts",
+      "resourceName": "TypeScript.Checking.Libraries.lib.decorators.d.ts",
+      "sha256": "1ce14b81c5cc821994aa8ec1d42b220dd41b27fcc06373bce3958af7421b77d4",
+      "bytes": 13153
+    },
+    {
+      "fileName": "/lib/lib.decorators.legacy.d.ts",
+      "resourceName": "TypeScript.Checking.Libraries.lib.decorators.legacy.d.ts",
+      "sha256": "b3a048b3e9302ef9a34ef4ebb9aecfb28b66abb3bce577206a79fee559c230da",
+      "bytes": 1287
+    }
+  ]
+}
