@@ -16,7 +16,7 @@ public partial class Scanner
     private Kind token;
     private global::TypeScript.Scanner.TokenFlags tokenFlags;
     private string tokenValue = "";
-    private List<CommentDirective> commentDirectives = new();
+    private List<CommentDirective>? commentDirectives;
     private Dictionary<string, string>? numberCache, hexNumberCache, hexDigitCache;
     private const int mergeConflictMarkerLength = 7, maxAsciiCharacter = 127;
     private static readonly Dictionary<string, Kind> textToKeyword = new(StringComparer.Ordinal)
@@ -140,9 +140,9 @@ public partial class Scanner
         return new TextRange(this.tokenStart, this.pos);
     }
 
-    public CommentDirective[] CommentDirectives()
+    public CommentDirective[]? CommentDirectives()
     {
-        return this.commentDirectives.ToArray();
+        return this.commentDirectives?.ToArray();
     }
 
     public void ResetPos(int pos)
@@ -1286,7 +1286,7 @@ public partial class Scanner
             }
         }
 
-        this.commentDirectives.Add(new CommentDirective(new TextRange(start, end), kind));
+        (this.commentDirectives ??= new()).Add(new CommentDirective(new TextRange(start, end), kind));
     }
 
     public Kind ReScanLessThanToken()
@@ -3698,7 +3698,7 @@ public partial class Scanner
         token = default;
         tokenValue = "";
         tokenFlags = default;
-        commentDirectives = new();
+        commentDirectives = null;
     }
 
     public string Text() => GoString.ToString(text);
@@ -3718,7 +3718,7 @@ public partial class Scanner
         token = default;
         tokenFlags = default;
         tokenValue = "";
-        commentDirectives = new();
+        commentDirectives = null;
     }
 
     public ScannerState Mark() => new()
@@ -3729,7 +3729,7 @@ public partial class Scanner
         token = token,
         tokenValue = tokenValue,
         tokenFlags = tokenFlags,
-        commentDirectives = commentDirectives.ToArray(),
+        commentDirectives = commentDirectives?.ToArray(),
         skipJSDocLeadingAsterisks = skipJSDocLeadingAsterisks
     };
     public void Rewind(ScannerState state)
@@ -3740,7 +3740,7 @@ public partial class Scanner
         token = state.token;
         tokenValue = state.tokenValue;
         tokenFlags = state.tokenFlags;
-        commentDirectives = new(state.commentDirectives);
+        commentDirectives = state.commentDirectives is null ? null : new(state.commentDirectives);
         skipJSDocLeadingAsterisks = state.skipJSDocLeadingAsterisks;
     }
 
@@ -4071,7 +4071,7 @@ public sealed record ScannerState
     internal Kind token;
     internal TokenFlags tokenFlags;
     internal string tokenValue = "";
-    internal CommentDirective[] commentDirectives = [];
+    internal CommentDirective[]? commentDirectives;
 }
 
 public sealed class SkipTriviaOptions

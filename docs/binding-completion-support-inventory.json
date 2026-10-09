@@ -1,0 +1,2676 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baselineCommit": "2886d47",
+  "status": "accepted source-file binding contract B1\u2013B6; finite behavior and source-review limits explicit",
+  "files": [
+    {
+      "source": "tsc/internal/ast/symbol.go",
+      "sourceSha256": "3be43d53668f71260e6446e631210a937f3543e37646513dfc169890e148ea10",
+      "destination": "src/TypeScript.Scanner/Ast/Symbol.cs",
+      "destinationSha256AtInventory": "f242ef107b44537860f55ad8cdadce91c92b28d87bad09bb89c0d8be0fbeb9ae",
+      "reviewedScope": "all Symbol/SymbolTable fields and eight callable functions; CheckFlags remains zero in binder-only output",
+      "implementationStatus": "existing counterpart; no missing required model identified",
+      "executionStatus": "accepted applicable final campaign and retained regression gates; see acceptanceEvidence"
+    },
+    {
+      "source": "tsc/internal/ast/flow.go",
+      "sourceSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d",
+      "destination": "src/TypeScript.Scanner/Ast/Flow.cs",
+      "destinationSha256AtInventory": "a652933dac42fec6a3d81a3fcb886e1120d0e68a49f388afec40aa6f0b31da31",
+      "reviewedScope": "complete FlowFlags/FlowNode/FlowList and both synthetic node factories plus IsEmpty",
+      "implementationStatus": "existing counterpart; no missing required model identified",
+      "executionStatus": "accepted applicable final campaign and retained regression gates; see acceptanceEvidence"
+    },
+    {
+      "source": "tsc/internal/ast/ast.go",
+      "sourceSha256": "0b77e229cf09a78d57dbcf222cf3dec9fea6590aea7baec80d20e4282e674a0f",
+      "destination": "src/TypeScript.Scanner/Ast/Ast.cs",
+      "destinationSha256AtInventory": "5f4a73a8e2f7d9544d1099cb47897f2b446b73e938eaff84c3d9b178b598a56e",
+      "reviewedScope": "source-file binding state, once publication/failure and source clone/copy/update binding reset; broader file scope unchanged",
+      "implementationStatus": "existing counterpart; no missing required model identified",
+      "executionStatus": "accepted applicable final campaign and retained regression gates; see acceptanceEvidence"
+    },
+    {
+      "source": "tsc/internal/ast/ast_generated.go",
+      "sourceSha256": "b6fc40ffc5f43adbe9e0f6e1a53bd90e5c20c86ae1c738bb0ae5716bc540bb5a",
+      "destination": "src/TypeScript.Scanner/Ast/AstGenerated.cs",
+      "destinationSha256AtInventory": "64f16cfe82b8c0c325c80d60cf66326cc6596e21386d108f19e21d3d5b637701",
+      "reviewedScope": "all generated embedded binding fields and BoundFields roles/order; syntax/facts separately accepted",
+      "implementationStatus": "existing counterpart; no missing required model identified",
+      "executionStatus": "accepted applicable final campaign and retained regression gates; see acceptanceEvidence"
+    },
+    {
+      "source": "tsc/internal/ast/utilities.go",
+      "sourceSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
+      "destination": "src/TypeScript.Scanner/Ast/Utilities.cs",
+      "destinationSha256AtInventory": "f76338876234530e39a29c77657819f75d9161dfe3d04dd1490ff978b88bf9aa",
+      "reviewedScope": "atomic node/symbol IDs and lazy ordinal raw-byte tables; existing broader syntax implementation unchanged",
+      "implementationStatus": "existing counterpart; no missing required model identified",
+      "executionStatus": "accepted applicable final campaign and retained regression gates; see acceptanceEvidence"
+    }
+  ],
+  "generatedBoundPayloadCount": 85,
+  "generatedBoundFieldCount": 178,
+  "generatedFieldRoleOrderGaps": [],
+  "generatedPayloads": [
+    {
+      "payload": "Identifier",
+      "upstreamLine": 621,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 287,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "QualifiedName",
+      "upstreamLine": 670,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 322,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "EmptyStatement",
+      "upstreamLine": 799,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 385,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "IfStatement",
+      "upstreamLine": 820,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 402,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "DoStatement",
+      "upstreamLine": 869,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 427,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "WhileStatement",
+      "upstreamLine": 914,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 450,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ForStatement",
+      "upstreamLine": 959,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 473,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ForInOrOfStatement",
+      "upstreamLine": 1014,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 504,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "BreakStatement",
+      "upstreamLine": 1067,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 535,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ContinueStatement",
+      "upstreamLine": 1105,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 555,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ReturnStatement",
+      "upstreamLine": 1143,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 575,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "WithStatement",
+      "upstreamLine": 1182,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 596,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "SwitchStatement",
+      "upstreamLine": 1228,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 619,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "CaseBlock",
+      "upstreamLine": 1274,
+      "upstreamBoundFields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 642,
+      "boundMetadataFields": [
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "CaseOrDefaultClause",
+      "upstreamLine": 1318,
+      "upstreamBoundFields": [
+        {
+          "name": "FallthroughFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 665,
+      "boundMetadataFields": [
+        {
+          "name": "FallthroughFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ThrowStatement",
+      "upstreamLine": 1369,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 688,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "TryStatement",
+      "upstreamLine": 1412,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 709,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "CatchClause",
+      "upstreamLine": 1461,
+      "upstreamBoundFields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 734,
+      "boundMetadataFields": [
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "DebuggerStatement",
+      "upstreamLine": 1503,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 759,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "LabeledStatement",
+      "upstreamLine": 1524,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 776,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ExpressionStatement",
+      "upstreamLine": 1569,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 798,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "Block",
+      "upstreamLine": 1611,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 818,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "VariableStatement",
+      "upstreamLine": 1657,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 845,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "VariableDeclaration",
+      "upstreamLine": 1698,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 870,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ParameterDeclaration",
+      "upstreamLine": 1836,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 940,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "BindingElement",
+      "upstreamLine": 1895,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 974,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "MissingDeclaration",
+      "upstreamLine": 1950,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1006,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "FunctionDeclaration",
+      "upstreamLine": 1989,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1030,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ClassDeclaration",
+      "upstreamLine": 2051,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1080,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ClassExpression",
+      "upstreamLine": 2102,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1120,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "InterfaceDeclaration",
+      "upstreamLine": 2194,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1180,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "TypeAliasDeclaration",
+      "upstreamLine": 2251,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1215,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "EnumMember",
+      "upstreamLine": 2333,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1264,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "EnumDeclaration",
+      "upstreamLine": 2379,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1294,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ModuleBlock",
+      "upstreamLine": 2428,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1326,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NotEmittedStatement",
+      "upstreamLine": 2471,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1347,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NotEmittedTypeElement",
+      "upstreamLine": 2492,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1364,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ImportDeclaration",
+      "upstreamLine": 2515,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1381,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NamespaceImport",
+      "upstreamLine": 2640,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1443,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ExportAssignment",
+      "upstreamLine": 2731,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1486,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NamespaceExportDeclaration",
+      "upstreamLine": 2777,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1517,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NamespaceExport",
+      "upstreamLine": 2823,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1544,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ExportSpecifier",
+      "upstreamLine": 2913,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1585,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "CallSignatureDeclaration",
+      "upstreamLine": 2962,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1613,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ConstructSignatureDeclaration",
+      "upstreamLine": 3005,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1643,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ConstructorDeclaration",
+      "upstreamLine": 3048,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1673,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "GetAccessorDeclaration",
+      "upstreamLine": 3101,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1716,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "SetAccessorDeclaration",
+      "upstreamLine": 3154,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1764,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "IndexSignatureDeclaration",
+      "upstreamLine": 3207,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1812,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "MethodSignatureDeclaration",
+      "upstreamLine": 3252,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 1846,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "MethodDeclaration",
+      "upstreamLine": 3308,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 1885,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "PropertySignatureDeclaration",
+      "upstreamLine": 3372,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1933,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "PropertyDeclaration",
+      "upstreamLine": 3427,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1964,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "SemicolonClassElement",
+      "upstreamLine": 3482,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 1996,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ClassStaticBlockDeclaration",
+      "upstreamLine": 3505,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2013,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "KeywordExpression",
+      "upstreamLine": 3571,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2059,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NoSubstitutionTemplateLiteral",
+      "upstreamLine": 3693,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2152,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "BinaryExpression",
+      "upstreamLine": 3719,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2176,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ArrowFunction",
+      "upstreamLine": 3899,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2270,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "FunctionExpression",
+      "upstreamLine": 3954,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2315,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "ReturnFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "PropertyAccessExpression",
+      "upstreamLine": 4155,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2433,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ElementAccessExpression",
+      "upstreamLine": 4205,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2459,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "CallExpression",
+      "upstreamLine": 4257,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2484,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "MetaProperty",
+      "upstreamLine": 4351,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 2535,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ObjectLiteralExpression",
+      "upstreamLine": 4703,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2707,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "SpreadAssignment",
+      "upstreamLine": 4749,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2730,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "PropertyAssignment",
+      "upstreamLine": 4789,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2750,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ShorthandPropertyAssignment",
+      "upstreamLine": 4844,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 2782,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ConditionalTypeNode",
+      "upstreamLine": 5205,
+      "upstreamBoundFields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 2966,
+      "boundMetadataFields": [
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "MappedTypeNode",
+      "upstreamLine": 5726,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 3242,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "TypeLiteralNode",
+      "upstreamLine": 5781,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 3276,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "NamedTupleMember",
+      "upstreamLine": 5858,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 3315,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "FunctionTypeNode",
+      "upstreamLine": 6024,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 3399,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ConstructorTypeNode",
+      "upstreamLine": 6063,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 3433,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "JsxAttributes",
+      "upstreamLine": 6391,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 3621,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "JsxAttribute",
+      "upstreamLine": 6647,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 3767,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "JsxSpreadAttribute",
+      "upstreamLine": 6693,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 3791,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "JSDocSignature",
+      "upstreamLine": 7944,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        }
+      ],
+      "counterpartLine": 4480,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ModuleDeclaration",
+      "upstreamLine": 8036,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable"
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node"
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode"
+        }
+      ],
+      "counterpartLine": 4530,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "Locals",
+          "metadataType": "table"
+        },
+        {
+          "name": "NextContainer",
+          "metadataType": "node"
+        },
+        {
+          "name": "EndFlowNode",
+          "metadataType": "flow"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ImportEqualsDeclaration",
+      "upstreamLine": 8093,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4574,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ExportDeclaration",
+      "upstreamLine": 8144,
+      "upstreamBoundFields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode"
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4608,
+      "boundMetadataFields": [
+        {
+          "name": "FlowNode",
+          "metadataType": "flow"
+        },
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ImportClause",
+      "upstreamLine": 8243,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4668,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "ImportSpecifier",
+      "upstreamLine": 8292,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4696,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        },
+        {
+          "name": "LocalSymbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "TypeParameterDeclaration",
+      "upstreamLine": 8496,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4807,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    },
+    {
+      "payload": "JSDocTypeLiteral",
+      "upstreamLine": 8597,
+      "upstreamBoundFields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol"
+        }
+      ],
+      "counterpartLine": 4859,
+      "boundMetadataFields": [
+        {
+          "name": "Symbol",
+          "metadataType": "symbol"
+        }
+      ],
+      "reviewStatus": "exact flattened binding-field role/order match; behavioral review pending systematic binding gate"
+    }
+  ],
+  "dependencyBoundary": {
+    "included": "single SourceFile binder state and graph identity; existing syntax helpers/diagnostics/raw scanner APIs",
+    "excluded": "checker/cache/type or resolver expansion, cross-file merging/module resolution, actual emit/transforms",
+    "adaptations": [
+      "Go map field slots -> nullable SymbolTable reference; missing-key getter returns null",
+      "Go pointer graph nodes and list cells -> managed reference classes",
+      "atomic.Uint64 -> atomic long storage with ulong interpretation",
+      "sync.Once -> non-reentrant SemaphoreSlim with attempted/completed flags; failure is done but not bound",
+      "arena allocation -> AOT-safe new(), no pooling or reflection"
+    ]
+  },
+  "verificationObligations": [
+    "nil versus allocated-empty table; same slot identity across GetMembers/GetExports/GetLocals",
+    "shared Symbol ownership versus genuinely shared table slots, with source reachability classification",
+    "shared FlowList.Next tails and reduce snapshots; same FlowNode dedup identity",
+    "success/failure concurrent BindOnce, partial state, no retry, last-write publication",
+    "shallow clone/changed update binding reset versus unchanged update identity",
+    "ScriptKind and declaration-file/module/JS JSDoc/recovery cases; raw keys/generated IDs",
+    "binder-only CheckFlags remains zero"
+  ],
+  "identityGapAssessment": {
+    "allocatedEmptyTables": {
+      "status": "actual pinned-Go production witness observed by verifier",
+      "input": "class {}",
+      "path": "declareClassLikeDeclaration -> declareSymbol(GetLocals(SourceFile)) -> InternalSymbolNameMissing branch allocates Symbol but skips table insertion; class Exports receives prototype",
+      "nonWitnessCandidates": [
+        "type T = {} (nil-state control)",
+        "const = 1 (no declarations/tables)",
+        "interface I { : number; } (recovered nonmissing name)"
+      ]
+    },
+    "distinctTableOwnerAliasing": {
+      "status": "source-producer absence proof independently reviewed by scanner; ordinary coverage remains unobserved by design",
+      "scope": "fresh parse -> BindSourceFile; no checker/external/prebound table injection",
+      "proof": [
+        "parser/generated fresh payload table slots start nil",
+        "Ast.GetSymbolTable allocates a fresh map per nil slot and only returns that same slot",
+        "binder.go whole Members assignments at 1003 and 1638 allocate fresh maps; no table-to-table assignments",
+        "CJS promotion at1050 inserts shared Symbol values into a separately allocated table, not another table reference",
+        "multiple Nodes referencing one Symbol share that single table owner and do not establish distinct-owner alias"
+      ]
+    },
+    "sharedFlowListTails": {
+      "status": "actual pinned-Go production witness observed by verifier; source producer independently reviewed by scanner",
+      "input": "(function(){try{if(a)return 1;x=2;}finally{x=3;}return 4;})();z;",
+      "observation": "seven FlowList cells; one cell has two incoming edges from chain Next and reduce snapshot; two FlowReduceLabelData payloads",
+      "path": "combineFlowLists(head,tail) copies head cells and retains exact tail; IIFE return reduce snapshot publishes that return list; final z retains relevant flow"
+    }
+  },
+  "sharedAssertionSource": "validation/BindingCompletion.Checks/BindingSupportChecks.cs",
+  "sharedAssertionGroups": 8,
+  "sharedAssertionStatus": "eight support groups passed in xUnit and actual Linux x64 Native AOT; independent original Go fixtures",
+  "requiredNonAstDependencies": [
+    {
+      "family": "core-combinators",
+      "requiredAPIs": [
+        "core.AppendIfUnique",
+        "core.IfElse",
+        "core.OrElse",
+        "core.Some"
+      ],
+      "scopeAndAdaptations": "Required pointer-comparable Node/Symbol calls preserve null, duplicate identity, eager argument evaluation and ordered early-stop predicates. Binder Some predicates do not mutate traversed lists; no general callback-mutation parity claim for LINQ Any. Append clones managed storage when growing; backing-array capacity/alias semantics excluded.",
+      "reviewAndVerificationDisposition": "source-body and binder caller review; old binder/foundation acceptance; new merge/flow/diagnostic cases pending",
+      "sources": [
+        {
+          "path": "tsc/internal/core/core.go",
+          "sha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Core/Core.cs",
+          "sha256AtInventory": "46fcc7dab6a7779e954fe782ef7ce9e834e6a2e337568fb00497214faf3b6b71"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+          "sha256AtInventory": "c3bddeba3b5a7535b5917f8aaf602b9752b2a58c8cae8ddb637b0df9422ece8f"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "pattern",
+      "requiredAPIs": [
+        "core.TryParsePattern",
+        "Pattern.IsValid"
+      ],
+      "scopeAndAdaptations": "Complete required text/star-index parsing and zero-value invalidity. Matches/MatchedText/FindBestPatternMatch are not called by binder and remain excluded from this closure. Original overlapping-match test cannot be counted as ported for parsing-only support.",
+      "reviewAndVerificationDisposition": "source-body review; new ambient-pattern binder observations pending",
+      "sources": [
+        {
+          "path": "tsc/internal/core/pattern.go",
+          "sha256": "53c0fc3df09cb967338b3390c6f891089694d4976923acd1b6ba0765cbd33651"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Core/Pattern.cs",
+          "sha256AtInventory": "9c0c4192ff439d06fa5a74c66ef48ad5b9e8b344d3fd81803b77a77fd5614245"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "identity-set",
+      "requiredAPIs": [
+        "collections.Set[Symbol].Has",
+        "collections.Set[Symbol].Add"
+      ],
+      "scopeAndAdaptations": "Private notConstEnumOnlyModules becomes HashSet<Symbol>; Symbol uses reference equality. Lazy Go map versus eager empty managed set is unobservable private storage; no iteration order consumed. Other Set APIs not required.",
+      "reviewAndVerificationDisposition": "source-call/write review; module merge probes pending",
+      "sources": [
+        {
+          "path": "tsc/internal/collections/set.go",
+          "sha256": "2de76c916ef54b6e0746d724827e74904be33fc82f7871913384e593fa0bbd46"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Binder/Binder.cs",
+          "sha256AtInventory": "de92bd927f76cb62f51aca4fbf255e1e436ac2f55381a42635ee8367cc686f5d"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "arenas",
+      "requiredAPIs": [
+        "core.Arena[Symbol].New",
+        "core.Arena[FlowNode].New",
+        "core.Arena[FlowList].New",
+        "core.Arena[Node].NewSlice1"
+      ],
+      "scopeAndAdaptations": "AOT-safe new() provides distinct zero-state managed graph objects; singleton declarations use List<Node>. Pool/chunk reuse is omitted, published reference identity retained. No reflection allocation or checker arena expansion.",
+      "reviewAndVerificationDisposition": "source allocation review; old binder acceptance; new synthetic-flow/file-isolation/native probes pending",
+      "sources": [
+        {
+          "path": "tsc/internal/core/arena.go",
+          "sha256": "458d8ec91149253a731ec3dee8f9fad77e16566aa4877fe294ad9c7e723f6222"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Runtime/BinderCompat.cs",
+          "sha256AtInventory": "065c7f0ba28fdb686fd80f747c73e41b973a47164564c43e0902f69a1c3e8b8b"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+          "sha256AtInventory": "c3bddeba3b5a7535b5917f8aaf602b9752b2a58c8cae8ddb637b0df9422ece8f"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "debug",
+      "requiredAPIs": [
+        "debug.Assert"
+      ],
+      "scopeAndAdaptations": "Nonconditional assertion executes in Release/AOT. Binder uses its sole computed-name assertion; panic-equivalent managed exception is not silently ignored. Generic debug/package APIs excluded.",
+      "reviewAndVerificationDisposition": "source-body review; retained foundation proof",
+      "sources": [
+        {
+          "path": "tsc/internal/debug/debug.go",
+          "sha256": "dd3aca7541d9f41c2e40629d27d768c393d5f3d134f341388e89ebabb34a092d"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Runtime/ScannerCompat.cs",
+          "sha256AtInventory": "ad63a8039ef662229944c0e968037bdb55c8abb127a1047e74a40ec7f43a23d0"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "slice-index",
+      "requiredAPIs": [
+        "slices.Index"
+      ],
+      "scopeAndAdaptations": "Required Node parameter search maps to List.IndexOf with reference-equal Nodes and null -> -1. No source-list mutation during this call. No general slices package port.",
+      "reviewAndVerificationDisposition": "source-body/caller review; broad binder mode corpus pending",
+      "sources": [],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+          "sha256AtInventory": "c3bddeba3b5a7535b5917f8aaf602b9752b2a58c8cae8ddb637b0df9422ece8f"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "decimal-identity-format",
+      "requiredAPIs": [
+        "strconv.Itoa",
+        "strconv.FormatUint"
+      ],
+      "scopeAndAdaptations": "Itoa(long) preserves signed platform-int interpretation of atomic uint64 ID; invariant decimal conversion, FormatUint binder branch base10 only. Internal FE prefix is raw byte, not UTF8 encoding. Other bases not required.",
+      "reviewAndVerificationDisposition": "source-body/caller review; new isolated 64-bit Go ID controls pending",
+      "sources": [],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Runtime/BinderCompat.cs",
+          "sha256AtInventory": "065c7f0ba28fdb686fd80f747c73e41b973a47164564c43e0902f69a1c3e8b8b"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "raw-scanner-boundaries",
+      "requiredAPIs": [
+        "scanner.DeclarationNameToString",
+        "scanner.GetSourceTextOfNodeFromSourceFile",
+        "scanner.GetErrorRangeForNode",
+        "scanner.GetRangeOfTokenAtPosition",
+        "scanner.GetIdentifierToken",
+        "scanner.TokenToString",
+        "Scanner.CommentDirectives lifecycle"
+      ],
+      "scopeAndAdaptations": "Existing internal byte-string adapters preserve raw source/name bytes and byte spans; public decoded/byte APIs remain unchanged. TokenToString actual bounds/preconditions and raw JSDoc/source ranges already reviewed foundation. No AST factory/compiler traversal expansion. Campaign repair preserves actual nil storage/getter/reset/text/Mark/Rewind; nullable public array explicitly distinguishes absence from allocated storage. Only historical JSON projection normalizes absence.",
+      "reviewAndVerificationDisposition": "retained foundation evidence, initial broad binding comparison, repaired 26 managed graphs and original-Go sixteen-stage directive lifecycle all exact; final native gate pending",
+      "sources": [
+        {
+          "path": "tsc/internal/scanner/scanner.go",
+          "sha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df"
+        },
+        {
+          "path": "tsc/internal/scanner/utilities.go",
+          "sha256": "61ff9d7fd717a2112b15850aabfeeab249186f12a35e4fbf20f615f7865768f0"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Scanner/Scanner.cs",
+          "sha256AtInventory": "7020aa8ffeb5f06d2e716ea97ecc468ceee15da630ac8eb3062fe3e15645e077"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Scanner/Utilities.cs",
+          "sha256AtInventory": "826ae6bdef8ce2c9d2c0126c248d05439b0e0f500cec1a80b581a7e84104b98f"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Runtime/GoString.cs",
+          "sha256AtInventory": "459d7255e73c6d2c377e2bd3eaf72f63e69e608473a5674c52e9885c9678df70"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Runtime/ScannerCompat.cs",
+          "sha256AtInventory": "ad63a8039ef662229944c0e968037bdb55c8abb127a1047e74a40ec7f43a23d0"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    },
+    {
+      "family": "diagnostics",
+      "requiredAPIs": [
+        "ast.NewDiagnostic",
+        "Diagnostic.AddRelatedInfo",
+        "SourceFile.SetBindDiagnostics"
+      ],
+      "scopeAndAdaptations": "Full pinned default-English metadata already present. Preserve raw args, owner/span, ordering, nullable/empty lists and related/chain/flags; binder append does not sort/dedup. No localized catalog/project diagnostics expansion.",
+      "reviewAndVerificationDisposition": "retained foundation diagnostic shared controls; new opt-in full binder metadata comparison pending",
+      "sources": [
+        {
+          "path": "tsc/internal/ast/diagnostic.go",
+          "sha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4"
+        },
+        {
+          "path": "tsc/internal/diagnostics/diagnostics.go",
+          "sha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238"
+        },
+        {
+          "path": "tsc/internal/diagnostics/diagnostics_generated.go",
+          "sha256": "c14d6d04dbd3ad39cb2871874a655b5fd48b391abbd995c0a2023314db33cf6f"
+        }
+      ],
+      "destinations": [
+        {
+          "path": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
+          "sha256AtInventory": "a40f23b34644ba63d6e4bc319333ac822cd76ae4fdfad02ac0df11f1ef47ae8d"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
+          "sha256AtInventory": "eda6146bdfe3a97422067c4147b27a1024f3d58c18b7fd5feb5ab1d6eac939f9"
+        },
+        {
+          "path": "src/TypeScript.Scanner/Diagnostics/DiagnosticsGenerated.cs",
+          "sha256AtInventory": "87ac6cd8b27d90d69d1b331aed8bd93beec4a4c2640a45a9a24aec6adbcf1d36"
+        }
+      ],
+      "retainedEvidence": [
+        "validation/results/foundation-verified.json",
+        "validation/results/binder-verified.json"
+      ]
+    }
+  ],
+  "lastVerification": {
+    "build": "Coordinated Release library/completion checks/adapter, Binder.Tests, Scanner.Tests and legacy Scanner.Validation: zero warnings/errors",
+    "managedSharedGroups": 8,
+    "managedTargetedGraphs": 26,
+    "broadManaged": "17722/17723 initial exact; sole private-name lexical-owner observer defect corrected; richer12nilchannels exposed actual CommentDirectives source defect repaired",
+    "requiredSupportAlgorithmDefects": "Scanner.CommentDirectives nil storage/getter lifecycle repaired by scanner owner; no missing binder AST/symbol/flow model found",
+    "finalNative": "pending",
+    "managedHelperControlGroups": 6,
+    "scannerUtilityTests": 9
+  },
+  "payloadCoverageReconciliation": {
+    "document": "docs/binding-completion-payload-coverage.md",
+    "generatedPayloadClasses": 85,
+    "generatedBoundFieldCells": 178,
+    "coldBroadPlusTargetedPayloadClasses": 81,
+    "coldBroadPlusTargetedPresentStaticCells": 172,
+    "targetedSavedExactObservedClasses": 29,
+    "targetedSavedExactObservedFieldCells": 59,
+    "aggregateStateCountsAreNotPerPayloadStateCoverage": true,
+    "absentColdClasses": [
+      "NotEmittedStatement",
+      "NotEmittedTypeElement",
+      "JSDocSignature",
+      "JSDocTypeLiteral"
+    ],
+    "remainingStateEvidence": "JSDocSignature has three all-null cells observed twice in historical warm-JSDoc binder fixtures; JSDocTypeLiteral.Symbol has no saved binding-state witness identified; final per-cell saved-fixture reconciliation verifier-owned"
+  },
+  "acceptanceEvidence": "validation/results/binding-completion-verified.json"
+}

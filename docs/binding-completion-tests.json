@@ -1,0 +1,346 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "2886d47",
+  "phase": "verified-native-exact-source",
+  "countingRules": [
+    "Original function count is separate from table rows, seed arguments and input units.",
+    "Benchmark execution is not correctness evidence.",
+    "Retained assertion bodies preserve their original provenance; new binder model/helper observations are authored differential checks.",
+    "Compiler/conformance/transpile files are input-only reuse, not original compiler baseline passes."
+  ],
+  "files": [
+    {
+      "path": "tsc/internal/binder/binder_test.go",
+      "sha256": "ba1e11e91ba01dd363c87f0c5065afd26c4a6f6550d19debc6a0d89db3ba690c",
+      "functions": [
+        {
+          "name": "BenchmarkBind",
+          "kind": "benchmark",
+          "line": 15,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/ast/diagnostic_test.go",
+      "sha256": "d6dd63bd1539140c06bc2f2cf9aabf8660277d04f3cc5748aca3b43b874a387c",
+      "functions": [
+        {
+          "name": "TestDiagnosticsCollectionDeduplicatesExactDiagnosticsOnAdd",
+          "kind": "test",
+          "line": 12,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestDiagnosticsCollectionPreservesDistinctAdHocMessages",
+          "kind": "test",
+          "line": 44,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestDiagnosticsCollectionGetsDiagnosticsForEquivalentSourceFile",
+          "kind": "test",
+          "line": 59,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestExternalDiagnosticIdentity",
+          "kind": "test",
+          "line": 81,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/ast/deepclone_test.go",
+      "sha256": "bb2581d818ab6d8969cc6322fae9fd1bb9f1c174eba6b1e49e22e87e200d3b5a",
+      "functions": [
+        {
+          "name": "TestDeepCloneNodeSanityCheck",
+          "kind": "test",
+          "line": 25,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/ast/positionmap_test.go",
+      "sha256": "50cdf0dfff8455844329d6f80526b0a64427436169d6a50787424e1ba5949c62",
+      "functions": [
+        {
+          "name": "TestPositionMapASCII",
+          "kind": "test",
+          "line": 12,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestPositionMapTwoByte",
+          "kind": "test",
+          "line": 29,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestPositionMapFourByte",
+          "kind": "test",
+          "line": 69,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestPositionMapMultipleNonASCII",
+          "kind": "test",
+          "line": 93,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestPositionMapLoneSurrogateSentinel",
+          "kind": "test",
+          "line": 123,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "TestPositionMapRoundtrip",
+          "kind": "test",
+          "line": 139,
+          "disposition": "retained-foundation-assertion-port",
+          "reason": "Original syntax/diagnostic assertions already run in shared xUnit/native foundation bodies. Retained regression, not a new binder-specific assertion."
+        },
+        {
+          "name": "BenchmarkComputePositionMap_ASCII",
+          "kind": "benchmark",
+          "line": 155,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        },
+        {
+          "name": "BenchmarkComputePositionMap_NonASCII",
+          "kind": "benchmark",
+          "line": 165,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        },
+        {
+          "name": "BenchmarkUTF8ToUTF16_ASCII",
+          "kind": "benchmark",
+          "line": 175,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        },
+        {
+          "name": "BenchmarkUTF8ToUTF16_NonASCII",
+          "kind": "benchmark",
+          "line": 188,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        },
+        {
+          "name": "BenchmarkUTF16ToUTF8_NonASCII",
+          "kind": "benchmark",
+          "line": 201,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        },
+        {
+          "name": "BenchmarkComputePositionMap_CheckerTS",
+          "kind": "benchmark",
+          "line": 215,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/ast/utilities_bench_test.go",
+      "sha256": "b696bab342fdd4e23d042e8d66f29ac32c1f6ddbb14095227e21eeb577ae6cea",
+      "functions": [
+        {
+          "name": "BenchmarkGetCombinedFlags",
+          "kind": "benchmark",
+          "line": 14,
+          "disposition": "excluded-performance-not-assertion",
+          "reason": "Original benchmark performs timing without correctness assertions; no benchmark pass is claimed."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/core/pattern_test.go",
+      "sha256": "52d6450c846dae0cf1793de8aeba17220a3c1425ab385b438a448ae0dfbfa6b1",
+      "functions": [
+        {
+          "name": "TestPatternOverlappingMatch",
+          "kind": "test",
+          "line": 5,
+          "disposition": "outside-source-file-binding-closure",
+          "reason": "Pattern-overlap matching is a resolver/global module relationship test; binder records TryParsePattern validity/text/star index, not overlapping module matching."
+        }
+      ]
+    },
+    {
+      "path": "tsc/internal/core/bfs_test.go",
+      "sha256": "47e51e2791f8479304955c6ef1476e903dd684d3f3d649b9fde49c5c5ab44dfd",
+      "functions": [
+        {
+          "name": "TestBreadthFirstSearchParallel",
+          "kind": "test",
+          "line": 13,
+          "disposition": "outside-source-file-binding-closure",
+          "reason": "Parallel BFS utility is not called by the pinned source-file binder; no full core API parity claim."
+        }
+      ]
+    }
+  ],
+  "packagesWithoutDirectTests": [
+    "tsc/internal/ast/symbol.go",
+    "tsc/internal/ast/flow.go",
+    "SourceFile.BindOnce and binder-owned fields in tsc/internal/ast/ast.go"
+  ],
+  "compilerInputs": {
+    "manifest": "validation/foundation-corpus/source-manifest.json",
+    "requests": "validation/foundation-corpus/source-requests.jsonl.gz",
+    "requestsCount": 17723,
+    "disposition": "input-only-reuse",
+    "originalCompilerAssertions": "later-stage-blocked",
+    "originalSplitter": "Reused accepted extraction; no repeat inventory or source transformation.",
+    "executionStatus": "17723/17723 exact native cold-binding comparisons; input reuse only"
+  },
+  "historicalEvidence": [
+    "validation/results/binder-verified.json",
+    "validation/results/foundation-verified.json"
+  ],
+  "executionStatus": "Final guarded gate passed; all selected original retained assertions, authored shared checks, targeted and broad cold binding comparisons passed with no skips or source/asset/historical drift.",
+  "additionalObservations": {
+    "sharedSupportGroups": 8,
+    "exportedBinderHelperGroups": 4,
+    "additionalRuntimeObserverGroups": 3,
+    "targetedGraphCases": 26,
+    "broadColdBindingInputCases": 17723,
+    "helperRows": {
+      "privateNameRawSignedIds": 15,
+      "strictPrologues": 12,
+      "valueDeclarationSequences": 9,
+      "containerModes": 3,
+      "directiveLifecycleStages": 16,
+      "seededObserverSensitivityGraphs": 1,
+      "generatedNameOrderNegativeControls": 2
+    },
+    "disposition": "authored-independent-Go-differential; shared xUnit/native assertion bodies",
+    "naturalWitnesses": {
+      "allocatedEmptyTables": "class {}",
+      "sharedFlowListTail": "IIFE try/finally/return with a following use"
+    },
+    "seededAliasWitness": "authored observer/API sensitivity only; source producer closure prevents distinct fresh table slots sharing a table",
+    "executionStatus": "passed-xUnit-and-native-shared-bodies"
+  },
+  "originalFunctionCounts": {
+    "excluded-performance-not-assertion": 8,
+    "retained-foundation-assertion-port": 11,
+    "outside-source-file-binding-closure": 2
+  },
+  "coverage": {
+    "observedBinderDiagnosticCodes": [
+      1100,
+      1101,
+      1102,
+      1184,
+      1210,
+      1212,
+      1213,
+      1214,
+      1215,
+      1262,
+      1314,
+      1315,
+      1316,
+      1344,
+      1359,
+      1369,
+      1550,
+      2300,
+      2451,
+      2528,
+      2567,
+      2668,
+      2752,
+      2753,
+      5061,
+      6204,
+      18012
+    ],
+    "unobservedBinderDiagnosticCodes": [
+      1250,
+      1251,
+      1252
+    ],
+    "unobservedReason": "Only private strict-mode helper has no binder callsites; independently reviewed source proof.",
+    "bindingFlowAtomicBitsObserved": 13,
+    "historicalFixtures": "All prior corpus/results bytes retained.",
+    "nativeBroadCounts": {
+      "requests": 17723,
+      "exact": 17723,
+      "symbols": 416118,
+      "tables": 147932,
+      "flows": 286218,
+      "flowLists": 46565,
+      "nodes": 2601667,
+      "allocatedEmptyTables": 28,
+      "nilBindingDiagnosticChannels": 17324,
+      "bindingDiagnostics": 1423,
+      "sharedDistinctTableSlots": 0,
+      "sharedFlowListReferences": 4
+    },
+    "generatedPayloadsObserved": 81,
+    "generatedPayloadsTotal": 85,
+    "generatedFieldsInObservedPayloads": 172,
+    "generatedFieldsTotal": 178,
+    "fieldStateReconciliation": "docs/binding-completion-field-coverage.json; exact per-cell null/ref states derive from stored targeted/historical outputs, not broad aggregate inference.",
+    "sourceDispositionReview": "docs/binding-completion-payload-coverage.md; absent raw attached JSDoc and synthetic NotEmitted payloads explicitly distinguished."
+  },
+  "finalEvidence": {
+    "path": "validation/results/binding-completion-verified.json",
+    "sourceSha256": "1a5912ce84ce0908bb5d06365de4742fb74d0ae27335572eb55ff04e6011ee87",
+    "verificationAssetsSha256": "4083b40e72903cded2a321ba26738b5ce256bd3ed7a39297934174b1e41cc080",
+    "elapsedSeconds": 480.539,
+    "xUnitCases": 22972,
+    "xUnitSubsystemCases": {
+      "scanner": 3838,
+      "parser": 18709,
+      "binder": 163,
+      "checker": 262
+    },
+    "nativeSupportGroups": 8,
+    "nativeHelperGroups": 7,
+    "nativeTargetedGraphCases": 26,
+    "nativeBroadColdBindingCases": 17723,
+    "foundationSharedNativeCases": 3153,
+    "foundationFiniteParserSeeds": 17633,
+    "foundationBroadSyntaxCases": 17723,
+    "foundationBroadScannerCases": 17723,
+    "completeOriginalGoNumericBaselines": [
+      156,
+      236
+    ],
+    "historicalBinderCases": 118,
+    "historicalSemanticCases": {
+      "dataTypes": 92,
+      "objects": 43,
+      "scalars": 45
+    },
+    "nativePlatform": "Linux x86-64 Native AOT ELF; libm and libc runtime dependencies",
+    "toolchain": {
+      "dotnetSDK": "10.0.401",
+      "go": "go1.27.1 linux/amd64",
+      "nativeCompiler": "Local extracted GCC 15.2.0 (Ubuntu 15.2.0-16ubuntu1), via tools/.cache/native/bin/cc; system clang unavailable"
+    },
+    "firstFailedGate": "Retained observer-only order/counter leak: 34.647s, 161/162 binder cases, no drift. Independent preserved-old failure/repaired-new pass controls are embedded in final proof."
+  }
+}

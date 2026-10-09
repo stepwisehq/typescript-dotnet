@@ -1,56 +1,51 @@
 # Current project state
 
-**No active campaign after this delivery: the fixed foundation contract is accepted.**
-The scanner/parser/syntax-AST completion campaign built on committed baseline
-`b6b22b9`; no callable work began. Upstream remains
-`fed0bf24149fb1ed36039212648bafdafc1ea10e`. Do not update it silently.
+**Source-file binding completion accepted; no active implementation campaign.**
+B1–B6 of the [fixed contract](./BINDING-COMPLETION-CONTRACT.md) passed actual Linux
+x64 Native AOT and all retained regressions. Read the
+[assessment](./BINDING-COMPLETION-ASSESSMENT.md),
+[reproduction instructions](./BINDING-COMPLETION-VERIFICATION.md) and
+[durable proof](../validation/results/binding-completion-verified.json).
+The delivery commit contains this state; inspect `git log -1` and working-tree status.
 
-Read the [foundation assessment](./FOUNDATION-ASSESSMENT.md),
-[fixed contract](./FOUNDATION-CONTRACT.md),
-[test inventory](./foundation-test-catalog.json),
-[source map](../source-map.json) and
-[verification instructions](./FOUNDATION-VERIFICATION.md).
-The [exact mandate](./FOUNDATION-PROMPT.md) and original prompts remain preserved
-through [START-HERE](../START-HERE.md). No new subsystem is authorized by resumption.
+Upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e`; foundation baseline is
+`2886d47`. Historical fixture and proof bytes remain unchanged. The exact
+[binding mandate](./BINDING-COMPLETION-PROMPT.md),
+[initial mandate](./INITIAL-PROMPT.md) and directions in
+[START-HERE](../START-HERE.md) govern any resumption. Do not restart completed work.
 
-## Acceptance evidence
+## Accepted result
 
-The [frozen proof](../validation/results/foundation-verified.json) records actual
-Linux x64 Native AOT publication and execution, 231.230 seconds, zero source/asset
-drift, and all earlier binder/checker/stage regressions. Other platforms are unverified.
+- All 167 binder functions accounted for, with fresh managed allocation/pool-return
+  adaptations. Binder algorithms unchanged; Symbol counterpart now full-file ported.
+- Fixed actual scanner comment-directive nil-state fidelity. Strengthened cold
+  graphs, source metadata, diagnostics, lifecycle and strict generated-name observers.
+- Native: 17,723/17,723 broad graphs, 26/26 targeted graphs, eight support and seven
+  helper/control groups. All 27 reachable binder diagnostic codes and 13 flow bits.
+- xUnit: 22,972 passed, no skips (3,838 scanner; 18,709 parser; 163 binder; 262 checker).
+  Foundation and all accepted semantic native regressions pass, including full Go
+  numeric finite baselines. Final guarded run 480.539 seconds; no source/asset drift.
+- Platform: Linux x64, .NET SDK 10.0.401, Go 1.27.1, existing GCC 15.2.0 fallback.
+  No other platform verified. No new package install or user decision required.
 
-- 22,930 xUnit **cases**, zero skipped: 17,633 original no-panic parser seeds plus
-  5,297 other original table rows, historical differentials and authored checks.
-- 3,153 shared assertion bodies and 17,633 finite parser seeds pass Native AOT.
-- All 17,723 native parser graphs and 17,723 ordinary scans match pinned Go exactly.
-- 39 original test/fuzz functions preserve assertions; one English-only test is
-  adapted. Remaining inventoried functions have explicit exclusions or later-stage
-  blockers. Do not equate executed case totals with handwritten upstream tests.
-- [Separate complete Go numeric seed replay](../validation/results/foundation-go-numeric-fuzz-verified.json)
-  supplements the main gate's short numeric fuzz smoke invocations.
+## Limits and next work
 
-Source SHA: `d14cb48750c8ce35f0767f97885b01f9b0d63c853390f6cfb4f9b3f4cb50fd67`.
-Verification assets SHA: `5aea5174cca50b6fb7d3b62af93c5056781dedeec5dfd79b11554dbedfe3e526`.
-Historical fixtures and proof records remain unchanged. Any future implementation
-or verification-asset change needs appropriate new verification, not this old proof.
+Source-file binding includes malformed input, five modes, scopes/symbols/merges,
+complete binder diagnostics/flags and graph relationships. Cross-file/global merging,
+checker resolution/types, project/module infrastructure, emit/transforms and
+incremental AST repair remain outside. Raw attached JSDoc uses reparsed ordinary
+nodes for binding. See [payload limits](./binding-completion-payload-coverage.md):
+81/85 generated payloads and 172/178 cells observed cold; no exhaustive per-cell
+null/reference or branch coverage claim. Three unused-helper diagnostic codes and
+incremental RepopulateInfo retain explicit reviewed dispositions.
 
-## Boundaries and next work
+Callable-type checking is ready to resume as the next substantial bounded campaign,
+but is not implemented or newly authorized by this completed mandate. Wait for the
+next direction; do not automatically broaden checking or update upstream.
 
-The accepted surface covers scanning, initial parsing in JS/JSX/TS/TSX/JSON modes,
-parseable syntax nodes, ordinary helpers/factories/visitors/clones/full facts,
-positions and default-English syntax diagnostics. Four defensive diagnostics remain
-unobserved with independently reviewed source arguments: 1513, 1140, 1179 and 1439.
-See the assessment for callback/storage, localization and comparison limitations.
-
-Prior [data-type checking](./DATA-TYPES-ASSESSMENT.md) remains accepted within its
-narrow no-library, single-file boundary. Binder/checker-owned state, transformations,
-projects/module resolution, emit and language services are not completed here.
-Recommended next mandate: finish and systematically verify source-file binding,
-then resume callable capability work. Wait for the user's next bounded instruction.
-
-Three GPT-6.1 Sol agents handled implementation/investigation/testing and independent
-reviews with disjoint ownership. Coordinator owned scope, integration and acceptance;
-main-session model metadata could not independently be confirmed. Owner recovery
-notes and reviews are under [progress](./progress/). No database/workflow framework,
-package install or additional human approval was needed. Token/cost telemetry was
-unavailable; measured gate durations are not labor or subscription-cost estimates.
+Three existing explicitly selected GPT-6.1 Sol agents handled core/support/verification
+and independent reviews; root owned decisions/acceptance. Main-session model metadata
+remained unavailable for independently confirming Astra. All agent writes are done.
+Relevant owner notes/reviews use `binding-completion-` in [progress](./progress/).
+The earlier [foundation state](./FOUNDATION-STATE.md) remains historical context.
+Token/billing telemetry is unavailable; measured validation elapsed time is not cost.

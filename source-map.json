@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted defined scanner/parser/syntax-AST foundation contract and prior bounded source-file binder/scalar/object/named-data checking checkpoints. Later compiler subsystems remain partial or excluded.",
+  "checkpoint": "Accepted defined scanner/parser/syntax-AST and fresh source-file binding completion contracts, plus prior bounded scalar/object/named-data checking checkpoints. Later compiler subsystems remain partial or excluded.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -12,7 +12,9 @@
       "parserCheckpointScope": "All lexical scanner functions, pure text/line helpers, comment range enumeration and parser-required GetTokenPosOfNode; named remaining AST/source-file helpers excluded. Raw parser adapters preserve byte-string semantics.",
       "dataTypesCheckpointScope": "Lexical scanner and pure text/line/comment helpers; parser-required GetTokenPosOfNode; source-file token/error-range scanning and ECMA line-start/line/end lookups required by binding. Four named full coordinate-mapping functions remain excluded.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionRepair": "Preserve actual nil comment-directive storage/getter state across construction, reset, text reuse and Mark/Rewind; legacy empty-array JSON projection stays in authored harness."
     },
     {
       "upstream": "tsc/internal/scanner/regexp.go",
@@ -69,7 +71,9 @@
       "parserCheckpointScope": "Tagged syntax nodes, source-file parse metadata/diagnostics, node lists, parser factory support/accessors and JSDoc registration/cache. Compiler symbols, flow/service state, position-map API and general public transform facts excluded. Private JSX fact projection preserves module-detection pruning.",
       "dataTypesCheckpointScope": "Tagged syntax nodes, node lists, factory/accessor/parser metadata and JSDoc registration/cache; exact declaration/export/local/flow embedded bases and forwards; SourceFile symbol/local/container state, binding diagnostics/count/pattern/global-export metadata, synchronized BindOnce/IsBound and lazy ECMALineMap. Static BoundFields separates binding state from syntax metadata. Checker/service state, content-mapper/position-map API and general public transform facts remain excluded; private JSX projection preserves module-detection pruning.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -303,7 +307,9 @@
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
       "dataTypesCheckpointScope": "190 typed syntax payloads and 192 New factories with syntax Update/Clone/ForEachChild/VisitEachChild. Exact embedded Symbol/LocalSymbol/Locals/NextContainer/FlowNode/EndFlowNode/ReturnFlowNode/FallthroughFlowNode fields and static BoundFields metadata retained where upstream defines them; managed flattened interfaces replace Go embedding. Checker-owned SyntheticExpression and remaining checker state excluded. Private JSX fact projection only. Object extension: Existing schema-generated syntax model/factory remains; selected static property/object accessors used by checking. Compiler/binder fields retained only as accepted prior scopes. General checker/emit node state excluded.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -420,7 +426,9 @@
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "dataTypesCheckpointScope": "Accepted parser/binder syntax closure expanded by selected semantic/diagnostic data name/entity/heritage/type/ancestor predicates, scope containers, static-key and existing-source reuse helpers. General cross-file/transform AST semantics excluded; handwritten supplements remain authoritative.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -518,15 +526,22 @@
       "destination": "src/TypeScript.Scanner/Binder/Binder.cs",
       "status": "ported",
       "scope": "Complete source-file binder.go algorithms: 163 emitted functions plus manually adapted getBinder/two ActiveLabel accessors; putBinder/pool-return defer omitted in favor of fresh isolated managed binders. Symbols/scopes/declaration merges, CommonJS/expando/module patterns, ordered diagnostics and cyclic/shared flow graphs retained. Public raw-name wrappers and pinned 64-bit identity formatting explicit. Resolver siblings, checker, cross-file/module resolution, incremental rebinding and emit stages excluded.",
-      "upstreamSha256": "6c7acb7a20064075577af2412f6daf0a7d4eba023a0030fe2f4b060ded336dee"
+      "upstreamSha256": "6c7acb7a20064075577af2412f6daf0a7d4eba023a0030fe2f4b060ded336dee",
+      "bindingCompletionInventory": "docs/binding-completion-functions.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
       "destination": "src/TypeScript.Scanner/Ast/Symbol.cs",
-      "status": "partial",
-      "scope": "All source-file binder Symbol fields/helpers, ordinal raw-byte SymbolTable keys and nil/missing reads; actual CheckFlags field added for checker-owned transient symbols. Atomic IDs and shared table identities retained. Binder-only oracle still asserts CheckFlags zero; checker graphs observe real values.",
+      "status": "ported",
+      "scope": "All pinned Symbol fields, atomic ID storage, internal-name constants, SymbolTable and all eight functions. Raw byte-backed names, managed references, atomic long/ulong interpretation and ordinal Dictionary missing-key/null-map adaptations preserve required Go behavior. Checker-created transient behavior remains outside source-file binding acceptance.",
       "upstreamSha256": "3be43d53668f71260e6446e631210a937f3543e37646513dfc169890e148ea10",
-      "binderCheckpointScope": "Binder Symbol fields, ordinal raw-byte SymbolTable keys and null-returning missing reads, exact internal-name constants and all upstream symbol helpers. Atomic ID storage retained; checker-only CheckFlags explicitly omitted (Go oracle asserts zero)."
+      "binderCheckpointScope": "Binder Symbol fields, ordinal raw-byte SymbolTable keys and null-returning missing reads, exact internal-name constants and all upstream symbol helpers. Atomic ID storage retained; checker-only CheckFlags explicitly omitted (Go oracle asserts zero).",
+      "bindingCompletionPreviousStatus": "partial",
+      "bindingCompletionInventory": "docs/binding-completion-support-inventory.json",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -540,7 +555,9 @@
       "destination": "src/TypeScript.Scanner/Ast/Flow.cs",
       "status": "ported",
       "scope": "Complete flow.go flags, FlowNode/FlowList model and FlowLabel alias adaptation; both KindUnknown synthetic switch-clause/reduce-label payloads, factories and IsEmpty. Shared identity, cyclic graphs, ordered linked antecedents and undefined spans retained; static syntax/bound metadata authored for verification.",
-      "upstreamSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d"
+      "upstreamSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
+      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/functionflags.go",
@@ -587,7 +604,8 @@
       "upstream": null,
       "destination": "tests/Binder.Tests",
       "status": "new",
-      "scope": "Authored 118 differential binder cases and four named publication/idempotence/default-options tests; 122 passed xUnit tests at the accepted binder checkpoint."
+      "scope": "Authored 118 differential binder cases and four named publication/idempotence/default-options tests; 122 passed xUnit tests at the accepted binder checkpoint.",
+      "bindingCompletionScope": "163 passing xUnit cases: retained122 plus26 cold targeted graphs,8support and7helper/control groups; authored observations distinguished from original assertion ports."
     },
     {
       "upstream": null,
@@ -1279,25 +1297,72 @@
       "scope": "Authored xUnit dispatch to pinned-Go diagnostic-gap witnesses, including related-information diagnostic 1486; shared Native AOT bodies verify the same graphs.",
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/BindingCompletionAccess.cs",
+      "status": "new",
+      "scope": "Authored friend-assembly access for isolated atomic-ID boundary assertions; no public compiler API or replacement algorithm.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/BindingCompletion.Checks",
+      "status": "new",
+      "scope": "Authored shared actual-Go API/lifecycle and exported-helper comparisons; xUnit and native dispatch use the same assertion bodies. No original binder correctness-test provenance is claimed.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/BindingCompletion.Validation",
+      "status": "new",
+      "scope": "Authored Native AOT executable for cold binding graphs and shared support/helper assertions; separate from retained historical protocol.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Binder.Validation/Completion.cs",
+      "status": "new",
+      "scope": "Authored opt-in cold-binding observation order, complete diagnostic states, symbol/container helper observations and repeat identity checks. Reuses independently implemented historical graph encoders.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/binding-completion-oracle",
+      "status": "new",
+      "scope": "Authored independent pinned-Go cold binder observer and actual support/helper API fixture producers; composed retained observers remain distinguishable from ported compiler source.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/binding-completion-corpus",
+      "status": "new",
+      "scope": "Authored targeted input/Go observation fixtures supplement unchanged foundation compiler-input reuse. Natural identity witnesses and seeded API controls are explicitly distinguished.",
+      "bindingCompletionManifestState": "accepted-source-file-binding",
+      "bindingCompletionEvidence": "validation/results/binding-completion-verified.json"
     }
   ],
   "activePhase": {
-    "name": "foundation-completion",
+    "name": "source-file-binding-completion",
     "status": "complete",
-    "acceptance": "accepted-contract",
-    "manifestState": "accepted-foundation",
-    "baselineCommit": "b6b22b9",
-    "contract": "docs/FOUNDATION-CONTRACT.md",
-    "statusInventory": "docs/FOUNDATION-STATUS.md",
-    "note": "Fixed F1\u2013F6 foundation contract passed Linux x64 Native AOT and retained regressions. No next campaign is authorized.",
+    "acceptance": "B1\u2013B6 accepted within source-file binding contract",
+    "manifestState": "accepted-source-file-binding",
+    "baselineCommit": "2886d47",
+    "contract": "docs/BINDING-COMPLETION-CONTRACT.md",
+    "statusInventory": "docs/BINDING-COMPLETION-STATUS.md",
     "implementationInventory": [
-      "docs/foundation-scanner-functions.json",
-      "docs/foundation-syntax-source-inventory.json",
-      "docs/foundation-utilities-source-inventory.json"
+      "docs/binding-completion-functions.json",
+      "docs/binding-completion-support-inventory.json"
     ],
-    "testInventory": "docs/foundation-test-catalog.json",
-    "departures": "docs/FOUNDATION-DEPARTURES.md",
-    "evidence": "validation/results/foundation-verified.json"
+    "note": "Complete initial source-file binding and systematic evidence, including cold observation order and prior identity/mode/diagnostic gaps. Existing accepted foundation and semantic checkpoints remain historical; no callable/checker expansion.",
+    "evidence": "validation/results/binding-completion-verified.json",
+    "assessment": "docs/BINDING-COMPLETION-ASSESSMENT.md",
+    "verification": "docs/BINDING-COMPLETION-VERIFICATION.md"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -1359,6 +1424,20 @@
     "platform": "Linux x64",
     "scope": "All lexical scanning and initial JS/JSX/TS/TSX/JSON parser paths, parseable syntax-node representation/ordinary factories/clones/visitors/helpers/full facts, positions/source syntax caches and default-English diagnostics within fixed foundation contract; later-stage state/project/transform/emit/services remain excluded.",
     "upstreamTestInventory": "docs/foundation-test-catalog.json",
-    "departures": "docs/FOUNDATION-DEPARTURES.md"
+    "departures": "docs/FOUNDATION-DEPARTURES.md",
+    "commit": "2886d47"
+  },
+  "acceptedBindingCompletionCheckpoint": {
+    "baselineCommit": "2886d47",
+    "contract": "docs/BINDING-COMPLETION-CONTRACT.md",
+    "evidence": "validation/results/binding-completion-verified.json",
+    "sourceSha256": "1a5912ce84ce0908bb5d06365de4742fb74d0ae27335572eb55ff04e6011ee87",
+    "verificationAssetsSha256": "4083b40e72903cded2a321ba26738b5ce256bd3ed7a39297934174b1e41cc080",
+    "xUnitCases": 22972,
+    "nativeBroadCases": 17723,
+    "nativeTargetedCases": 26,
+    "sharedNativeGroups": 15,
+    "platform": "linux-x64",
+    "scope": "Complete fixed fresh source-file binding contract; not cross-file/global/checker/emit parity. Delivery commit contains this manifest."
   }
 }

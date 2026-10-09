@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" />
+    <ProjectReference Include="../Binder.Validation/Binder.Validation.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../binding-completion-corpus/support-fixtures.json" LogicalName="TypeScript.Binding.Support.json" Condition="Exists('../binding-completion-corpus/support-fixtures.json')" />
+  <EmbeddedResource Include="../binding-completion-corpus/helper-fixtures.json" LogicalName="TypeScript.Binding.Helpers.json" Condition="Exists('../binding-completion-corpus/helper-fixtures.json')" />
+  </ItemGroup>
+</Project>

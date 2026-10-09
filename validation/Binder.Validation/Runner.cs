@@ -3,17 +3,19 @@ using System.Text.Json;
 using TypeScript.Scanner.ParserValidation;
 
 namespace TypeScript.Scanner.BinderValidation;
-public sealed class Graph
+public sealed partial class Graph
 {
     private readonly Encoder syntax;
+    private readonly bool lexicalPrivateOwner;
     private readonly Dictionary<Symbol, int> symbolIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<SymbolTable, int> tableIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<FlowNode, int> flowIds = new(ReferenceEqualityComparer.Instance);
     private readonly Dictionary<FlowList, int> listIds = new(ReferenceEqualityComparer.Instance);
     private readonly Binding output = new();
-    public Graph(Encoder syntax)
+    public Graph(Encoder syntax, bool lexicalPrivateOwner = false)
     {
         this.syntax = syntax;
+        this.lexicalPrivateOwner = lexicalPrivateOwner;
     }
 
     public int? AddNode(Node? node) => node is null ? null : syntax.Add(node);
@@ -23,10 +25,12 @@ public sealed class Graph
         {
             if (declaration.Name()is { Kind: Kind.PrivateIdentifier } identifier && name.StartsWith("\u00fe#", StringComparison.Ordinal))
             {
-                var owner = symbol.Parent ?? throw new InvalidOperationException("Private symbol has no parent");
+                var owner = (lexicalPrivateOwner ? Ast.GetContainingClass(declaration)?.Symbol() : symbol.Parent) ?? throw new InvalidOperationException("Private symbol has no parent");
                 const string prefix = "\u00fe#";
                 string suffix = "@" + identifier.Text();
-                string expected = prefix + Ast.GetSymbolId(owner).ToString(CultureInfo.InvariantCulture) + suffix;
+                ulong ownerId = Ast.GetSymbolId(owner);
+                string numericOwner = lexicalPrivateOwner ? unchecked((long)ownerId).ToString(CultureInfo.InvariantCulture) : ownerId.ToString(CultureInfo.InvariantCulture);
+                string expected = prefix + numericOwner + suffix;
                 if (name != expected)
                     throw new InvalidOperationException("Private name owner mismatch");
                 return new()
@@ -73,6 +77,8 @@ public sealed class Graph
             return null;
         if (symbolIds.TryGetValue(symbol, out int id))
             return id;
+        if (symbol.CheckFlags != 0)
+            throw new InvalidOperationException("Binder produced checker-owned CheckFlags");
         id = output.Symbols.Count;
         symbolIds.Add(symbol, id);
         var value = new BoundSymbol
@@ -118,7 +124,7 @@ public sealed class Graph
         {
             if (declaration.Name()is { Kind: Kind.PrivateIdentifier } identifier && name.StartsWith("\u00fe#", StringComparison.Ordinal))
             {
-                var owner = symbol.Parent;
+                var owner = lexicalPrivateOwner ? Ast.GetContainingClass(declaration)?.Symbol() : symbol.Parent;
                 if (owner?.Declarations is not { Count: > 0 })
                     throw new InvalidOperationException("Private sorting owner missing");
                 int id = FindSyntaxOwner(owner.Declarations[0]);
@@ -229,7 +235,7 @@ public sealed class Graph
     {
         foreach (var diagnostic in items ?? [])
         {
-            if (diagnostic.ReportsUnnecessary() || diagnostic.ReportsDeprecated() || diagnostic.Source() != "" || (diagnostic.File()is not null && !ReferenceEquals(diagnostic.File(), file)))
+            if (diagnostic.ReportsUnnecessary() || diagnostic.ReportsDeprecated() || diagnostic.SkippedOnNoEmit() || diagnostic.Source() != "" || (diagnostic.File()is not null && !ReferenceEquals(diagnostic.File(), file)))
                 throw new InvalidOperationException("Unexpected binder diagnostic metadata outside canonical schema");
             ValidateDiagnostics(diagnostic.RelatedInformation(), file);
             ValidateDiagnostics(diagnostic.MessageChain(), file);

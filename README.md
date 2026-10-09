@@ -3,8 +3,9 @@
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type checking, pinned to maintained
 [microsoft/TypeScript source](./UPSTREAM.md). The defined scanner/parser/syntax-AST
-foundation contract and six earlier bounded checkpoints passed actual **Linux x64
-Native AOT** verification. See the [current state](./docs/STATE.md),
+foundation contract, source-file binding completion contract and six earlier bounded
+checkpoints passed actual **Linux x64 Native AOT** verification. See the
+[current state](./docs/STATE.md), [binding assessment](./docs/BINDING-COMPLETION-ASSESSMENT.md),
 [foundation assessment](./docs/FOUNDATION-ASSESSMENT.md),
 [completion contract](./docs/FOUNDATION-CONTRACT.md) and
 [verification](./docs/FOUNDATION-VERIFICATION.md) for scope and evidence.
@@ -26,6 +27,26 @@ for [scanner](./validation/Scanner.Validation), [parser](./validation/Parser.Val
 [binder](./validation/Binder.Validation) and [checker](./validation/Checker.Validation)
 support Native AOT; xUnit compares stored pinned-Go results. No Go process is
 needed to use the C# implementation.
+
+## Source-file binding completion verification
+
+The [binding contract](./docs/BINDING-COMPLETION-CONTRACT.md),
+[assessment](./docs/BINDING-COMPLETION-ASSESSMENT.md) and
+[test inventory](./docs/binding-completion-tests.json) define the accepted source-file
+binding surface. All 17,723 broad and 26 targeted binding graphs agree with pinned Go
+under actual Linux x64 Native AOT; all 22,972 xUnit cases pass. Compiler-input reuse
+does not establish full compiler-test success or whole-checker parity.
+
+```sh
+python3 tools/run-binding-completion-gate.py
+python3 tools/record-binding-completion-evidence.py
+```
+
+This gate includes the complete foundation and semantic regression cascade plus the
+full original numeric finite baseline sets. See
+[verification instructions](./docs/BINDING-COMPLETION-VERIFICATION.md) for prerequisites,
+observation order, provenance and limits. Callable-type checking is the recommended
+next bounded campaign; it has not been implemented by this binding work.
 
 ## Foundation completion verification
 

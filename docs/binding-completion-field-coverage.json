@@ -1,0 +1,1957 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "generatedPayloads": 85,
+  "generatedFields": 178,
+  "broadGeneratedPayloadsObserved": 81,
+  "broadGeneratedFieldsObserved": 172,
+  "savedStateCounts": {
+    "both-observed": 50,
+    "not-observed-in-saved-full-fixtures": 17,
+    "null-only-observed": 40,
+    "reference-only-observed": 71
+  },
+  "savedFullGraphSources": [
+    "validation/binder-corpus/opaque-expected.jsonl",
+    "validation/binder-corpus/selected-expected.jsonl",
+    "validation/binder-corpus/tiny-expected.jsonl",
+    "validation/binding-completion-corpus/targeted-expected.jsonl"
+  ],
+  "scope": "The initial streamed broad run preserves success digests and payload/role aggregates, not individual successful graphs. Exact payload-specific null/reference counts below come only from stored full historical and new targeted oracle graphs. Do not infer both-state broad coverage from aggregate role counts.",
+  "payloads": [
+    {
+      "payload": "Identifier",
+      "broadInitialSuccessfulInstances": 843103,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 28,
+          "savedReferenceCount": 1646,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "QualifiedName",
+      "broadInitialSuccessfulInstances": 7505,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "EmptyStatement",
+      "broadInitialSuccessfulInstances": 680,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 5,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "IfStatement",
+      "broadInitialSuccessfulInstances": 17506,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 61,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "DoStatement",
+      "broadInitialSuccessfulInstances": 212,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "WhileStatement",
+      "broadInitialSuccessfulInstances": 700,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ForStatement",
+      "broadInitialSuccessfulInstances": 1087,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ForInOrOfStatement",
+      "broadInitialSuccessfulInstances": 1763,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 8,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 1,
+          "savedReferenceCount": 7,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 8,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "BreakStatement",
+      "broadInitialSuccessfulInstances": 1482,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ContinueStatement",
+      "broadInitialSuccessfulInstances": 597,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ReturnStatement",
+      "broadInitialSuccessfulInstances": 26864,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 117,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "WithStatement",
+      "broadInitialSuccessfulInstances": 41,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "SwitchStatement",
+      "broadInitialSuccessfulInstances": 964,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "CaseBlock",
+      "broadInitialSuccessfulInstances": 964,
+      "fields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 4,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 2,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "CaseOrDefaultClause",
+      "broadInitialSuccessfulInstances": 7361,
+      "fields": [
+        {
+          "name": "FallthroughFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 31,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ThrowStatement",
+      "broadInitialSuccessfulInstances": 351,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "TryStatement",
+      "broadInitialSuccessfulInstances": 317,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "CatchClause",
+      "broadInitialSuccessfulInstances": 273,
+      "fields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "DebuggerStatement",
+      "broadInitialSuccessfulInstances": 17,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "LabeledStatement",
+      "broadInitialSuccessfulInstances": 1065,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ExpressionStatement",
+      "broadInitialSuccessfulInstances": 62853,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 1,
+          "savedReferenceCount": 86,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "Block",
+      "broadInitialSuccessfulInstances": 58668,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 162,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 140,
+          "savedReferenceCount": 22,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 107,
+          "savedReferenceCount": 55,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "VariableStatement",
+      "broadInitialSuccessfulInstances": 61814,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 119,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "VariableDeclaration",
+      "broadInitialSuccessfulInstances": 65321,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 4,
+          "savedReferenceCount": 127,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 113,
+          "savedReferenceCount": 18,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ParameterDeclaration",
+      "broadInitialSuccessfulInstances": 70810,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 77,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "BindingElement",
+      "broadInitialSuccessfulInstances": 5239,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 11,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 12,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 12,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "MissingDeclaration",
+      "broadInitialSuccessfulInstances": 13,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 5,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 5,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "FunctionDeclaration",
+      "broadInitialSuccessfulInstances": 23642,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 66,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 66,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 50,
+          "savedReferenceCount": 16,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 16,
+          "savedReferenceCount": 50,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 10,
+          "savedReferenceCount": 56,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 50,
+          "savedReferenceCount": 16,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 66,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ClassDeclaration",
+      "broadInitialSuccessfulInstances": 10371,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 57,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 57,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 54,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 57,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 57,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ClassExpression",
+      "broadInitialSuccessfulInstances": 650,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "InterfaceDeclaration",
+      "broadInitialSuccessfulInstances": 8905,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 8,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 8,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 3,
+          "savedReferenceCount": 5,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "TypeAliasDeclaration",
+      "broadInitialSuccessfulInstances": 6499,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 17,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 17,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 12,
+          "savedReferenceCount": 5,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 15,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 11,
+          "savedReferenceCount": 6,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "EnumMember",
+      "broadInitialSuccessfulInstances": 5697,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 8,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "EnumDeclaration",
+      "broadInitialSuccessfulInstances": 1155,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 9,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 9,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 5,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ModuleBlock",
+      "broadInitialSuccessfulInstances": 3938,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 62,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NotEmittedStatement",
+      "broadInitialSuccessfulInstances": 0,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        }
+      ]
+    },
+    {
+      "payload": "NotEmittedTypeElement",
+      "broadInitialSuccessfulInstances": 0,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        }
+      ]
+    },
+    {
+      "payload": "ImportDeclaration",
+      "broadInitialSuccessfulInstances": 3133,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 25,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 25,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NamespaceImport",
+      "broadInitialSuccessfulInstances": 926,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ExportAssignment",
+      "broadInitialSuccessfulInstances": 795,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NamespaceExportDeclaration",
+      "broadInitialSuccessfulInstances": 58,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 5,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 4,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NamespaceExport",
+      "broadInitialSuccessfulInstances": 36,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ExportSpecifier",
+      "broadInitialSuccessfulInstances": 1077,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 12,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 12,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "CallSignatureDeclaration",
+      "broadInitialSuccessfulInstances": 1412,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ConstructSignatureDeclaration",
+      "broadInitialSuccessfulInstances": 1630,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ConstructorDeclaration",
+      "broadInitialSuccessfulInstances": 2433,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 1,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "GetAccessorDeclaration",
+      "broadInitialSuccessfulInstances": 1495,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 1,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "SetAccessorDeclaration",
+      "broadInitialSuccessfulInstances": 1062,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 1,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "IndexSignatureDeclaration",
+      "broadInitialSuccessfulInstances": 1522,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "MethodSignatureDeclaration",
+      "broadInitialSuccessfulInstances": 7731,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "MethodDeclaration",
+      "broadInitialSuccessfulInstances": 7984,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 12,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 9,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 5,
+          "savedReferenceCount": 7,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 7,
+          "savedReferenceCount": 5,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 11,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "PropertySignatureDeclaration",
+      "broadInitialSuccessfulInstances": 29301,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 49,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "PropertyDeclaration",
+      "broadInitialSuccessfulInstances": 7182,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 49,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "SemicolonClassElement",
+      "broadInitialSuccessfulInstances": 59,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ClassStaticBlockDeclaration",
+      "broadInitialSuccessfulInstances": 168,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 1,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 1,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "KeywordExpression",
+      "broadInitialSuccessfulInstances": 22407,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 19,
+          "savedReferenceCount": 15,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NoSubstitutionTemplateLiteral",
+      "broadInitialSuccessfulInstances": 530,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "BinaryExpression",
+      "broadInitialSuccessfulInstances": 98083,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 161,
+          "savedReferenceCount": 9,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ArrowFunction",
+      "broadInitialSuccessfulInstances": 9153,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 3,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 2,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "FunctionExpression",
+      "broadInitialSuccessfulInstances": 2333,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 6,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 6,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 3,
+          "savedReferenceCount": 3,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 2,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 6,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "ReturnFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 6,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "PropertyAccessExpression",
+      "broadInitialSuccessfulInstances": 101654,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 11,
+          "savedReferenceCount": 276,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ElementAccessExpression",
+      "broadInitialSuccessfulInstances": 16500,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 1,
+          "savedReferenceCount": 7,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "CallExpression",
+      "broadInitialSuccessfulInstances": 74027,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 104,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "MetaProperty",
+      "broadInitialSuccessfulInstances": 148,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ObjectLiteralExpression",
+      "broadInitialSuccessfulInstances": 16379,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 9,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "SpreadAssignment",
+      "broadInitialSuccessfulInstances": 600,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "PropertyAssignment",
+      "broadInitialSuccessfulInstances": 31790,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 32,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ShorthandPropertyAssignment",
+      "broadInitialSuccessfulInstances": 2332,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ConditionalTypeNode",
+      "broadInitialSuccessfulInstances": 1362,
+      "fields": [
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "MappedTypeNode",
+      "broadInitialSuccessfulInstances": 816,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "TypeLiteralNode",
+      "broadInitialSuccessfulInstances": 10574,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 48,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "NamedTupleMember",
+      "broadInitialSuccessfulInstances": 233,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "FunctionTypeNode",
+      "broadInitialSuccessfulInstances": 6793,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 8,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 1,
+          "savedReferenceCount": 7,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 1,
+          "savedReferenceCount": 7,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ConstructorTypeNode",
+      "broadInitialSuccessfulInstances": 797,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "JsxAttributes",
+      "broadInitialSuccessfulInstances": 1701,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 11,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "JsxAttribute",
+      "broadInitialSuccessfulInstances": 1000,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 4,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "JsxSpreadAttribute",
+      "broadInitialSuccessfulInstances": 278,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "JSDocSignature",
+      "broadInitialSuccessfulInstances": 0,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 2,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        }
+      ]
+    },
+    {
+      "payload": "ModuleDeclaration",
+      "broadInitialSuccessfulInstances": 4199,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 63,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 62,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 62,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Locals",
+          "goType": "SymbolTable",
+          "savedNullCount": 46,
+          "savedReferenceCount": 17,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "NextContainer",
+          "goType": "*Node",
+          "savedNullCount": 49,
+          "savedReferenceCount": 14,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "EndFlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 63,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ImportEqualsDeclaration",
+      "broadInitialSuccessfulInstances": 1155,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "reference-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ExportDeclaration",
+      "broadInitialSuccessfulInstances": 1526,
+      "fields": [
+        {
+          "name": "FlowNode",
+          "goType": "*FlowNode",
+          "savedNullCount": 13,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 12,
+          "savedReferenceCount": 1,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ImportClause",
+      "broadInitialSuccessfulInstances": 2994,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 24,
+          "savedReferenceCount": 2,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 26,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "ImportSpecifier",
+      "broadInitialSuccessfulInstances": 10535,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 52,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        },
+        {
+          "name": "LocalSymbol",
+          "goType": "*Symbol",
+          "savedNullCount": 53,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "null-only-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "TypeParameterDeclaration",
+      "broadInitialSuccessfulInstances": 16693,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 1,
+          "savedReferenceCount": 18,
+          "savedStateStatus": "both-observed",
+          "broadStateStatus": "Runtime field observed with exact comparison; per-cell nil/ref counts not collected in streamed broad report."
+        }
+      ]
+    },
+    {
+      "payload": "JSDocTypeLiteral",
+      "broadInitialSuccessfulInstances": 0,
+      "fields": [
+        {
+          "name": "Symbol",
+          "goType": "*Symbol",
+          "savedNullCount": 0,
+          "savedReferenceCount": 0,
+          "savedStateStatus": "not-observed-in-saved-full-fixtures",
+          "broadStateStatus": "Payload not in cold broad output; see reviewed source disposition."
+        }
+      ]
+    }
+  ],
+  "sourceDispositions": "docs/binding-completion-payload-coverage.md"
+}

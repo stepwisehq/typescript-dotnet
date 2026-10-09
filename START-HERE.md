@@ -131,6 +131,18 @@ Later user directions, in chronological order:
     Report executed data-driven cases separately from upstream test functions and
     no-panic seeds separately from structural comparisons, as the user clarified.
 
+17. The user authorized **completion and systematic verification of source-file
+    binding** atop `2886d47` before callable checking. Read the
+    [exact mandate](./docs/BINDING-COMPLETION-PROMPT.md) and fixed
+    [contract](./docs/BINDING-COMPLETION-CONTRACT.md). Include every binder-produced
+    symbol/scope/flow/diagnostic relationship, required support and historical
+    identity/mode/diagnostic gaps; keep later checker/project/emit work outside.
+    Proceed autonomously through actual Linux x64 Native AOT and all regressions,
+    independent review and clean committed delivery. This mandate is fulfilled;
+    the [assessment](./docs/BINDING-COMPLETION-ASSESSMENT.md) records B1–B6 acceptance
+    with actual Linux x64 Native AOT. Callable checking is ready for a subsequent
+    bounded campaign, but no new campaign is automatically authorized.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -146,8 +158,8 @@ Later user directions, in chronological order:
    includes executing the actual Native AOT binary against the oracle corpus.
    Recheck results after changes; a prior publish does not establish current success.
 
-No campaign is active after committed foundation delivery. The latest accepted
-checkpoint is the defined foundation contract. A checkpoint can
+Source-file binding completion is accepted; no active implementation campaign remains.
+The delivery commit builds on foundation `2886d47`. A checkpoint can
 be accepted, incomplete, or blocked; never infer completion from source presence,
 an agent finishing, or a small set of passing tests. A later full compiler phase
 needs a new bounded mandate. Follow STATE.md for the active phase instead of

@@ -89,7 +89,7 @@ public static class Runner
                 result.UtilityResults.Add(item);
             }
         }
-        foreach (var d in scanner.CommentDirectives()) result.CommentDirectives.Add(new(d.Loc.Pos(), d.Loc.End(), (int)d.Kind));
+        foreach (var d in scanner.CommentDirectives() ?? []) result.CommentDirectives.Add(new(d.Loc.Pos(), d.Loc.End(), (int)d.Kind));
         return result;
     }
 }

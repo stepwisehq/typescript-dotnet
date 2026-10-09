@@ -5,6 +5,8 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1"><PrivateAssets>all</PrivateAssets></PackageReference>
     <ProjectReference Include="../../validation/Binder.Validation/Binder.Validation.csproj" />
+    <ProjectReference Include="../../validation/BindingCompletion.Checks/BindingCompletion.Checks.csproj" />
+    <None Include="../../validation/binding-completion-corpus/*-*.jsonl" Link="completion-corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../validation/binder-corpus/*.jsonl" Link="corpus/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

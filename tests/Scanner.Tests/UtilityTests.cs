@@ -36,11 +36,11 @@ public class UtilityTests
         scanner.SetSkipJSDocLeadingAsterisks(true);
         scanner.SetText("// @ts-ignore\nvalue");
         Assert.Equal(Kind.SingleLineCommentTrivia, scanner.Scan());
-        Assert.Single(scanner.CommentDirectives());
+        Assert.Single(Assert.IsType<CommentDirective[]>(scanner.CommentDirectives()));
         scanner.SetOnError((_, _, _, _) => throw new InvalidOperationException("Reset must remove the callback"));
         scanner.Reset();
         Assert.Empty(scanner.TextBytes());
-        Assert.Empty(scanner.CommentDirectives());
+        Assert.Null(scanner.CommentDirectives());
         Assert.Equal(Kind.Unknown, scanner.Token());
         scanner.SetText("  \"\\8\"");
         Assert.Equal(Kind.StringLiteral, scanner.Scan());
@@ -55,13 +55,35 @@ public class UtilityTests
         Assert.Equal(Kind.Identifier, scanner.Scan());
         ScannerState mark = scanner.Mark();
         Assert.Equal(Kind.Identifier, scanner.Scan());
-        Assert.Single(scanner.CommentDirectives());
+        Assert.Single(Assert.IsType<CommentDirective[]>(scanner.CommentDirectives()));
         scanner.Rewind(mark);
         Assert.Equal("first", scanner.TokenValue());
-        Assert.Empty(scanner.CommentDirectives());
+        Assert.Null(scanner.CommentDirectives());
         Assert.Equal(Kind.Identifier, scanner.Scan());
         Assert.Equal("second", scanner.TokenValue());
-        Assert.Single(scanner.CommentDirectives());
+        Assert.Single(Assert.IsType<CommentDirective[]>(scanner.CommentDirectives()));
+    }
+
+    [Fact]
+    public void DirectiveStatePreservesAbsenceAcrossTextReuseAndSavedPresentState()
+    {
+        var scanner = new Scanner();
+        Assert.Null(scanner.CommentDirectives());
+        scanner.SetText("// @ts-ignore\nfirst\n// @ts-expect-error\nsecond");
+        Assert.Null(scanner.CommentDirectives());
+        Assert.Equal(Kind.Identifier, scanner.Scan());
+        ScannerState present = scanner.Mark();
+        Assert.Single(Assert.IsType<CommentDirective[]>(scanner.CommentDirectives()));
+        Assert.Equal(Kind.Identifier, scanner.Scan());
+        Assert.Equal(2, scanner.CommentDirectives()?.Length);
+        scanner.Rewind(present);
+        Assert.Single(Assert.IsType<CommentDirective[]>(scanner.CommentDirectives()));
+        Assert.Equal(Kind.Identifier, scanner.Scan());
+        Assert.Equal(2, scanner.CommentDirectives()?.Length);
+        scanner.SetText("plain");
+        Assert.Null(scanner.CommentDirectives());
+        Assert.Equal(Kind.Identifier, scanner.Scan());
+        Assert.Null(scanner.CommentDirectives());
     }
 
     [Fact]
