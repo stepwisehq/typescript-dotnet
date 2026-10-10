@@ -1242,6 +1242,18 @@
         "state": "Complete affected source/direct helpers independently reviewed; clean Release build and native VS Code ten complete diagnostic records/available pinned-Go chains exact. Eight existing original full-record comparisons pass with zero failures/skips and no expected changes. No matched allocation capture for this batch or causal native speedup claim.",
         "nativeEvidence": "artifacts/vscode-relater-callbacks/first-vscode/result.json",
         "focusedEvidence": "artifacts/vscode-relater-callbacks/focused/report.json"
+      },
+      "templateInferenceLocalAdaptation": {
+        "sourceResponsibilities": "relater.go:2418 inferFromLiteralPartsToTemplateLiteral;2433 getSourceText and2439 addMatch.",
+        "adaptation": "Two operation-local Func/Action declarations become direct local functions. Existing mutable seg/pos/matches, prefix/suffix bounds, delimiter search, Unicode rune/surrogate decisions and final match publication remain unchanged.",
+        "review": "artifacts/vscode-template-inference-locals/build/independent-review.json",
+        "snapshot": "artifacts/vscode-template-inference-locals/build/snapshot-1/snapshot.json",
+        "nativeEvidence": "artifacts/vscode-template-inference-locals/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-template-inference-locals/focused/report.json",
+        "loweringEvidence": "artifacts/vscode-template-inference-locals/metadata/result.json: both local helpers use by-reference value-type state and direct calls; no worker constructors in inspected metadata.",
+        "state": "Compiled8fcc snapshot; native VS Code ten complete diagnostics/available pinned chains exact; six unchanged original full records pass.",
+        "allocationEvidence": "artifacts/vscode-template-inference-locals/allocation-comparison.json",
+        "allocationQualification": "One matched ServerGC CoreCLR trace each:282c18.701305 to8fcc18.122111GiB sampled interval estimate (-3.0971%),zero loss/truncation/aggregation overflow,baseline one missing stack. Cumulative includes contextual/deprecation and Relater callback changes committed162cdc2, not isolated template attribution or exact allocation/native speed claim."
       }
     },
     {

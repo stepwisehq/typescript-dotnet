@@ -5250,7 +5250,8 @@ public sealed partial class Checker
         var seg = 0;
         var pos = GoRuntime.Len(targetStartText);
         List<Type> matches = default;
-        Func<int, string> getSourceText = (index) =>
+        // relater.go:2433/2439. Direct local calls preserve shared operation state without delegate conversion.
+        string getSourceText(int index)
         {
             if ((index < lastSourceIndex))
             {
@@ -5258,8 +5259,8 @@ public sealed partial class Checker
             }
 
             return remainingEndText;
-        };
-        Action<int, int> addMatch = (s, p) =>
+        }
+        void addMatch(int s, int p)
         {
             Type matchType = default;
             if ((s == seg))
@@ -5279,7 +5280,7 @@ public sealed partial class Checker
             matches = GoRuntime.Append(matches, matchType);
             seg = s;
             pos = p;
-        };
+        }
         {
             var i = 1;
             for (; (i < lastTargetIndex); i++)

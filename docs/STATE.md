@@ -1,40 +1,39 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest committed checkpoint is `b2ce0f6` (ownership tokens and
-static reporter state), following `737eead`. Continue Go-faithful allocation work;
-there is no blocker or instruction to stop at a commit. Full regression acceptance
-remains deferred; use Native AOT VS Code first, then focused checks.
+**Resume here:** latest committed checkpoint is `162cdc2` (contextual/deprecation
+loops and explicit relation callbacks), following `b2ce0f6`. Continue Go-faithful
+allocation work; no blocker or instruction to stop at a commit. Full regression
+acceptance remains deferred; Native AOT VS Code first, then focused checks.
 
-**Qualified, staged next packet:** contextual-literal/deprecation loops in
-Checker.cs and variance/property callbacks plus nil-backed empty exclusions in
-Relater.cs. Frozen library `8dcc247f`, native `9934ceeb`: Linux x64 Native AOT
-VS Code 22.43s wall / 97.81s CPU / 10,028,472KiB peak, exact ten diagnostics and
-pinned chains. Eight unchanged original full compiler records pass, zero skipped.
-Compiled metadata confirms variance local state is a value type passed by ref,
-with direct calls and no variance closure/delegate constructor. This establishes
-lowering, not a measured per-change byte/time saving. Evidence:
-`artifacts/vscode-relater-callbacks/{first-vscode/result.json,focused/report.json,metadata/result.json}`.
+**Qualified, staged next packet:** two direct template inference local functions
+in Relater.cs. Frozen library `8fcc3d0e`, native `9f342201`: clean build8.951s;
+Linux x64 Native AOT VS Code22.54s wall /99.99s CPU /9,903,144KiB peak,
+exact ten records/chains. Six unchanged original template-inference records pass.
+Compiled metadata confirms both local helpers use direct calls and by-ref
+value-type state, with no constructors in the outer method. Support reviewed the
+whole upstream function/direct helpers. Evidence: `artifacts/vscode-template-inference-locals/`.
 
-**Active next packet, deliberately UNSTAGED:** scanner's two direct template
-inference local functions in Relater.cs, hash `cd7c5df7`. Support independently
-reviewed the entire function and helpers. Verifier owns the sole heavy window. Clean build froze library `8fcc3d0e`;
-Native AOT VS Code passed at 22.54s wall / 99.99s CPU / 9,903,144KiB peak,
-exact ten records/chains. Focused existing template records, cheap lowering check
-and one cumulative allocation profile versus frozen `282c618e` are in progress.
-Evidence: `artifacts/vscode-template-inference-locals/`. Do not stage the entire
-Relater file when committing the preceding packet: its index preserves qualified
-hash `6428403d`. Scanner now owns two next contextual map callbacks in Checker.cs using existing
-generic explicit-state/static mapTypeEx (Go31235/30521). These edits remain
-UNSTAGED, separate from current qualified index and frozen8fcc binary. Support
-reviews complete methods/state semantics. Coordinator owns this file.
+**Latest allocation evidence:** one cumulative matched CoreCLR profile versus
+ownership/reporter frozen `282c618e`:18.701305→18.122111GiB sampled intervals
+(−3.0971%), zero lost/truncated events, no candidate missing stacks/type names.
+Closure weights1,670,351,776→1,337,218,456B; delegate weights1,650,916,648→1,407,964,728B;
+arrays essentially flat. Includes prior162cdc2 plus template locals, not per-change
+attribution, exact byte census or Native AOT speedup. All ten diagnostics exact.
+`artifacts/vscode-template-inference-locals/allocation-comparison.json`.
 
-**Latest allocation evidence:** frozen ownership/reporter library `282c618e`
-reduced sampled CoreCLR allocation intervals 19.321389→18.701305GiB (−3.2093%);
-zero lost/truncated events, one missing stack, exact ten diagnostics. Native
-22.32s / 90.99CPU / 10,298,208KiB; focused four original full records, three public
-API Facts, fourteen native self checks and ten native callable cases pass.
-`artifacts/vscode-symbol-ownership-token/`. Current callback/local packets are
-not allocation-profiled yet.
+**Active next packet, UNSTAGED Checker.cs:** two contextual map callbacks use
+existing generic explicit-state/static mapTypeEx (Go31235/30521). Sourcea3e14ea3
+independently reviewed; verifier owns sole heavy window build/NativeVSCode-first
+then focused tuple/spread/object/JSX/mapped comparisons. No separate allocation
+profile for this small pair. Freeze must precede next same-file edit.
+
+**Next approved source packet:** scanner will restore upstream mapTypeEx cap16
+local scratch using InlineArray plus spill and a detached changed-output List
+snapshot; preserve existing public storage. Only proven unaliased contextual
+intersection local Append copies become amortized Add. No blanket migration;
+prior stack experiment regressed, so qualify actual native workload first.
+Wait until verifier freezes contextual callback binary before editing Checker.cs.
+Support reviews; no competing build. Coordinator owns this state file.
 
 **Timing context:** six alternating frozen native runs compare signature baseline
 `cd2b47bb` to direct-slot candidate `c385e71b`: mean 23.17→21.36s wall (−7.81%),

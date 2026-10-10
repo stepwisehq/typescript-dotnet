@@ -1226,6 +1226,36 @@ literals, deprecated overloads, variance fallback, private/protected properties,
 and discriminated relationships. This is focused qualification with no new matched
 allocation profile or causal native speedup claim.
 
+## Template inference local callbacks
+
+The [template inference snapshot](../artifacts/vscode-template-inference-locals/build/snapshot-1/snapshot.json)
+uses direct local functions for the original `getSourceText` and `addMatch` bodies,
+retaining operation-local segment, position and match state. The
+[source review](../artifacts/vscode-template-inference-locals/build/independent-review.json)
+covers the complete prefix/suffix, delimiter and Unicode matching path. Compiled
+[metadata](../artifacts/vscode-template-inference-locals/metadata/result.json)
+confirms by-reference value-type state at both helpers and direct calls; this is
+limited to the inspected worker and helpers.
+
+The [native workload](../artifacts/vscode-template-inference-locals/first-vscode/result.json)
+took 22.54 seconds wall and 99.99 seconds CPU, peaking at 9,903,144 KiB, with all ten
+complete diagnostics and available pinned-Go chains exact. The
+[focused gate](../artifacts/vscode-template-inference-locals/focused/report.json)
+passed six unchanged original full records. This single native observation is not
+a speedup claim.
+
+The [matched allocation comparison](../artifacts/vscode-template-inference-locals/allocation-comparison.json)
+reports 18.701305 to 18.122111 GiB of sampled allocation interval weight, down
+3.0971%. This cumulative comparison starts at the ownership/reporter snapshot and
+includes the preceding contextual/deprecation and relationship callback changes
+committed as `162cdc2`; it does not isolate template inference savings. Each role
+has one CoreCLR trace, with zero lost/truncated events and aggregation overflow;
+one baseline event lacks a stack. The
+[site comparison](../artifacts/vscode-template-inference-locals/site-comparison.json)
+and [evidence review](../artifacts/vscode-template-inference-locals/acceptance-review.json)
+retain the attribution and sampling limits. These are estimates, separate from
+NativeAOT timing.
+
 ## Reproduction and records
 
 ```bash
