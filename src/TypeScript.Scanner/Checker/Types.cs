@@ -193,6 +193,7 @@ public sealed class Type
     public IndexType AsIndexType() => (IndexType)data;
     public IndexedAccessType AsIndexedAccessType() => (IndexedAccessType)data;
     public TemplateLiteralType AsTemplateLiteralType() => (TemplateLiteralType)data;
+    public StringMappingType AsStringMappingType() => (StringMappingType)data;
     public SubstitutionType AsSubstitutionType() => (SubstitutionType)data;
     public ConditionalType AsConditionalType() => (ConditionalType)data;
     public ConstrainedType AsConstrainedType() => data.AsConstrainedType();
@@ -211,7 +212,9 @@ public sealed class Type
             return AsTypeParameter().target;
         if ((flags & TypeFlags.Index) != 0)
             return AsIndexType().target;
-        throw Checker.unsupported("Type.Target: index/string-mapping payload");
+        if ((flags & TypeFlags.StringMapping) != 0)
+            return AsStringMappingType().target;
+        throw new InvalidOperationException("Unhandled case in Type.Target");
     }
 
     internal TypeMapper Mapper()
@@ -400,8 +403,7 @@ public sealed class TypeParameter : ConstrainedType
     public bool IsThisType() => isThisType;
 }
 
-// types.go:1213. Internal finite-key origins retain the real constrained payload;
-// source keyof operators remain excluded by semantic admission.
+// types.go:1213. Deferred keyof target and index flags.
 public sealed class IndexType : ConstrainedType
 {
     internal Type target;
@@ -621,13 +623,11 @@ internal sealed class AliasSymbolLinks
     internal Node typeOnlyDeclaration;
 }
 
-// types.go:218. The internal globalThis module uses the real export cache;
-// written module/type-only export declarations remain outside admission.
+// types.go:218. Source module export resolution and type-only export-star state.
 internal sealed class ModuleSymbolLinks
 {
     internal SymbolTable resolvedExports;
     internal Dictionary<string, Node> typeOnlyExportStarMap;
-    // Source export checking is excluded, preserving the upstream zero value.
     internal bool exportsChecked = false;
 }
 
@@ -770,8 +770,7 @@ internal sealed class MarkedAssignmentSymbolLinks
     internal bool hasDefiniteAssignment;
 }
 
-// types.go:409. Actual source-file state; unused/JSX/emit-helper slots remain
-// zero where the fixed profiles and admitted script syntax do not select them.
+// types.go:409. Source-file checking, unused, helper and deferred-node state.
 internal sealed class SourceFileLinks
 {
     internal bool typeChecked;
@@ -918,14 +917,20 @@ internal enum ExternalEmitHelpers : uint
     AsyncDelegatorIncludes = Await | AsyncDelegator | AsyncValues,
 }
 
-// types.go:1233. Internal numeric-string keys for homomorphic mapped arrays
-// retain the actual constrained template payload; written templates stay excluded.
+// types.go:1233. Template literal text segments and placeholder types.
 public sealed class TemplateLiteralType : ConstrainedType
 {
     internal List<string> texts;
     internal List<Type> types;
     public List<string> Texts() => texts;
     public List<Type> Types() => types;
+}
+
+// types.go:1242. Intrinsic string mappings retain the actual constrained target.
+public sealed class StringMappingType : ConstrainedType
+{
+    internal Type target;
+    public Type Target() => target;
 }
 
 internal sealed class EnumMemberLinks

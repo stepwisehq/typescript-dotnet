@@ -198,7 +198,18 @@ public sealed partial class Checker
             {
                 if ((((t1.objectFlags & ObjectFlags.InstantiationExpressionType) != 0) && ((t2.objectFlags & ObjectFlags.InstantiationExpressionType) != 0)))
                 {
-                    throw unsupported("CompareTypes: source instantiation expression");
+                    Node declaration1 = null;
+                    Node declaration2 = null;
+                    if (t1.symbol?.Declarations is { Count: > 0 })
+                        declaration1 = t1.symbol.Declarations[0];
+                    if (t2.symbol?.Declarations is { Count: > 0 })
+                        declaration2 = t2.symbol.Declarations[0];
+                    var declarationOrder = t1.checker.compareNodes(declaration1, declaration2);
+                    if (declarationOrder != 0)
+                        return declarationOrder;
+                    var expressionOrder = t1.checker.compareNodes(t1.AsInstantiationExpressionType().node, t2.AsInstantiationExpressionType().node);
+                    if (expressionOrder != 0)
+                        return expressionOrder;
                 }
                 else
                 {
@@ -579,7 +590,10 @@ public sealed partial class Checker
 
             case true when ((t1.flags & TypeFlags.StringMapping) != 0):
             {
-                throw unsupported("CompareTypes: intrinsic string mapping");
+                var targetOrder = CompareTypes(t1.AsStringMappingType().target, t2.AsStringMappingType().target);
+                if (targetOrder != 0)
+                    return targetOrder;
+                break;
             }
         }
 
@@ -720,7 +734,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     internal void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsWorker);
-    private static bool isReservedMemberName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] != '@' && name[1] != '#';
+    internal static bool isReservedMemberName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] != '@' && name[1] != '#';
 }
 
 public sealed partial class Checker

@@ -34,6 +34,8 @@ internal class TextWriter
     }
 
     internal virtual string String() => builder.ToString();
+    // textwriter.go:84. Preserve the stored writer state for trailing comments.
+    internal virtual bool IsAtStartOfLine() => lineStart;
     private void writeText(string text)
     {
         if (text != "")

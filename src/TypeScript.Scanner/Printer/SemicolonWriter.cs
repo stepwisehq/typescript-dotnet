@@ -62,4 +62,5 @@ internal sealed class trailingSemicolonDeferringWriter : TextWriter
     }
 
     internal override string String() => inner.String();
+    internal override bool IsAtStartOfLine() => inner.IsAtStartOfLine();
 }

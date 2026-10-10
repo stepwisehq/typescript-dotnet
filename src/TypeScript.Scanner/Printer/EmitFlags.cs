@@ -10,5 +10,6 @@ internal enum EmitFlags : uint
     SingleLine = 1,
     NoIndentation = 1u << 14,
     NoLeadingComments = 1u << 7,
+    NoTrailingComments = 1u << 8,
     NoAsciiEscaping = 1u << 17
 }

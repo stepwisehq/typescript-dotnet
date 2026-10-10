@@ -13,6 +13,7 @@ internal sealed class EmitContext
     private readonly Dictionary<Node, Node> original = new();
     private readonly Dictionary<Node, EmitFlags> emitFlags = new();
     private readonly Dictionary<Node, List<SynthesizedComment>> leadingComments = new();
+    private readonly Dictionary<Node, List<SynthesizedComment>> trailingComments = new();
     // emitcontext.go:997/1002. Managed prefix copies preserve Go slice lengths.
     internal Node AddSyntheticLeadingComment(Node node, Kind kind, string text, bool hasTrailingNewLine)
     {
@@ -23,6 +24,16 @@ internal sealed class EmitContext
     }
 
     internal List<SynthesizedComment> GetSyntheticLeadingComments(Node node) => leadingComments.TryGetValue(node, out var comments) ? comments : null;
+    // emitcontext.go:1014/1019. Diagnostic elision retains source trailing data.
+    internal Node AddSyntheticTrailingComment(Node node, Kind kind, string text, bool hasTrailingNewLine)
+    {
+        if (!trailingComments.TryGetValue(node, out var comments))
+            trailingComments[node] = comments = new();
+        comments.Add(new(kind, new(-1, -1), false, hasTrailingNewLine, text));
+        return node;
+    }
+
+    internal List<SynthesizedComment> GetSyntheticTrailingComments(Node node) => trailingComments.TryGetValue(node, out var comments) ? comments : null;
     internal EmitFlags EmitFlags(Node node) => emitFlags.TryGetValue(node, out var flags) ? flags : TypeScript.DiagnosticPrinting.EmitFlags.None;
     internal void SetEmitFlags(Node node, EmitFlags flags) => emitFlags[node] = flags;
     internal void AddEmitFlags(Node node, EmitFlags flags) => emitFlags[node] = EmitFlags(node) | flags;
@@ -38,6 +49,8 @@ internal sealed class EmitContext
                 emitFlags[node] = flags;
             if (leadingComments.TryGetValue(source, out var comments))
                 leadingComments[node] = new(comments);
+            if (trailingComments.TryGetValue(source, out var trailing))
+                trailingComments[node] = new(trailing);
         }
         else if (!allowOverwrite && prior != source)
             throw new InvalidOperationException("Original node already set.");

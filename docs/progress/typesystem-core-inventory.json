@@ -1,0 +1,722 @@
+{
+  "baseline": "09630d6",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
+  "policy": "Finite responsibility records, not whole checker inventory. Existing-method presence does not establish complete source algorithm or per-function execution. Concrete missing branches and pending reconciliation stated separately.",
+  "families": [
+    {
+      "family": "intrinsic_string_mapping",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getStringMappingType",
+          "line": 29771
+        },
+        {
+          "name": "applyStringMapping",
+          "line": 29790
+        },
+        {
+          "name": "applyTemplateStringMapping",
+          "line": 29806
+        },
+        {
+          "name": "getStringMappingTypeForGenericType",
+          "line": 29824
+        },
+        {
+          "name": "newStringMappingType",
+          "line": 25756
+        },
+        {
+          "name": "getTypeAliasInstantiation",
+          "line": 24165
+        },
+        {
+          "name": "instantiateTypeWorker",
+          "line": 22708
+        },
+        {
+          "name": "computeBaseConstraint",
+          "line": 28024
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "generic_instantiation",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "instantiateTypeWithAlias",
+          "line": 22563
+        },
+        {
+          "name": "instantiateTypeWorker",
+          "line": 22708
+        },
+        {
+          "name": "getObjectTypeInstantiation",
+          "line": 22792
+        },
+        {
+          "name": "getConditionalTypeInstantiation",
+          "line": 22973
+        },
+        {
+          "name": "instantiateMappedType",
+          "line": 23023
+        },
+        {
+          "name": "instantiateReverseMappedType",
+          "line": 23230
+        },
+        {
+          "name": "instantiateSignature",
+          "line": 21019
+        },
+        {
+          "name": "getSignatureInstantiation",
+          "line": 19697
+        },
+        {
+          "name": "createSignatureInstantiation",
+          "line": 19732
+        },
+        {
+          "name": "fillMissingTypeArguments",
+          "line": 22413
+        },
+        {
+          "name": "getGenericObjectFlags",
+          "line": 25414
+        },
+        {
+          "name": "isGenericMappedType",
+          "line": 25442
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "generic_constraints_defaults",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getConstraintOfType",
+          "line": 17434
+        },
+        {
+          "name": "getConstraintOfTypeParameter",
+          "line": 17446
+        },
+        {
+          "name": "getConstraintFromTypeParameter",
+          "line": 17458
+        },
+        {
+          "name": "getInferredTypeParameterConstraint",
+          "line": 17501
+        },
+        {
+          "name": "getConstraintFromIndexedAccess",
+          "line": 17614
+        },
+        {
+          "name": "getConstraintFromConditionalType",
+          "line": 17642
+        },
+        {
+          "name": "getDefaultConstraintOfConditionalType",
+          "line": 17650
+        },
+        {
+          "name": "getConstraintOfDistributiveConditionalType",
+          "line": 17671
+        },
+        {
+          "name": "getResolvedBaseConstraint",
+          "line": 27981
+        },
+        {
+          "name": "computeBaseConstraint",
+          "line": 28024
+        },
+        {
+          "name": "getNextBaseConstraint",
+          "line": 28127
+        },
+        {
+          "name": "getDefaultFromTypeParameter",
+          "line": 22455
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "variance_validation",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkTypeParameterDeferred",
+          "line": 2673
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "union_reduction",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getUnionType",
+          "line": 26151
+        },
+        {
+          "name": "getUnionTypeEx",
+          "line": 26162
+        },
+        {
+          "name": "getUnionTypeWorker",
+          "line": 26187
+        },
+        {
+          "name": "getUnionTypeFromSortedList",
+          "line": 26270
+        },
+        {
+          "name": "addTypesToUnion",
+          "line": 26295
+        },
+        {
+          "name": "removeSubtypes",
+          "line": 26468
+        },
+        {
+          "name": "removeRedundantLiteralTypes",
+          "line": 26372
+        },
+        {
+          "name": "removeStringLiteralsMatchedByTemplateLiterals",
+          "line": 26391
+        },
+        {
+          "name": "isTypeMatchedByTemplateLiteralOrStringMapping",
+          "line": 26408
+        },
+        {
+          "name": "extractRedundantTemplateLiterals",
+          "line": 26851
+        },
+        {
+          "name": "someType",
+          "line": 27071
+        },
+        {
+          "name": "everyType",
+          "line": 27078
+        },
+        {
+          "name": "filterType",
+          "line": 27092
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "intersection_reduction",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getIntersectionType",
+          "line": 26586
+        },
+        {
+          "name": "getIntersectionTypeEx",
+          "line": 26590
+        },
+        {
+          "name": "addTypesToIntersection",
+          "line": 26785
+        },
+        {
+          "name": "removeRedundantSupertypes",
+          "line": 26829
+        },
+        {
+          "name": "getReducedType",
+          "line": 22244
+        },
+        {
+          "name": "getReducedApparentType",
+          "line": 22319
+        },
+        {
+          "name": "getSingleBaseForNonAugmentingSubtype",
+          "line": 28621
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "keyof_indexed",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getIndexType",
+          "line": 27214
+        },
+        {
+          "name": "getIndexTypeEx",
+          "line": 27218
+        },
+        {
+          "name": "getIndexTypeForGenericType",
+          "line": 27387
+        },
+        {
+          "name": "getIndexTypeForMappedType",
+          "line": 27405
+        },
+        {
+          "name": "getIndexedAccessTypeOrUndefined",
+          "line": 27469
+        },
+        {
+          "name": "getPropertyTypeForIndexType",
+          "line": 27535
+        },
+        {
+          "name": "getSimplifiedIndexedAccessTypeWorker",
+          "line": 28464
+        },
+        {
+          "name": "distributeObjectOverIndexType",
+          "line": 28509
+        },
+        {
+          "name": "substituteIndexedMappedType",
+          "line": 29839
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "mapped_key_remapping",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "resolveMappedTypeMembers",
+          "line": 21298
+        },
+        {
+          "name": "instantiateMappedType",
+          "line": 23023
+        },
+        {
+          "name": "instantiateMappedTupleType",
+          "line": 23081
+        },
+        {
+          "name": "instantiateMappedTypeTemplate",
+          "line": 23134
+        },
+        {
+          "name": "getTypeParameterFromMappedType",
+          "line": 23158
+        },
+        {
+          "name": "getConstraintTypeFromMappedType",
+          "line": 23166
+        },
+        {
+          "name": "getNameTypeFromMappedType",
+          "line": 23174
+        },
+        {
+          "name": "getTemplateTypeFromMappedType",
+          "line": 23185
+        },
+        {
+          "name": "getMappedTypeNameTypeKind",
+          "line": 27376
+        },
+        {
+          "name": "getModifiersTypeFromMappedType",
+          "line": 28661
+        },
+        {
+          "name": "getMappedTypeModifiers",
+          "line": 29541
+        },
+        {
+          "name": "getCombinedMappedTypeOptionality",
+          "line": 29569
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "conditional_infer",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getTypeFromConditionalTypeNode",
+          "line": 24803
+        },
+        {
+          "name": "getConditionalType",
+          "line": 24834
+        },
+        {
+          "name": "getConditionalTypeInstantiation",
+          "line": 22973
+        },
+        {
+          "name": "getPermissiveInstantiation",
+          "line": 25013
+        },
+        {
+          "name": "getRestrictiveInstantiation",
+          "line": 25026
+        },
+        {
+          "name": "getTrueTypeFromConditionalType",
+          "line": 25073
+        },
+        {
+          "name": "getFalseTypeFromConditionalType",
+          "line": 25081
+        },
+        {
+          "name": "getInferredTrueTypeFromConditionalType",
+          "line": 25089
+        },
+        {
+          "name": "getSimplifiedConditionalType",
+          "line": 28540
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "template_construction",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "getTypeFromTemplateTypeNode",
+          "line": 24773
+        },
+        {
+          "name": "getTemplateLiteralType",
+          "line": 29682
+        },
+        {
+          "name": "getTemplateStringForType",
+          "line": 29761
+        },
+        {
+          "name": "newTemplateLiteralType",
+          "line": 25749
+        },
+        {
+          "name": "isPatternLiteralPlaceholderType",
+          "line": 27033
+        },
+        {
+          "name": "isPatternLiteralType",
+          "line": 27050
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "tuple_variadic",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "createNormalizedTupleTypeEx",
+          "line": 23827
+        },
+        {
+          "name": "createNormalizedTupleType",
+          "line": 23875
+        },
+        {
+          "name": "createTupleTypeEx",
+          "line": 25274
+        },
+        {
+          "name": "getTupleTargetType",
+          "line": 25285
+        },
+        {
+          "name": "createTupleTargetType",
+          "line": 25309
+        },
+        {
+          "name": "getElementTypeOfSliceOfTupleType",
+          "line": 25364
+        },
+        {
+          "name": "getRestTypeOfTupleType",
+          "line": 25385
+        },
+        {
+          "name": "expandSignatureParametersWithTupleMembers",
+          "line": 28266
+        },
+        {
+          "name": "getNormalizedTupleType",
+          "line": 28607
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "predicate_assertion_signature",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkTypePredicate",
+          "line": 3106
+        },
+        {
+          "name": "getTypePredicateFromBody",
+          "line": 20939
+        },
+        {
+          "name": "getSignatureFromDeclaration",
+          "line": 20240
+        },
+        {
+          "name": "instantiateSignature",
+          "line": 21019
+        },
+        {
+          "name": "getRestTypeOfSignature",
+          "line": 9856
+        },
+        {
+          "name": "getContextualSignature",
+          "line": 10495
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-family-reconciled; independently-source-reviewed-by-support",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "No concrete selected source omission currently identified in the reconciled family. Runtime acceptance remains pending; explicit external consumers are separate."
+    },
+    {
+      "family": "external_protocol_callers",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkGeneratorInstantiationAssignabilityToReturnType",
+          "line": 30246
+        },
+        {
+          "name": "getAwaitedType",
+          "line": 31802
+        },
+        {
+          "name": "checkAwaitExpression",
+          "line": 11081
+        },
+        {
+          "name": "checkYieldExpression",
+          "line": 11188
+        }
+      ],
+      "unresolvedSpellings": [],
+      "implementationState": "external",
+      "reviewStatus": "explicit-external",
+      "runtimeQualification": "not-run-current-campaign",
+      "remainingOmissions": "Async/generator protocol execution external; shared type algorithms remain selected."
+    },
+    {
+      "family": "predicate_factory_peer",
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/relater.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+      "functions": [
+        {
+          "name": "getTypePredicateOfSignature",
+          "line": 2049
+        },
+        {
+          "name": "createTypePredicateFromTypePredicateNode",
+          "line": 2117
+        },
+        {
+          "name": "instantiateTypePredicate",
+          "line": 2133
+        }
+      ],
+      "implementationState": "implemented",
+      "reviewStatus": "independently-source-reviewed-by-core",
+      "runtimeQualification": "Immutable snapshot4: all 77 aggregate complete Program/type/relation/diagnostic records match pinned Go (43 authored families, 2 disk examples, 32 reused compiler inputs). No per-function execution claim. Actual native/full retained acceptance pending.",
+      "remainingOmissions": "Predicate resolution sentinel/target/composite/body selection, this/asserts/parameter index and mapper-preserved identity source compared; no finding."
+    }
+  ],
+  "modelResponsibilities": [
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/types.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Types.cs",
+      "symbols": [
+        "StringMappingType",
+        "Type.AsStringMappingType",
+        "Type.Target"
+      ],
+      "implementationState": "implemented",
+      "reviewStatus": "independently-source-reviewed-by-support",
+      "runtimeQualification": "Compiled all three snapshots; genuine intrinsic/template Program and assignability witnesses exact on snapshot 1; no per-accessor execution claim.",
+      "remainingOmissions": "No concrete demanded model omission identified; original object payload selections and invariant failure defaults reconciled separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "symbols": [
+        "newObjectType",
+        "typeResolutionHasProperty"
+      ],
+      "implementationState": "implemented",
+      "reviewStatus": "core-source-reconciled",
+      "runtimeQualification": "Compiled snapshot3; no direct invalid-selector public trigger claimed.",
+      "remainingOmissions": "All original payload/property selectors present; invalid cases are source invariants, not excluded type families."
+    }
+  ],
+  "peerDependencies": [
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/stringutil/js_case.go",
+      "counterpart": "src/TypeScript.Scanner/StringUtil/JsCase.cs",
+      "implementationState": "implemented",
+      "reviewStatus": "independently-source-reviewed-by-core",
+      "runtimeQualification": "Actual original TestJSCasing body, 26 assertions, passed immutable snapshot 1; source data independently compared exactly.",
+      "note": "Whole8 function algorithm compared; existing range membership reused. Raw Go-byte/JS-surrogate semantics preserved."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/stringutil/js_case_generated.go",
+      "counterpart": "src/TypeScript.Scanner/StringUtil/JsCaseGenerated.cs",
+      "implementationState": "implemented",
+      "reviewStatus": "independently-source-reviewed-by-core",
+      "runtimeQualification": "Actual original TestJSCasing body, 26 assertions, passed immutable snapshot 1; source data independently compared exactly.",
+      "note": "All2927 raw mapping entries+147Cased+377CaseIgnorable ranges exact. Durable source review artifacts/typesystem-validation/casing-data-source-review.json."
+    }
+  ],
+  "buildLedger": {
+    "libraryInvocations": 4,
+    "cliInvocations": 4,
+    "libraryWallSeconds": 32.3,
+    "cliWallSeconds": 6.66,
+    "totalWallSeconds": 38.96,
+    "snapshots": [
+      {
+        "number": 1,
+        "libraryWallSeconds": 9.74,
+        "cliWallSeconds": 2.34,
+        "dllSha256": "83ed1d873cd4f1e6010f8b7c52387f08af1b88885109feb2c73b4972fd666505"
+      },
+      {
+        "number": 2,
+        "libraryWallSeconds": 9.28,
+        "cliWallSeconds": 2.22,
+        "dllSha256": "73827c13f7d3c518617fa14991b6a402cd4c74211477c8d8f9549f6a7cc52819"
+      },
+      {
+        "number": 3,
+        "libraryWallSeconds": 9.39,
+        "cliWallSeconds": 0.99,
+        "dllSha256": "9f264e1c99509f5f7e2fe6d0ac0d20cebe04f9daade714eede34e91632bf63e6"
+      },
+      {
+        "number": 4,
+        "libraryWallSeconds": 3.89,
+        "cliWallSeconds": 1.11,
+        "dllSha256": "e52022b57c864d624901e8ec72d723f7664665d6638e4dfa0fd98f6896d125d3"
+      }
+    ]
+  },
+  "residualDisposition": {
+    "selectedInvariantDefaults": "typeResolutionHasProperty: all 10 source property selectors present; newObjectType: all 8 source payload selectors present. Unknown selectors throw source-equivalent invariant exceptions, not semantic unsupported placeholders.",
+    "sharedCallConsumer": "isPromiseResolveArityError restored actual global-constructor-symbol identity tail; ordinary callback constructors return false, no async execution expansion.",
+    "namedAdapters": "Historical generic-rest/remapping/profile admission remains named-adapter policy only; genuine Program invokes original shared algorithms.",
+    "externalConsumers": "Yield/await/decorator/JSX/import-attribute contextual syntax consumers remain explicit unsupported boundaries. Shared type constructors and inference/relation reused by those protocols remain selected.",
+    "sharedAdvancedTypes": "No broad advanced-type exclusion: shared TS generic/mapped/conditional/indexed/template/intrinsic/variadic/inference/relation responsibilities are selected and reconciled under T1\u2013T5."
+  },
+  "peerSourceReview": {
+    "sourceFiles": [
+      "upstream/TypeScript/tsc/internal/checker/inference.go",
+      "upstream/TypeScript/tsc/internal/checker/relater.go"
+    ],
+    "counterparts": [
+      "src/TypeScript.Scanner/Checker/Inference.cs",
+      "src/TypeScript.Scanner/Checker/Relater.cs"
+    ],
+    "reviewStatus": "independently-source-reviewed-by-core",
+    "scope": "Selected synchronous inference/relation responsibilities: priority/context fixing and fallback; recursion/reliability/publication; structural conditional/mapped/indexed/tuple/template/intrinsic; variance; signature/predicate/property/index relations and diagnostics. Full named-function/call/flag/diagnostic triage corroborates body-family comparison, not a method-count completion test.",
+    "finding": "No remaining substantive selected inference/relation discrepancy identified. NoErrorTruncation diagnostic display option/elision/printer dependencies source-restored by support and independently reviewed by core; snapshot4 full 77 aggregate records exact. JSX-specific and enabled-trace consumers remain explicit external."
+  },
+  "compiledSnapshot": "artifacts/typesystem-validation/build4/snapshot/TypeScript.Scanner.dll",
+  "counterpartHashes": {
+    "src/TypeScript.Scanner/Checker/Checker.cs": "e212ae786205c803a1e7dcbc022bab26f18f0c97845eaf7f1795230506d9521c",
+    "src/TypeScript.Scanner/Checker/Types.cs": "4332b04596e8877942ab979b926384126fbb7e231be10965b446ec1c008fa1bd"
+  }
+}

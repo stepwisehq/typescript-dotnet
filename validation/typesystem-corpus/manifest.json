@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "campaign": "typescript-shared-type-system-completion",
+  "baseline": "09630d6",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 77,
+  "groups": [
+    {
+      "name": "families",
+      "requests": "validation/typesystem-corpus/requests-families.jsonl",
+      "expected": "validation/typesystem-corpus/expected-families.jsonl.gz",
+      "provenance": "validation/typesystem-corpus/requests-families-provenance.json",
+      "cases": 43,
+      "requestsSha256": "12dcae874290c87ebe27e52399cad7fac92f5bddc75c3970a6bfed1da26a225a",
+      "expectedSha256": "d32cd0275f2ab161389590cde28ad4213a3cb0062007e61aaed65406a621e7a9",
+      "provenanceSha256": "d1aa583a831b0a68bf0e28e20f902c7ed20923aa88e2205db76a188663ef0ae7",
+      "originalOutputSha256": "340aa9e2813360993869f16667315413013d06bf9f8ed81a6b50dd333fe7c0c4",
+      "originalReport": "artifacts/typesystem-validation/original/families43/report.json"
+    },
+    {
+      "name": "vertical",
+      "requests": "validation/typesystem-corpus/requests-vertical.jsonl",
+      "expected": "validation/typesystem-corpus/expected-vertical.jsonl.gz",
+      "provenance": "validation/typesystem-corpus/requests-vertical-provenance.json",
+      "cases": 2,
+      "requestsSha256": "914ac79ccc81d7cdc5fc3ea3ff8bd144e5edd06da02aa8a95f742f562a14ba81",
+      "expectedSha256": "d53b594d16a87ace24d65e12d963d3f8174f3b72161c5e10c4efd44b4388a783",
+      "provenanceSha256": "457b7ee9df343c2125d2f10068b6531d2deeaf3ea1781ccbd954e7134ee76b49",
+      "originalOutputSha256": "b96aa03e713081f5ccdb779d199cb9a68e308fb58ccae1f9818a9dfbeaab18ab",
+      "originalReport": "artifacts/typesystem-validation/original/vertical/report.json"
+    },
+    {
+      "name": "compiler-inputs",
+      "requests": "validation/typesystem-corpus/requests-compiler-inputs.jsonl",
+      "expected": "validation/typesystem-corpus/expected-compiler-inputs.jsonl.gz",
+      "provenance": "validation/typesystem-corpus/requests-compiler-inputs-provenance.json",
+      "cases": 32,
+      "requestsSha256": "6f9be20e36b095503a5b38f00461b64e43cb9d2c3de8b958ec1ddea6a816f54d",
+      "expectedSha256": "e9671cd2c679a4d6520ccb708ccc9fae186ca883a6605b7d7311d2c4f20bb54f",
+      "provenanceSha256": "43e8ed7f50467a310e373891636e8347ee878a4cea8ae6a3e5cc2bb229c8a176",
+      "originalOutputSha256": "affd36741548215557a5738a7fcb0f015b1e9db221c95a56285cac4b4751d30a",
+      "originalReport": "artifacts/typesystem-validation/original/compiler-inputs/report.json"
+    }
+  ],
+  "sharedChecks": {
+    "count": 7,
+    "groups": [
+      {
+        "flag": "--checker-checks",
+        "count": 2,
+        "classNames": [
+          "TypeSystem.Tests.CheckerOriginalTests"
+        ],
+        "names": [
+          "TestGetSymbolAtLocation",
+          "TestGetTypeAtLocationOfTypeOnlyImportClause"
+        ]
+      },
+      {
+        "flag": "--mapper-semantic-checks",
+        "count": 3,
+        "classNames": [
+          "TypeSystem.Tests.MapperSemanticTests"
+        ],
+        "names": [
+          "TestCompositeProjectContentMapperSupplementalRoots",
+          "TestContentMapperInvalidMappings",
+          "TestContentMapperSourceFileState"
+        ]
+      },
+      {
+        "flag": "--external-semantic-boundary-checks",
+        "count": 1,
+        "classNames": [
+          "TypeSystem.Tests.ExternalSemanticBoundaryTests"
+        ],
+        "names": [
+          "Authored.ExternalSemanticConsumers"
+        ]
+      },
+      {
+        "flag": "--js-casing-checks",
+        "count": 1,
+        "classNames": [
+          "TypeSystem.Tests.JsCasingTests"
+        ],
+        "names": [
+          "TestJSCasing"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "TypeSystem.Tests.CheckerOriginalTests": 2,
+      "TypeSystem.Tests.MapperSemanticTests": 3,
+      "TypeSystem.Tests.ExternalSemanticBoundaryTests": 1,
+      "TypeSystem.Tests.JsCasingTests": 1
+    }
+  },
+  "corpusXUnitClass": "TypeSystem.Tests.TypeSystemOracleTests",
+  "originalTests": [
+    {
+      "package": "./internal/checker",
+      "functions": [
+        "TestGetSymbolAtLocation",
+        "TestGetTypeAtLocationOfTypeOnlyImportClause"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/checker/checker_test.go": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestCompositeProjectContentMapperSupplementalRoots",
+        "TestContentMapperInvalidMappings",
+        "TestContentMapperSourceFileState"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/stringutil",
+      "functions": [
+        "TestJSCasing"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/stringutil/js_case_test.go": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5"
+      }
+    }
+  ],
+  "currentCheckingEnvironment": {
+    "DECLARATIONS_CURRENT_CHECKING": "1"
+  },
+  "semanticObservation": {
+    "provenance": "validation/declarations-corpus/semantic-observation-provenance.json",
+    "provenanceSha256": "0604e69f15f8534063dbf2eaf7d95c886746824ef34a4862ff94c1b2cf24b981",
+    "publicRelations": "Optional Relations records select actual identifier type/declared-type inputs, record owned byte positions and type display, and call public IsTypeAssignableTo on the same genuine Program checker. Invalid selectors reject harness input. No relationship IDs/private graph."
+  },
+  "cliControls": {
+    "cases": 2,
+    "requests": "validation/typesystem-corpus/cli-requests.jsonl",
+    "requestsSha256": "1699dec97e022da0586000579b1aeeafede17c26c3b3094edc22f9febd2a1cc6",
+    "provenance": "validation/typesystem-corpus/cli-provenance.json",
+    "provenanceSha256": "967e7cf1ec018f28abdb6deffdf8ba1f8ba0c382cf0cd6c1043e4a1ef3d144c2",
+    "runner": "tools/check-typesystem-cli.py",
+    "runnerSha256": "05325b9e0ffb02975af131f687da3b4b2cb77552cf08c000ab1ea12071e93e0b",
+    "expectedExits": {
+      "typed-event-client-valid": 0,
+      "typed-event-client-invalid": 1
+    },
+    "sourceFiles": {
+      "examples/typesystem/event-client/src/client.ts": "eafbc195b785c00bad01bec8d48de67f3908b12d3f295f60187fe8f68bfa39bf",
+      "examples/typesystem/event-client/src/main.ts": "98a4f46018fa9ca9bc3f79cc97d4ec00713e1a004c77ab9c949924c6ce23c073",
+      "examples/typesystem/event-client/src/model.ts": "0842386cb770a1b651e0daccf70d1c71152110411dbb5383fa6d392c24d6c288",
+      "examples/typesystem/event-client/tsconfig.json": "b8ea2bad0fb977e778f7e28b6276b4d1ab07065afd443c4a9629f927eaf75f06",
+      "examples/typesystem/event-client-invalid/src/client.ts": "eafbc195b785c00bad01bec8d48de67f3908b12d3f295f60187fe8f68bfa39bf",
+      "examples/typesystem/event-client-invalid/src/main.ts": "01e0beaa0fe622b64734aad9944d7aa4b5882f2d7d7062e73130ac42f18e7d70",
+      "examples/typesystem/event-client-invalid/src/model.ts": "0842386cb770a1b651e0daccf70d1c71152110411dbb5383fa6d392c24d6c288",
+      "examples/typesystem/event-client-invalid/tsconfig.json": "b8ea2bad0fb977e778f7e28b6276b4d1ab07065afd443c4a9629f927eaf75f06"
+    },
+    "semanticObserver": "tools/resolution-cli-oracle/main.go",
+    "semanticObserverSha256": "887d169f97d76623efba66645c56f91d6fd563c2256b2336dc506aa8be6b9379"
+  },
+  "orderControls": {
+    "cases": 10,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 22,
+    "requests": "validation/typesystem-corpus/order-requests.jsonl",
+    "requestsSha256": "04144fb3ee23bd68de596147bebc9d757698c51cc8ec01e0925a2184587c231e"
+  },
+  "jsonErrorProjection": {
+    "controls": 6,
+    "expected": "validation/program-corpus/json-error-controls-expected.json",
+    "expectedSha256": "31115caa8aa1ff8b5bc1190d9b29aaaa581e403ec6f11fa984ad4a047937d8db",
+    "provenance": "validation/program-corpus/json-error-controls-provenance.json",
+    "provenanceSha256": "7ac1c7310473382b06251d3911f66d28ffe3724c4a3f9e5a8fd78ab4f7564625"
+  },
+  "authoredControlRetirement": {
+    "provenance": "validation/declarations-corpus/authored-control-retirement-provenance.json",
+    "provenanceSha256": "5e0ffd4ddc03d2cd9e1a13f96e486e84adeb7685b553faa8fba5356945fc4b84"
+  },
+  "currentCheckingReplacement": {
+    "configurationManifest": "validation/declarations-corpus/configuration-current-manifest.json",
+    "resolutionManifest": "validation/declarations-corpus/resolution-current-manifest.json",
+    "migration": "validation/declarations-corpus/checking-environment-migration.json",
+    "migrationSha256": "4db955a73815d0e2d5d67d60ffd4725db527b3854c8b6fdd0a87aff3d81b176f",
+    "configurationManifestSha256": "a92a7b9f1a9e63227c9959e023ffce8e4d34d7c301e3afdd5655d36897749256",
+    "resolutionManifestSha256": "cb5e53a601331638e23190e3975c14a302f784d31a9db61514e7cfa5113dd976"
+  },
+  "publicRelationsObservation": {
+    "provenance": "validation/typesystem-corpus/public-relations-provenance.json",
+    "provenanceSha256": "f6f8ec93e3a615d99391dff85da517457511965b9217636b65e777ff0bf6a5c9"
+  }
+}

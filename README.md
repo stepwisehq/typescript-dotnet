@@ -1,29 +1,35 @@
 # TypeScript port feasibility study
 
-The **TypeScript synchronous expression, statement and checker-flow contract is complete**,
-verified under actual **Linux x64 Native AOT**, on the accepted declaration/object,
-Program, configuration, resolution and syntax/binder foundations. Ordinary
+The **shared TypeScript type-system contract T1–T6 is complete**, verified under actual
+**Linux x64 Native AOT** on the accepted syntax/binder, Program/environment,
+declaration/object and synchronous expression/flow foundations. Ordinary
 `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged upstream
 libraries, without hidden library injection.
 
-Supported behavior includes runtime destructuring/defaults/rest, object/array spread,
-optional access/calls, synchronous loops, switch and labels, try/catch/finally,
-predicates and flow-sensitive narrowing, alongside existing classes, functions,
-generics, objects and modules. The strict ES2022 [order-fulfillment project](./examples/expressions/)
-checks successfully; its invalid variant reports all five expected diagnostics and
-exits 1. See the [usage/reproduction guide](./docs/EXPRESSIONS-VERIFY.md),
-[contract assessment](./docs/EXPRESSIONS-ASSESSMENT.md),
-[proof](./validation/results/expressions-verified.json), [source mapping](./source-map.json)
+The reconciled capability includes generic instantiation/constraints/variance,
+union/intersection/indexed/mapped/conditional/template/intrinsic types, inference and
+relationships, and required tuple/variadic/callable/predicate consumers. The strict ES2022
+[event-client project](./examples/typesystem/event-client/) combines these across three
+files and checks successfully. Its [invalid variant](./examples/typesystem/event-client-invalid/)
+reports all six expected diagnostics and exits 1, with no missing globals. See the
+[usage/reproduction guide](./docs/TYPESYSTEM-VERIFY.md),
+[contract assessment](./docs/TYPESYSTEM-ASSESSMENT.md),
+[proof](./validation/results/typesystem-verified.json), [source mapping](./source-map.json)
 and [checker roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
 
-Acceptance includes 91 new xUnit cases, 85 complete pinned-Go managed/native comparisons,
-six shared assertion groups, repeated-order checks and all retained regressions.
-The 24,765 selected-suite TRX aggregate counts passed case executions, not unique
-upstream tests. Reused compiler inputs are not full compiler-test passes. Remaining
-advanced types, async/generators/disposal, JS/JSDoc/JSX/decorators and module/option
-semantics are unfinished. This is not whole-checker parity or support for every API
+Acceptance includes 84 new xUnit cases, 77 complete pinned-Go managed/native comparisons,
+seven shared checks (six original bodies plus one authored control), 42 public
+assignability observations, repeated-order checks and all retained regressions.
+The 24,849 selected-suite TRX aggregate counts passed case executions, not unique
+upstream tests or every repeated invocation. Reused compiler inputs are not full
+compiler-test passes. Source review is distinct from finite runtime coverage.
+
+Async/generators/disposal execution, JS/JSDoc/JSX/decorators and remaining module/option
+consumers are unfinished. This is not whole-checker parity or support for every API
 in the genuine libraries. Private-state observations remain diagnostic aids, not
-independent exhaustive acceptance requirements.
+independent exhaustive acceptance requirements. The next recommended campaign is
+async, generators and runtime protocol checking; large-project comparisons remain
+deferred until whole-checker no-emit acceptance.
 
 All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and

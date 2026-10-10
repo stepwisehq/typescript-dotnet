@@ -1,9 +1,39 @@
 # Current project state
 
+**Accepted: shared TypeScript type-system contract T1–T6. No active campaign.**
+Baseline `09630d6`; delivery commit contains this state and the
+[durable proof](../validation/results/typesystem-verified.json). Read the
+[assessment](TYPESYSTEM-ASSESSMENT.md), [checkpoint](TYPESYSTEM-STATUS.md),
+[contract](TYPESYSTEM-CONTRACT.md), [inventory](TYPESYSTEM-INVENTORY.md) and
+[verification guide](TYPESYSTEM-VERIFY.md).
+
+All 77 complete pinned-Go records match managed and actual Linux x64 Native AOT,
+including finite public inferred-type and 42 assignability observations with complete
+diagnostics. Seven shared checks in four groups preserve six original bodies and one
+authored control; 22 order/repeat executions per runtime and both ordinary disk CLI
+cases pass (valid0, invalid1 with all six diagnostics, no missing globals).
+All 84 new xUnit cases and retained gates pass. Selected-suite TRX aggregate: 24,849
+passed case executions, zero failures/skips; not a unique-test inventory. Gate elapsed
+1,492.728 seconds, all five drift guards clear, 256 historical files unchanged.
+
+Source reconciliation and independent Sol review close the shared TS generic/inference/
+relationship/advanced-operator and required tuple/callable/predicate responsibilities.
+Original casing and demanded diagnostic-display support are included. Source review
+and finite behavioral evidence remain separate; whole checker/printer files are partial.
+The assessment records real source repairs, one harness-only failed gate and a narrow
+exact-version observer provenance adaptation without changed expectations.
+
+Recommended next: async, generators and runtime protocol checking, then remaining
+JS/JSDoc/JSX/decorator/module/options consumers and whole-checker reconciliation under
+the [roadmap](CHECKER-COMPLETION-ROADMAP.md). Wait for the next user mandate; do not start
+it automatically. Large-project comparisons, .NET upgrades and optimization remain
+deferred. No new private-state instrumentation or token/cost estimates were added.
+
+## Prior expression checkpoint
+
 **Accepted: TypeScript synchronous expressions, statements and checker-flow E1–E6.**
 Baseline `5efa4e5`; delivery commit contains this state and the
-[durable proof](../validation/results/expressions-verified.json). No active implementation
-campaign. Read the [assessment](EXPRESSIONS-ASSESSMENT.md),
+[durable proof](../validation/results/expressions-verified.json). This historical campaign was committed as `09630d6`; the shared type-system checkpoint above supersedes its next-step recommendation. Read the [assessment](EXPRESSIONS-ASSESSMENT.md),
 [contract](EXPRESSIONS-CONTRACT.md), [checkpoint](EXPRESSIONS-STATUS.md) and
 [verification guide](EXPRESSIONS-VERIFY.md).
 
@@ -17,8 +47,8 @@ The successful frozen gate took 1,398.790 seconds; five drift checks clear and
 substantive in-contract finding. The assessment records the first failed gate and
 source/public-query versus observer-bookkeeping repairs without changed expectations.
 
-Recommended next: remaining type-system closure under the [checker roadmap](CHECKER-COMPLETION-ROADMAP.md).
-Await a new mandate. Async/protocol, advanced-type closure and JS-specific semantics
+Historical recommendation: remaining type-system closure under the [checker roadmap](CHECKER-COMPLETION-ROADMAP.md).
+That campaign is now accepted above. Async/protocol and JS-specific consumers
 remain unfinished; whole-checker completion is not claimed. Private-state observations
 remain diagnostic aids, not automatic acceptance obligations. No new instrumentation
 was added. Large-project comparison and .NET 11/optimization remain deferred.

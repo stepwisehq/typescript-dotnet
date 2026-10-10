@@ -1,0 +1,29 @@
+{
+  "classification": "authored-additive-public-relations-observer-extension",
+  "baseline": "09630d6",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalSourceFiles": {
+    "tools/program-oracle/semantic.go": "8d654a79545abf458fc53ded0821508b2af84e2d99818c072ea900d559a780e6",
+    "validation/Program.Checks/ProgramSemanticRunner.cs": "73f261a91252d698407d9b0bbd6cb8d3476a3623d25b8fc25da2d57a2fe7b22e"
+  },
+  "sourceFiles": {
+    "tools/program-oracle/semantic.go": "dc04058f4aadd2b3f4deeaf5f82e87ce80baa97501194e112c583cdc5cefde62",
+    "validation/Program.Checks/ProgramSemanticRunner.cs": "44804da2e62e1117bb20c9ea78dbb0904d9c9a3efdb291d1331d21d1eb73748e"
+  },
+  "addedInput": "Optional Semantic.Relations selects Source/Target File,Identifier,Occurrence,type-or-declared operation. Wrong shapes and invalid selectors reject input.",
+  "addedOutput": "Explicit source/target owned file ID, byte positions/node kind, selected operation/type display, direct public IsTypeAssignableTo bool; actual globalAfterRelations.",
+  "preserved": [
+    "Missing/null Relations keeps prior output absent; actual existing property SymbolToString display producer unchanged.",
+    "No existing diagnostic/input/option/library/query normalization.",
+    "All historical request/expected/proof/provenance bytes remain unchanged."
+  ],
+  "limits": [
+    "One finite absent-field request byte identity establishes this specific control, not exhaustive schema parity. All retained behavioral corpora replay under the final gate.",
+    "Public display names are not arbitrary unique-symbol identity. No private relation graph or incidental allocation IDs."
+  ],
+  "evidence": {
+    "absentField": "artifacts/typesystem-validation/observer-initial/report.json",
+    "invalidShape": "artifacts/typesystem-validation/observer-initial/invalid-relations-report.json",
+    "publicPairs": "artifacts/typesystem-validation/build1/public-pairs/report.json"
+  }
+}

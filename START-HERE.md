@@ -11,11 +11,11 @@ Follow the active phase in [STATE.md](./docs/STATE.md). If it records no active
 work, report that checkpoint and wait for a new bounded mandate; this resume
 instruction does not authorize starting the full compiler.
 
-Latest accepted campaign: [TypeScript expressions, statements and checker flow](./docs/EXPRESSIONS-ASSESSMENT.md),
-from `5efa4e5`. Its delivery commit contains the [proof](./validation/results/expressions-verified.json)
-and [checkpoint](./docs/EXPRESSIONS-STATUS.md). There is no active implementation campaign;
-await a new mandate. The [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md) recommends remaining
-type-system closure next. Do not restart accepted foundations or begin optimization.
+Latest accepted campaign: [shared TypeScript type-system completion](./docs/TYPESYSTEM-ASSESSMENT.md),
+from baseline `09630d6`. The delivery commit contains its [checkpoint](./docs/TYPESYSTEM-STATUS.md)
+and proof. No new campaign is active; report that checkpoint and wait for a mandate.
+Recommended next: async/generator/runtime protocols under the [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
+Do not restart accepted work, large-project comparison or optimization.
 
 ## User mandate
 
@@ -249,6 +249,13 @@ Later user directions, in chronological order:
     [contract](./docs/EXPRESSIONS-CONTRACT.md) govern autonomous delivery. Retain genuine
     Program/libraries, actual Native AOT, complete diagnostics/inferred types and all
     regression gates; advanced-type/protocol/JS boundaries remain explicit.
+
+28. From `09630d6`, complete remaining upstream type-system responsibilities and
+    reconcile earlier partial generic/inference/relation/mapped/conditional support.
+    Follow the exact [mandate](./docs/TYPESYSTEM-PROMPT.md). Keep genuine environments,
+    meaningful public semantic comparisons, independent Sol review and actual Native
+    AOT/retained acceptance. Async/generator and JS-specific boundaries stay explicit;
+    large-project comparison remains deferred until checker completion.
 
 ## Recovery sequence
 

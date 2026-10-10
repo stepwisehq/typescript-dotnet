@@ -11,7 +11,9 @@ public static partial class ProgramRunner
 {
     private static JsonObject ObserveSemantics(Observer observer, CompilerProgram program, JsonObject input)
     {
-        Keys(input, "PerFile", "Repeat", "IncrementalFiles", "Queries");
+        Keys(input, "PerFile", "Repeat", "IncrementalFiles", "Queries", "Relations");
+        if (input["Relations"] is not null and not JsonArray)
+            throw new ArgumentException("Semantic Relations must be an array or null.");
         var result = new JsonObject
         {
             ["globalBefore"] = observer.Diagnostics(program.GetGlobalDiagnostics()),
@@ -49,7 +51,62 @@ public static partial class ProgramRunner
             result["queries"] = rows;
             result["globalAfterQueries"] = observer.Diagnostics(program.GetGlobalDiagnostics());
         }
+        if (input["Relations"] is JsonArray relations)
+        {
+            JsonArray rows = [];
+            foreach (var relation in relations)
+                rows.Add((JsonNode)ObserveSemanticRelation(observer, program, relation!.AsObject()));
+            result["relations"] = rows;
+            result["globalAfterRelations"] = observer.Diagnostics(program.GetGlobalDiagnostics());
+        }
         return result;
+    }
+
+    // Finite pairs use the genuine public API on the same Program checker.
+    // No internal IDs, private relation state or equality assumptions are observed.
+    private static JsonObject ObserveSemanticRelation(Observer observer, CompilerProgram program, JsonObject relation)
+    {
+        Keys(relation, "Source", "Target");
+        var (checker, done) = program.GetTypeChecker();
+        try
+        {
+            (TypeScript.Checking.Type Type, JsonObject Observation) SelectType(JsonObject query)
+            {
+                Keys(query, "File", "Identifier", "Operation", "Occurrence");
+                string operation = query["Operation"]!.GetValue<string>();
+                int occurrence = query["Occurrence"]?.GetValue<int>() ?? 0;
+                if (occurrence < 0 || operation is not ("type" or "declared"))
+                    throw new ArgumentException("Relation requires nonnegative identifier occurrence and type/declared operation");
+                var file = program.GetSourceFile(RootedFilePath.FromGoString(Input(query, "File")))
+                    ?? throw new ArgumentException("Unknown semantic relation file");
+                string identifier = Input(query, "Identifier");
+                Node? selected = null;
+                int current = 0;
+                void Visit(Node node)
+                {
+                    if (Ast.IsIdentifier(node) && node.Text() == identifier)
+                    {
+                        if (current == occurrence) selected = node;
+                        current++;
+                    }
+                    node.ForEachChild(child => { Visit(child); return false; });
+                }
+                Visit(file.AsNode());
+                if (selected is null) throw new ArgumentException("Unknown semantic relation identifier occurrence");
+                var type = checker.GetTypeAtLocation(selected);
+                if (operation == "declared")
+                    type = checker.GetDeclaredTypeOfSymbol(checker.GetSymbolAtLocation(selected)
+                        ?? throw new ArgumentException("Declared relation type requires actual symbol"));
+                return (type, new JsonObject { ["file"] = observer.File(file), ["pos"] = selected.Pos(),
+                    ["end"] = selected.End(), ["kind"] = (int)selected.Kind, ["operation"] = operation,
+                    ["typeBase64"] = Bytes(GoString.ToUtf8(checker.TypeToString(type))) });
+            }
+            var source = SelectType(relation["Source"]!.AsObject());
+            var target = SelectType(relation["Target"]!.AsObject());
+            return new JsonObject { ["source"] = source.Observation, ["target"] = target.Observation,
+                ["assignable"] = checker.IsTypeAssignableTo(source.Type, target.Type) };
+        }
+        finally { done(); }
     }
 
     private static JsonObject ObserveSemanticQuery(Observer observer, CompilerProgram program, JsonObject query)

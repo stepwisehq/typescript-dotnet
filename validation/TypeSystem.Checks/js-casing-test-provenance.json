@@ -1,0 +1,44 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "upstream/TypeScript/tsc/internal/stringutil/js_case_test.go",
+  "sourceSha256": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5",
+  "originalFunctions": [
+    "TestJSCasing"
+  ],
+  "originalTableAssertions": 26,
+  "names": [
+    "ascii lowercase",
+    "ascii uppercase",
+    "lowercase dotted i",
+    "lowercase lone sigma",
+    "lowercase final sigma",
+    "lowercase non-sigma greek",
+    "uppercase sharp s",
+    "uppercase non-ascii simple mapping",
+    "uppercase ligature",
+    "capitalize-style uppercase",
+    "uncapitalize-style lowercase",
+    "lowercase final sigma after lowercase letter without uppercase mapping",
+    "lowercase sigma after modifier letter",
+    "lowercase sigma after case ignorable ypogegrammeni",
+    "lowercase final sigma after feminine ordinal indicator",
+    "lowercase final sigma after masculine ordinal indicator",
+    "lowercase final sigma after roman numeral",
+    "lowercase sigma after uppercase property added after unicode 15",
+    "lowercase sigma after uppercase property skewed from local v8 unicode data",
+    "lowercase sigma before immediate latin letter",
+    "lowercase sigma before immediate roman numeral letter",
+    "lowercase sigma before case ignorable then latin letter",
+    "uppercase lone surrogate",
+    "lowercase lone surrogate",
+    "uppercase lone low surrogate with text",
+    "lowercase lone surrogate before sigma"
+  ],
+  "adaptations": [
+    "Source t.Parallel scheduling is sequential; all original operations and expected bytes retained.",
+    "Source string literals explicitly use GoString.ToUtf8; actual EncodeJSStringRune retains lone surrogate WTF8 bytes."
+  ],
+  "generator": "tools/typesystem-generate-casing-tests.py",
+  "generated": "validation/TypeSystem.Checks/JsCasingChecks.Generated.cs",
+  "generatedSha256": "fe16379dbe54817d93969fd717a11c9c610c524411f6499182bf04fc8564b43d"
+}

@@ -17,8 +17,8 @@ public sealed partial class Checker
     private string typeToStringNoTypeReduction(Type t) => typeToStringEx(t, null, flags: TypeScript.NodeBuilding.Flags.NoTypeReduction);
     // checker.go:19952 selects WriteArrayAsGenericType without the default alias flags.
     private string typeToStringWriteArrayAsGenericType(Type t) => typeToStringEx(t, null, flags: TypeScript.NodeBuilding.Flags.WriteArrayAsGenericType);
-    // printer.go:47/59. Default AllowUniqueESSymbolType|UseAliasDefinedOutsideCurrentScope,
-    // no verbosity; selected diagnostic calls may supply an enclosing declaration.
+    // printer.go:47/59. Preserve diagnostic flags and the compiler's truncation
+    // option; service verbosity remains outside the diagnostic entry point.
     private string typeToString(Type t, Node enclosingDeclaration) => typeToStringEx(t, enclosingDeclaration);
     private string typeToStringEx(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null)
     {
@@ -29,7 +29,15 @@ public sealed partial class Checker
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         var nodeBuilder = getNodeBuilder();
         serializationLevel++;
-        var combinedFlags = flags != null ? flags.Value | TypeScript.NodeBuilding.Flags.IgnoreErrors : (TypeScript.NodeBuilding.Flags? )null;
+        var noTruncation = compilerOptions.NoErrorTruncation == Tristate.True ||
+            (flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.NoTruncation) != 0;
+        var combinedFlags = (flags ?? (TypeScript.NodeBuilding.Flags.AllowUniqueESSymbolType |
+            TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope |
+            (fullyQualified ? TypeScript.NodeBuilding.Flags.UseFullyQualifiedType : 0) |
+            (noTypeReduction ? TypeScript.NodeBuilding.Flags.NoTypeReduction : 0))) |
+            TypeScript.NodeBuilding.Flags.IgnoreErrors;
+        if (noTruncation)
+            combinedFlags |= TypeScript.NodeBuilding.Flags.NoTruncation;
         var typeNode = nodeBuilder.TypeToTypeNode(t, enclosingDeclaration, fullyQualified, noTypeReduction, combinedFlags);
         serializationLevel--;
         if (typeNode == null)
@@ -38,8 +46,8 @@ public sealed partial class Checker
         var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), t != unresolvedType);
         printer.Write(typeNode, writer, enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null);
         var result = writer.String();
-        // Default TypeFormatFlags, no verbosity and NoErrorTruncation false.
-        const int maxLength = 320; // defaultMaximumTruncationLength * 2 upstream.
+        var maxLength = (noTruncation ? NodeBuilderImpl.noTruncationMaximumTruncationLength :
+            NodeBuilderImpl.defaultMaximumTruncationLength) * 2;
         return result.Length >= maxLength ? result[..(maxLength - 3)] + "..." : result;
     }
 

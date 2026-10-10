@@ -1,0 +1,1349 @@
+{
+  "baseline": "09630d6",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "contract": "docs/TYPESYSTEM-CONTRACT.md",
+  "directOriginalFunctions": [
+    {
+      "package": "./internal/checker",
+      "function": "TestGetSymbolAtLocation",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "disposition": "retained-complete-original-assertion-body",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-0.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    },
+    {
+      "package": "./internal/checker",
+      "function": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "disposition": "retained-complete-original-assertion-body",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-0.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestCompositeProjectContentMapperSupplementalRoots",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "disposition": "retained-complete-original-assertion-body",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-1.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestContentMapperInvalidMappings",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "disposition": "retained-complete-original-assertion-body",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-1.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestContentMapperSourceFileState",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "disposition": "retained-complete-original-assertion-body",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-1.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    },
+    {
+      "package": "./internal/stringutil",
+      "function": "TestJSCasing",
+      "source": "upstream/TypeScript/tsc/internal/stringutil/js_case_test.go",
+      "sourceSha256": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5",
+      "disposition": "complete-new-original-body",
+      "tableAssertions": 26,
+      "adaptation": "Sequential t.Parallel; source scalar literals encode UTF8 once, actual EncodeJSStringRune retains WTF8 surrogate bytes.",
+      "execution": {
+        "original": "passed: artifacts/typesystem-validation/original-tests-2.jsonl; validation/results/typesystem-verified.json#originalDirectTests",
+        "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.sharedChecks; artifacts/typesystem-validation/typesystem.trx",
+        "native": "passed: validation/results/typesystem-verified.json#typesystemNative.sharedChecks"
+      }
+    }
+  ],
+  "originalBodyAccounting": {
+    "new": 1,
+    "retained": 5,
+    "tableAssertionsNew": 26,
+    "noDirectOriginalBodies": "Pinned checker only has the two retained bodies; types/inference/relater have no direct test files. util_test applicable helpers already retained. Compiler inputs below are not original assertions or entire baseline checks."
+  },
+  "authoredSourceFamilies": {
+    "classification": "authored-source-driven-genuine-Program-comparisons",
+    "requests": 43,
+    "domains": {
+      "intrinsic-literal-union-casing": "T2/T6",
+      "intrinsic-surrogate-and-context-casing": "T2/T6",
+      "intrinsic-generic-template-instantiation": "T1/T2/T3",
+      "intrinsic-constraint-and-idempotence": "T1/T2/T4",
+      "template-numeric-bigint-boolean-inference": "T2/T3",
+      "template-prefix-suffix-and-empty-inference": "T2/T3",
+      "template-union-intersection-relationship": "T2/T4",
+      "template-source-complexity-diagnostic": "T1/T2",
+      "mapped-remapping-filter-and-modifiers": "T2/T3",
+      "mapped-colliding-keys-value-union": "T2/T4",
+      "mapped-numeric-unique-symbol-keys": "T2/T4/T5",
+      "mapped-homomorphic-readonly-tuple": "T1/T2/T5",
+      "mapped-generic-indexed-access-optionality": "T1/T2/T4",
+      "reverse-mapped-inference-callbacks": "T2/T3",
+      "generic-mapped-to-string-index-relation": "T2/T4",
+      "conditional-distribution-any-never": "T2/T3",
+      "conditional-constrained-infer-and-deferred": "T1/T2/T3",
+      "conditional-recursion-and-alias-instantiation": "T1/T2/T3",
+      "conditional-instantiation-depth-diagnostic": "T1/T2",
+      "generic-default-constraints-and-errors": "T1/T3",
+      "generic-dependent-and-circular-constraints": "T1/T3",
+      "variance-annotations-and-relationship": "T1/T4",
+      "inference-priorities-contravariance-and-noinfer": "T1/T3/T4",
+      "generic-callback-context-and-return-inference": "T3/T5",
+      "generic-signature-canonical-contextual-relation": "T3/T4/T5",
+      "overload-generic-inference-and-recovery": "T3/T4/T5",
+      "variadic-generic-call-and-normalization": "T1/T3/T5",
+      "variadic-implied-arity-empty-slice": "T1/T2/T3/T5",
+      "variadic-readonly-rest-relation-and-errors": "T1/T4/T5",
+      "variadic-rest-function-inference": "T3/T4/T5",
+      "intersection-private-origin-conflict-diagnostic": "T2/T4",
+      "union-intersection-optionality-and-index-relation": "T2/T4",
+      "object-literal-union-arraylike-target-selection": "T3/T4",
+      "predicate-structural-signature-relationships": "T4/T5",
+      "inferred-predicates-and-flow": "T3/T5",
+      "assertion-predicate-import-and-diagnostics": "T4/T5",
+      "type-predicate-this-and-generic-constraint": "T1/T4/T5",
+      "non-strict-nullable-union-inference": "T1/T2/T3",
+      "pattern-template-intersection-empty-object": "T2/T4",
+      "generic-variadic-base-constraint": "T1/T3/T5",
+      "generic-constructor-callback-normal-arity": "T3/T4/T5",
+      "promise-constructor-synchronous-resolve-arity": "T4/T5",
+      "intrinsic-mixed-nested-mapping-membership": "T2/T4"
+    },
+    "provenance": "validation/typesystem-corpus/requests-families-provenance.json",
+    "execution": {
+      "original": "passed: artifacts/typesystem-validation/original-go/families/report.json; validation/results/typesystem-verified.json",
+      "managed": "passed: artifacts/typesystem-validation/managed-corpus/families/report.json; validation/results/typesystem-verified.json",
+      "native": "passed: artifacts/typesystem-validation/native-corpus/families/report.json; validation/results/typesystem-verified.json"
+    }
+  },
+  "compilerInputs": {
+    "selectionScope": "Finite source-selected upstream fixture inventory; not exhaustive compiler corpus or complete baseline assertion coverage. All actual directive variants emitted and listed per selected input; emitted/declaration outputs and full types/symbol baselines outside these observations.",
+    "inventoried": 35,
+    "reused": 32,
+    "excluded": 3,
+    "requests": 32,
+    "inputs": [
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/stringMappingSpecialCasing.ts",
+        "sourceSha256": "df4425bace86ff3b547407e91b2205a73a07d59fa74f82f2ab28692a1a77505b",
+        "domain": "T2 intrinsic/string templates",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-01-01-stringMappingSpecialCasing"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-01-01-stringMappingSpecialCasing",
+            "compilerDirectives": {
+              "noemit": "true"
+            },
+            "requestSha256": "875c0158202c2d71ec3e853a833e1241af670c19046a970329018d06ab909894"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/stringMappingSpecialCasing.symbols": "5cfa7b8de20dcf1050379be95f2408eea953ee87888a46066f59b0ea25bf0502",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/stringMappingSpecialCasing.types": "ef7bf2ac79eef2be1d220e3a7c558e54d4479aca93eefc93ecc823b9667f2bae"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/stringMappingAssignability.ts",
+        "sourceSha256": "0fdc37e6328f42dcd041172429f2114e3dcd1e369079a1f79c3a1a36bb97b128",
+        "domain": "T2 intrinsic/string templates",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-02-01-stringMappingAssignability"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-02-01-stringMappingAssignability",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "3333838a2d53a0db4cb8b26a829ca686235638cc59756340ab0deb14408c25bf"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/stringMappingAssignability.errors.txt": "2d87d97b3e8478ceeb0f3355973e3000c332b9ee795c642f603888878cf0f468",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/stringMappingAssignability.symbols": "761f98448317dd23065b64c4a3c90a2283e9996b2d394d98ac0c5b568ac9e57d",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/stringMappingAssignability.types": "a4007d64777a117d33ee0c2f8720bf1c3bc473ae89f35c0b747a73071eaed217"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/intrinsicStringMappingLoneSurrogate.ts",
+        "sourceSha256": "c4f51c10d89d144370f8b5aa3411cd3abd1f03ff0162671a7a106bd93e8fe2c8",
+        "domain": "T2 intrinsic/string templates",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-03-01-intrinsicStringMappingLoneSurrogate"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-03-01-intrinsicStringMappingLoneSurrogate",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true"
+            },
+            "requestSha256": "fe6c57c6e8ca69e506b3b59da92377382efdde2e963a85f707e154da80cd135c"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/intrinsicStringMappingLoneSurrogate.symbols": "b6bf2a6381e2179e4ff3ae4823aef577cf47def1edd6dce34f1d587a1b88b31f",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/intrinsicStringMappingLoneSurrogate.types": "b665e5be3dd138fe340f893cee759a962958a60a5b2651a50424b9c48d6b9463"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/templateLiteralInferenceSupplementarySplit.ts",
+        "sourceSha256": "b4275ff85229919f027339826eaed6c0a8e21f20bfc068caeabc86f27fecac3d",
+        "domain": "T2 intrinsic/string templates",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-04-01-templateLiteralInferenceSupplementarySplit"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-04-01-templateLiteralInferenceSupplementarySplit",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true"
+            },
+            "requestSha256": "693b406934764a3aee310f5e90eedd43bc4fb73d1423ec5a19d124b521f464e1"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/templateLiteralInferenceSupplementarySplit.symbols": "5e4b7ea6e4244cb68a9a1f47cbc9cb5de398b2b9e5ac672c4dbbae25ea8754cc",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/templateLiteralInferenceSupplementarySplit.types": "16a2d60baab3b44b1cd96347c9ad97d400011a1896dfcfff6822125c069f99e6"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/templateLiteralInferenceLoneSurrogate.ts",
+        "sourceSha256": "e470c94ad3b4824f46d206242f3ae9e7b5159aabf00fea2ce14036895e169ee6",
+        "domain": "T2 intrinsic/string templates",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-05-01-templateLiteralInferenceLoneSurrogate"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-05-01-templateLiteralInferenceLoneSurrogate",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true"
+            },
+            "requestSha256": "0b2d16de583f3b68b87fca763840997b1be7c799c8e259e80e3d493aafb842e1"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/templateLiteralInferenceLoneSurrogate.symbols": "bd1aa4a902445ae0aab933dacf3db49925b72d0df16cd8e545f40ee94f7431c3",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/templateLiteralInferenceLoneSurrogate.types": "b2e78dd5d52116d25425d7e02b1433c5743654222d2469d4bf2deb6335d89587"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/keyRemappingKeyofResult.ts",
+        "sourceSha256": "c3a15568d7d6fa869dc7080491ac36d8f25576752163e595de02716d908acd98",
+        "domain": "T2 key remapping/indexed types",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-06-01-keyRemappingKeyofResult"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-06-01-keyRemappingKeyofResult",
+            "compilerDirectives": {
+              "target": "es6"
+            },
+            "requestSha256": "02804dac94e5853dfd2bdc794fd7b941d2298fab0e9adc2a379f67c9e6bc0400"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/keyRemappingKeyofResult.errors.txt": "f9d109f3117a95ed6d1d818a6aebb972ca44ca829be0112d4cee1eb9a141c5ea",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/keyRemappingKeyofResult.symbols": "642f9ed76f67ad7138692f614a452b6c4ecf86f4795f48acfa291d3848ccdb94",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/keyRemappingKeyofResult.types": "0a430120553b2bf3ae32008b64714e04385ab35f5d7b28ef3b4543f26b5b42b0"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/keyRemappingKeyofResult2.ts",
+        "sourceSha256": "7e1a1a2d6069cd416b1a3f1062791a2813c35a4bafd70abe8b800967d91f648f",
+        "domain": "T2 key remapping/indexed types",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-07-01-keyRemappingKeyofResult2"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-07-01-keyRemappingKeyofResult2",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "cc5a48aebbb0c73749fc522a9817305f3461364b375a0b9dec1396347bbaa8cd"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/keyRemappingKeyofResult2.symbols": "97bf75c9c82f762f0ddad669b81ca75fb0bda5456f1f645acefdc22775d00fa9",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/keyRemappingKeyofResult2.types": "320d20b5549f54919af9856585495f81ab3460522baa0c889c5a11d5ec2702d5"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/mappedTypeRecursiveInference.ts",
+        "sourceSha256": "9b51218b9f2a455013836664fcbe590075ccdc1841b66046dcb6e977057ba85c",
+        "domain": "T1/T2 recursive mapped instantiation",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-08-01-mappedTypeRecursiveInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-08-01-mappedTypeRecursiveInference",
+            "compilerDirectives": {
+              "lib": "es6, dom",
+              "target": "es2015"
+            },
+            "requestSha256": "84b8cf45704e9cee7c0e21a2c9b7efb4f788774ff1e703a11b30f3e3efeebdd9"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/mappedTypeRecursiveInference.errors.txt": "45ea30b7010235e076ba2646b585f39cb6ee6e8267f1035987d8d0f00005ada5",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/mappedTypeRecursiveInference.symbols": "9c5052326329877dc5f40c16d66f92ab94c499de312d35d05dd1468f74739276",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/mappedTypeRecursiveInference.types": "e4a7d6b5e7b45c4706c290e1cb2407bab3e8d4ca8b46375d5c562928bf68c142"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/mappedTypeRecursiveInference2.ts",
+        "sourceSha256": "6e42e3470e4effb35698ec58e92bb82c95ca6d235ed60ce226f438ee6cb3f7ab",
+        "domain": "T1/T2 recursive mapped instantiation",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-09-01-mappedTypeRecursiveInference2"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-09-01-mappedTypeRecursiveInference2",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "93f50395ae29e585153105040b00dd694a9f5c997b037c534257154055709d2c"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/mappedTypeRecursiveInference2.symbols": "b963ebd93ce5c0f8e825591521ff9bdf9c6d061e8bb172ec3c57168e29cce5fe",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/mappedTypeRecursiveInference2.types": "119484ce4cc5102711901b717ac6734073819312d2d8a6ee932d59151e563fe2"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedTypeConditionalTemplateInference.ts",
+        "sourceSha256": "e95accd1348579a5f000bccabb6af017f1e04c99ee429d029c87eb153a157f99",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-10-01-reverseMappedTypeConditionalTemplateInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-10-01-reverseMappedTypeConditionalTemplateInference",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true"
+            },
+            "requestSha256": "fa309fac99daea9be651db5ef4d6157e1454d300ff8273e600fb56ff53f0fd3c"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTypeConditionalTemplateInference.symbols": "4b8dc68f5b84c77ca8310249d6e10f3211628bd9b4f1ac2da3babb9b728d0ddf",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTypeConditionalTemplateInference.types": "c179a7099bf2719afc8ab438c0968f0e41871eec8f29b627c5c2acceaf073412"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedContravariantInference.ts",
+        "sourceSha256": "f1127b9008019b6cc071b95103a659c0c5f350bb2438c45d02d09a52ec1fbfd2",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-11-01-reverseMappedContravariantInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-11-01-reverseMappedContravariantInference",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "c6c8da1069c79a9770ce7fff2f3836e3bf9835d747b079e7f53a5d1180d6a224"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedContravariantInference.symbols": "b72998c2212b396a03dc7f93e480df0dd715480f8b4418e60782dddd138e73a1",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedContravariantInference.types": "9818df6e3a6e625c7d2e26c84e3c67d9425721998d9eedcf4c5d2ab1cb57921e"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedPartiallyInferableTypes.ts",
+        "sourceSha256": "711fae3ff16cf933f2a8166331097c16958b932b5d4a87ef0fa8bb68409895f7",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-12-01-reverseMappedPartiallyInferableTypes"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-12-01-reverseMappedPartiallyInferableTypes",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "842736a57a7b3c1c8d64f5cd3c18ccba49aea27996efbb6ea475096c96e4510d"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedPartiallyInferableTypes.errors.txt": "aae858adf5fcb72a5f8a6480b7b0109b32cd300eeab84c37b121e2ab2c23047c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedPartiallyInferableTypes.symbols": "a03c7cbc183cb06233737003fb06b3426053c52604ebe311eae7f3c4ead85a42",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedPartiallyInferableTypes.types": "531b5d6adce0e6384b89399b1308cb242d21f0d65369e510d45011d7a0c6b585"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedUnionInference.ts",
+        "sourceSha256": "ff9eb77e84cb7e4de9b58e3c974a039a0b8410616f264522e086d7582301920b",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-13-01-reverseMappedUnionInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-13-01-reverseMappedUnionInference",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "6ffa439ff76992e86e3898884e0335475b63332010b8f6ed31c66e33fb94d37e"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedUnionInference.symbols": "08f6145834d0cb5f90c108497fc58fe2058268d787326a5d1794a9476a2b5965",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedUnionInference.types": "8f3c8f2ac68f34b0100b8ef94b6df9abd9dcd695e0a1393101f515fd7ab2e6d1"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedIntersectionInference1.ts",
+        "sourceSha256": "8d4e65bd25d0845f77852ff1d1abb74e4aee18cee56054b0ed45afb90afb5166",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-14-01-reverseMappedIntersectionInference1"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-14-01-reverseMappedIntersectionInference1",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "cd7511cb0c6369a6dd25e5cca1317fdf22558e5ae41ccd4a3c33cfb7535a2894"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedIntersectionInference1.symbols": "576134d41d8d32fc44875452992f9c58e0e40a52da1e100e96c8272753a4299d",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedIntersectionInference1.types": "13b27a2152d1e7ab78e12d33b7464bf2566c765ceb926b409560ea5d455d4b2d"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedTupleContext.ts",
+        "sourceSha256": "41da3dc691ec1e89b8a2bd35cd4d7617b62b072fbe2da600fa72c4a526b978a8",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-15-01-reverseMappedTupleContext"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-15-01-reverseMappedTupleContext",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "e98139937f22e3903dc15337705974735c8dcd8927d9cf48064ee2c70d41cfd9"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTupleContext.symbols": "79c2c8b3920fa87aebabd46540dc554b04c0ed097225eae6091ed4c18bad139e",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTupleContext.types": "df3d40be55430439917528f73db9754ee0f31870ae9c463a1f7f9bcd48fa252d"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/reverseMappedTypeAssignableToIndex.ts",
+        "sourceSha256": "7e6d73c8ba0d33d73f4e73e64a0e60c840586bf144e34fda10072a26b9aff612",
+        "domain": "T3 reverse-mapped/contextual inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-16-01-reverseMappedTypeAssignableToIndex"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-16-01-reverseMappedTypeAssignableToIndex",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "2583bcc7b28038b84b99c73c51fd08c25fd8ffe69b94b0e648d3c639590d91e3"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTypeAssignableToIndex.symbols": "ab8e8ad3d0a90378bfa352ced91104fe8ec8b4979214d3cd5f42888d894a8d65",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/reverseMappedTypeAssignableToIndex.types": "d817e82b68c74be5dda59fc7335ade894fde8506e26a878662aadc517d5dbe77"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/inferFromTupleRestAndVariadic.ts",
+        "sourceSha256": "b677b572c5733e2bef53e996bbb0899fef68c7ca51a4478bdc47aefaa67b28d4",
+        "domain": "T1/T3/T5 generic tuple/constraints/variance",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-17-01-inferFromTupleRestAndVariadic"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-17-01-inferFromTupleRestAndVariadic",
+            "compilerDirectives": {
+              "strict": "true"
+            },
+            "requestSha256": "920ac0d6aa621f3cb4325232ed89ca7c2bc2f1f043612cf6005eda69ec31a21d"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/inferFromTupleRestAndVariadic.symbols": "7bdcc113a906aed6b17324ea82655f5d2508a966963da80accaa494ccbf42188",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/inferFromTupleRestAndVariadic.types": "39dae7481b67e856a14edd32e711ca8b3241195d217b3b4eadaf75f7205ad2d7"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/varianceAnnotationValidation.ts",
+        "sourceSha256": "5001ab8835c97fd224597f19e590afc2198568b615d9644bd5ecc294d17e104f",
+        "domain": "T1/T3/T5 generic tuple/constraints/variance",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-18-01-varianceAnnotationValidation"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-18-01-varianceAnnotationValidation",
+            "compilerDirectives": {
+              "declaration": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "895a998c5135131b31089a7063cc613363ffd00c9631ae7a83d9d323471017be"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/varianceAnnotationValidation.errors.txt": "e61ed3b3331abc15638a3400a606d897e286e2344b0f7779d280322df7fa25be",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/varianceAnnotationValidation.symbols": "279a6c7107567dcff124fcfa1f3613d7644fe00029fc737b913279353db6d6da",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/varianceAnnotationValidation.types": "d68b6f93d75592d801b0da92c04ec56172b0b1d6313e13a797409afc5202ac1c"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/inferTypeConstraintInstantiationCircularity.ts",
+        "sourceSha256": "03047e96edfea08ad9a89d0b64fe3043ccbee99ea3cc62a6deb667743af4ec85",
+        "domain": "T1/T3/T5 generic tuple/constraints/variance",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-19-01-inferTypeConstraintInstantiationCircularity"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-19-01-inferTypeConstraintInstantiationCircularity",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "62dbc15cbeecc72a0a10faa14782ef2e1801a2a1c5e8b962afdeafd95eb8963d"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/inferTypeConstraintInstantiationCircularity.symbols": "55692046925d14e0d24848aa63d9d50fb1bd0e616dfe0f7c7dbd3cce8cd84963",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/inferTypeConstraintInstantiationCircularity.types": "9051e244e2589584ffa61e94d43c37897fce3e399533d907170af81733d08bac"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/noInferCommonPropertyCheck1.ts",
+        "sourceSha256": "1ce6392a20aa5f7494391edbedec0d0e36895c85c83c4663f1f5744c8487303a",
+        "domain": "T3 NoInfer/inference priorities",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-20-01-noInferCommonPropertyCheck1"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-20-01-noInferCommonPropertyCheck1",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "1203951bc00517aa3953d84f453f05266f6c374ff03a5814347a05a41a8c86c5"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferCommonPropertyCheck1.errors.txt": "0d78c55ae73233ea590f628bd1f84c20311ddaa51bb19d430d216389a0568a73",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferCommonPropertyCheck1.symbols": "df21a1f8fd2a9cb19a348afe88d930c97defda4bb25108795bfdee577122b30e",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferCommonPropertyCheck1.types": "cf23b36b2b6d3a30fa7a80378916479362e3bf3a525f8b96b50d37bf677fb434"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/noInferUnionExcessPropertyCheck1.ts",
+        "sourceSha256": "6e07b359345cb4db65aff50e91fa522b5edf3cec8bcea02bcc762ad4feb4cbfc",
+        "domain": "T3 NoInfer/inference priorities",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-21-01-noInferUnionExcessPropertyCheck1"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-21-01-noInferUnionExcessPropertyCheck1",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "f78ae8de17fed11e2932ab6574e316c9ff1ace08bd0b969546a4f69f18cbe7c0"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferUnionExcessPropertyCheck1.errors.txt": "b4524708ea3e9eeb3680b639323c03b6ea700564bba772b062a8e53f12773606",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferUnionExcessPropertyCheck1.symbols": "4c7942f5bd83893da3e6cda3bdb15f09ff530bc04dea4c3f9c658af08df4eeaa",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noInferUnionExcessPropertyCheck1.types": "8c587547c5f571d225e62ec2abda894a0e26a7bfcbe3cb4b3b38e51ab9697a74"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/conditionalTypeAnyUnion.ts",
+        "sourceSha256": "f74cb589ed413c751696d8dca3e2fb8d768ed29c902d59ca94363d6dcafffdee",
+        "domain": "T1/T2/T4 conditional relation/recursion",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-22-01-conditionalTypeAnyUnion"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-22-01-conditionalTypeAnyUnion",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "5e05937571f37bfbb634fb81f247e12e99a8110c2268982230aa313e47f3b6fa"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeAnyUnion.symbols": "19a6d86beb1719ed42ced63dc6d3f3d7de6770021f9f7eb93d3d83589fa4b52f",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeAnyUnion.types": "b8883209946e09ffac9879b61eda6881eda54c8cd97be9b29377971104f13735"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/conditionalTypeAssignabilityWhenDeferred.ts",
+        "sourceSha256": "04d66123713610982bbccc8306805bd7a02832e2966a136612ac85706ba7bf0b",
+        "domain": "T1/T2/T4 conditional relation/recursion",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-23-01-conditionalTypeAssignabilityWhenDeferred"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-23-01-conditionalTypeAssignabilityWhenDeferred",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "41416839431ca6c3d76524898a52a4acff2904a8a2ff60ef9ba0dc38f5572dcf"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeAssignabilityWhenDeferred.errors.txt": "a3d13a7c72e15f477366791787e4ad9056d09d34fefa2c1a1f4fd70547e8871b",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeAssignabilityWhenDeferred.symbols": "83516701cfaa535e59ec5fe7cd5e62c0da6a4b65614785e6984e66ae9bf70b9c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeAssignabilityWhenDeferred.types": "d53cb4b57ba7c3bf74c3cda422cb6fefc5e54023adb1dc68bbce0f975daf2227"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/conditionalTypeGenericInSignatureTypeParameterConstraint.ts",
+        "sourceSha256": "03e93d96b6d59aab39407e287b257a8b121fa1eecd331f25f0d1b638f3b04144",
+        "domain": "T1/T2/T4 conditional relation/recursion",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-24-01-conditionalTypeGenericInSignatureTypeParameterConstraint"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-24-01-conditionalTypeGenericInSignatureTypeParameterConstraint",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "96f8c2b8570a32a5d55814d61cfe962c2bc22c008717e4adfb8332d2b29839b7"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeGenericInSignatureTypeParameterConstraint.symbols": "eba97a44ba3ebf2351419b46476842ebf1a909e919047d3c7804ab9fa41260ab",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeGenericInSignatureTypeParameterConstraint.types": "ab1c69d8b4ba2df09e457f1441a14f0ccb07c39bc641991664a2b41c3fdee45d"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/conditionalTypeRelaxingConstraintAssignability.ts",
+        "sourceSha256": "616a876052ab50c77a531735c3e08d32a17d1cba6f7ca81f8b534b60e3007ed9",
+        "domain": "T1/T2/T4 conditional relation/recursion",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-25-01-conditionalTypeRelaxingConstraintAssignability"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-25-01-conditionalTypeRelaxingConstraintAssignability",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "7f21c316f8e5172f771338fbddab7272a8a43a139c0f260131d50d358514124c"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeRelaxingConstraintAssignability.symbols": "82ec965f3911c12adb3656e5f66b5bda46609be7acd94cb9f1cd544fce5c6dc5",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/conditionalTypeRelaxingConstraintAssignability.types": "c692081f5dae0c687c624bd0c4e9d57295e4e5b74d4f20c85e9b4a9f49b5b3ac"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/recursiveConditionalTypes.ts",
+        "sourceSha256": "b8c611a3b369008491208a9df11b31e921a8bfe591edc58e67e5feae81564f41",
+        "domain": "T1/T2/T4 conditional relation/recursion",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-26-01-recursiveConditionalTypes"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-26-01-recursiveConditionalTypes",
+            "compilerDirectives": {
+              "declaration": "true",
+              "strict": "true",
+              "target": "esnext"
+            },
+            "requestSha256": "87f60795c3fcdf5a34602b59f0c72488bcec1ba9dd6212b4d1a25423b41a9efc"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/recursiveConditionalTypes.errors.txt": "da6cf0cf9faff6f5a7de9d485b33e40297776a246f0d0a18fd7692f53542d31c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/recursiveConditionalTypes.symbols": "7ea0aed13a2f19aa51cdea31c398731e8f811f864652fc052aa961b2500da17f",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/recursiveConditionalTypes.types": "133b78605f86284854b968c6e0b4af4022697db07b4de1c1df13294321cc4f26"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/assertionFunctionsCanNarrowByDiscriminant.ts",
+        "sourceSha256": "bd8092239a23dbb8e85d5e40d29a1e83a9c6a0c4ef10a94261be1c5e78a07107",
+        "domain": "T3/T5 generic callable/predicate inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-27-01-assertionFunctionsCanNarrowByDiscriminant"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-27-01-assertionFunctionsCanNarrowByDiscriminant",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "15d7075ab44ea58b108871211c77e155d81b7a3127a6e7d04fd211612b1d7f22"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/assertionFunctionsCanNarrowByDiscriminant.symbols": "4f34f593da72e14d7e545569ae84d3fbfc5113b5f7c2f04ec6adfc9a30b5c0c2",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/assertionFunctionsCanNarrowByDiscriminant.types": "4c344fe70c2016462291f7611ddba5ea941a992ff82e4547380014e9c7319597"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/genericInferenceDefaultTypeParameter.ts",
+        "sourceSha256": "43ba84b02f97f12437b26bb5cba4a5d33a9ea481a7658bb7896199105a5fd8d4",
+        "domain": "T3/T5 generic callable/predicate inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-28-01-genericInferenceDefaultTypeParameter"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-28-01-genericInferenceDefaultTypeParameter",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "db44c798695c91fa983451f74591f79b0589ac58b5b707463ce78d4e94272515"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericInferenceDefaultTypeParameter.symbols": "914e897d1542b93fa3962cbc10a558f768c4d4c642803f652bb282cd1d81068c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericInferenceDefaultTypeParameter.types": "0e4c77d016b5d3cf485f7e672d29e34876491b684fdb442e0e2118e9c60400d2"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/genericCallInferenceWithGenericLocalFunction.ts",
+        "sourceSha256": "eabda4ab6b9f980fdb96a6fbd6413c9f9760576df5955e4e9899a5e63338a820",
+        "domain": "T3/T5 generic callable/predicate inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-29-01-genericCallInferenceWithGenericLocalFunction"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-29-01-genericCallInferenceWithGenericLocalFunction",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "fb28c6b0d9d9294e720dcc1a008abede944286373e9828399db4e20de7b85f8f"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericCallInferenceWithGenericLocalFunction.symbols": "3a6e20202e6518e4311f27ff9609269304165eebf364e3df04cf259b4c30b83c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericCallInferenceWithGenericLocalFunction.types": "62ce15f30ad4402916e6c7766634ac84abec612bf29635a7004d5937e5b48cbc"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/genericFunctionsAndConditionalInference.ts",
+        "sourceSha256": "d3a5f9db331bd90ec448f8d7ce13bf6178f8e0a438bb1a4a57c4e02352a40096",
+        "domain": "T3/T5 generic callable/predicate inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-30-01-genericFunctionsAndConditionalInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-30-01-genericFunctionsAndConditionalInference",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "9064de7d8d9cb1f4b0f9d43b04e8ce44b9c131ff14d3da5ca5b05b270dadfe1c"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericFunctionsAndConditionalInference.symbols": "29ef99b937c655bf420e2b4e9d79ba185450328ae2e0028165867125ba3193b4",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/genericFunctionsAndConditionalInference.types": "e36ba3536f578e8130535fc23b6a1aa4cee9b36af8511fa6fc133cf5dff0eecd"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/typeRelationships/typeInference/genericCallTypeArgumentInference.ts",
+        "sourceSha256": "bb696b2b90e4cd26789c706bf7abb0b2c88d724fe7b2a3f52819837bc471989b",
+        "domain": "T3 generic call inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-31-01-genericCallTypeArgumentInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-31-01-genericCallTypeArgumentInference",
+            "compilerDirectives": {
+              "strict": "false",
+              "target": "es2015"
+            },
+            "requestSha256": "4fc73f09ca8646fa677a316f8079a054b1f5eed4fcf15e06c1f728231ae48662"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/genericCallTypeArgumentInference.symbols": "936cf1639cc1c63ce3afb2329acaff8f99f09b400f9c137150c0bd8515720176",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/genericCallTypeArgumentInference.types": "b047bf2acbbabc458a1bef67aa926a9f7178eebd6656abcf409663aa31f47641"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/typeRelationships/typeInference/genericCallWithConstraintsTypeArgumentInference.ts",
+        "sourceSha256": "9feb6b9d531200bbcb0256092c9a6458e2fe0406db3e9417496530f9d740d5a0",
+        "domain": "T1/T3 call constraints",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "typesystem-input-32-01-genericCallWithConstraintsTypeArgumentInference"
+        ],
+        "variants": [
+          {
+            "name": "typesystem-input-32-01-genericCallWithConstraintsTypeArgumentInference",
+            "compilerDirectives": {
+              "strict": "false",
+              "target": "es2015"
+            },
+            "requestSha256": "663678561e1a25dbac0b8ec9aa72f8f689b42a7e9f6be893f54798b0fa71cbd1"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/genericCallWithConstraintsTypeArgumentInference.symbols": "9e770d3b59345ffa76a60d3bed5e7328106ddba7ec8a0403576c5d2f9c2e3f72",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/genericCallWithConstraintsTypeArgumentInference.types": "bc20e1c5a62425e91e26815082f99e79c3cdab77fc89d10888344cb2de2168ff"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+          "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/genericInferenceDefaultTypeParameterJsxReact.tsx",
+        "sourceSha256": "706f24ce5be81d7ef7e1877f1700d450712a464ece49d4bb4a299ddf1c0f749e",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Whole JSX/React consumer external under T1-T6; preserve input, no JSX erasure.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/for-await-ofStatements/emitter.forAwait.ts",
+        "sourceSha256": "3626753deb028da7f2e15b5ad94494b166e98ae727d28c5757b42f50f438ce66",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Async iteration execution external under T1-T6; no await erasure.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES6CJS.ts",
+        "sourceSha256": "fbe15493f02f19b91ba20f0c4e4e58dff4e4912fb945ccbb6551d62bd6ec21a3",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Dynamic import/async execution external under T1-T6; no consumer suppression.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      }
+    ],
+    "execution": {
+      "original": "passed: artifacts/typesystem-validation/original-go/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+      "managed": "passed: artifacts/typesystem-validation/managed-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json",
+      "native": "passed: artifacts/typesystem-validation/native-corpus/compiler-inputs/report.json; validation/results/typesystem-verified.json"
+    }
+  },
+  "integration": {
+    "cases": 2,
+    "source": "examples/typesystem",
+    "reference": "artifacts/typesystem-validation/original/vertical/report.json",
+    "execution": {
+      "original": "passed: validation/results/typesystem-verified.json#originalGoCorpus.vertical",
+      "managed": "passed: validation/results/typesystem-verified.json#typesystemManaged.corpus.vertical and typesystemManaged.cli; actual exits0/1, complete six invalid diagnostics",
+      "native": "passed: validation/results/typesystem-verified.json#typesystemNative.corpus.vertical and typesystemNative.cli; actual Linuxx64 ELF exits0/1, complete six invalid diagnostics"
+    }
+  },
+  "publicObservation": {
+    "diagnostics": "Complete genuine Program bulk/per-file/repeated semantic and public global/config/syntactic/bind/inclusion records; actual options/libraries unchanged.",
+    "types": "Existing public inferred/declared/property/signature displays with finite queries; property display names do not establish arbitrary unique symbol identity.",
+    "relations": "Public IsTypeAssignableTo with explicit source/target selector and type records; 42 finite pairs. No private graph.",
+    "incidentalRepresentation": "No new private-state or cache topology observation. Nil internal union/intersection inputs source-reviewed, no public trigger claimed.",
+    "provenance": "validation/typesystem-corpus/public-relations-provenance.json"
+  },
+  "execution": {
+    "status": "passed-frozen-final-acceptance",
+    "proof": "validation/results/typesystem-verified.json",
+    "proofSha256": "2a535e20bd3fa55ddd760476a3499e9943e419f3c77d3e807aa4e90c78439b97",
+    "gate": "artifacts/typesystem-validation/final-gate.json",
+    "elapsedSeconds": 1492.728,
+    "newXUnitCases": 84,
+    "selectedAggregateXUnitExecutions": 24849,
+    "failed": 0,
+    "skipped": 0,
+    "nativeBinaryPaths": 21,
+    "protectedHistoricalFiles": 256,
+    "countQualification": "Selected TRX execution records, not distinct tests or every repeated predecessor execution. Seven shared checks across four dispatcher groups; six complete original bodies (one new and five retained), plus one authored control."
+  },
+  "evidenceLimitations": [
+    "Finite source-selected compiler inputs are not exhaustive upstream compiler tests or full diagnostic/type/symbol/emit baseline runs.",
+    "Complete selected algorithms/source responsibility review supplies applicability beyond the finite recorded cases. Nil internal union/intersection arguments were source-reviewed; no public trigger or private probe is claimed.",
+    "Public display names do not establish arbitrary unique/private-symbol identity.",
+    "Bulk/per-file/repeated publication and finite public query/relation evidence are new; incremental/update/reuse remain retained evidence.",
+    "Generator/yield mapper global/incremental debt and other actual contract-external semantic consumers remain explicit. No broader type-system algorithm exclusion is inferred from callers."
+  ]
+}

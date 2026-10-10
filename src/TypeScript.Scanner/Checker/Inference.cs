@@ -298,7 +298,7 @@ public sealed partial class Checker
             {
                 if ((source.symbol == target.symbol))
                 {
-                    throw unsupported("inferFromTypes: intrinsic string mapping");
+                    inferFromTypes(n, source.AsStringMappingType().target, target.AsStringMappingType().target);
                 }
 
                 break;
@@ -2396,9 +2396,9 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when ((right.flags & TypeFlags.StringMapping) != 0):
+                                                    case true when ((right.flags & TypeFlags.StringMapping) != 0 && str == applyStringMapping(right.symbol, str)):
                                                     {
-                                                        throw unsupported("inferToTemplateLiteralType: intrinsic string mapping");
+                                                        return source2;
                                                     }
 
                                                     case true when ((left.flags & TypeFlags.StringLiteral) != 0):

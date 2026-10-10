@@ -415,8 +415,29 @@ internal sealed partial class Printer
             emitConstructSignature(node.AsConstructSignatureDeclaration());
         else if (node.Kind == Kind.IndexSignature)
             emitIndexSignature(node.AsIndexSignatureDeclaration());
+        else if (node.Kind == Kind.NotEmittedTypeElement)
+            emitNotEmittedTypeElement(node);
         else
             throw TypeScript.Checking.Checker.unsupported("Printer.emitTypeElement: signatures");
+    }
+
+    // printer.go:3694. The synthesized element has no emitted body. Ordinary
+    // type diagnostics remove its elision comments through the source policy.
+    private void emitNotEmittedTypeElement(Node node)
+    {
+        if (!shouldEmitComments(node))
+            return;
+        var flags = emitContext.EmitFlags(node);
+        emitLeadingSyntheticCommentsOfNode(node, flags);
+        if ((flags & EmitFlags.NoTrailingComments) == 0)
+            foreach (var comment in emitContext.GetSyntheticTrailingComments(node) ?? [])
+            {
+                if (comment.HasTrailingNewLine || comment.Kind != Kind.MultiLineCommentTrivia)
+                    throw TypeScript.Checking.Checker.unsupported("Printer.emitNotEmittedTypeElement: multiline comment");
+                if (!writer.IsAtStartOfLine())
+                    writer.WriteSpace(" ");
+                writeSynthesizedComment(comment);
+            }
     }
 
     // printer.go:2053/2057. Selected constituents have scalar/primary precedence;

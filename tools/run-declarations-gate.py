@@ -244,9 +244,23 @@ def manifest_groups():
     display = read(observation["provenance"])
     if display["classification"] != "authored-public-property-display-observation-correction":
         raise RuntimeError("Unexpected semantic property observation")
-    for name, expected in display["sourceFiles"].items():
-        if sha(name) != expected:
-            raise RuntimeError("Public property display observer changed: " + name)
+    # The only admitted observer extension is the reviewed additive public
+    # Relations channel. Historical display provenance remains immutable.
+    original_observer = {
+        "tools/program-oracle/semantic.go": "8d654a79545abf458fc53ded0821508b2af84e2d99818c072ea900d559a780e6",
+        "validation/Program.Checks/ProgramSemanticRunner.cs": "73f261a91252d698407d9b0bbd6cb8d3476a3623d25b8fc25da2d57a2fe7b22e",
+    }
+    if display["sourceFiles"] != original_observer:
+        raise RuntimeError("Unexpected original public-display observer source set/hashes")
+    if any(sha(name) != digest for name, digest in original_observer.items()):
+        extension_path = "validation/typesystem-corpus/public-relations-provenance.json"
+        checked_path(extension_path, "f6f8ec93e3a615d99391dff85da517457511965b9217636b65e777ff0bf6a5c9")
+        extension = read(extension_path)
+        if (extension["classification"] != "authored-additive-public-relations-observer-extension"
+                or extension["originalSourceFiles"] != original_observer
+                or set(extension["sourceFiles"]) != set(original_observer)
+                or any(sha(name) != digest for name, digest in extension["sourceFiles"].items())):
+            raise RuntimeError("Unreviewed public Relations observer extension")
     retirement = manifest["authoredControlRetirement"]
     corpus_asset(retirement["provenance"], retirement["provenanceSha256"])
     controls = read(retirement["provenance"])

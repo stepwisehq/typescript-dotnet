@@ -2,7 +2,7 @@
 
 **Reviewed source-grounded roadmap from the accepted Program campaign; not a checker
 completion claim.**
-Latest accepted expression campaign baseline `5efa4e5`; pinned upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
+Latest accepted shared type-system campaign baseline `09630d6`; pinned upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 The [Program contract](PROGRAM-CONTRACT.md) supplies the environment required by
 later checker campaigns. Accepted semantic, configuration and resolution proofs remain
 the foundation; this document does not reopen them or start large-project benchmarks.
@@ -19,15 +19,20 @@ metadata, intrinsic-alias declaration validation, typed ambient/bodyless binding
 elements and synchronous iterator type-model helpers. Template syntax dispatch uses
 the existing construction/cache algorithms. These responsibilities must be reused;
 the expression campaign below completes selected runtime destructuring/object spread.
-Operational string mappings, generator/async execution and general JS/JSDoc checking
-remain later responsibilities.
+Operational string mappings are now source-complete in the type-system campaign below;
+generator/async execution and general JS/JSDoc checking remain later responsibilities.
 
 The expression/statement/checker-flow campaign has passed its
 [source-grounded E1–E6 contract](EXPRESSIONS-CONTRACT.md). Selected synchronous runtime
 binding, composite/optional expression, statement and flow responsibilities now have
 independent review, actual Linux x64 Native AOT and retained-regression acceptance.
 See the [assessment](EXPRESSIONS-ASSESSMENT.md) and [proof](../validation/results/expressions-verified.json).
-No implementation campaign is active; the next recommendation remains type-system closure.
+Shared type-system completion is accepted from baseline `09630d6` under its
+[source-defined contract](TYPESYSTEM-CONTRACT.md) and [checkpoint](TYPESYSTEM-STATUS.md).
+Source-family reconciliation and independent review are complete, including earlier
+partial implementations rather than only explicit guards. All 77 complete managed/native
+Go records, 84 new xUnit cases, seven shared checks and retained gates pass. The
+[current inventory](TYPESYSTEM-INVENTORY.md) separates source closure from finite coverage.
 
 ## What is missing, and what is merely unverified
 
@@ -48,7 +53,7 @@ enums, namespaces, constructors/new, await/yield, JSX and several statements.
 ES-module syntax to another named adapter. The declaration campaign removed the
 former authored fixed-option admission gate and library injection from the genuine
 Program path. Actual unfinished semantic consumers retain explicit failures, distinct
-from successful TypeScript checks; see the [current checkpoint](DECLARATIONS-STATUS.md).
+from successful TypeScript checks; see the [current checkpoint](TYPESYSTEM-STATUS.md).
 
 There are actual algorithm gaps beyond the named adapter restrictions. Declaration
 class/base models, computed names and required TS alias producers in
@@ -59,8 +64,9 @@ iteration-related paths in [Flow](../src/TypeScript.Scanner/Checker/Flow.cs); it
 bounded E1–E6 runtime/native acceptance has passed. For-await and external JS/protocol consumers
 remain distinct later obligations.
 [Relater](../src/TypeScript.Scanner/Checker/Relater.cs) and
-[Inference](../src/TypeScript.Scanner/Checker/Inference.cs) retain missing template/string
-mapping and JSX branches. Selected private-class and declaration option-sensitive branches have been restored.
+[Inference](../src/TypeScript.Scanner/Checker/Inference.cs) now include the reconciled
+shared template/string-mapping branches. JS/JSX-only branches remain external.
+Private-class and declaration option-sensitive branches have been restored.
 Removing obsolete admission must follow completion of actual producers and consumers.
 
 Conversely, missing broad tests for an implemented algorithm are verification gaps.
@@ -76,8 +82,7 @@ owns context/modifier/source grammar diagnostics;
 [flow.go](../upstream/TypeScript/tsc/internal/checker/flow.go),
 [relater.go](../upstream/TypeScript/tsc/internal/checker/relater.go) and
 [inference.go](../upstream/TypeScript/tsc/internal/checker/inference.go)
-own the interacting flow/relation/inference algorithms. The async return, yield and
-operational string-mapping producers in
+own the interacting flow/relation/inference algorithms. The async return and yield producers in
 [checker.go](../upstream/TypeScript/tsc/internal/checker/checker.go) identify actual
 remaining families. Later campaigns must follow those producer
 and consumer chains, not simply enlarge an allowed-kind list.
@@ -104,7 +109,7 @@ before implementation; shared primitives should be completed once and reused.
 | --- | --- | --- |
 | Declaration and object model | Accepted D1–D6 responsibility closure; see the declaration assessment. | Genuine ES2022/default libraries, complete diagnostics and finite public relationships; actual Linux x64 native and retained gates passed. |
 | Expressions, statements and flow | Accepted E1–E6 selected synchronous responsibility closure; whole checker counterparts remain partial. | 85 complete managed/native records, six shared groups, 26 order executions per runtime, two ordinary CLI cases and retained gates pass. See the expression assessment for exact scope and observation limits. |
-| Remaining type-system closure | Operational intrinsic string mappings and remaining template/relation/inference interactions, key remapping, broader unique-symbol expression uses, generic variadic/rest completion evidence, assertion predicates and missing constraint branches. Declaration keys and template syntax construction are already implemented. | Original type/inference assertions and meaningful positive/negative combinations with existing generic, conditional, tuple, index and mapped-type algorithms. |
+| Remaining type-system closure | T1–T6 source responsibilities implemented and independently reviewed: shared generics, inference, relationships, advanced operators, tuple/callable/predicate consumers and demanded Unicode/display dependencies. Actual Linux x64 Native AOT acceptance passed. | 77 complete managed/native records, 84 new xUnit cases, seven shared checks, order/CLI checks and all retained gates pass. The current inventory distinguishes source-reviewed paths from finite exercised combinations. |
 | Async, generators and runtime protocol types | Async/await, generators/yield, remaining iterator execution and async-iterator protocols, promise checking, custom iteration and disposal/using. Reuse the completed synchronous iterator type-model helpers. | Real pinned libraries and custom protocols; all global/semantic diagnostics, return/yield inference and invalid protocol cases. The Program mapper generator test is a concrete outstanding consumer. |
 | JS, JSX and remaining module/options semantics | JS/JSDoc checking, JSX, broader CommonJS/import-equals/export-equals/UMD interoperability, import attributes, decorators and option-dependent rules. Reuse completed TS internal aliases/export-target resolution and namespace/augmentation merges. | Applicable TS/JS/JSX/JSDoc compiler inputs, platform-independent module modes and option combinations, retaining original parser/checker diagnostics and file attribution. |
 | Whole-checker reconciliation | Complete remaining pinned semantic responsibilities and demanded utility/model/printer dependencies; remove accidental fixed-profile assumptions. | A responsibility-level source audit and independent omission review spanning every applicable source kind, option, module and library mode, rather than extrapolation from campaign fixtures. |
@@ -118,17 +123,20 @@ omitted to avoid that distinction. The declaration campaign restored the three m
 original semantic API channels, which pass managed and actual Native AOT execution. The generator test still must regain
 its original global and incremental assertions in the protocol campaign.
 
-With expression E1–E6 accepted, the next recommended campaign completes remaining type-system responsibilities:
-operational intrinsic string mappings, key remapping, remaining template/relation/
-inference/constraint branches, generic variadic/rest and assertion-predicate closure.
-Do not reimplement existing conditional/mapped/tuple algorithms; reconcile missing
-source branches separately from insufficient combination coverage. The restored
-synchronous body and declaration models provide their real consumers.
+With T1–T6 accepted, the next recommended campaign completes **async, generators
+and runtime protocol checking**. Its source boundary should follow actual await/yield/
+for-await/using producers, promise/iterator/disposal libraries, return/yield inference
+and their shared flow consumers. Reuse the accepted synchronous type machinery and
+real environments; restore the original Program mapper generator test's global and
+incremental assertions where the dependency is satisfied. Do not re-audit completed
+foundations without a concrete defect or demanded dependency.
 
-Async/generator/iteration execution, disposal and JS/JSX/module-option work follow
-according to actual source dependencies. Existing synchronous iterator type-model
-helpers are reusable, not evidence that those protocols are complete. Whole-checker
-reconciliation still covers every applicable semantic responsibility.
+JS/JSDoc/JSX/decorator and remaining module/options consumers follow. Whole-checker
+reconciliation must then cover every remaining applicable semantic and diagnostic-
+display responsibility, including absent branches in mixed functions and option modes.
+Those are implementation obligations; untested combinations of already ported shared
+type algorithms are separate evidence gaps. This recommendation does not authorize
+starting the next campaign; large-project comparisons still wait for whole-checker acceptance.
 
 ## Checker-wide no-emit completion gate
 

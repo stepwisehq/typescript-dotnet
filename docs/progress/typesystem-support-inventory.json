@@ -1,0 +1,2509 @@
+{
+  "schemaVersion": 1,
+  "baseline": "09630d6",
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "contract": "docs/TYPESYSTEM-CONTRACT.md",
+  "owner": "support",
+  "purpose": "Finite source responsibility reconciliation; function-name triage is separate from source branch review and runtime acceptance.",
+  "units": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/inference.go",
+      "sourceSha256": "83f6bce6296df35258ba9886ea3bfda491e000e2439cd49cc66cc531ac55aff0",
+      "sourceFunctions": 79,
+      "selectedFunctions": 79,
+      "functions": [
+        {
+          "name": "getInferenceState",
+          "sourceLine": 35,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 23,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "putInferenceState",
+          "sourceLine": 44,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 38,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferTypes",
+          "sourceLine": 56,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 53,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromTypes",
+          "sourceLine": 68,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 67,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromAliasTypeArguments",
+          "sourceLine": 280,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 375,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromReferenceTypeArguments",
+          "sourceLine": 291,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 386,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromTypeArguments",
+          "sourceLine": 295,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 392,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferWithPriority",
+          "sourceLine": 305,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 410,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromContravariantTypesWithPriority",
+          "sourceLine": 312,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 419,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromContravariantTypes",
+          "sourceLine": 319,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 428,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromContravariantTypesIfStrictFunctionTypes",
+          "sourceLine": 325,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 436,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "invokeOnce",
+          "sourceLine": 346,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 449,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromMatchingTypes",
+          "sourceLine": 381,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 520,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypesAndDepth",
+          "sourceLine": 421,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 590,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeDepth",
+          "sourceLine": 434,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 604,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeListDepth",
+          "sourceLine": 451,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 638,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferToMultipleTypes",
+          "sourceLine": 459,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 652,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getSingleTypeVariableFromIntersectionTypes",
+          "sourceLine": 543,
+          "family": "state-priority-and-recursion",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 771,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferToMultipleTypesWithPriority",
+          "sourceLine": 558,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 799,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferToConditionalType",
+          "sourceLine": 565,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 808,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferToTemplateLiteralType",
+          "sourceLine": 577,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2310,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromGenericMappedTypes",
+          "sourceLine": 698,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 829,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromObjectTypes",
+          "sourceLine": 710,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 843,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromProperties",
+          "sourceLine": 839,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1043,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromSignatures",
+          "sourceLine": 849,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1059,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromSignature",
+          "sourceLine": 864,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1078,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "applyToParameterTypes",
+          "sourceLine": 879,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1104,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "applyToReturnTypes",
+          "sourceLine": 907,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1146,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromIndexTypes",
+          "sourceLine": 922,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1167,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferToMappedType",
+          "sourceLine": 959,
+          "family": "structured-template-and-variadic-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1235,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferTypeForHomomorphicMappedType",
+          "sourceLine": 1015,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1292,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createReverseMappedType",
+          "sourceLine": 1025,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1318,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isPartiallyInferableType",
+          "sourceLine": 1071,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1379,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferReverseMappedType",
+          "sourceLine": 1077,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1392,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferReverseMappedTypeWorker",
+          "sourceLine": 1102,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1435,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "resolveReverseMappedTypeMembers",
+          "sourceLine": 1110,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1445,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeOfReverseMappedSymbol",
+          "sourceLine": 1156,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1503,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getLimitedConstraint",
+          "sourceLine": 1169,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1516,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "replaceIndexedAccess",
+          "sourceLine": 1189,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1553,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typesDefinitelyUnrelated",
+          "sourceLine": 1196,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1559,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "tupleTypesDefinitelyUnrelated",
+          "sourceLine": 1206,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1570,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTupleTypeStructureMatching",
+          "sourceLine": 1213,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1578,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeOrBaseIdenticalTo",
+          "sourceLine": 1225,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1601,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeCloselyMatchedBy",
+          "sourceLine": 1234,
+          "family": "reverse-mapped-inference",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1612,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createEmptyObjectTypeFromStringLiteral",
+          "sourceLine": 1240,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1618,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "newInferenceContext",
+          "sourceLine": 1262,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1656,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "cloneInferenceContext",
+          "sourceLine": 1269,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1667,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "cloneInferredPartOfContext",
+          "sourceLine": 1276,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1678,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "newInferenceContextWorker",
+          "sourceLine": 1284,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1690,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "addIntraExpressionInferenceSite",
+          "sourceLine": 1296,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1705,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromIntraExpressionSites",
+          "sourceLine": 1313,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1711,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getInferredType",
+          "sourceLine": 1328,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1750,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getInferredTypes",
+          "sourceLine": 1418,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1863,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getMapperFromContext",
+          "sourceLine": 1426,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1877,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createOuterReturnMapper",
+          "sourceLine": 1435,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1888,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getCovariantInference",
+          "sourceLine": 1446,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1907,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getContravariantInference",
+          "sourceLine": 1475,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1948,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "unionObjectAndArrayLiteralCandidates",
+          "sourceLine": 1482,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1959,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasPrimitiveConstraint",
+          "sourceLine": 1494,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1979,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeParameterAtTopLevel",
+          "sourceLine": 1505,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 1996,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeParameterAtTopLevelInReturnType",
+          "sourceLine": 1513,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2005,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeFromInference",
+          "sourceLine": 1521,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2017,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getInferenceInfoForType",
+          "sourceLine": 1531,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2036,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getCommonSupertype",
+          "sourceLine": 1543,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2056,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getSingleCommonSupertype",
+          "sourceLine": 1570,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2094,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findLeftmostType",
+          "sourceLine": 1581,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2109,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getCommonSubtype",
+          "sourceLine": 1592,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2126,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getCombinedTypeFlags",
+          "sourceLine": 1602,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2144,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "literalTypesWithSameBaseType",
+          "sourceLine": 1614,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2165,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isFromInferenceBlockedSource",
+          "sourceLine": 1630,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2191,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isSkipDirectInferenceNode",
+          "sourceLine": 1634,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2197,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "newInferenceInfo",
+          "sourceLine": 1638,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2203,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "cloneInferenceInfo",
+          "sourceLine": 1642,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2215,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "clearCachedInferences",
+          "sourceLine": 1655,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2231,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasInferenceCandidates",
+          "sourceLine": 1663,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2245,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasInferenceCandidatesOrDefault",
+          "sourceLine": 1667,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2251,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasTypeParameterDefault",
+          "sourceLine": 1671,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+          "counterpartLine": 21863,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasOverlappingInferences",
+          "sourceLine": 1682,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2276,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "mergeInferences",
+          "sourceLine": 1691,
+          "family": "context-fixing-default-constraint-and-candidate-selection",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Inference.cs",
+          "counterpartLine": 2292,
+          "triage": "definition-resolved"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/relater.go",
+      "sourceSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47",
+      "sourceFunctions": 188,
+      "selectedFunctions": 185,
+      "functions": [
+        {
+          "name": "get",
+          "sourceLine": 102,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 101,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "set",
+          "sourceLine": 106,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 102,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "size",
+          "sourceLine": 113,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 103,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeIdenticalTo",
+          "sourceLine": 117,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 207,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypesIdentical",
+          "sourceLine": 121,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 208,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypesAssignableSimple",
+          "sourceLine": 128,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 209,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypesAssignableWorker",
+          "sourceLine": 135,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 210,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypesSubtypeOf",
+          "sourceLine": 142,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 620,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeAssignableTo",
+          "sourceLine": 149,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 206,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeSubtypeOf",
+          "sourceLine": 153,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 617,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeStrictSubtypeOf",
+          "sourceLine": 157,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 619,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeComparableTo",
+          "sourceLine": 161,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 32,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "areTypesComparable",
+          "sourceLine": 165,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 35,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeRelatedTo",
+          "sourceLine": 169,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 253,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isSimpleTypeRelatedTo",
+          "sourceLine": 205,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 293,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isEnumTypeRelatedTo",
+          "sourceLine": 281,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5386,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeAssignableTo",
+          "sourceLine": 339,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 202,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeAssignableToEx",
+          "sourceLine": 343,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 205,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeComparableTo",
+          "sourceLine": 347,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 203,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeRelatedTo",
+          "sourceLine": 351,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 398,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeRelatedToEx",
+          "sourceLine": 358,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 401,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createDiagnosticChainFromErrorChain",
+          "sourceLine": 400,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 440,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "reportDiagnostic",
+          "sourceLine": 414,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 452,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeAssignableToAndOptionallyElaborate",
+          "sourceLine": 424,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 389,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkTypeRelatedToAndOptionallyElaborate",
+          "sourceLine": 428,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 390,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateError",
+          "sourceLine": 438,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4423,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isOrHasGenericConditional",
+          "sourceLine": 474,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4421,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateDidYouMeanToCallOrConstruct",
+          "sourceLine": 478,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4487,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateObjectLiteral",
+          "sourceLine": 496,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4545,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateArrayLiteral",
+          "sourceLine": 520,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4456,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateElement",
+          "sourceLine": 544,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4575,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getBestMatchIndexedAccessTypeOrUndefined",
+          "sourceLine": 618,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4640,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "checkExpressionForMutableLocationWithContextualType",
+          "sourceLine": 632,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4655,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "elaborateArrowFunction",
+          "sourceLine": 639,
+          "family": "relation-entry-and-diagnostic-elaboration",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4507,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isWeakType",
+          "sourceLine": 679,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 493,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasCommonProperties",
+          "sourceLine": 695,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 519,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isKnownProperty",
+          "sourceLine": 717,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 527,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isHyphenatedJsxName",
+          "sourceLine": 743,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "external",
+          "counterpart": null,
+          "counterpartLine": null,
+          "triage": "external-definition-absent",
+          "exclusion": "JSX attribute checking is an external consumer"
+        },
+        {
+          "name": "isExcessPropertyCheckTarget",
+          "sourceLine": 747,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 547,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isDeeplyNestedType",
+          "sourceLine": 766,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 555,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasMatchingRecursionIdentity",
+          "sourceLine": 797,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 576,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRecursionIdentity",
+          "sourceLine": 810,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 582,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRecursionIdentityTarget",
+          "sourceLine": 820,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 584,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRecursionIdentityFromTarget",
+          "sourceLine": 840,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 597,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getBestMatchingType",
+          "sourceLine": 872,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 891,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findMatchingTypeReferenceOrTypeAliasReference",
+          "sourceLine": 891,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 911,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findBestTypeForInvokable",
+          "sourceLine": 909,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 928,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findMostOverlappyType",
+          "sourceLine": 916,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 943,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findBestTypeForObjectLiteral",
+          "sourceLine": 945,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 936,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "shouldReportUnmatchedPropertyError",
+          "sourceLine": 952,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1013,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getUnmatchedProperty",
+          "sourceLine": 967,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 970,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getUnmatchedProperties",
+          "sourceLine": 971,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 972,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getUnmatchedPropertiesWorker",
+          "sourceLine": 977,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 980,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "excludeProperties",
+          "sourceLine": 1008,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1028,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "len",
+          "sourceLine": 1036,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 630,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "name",
+          "sourceLine": 1040,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 631,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "matches",
+          "sourceLine": 1044,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 632,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findMatchingDiscriminantType",
+          "sourceLine": 1055,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 676,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findDiscriminantProperties",
+          "sourceLine": 1070,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 695,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isDiscriminantProperty",
+          "sourceLine": 1080,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 704,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getMatchingUnionConstituentForType",
+          "sourceLine": 1096,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 725,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getKeyPropertyName",
+          "sourceLine": 1111,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 734,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getConstituentTypeForKeyType",
+          "sourceLine": 1124,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 742,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "computeKeyPropertyNameAndMap",
+          "sourceLine": 1132,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 749,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isObjectOrInstantiableNonPrimitive",
+          "sourceLine": 1148,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 761,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getKeyPropertyCandidateName",
+          "sourceLine": 1152,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 763,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "mapTypesByKeyProperty",
+          "sourceLine": 1169,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 772,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "discriminateTypeByDiscriminableItems",
+          "sourceLine": 1205,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 634,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "filterPrimitivesIfContainsNonPrimitive",
+          "sourceLine": 1256,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 802,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isNonPrimitiveType",
+          "sourceLine": 1266,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 814,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeNamesForErrorDisplay",
+          "sourceLine": 1270,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4390,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeNameForErrorDisplay",
+          "sourceLine": 1290,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4405,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "symbolValueDeclarationIsContextSensitive",
+          "sourceLine": 1294,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4403,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeCouldHaveTopLevelSingletonTypes",
+          "sourceLine": 1298,
+          "family": "structural-discriminants-recursion-and-error-display",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4406,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getVariances",
+          "sourceLine": 1317,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 110,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getAliasVariances",
+          "sourceLine": 1325,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 118,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getVariancesWorker",
+          "sourceLine": 1334,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 120,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getVarianceStackIndex",
+          "sourceLine": 1437,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 191,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createMarkerType",
+          "sourceLine": 1446,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4667,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isMarkerType",
+          "sourceLine": 1462,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 201,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeParameterModifiers",
+          "sourceLine": 1466,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4693,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasCovariantVoidArgument",
+          "sourceLine": 1478,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4712,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isSignatureAssignableTo",
+          "sourceLine": 1487,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1051,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareSignaturesRelated",
+          "sourceLine": 1491,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1057,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypePredicateRelatedTo",
+          "sourceLine": 1675,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1312,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTopSignature",
+          "sourceLine": 1708,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1370,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getParameterCount",
+          "sourceLine": 1726,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1393,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getMinArgumentCount",
+          "sourceLine": 1737,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1413,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getMinArgumentCountEx",
+          "sourceLine": 1741,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1419,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasEffectiveRestParameter",
+          "sourceLine": 1782,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1487,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeAtPosition",
+          "sourceLine": 1790,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1499,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "tryGetTypeAtPosition",
+          "sourceLine": 1798,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1511,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRestOrAnyTypeAtPosition",
+          "sourceLine": 1819,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4732,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRestTypeAtPosition",
+          "sourceLine": 1829,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4752,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getNameableDeclarationAtPosition",
+          "sourceLine": 1860,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4806,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isValidDeclarationForTupleLabel",
+          "sourceLine": 1887,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4848,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getNonArrayRestType",
+          "sourceLine": 1891,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1949,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getEffectiveRestType",
+          "sourceLine": 1899,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1961,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "sliceTupleType",
+          "sourceLine": 1915,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4856,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getKnownKeysOfTupleType",
+          "sourceLine": 1930,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4884,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRestArrayTypeOfTupleType",
+          "sourceLine": 1940,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4902,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getThisTypeOfSignature",
+          "sourceLine": 1947,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1828,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isInstantiatedGenericParameter",
+          "sourceLine": 1954,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1839,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getParameterNameAtPosition",
+          "sourceLine": 1962,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1985,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTupleElementLabel",
+          "sourceLine": 1976,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4918,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTupleElementLabelFromBindingElement",
+          "sourceLine": 1992,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4946,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypePredicateOfSignature",
+          "sourceLine": 2049,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1533,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getUnionOrIntersectionTypePredicate",
+          "sourceLine": 2083,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1601,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typePredicateKindsMatch",
+          "sourceLine": 2113,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1851,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "createTypePredicateFromTypePredicateNode",
+          "sourceLine": 2117,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5009,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "instantiateTypePredicate",
+          "sourceLine": 2133,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1857,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "newTypePredicate",
+          "sourceLine": 2141,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1869,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isResolvingReturnTypeOfSignature",
+          "sourceLine": 2145,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1881,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findMatchingSignatures",
+          "sourceLine": 2152,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1892,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "findMatchingSignature",
+          "sourceLine": 2187,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1645,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareSignaturesIdentical",
+          "sourceLine": 2200,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1662,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isMatchingSignature",
+          "sourceLine": 2260,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1753,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypeParametersIdentical",
+          "sourceLine": 2280,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1775,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "compareTypePredicatesIdentical",
+          "sourceLine": 2303,
+          "family": "variance-signature-and-tuple-relations",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 1804,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getEffectiveConstraintOfIntersection",
+          "sourceLine": 2315,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 855,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "templateLiteralTypesDefinitelyUnrelated",
+          "sourceLine": 2354,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5111,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeMatchedByTemplateLiteralType",
+          "sourceLine": 2365,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5122,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferTypesFromTemplateLiteralType",
+          "sourceLine": 2378,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5146,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "inferFromLiteralPartsToTemplateLiteral",
+          "sourceLine": 2418,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5181,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getStringLikeTypeForType",
+          "sourceLine": 2502,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5311,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isValidTypeForTemplateLiteralPlaceholder",
+          "sourceLine": 2509,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5322,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isMemberOfStringMapping",
+          "sourceLine": 2531,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5356,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "applyTargetStringMappingToSource",
+          "sourceLine": 2551,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5372,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "visibilityToString",
+          "sourceLine": 2559,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 55,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getRelater",
+          "sourceLine": 2599,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 463,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "putRelater",
+          "sourceLine": 2608,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 470,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isRelatedToSimple",
+          "sourceLine": 2621,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2023,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isRelatedToWorker",
+          "sourceLine": 2625,
+          "family": "constraints-template-and-intrinsic-membership",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2024,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isRelatedTo",
+          "sourceLine": 2629,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2025,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isRelatedToEx",
+          "sourceLine": 2633,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2026,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "hasExcessProperties",
+          "sourceLine": 2747,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2113,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeOfPropertyInTypes",
+          "sourceLine": 2829,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 816,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getTypeOfPropertyInType",
+          "sourceLine": 2837,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 817,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "shouldCheckAsExcessProperty",
+          "sourceLine": 2855,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2172,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isIgnoredJsxProperty",
+          "sourceLine": 2859,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "external",
+          "counterpart": null,
+          "counterpartLine": null,
+          "triage": "external-definition-absent",
+          "exclusion": "JSX children/attribute checking is external"
+        },
+        {
+          "name": "isTypeSubsetOf",
+          "sourceLine": 2863,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 828,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeSubsetOfUnion",
+          "sourceLine": 2867,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 833,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "unionOrIntersectionRelatedTo",
+          "sourceLine": 2882,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2174,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "someTypeRelatedToType",
+          "sourceLine": 2951,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2217,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "eachTypeRelatedToType",
+          "sourceLine": 2965,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2232,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getUndefinedStrippedTargetIfNeeded",
+          "sourceLine": 2997,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2259,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeRelatedToSomeType",
+          "sourceLine": 3004,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2266,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeRelatedToEachType",
+          "sourceLine": 3063,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2315,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "eachTypeRelatedToSomeType",
+          "sourceLine": 3076,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2330,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "recursiveTypeRelatedTo",
+          "sourceLine": 3094,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2344,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "resetMaybeStack",
+          "sourceLine": 3201,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2421,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getErrorState",
+          "sourceLine": 3212,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2438,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "restoreErrorState",
+          "sourceLine": 3219,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2441,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "structuredTypeRelatedTo",
+          "sourceLine": 3224,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2446,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isSourceIntersectionNeedingExtraCheck",
+          "sourceLine": 3286,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2478,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "structuredTypeRelatedToWorker",
+          "sourceLine": 3293,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 2481,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeArgumentsRelatedTo",
+          "sourceLine": 3935,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3331,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "mappedTypeRelatedTo",
+          "sourceLine": 4004,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5038,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeRelatedToDiscriminatedType",
+          "sourceLine": 4021,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3420,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "propertiesRelatedTo",
+          "sourceLine": 4132,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3733,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "propertyRelatedTo",
+          "sourceLine": 4302,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4001,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isPropertySymbolTypeRelated",
+          "sourceLine": 4366,
+          "family": "structured-recursive-relationship-engine",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4062,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "reportUnmatchedProperty",
+          "sourceLine": 4377,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4071,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "tryElaborateArrayLikeErrors",
+          "sourceLine": 4411,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4106,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "tryElaborateErrorsForPrimitivesAndObjects",
+          "sourceLine": 4440,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4141,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "propertiesIdenticalTo",
+          "sourceLine": 4449,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4147,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "signaturesRelatedTo",
+          "sourceLine": 4473,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3520,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "constructorVisibilitiesAreCompatible",
+          "sourceLine": 4550,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5067,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "signatureRelatedTo",
+          "sourceLine": 4575,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3592,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "signaturesIdenticalTo",
+          "sourceLine": 4593,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3610,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "indexSignaturesRelatedTo",
+          "sourceLine": 4610,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3630,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "typeRelatedToIndexInfo",
+          "sourceLine": 4635,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3656,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isObjectTypeWithInferableIndex",
+          "sourceLine": 4656,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 510,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "membersRelatedToIndexInfo",
+          "sourceLine": 4666,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3668,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "indexInfoRelatedTo",
+          "sourceLine": 4710,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3703,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "indexSignaturesIdenticalTo",
+          "sourceLine": 4722,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 3717,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "reportErrorResults",
+          "sourceLine": 4737,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4170,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "reportRelationError",
+          "sourceLine": 4783,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4216,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "reportError",
+          "sourceLine": 4864,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4284,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "addToDottedName",
+          "sourceLine": 4912,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4351,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getChainMessage",
+          "sourceLine": 4934,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4328,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "chainArgsMatch",
+          "sourceLine": 4950,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4342,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "getPropertyNameArg",
+          "sourceLine": 4959,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4371,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isConversionOrInterfaceImplementationMessage",
+          "sourceLine": 4967,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4377,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "chainDepth",
+          "sourceLine": 4976,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 4379,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isTypeDerivedFrom",
+          "sourceLine": 4995,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 36,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "isDistributionDependent",
+          "sourceLine": 5026,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "represented-source-algorithm",
+          "counterpart": "src/TypeScript.Scanner/Checker/Relater.cs",
+          "counterpartLine": 5103,
+          "triage": "definition-resolved"
+        },
+        {
+          "name": "traceUnionsOrIntersectionsTooLarge",
+          "sourceLine": 5030,
+          "family": "property-signature-index-and-error-publication",
+          "implementation": "external",
+          "counterpart": null,
+          "counterpartLine": null,
+          "triage": "external-definition-absent",
+          "exclusion": "Enabled tracing is external; semantic relation/cache paths remain selected"
+        }
+      ]
+    }
+  ],
+  "branchReview": {
+    "state": "source-family-and-cross-owner-review-closed-pending-runtime-acceptance",
+    "reviewedFamilies": [
+      "Inference dispatch/priorities/visited recursion and contravariance",
+      "Inference tuple slicing/variadic priorities, mapped and reverse-mapped recursion/caches",
+      "Inference contextual fixing/default/constraint and candidate selection",
+      "Relation variance measurement/restart, signature variance/predicates/rest, recursion/maybe stack and combined constraints",
+      "Intrinsic inference, relation membership/composition, target and source relationships, diagnostic display and type ordering",
+      "Relation discriminant filtering, excess/common-property checks, combined constraints, generic mapped/key-remapped and conditional structured comparisons",
+      "Relation property/index/signature/tuple arity, readonly/optional/rest comparisons and diagnostic recovery/publication",
+      "Required type serialization: intrinsic arguments, variance marker names, reserved/Array aliases and shadowed generic-parameter usage",
+      "Diagnostic NoErrorTruncation policy, source finite length thresholds, cyclic/list/object elision and demanded synthetic-comment/writer publication"
+    ],
+    "closedSourceOmissions": [
+      "same-symbol intrinsic inference",
+      "constrained template intrinsic placeholder selection",
+      "structured intrinsic relation branches and recursive membership",
+      "object-literal preferred union member excluding array-like candidates",
+      "canonical generic target signature before contextual instantiation",
+      "generic mapped source to target string index uses mapped template",
+      "private-conflicting never intersection explanatory diagnostic",
+      "variance marker sub-/super- diagnostic naming",
+      "shadowed generic type parameter usage naming",
+      "reserved-member and Array alias serialization",
+      "NoErrorTruncation compiler option propagation and original builder/printer truncation and elision behavior"
+    ],
+    "remaining": [
+      "Verifier corrected full-record replay, genuine original assertions, ordinary CLI and native/retained acceptance"
+    ],
+    "independentReview": "Core compared complete selected inference/relation source families and saved display/casing packets; no unresolved substantive selected-source finding."
+  },
+  "adaptations": [
+    "Dictionary missing-value reads preserve Go nil/default semantics; speculative related-information snapshots retain source slice prefix",
+    "Closure delegates and value-record cache keys preserve original capture/key roles",
+    "Byte-role JS casing uses pinned generated mappings/ranges and existing UTF8/WTF8 decoding; R16/R32 ranges combined in original order; LatinOffset performance optimization omitted",
+    "Inference source Go append uses existing clone-on-append adapter; intra-expression site enumeration retains the captured pre-append collection, so reentrant append does not invalidate or extend the current iteration"
+  ],
+  "dependencies": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/stringutil/js_case.go",
+      "counterpart": "src/TypeScript.Scanner/StringUtil/JsCase.cs",
+      "sourceFunctions": 8,
+      "implementation": "ported",
+      "independentReview": "core full algorithm ACK; verifier original26 early runtime passed; final native acceptance pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/stringutil/js_case_generated.go",
+      "counterpart": "src/TypeScript.Scanner/StringUtil/JsCaseGenerated.cs",
+      "implementation": "pinned generated data translated",
+      "mappings": 2927,
+      "casedRanges": 147,
+      "caseIgnorableRanges": 377,
+      "independentReview": "core and verifier independently compared all entries/ranges against source"
+    },
+    {
+      "source": [
+        "upstream/TypeScript/tsc/internal/checker/printer.go",
+        "upstream/TypeScript/tsc/internal/checker/nodebuilder.go",
+        "upstream/TypeScript/tsc/internal/printer/emitcontext.go",
+        "upstream/TypeScript/tsc/internal/printer/printer.go",
+        "upstream/TypeScript/tsc/internal/printer/textwriter.go",
+        "upstream/TypeScript/tsc/internal/printer/emitflags.go",
+        "upstream/TypeScript/tsc/internal/printer/semicolon_writer.go"
+      ],
+      "counterpart": [
+        "src/TypeScript.Scanner/Checker/Printer.cs",
+        "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+        "src/TypeScript.Scanner/Printer/EmitContext.cs",
+        "src/TypeScript.Scanner/Printer/Printer.cs",
+        "src/TypeScript.Scanner/Printer/EmitFlags.cs",
+        "src/TypeScript.Scanner/Printer/Textwriter.cs",
+        "src/TypeScript.Scanner/Printer/SemicolonWriter.cs"
+      ],
+      "implementation": "Required partial diagnostic display closure: compiler NoErrorTruncation option, finite length thresholds, original list/object/cyclic elision and demanded comment/line-start forwarding. Service custom verbosity and emission execution remain external.",
+      "independentReview": "Core compared source option/flag/limit/elision and demanded writer/comment leaves; ACK. Immutable4 replay pending."
+    }
+  ]
+}

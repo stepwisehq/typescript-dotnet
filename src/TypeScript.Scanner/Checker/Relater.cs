@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Modified partial C# port of tsc/internal/checker/relater.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Selected scalar, data-object/composite, callable and collection/generic relationships.
-// Required internal template matching is retained; intrinsic string mapping,
-// source classes and unselected module paths remain guarded.
+// Modified C# port of shared TypeScript relationships in tsc/internal/checker/relater.go,
+// upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// JSX-specific elaboration and enabled tracing remain external consumers.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -485,16 +484,16 @@ public sealed partial class Checker
         freeRelater = r;
     }
 
-    private static void guardFiniteObject(Type t, string branch)
+    private static void guardJsxAttributes(Type t, string branch)
     {
-        if ((t.flags & TypeFlags.StringMapping) != 0 || (t.objectFlags & ObjectFlags.JsxAttributes) != 0)
+        if ((t.objectFlags & ObjectFlags.JsxAttributes) != 0)
             throw unsupported(branch);
     }
 
     // relater.go:679. Substitutions retain their base type's weak-type status.
     private bool isWeakType(Type t)
     {
-        guardFiniteObject(t, "isWeakType: unselected type payload");
+        guardJsxAttributes(t, "isWeakType: unselected type payload");
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var resolved = resolveStructuredTypeMembers(t);
@@ -513,7 +512,7 @@ public sealed partial class Checker
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
             return t.Types().All(isObjectTypeWithInferableIndex);
-        guardFiniteObject(t, "isObjectTypeWithInferableIndex: JS/reverse-mapped");
+        guardJsxAttributes(t, "isObjectTypeWithInferableIndex: JS/reverse-mapped");
         return t.symbol != null && (t.symbol.Flags & (SymbolFlags.ObjectLiteral | SymbolFlags.TypeLiteral | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0 && (t.symbol.Flags & SymbolFlags.Class) == 0 && !typeHasCallOrConstructSignatures(t) || (t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.ObjectRestType)) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0 && isObjectTypeWithInferableIndex(t.AsReverseMappedType().source);
     }
 
@@ -527,7 +526,7 @@ public sealed partial class Checker
 
     private bool isKnownProperty(Type targetType, string name, bool isComparingJsxAttributes)
     {
-        guardFiniteObject(targetType, "isKnownProperty: substitution/intersection");
+        guardJsxAttributes(targetType, "isKnownProperty: substitution/intersection");
         if (isComparingJsxAttributes)
             throw unsupported("isKnownProperty: JSX attributes");
         if ((targetType.flags & TypeFlags.Object) != 0)
@@ -547,7 +546,7 @@ public sealed partial class Checker
 
     private static bool isExcessPropertyCheckTarget(Type type)
     {
-        guardFiniteObject(type, "isExcessPropertyCheckTarget: substitution/intersection");
+        guardJsxAttributes(type, "isExcessPropertyCheckTarget: substitution/intersection");
         return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Substitution) != 0 && isExcessPropertyCheckTarget(type.AsSubstitutionType().baseType) || (type.flags & TypeFlags.Union) != 0 && type.Types().Any(isExcessPropertyCheckTarget) || (type.flags & TypeFlags.Intersection) != 0 && type.Types().All(isExcessPropertyCheckTarget);
     }
 
@@ -597,7 +596,7 @@ public sealed partial class Checker
 
     private static RecursionId getRecursionIdentityFromTarget(Type t)
     {
-        guardFiniteObject(t, "getRecursionIdentityFromTarget: reference/tuple/type parameter/conditional");
+        guardJsxAttributes(t, "getRecursionIdentityFromTarget: reference/tuple/type parameter/conditional");
         if ((t.flags & TypeFlags.Object) != 0 && (t.objectFlags & (ObjectFlags.ObjectLiteral | ObjectFlags.ArrayLiteral)) == 0)
         {
             if ((t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null)
@@ -853,8 +852,7 @@ public sealed partial class Checker
         return containsType(target.Types(), source);
     }
 
-    // relater.go:2315. Preserve combined constraints for admitted implicit-this
-    // variables and finite intersections; source generic operators are guarded.
+    // relater.go:2315. Combined constraints preserve intersection/union reduction.
     private Type getEffectiveConstraintOfIntersection(List<Type> types, bool targetIsUnion)
     {
         List<Type> constraints = null;
@@ -936,10 +934,9 @@ public sealed partial class Checker
 
     private Type findBestTypeForObjectLiteral(Type source, Type target)
     {
-        guardFiniteObject(source, "findBestTypeForObjectLiteral: unselected type payload");
-        foreach (var part in target.Types())
-            guardFiniteObject(part, "findBestTypeForObjectLiteral: unselected type payload");
-        return null; // No selected type is array-like.
+        if ((source.objectFlags & ObjectFlags.ObjectLiteral) != 0 && someType(target, isArrayLikeType))
+            return Core.Find(target.Types(), type => !isArrayLikeType(type));
+        return null;
     }
 
     private Type findMostOverlappyType(Type source, Type target)
@@ -1100,6 +1097,7 @@ public sealed partial class Checker
 
         if (((GoRuntime.Len(source.typeParameters) != 0) && !ReferenceEquals(source.typeParameters, target.typeParameters)))
         {
+            target = getCanonicalSignature(target);
             source = instantiateSignatureInContextOf(source, target, null, compareTypes);
         }
 
@@ -1947,7 +1945,7 @@ public sealed partial class Checker
         return result;
     }
 
-    // relater.go:1891/1900. Ordinary signatures have no rest type; rest creation is excluded.
+    // relater.go:1891/1900. Distinguish effective tuple/rest types from array rests.
     private Type getNonArrayRestType(Signature signature)
     {
         var restType = this.getEffectiveRestType(signature);
@@ -2027,8 +2025,8 @@ public sealed partial class Checker
         {
             if (originalSource == originalTarget)
                 return Ternary.True;
-            guardFiniteObject(originalSource, "isRelatedToEx: source generic/named/intersection");
-            guardFiniteObject(originalTarget, "isRelatedToEx: target generic/named/intersection");
+            guardJsxAttributes(originalSource, "isRelatedToEx: source generic/named/intersection");
+            guardJsxAttributes(originalTarget, "isRelatedToEx: target generic/named/intersection");
             if ((originalSource.flags & TypeFlags.Object) != 0 && (originalTarget.flags & TypeFlags.Primitive) != 0)
             {
                 if (relation == c.comparableRelation && (originalTarget.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(originalTarget, originalSource, relation) || c.isSimpleTypeRelatedTo(originalSource, originalTarget, relation, reportErrors ? reportError : null))
@@ -2621,7 +2619,9 @@ public sealed partial class Checker
 
                         case true when ((source.flags & TypeFlags.StringMapping) != 0):
                         {
-                            throw unsupported("structuredTypeRelatedToWorker: template/intrinsic string mapping");
+                            if (source.symbol == target.symbol)
+                                return isRelatedTo(source.AsStringMappingType().target, target.AsStringMappingType().target, RecursionFlags.Both, false);
+                            break;
                         }
                     }
 
@@ -2913,7 +2913,9 @@ public sealed partial class Checker
 
                 case true when ((target.flags & TypeFlags.StringMapping) != 0):
                 {
-                    throw unsupported("structuredTypeRelatedToWorker: template/intrinsic string mapping");
+                    if ((source.flags & TypeFlags.StringMapping) == 0 && c.isMemberOfStringMapping(source, target))
+                        return Ternary.True;
+                    break;
                 }
 
                 case true when (this.c.isGenericMappedType(target) && (this.relation != this.c.identityRelation)):
@@ -3159,7 +3161,25 @@ public sealed partial class Checker
 
                 case true when ((source.flags & TypeFlags.StringMapping) != 0):
                 {
-                    throw unsupported("structuredTypeRelatedToWorker: template/intrinsic string mapping");
+                    if ((target.flags & TypeFlags.StringMapping) != 0)
+                    {
+                        if (source.symbol != target.symbol)
+                            return Ternary.False;
+                        result = isRelatedTo(source.AsStringMappingType().target, target.AsStringMappingType().target, RecursionFlags.Both, reportErrors);
+                        if (result != Ternary.False)
+                            return result;
+                    }
+                    else
+                    {
+                        var constraint = c.getBaseConstraintOfType(source);
+                        if (constraint != null)
+                        {
+                            result = isRelatedTo(constraint, target, RecursionFlags.Source, reportErrors);
+                            if (result != Ternary.False)
+                                return result;
+                        }
+                    }
+                    break;
                 }
 
                 default:
@@ -3606,8 +3626,7 @@ public sealed partial class Checker
             return result;
         }
 
-        // relater.go:4610. Nonempty selected indexes arise from any-base
-        // inheritance even though source index-signature syntax is excluded.
+        // relater.go:4610. Generic mapped sources use their template against string indexes.
         private Ternary indexSignaturesRelatedTo(Type source, Type target, bool sourceIsPrimitive, bool reportErrors, IntersectionState intersectionState)
         {
             if (relation == c.identityRelation)
@@ -3617,7 +3636,13 @@ public sealed partial class Checker
             var result = Ternary.True;
             foreach (var info in infos ?? [])
             {
-                var related = relation != c.strictSubtypeRelation && !sourceIsPrimitive && hasStringIndex && (info.valueType.flags & TypeFlags.Any) != 0 ? Ternary.True : typeRelatedToIndexInfo(source, info, reportErrors, intersectionState);
+                Ternary related;
+                if (relation != c.strictSubtypeRelation && !sourceIsPrimitive && hasStringIndex && (info.valueType.flags & TypeFlags.Any) != 0)
+                    related = Ternary.True;
+                else if (c.isGenericMappedType(source) && hasStringIndex)
+                    related = isRelatedTo(c.getTemplateTypeFromMappedType(source), info.valueType, RecursionFlags.Both, reportErrors);
+                else
+                    related = typeRelatedToIndexInfo(source, info, reportErrors, intersectionState);
                 if (related == Ternary.False)
                     return Ternary.False;
                 result &= related;
@@ -4058,9 +4083,9 @@ public sealed partial class Checker
                 }
             }
             var props = c.getUnmatchedProperties(source, target, requireOptionalProperties, false);
-            var(sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
-            if (props.Count == 1)
+            if (GoRuntime.Len(props) == 1)
             {
+                var (sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
                 var name = c.symbolToString(unmatchedProperty);
                 reportError(Diagnostics.Property_0_is_missing_in_type_1_but_required_in_type_2, name, sourceType, targetType);
                 if ((unmatchedProperty.Declarations?.Count ?? 0) != 0)
@@ -4068,10 +4093,11 @@ public sealed partial class Checker
             }
             else if (tryElaborateArrayLikeErrors(source, target, false))
             {
-                if (props.Count > 5)
+                var (sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
+                if (GoRuntime.Len(props) > 5)
                     reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2_and_3_more, sourceType, targetType, string.Join(", ", props.Take(4).Select(c.symbolToString)), props.Count - 4);
                 else
-                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, sourceType, targetType, string.Join(", ", props.Select(c.symbolToString)));
+                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, sourceType, targetType, string.Join(", ", (props ?? []).Select(c.symbolToString)));
             }
         }
 
@@ -4141,8 +4167,8 @@ public sealed partial class Checker
 
         private void reportErrorResults(Type originalSource, Type originalTarget, Type source, Type target, Message headMessage)
         {
-            guardFiniteObject(originalSource, "reportErrorResults: unsupported source");
-            guardFiniteObject(originalTarget, "reportErrorResults: unsupported target");
+            guardJsxAttributes(originalSource, "reportErrorResults: unsupported source");
+            guardJsxAttributes(originalTarget, "reportErrorResults: unsupported target");
             bool sourceHasBase = c.getSingleBaseForNonAugmentingSubtype(originalSource) != null;
             bool targetHasBase = c.getSingleBaseForNonAugmentingSubtype(originalTarget) != null;
             if (originalSource.alias != null || sourceHasBase)
@@ -4159,11 +4185,15 @@ public sealed partial class Checker
                 throw unsupported("reportErrorResults: JSX");
             if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
             {
-                var property = c.getPropertiesOfUnionOrIntersectionType(originalTarget)?.FirstOrDefault(c.isDiscriminantWithNeverType);
+                var message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents;
+                var property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), c.isDiscriminantWithNeverType);
+                if (property == null)
+                {
+                    message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_exists_in_multiple_constituents_and_is_private_in_some;
+                    property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), isConflictingPrivateProperty);
+                }
                 if (property != null)
-                    reportError(Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents, c.typeToStringNoTypeReduction(originalTarget), c.symbolToString(property));
-            // Private data members are excluded, so the private-conflict
-            // fallback can have no matches in this admitted property model.
+                    reportError(message, c.typeToStringNoTypeReduction(originalTarget), c.symbolToString(property));
             }
 
             reportRelationError(headMessage, source, target);
@@ -5321,8 +5351,8 @@ public sealed partial class Checker
         return false;
     }
 
-    // relater.go:2531. Required template-union reductions retain the ordinary
-    // any/string/template arms; intrinsic string transformations are excluded.
+    // relater.go:2531. Membership requires unchanged mapped source identity and
+    // compatibility with the innermost unmapped target.
     private bool isMemberOfStringMapping(Type source, Type target)
     {
         if ((target.flags & TypeFlags.Any) != 0)
@@ -5330,9 +5360,22 @@ public sealed partial class Checker
         if ((target.flags & (TypeFlags.String | TypeFlags.TemplateLiteral)) != 0)
             return isTypeAssignableTo(source, target);
         if ((target.flags & TypeFlags.StringMapping) != 0)
-            throw unsupported("isMemberOfStringMapping: intrinsic string mapping");
+        {
+            var (mapped, inner) = applyTargetStringMappingToSource(source, target);
+            return mapped == source && isMemberOfStringMapping(source, inner);
+        }
         return false;
     }
+
+    // relater.go:2551. Apply nested mappings from the innermost target outward.
+    private (Type Mapped, Type Inner) applyTargetStringMappingToSource(Type source, Type target)
+    {
+        var inner = target.AsStringMappingType().target;
+        if ((inner.flags & TypeFlags.StringMapping) != 0)
+            (source, inner) = applyTargetStringMappingToSource(source, inner);
+        return (getStringMappingType(target.symbol, source), inner);
+    }
+
 }
 
 public sealed partial class Checker

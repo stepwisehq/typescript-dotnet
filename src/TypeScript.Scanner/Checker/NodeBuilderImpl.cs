@@ -12,6 +12,8 @@ using ModuleSpecifierFunctions = TypeScript.ModuleSpecifiers.ModuleSpecifiers;
 namespace TypeScript.Checking;
 internal sealed partial class NodeBuilderImpl
 {
+    internal const int defaultMaximumTruncationLength = 160;
+    internal const int noTruncationMaximumTruncationLength = 1_000_000;
     private readonly Checker ch;
     private readonly NodeFactory f;
     private readonly NodeVisitor cloneBindingNameVisitor;
@@ -148,8 +150,6 @@ internal sealed partial class NodeBuilderImpl
         t = Checker.getNonDistributedTypeParameter(t);
         if ((ctx.flags & NodeBuilderFlags.NoTypeReduction) == 0)
             t = ch.getReducedType(t);
-        if ((t.flags & TypeFlags.StringMapping) != 0)
-            throw Checker.unsupported("typeToTypeNode: intrinsic string-mapping payload");
         if ((t.flags & TypeFlags.Any) != 0)
         {
             if (t.alias != null)
@@ -319,7 +319,17 @@ internal sealed partial class NodeBuilderImpl
         // nodebuilderimpl.go:3516. Default diagnostics allow aliases from outside
         // the current scope; other selected contexts use actual accessibility.
         if (inTypeAlias == 0 && t.alias != null && ((ctx.flags & NodeBuilderFlags.UseAliasDefinedOutsideCurrentScope) != 0 || ch.IsTypeSymbolAccessible(t.alias.Symbol(), ctx.enclosingDeclaration)))
-            return symbolToTypeNode(t.alias.Symbol(), SymbolFlags.Type, mapToTypeNodes(t.alias.TypeArguments(), false));
+        {
+            // Configured structural expansion is a service-only consumer. Ordinary
+            // diagnostics preserve the source alias/member-name and array branches.
+            var symbol = t.alias.Symbol();
+            var typeArgumentNodes = mapToTypeNodes(t.alias.TypeArguments(), false);
+            if (Checker.isReservedMemberName(symbol.Name) && (symbol.Flags & SymbolFlags.Class) == 0)
+                return f.NewTypeReferenceNode(f.NewIdentifier(""), typeArgumentNodes);
+            if (typeArgumentNodes?.Nodes.Count == 1 && symbol == ch.globalArrayType.symbol)
+                return f.NewArrayTypeNode(typeArgumentNodes.Nodes[0]);
+            return symbolToTypeNode(symbol, SymbolFlags.Type, typeArgumentNodes);
+        }
         if ((t.objectFlags & ObjectFlags.Reference) != 0)
         {
             if (ch.isArrayOrTupleType(t))
@@ -331,7 +341,7 @@ internal sealed partial class NodeBuilderImpl
 
         if ((t.flags & TypeFlags.TypeParameter) != 0 || (t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
         {
-            if (Core.Some(ctx.inferTypeParameters, parameter => ReferenceEquals(parameter, t)))
+            if ((t.flags & TypeFlags.TypeParameter) != 0 && Core.Some(ctx.inferTypeParameters, parameter => ReferenceEquals(parameter, t)))
             {
                 approximateLength += Ast.SymbolName(t.symbol).Length + 6;
                 Node constraintNode = null;
@@ -350,9 +360,22 @@ internal sealed partial class NodeBuilderImpl
             }
 
 
+            if ((ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0 && (t.flags & TypeFlags.TypeParameter) != 0)
+            {
+                var parameterName = typeParameterToName(t);
+                approximateLength += parameterName.Text().Length;
+                return f.NewTypeReferenceNode(newIdentifier(parameterName.Text(), t.symbol), null);
+            }
+
             if (t.symbol != null)
                 return symbolToTypeNode(t.symbol, SymbolFlags.Type, null);
-            return f.NewTypeReferenceNode(newIdentifier("?", null), null);
+            string name;
+            if ((t == ch.markerSuperTypeForCheck || t == ch.markerSubTypeForCheck) &&
+                ch.varianceTypeParameter?.symbol != null)
+                name = (t == ch.markerSubTypeForCheck ? "sub-" : "super-") + Ast.SymbolName(ch.varianceTypeParameter.symbol);
+            else
+                name = "?";
+            return f.NewTypeReferenceNode(newIdentifier(name, null), null);
         }
 
         if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin != null)
@@ -393,6 +416,12 @@ internal sealed partial class NodeBuilderImpl
             }));
             approximateLength += 2;
             return f.NewTemplateLiteralTypeNode(head, spans);
+        }
+
+        if ((t.flags & TypeFlags.StringMapping) != 0)
+        {
+            var typeNode = typeToTypeNode(t.Target());
+            return symbolToTypeNode(t.symbol, SymbolFlags.Type, f.NewNodeList(new List<Node> { typeNode }));
         }
 
         if ((t.flags & TypeFlags.IndexedAccess) != 0)
@@ -902,20 +931,26 @@ internal sealed partial class NodeBuilderImpl
         return null;
     }
 
-    // nodebuilderimpl.go:147. Fixed default context, no NoTruncation/verbosity options.
+    // nodebuilderimpl.go:147. Compiler/diagnostic NoTruncation uses the original
+    // larger finite limit; configured service verbosity remains external.
     private bool checkTruncationLength()
     {
         if (truncating)
             return truncating;
-        truncating = approximateLength > 160;
+        var maxLength = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
+            noTruncationMaximumTruncationLength : defaultMaximumTruncationLength;
+        truncating = approximateLength > maxLength;
         return truncating;
     }
 
-    // nodebuilderimpl.go:342/3017. IgnoreErrors is fixed by the diagnostic API.
+    // nodebuilderimpl.go:342/3017. Elision preserves the source NoTruncation node.
     private Node createElidedInformationPlaceholder()
     {
         approximateLength += 3;
-        return f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
+        return (ctx.flags & NodeBuilderFlags.NoTruncation) == 0 ?
+            f.NewTypeReferenceNode(f.NewIdentifier("..."), null) :
+            e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
+                Kind.MultiLineCommentTrivia, "elided", false);
     }
 
     private Node createCyclicStructurePlaceholder()
@@ -929,8 +964,8 @@ internal sealed partial class NodeBuilderImpl
         return createElidedInformationPlaceholder();
     }
 
-    // nodebuilderimpl.go:350. No source aliases/generic names; generated ellipsis
-    // references still participate in the original name-collision pass.
+    // nodebuilderimpl.go:350. Generated elision nodes and named references
+    // retain the original truncation and name-collision branches.
     private NodeList mapToTypeNodes(List<Type> list, bool isBareList)
     {
         if (list == null || list.Count == 0)
@@ -938,11 +973,20 @@ internal sealed partial class NodeBuilderImpl
         if (checkTruncationLength())
         {
             if (!isBareList)
-                return f.NewNodeList([f.NewTypeReferenceNode(f.NewIdentifier("..."), null)]);
+            {
+                var node = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
+                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
+                        Kind.MultiLineCommentTrivia, "elided", false) :
+                    f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
+                return f.NewNodeList([node]);
+            }
             if (list.Count > 2)
             {
                 List<Node> nodes = [typeToTypeNode(list[0]), null, typeToTypeNode(list[^1])];
-                nodes[1] = f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - 2} more ..."), null);
+                nodes[1] = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
+                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
+                        Kind.MultiLineCommentTrivia, $"... {list.Count - 2} more elided ...", false) :
+                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - 2} more ..."), null);
                 return f.NewNodeList(nodes);
             }
         }
@@ -954,7 +998,10 @@ internal sealed partial class NodeBuilderImpl
             int displayIndex = i + 1;
             if (checkTruncationLength() && displayIndex + 2 < list.Count - 1)
             {
-                result.Add(f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - displayIndex} more ..."), null));
+                result.Add((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
+                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
+                        Kind.MultiLineCommentTrivia, $"... {list.Count - displayIndex} more elided ...", false) :
+                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - displayIndex} more ..."), null));
                 var last = typeToTypeNode(list[^1]);
                 if (last != null)
                     result.Add(last);
@@ -1366,12 +1413,20 @@ internal sealed partial class NodeBuilderImpl
         return f.NewIndexSignatureDeclaration(modifiers, f.NewNodeList([parameter]), typeNode);
     }
 
-    // nodebuilderimpl.go:2722. Original truncation/order loop; ordinary calls and
-    // internal any-base index information are retained, constructors excluded.
+    // nodebuilderimpl.go:2722. Original truncation/order loop retains ordinary
+    // calls, nonabstract constructors and index/property information.
     private NodeList createTypeNodesFromResolvedType(StructuredType resolved)
     {
         if (checkTruncationLength())
+        {
+            if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
+            {
+                var element = f.NewNotEmittedTypeElement();
+                return f.NewNodeList([e.AddSyntheticTrailingComment(element,
+                    Kind.MultiLineCommentTrivia, "elided", false)]);
+            }
             return f.NewNodeList([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]);
+        }
         List<Node> elements = null;
         foreach (var signature in resolved.CallSignatures() ?? [])
             (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
@@ -1394,7 +1449,11 @@ internal sealed partial class NodeBuilderImpl
             if (checkTruncationLength() && i + 2 < properties.Count - 1)
             {
                 elements ??= new();
-                elements.Add(f.NewPropertySignatureDeclaration(null, f.NewIdentifier($"... {properties.Count - i} more ..."), null, null, null));
+                if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
+                    elements[^1] = e.AddSyntheticTrailingComment(elements[^1],
+                        Kind.MultiLineCommentTrivia, $"... {properties.Count - i} more elided ...", false);
+                else
+                    elements.Add(f.NewPropertySignatureDeclaration(null, f.NewIdentifier($"... {properties.Count - i} more ..."), null, null, null));
                 elements = addPropertyToElementList(properties[^1], elements);
                 break;
             }

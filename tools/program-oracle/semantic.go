@@ -15,11 +15,67 @@ type semanticInput struct {
 	PerFile, Repeat  bool
 	IncrementalFiles []string
 	Queries          []semanticQuery
+	Relations        []semanticRelation
 }
 
 type semanticQuery struct {
 	File, Identifier, Operation string
 	Occurrence                  int
+}
+
+// Authored finite public API pairs; no internal type identity is projected.
+type semanticRelation struct {
+	Source, Target semanticQuery
+}
+
+func semanticRelationNode(p *compiler.Program, q semanticQuery) (*ast.SourceFile, *ast.Node) {
+	if q.Occurrence < 0 || q.Operation != "type" && q.Operation != "declared" {
+		panic("Relation requires nonnegative identifier occurrence and type/declared operation")
+	}
+	file := p.GetSourceFile(tspath.RootedFilePath(q.File))
+	if file == nil {
+		panic("Unknown semantic relation file")
+	}
+	var selected *ast.Node
+	occurrence := 0
+	var visit ast.Visitor
+	visit = func(node *ast.Node) bool {
+		if ast.IsIdentifier(node) && node.Text() == q.Identifier {
+			if occurrence == q.Occurrence {
+				selected = node
+			}
+			occurrence++
+		}
+		node.ForEachChild(visit)
+		return false
+	}
+	visit(file.AsNode())
+	if selected == nil {
+		panic("Unknown semantic relation identifier occurrence")
+	}
+	return file, selected
+}
+
+func observeSemanticRelation(o *observer, p *compiler.Program, input semanticRelation) any {
+	c, done := p.GetTypeChecker(context.Background())
+	defer done()
+	selectType := func(q semanticQuery) (*checker.Type, any) {
+		file, node := semanticRelationNode(p, q)
+		t := c.GetTypeAtLocation(node)
+		if q.Operation == "declared" {
+			symbol := c.GetSymbolAtLocation(node)
+			if symbol == nil {
+				panic("Declared relation type requires actual symbol")
+			}
+			t = c.GetDeclaredTypeOfSymbol(symbol)
+		}
+		return t, map[string]any{"file": o.file(file), "pos": node.Pos(), "end": node.End(),
+			"kind": node.Kind, "operation": q.Operation, "typeBase64": b64(c.TypeToString(t))}
+	}
+	source, sourceObservation := selectType(input.Source)
+	target, targetObservation := selectType(input.Target)
+	return map[string]any{"source": sourceObservation, "target": targetObservation,
+		"assignable": c.IsTypeAssignableTo(source, target)}
 }
 
 func observeSemanticQuery(o *observer, p *compiler.Program, q semanticQuery) any {
@@ -157,6 +213,14 @@ func observeSemantics(o *observer, p *compiler.Program, input *semanticInput) an
 		}
 		result["queries"] = rows
 		result["globalAfterQueries"] = o.diagnostics(p.GetGlobalDiagnostics(ctx))
+	}
+	if input.Relations != nil {
+		rows := []any{}
+		for _, relation := range input.Relations {
+			rows = append(rows, observeSemanticRelation(o, p, relation))
+		}
+		result["relations"] = rows
+		result["globalAfterRelations"] = o.diagnostics(p.GetGlobalDiagnostics(ctx))
 	}
 	return result
 }

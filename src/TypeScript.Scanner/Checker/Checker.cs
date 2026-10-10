@@ -8,6 +8,9 @@ using TypeScript.Scanner;
 using TypeScript.Compiler;
 using TypeScript.Modules;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Checks")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Validation")]
+
 namespace TypeScript.Checking;
 
 public sealed partial class Checker
@@ -1283,10 +1286,10 @@ public sealed partial class Checker
     }
 
     internal Type getUnionType(List<Type> types) => getUnionTypeEx(types, UnionReduction.Literal, null, null);
-    // getUnionTypeEx/getUnionTypeWorker (26166): scalar unions; aliases/subtypes reject.
+    // checker.go:26162–26270. Canonical union construction and reduction.
     private Type getUnionTypeEx(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
     {
-        if (types.Count == 0)
+        if (GoRuntime.Len(types) == 0)
             return neverType;
         if (types.Count == 1)
             return types[0];
@@ -1340,9 +1343,9 @@ public sealed partial class Checker
             if (typeSet.Count == 0)
             {
                 if ((includes & TypeFlags.Null) != 0)
-                    return nullType;
+                    return (includes & TypeFlags.IncludesNonWideningType) != 0 ? nullType : nullWideningType;
                 if ((includes & TypeFlags.Undefined) != 0)
-                    return undefinedType;
+                    return (includes & TypeFlags.IncludesNonWideningType) != 0 ? undefinedType : undefinedWideningType;
                 return neverType;
             }
         }
@@ -1394,6 +1397,12 @@ public sealed partial class Checker
                 includes |= TypeFlags.IncludesWildcard;
             if (isErrorType(t))
                 includes |= TypeFlags.IncludesError;
+            if (!strictNullChecks && (flags & TypeFlags.Nullable) != 0)
+            {
+                if ((t.objectFlags & ObjectFlags.ContainsWideningType) == 0)
+                    includes |= TypeFlags.IncludesNonWideningType;
+                return;
+            }
             types.Add(t);
         }
 
@@ -1445,7 +1454,7 @@ public sealed partial class Checker
 
     private Type getUnionTypeFromSortedList(List<Type> types, ObjectFlags precomputedObjectFlags, TypeAlias alias = null, Type origin = null)
     {
-        if (types.Count == 0)
+        if (GoRuntime.Len(types) == 0)
             return neverType;
         if (types.Count == 1)
             return types[0];
@@ -2204,7 +2213,7 @@ public sealed partial class Checker
             TypeSystemPropertyName.ResolvedBaseConstraint => ((Type)r.target).AsConstrainedType().resolvedBaseConstraint != null,
             TypeSystemPropertyName.WriteType => valueSymbolLinks.Get((Symbol)r.target).writeType != null,
             TypeSystemPropertyName.AliasTarget => aliasSymbolLinks.Get((Symbol)r.target).aliasTarget != null,
-            _ => throw unsupported("typeResolutionHasProperty: callable/assignment/module resolution")
+            _ => throw new InvalidOperationException("Unhandled case in typeResolutionHasProperty")
         };
     }
 
@@ -3736,10 +3745,10 @@ public sealed partial class Checker
     private Type newObjectType(ObjectFlags objectFlags, Symbol symbol)
     {
         TypeData data;
-        if ((objectFlags & ObjectFlags.Tuple) != 0)
-            data = new TupleType();
-        else if ((objectFlags & ObjectFlags.ClassOrInterface) != 0)
+        if ((objectFlags & ObjectFlags.ClassOrInterface) != 0)
             data = new InterfaceType();
+        else if ((objectFlags & ObjectFlags.Tuple) != 0)
+            data = new TupleType();
         else if ((objectFlags & ObjectFlags.Reference) != 0)
             data = new TypeReference();
         else if ((objectFlags & ObjectFlags.Mapped) != 0)
@@ -3753,7 +3762,7 @@ public sealed partial class Checker
         else if ((objectFlags & ObjectFlags.Anonymous) != 0)
             data = new ObjectType();
         else
-            throw unsupported("newObjectType: unselected object payload");
+            throw new InvalidOperationException("Unhandled case in newObjectType");
         var t = newType(TypeFlags.Object, objectFlags, data);
         t.symbol = symbol;
         return t;
@@ -3860,7 +3869,7 @@ public sealed partial class Checker
             return getUnionTypeFromSortedList(filtered, t.objectFlags & (ObjectFlags.PrimitiveUnion | ObjectFlags.ContainsIntersections), null, newOrigin);
         }
 
-        return predicate(t) ? t : neverType;
+        return (t.flags & TypeFlags.Never) != 0 || predicate(t) ? t : neverType;
     }
 }
 
@@ -8268,13 +8277,12 @@ public sealed partial class Checker
         NoConstraintReduction = 2
     }
 
-    // The selected complete cache preimage is ordered type IDs + flags. Aliases
-    // and retained intersection payloads are excluded explicitly below.
+    // checker.go:26590. Cache keys retain constituent order, flags and aliases.
     private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
     internal Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
     private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
-        var orderedTypes = new List<Type>(types.Count);
+        var orderedTypes = new List<Type>(GoRuntime.Len(types));
         var includes = addTypesToIntersection(orderedTypes, 0, types);
         var typeSet = orderedTypes;
         ObjectFlags objectFlags = ObjectFlags.None;
@@ -8311,7 +8319,7 @@ public sealed partial class Checker
             if ((typeVariable.flags & TypeFlags.TypeVariable) != 0 && ((primitiveType.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 && !isGenericStringLikeType(primitiveType) || (includes & TypeFlags.IncludesEmptyObject) != 0))
             {
                 var constraint = getBaseConstraintOfType(typeVariable);
-                if (constraint != null && (constraint.Distributed()?.All(isPrimitiveOrObjectOrEmptyType) ?? true))
+                if (constraint != null && everyType(constraint, isPrimitiveOrObjectOrEmptyType))
                 {
                     if (isTypeStrictSubtypeOf(constraint, primitiveType))
                         return typeVariable;
@@ -8371,7 +8379,7 @@ public sealed partial class Checker
 
     private TypeFlags addTypesToIntersection(List<Type> typeSet, TypeFlags includes, List<Type> types)
     {
-        foreach (var t in types)
+        foreach (var t in types ?? [])
             includes = addTypeToIntersection(typeSet, includes, getRegularTypeOfLiteralType(t));
         return includes;
     }
@@ -9387,7 +9395,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:24194/24200. Enum/class/source generic declarations remain outside admission.
+    // checker.go:24194/24200. Resolve the actual declaration kind before using the error sentinel.
     internal Type getDeclaredTypeOfSymbol(Symbol symbol) => tryGetDeclaredTypeOfSymbol(symbol) ?? errorType;
     private Type tryGetDeclaredTypeOfSymbol(Symbol symbol)
     {
@@ -10362,9 +10370,20 @@ public sealed partial class Checker
         var links = typeNodeLinks.Get(node);
         if (links.resolvedType == null)
         {
+            var alias = getAliasForTypeNode(node);
             var types = node.AsIntersectionTypeNode().Types.Nodes.Select(getTypeFromTypeNode).ToList();
-            bool noSupertypeReduction = types.Count == 2 && types.IndexOf(emptyTypeLiteralType) >= 0 && (types[1 - types.IndexOf(emptyTypeLiteralType)].flags & (TypeFlags.String | TypeFlags.Number | TypeFlags.BigInt)) != 0;
-            links.resolvedType = getIntersectionTypeEx(types, noSupertypeReduction ? IntersectionFlags.NoSupertypeReduction : IntersectionFlags.None, getAliasForTypeNode(node));
+            var noSupertypeReduction = false;
+            if (types.Count == 2)
+            {
+                var emptyIndex = types.IndexOf(emptyTypeLiteralType);
+                if (emptyIndex >= 0)
+                {
+                    var t = types[1 - emptyIndex];
+                    noSupertypeReduction = (t.flags & (TypeFlags.String | TypeFlags.Number | TypeFlags.BigInt)) != 0
+                        || (t.flags & TypeFlags.TemplateLiteral) != 0 && isPatternLiteralType(t);
+                }
+            }
+            links.resolvedType = getIntersectionTypeEx(types, noSupertypeReduction ? IntersectionFlags.NoSupertypeReduction : IntersectionFlags.None, alias);
         }
 
         return links.resolvedType;
@@ -10375,21 +10394,36 @@ public sealed partial class Checker
 {
     internal Type noConstraintType, circularConstraintType;
     private Type resolvingDefaultType;
+    internal Type varianceTypeParameter;
     private bool strictBuiltinIteratorReturn = false;
-    // Written module aliases remain excluded. The generic type-alias-reference
-    // branch retains this boundary rather than resolving arbitrary foreign imports.
-    // checker.go:2673. Explicit variance annotations remain outside Collections
-    // admission; demanded library type parameters carry no in/out modifiers.
+    // checker.go:2673. Explicit variance annotations use the same marker relations
+    // as inferred variance; enabled tracing is an external consumer.
     private void checkTypeParameterDeferred(Node node)
     {
         if (Ast.IsInterfaceDeclaration(node.Parent) || Ast.IsClassLike(node.Parent) || Ast.IsTypeOrJSTypeAliasDeclaration(node.Parent))
         {
             var typeParameter = getDeclaredTypeOfTypeParameter(getSymbolOfDeclaration(node));
-            ModifierFlags modifiers = ModifierFlags.None;
-            foreach (var declaration in typeParameter.symbol?.Declarations ?? [])
-                modifiers |= Ast.GetCombinedModifierFlags(declaration);
-            if ((modifiers & (ModifierFlags.In | ModifierFlags.Out)) != 0)
-                throw unsupported("checkTypeParameterDeferred: source variance annotation");
+            var modifiers = getTypeParameterModifiers(typeParameter) & (ModifierFlags.In | ModifierFlags.Out);
+            if (modifiers != ModifierFlags.None)
+            {
+                var symbol = getSymbolOfDeclaration(node.Parent);
+                if (Ast.IsTypeOrJSTypeAliasDeclaration(node.Parent) &&
+                    (getDeclaredTypeOfSymbol(symbol).objectFlags & (ObjectFlags.Anonymous | ObjectFlags.Mapped)) == 0)
+                {
+                    error(node, Diagnostics.Variance_annotations_are_only_supported_in_type_aliases_for_object_function_constructor_and_mapped_types);
+                }
+                else if (modifiers is ModifierFlags.In or ModifierFlags.Out)
+                {
+                    var source = createMarkerType(symbol, typeParameter,
+                        modifiers == ModifierFlags.Out ? markerSubTypeForCheck : markerSuperTypeForCheck);
+                    var target = createMarkerType(symbol, typeParameter,
+                        modifiers == ModifierFlags.Out ? markerSuperTypeForCheck : markerSubTypeForCheck);
+                    var saveVarianceTypeParameter = typeParameter;
+                    varianceTypeParameter = typeParameter;
+                    checkTypeAssignableTo(source, target, node, Diagnostics.Type_0_is_not_assignable_to_type_1_as_implied_by_variance_annotation);
+                    varianceTypeParameter = saveVarianceTypeParameter;
+                }
+            }
         }
     }
 
@@ -10591,7 +10625,7 @@ public sealed partial class Checker
 
             case true when ((flags & TypeFlags.StringMapping) != 0):
                 {
-                    throw unsupported("instantiateTypeWorker: intrinsic string mapping");
+                    return getStringMappingType(t.symbol, instantiateType(t.Target(), m));
                 }
 
             case true when ((flags & TypeFlags.Conditional) != 0):
@@ -11086,7 +11120,8 @@ public sealed partial class Checker
 
     private Type getBaseConstraintOfType(Type t)
     {
-        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.UnionOrIntersection | TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.Index)) != 0)
+        if ((t.flags & (TypeFlags.InstantiableNonPrimitive | TypeFlags.UnionOrIntersection | TypeFlags.TemplateLiteral | TypeFlags.StringMapping | TypeFlags.Index)) != 0
+            || isGenericTupleType(t))
         {
             var constraint = getResolvedBaseConstraint(t, null);
             return constraint != noConstraintType && constraint != circularConstraintType ? constraint : null;
@@ -11256,7 +11291,7 @@ public sealed partial class Checker
                     var constraint4 = this.getNextBaseConstraint(t.Target(), stack);
                     if (((constraint4 != null) && (constraint4 != t.Target())))
                     {
-                        throw unsupported("computeBaseConstraint: intrinsic string mapping");
+                        return getStringMappingType(t.symbol, constraint4);
                     }
 
                     return this.stringType;
@@ -11577,8 +11612,7 @@ public sealed partial class Checker
 
     private readonly Dictionary<CacheHashKey, List<Type>> subtypeReductionCache = new();
     private Type unknownEmptyObjectType;
-    // checker.go:26468. Class derivation and source type variables are excluded;
-    // selected implicit-this constraints still use the original union constraint arm.
+    // checker.go:26468. Reduce subtypes with the original constraint and derivation checks.
     private List<Type> removeSubtypes(List<Type> types, bool hasObjectTypes)
     {
         if (types.Count < 2)
@@ -12020,7 +12054,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:initializeClosures and27057; source template/string-mapping types are excluded.
+    // checker.go:initializeClosures and27057. Shared reduction and generic string-like predicates.
     private bool isPrimitiveOrObjectOrEmptyType(Type t) => (t.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 || IsEmptyAnonymousObjectType(t);
     private bool isGenericStringLikeType(Type t)
     {
@@ -17017,7 +17051,11 @@ public sealed partial class Checker
             return false;
         }
 
-        throw unsupported("isPromiseResolveArityError: source new Promise");
+        var globalPromiseSymbol = getGlobalPromiseConstructorSymbolOrNil();
+        if (globalPromiseSymbol == null)
+            return false;
+        var constructorSymbol = getResolvedSymbol(decl.Parent.Parent.Expression());
+        return constructorSymbol == globalPromiseSymbol;
     }
 }
 
@@ -17083,7 +17121,8 @@ public sealed partial class Checker
 {
     private Node lastGetCombinedModifierFlagsNode;
     private ModifierFlags lastGetCombinedModifierFlagsResult;
-    private Type markerSuperType, markerSubType, markerOtherType, markerSuperTypeForCheck, markerSubTypeForCheck, globalThisType;
+    private Type markerSuperType, markerSubType, markerOtherType, globalThisType;
+    internal Type markerSuperTypeForCheck, markerSubTypeForCheck;
     private enum PredicateSemantics
     {
         None = 0,
@@ -18545,12 +18584,12 @@ public sealed partial class Checker
     private Type getTypeAliasInstantiation(Symbol symbol, List<Type> typeArguments, TypeAlias alias)
     {
         var t = this.getDeclaredTypeOfSymbol(symbol);
-        if (t == intrinsicMarkerType && (typeArguments?.Count ?? 0) == 1)
+        if (t == intrinsicMarkerType && typeArguments?.Count == 1 &&
+            intrinsicTypeKinds.TryGetValue(symbol.Name, out var typeKind))
         {
-            if (symbol.Name == "NoInfer")
-                return getNoInferType(typeArguments[0]);
-            if (symbol.Name is "Uppercase" or "Lowercase" or "Capitalize" or "Uncapitalize")
-                throw unsupported("getTypeAliasInstantiation: intrinsic string mapping");
+            return typeKind == IntrinsicTypeKind.NoInfer
+                ? getNoInferType(typeArguments[0])
+                : getStringMappingType(symbol, typeArguments[0]);
         }
 
         var links = this.typeAliasLinks.Get(symbol);
@@ -22727,8 +22766,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:23879. Required internal variadic normalization is retained even
-    // though source generic variadic tuple composition is outside admission.
+    // checker.go:23879. Normalize fixed, optional, rest and generic variadic elements.
     private sealed class TupleNormalizer
     {
         internal Checker c;
@@ -25818,6 +25856,91 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
+    // checker.go:25756/29771–29839. Operational intrinsic mappings use Go-byte JS strings.
+    private Type newStringMappingType(Symbol symbol, Type target)
+    {
+        var t = newType(TypeFlags.StringMapping, ObjectFlags.None, new StringMappingType { target = target });
+        t.symbol = symbol;
+        return t;
+    }
+
+    internal Type getStringMappingType(Symbol symbol, Type t)
+    {
+        if ((t.flags & (TypeFlags.Union | TypeFlags.Never)) != 0)
+            return mapType(t, constituent => getStringMappingType(symbol, constituent));
+        if ((t.flags & TypeFlags.StringLiteral) != 0)
+            return getStringLiteralType(applyStringMapping(symbol, getStringLiteralValue(t)));
+        if ((t.flags & TypeFlags.TemplateLiteral) != 0)
+        {
+            var (texts, types) = applyTemplateStringMapping(symbol, t.AsTemplateLiteralType().texts, t.AsTemplateLiteralType().types);
+            return getTemplateLiteralType(texts, types);
+        }
+        if ((t.flags & TypeFlags.StringMapping) != 0 && symbol == t.symbol)
+            return t;
+        if ((t.flags & (TypeFlags.Any | TypeFlags.String | TypeFlags.StringMapping)) != 0 || isGenericIndexType(t))
+            return getStringMappingTypeForGenericType(symbol, t);
+        if (isPatternLiteralPlaceholderType(t))
+            return getStringMappingTypeForGenericType(symbol, getTemplateLiteralType(["", ""], [t]));
+        return t;
+    }
+
+    private static string applyStringMapping(Symbol symbol, string str)
+    {
+        switch (intrinsicTypeKinds.GetValueOrDefault(symbol.Name))
+        {
+            case IntrinsicTypeKind.Uppercase:
+                return StringUtil.ToUpperJS(str);
+            case IntrinsicTypeKind.Lowercase:
+                return StringUtil.ToLowerJS(str);
+            case IntrinsicTypeKind.Capitalize:
+            {
+                var (_, size) = StringUtil.DecodeJSStringRune(str);
+                return StringUtil.ToUpperJS(str[..size]) + str[size..];
+            }
+            case IntrinsicTypeKind.Uncapitalize:
+            {
+                var (_, size) = StringUtil.DecodeJSStringRune(str);
+                return StringUtil.ToLowerJS(str[..size]) + str[size..];
+            }
+        }
+        return str;
+    }
+
+    private (List<string> Texts, List<Type> Types) applyTemplateStringMapping(Symbol symbol, List<string> texts, List<Type> types)
+    {
+        switch (intrinsicTypeKinds.GetValueOrDefault(symbol.Name))
+        {
+            case IntrinsicTypeKind.Uppercase:
+            case IntrinsicTypeKind.Lowercase:
+                return (texts?.Select(text => applyStringMapping(symbol, text)).ToList(),
+                    types?.Select(type => getStringMappingType(symbol, type)).ToList());
+            case IntrinsicTypeKind.Capitalize:
+            case IntrinsicTypeKind.Uncapitalize:
+                if (texts[0] != "")
+                {
+                    var newTexts = new List<string>(texts);
+                    newTexts[0] = applyStringMapping(symbol, newTexts[0]);
+                    return (newTexts, types);
+                }
+                var newTypes = types == null ? null : new List<Type>(types);
+                newTypes[0] = getStringMappingType(symbol, newTypes[0]);
+                return (texts, newTypes);
+        }
+        return (texts, types);
+    }
+
+    private Type getStringMappingTypeForGenericType(Symbol symbol, Type t)
+    {
+        var key = new StringMappingKey(symbol, t);
+        var result = stringMappingTypes.GetValueOrDefault(key);
+        if (result == null)
+        {
+            result = newStringMappingType(symbol, t);
+            stringMappingTypes[key] = result;
+        }
+        return result;
+    }
+
     private Type getTemplateLiteralType(List<string> texts, List<Type> types)
     {
         var unionIndex = Core.FindIndex(types, (t) =>

@@ -1,0 +1,18 @@
+{
+  "classification": "authored-genuine-Program-disk-checking-controls",
+  "baseline": "09630d6",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 2,
+  "requestsSha256": "1699dec97e022da0586000579b1aeeafede17c26c3b3094edc22f9febd2a1cc6",
+  "sourceFiles": {
+    "examples/typesystem/event-client/src/client.ts": "eafbc195b785c00bad01bec8d48de67f3908b12d3f295f60187fe8f68bfa39bf",
+    "examples/typesystem/event-client/src/main.ts": "98a4f46018fa9ca9bc3f79cc97d4ec00713e1a004c77ab9c949924c6ce23c073",
+    "examples/typesystem/event-client/src/model.ts": "0842386cb770a1b651e0daccf70d1c71152110411dbb5383fa6d392c24d6c288",
+    "examples/typesystem/event-client/tsconfig.json": "b8ea2bad0fb977e778f7e28b6276b4d1ab07065afd443c4a9629f927eaf75f06",
+    "examples/typesystem/event-client-invalid/src/client.ts": "eafbc195b785c00bad01bec8d48de67f3908b12d3f295f60187fe8f68bfa39bf",
+    "examples/typesystem/event-client-invalid/src/main.ts": "01e0beaa0fe622b64734aad9944d7aa4b5882f2d7d7062e73130ac42f18e7d70",
+    "examples/typesystem/event-client-invalid/src/model.ts": "0842386cb770a1b651e0daccf70d1c71152110411dbb5383fa6d392c24d6c288",
+    "examples/typesystem/event-client-invalid/tsconfig.json": "b8ea2bad0fb977e778f7e28b6276b4d1ab07065afd443c4a9629f927eaf75f06"
+  },
+  "options": "Actual strict ES2022/libES2022 options and parsed root list unchanged; default skipLibCheckfalse; no profile injection."
+}
