@@ -19,11 +19,11 @@ public partial class Scanner
         return false;
     }
 
-    internal static string normalizeJSDocTypeSourceText(string text)
+    internal static string normalizeJSDocTypeSourceText(ByteStringView text)
     {
         var lineStarts = Core.ComputeECMALineStarts(text);
         if (lineStarts.Count == 1)
-            return stripLeadingJSDocComment(text);
+            return stripLeadingJSDocComment(text).Materialize();
         var result = new GoBuilder();
         result.Grow(text.Length);
         for (int i = 0; i < lineStarts.Count; i++)
@@ -33,31 +33,34 @@ public partial class Scanner
             int lineEnd = text.Length;
             if (i + 1 < lineStarts.Count)
                 lineEnd = lineStarts[i + 1];
-            string line = GoStrings.TrimRightFunc(text[lineStarts[i]..lineEnd], StringUtil.IsLineBreak);
-            result.WriteString(stripLeadingJSDocComment(line));
+            var line = GoStrings.TrimRightFunc(text.Slice(lineStarts[i], lineEnd), StringUtil.IsLineBreak);
+            result.WriteString(stripLeadingJSDocComment(line).AsSpan());
         }
 
         return result.String();
     }
 
-    private static string stripLeadingJSDocComment(string line)
+    private static ByteStringView stripLeadingJSDocComment(ByteStringView line)
     {
         line = GoStrings.TrimLeftFunc(line, StringUtil.IsWhiteSpaceLike);
         if (line.Length > 0 && line[0] == '*')
-            line = line[1..];
+            line = line.Slice(1);
         return GoStrings.TrimLeftFunc(line, StringUtil.IsWhiteSpaceLike);
     }
 
     internal static string GetTextOfNodeFromSourceTextByteString(string sourceText, Node node, bool includeTrivia)
+        => GetTextOfNodeFromSourceTextByteString((ByteStringView)sourceText, node, includeTrivia);
+
+    internal static string GetTextOfNodeFromSourceTextByteString(ByteStringView sourceText, Node node, bool includeTrivia)
     {
         if (Ast.NodeIsMissing(node))
             return "";
         int pos = node.Pos();
         if (!includeTrivia)
             pos = SkipTriviaByteString(sourceText, pos);
-        string text = sourceText[pos..node.End()];
-        if (isJSDocTypeExpressionOrChild(node))
-            text = normalizeJSDocTypeSourceText(text);
+        var borrowed = sourceText.Slice(pos, node.End());
+        string text = isJSDocTypeExpressionOrChild(node)
+            ? normalizeJSDocTypeSourceText(borrowed) : borrowed.Materialize();
         if ((node.Flags & NodeFlags.ReparserTransformedLiteral) != 0)
         {
             if (Ast.IsStringLiteral(node))
@@ -72,7 +75,7 @@ public partial class Scanner
 
     public static string GetTextOfNodeFromSourceText(string sourceText, Node node, bool includeTrivia) => ScannerString.ToJsString(GetTextOfNodeFromSourceTextByteString(GoString.ToUtf8(sourceText), node, includeTrivia));
     public static byte[] GetTextOfNodeFromSourceTextBytes(byte[] sourceText, Node node, bool includeTrivia) => GoString.Bytes(GetTextOfNodeFromSourceTextByteString(GoString.FromBytes(sourceText), node, includeTrivia));
-    internal static string GetSourceTextOfNodeFromSourceFileByteString(SourceFile sourceFile, Node node, bool includeTrivia) => GetTextOfNodeFromSourceTextByteString(sourceFile.Text(), node, includeTrivia);
+    internal static string GetSourceTextOfNodeFromSourceFileByteString(SourceFile sourceFile, Node node, bool includeTrivia) => GetTextOfNodeFromSourceTextByteString(sourceFile.TextView(), node, includeTrivia);
     public static string GetSourceTextOfNodeFromSourceFile(SourceFile sourceFile, Node node, bool includeTrivia) => ScannerString.ToJsString(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
     public static byte[] GetSourceTextOfNodeFromSourceFileBytes(SourceFile sourceFile, Node node, bool includeTrivia) => GoString.Bytes(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
     internal static string GetTextOfNodeByteString(Node node) => GetSourceTextOfNodeFromSourceFileByteString(Ast.GetSourceFileOfNode(node), node, false);

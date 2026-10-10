@@ -4,6 +4,8 @@
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>tscheck</AssemblyName>
+    <!-- CLI execution policy; applies to managed and NativeAOT runtimes. -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../TypeScript.Scanner/TypeScript.Scanner.csproj" /></ItemGroup>
 </Project>

@@ -36,6 +36,9 @@ public partial class Parser
 
     // Upstream upstream/TypeScript/tsc/internal/parser/utilities.go:28:1.
     public static List<CommentRange> GetJSDocCommentRanges(NodeFactory f, List<CommentRange> commentRanges, Node node, string text)
+        => GetJSDocCommentRanges(f, commentRanges, node, (ByteStringView)text);
+
+    private static List<CommentRange> GetJSDocCommentRanges(NodeFactory f, List<CommentRange> commentRanges, Node node, ByteStringView text)
     {
         switch (node.Kind)
         {
@@ -92,7 +95,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/utilities.go:54:1.
-    private static bool isJSDocLikeText(string text)
+    private static bool isJSDocLikeText(ByteStringView text)
     {
         return ((((GoRuntime.Len(text) >= 4) && (text[1] == '*')) && (text[2] == '*')) && (text[3] != '/'));
     }

@@ -9,25 +9,28 @@ public sealed partial class Checker
     internal sealed record CollectionsFlowToken(string Kind, string Bytes, object Owner);
     private sealed record CollectionsFlowSlot(int Offset, int Width, string Kind, object Owner);
     private sealed record CollectionsFlowInput(byte[] Bytes, List<CollectionsFlowSlot> Slots, bool Ambiguous);
-    private readonly Dictionary<keyBuilder, List<CollectionsFlowSlot>> collectionsFlowBuilders = new();
+    private readonly Dictionary<object, List<CollectionsFlowSlot>> collectionsFlowBuilders = new();
     private readonly Dictionary<CacheHashKey, CollectionsFlowInput> collectionsFlowKeys = new();
-    private void verificationCollectionsFlowStart(keyBuilder builder)
+    private void verificationCollectionsFlowStart(ref keyBuilder builder)
     {
         if (authoredCollectionsProfile)
-            collectionsFlowBuilders.Add(builder, []);
+        {
+            builder.verificationIdentity = new object();
+            collectionsFlowBuilders.Add(builder.verificationIdentity, []);
+        }
     }
 
-    private void verificationCollectionsFlowSlot(keyBuilder builder, string kind, object owner, int width)
+    private void verificationCollectionsFlowSlot(ref keyBuilder builder, string kind, object owner, int width)
     {
-        if (collectionsFlowBuilders.TryGetValue(builder, out var slots))
+        if (builder.verificationIdentity != null && collectionsFlowBuilders.TryGetValue(builder.verificationIdentity, out var slots))
             slots.Add(new(builder.Length - width, width, kind, owner));
     }
 
-    private void verificationCollectionsFlowEnd(keyBuilder builder, CacheHashKey key, bool success)
+    private void verificationCollectionsFlowEnd(ref keyBuilder builder, CacheHashKey key, bool success)
     {
-        if (!collectionsFlowBuilders.Remove(builder, out var slots) || !success)
+        if (builder.verificationIdentity == null || !collectionsFlowBuilders.Remove(builder.verificationIdentity, out var slots) || !success)
             return;
-        var bytes = Convert.FromBase64String(key.preimage);
+        var bytes = verificationCollectionsKeyBytes(key);
         var input = new CollectionsFlowInput(bytes, slots, false);
         if (collectionsFlowKeys.TryGetValue(key, out var old) && (old.Ambiguous || !old.Bytes.SequenceEqual(bytes) || old.Slots.Count != slots.Count || old.Slots.Where((slot, i) => slot.Offset != slots[i].Offset || slot.Width != slots[i].Width || slot.Kind != slots[i].Kind || !ReferenceEquals(slot.Owner, slots[i].Owner)).Any()))
             input = input with
@@ -41,7 +44,7 @@ public sealed partial class Checker
     {
         if (key == nonDottedNameCacheKey)
             return[new("bytes", "?", null)];
-        if (!collectionsFlowKeys.TryGetValue(key, out var input) || input.Ambiguous || !Convert.FromBase64String(key.preimage).SequenceEqual(input.Bytes))
+        if (!collectionsFlowKeys.TryGetValue(key, out var input) || input.Ambiguous || !verificationCollectionsKeyBytes(key).SequenceEqual(input.Bytes))
             throw new InvalidOperationException("Unknown flow reference key producer");
         var output = new List<CollectionsFlowToken>();
         int offset = 0;

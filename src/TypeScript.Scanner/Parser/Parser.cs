@@ -16,7 +16,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:134:1.
-    private static SourceFile ParseSourceFileRaw(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind)
+    internal static SourceFile ParseSourceFileOwned(SourceFileParseOptions opts, ByteStringView sourceText, ScriptKind scriptKind)
     {
         var p = getParser();
         // Go parser-pool return omitted: this port creates an isolated managed parser.
@@ -166,7 +166,7 @@ public partial class Parser
             eof = this.parseExpectedToken(Kind.EndOfFile);
         }
 
-        var node = this.finishNode(this.factory.NewSourceFile(this.opts, this.sourceText, statements, eof), pos);
+        var node = this.finishNode(this.factory.NewSourceFileWithTextView(this.opts, this.sourceText, statements, eof), pos);
         var result = node.AsSourceFile();
         if ((GoRuntime.Len(result.Statements.Nodes) > 0))
         {
@@ -178,7 +178,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:226:1.
-    private static TextRange getErrorSpanForNode(string sourceText, Node node)
+    private static TextRange getErrorSpanForNode(ByteStringView sourceText, Node node)
     {
         var pos = node.Pos();
         if (!Ast.NodeIsMissing(node))
@@ -290,7 +290,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:290:1.
-    private void initializeState(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind)
+    private void initializeState(SourceFileParseOptions opts, ByteStringView sourceText, ScriptKind scriptKind)
     {
         if ((scriptKind == ScriptKind.Unknown))
         {
@@ -501,7 +501,7 @@ public partial class Parser
             this.reparseList = null;
         }
 
-        var node = this.finishNode(this.factory.NewSourceFile(this.opts, this.sourceText, this.newNodeList(Core.NewTextRange(pos, end), statements), eof), pos);
+        var node = this.finishNode(this.factory.NewSourceFileWithTextView(this.opts, this.sourceText, this.newNodeList(Core.NewTextRange(pos, end), statements), eof), pos);
         var result = node.AsSourceFile();
         this.finishSourceFile(result, isDeclarationFile);
         if (((!result.IsDeclarationFile && (result.ExternalModuleIndicator != null)) && (GoRuntime.Len(this.possibleAwaitSpans) > 0)))
@@ -702,7 +702,7 @@ public partial class Parser
             }
         }
 
-        var result = this.factory.NewSourceFile(sourceFile.ParseOptions(), this.sourceText, this.newNodeList(sourceFile.Statements.Loc, statements), sourceFile.EndOfFileToken);
+        var result = this.factory.NewSourceFileWithTextView(sourceFile.ParseOptions(), this.sourceText, this.newNodeList(sourceFile.Statements.Loc, statements), sourceFile.EndOfFileToken);
         {
             foreach (var s in GoRuntime.RangeValues(statements))
             {
@@ -720,7 +720,7 @@ public partial class Parser
         this.parsingContexts |= (1 << (int)(kind));
         var outerReparseList = this.reparseList;
         this.reparseList = null;
-        var list = GoRuntime.MakeSlice<Node>(0);
+        var list = Slice<Node>.Make(0, 16);
         {
             var i = 0;
             for (; !this.isListTerminator(kind); i++)
@@ -760,7 +760,7 @@ public partial class Parser
 
         this.reparseList = outerReparseList;
         this.parsingContexts = saveParsingContexts;
-        return this.nodeSliceArena.Clone(list);
+        return this.nodeSliceArena.CloneAsList(list);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:644:1.
@@ -781,7 +781,7 @@ public partial class Parser
         var pos = this.nodePos();
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(kind));
-        var list = GoRuntime.MakeSlice<Node>(0);
+        var list = Slice<Node>.Make(0, 16);
         while (true)
         {
             if (this.isListElement(kind, false))
@@ -839,7 +839,7 @@ public partial class Parser
         }
 
         this.parsingContexts = saveParsingContexts;
-        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.Clone(list));
+        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneAsList(list));
     }
 
     // Return a non-nil (but possibly empty) NodeList if parsing was successful, a missing NodeList if the opening
@@ -5165,13 +5165,14 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3774:1.
     private string getTemplateLiteralRawText(int endLength)
     {
-        var tokenText = this.scanner.TokenTextByteString();
+        // parser.go:3774. Slice the borrowed token before the required AST raw-string projection.
+        var tokenText = this.scanner.TokenTextView();
         if (((this.scanner.TokenFlags() & TokenFlags.Unterminated) != 0))
         {
             endLength = 0;
         }
 
-        return GoRuntime.Slice(tokenText, 1, (GoRuntime.Len(tokenText) - endLength));
+        return GoRuntime.Slice(tokenText, 1, (GoRuntime.Len(tokenText) - endLength)).Materialize();
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3782:1.
@@ -8720,7 +8721,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6492:1.
-    private static List<Pragma> getCommentPragmas(NodeFactory f, string sourceText)
+    private static List<Pragma> getCommentPragmas(NodeFactory f, ByteStringView sourceText)
     {
         List<Pragma> pragmas = default;
         {
@@ -8735,19 +8736,19 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6500:1.
-    private static List<Pragma> extractPragmas(CommentRange commentRange, string text)
+    private static List<Pragma> extractPragmas(CommentRange commentRange, ByteStringView text)
     {
         if ((commentRange.Kind == Kind.SingleLineCommentTrivia))
         {
             var pos = 2;
-            var tripleSlash = match(text, pos, "/");
+            var tripleSlash = match(text, pos, "/"u8);
             if (tripleSlash)
             {
                 pos++;
             }
 
             pos = skipBlanks(text, pos);
-            if ((tripleSlash && match(text, pos, "<")))
+            if ((tripleSlash && match(text, pos, "<"u8)))
             {
                 var tagName = extractName(text, (pos + 1));
                 if ((tagName != "reference"))
@@ -8760,7 +8761,7 @@ public partial class Parser
                 while (true)
                 {
                     pos = skipBlanks(text, pos);
-                    if (match(text, pos, "/>"))
+                    if (match(text, pos, "/>"u8))
                     {
                         break;
                     }
@@ -8772,7 +8773,7 @@ public partial class Parser
                     }
 
                     pos = skipBlanks(text, (pos + GoRuntime.Len(argName)));
-                    if (!match(text, pos, "="))
+                    if (!match(text, pos, "="u8))
                     {
                         break;
                     }
@@ -8806,7 +8807,7 @@ public partial class Parser
                 };
             }
 
-            if (match(text, pos, "@"))
+            if (match(text, pos, "@"u8))
             {
                 pos++;
                 var pragmaName = extractName(text, pos);
@@ -8828,13 +8829,13 @@ public partial class Parser
 
         if ((commentRange.Kind == Kind.MultiLineCommentTrivia))
         {
-            text = GoStrings.TrimSuffix(text, "*/");
+            text = GoStrings.TrimSuffix(text, "*/"u8);
             var pos2 = 2;
             List<Pragma> pragmas = default;
             while (true)
             {
                 {
-                    pos2 = skipTo(text, pos2, "@");
+                    pos2 = skipTo(text, pos2, "@"u8);
                     if ((pos2 < 0))
                     {
                         break;
@@ -8850,7 +8851,7 @@ public partial class Parser
                 }
 
                 var lineEnd = lineEndPos(text, pos2);
-                var pragmaName2 = GoStrings.ToLower(GoRuntime.Slice(text, namePos, nameEnd));
+                var pragmaName2 = GoStrings.ToLower(GoRuntime.Slice(text, namePos, nameEnd).Materialize());
                 if (((((pragmaName2 == "jsx") || (pragmaName2 == "jsxfrag")) || (pragmaName2 == "jsximportsource")) || (pragmaName2 == "jsxruntime")))
                 {
                     var start = skipBlanks(text, nameEnd);
@@ -8861,7 +8862,7 @@ public partial class Parser
                         args2["factory"] = new PragmaArgument
                         {
                             Name = "factory",
-                            Value = GoRuntime.Slice(text, start, argEnd),
+                            Value = GoRuntime.Slice(text, start, argEnd).Materialize(),
                             TextRange = Core.NewTextRange((commentRange.Pos + start), (commentRange.Pos + argEnd))
                         };
                         pragmas = GoRuntime.Append(pragmas, new Pragma { CommentRange = commentRange, Name = pragmaName2, Args = args2 });
@@ -8878,13 +8879,13 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6604:1.
-    private static bool match(string text, int pos, string s)
+    private static bool match(ByteStringView text, int pos, ReadOnlySpan<byte> s)
     {
-        return GoStrings.HasPrefix(GoRuntime.Slice(text, pos), s);
+        return GoStrings.HasPrefix(text.AsSpan(pos), s);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6608:1.
-    private static int skipBlanks(string text, int pos)
+    private static int skipBlanks(ByteStringView text, int pos)
     {
         while (((pos < GoRuntime.Len(text)) && (((text[pos] == ' ') || (text[pos] == '\t')))))
         {
@@ -8895,7 +8896,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6615:1.
-    private static int skipNonBlanks(string text, int pos)
+    private static int skipNonBlanks(ByteStringView text, int pos)
     {
         while (((pos < GoRuntime.Len(text)) && (((((text[pos] != ' ') && (text[pos] != '\t')) && (text[pos] != '\r')) && (text[pos] != '\n')))))
         {
@@ -8906,14 +8907,14 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6622:1.
-    private static int skipTo(string text, int pos, string s)
+    private static int skipTo(ByteStringView text, int pos, ReadOnlySpan<byte> s)
     {
         if ((pos >= GoRuntime.Len(text)))
         {
             return -1;
         }
 
-        var i = GoStrings.Index(GoRuntime.Slice(text, pos), s);
+        var i = GoStrings.Index(text.AsSpan(pos), s);
         if ((i < 0))
         {
             return -1;
@@ -8923,11 +8924,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6633:1.
-    private static int lineEndPos(string text, int pos)
+    private static int lineEndPos(ByteStringView text, int pos)
     {
         while ((pos < GoRuntime.Len(text)))
         {
-            var tuple21 = Utf8.DecodeRuneInString(GoRuntime.Slice(text, pos));
+            var tuple21 = Utf8.DecodeRuneInString(text.AsSpan(pos));
             var ch = tuple21.Item1;
             var size = tuple21.Item2;
             if (StringUtil.IsLineBreak(ch))
@@ -8942,7 +8943,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6644:1.
-    private static string extractName(string text, int pos)
+    private static string extractName(ByteStringView text, int pos)
     {
         var start = pos;
         while (((pos < GoRuntime.Len(text)) && (((((text[pos] >= 'A') && (text[pos] <= 'Z')) || ((text[pos] >= 'a') && (text[pos] <= 'z'))) || (text[pos] == '-')))))
@@ -8950,11 +8951,11 @@ public partial class Parser
             pos++;
         }
 
-        return GoStrings.ToLower(GoRuntime.Slice(text, start, pos));
+        return GoStrings.ToLower(GoRuntime.Slice(text, start, pos).Materialize());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6652:1.
-    private static (string, bool) extractQuotedString(string text, int pos)
+    private static (string, bool) extractQuotedString(ByteStringView text, int pos)
     {
         if ((pos == GoRuntime.Len(text)))
         {
@@ -8979,7 +8980,7 @@ public partial class Parser
             return ("", false);
         }
 
-        return (GoRuntime.Slice(text, start, pos), true);
+        return (GoRuntime.Slice(text, start, pos).Materialize(), true);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6671:1.
@@ -9478,7 +9479,7 @@ public partial class Parser
     private Scanner scanner;
     private NodeFactory factory = new();
     private SourceFileParseOptions opts;
-    private string sourceText = "";
+    private ByteStringView sourceText = "";
     private ScriptKind scriptKind;
     private LanguageVariant languageVariant;
     private List<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
@@ -9489,10 +9490,10 @@ public partial class Parser
     private int identifierCount;
     private HashSet<int> notParenthesizedArrow = new();
     private GoArena<Node> nodeSliceArena = new();
-    private GoArena<string> stringSliceArena = new();
+    private GoArena<ByteStringView> stringSliceArena = new();
     private List<JSDocInfo> jsdocInfos;
     private List<int> possibleAwaitSpans;
-    private List<string> jsdocCommentsSpace, jsdocTagCommentsSpace;
+    private Slice<ByteStringView> jsdocCommentsSpace, jsdocTagCommentsSpace;
     private List<CommentRange> jsdocCommentRangesSpace;
     private List<Node> jsdocTagCommentsPartsSpace, reparseList, reparsedClones;
     private Node currentParent;
@@ -9503,8 +9504,8 @@ public partial class Parser
     private static Parser getParser() => newParser();
     private static bool isMissingNodeList(NodeList list) => list != null && ReferenceEquals(list.Nodes, missingListNodes);
     // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
-    public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileRaw(opts, GoString.ToUtf8(sourceText), scriptKind);
-    public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileRaw(opts, GoString.FromBytes(sourceText), scriptKind);
+    public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.FromUnicode(sourceText), scriptKind);
+    public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.CopyFrom(sourceText), scriptKind);
     public static Node ParseIsolatedEntityName(string text) => ParseIsolatedEntityNameRaw(GoString.ToUtf8(text));
     public static Node ParseIsolatedEntityName(byte[] text) => ParseIsolatedEntityNameRaw(GoString.FromBytes(text));
 }

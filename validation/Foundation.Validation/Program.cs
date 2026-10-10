@@ -2,6 +2,166 @@ using System.Diagnostics;
 using System.Text.Json;
 using TypeScript.Foundation;
 
+if (args.Length == 1 && args[0] == "--list-value-ranges")
+{
+    foreach (string name in ListValueRangeChecks.Cases)
+    {
+        try { ListValueRangeChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("list-value-range-checks: " + ListValueRangeChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--list-appends")
+{
+    foreach (string name in ListAppendChecks.Cases)
+    {
+        try { ListAppendChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("list-append-checks: " + ListAppendChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--list-ranges")
+{
+    foreach (string name in ListRangeChecks.Cases)
+    {
+        try { ListRangeChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("list-range-checks: " + ListRangeChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--cache-key-hashes")
+{
+    foreach (string name in KeyBuilderChecks.Cases)
+    {
+        try { KeyBuilderChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("cache-key-hash-checks: " + KeyBuilderChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--parser-list-scratch")
+{
+    foreach (string name in ParserListScratchChecks.Cases)
+    {
+        try { ParserListScratchChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("parser-list-scratch-checks: " + ParserListScratchChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--token-projections")
+{
+    foreach (string name in TokenProjectionChecks.Cases)
+    {
+        try { TokenProjectionChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("token-projection-checks: " + TokenProjectionChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--byte-comparisons")
+{
+    foreach (string name in ByteSpanComparisonChecks.Cases)
+    {
+        try { ByteSpanComparisonChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("byte-comparison-checks: " + ByteSpanComparisonChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--byte-source")
+{
+    foreach (string name in ByteSourceChecks.Cases)
+    {
+        try { ByteSourceChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("byte-source-checks: " + ByteSourceChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--jsdoc-fragments")
+{
+    foreach (string name in JSDocFragmentChecks.Cases)
+    {
+        try { JSDocFragmentChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("jsdoc-fragment-checks: " + JSDocFragmentChecks.Cases.Count + " passed");
+    return;
+}
+
+if (args.Length == 1 && args[0] == "--text-view")
+{
+    foreach (string name in JSDocTextViewChecks.Cases)
+    {
+        try { JSDocTextViewChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("text-view-checks: " + JSDocTextViewChecks.Cases.Count + " passed");
+    return;
+}
+
 if (args.Length == 1 && args[0] == "--fuzz")
 {
     var clock = Stopwatch.StartNew();

@@ -130,10 +130,10 @@ public sealed partial class Node
         Kind.RegularExpressionLiteral => AsRegularExpressionLiteral().Text,
         Kind.MetaProperty => AsMetaProperty().Name().Text(),
         Kind.JsxNamespacedName => AsJsxNamespacedName().Namespace.Text() + ":" + Name().Text(),
-        Kind.JSDocText => string.Concat(AsJSDocText().text ?? []),
-        Kind.JSDocLink => string.Concat(AsJSDocLink().text ?? []),
-        Kind.JSDocLinkCode => string.Concat(AsJSDocLinkCode().text ?? []),
-        Kind.JSDocLinkPlain => string.Concat(AsJSDocLinkPlain().text ?? []),
+        Kind.JSDocText => AsJSDocText().TextFragments?.Join() ?? "",
+        Kind.JSDocLink => AsJSDocLink().TextFragments?.Join() ?? "",
+        Kind.JSDocLinkCode => AsJSDocLinkCode().TextFragments?.Join() ?? "",
+        Kind.JSDocLinkPlain => AsJSDocLinkPlain().TextFragments?.Join() ?? "",
         _ => throw new InvalidOperationException("Unhandled Node.Text kind " + Kind),
     };
     public byte[] TextBytes() => GoString.Bytes(Text());
@@ -257,6 +257,9 @@ public sealed partial class NodeFactory : NodeFactoryCoercible
     };
     public Node NewModifier(Kind kind) => NewToken(kind);
     public Node NewSourceFile(SourceFileParseOptions opts, string text, NodeList statements, Node endOfFileToken) => newNode(Kind.SourceFile, new SourceFile { parseOptions = opts, text = text, Statements = statements, EndOfFileToken = endOfFileToken });
+    // ast.go source construction shares immutable source bytes before hooks run.
+    internal Node NewSourceFileWithTextView(SourceFileParseOptions opts, ByteStringView text, NodeList statements, Node endOfFileToken)
+        => newNode(Kind.SourceFile, new SourceFile { parseOptions = opts, sourceText = text, Statements = statements, EndOfFileToken = endOfFileToken });
 }
 
 public static partial class Ast
@@ -371,6 +374,18 @@ public sealed class Pragma
     public Dictionary<string, PragmaArgument> Args;
 }
 
+// Authored internal byte-source bridge; legacy public text-only adapters can
+// project at their boundary, while real SourceFiles and diagnostics borrow bytes.
+internal interface ISourceTextFileLike
+{
+    ByteStringView TextView();
+}
+internal static class SourceTextViews
+{
+    internal static ByteStringView TextView(this SourceFileLike source)
+        => source is ISourceTextFileLike bytes ? bytes.TextView() : ByteStringView.FromGoBytes(source.Text());
+}
+
 public interface SourceFileLike
 {
     string Text();
@@ -413,10 +428,30 @@ public struct ContentMapperSourceFileInfo
     public SourceFile CanonicalSourceFile;
 }
 
-public sealed partial class SourceFile : NodeData, SourceFileLike
+public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFileLike
 {
     internal SourceFileParseOptions parseOptions;
-    internal string text = "";
+    // Authored filename-role boundary: Go ast.SourceFile stores the raw filename
+    // directly. Retain that immutable string when a .NET adapter exposes Unicode.
+    // Publish source/bytes together so concurrent readers cannot mix cache pairs.
+    private sealed record FileNameByteText(string Source, string Bytes);
+    private FileNameByteText fileNameByteText;
+    internal ByteStringView sourceText = "";
+    private string projectedText;
+    // Only the legacy public raw-string surface requests this projection. Normal
+    // compiler/parser/scanner consumers borrow canonical bytes through TextView.
+    internal string text
+    {
+        get
+        {
+            var saved = Volatile.Read(ref projectedText);
+            if (saved != null) return saved;
+            return Interlocked.CompareExchange(ref projectedText, sourceText.Materialize(), null) ?? projectedText;
+        }
+        set { sourceText = ByteStringView.FromGoBytes(value); projectedText = value; }
+    }
+    internal ByteStringView TextView() => sourceText;
+    ByteStringView ISourceTextFileLike.TextView() => sourceText;
     public NodeList Statements;
     public Node EndOfFileToken;
     public LanguageVariant LanguageVariant;
@@ -441,7 +476,7 @@ public sealed partial class SourceFile : NodeData, SourceFileLike
     {
         Lazy<PositionMap> once;
         lock (positionMapLock)
-            once = positionMap ??= new(() => Ast.ComputePositionMapByteString(text), LazyThreadSafetyMode.ExecutionAndPublication);
+            once = positionMap ??= new(() => Ast.ComputePositionMapByteString(sourceText), LazyThreadSafetyMode.ExecutionAndPublication);
         return once.Value;
     }
 
@@ -475,12 +510,32 @@ public sealed partial class SourceFile : NodeData, SourceFileLike
         // A default managed parse-options struct has a null filename; the
         // corresponding Go string zero value is empty in either filename role.
         var fileName = FileName() ?? "";
-        return parseOptions.FileNameIsGoBytes ? fileName : GoString.ToUtf8(fileName);
+        if (parseOptions.FileNameIsGoBytes || fileName.Length == 0)
+        {
+            Volatile.Write(ref fileNameByteText, null);
+            return fileName;
+        }
+        var saved = Volatile.Read(ref fileNameByteText);
+        if (saved != null && ReferenceEquals(saved.Source, fileName))
+            return saved.Bytes;
+        var bytes = GoString.ToUtf8(fileName);
+        Volatile.Write(ref fileNameByteText, new(fileName, bytes));
+        return bytes;
+    }
+    // Only the disk Project adapter changes the public filename role. Preserve
+    // its original bytes rather than encoding them again on every Program query
+    // (program.go:1767–1780 uses the original filename string directly).
+    internal void SetFileNameToUnicode()
+    {
+        var bytes = FileNameGoBytes();
+        var unicode = RootedFilePath.FromGoString(bytes).ToUnicode();
+        parseOptions = parseOptions with { FileName = unicode, FileNameIsGoBytes = false };
+        Volatile.Write(ref fileNameByteText, new(unicode, bytes));
     }
     public string PathKey() => parseOptions.PathKey;
     public string Text() => text;
-    public byte[] TextBytes() => GoString.Bytes(text);
-    public string DecodedText() => GoString.ToString(text);
+    public byte[] TextBytes() => sourceText.ToArray();
+    public string DecodedText() => sourceText.DecodeUnicode();
     public List<Node> Imports() => imports;
     public List<Diagnostic> Diagnostics() => diagnostics;
     public List<Diagnostic> JSDiagnostics() => jsDiagnostics;
@@ -553,7 +608,7 @@ public sealed partial class SourceFile
 
     public override Node Clone(NodeFactoryCoercible f)
     {
-        var updated = f.AsNodeFactory().NewSourceFile(parseOptions, text, Statements, EndOfFileToken);
+        var updated = f.AsNodeFactory().NewSourceFileWithTextView(parseOptions, sourceText, Statements, EndOfFileToken);
         var copy = updated.AsSourceFile();
         copy.copyFrom(this);
         return Ast.CloneNode(updated, AsNode(), f.AsNodeFactory().hooks);
@@ -568,7 +623,7 @@ public sealed partial class NodeFactory
     {
         if (statements == node.Statements && endOfFileToken == node.EndOfFileToken)
             return node.AsNode();
-        var updated = NewSourceFile(node.parseOptions, node.text, statements, endOfFileToken).AsSourceFile();
+        var updated = NewSourceFileWithTextView(node.parseOptions, node.sourceText, statements, endOfFileToken).AsSourceFile();
         updated.copyFrom(node);
         return Ast.UpdateNode(updated.AsNode(), node.AsNode(), hooks);
     }
@@ -641,7 +696,7 @@ public sealed partial class SourceFile : DeclarationBase, LocalsContainerBase
     public List<int> ECMALineMap()
     {
         lock (ecmaLineMapMutex)
-            return ecmaLineMap ??= Core.ComputeECMALineStarts(Text());
+            return ecmaLineMap ??= Core.ComputeECMALineStarts(TextView());
     }
 
     public override IEnumerable<SyntaxField> BoundFields()

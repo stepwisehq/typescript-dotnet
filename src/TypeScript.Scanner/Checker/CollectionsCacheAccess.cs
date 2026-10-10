@@ -14,6 +14,28 @@ public sealed partial class Checker
     // Original relation keys can erase input reference/parameter identities.
     // Retain the latest actual producer inputs solely for passive ID lookup.
     private sealed record CollectionsRelationInput(Type Source, Type Target, bool Invalid);
+    // Authored existing Collections compatibility only; genuine Program keys carry no preimages.
+    private Dictionary<CacheHashKey, byte[]> collectionsKeyPreimages;
+    private void verificationCollectionsCaptureKey(CacheHashKey key, ReadOnlySpan<byte> bytes)
+    {
+        if (!authoredCollectionsProfile) return;
+        var preimages = collectionsKeyPreimages ??= new();
+        if (preimages.TryGetValue(key, out var old))
+        {
+            if (!bytes.SequenceEqual(old)) throw new InvalidOperationException("Ambiguous observed cache hash preimage");
+            return;
+        }
+        preimages.Add(key, bytes.ToArray());
+    }
+
+    private byte[] verificationCollectionsKeyBytes(CacheHashKey key)
+    {
+        if (!authoredCollectionsProfile || collectionsKeyPreimages == null ||
+            !collectionsKeyPreimages.TryGetValue(key, out var bytes) || CacheHashKey.FromBytes(bytes) != key)
+            throw new InvalidOperationException("Missing or mismatched observed cache hash preimage");
+        return bytes;
+    }
+
     private readonly Dictionary<CacheHashKey, CollectionsRelationInput> collectionsRelationInputs = new();
     private void verificationCollectionsCaptureRelationInputs(Type source, Type target, CacheHashKey key)
     {
@@ -119,10 +141,8 @@ public sealed partial class Checker
             var entries = new List<(string Family, uint Result, uint IntersectionState, Type Source, Type Target, CollectionsRelationReference SourceReference, CollectionsRelationReference TargetReference)>();
             foreach (var(key, result)in cache)
             {
-                if (key.preimage == null)
-                    throw new InvalidOperationException("Missing completed relation key preimage");
-                var bytes = Convert.FromBase64String(key.preimage);
-                if (Convert.ToBase64String(bytes) != key.preimage || bytes.Length < 13)
+                var bytes = verificationCollectionsKeyBytes(key);
+                if (bytes.Length < 13)
                     throw new InvalidOperationException("Noncanonical or truncated completed relation key");
                 int offset = 1;
                 int end = bytes.Length - sizeof(uint);
@@ -313,10 +333,8 @@ public sealed partial class Checker
 
     private List<Type> verificationCollectionsTypeList(CacheHashKey key, IReadOnlyDictionary<uint, Type> knownTypes)
     {
-        if (key.preimage == null)
-            throw new InvalidOperationException("Missing type-list cache key preimage");
-        var bytes = Convert.FromBase64String(key.preimage);
-        if (Convert.ToBase64String(bytes) != key.preimage || bytes.Length < sizeof(ulong))
+        var bytes = verificationCollectionsKeyBytes(key);
+        if (bytes.Length < sizeof(ulong))
             throw new InvalidOperationException("Noncanonical or truncated type-list cache key");
         ulong count = System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(bytes);
         if (count != (ulong)((bytes.Length - sizeof(ulong)) / sizeof(uint)) || (bytes.Length - sizeof(ulong)) % sizeof(uint) != 0)
@@ -378,7 +396,7 @@ public sealed partial class Checker
     }
 
     // Authored key-sequence mirror. Go instrumentation retains the corresponding
-    // original producer inputs; the managed cache stores the complete preimage.
+    // original producer inputs; the named-only sidecar retains the complete preimage.
     // The key erases nil versus empty input slices and alias object identity, so
     // this API exposes only encoded sequences and the actual alias symbol.
     internal (bool IsNull, int Count, List<(CacheHashKey Key, Type Value, List<Type> Arguments, Symbol AliasSymbol, List<Type> AliasArguments, string Family, bool ForConstraint)> Entries) VerificationCollectionsInstantiations(object owner, IReadOnlyDictionary<uint, Type> knownTypes, IReadOnlyDictionary<ulong, Symbol> knownSymbols) => verificationCollectionsKeySequences(owner, knownTypes, knownSymbols);
@@ -439,11 +457,7 @@ public sealed partial class Checker
         {
             if (value == null || value.checker != null && !ReferenceEquals(value.checker, this))
                 throw new InvalidOperationException("Absent or foreign instantiation value");
-            if (key.preimage == null)
-                throw new InvalidOperationException("Missing instantiation key preimage");
-            var bytes = Convert.FromBase64String(key.preimage);
-            if (Convert.ToBase64String(bytes) != key.preimage)
-                throw new InvalidOperationException("Noncanonical instantiation key preimage");
+            var bytes = verificationCollectionsKeyBytes(key);
             int offset = 0;
             ulong ReadUint64()
             {

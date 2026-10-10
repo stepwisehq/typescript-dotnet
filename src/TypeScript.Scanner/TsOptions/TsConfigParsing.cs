@@ -402,7 +402,7 @@ public static partial class TsOptions
         if (sourceFile != null && node != null)
         {
             diagnostic.SetFile(sourceFile);
-            diagnostic.SetLocation(new(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(sourceFile.Text(), node.Pos()), node.End()));
+            diagnostic.SetLocation(new(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(sourceFile.TextView(), node.Pos()), node.End()));
         }
 
         return diagnostic;

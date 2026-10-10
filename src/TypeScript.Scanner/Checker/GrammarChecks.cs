@@ -18,19 +18,23 @@ public sealed partial class Checker
         regExpScanner ??= TypeScript.Scanner.Scanner.NewScanner();
         regExpScanner.SetScriptTarget(languageVersion);
         regExpScanner.SetLanguageVariant(sourceFile.LanguageVariant);
-        regExpScanner.SetOnError((message, start, length, args) =>
+        // This checker consumer stores Go-byte diagnostic arguments. The public
+        // scanner callback converts them to Unicode for .NET callers instead.
+        regExpScanner.SetOnErrorByteStrings((message, start, length, args) =>
         {
             if (message.Category() == DiagnosticCategory.Message && lastError != null && start == lastError.Pos() && length == lastError.Len())
                 lastError.AddRelatedInfo(Ast.NewDiagnostic(null, new(start, start + length), message, args));
             else if (lastError == null || start != lastError.Pos())
                 lastError = addDiagnostic(Ast.NewDiagnostic(sourceFile, new(start, start + length), message, args));
         });
-        regExpScanner.SetText(GoString.Bytes(sourceFile.Text()));
+        // grammarchecks.go:88. Share the existing byte-string source, as Go does;
+        // the public byte[] setter would copy the complete file twice per regex.
+        regExpScanner.SetByteTextInternal(sourceFile.TextView());
         regExpScanner.ResetTokenState(node.AsNode().Pos());
         regExpScanner.Scan();
         var tokenIsRegularExpressionLiteral = regExpScanner.ReScanSlashToken(true) == Kind.RegularExpressionLiteral;
         regExpScanner.SetText("");
-        regExpScanner.SetOnError(null);
+        regExpScanner.SetOnErrorByteStrings(null);
         if (!tokenIsRegularExpressionLiteral)
             throw new InvalidOperationException("Regular expression scanner did not return a regular expression literal");
         return lastError != null;
@@ -1549,7 +1553,7 @@ public sealed partial class Checker
         {
             var sourceFile = Ast.GetSourceFileOfNode(node);
             int start = arguments.Pos() - 1;
-            int end = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), arguments.End()) + 1;
+            int end = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), arguments.End()) + 1;
             return grammarErrorAtPos(sourceFile.AsNode(), start, end - start, Diagnostics.Type_argument_list_cannot_be_empty);
         }
         return false;
@@ -1580,7 +1584,7 @@ public sealed partial class Checker
         if (((typeParameters != null) && (GoRuntime.Len(typeParameters.Nodes) == 0)))
         {
             var start = (typeParameters.Pos() - GoRuntime.Len("<"));
-            var end = (TypeScript.Scanner.Scanner.SkipTrivia(file.Text(), typeParameters.End()) + GoRuntime.Len(">"));
+            var end = (TypeScript.Scanner.Scanner.SkipTrivia(file.TextView(), typeParameters.End()) + GoRuntime.Len(">"));
             return this.grammarErrorAtPos(file.AsNode(), start, (end - start), Diagnostics.Type_parameter_list_cannot_be_empty);
         }
 
@@ -1739,8 +1743,8 @@ public sealed partial class Checker
         }
 
         var equalsGreaterThanToken = arrowFunc.EqualsGreaterThanToken;
-        var arrowFullText = GoRuntime.Slice(file.Text(), equalsGreaterThanToken.Pos(), equalsGreaterThanToken.End());
-        return (arrowFullText.Any(ch => StringUtil.IsLineBreak(ch)) && this.grammarErrorOnNode(equalsGreaterThanToken, Diagnostics.Line_terminator_not_permitted_before_arrow));
+        var arrowFullText = GoRuntime.Slice(file.TextView(), equalsGreaterThanToken.Pos(), equalsGreaterThanToken.End());
+        return (GoStrings.ContainsFunc(arrowFullText.AsSpan(), StringUtil.IsLineBreak) && this.grammarErrorOnNode(equalsGreaterThanToken, Diagnostics.Line_terminator_not_permitted_before_arrow));
     }
 }
 
@@ -2715,7 +2719,7 @@ public sealed partial class Checker
             }
             else
             {
-                pos = TypeScript.Scanner.Scanner.SkipTrivia(Ast.GetSourceFileOfNode(node.AsNode()).Text(), range_.Pos());
+                pos = TypeScript.Scanner.Scanner.SkipTrivia(Ast.GetSourceFileOfNode(node.AsNode()).TextView(), range_.Pos());
             }
             return this.grammarErrorAtPos(node.AsNode(), pos, (range_.End() - pos), Diagnostics.Type_parameters_cannot_appear_on_a_constructor_declaration);
         }

@@ -6,7 +6,7 @@ using TypeScript.Scanner;
 using TypeScript.Collections;
 
 namespace TypeScript.Vfs.CachedVfs;
-public sealed class FS : IFS
+public sealed class FS : IFS, ISourceTextFileSystem
 {
     private readonly IFS fs;
     private int enabled;
@@ -106,6 +106,7 @@ public sealed class FS : IFS
     }
 
     public (string Contents, bool Ok) ReadFile(RootedFilePath path) => fs.ReadFile(path);
+    (ByteStringView Contents, bool Ok) ISourceTextFileSystem.ReadSourceText(RootedFilePath path) => SourceTextReaders.Read(fs, path);
     public CaseSensitivity CaseSensitivity() => fs.CaseSensitivity();
 
 }

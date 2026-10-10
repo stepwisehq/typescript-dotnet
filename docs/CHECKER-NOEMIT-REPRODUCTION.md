@@ -51,7 +51,12 @@ qualification.
 
 The project now also contains three Go-backed `DiscriminantNeverTests` regressions
 and eleven `ProjectDiagnosticPolicyTests` cases from the subsequent VS Code repairs,
-so an unfiltered current project run has 15,354 cases. The historical acceptance totals above remain unchanged. The focused
+plus 23 authored shared slice-semantics cases from the subsequent inference-stack
+migration, and three complete pinned-Go regex byte-argument regressions from the
+shared-text-view work, and eleven authored filename-role checks, plus four complete pinned-Go arrow-rune
+diagnostic comparisons from the owned-byte source work. An unfiltered
+current project run has 15,395 cases. The historical
+acceptance totals above remain unchanged. The focused
 repair and actual Native AOT retry are recorded in [the VS Code findings](VSCODE-CHECK-STATUS.md).
 
 The documented Release project build and filter were smoke-tested with exactly

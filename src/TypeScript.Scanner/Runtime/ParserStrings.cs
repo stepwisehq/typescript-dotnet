@@ -4,6 +4,103 @@
 namespace TypeScript.Scanner;
 internal static partial class GoStrings
 {
+    // Narrow view counterparts of Go's substring-returning text operations.
+    public static ByteStringView TrimSuffix(ByteStringView value, string suffix)
+        => HasSuffix(value.AsSpan(), suffix)
+            ? value.Slice(0, value.Length - suffix.Length) : value;
+    public static ByteStringView TrimSuffix(ByteStringView value, ReadOnlySpan<byte> suffix)
+        => HasSuffix(value.AsSpan(), suffix)
+            ? value.Slice(0, value.Length - suffix.Length) : value;
+    public static ByteStringView TrimRightFunc(ByteStringView value, Func<int, bool> predicate)
+    {
+        int end = value.Length;
+        while (end > 0)
+        {
+            var (rune, size) = Utf8.DecodeLastRuneInString(value.AsSpan(0, end));
+            if (!predicate(rune)) break;
+            end -= size;
+        }
+        return value.Slice(0, end);
+    }
+    public static ByteStringView TrimLeftFunc(ByteStringView value, Func<int, bool> predicate)
+    {
+        int start = 0;
+        while (start < value.Length)
+        {
+            var (rune, size) = Utf8.DecodeRuneInString(value.AsSpan(start));
+            if (!predicate(rune)) break;
+            start += size;
+        }
+        return value.Slice(start);
+    }
+    public static string Join(List<ByteStringView> values, string separator)
+    {
+        if (values == null || values.Count == 0) return "";
+        if (values.Count == 1) return values[0].Materialize();
+        int length = checked(separator.Length * (values.Count - 1));
+        foreach (var value in values) length = checked(length + value.Length);
+        return string.Create(length, (values, separator), static (destination, state) =>
+        {
+            int pos = 0;
+            for (int i = 0; i < state.values.Count; i++)
+            {
+                if (i > 0)
+                {
+                    state.separator.AsSpan().CopyTo(destination[pos..]);
+                    pos += state.separator.Length;
+                }
+                var source = state.values[i].AsSpan();
+                for (int j = 0; j < source.Length; j++) destination[pos + j] = (char)source[j];
+                pos += source.Length;
+            }
+        });
+    }
+    public static string Join(Slice<ByteStringView> values, string separator)
+    {
+        if (values.Length == 0) return "";
+        if (values.Length == 1) return values[0].Materialize();
+        int length = checked(separator.Length * (values.Length - 1));
+        foreach (var value in values) length = checked(length + value.Length);
+        return string.Create(length, (values, separator), static (destination, state) =>
+        {
+            int pos = 0;
+            for (int i = 0; i < state.values.Length; i++)
+            {
+                if (i > 0)
+                {
+                    state.separator.AsSpan().CopyTo(destination[pos..]);
+                    pos += state.separator.Length;
+                }
+                var source = state.values[i].AsSpan();
+                for (int j = 0; j < source.Length; j++) destination[pos + j] = (char)source[j];
+                pos += source.Length;
+            }
+        });
+    }
+
+    // strings.Join constructs one owned byte result. Internal indentation text
+    // can retain that result without a full raw-string encode/decode roundtrip.
+    public static ByteStringView JoinViews(Slice<ByteStringView> values, string separator)
+    {
+        if (values.Length == 0) return "";
+        if (values.Length == 1) return values[0];
+        int length = checked(separator.Length * (values.Length - 1));
+        foreach (var value in values) length = checked(length + value.Length);
+        var result = new byte[length];
+        int pos = 0;
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (i > 0)
+            {
+                for (int j = 0; j < separator.Length; j++) result[pos++] = checked((byte)separator[j]);
+            }
+            var source = values[i].AsSpan();
+            source.CopyTo(result.AsSpan(pos));
+            pos += source.Length;
+        }
+        return ByteStringView.FromOwnedBytes(result);
+    }
+
     // Go strings operations for module naming. Managed characters represent Go bytes.
     public static (string Before, string After, bool Found) Cut(string s, string separator)
     {

@@ -31,7 +31,8 @@ public static class Runner
         }
         else
         {
-            ScannerState saved = null!;
+            // Original Go oracle starts with a zero ScannerState, including Rewind before Mark.
+            ScannerState saved = default;
             foreach (var op in request.Operations)
             {
                 switch (op.Op)

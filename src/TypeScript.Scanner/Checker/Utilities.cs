@@ -1804,8 +1804,8 @@ public sealed partial class Checker
 {
     // utilities.go:1609. Type-parameter list positions use source byte offsets.
     private static TextRange rangeOfTypeParameters(SourceFile sourceFile, NodeList typeParameters) =>
-        new(typeParameters.Pos() - 1, Math.Min(sourceFile.Text().Length,
-            TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeParameters.End()) + 1));
+        new(typeParameters.Pos() - 1, Math.Min(sourceFile.TextView().Length,
+            TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), typeParameters.End()) + 1));
     // utilities.go:1633. Declaration identity, rather than equivalent filenames.
     private static bool allDeclarationsInSameSourceFile(Symbol symbol)
     {

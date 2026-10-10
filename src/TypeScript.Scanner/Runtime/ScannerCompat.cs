@@ -8,6 +8,39 @@ namespace TypeScript.Scanner;
 internal static partial class GoStrings
 {
     public static int Index(string value, string text) => value.IndexOf(text, StringComparison.Ordinal);
+    public static int IndexByte(ReadOnlySpan<byte> value, int ch) => value.IndexOf((byte)ch);
+    // Go strings byte comparisons: static patterns borrow u8 literals directly.
+    public static bool HasPrefix(ReadOnlySpan<byte> value, ReadOnlySpan<byte> prefix) => value.StartsWith(prefix);
+    public static bool HasSuffix(ReadOnlySpan<byte> value, ReadOnlySpan<byte> suffix) => value.EndsWith(suffix);
+    public static int Index(ReadOnlySpan<byte> value, ReadOnlySpan<byte> part) => value.IndexOf(part);
+    public static bool Equal(ReadOnlySpan<byte> left, ReadOnlySpan<byte> right) => left.SequenceEqual(right);
+    // Dynamic raw-string compatibility keeps char-per-byte comparisons. Do not
+    // UTF8-encode these strings: their non-ASCII characters already denote bytes.
+    public static bool HasPrefix(ReadOnlySpan<byte> value, string prefix)
+    {
+        if (value.Length < prefix.Length) return false;
+        for (int i = 0; i < prefix.Length; i++) if (value[i] != prefix[i]) return false;
+        return true;
+    }
+    public static bool HasSuffix(ReadOnlySpan<byte> value, string suffix)
+        => value.Length >= suffix.Length && HasPrefix(value[(value.Length - suffix.Length)..], suffix);
+    public static int Index(ReadOnlySpan<byte> value, string part)
+    {
+        for (int i = 0; i <= value.Length - part.Length; i++)
+            if (HasPrefix(value[i..], part)) return i;
+        return -1;
+    }
+    // Go strings.ContainsFunc iterates decoded UTF8 runes, not byte values.
+    public static bool ContainsFunc(ReadOnlySpan<byte> value, Func<int, bool> predicate)
+    {
+        for (int pos = 0; pos < value.Length;)
+        {
+            var (rune, size) = Utf8.DecodeRuneInString(value[pos..]);
+            if (predicate(rune)) return true;
+            pos += size;
+        }
+        return false;
+    }
     public static int IndexByte(ReadOnlySpan<char> value, int ch) => value.IndexOf((char)ch);
     public static bool HasPrefix(ReadOnlySpan<char> value, string prefix) => value.StartsWith(prefix, StringComparison.Ordinal);
     public static int IndexByte(string value, int ch) => value.IndexOf((char)ch);

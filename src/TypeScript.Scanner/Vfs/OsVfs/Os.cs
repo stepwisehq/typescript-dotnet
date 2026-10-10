@@ -15,7 +15,7 @@ public static class OsVfs
 {
     private static readonly IFS instance = new OsFS();
     public static IFS FS() => instance;
-    private sealed class OsFS : IFS
+    private sealed class OsFS : IFS, ISourceTextFileSystem
     {
         private readonly CaseSensitivity sensitivity = detectCaseSensitivity();
         private static string Native(string bytes)
@@ -68,16 +68,21 @@ public static class OsVfs
         public bool DirectoryExists(RootedDirectoryPath path) => Stat(path.AsPath())?.IsDir() == true;
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         {
+            var (contents, ok) = ReadSourceText(path);
+            return ok ? (contents.Materialize(), true) : ("", false);
+        }
+        public (ByteStringView Contents, bool Ok) ReadSourceText(RootedFilePath path)
+        {
             string native = Native(path.AsString());
             if (native.Contains('\0'))
-                return ("", false);
+                return (default, false);
             try
             {
-                return VfsInternal.DecodeBytes(GoString.FromBytes(System.IO.File.ReadAllBytes(native)));
+                return VfsInternal.DecodeSourceBytes(System.IO.File.ReadAllBytes(native));
             }
             catch (Exception error)when (readFailure(error))
             {
-                return ("", false);
+                return (default, false);
             }
         }
 

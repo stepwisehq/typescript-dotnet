@@ -4723,9 +4723,17 @@ public sealed partial class ImportSpecifier : NodeData, DeclarationBase, Exporta
 
 public sealed partial class JSDocText : NodeData, JSDocCommentBase
 {
-    public List<string> text { get; set; }
+    // Managed JSDoc-only bridge over the original []string field. Public list
+    // access stays mutable; internal parser/clone paths retain shared text views.
+    internal JSDocTextFragments TextFragments { get; private set; }
+    public List<string> text
+    {
+        get => TextFragments?.AsList();
+        set => TextFragments = JSDocTextFragments.FromStrings(value);
+    }
+    internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocText(this.text), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocTextWithFragments(this.TextFragments), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "JSDocText";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -4740,13 +4748,21 @@ public sealed partial class JSDocText : NodeData, JSDocCommentBase
 
 public sealed partial class JSDocLink : NodeData, JSDocCommentBase
 {
-    public List<string> text { get; set; }
+    // Managed JSDoc-only bridge over the original []string field. Public list
+    // access stays mutable; internal parser/clone paths retain shared text views.
+    internal JSDocTextFragments TextFragments { get; private set; }
+    public List<string> text
+    {
+        get => TextFragments?.AsList();
+        set => TextFragments = JSDocTextFragments.FromStrings(value);
+    }
+    internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;
     public Node name { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.name);
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLink(this.name, this.text), this.AsNode(), f.AsNodeFactory().hooks);
-    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLink(this, v.visitNode(this.name), this.text);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLinkWithFragments(this.name, this.TextFragments), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLinkWithFragments(this, v.visitNode(this.name), this.TextFragments);
     public override string DataType() => "JSDocLink";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -4762,13 +4778,21 @@ public sealed partial class JSDocLink : NodeData, JSDocCommentBase
 
 public sealed partial class JSDocLinkPlain : NodeData, JSDocCommentBase
 {
-    public List<string> text { get; set; }
+    // Managed JSDoc-only bridge over the original []string field. Public list
+    // access stays mutable; internal parser/clone paths retain shared text views.
+    internal JSDocTextFragments TextFragments { get; private set; }
+    public List<string> text
+    {
+        get => TextFragments?.AsList();
+        set => TextFragments = JSDocTextFragments.FromStrings(value);
+    }
+    internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;
     public Node name { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.name);
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLinkPlain(this.name, this.text), this.AsNode(), f.AsNodeFactory().hooks);
-    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLinkPlain(this, v.visitNode(this.name), this.text);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLinkPlainWithFragments(this.name, this.TextFragments), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLinkPlainWithFragments(this, v.visitNode(this.name), this.TextFragments);
     public override string DataType() => "JSDocLinkPlain";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -4784,13 +4808,21 @@ public sealed partial class JSDocLinkPlain : NodeData, JSDocCommentBase
 
 public sealed partial class JSDocLinkCode : NodeData, JSDocCommentBase
 {
-    public List<string> text { get; set; }
+    // Managed JSDoc-only bridge over the original []string field. Public list
+    // access stays mutable; internal parser/clone paths retain shared text views.
+    internal JSDocTextFragments TextFragments { get; private set; }
+    public List<string> text
+    {
+        get => TextFragments?.AsList();
+        set => TextFragments = JSDocTextFragments.FromStrings(value);
+    }
+    internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;
     public Node name { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.name);
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLinkCode(this.name, this.text), this.AsNode(), f.AsNodeFactory().hooks);
-    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLinkCode(this, v.visitNode(this.name), this.text);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocLinkCodeWithFragments(this.name, this.TextFragments), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocLinkCodeWithFragments(this, v.visitNode(this.name), this.TextFragments);
     public override string DataType() => "JSDocLinkCode";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -6524,6 +6556,42 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.JSDocLinkCode, data);
     }
 
+    // Managed JSDoc text-view bridges to the same source factory bodies.
+    internal Node NewJSDocTextWithFragments(JSDocTextFragments text)
+    {
+        var data = new JSDocText();
+        data.SetTextFragments(text);
+        textCount++;
+        return this.newNode(Kind.JSDocText, data);
+    }
+
+    internal Node NewJSDocLinkWithFragments(Node name, JSDocTextFragments text)
+    {
+        var data = new JSDocLink();
+        data.name = name;
+        data.SetTextFragments(text);
+        textCount++;
+        return this.newNode(Kind.JSDocLink, data);
+    }
+
+    internal Node NewJSDocLinkPlainWithFragments(Node name, JSDocTextFragments text)
+    {
+        var data = new JSDocLinkPlain();
+        data.name = name;
+        data.SetTextFragments(text);
+        textCount++;
+        return this.newNode(Kind.JSDocLinkPlain, data);
+    }
+
+    internal Node NewJSDocLinkCodeWithFragments(Node name, JSDocTextFragments text)
+    {
+        var data = new JSDocLinkCode();
+        data.name = name;
+        data.SetTextFragments(text);
+        textCount++;
+        return this.newNode(Kind.JSDocLinkCode, data);
+    }
+
     public Node NewTypeParameterDeclaration(ModifierList modifiers, Node name, Node constraint, Node expression, Node defaultType)
     {
         var data = new TypeParameterDeclaration();
@@ -8186,6 +8254,28 @@ public sealed partial class NodeFactory
             return Ast.UpdateNode(this.NewJSDocLinkCode(name, text), node.AsNode(), hooks);
         }
 
+        return node.AsNode();
+    }
+
+    // Internal visitor joins preserve shared storage without projecting lists.
+    internal Node UpdateJSDocLinkWithFragments(JSDocLink node, Node name, JSDocTextFragments text)
+    {
+        if (name != node.name || !ReferenceEquals(text, node.TextFragments))
+            return Ast.UpdateNode(this.NewJSDocLinkWithFragments(name, text), node.AsNode(), hooks);
+        return node.AsNode();
+    }
+
+    internal Node UpdateJSDocLinkPlainWithFragments(JSDocLinkPlain node, Node name, JSDocTextFragments text)
+    {
+        if (name != node.name || !ReferenceEquals(text, node.TextFragments))
+            return Ast.UpdateNode(this.NewJSDocLinkPlainWithFragments(name, text), node.AsNode(), hooks);
+        return node.AsNode();
+    }
+
+    internal Node UpdateJSDocLinkCodeWithFragments(JSDocLinkCode node, Node name, JSDocTextFragments text)
+    {
+        if (name != node.name || !ReferenceEquals(text, node.TextFragments))
+            return Ast.UpdateNode(this.NewJSDocLinkCodeWithFragments(name, text), node.AsNode(), hooks);
         return node.AsNode();
     }
 

@@ -99,6 +99,64 @@ internal static class Utf8
         return start + result.Size == text.Length ? result : (RuneError, 1);
     }
 
+    public static (int Rune, int Size) DecodeRuneInString(ReadOnlySpan<byte> text)
+    {
+        if (text.IsEmpty)
+            return (RuneError, 0);
+        int first = text[0];
+        if (first < 0x80)
+            return (first, 1);
+        int size, value, secondLow = 0x80, secondHigh = 0xBF;
+        if (first is >= 0xC2 and <= 0xDF)
+        {
+            size = 2;
+            value = first & 0x1F;
+        }
+        else if (first is >= 0xE0 and <= 0xEF)
+        {
+            size = 3;
+            value = first & 0xF;
+            if (first == 0xE0)
+                secondLow = 0xA0;
+            if (first == 0xED)
+                secondHigh = 0x9F;
+        }
+        else if (first is >= 0xF0 and <= 0xF4)
+        {
+            size = 4;
+            value = first & 7;
+            if (first == 0xF0)
+                secondLow = 0x90;
+            if (first == 0xF4)
+                secondHigh = 0x8F;
+        }
+        else
+            return (RuneError, 1);
+        if (text.Length < size || text[1] < secondLow || text[1] > secondHigh)
+            return (RuneError, 1);
+        value = (value << 6) | (text[1] & 0x3F);
+        for (int i = 2; i < size; i++)
+        {
+            if (text[i] < 0x80 || text[i] > 0xBF)
+                return (RuneError, 1);
+            value = (value << 6) | (text[i] & 0x3F);
+        }
+
+        return (value, size);
+    }
+
+    public static (int Rune, int Size) DecodeLastRuneInString(ReadOnlySpan<byte> text)
+    {
+        if (text.Length == 0)
+            return (RuneError, 0);
+        int start = text.Length - 1;
+        int lower = Math.Max(0, text.Length - 4);
+        while (start > lower && text[start] is >= (byte)0x80 and <= (byte)0xBF)
+            start--;
+        var result = DecodeRuneInString(text[start..]);
+        return start + result.Size == text.Length ? result : (RuneError, 1);
+    }
+
     public static int RuneLen(int rune) => rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF ? -1 : rune < 0x80 ? 1 : rune < 0x800 ? 2 : rune < 0x10000 ? 3 : 4;
 }
 
@@ -107,6 +165,15 @@ internal sealed class GoBuilder
     private readonly StringBuilder value = new();
     public void Grow(int capacity) => value.EnsureCapacity(value.Length + capacity);
     public void WriteString(string bytes) => value.Append(bytes);
+    // Go strings.Builder.WriteString accepts a shared substring without copying
+    // an intermediate string. The builder still owns its constructed output.
+    public void WriteString(ReadOnlySpan<char> bytes) => value.Append(bytes);
+    public void WriteString(ReadOnlySpan<byte> bytes)
+    {
+        // Existing builder output is a raw Go string, one char per byte. Only
+        // this constructed output crosses that compatibility boundary.
+        foreach (byte b in bytes) value.Append((char)b);
+    }
     public void WriteRune(int rune) => value.Append(GoString.FromRune(rune));
     public void WriteByte(int b) => value.Append((char)b);
     public string String() => value.ToString();

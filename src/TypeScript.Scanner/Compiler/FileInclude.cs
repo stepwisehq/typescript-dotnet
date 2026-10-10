@@ -18,8 +18,8 @@ internal sealed class ReferenceFileLocation
     internal PackageId packageId;
     internal bool isSynthetic;
     internal string Text() => node is not null
-        ? isSynthetic ? "\"" + node.Text() + "\"" : file.Text()[TsScanner.SkipTriviaByteString(file.Text(), node.Pos())..node.End()]
-        : file.Text()[reference!.Pos()..reference.End()];
+        ? isSynthetic ? "\"" + node.Text() + "\"" : file.TextView().Slice(TsScanner.SkipTriviaByteString(file.TextView(), node.Pos()), node.End()).Materialize()
+        : file.TextView().Slice(reference!.Pos(), reference.End()).Materialize();
     internal Diagnostic DiagnosticAt(Message message, params object[] args) => node is not null
         ? ConfigParser.CreateDiagnosticForNodeInSourceFile(file, node, message, args)
         : Ast.NewDiagnostic(file, reference!.TextRange, message, args);

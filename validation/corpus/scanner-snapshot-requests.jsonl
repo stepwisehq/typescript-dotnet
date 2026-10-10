@@ -1,0 +1,3 @@
+{"name":"snapshot-zero-before-mark","text":"alpha + beta","operations":[{"op":"Rewind"},{"op":"Scan"},{"op":"Scan"},{"op":"Rewind"},{"op":"Scan"}]}
+{"name":"snapshot-directive-rewind","text":"// @ts-ignore\na\n// @ts-ignore\nb\n// @ts-ignore\nc\n// @ts-ignore\nd\n// @ts-ignore\ne\n","operations":[{"op":"Scan"},{"op":"Scan"},{"op":"Scan"},{"op":"Mark"},{"op":"Scan"},{"op":"Scan"},{"op":"Rewind"},{"op":"Scan"}]}
+{"name":"snapshot-borrowed-token-rewind","textBytesBase64":"w6nwn6aA/yBAdGFn","operations":[{"op":"ScanJSDocCommentTextToken","argument":false},{"op":"Mark"},{"op":"ScanJSDocToken"},{"op":"Rewind"},{"op":"ScanJSDocToken"}]}

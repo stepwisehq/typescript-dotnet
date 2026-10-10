@@ -157,7 +157,9 @@ public sealed partial class Checker
 
             case SourceFileLinks value:
             {
-                return ("SourceFileLinks", new List<(string Name, string Kind, object Value)> { ("typeChecked", "bool", value.typeChecked), ("unusedChecked", "bool", value.unusedChecked), ("externalHelpersModule", "symbol", value.externalHelpersModule), ("requestedExternalEmitHelpers", "number", value.requestedExternalEmitHelpers), ("deferredNodes", "list", value.deferredNodes), ("identifierCheckNodes", "list", value.identifierCheckNodes), ("localJsxNamespace", "bytes", value.localJsxNamespace), ("localJsxFragmentNamespace", "bytes", value.localJsxFragmentNamespace), ("localJsxFactory", "node", value.localJsxFactory), ("localJsxFragmentFactory", "node", value.localJsxFragmentFactory), ("jsxFragmentType", "reference", value.jsxFragmentType), });
+                // Existing named validation list boundary only; ordinary checking
+                // keeps the identifier slice header and does not project an array.
+                return ("SourceFileLinks", new List<(string Name, string Kind, object Value)> { ("typeChecked", "bool", value.typeChecked), ("unusedChecked", "bool", value.unusedChecked), ("externalHelpersModule", "symbol", value.externalHelpersModule), ("requestedExternalEmitHelpers", "number", value.requestedExternalEmitHelpers), ("deferredNodes", "list", value.deferredNodes), ("identifierCheckNodes", "list", value.identifierCheckNodes.IsNil ? null : value.identifierCheckNodes.AsSpan().ToArray()), ("localJsxNamespace", "bytes", value.localJsxNamespace), ("localJsxFragmentNamespace", "bytes", value.localJsxFragmentNamespace), ("localJsxFactory", "node", value.localJsxFactory), ("localJsxFragmentFactory", "node", value.localJsxFragmentFactory), ("jsxFragmentType", "reference", value.jsxFragmentType), });
             }
 
             case VarianceLinks value:

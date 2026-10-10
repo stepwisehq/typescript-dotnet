@@ -39,12 +39,13 @@ public sealed class ASTDiagnostic : IDiagnostic
     private static readonly ConditionalWeakTable<SourceFile, AstFile> ordinaryFiles = new();
     private static readonly ConditionalWeakTable<SourceFile, AstFile> configFiles = new();
 
-    private sealed class AstFile(SourceFile file, bool rawFileName) : IFileLike
+    private sealed class AstFile(SourceFile file, bool rawFileName) : IFileLike, ISourceTextFileLike
     {
         public RootedFilePath FileName() => rawFileName
             ? RootedFilePath.FromGoString(file.FileName())
             : RootedFilePath.FromUnicode(file.FileName());
         public string Text() => file.Text();
+        ByteStringView ISourceTextFileLike.TextView() => file.TextView();
         public List<int> ECMALineMap() => file.ECMALineMap();
     }
 
@@ -177,7 +178,7 @@ public static class DiagnosticWriter
         var (firstLine, firstCharacter) = TypeScript.Scanner.Scanner.GetECMALineAndUTF16CharacterOfPosition(file, start);
         var (lastLine, lastCharacter) = TypeScript.Scanner.Scanner.GetECMALineAndUTF16CharacterOfPosition(file, start + length);
         if (length == 0) lastCharacter++;
-        int lastFileLine = TypeScript.Scanner.Scanner.GetECMALineOfPosition(file, file.Text().Length);
+        int lastFileLine = TypeScript.Scanner.Scanner.GetECMALineOfPosition(file, file.TextView().Length);
         bool hasMoreThanFiveLines = lastLine - firstLine >= 4;
         int gutterWidth = Strconv.Itoa(lastLine + 1).Length;
         if (hasMoreThanFiveLines) gutterWidth = Math.Max(ellipsis.Length, gutterWidth);
@@ -190,8 +191,8 @@ public static class DiagnosticWriter
                 i = lastLine - 1;
             }
             int lineStart = TypeScript.Scanner.Scanner.GetECMAPositionOfLineAndByteOffset(file, i, 0);
-            int lineEnd = i < lastFileLine ? TypeScript.Scanner.Scanner.GetECMAPositionOfLineAndByteOffset(file, i + 1, 0) : file.Text().Length;
-            string lineContent = GoStrings.TrimRightFunc(file.Text()[lineStart..lineEnd], GoUnicode.IsSpace).Replace('\t', ' ');
+            int lineEnd = i < lastFileLine ? TypeScript.Scanner.Scanner.GetECMAPositionOfLineAndByteOffset(file, i + 1, 0) : file.TextView().Length;
+            string lineContent = GoStrings.TrimRightFunc(file.TextView().Slice(lineStart, lineEnd), GoUnicode.IsSpace).Materialize().Replace('\t', ' ');
             output.Write(indent + gutterStyleSequence + Strconv.Itoa(i + 1).PadLeft(gutterWidth) + resetEscapeSequence + gutterSeparator + lineContent + options.NewLine);
             output.Write(indent + gutterStyleSequence + "".PadLeft(gutterWidth) + resetEscapeSequence + gutterSeparator + squiggleColor);
             if (i == firstLine)

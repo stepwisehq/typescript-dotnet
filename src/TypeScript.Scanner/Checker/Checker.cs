@@ -7,6 +7,7 @@
 using TypeScript.Scanner;
 using TypeScript.Compiler;
 using TypeScript.Modules;
+using System.Runtime.InteropServices;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Checks")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Validation")]
@@ -177,7 +178,7 @@ public sealed partial class Checker
         else
             host.BindSourceFiles();
 
-        var checker = initializeCheckerEnvironment(host, options, files);
+        var checker = initializeCheckerEnvironment(host, options, files, profile == CheckerProfile.Collections);
         checker.sourceFile = file;
         checker.authoredCollectionsProfile = profile == CheckerProfile.Collections;
         checker.authoredProjectsProfile = profile == CheckerProfile.Projects;
@@ -185,11 +186,12 @@ public sealed partial class Checker
     }
 
     // checker.go:913–1126. The actual environment has no fixture profile.
-    private static Checker initializeCheckerEnvironment(ICheckerProgramHost host, CompilerOptions options, List<SourceFile> files)
+    private static Checker initializeCheckerEnvironment(ICheckerProgramHost host, CompilerOptions options, List<SourceFile> files, bool captureCollectionsKeys = false)
     {
         var c = new Checker
         {
             id = unchecked((uint)Interlocked.Increment(ref nextCheckerID)),
+            authoredCollectionsProfile = captureCollectionsKeys,
             sourceFile = files.FirstOrDefault(),
             files = files,
             fileIndexMap = createFileIndexMap(files),
@@ -1461,19 +1463,24 @@ public sealed partial class Checker
     }
 
     private Type mapType(Type t, Func<Type, Type> f) => mapTypeEx(t, f, false);
-    private Type mapTypeEx(Type t, Func<Type, Type> f, bool noReductions)
+    private Type mapTypeEx(Type t, Func<Type, Type> f, bool noReductions) =>
+        mapTypeEx(t, f, static (s, callback) => callback(s), noReductions);
+
+    // checker.go:26099 mapTypeEx. Explicit callback state avoids managed capture frames;
+    // both callback forms use the same ordered union mapping and reduction algorithm.
+    private Type mapTypeEx<TState>(Type t, TState state, Func<Type, TState, Type> f, bool noReductions)
     {
         if ((t.flags & TypeFlags.Never) != 0)
             return t;
         if ((t.flags & TypeFlags.Union) == 0)
-            return f(t);
+            return f(t, state);
         var u = t.AsUnionType();
         var types = u.origin != null && (u.origin.flags & TypeFlags.Union) != 0 ? u.origin.Types() : u.types;
         var mappedTypes = new List<Type>(16);
         bool changed = false;
         foreach (var s in types)
         {
-            var mapped = (s.flags & TypeFlags.Union) != 0 ? mapTypeEx(s, f, noReductions) : f(s);
+            var mapped = (s.flags & TypeFlags.Union) != 0 ? mapTypeEx(s, state, f, noReductions) : f(s, state);
             if (mapped != s)
                 changed = true;
             if (mapped != null)
@@ -1510,8 +1517,8 @@ public sealed partial class Checker
             uint id1 = types[0].id, id2 = types[1].id;
             if (id1 > id2)
                 (id1, id2) = (id2, id1);
-            if (!unionOfUnionTypes.TryGetValue((id1, id2, reduction, getAliasKey(alias)), out var t))
-                unionOfUnionTypes[(id1, id2, reduction, getAliasKey(alias))] = t = getUnionTypeWorker(types, reduction, alias, origin);
+            if (!unionOfUnionTypes.TryGetValue((id1, id2, reduction, getAliasKey(alias, verificationOwner: authoredCollectionsProfile ? this : null)), out var t))
+                unionOfUnionTypes[(id1, id2, reduction, getAliasKey(alias, verificationOwner: authoredCollectionsProfile ? this : null))] = t = getUnionTypeWorker(types, reduction, alias, origin);
             return t;
         }
 
@@ -1670,8 +1677,8 @@ public sealed partial class Checker
             return neverType;
         if (types.Count == 1)
             return types[0];
-        // Exact constituent identity tuple replaces opaque xxh3 cache key encoding.
-        var key = getUnionKey(types, origin, alias);
+        // Go checker.go:26270: original constituent/alias hash key.
+        var key = getUnionKey(types, origin, alias, verificationOwner: authoredCollectionsProfile ? this : null);
         if (!unionTypes.TryGetValue(key, out var t))
         {
             t = newUnionType(precomputedObjectFlags | getPropagatingFlagsOfTypes(types, TypeFlags.Nullable), types);
@@ -3914,9 +3921,14 @@ public sealed partial class Checker
 
         var declaration = localOrExportSymbol.ValueDeclaration;
         var immediateDeclaration = declaration;
-        if (declaration?.Kind == Kind.BindingElement && GoSlices.Contains(contextualBindingPatterns, declaration.Parent) &&
-            Ast.FindAncestor(node, parent => parent == declaration.Parent) != null)
-            return nonInferrableAnyType;
+        if (declaration?.Kind == Kind.BindingElement && GoSlices.Contains(contextualBindingPatterns, declaration.Parent))
+        {
+            // checker.go:11308 / ast/utilities.go:911. Preserve node-inclusive
+            // parent traversal without capturing the reassigned declaration local.
+            for (var parent = node; parent != null; parent = parent.Parent)
+                if (parent == declaration.Parent)
+                    return nonInferrableAnyType;
+        }
         var t = this.getNarrowedTypeOfSymbol(localOrExportSymbol, node);
         var assignmentKind = getAssignmentTargetKind(node);
         if ((assignmentKind != AssignmentKind.None))
@@ -4491,12 +4503,12 @@ public sealed partial class Checker
         foreach (var (id, symbol) in members)
             if (isNamedMember(symbol, id) && (container == null || (container.Flags & (SymbolFlags.Class | SymbolFlags.Interface)) == 0 || !isDeclarationContainedBy(symbol, container)))
                 result.Add(symbol);
-        var contained = result.GetRange(0, containedCount);
-        var inherited = result.GetRange(containedCount, result.Count - containedCount);
-        sortSymbols(contained);
-        sortSymbols(inherited);
-        contained.AddRange(inherited);
-        return contained;
+        // checker.go:22530. Sort the two borrowed source slices in place;
+        // the local result list is not published or resized during comparison.
+        var symbols = CollectionsMarshal.AsSpan(result);
+        symbols.Slice(0, containedCount).Sort(compareSymbolsWorker);
+        symbols.Slice(containedCount).Sort(compareSymbolsWorker);
+        return result;
     }
 
     private static bool isDeclarationContainedBy(Symbol symbol, Symbol container)
@@ -5656,22 +5668,29 @@ public sealed partial class Checker
             if ((element.Name() != null))
             {
                 var nameType = this.getLiteralTypeFromPropertyName(element.Name());
-                return this.mapTypeEx(t2, (t3) =>
-{
-    var indexInfo = this.findApplicableIndexInfo(this.getIndexInfosOfStructuredType(t3), nameType);
-    if ((indexInfo == null))
-    {
-        return null;
-    }
-    return indexInfo.valueType;
-}, true);
+                // checker.go:30497. Pass the original closure's state explicitly.
+                return this.mapTypeEx(t2, (checker: this, nameType), static (t3, state) =>
+                {
+                    var indexInfo = state.checker.findApplicableIndexInfo(state.checker.getIndexInfosOfStructuredType(t3), state.nameType);
+                    if ((indexInfo == null))
+                    {
+                        return null;
+                    }
+                    return indexInfo.valueType;
+                }, true);
             }
         }
         return null;
     }
 
-    private Type getTypeOfPropertyOfContextualTypeEx(Type t, string name, Type nameType) => mapTypeEx(t, constituent =>
+    // checker.go:31104. Value callback state retains the source closure's references
+    // without allocating a managed display class or an instance delegate per call.
+    private Type getTypeOfPropertyOfContextualTypeEx(Type t, string name, Type nameType) =>
+        mapTypeEx(t, (checker: this, name, nameType), static (constituent, state) =>
     {
+        var checker = state.checker;
+        var propertyName = state.name;
+        var propertyNameType = state.nameType;
         if ((constituent.flags & TypeFlags.Intersection) != 0)
         {
             List<Type> types = null, indexCandidates = null;
@@ -5680,14 +5699,14 @@ public sealed partial class Checker
             {
                 if ((memberType.flags & TypeFlags.Object) == 0)
                     continue;
-                if (isGenericMappedType(memberType) && getMappedTypeNameTypeKind(memberType) != MappedTypeNameTypeKind.Remapping)
+                if (checker.isGenericMappedType(memberType) && checker.getMappedTypeNameTypeKind(memberType) != MappedTypeNameTypeKind.Remapping)
                 {
-                    var substitutedType = getIndexedMappedTypeSubstitutedTypeOfContextualType(memberType, name, nameType);
-                    types = appendContextualPropertyTypeConstituent(types, substitutedType);
+                    var substitutedType = checker.getIndexedMappedTypeSubstitutedTypeOfContextualType(memberType, propertyName, propertyNameType);
+                    types = checker.appendContextualPropertyTypeConstituent(types, substitutedType);
                     continue;
                 }
 
-                var propertyType = getTypeOfConcretePropertyOfContextualType(memberType, name);
+                var propertyType = checker.getTypeOfConcretePropertyOfContextualType(memberType, propertyName);
                 if (propertyType == null)
                 {
                     if (!ignoreIndexInfos)
@@ -5697,23 +5716,23 @@ public sealed partial class Checker
 
                 ignoreIndexInfos = true;
                 indexCandidates = null;
-                types = appendContextualPropertyTypeConstituent(types, propertyType);
+                types = checker.appendContextualPropertyTypeConstituent(types, propertyType);
             }
 
             foreach (var candidate in indexCandidates ?? [])
-                types = appendContextualPropertyTypeConstituent(types, getTypeFromIndexInfosOfContextualType(candidate, name, nameType));
+                types = checker.appendContextualPropertyTypeConstituent(types, checker.getTypeFromIndexInfosOfContextualType(candidate, propertyName, propertyNameType));
             if ((types?.Count ?? 0) == 0)
                 return null;
             if (types.Count == 1)
                 return types[0];
-            return getIntersectionType(types);
+            return checker.getIntersectionType(types);
         }
 
         if ((constituent.flags & TypeFlags.Object) == 0)
             return null;
-        if (isGenericMappedType(constituent) && getMappedTypeNameTypeKind(constituent) != MappedTypeNameTypeKind.Remapping)
-            return getIndexedMappedTypeSubstitutedTypeOfContextualType(constituent, name, nameType);
-        return getTypeOfConcretePropertyOfContextualType(constituent, name) ?? getTypeFromIndexInfosOfContextualType(constituent, name, nameType);
+        if (checker.isGenericMappedType(constituent) && checker.getMappedTypeNameTypeKind(constituent) != MappedTypeNameTypeKind.Remapping)
+            return checker.getIndexedMappedTypeSubstitutedTypeOfContextualType(constituent, propertyName, propertyNameType);
+        return checker.getTypeOfConcretePropertyOfContextualType(constituent, propertyName) ?? checker.getTypeFromIndexInfosOfContextualType(constituent, propertyName, propertyNameType);
     }, true);
     private Type getTypeOfConcretePropertyOfContextualType(Type t, string name)
     {
@@ -6401,34 +6420,49 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:17764/18016. The value record retains the entire selected
-    // XXH3 input preimage; opaque hash representation is a managed adaptation.
-    internal readonly record struct CacheHashKey(string preimage);
-    // checker.go:17767. Managed complete preimage replaces the opaque XXH3 hash;
-    // write widths, little endian order, delimiters and presence tags are exact.
-    private sealed class keyBuilder
+    // Go checker.go:17764: opaque XXH3-128 value; zero is the uninitialized-key sentinel.
+    internal readonly record struct CacheHashKey(UInt128 Value)
     {
-        private readonly List<byte> bytes = new();
-        // Authored observation support: completed writer offset without hashing.
-        internal int Length => bytes.Count;
+        internal bool IsZero() => Value == 0;
+        internal static CacheHashKey FromBytes(ReadOnlySpan<byte> bytes) =>
+            new(System.IO.Hashing.XxHash128.HashToUInt128(bytes));
+    }
 
-        internal void writeByte(byte value) => bytes.Add(value);
+    // Go checker.go:17770–17914. Value-owned inline buffer; only spills allocate storage.
+    internal struct keyBuilder
+    {
+        [System.Runtime.CompilerServices.InlineArray(192)]
+        private struct InlineBuffer { private byte first; }
+        private int inlineLength;
+        private Slice<byte> overflowBuffer;
+        private InlineBuffer inlineBuffer;
+        // Existing named Collections observation identity; ordinary checking leaves this null.
+        internal object verificationIdentity;
+        internal int Length => overflowBuffer.Length + inlineLength;
+
+        private void spill()
+        {
+            overflowBuffer = overflowBuffer.Append(inlineBuffer[..inlineLength]);
+            inlineLength = 0;
+        }
+
+        internal void writeByte(byte value)
+        {
+            if (inlineLength == 192) spill();
+            inlineBuffer[inlineLength++] = value;
+        }
         internal void writeUint32(uint value)
         {
-            Span<byte> encoded = stackalloc byte[4];
-            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(encoded, value);
-            foreach (var b in encoded)
-                bytes.Add(b);
+            if (inlineLength + 4 > 192) spill();
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(inlineBuffer[inlineLength..], value);
+            inlineLength += 4;
         }
-
         internal void writeUint64(ulong value)
         {
-            Span<byte> encoded = stackalloc byte[8];
-            System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(encoded, value);
-            foreach (var b in encoded)
-                bytes.Add(b);
+            if (inlineLength + 8 > 192) spill();
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(inlineBuffer[inlineLength..], value);
+            inlineLength += 8;
         }
-
         internal void writeInt(int value) => writeUint64(unchecked((ulong)value));
         internal void writeSymbol(Symbol symbol) => writeUint64(Ast.GetSymbolId(symbol));
         internal void writeType(Type t) => writeUint32(t.id);
@@ -6458,75 +6492,98 @@ public sealed partial class Checker
                 writeNodeId(Ast.GetNodeId(node));
         }
 
+
         internal void writeString(string text)
         {
-            foreach (var value in text)
-                bytes.Add((byte)value);
+            if (inlineLength + text.Length > 192)
+            {
+                spill();
+                if (text.Length > 192)
+                {
+                    // Raw Go-byte chars, not Unicode encoding. Append reuses owned spill capacity.
+                    foreach (char c in text) overflowBuffer = overflowBuffer.Append((byte)c);
+                    return;
+                }
+            }
+            foreach (char c in text) inlineBuffer[inlineLength++] = (byte)c;
         }
 
-        internal CacheHashKey hash() => new(Convert.ToBase64String(bytes.ToArray()));
+        internal CacheHashKey hash(Checker verificationOwner = null)
+        {
+            if (overflowBuffer.IsNil)
+            {
+                var bytes = (ReadOnlySpan<byte>)inlineBuffer[..inlineLength];
+                var key = CacheHashKey.FromBytes(bytes);
+                verificationOwner?.verificationCollectionsCaptureKey(key, bytes);
+                return key;
+            }
+            // Go hash appends into a local header, leaving the builder's length unchanged.
+            var combined = overflowBuffer.Append(inlineBuffer[..inlineLength]);
+            var result = CacheHashKey.FromBytes(combined.AsSpan());
+            verificationOwner?.verificationCollectionsCaptureKey(result, combined.AsSpan());
+            return result;
+        }
         internal bool writeGenericTypeReferences(Type source, Type target, bool ignoreConstraints)
         {
             bool constrained = false;
             List<Type> typeParameters = new(8);
-            void writeTypeReference(Type reference, int depth)
+            writeTypeReference(ref this, source, 0, ignoreConstraints, typeParameters, ref constrained);
+            writeByte((byte)',');
+            writeTypeReference(ref this, target, 0, ignoreConstraints, typeParameters, ref constrained);
+            return constrained;
+        }
+
+        // Go checker.go:17873: closure over b becomes explicit ref recursion for the value buffer.
+        private static void writeTypeReference(ref keyBuilder b, Type reference, int depth,
+            bool ignoreConstraints, List<Type> typeParameters, ref bool constrained)
+        {
+            b.writeType(reference.Target());
+            foreach (var t in reference.AsTypeReference().resolvedTypeArguments ?? [])
             {
-                writeType(reference.Target());
-                foreach (var t in reference.AsTypeReference().resolvedTypeArguments ?? [])
+                if ((t.flags & TypeFlags.TypeParameter) != 0)
                 {
-                    if ((t.flags & TypeFlags.TypeParameter) != 0)
+                    if (ignoreConstraints || t.checker.getConstraintOfTypeParameter(t) == null)
                     {
-                        if (ignoreConstraints || t.checker.getConstraintOfTypeParameter(t) == null)
+                        int index = typeParameters.IndexOf(t);
+                        if (index < 0)
                         {
-                            int index = typeParameters.IndexOf(t);
-                            if (index < 0)
-                            {
-                                index = typeParameters.Count;
-                                typeParameters.Add(t);
-                            }
-
-                            writeByte((byte)'=');
-                            writeInt(index);
-                            continue;
+                            index = typeParameters.Count;
+                            typeParameters.Add(t);
                         }
-
-                        constrained = true;
-                    }
-                    else if (depth < 4 && isTypeReferenceWithGenericArguments(t))
-                    {
-                        writeByte((byte)'<');
-                        writeTypeReference(t, depth + 1);
-                        writeByte((byte)'>');
+                        b.writeByte((byte)'=');
+                        b.writeInt(index);
                         continue;
                     }
-
-                    writeByte((byte)'-');
-                    writeType(t);
+                    constrained = true;
                 }
+                else if (depth < 4 && isTypeReferenceWithGenericArguments(t))
+                {
+                    b.writeByte((byte)'<');
+                    writeTypeReference(ref b, t, depth + 1, ignoreConstraints, typeParameters, ref constrained);
+                    b.writeByte((byte)'>');
+                    continue;
+                }
+                b.writeByte((byte)'-');
+                b.writeType(t);
             }
-
-            writeTypeReference(source, 0);
-            writeByte((byte)',');
-            writeTypeReference(target, 0);
-            return constrained;
         }
     }
 
-    internal static CacheHashKey getTypeListKey(List<Type> types)
+    internal static CacheHashKey getTypeListKey(List<Type> types, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getAliasKey(TypeAlias alias)
+    private static CacheHashKey getAliasKey(TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeAlias(alias);
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getUnionKey(List<Type> types, Type origin, TypeAlias alias)
+    private static CacheHashKey getUnionKey(List<Type> types, Type origin, TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         if (origin == null)
@@ -6551,10 +6608,10 @@ public sealed partial class Checker
         else
             throw new InvalidOperationException("Unhandled case in getUnionKey");
         b.writeAlias(alias);
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getIntersectionKey(List<Type> types, IntersectionFlags flags, TypeAlias alias)
+    private static CacheHashKey getIntersectionKey(List<Type> types, IntersectionFlags flags, TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
@@ -6562,20 +6619,20 @@ public sealed partial class Checker
             b.writeAlias(alias);
         else
             b.writeByte((byte)'*');
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getTypeInstantiationKey(List<Type> types, TypeAlias alias, bool singleSignature)
+    private static CacheHashKey getTypeInstantiationKey(List<Type> types, TypeAlias alias, bool singleSignature, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
         b.writeAlias(alias);
         if (singleSignature)
             b.writeByte((byte)'!');
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getTypeAliasInstantiationKey(List<Type> types, TypeAlias alias) => getTypeInstantiationKey(types, alias, false);
+    private static CacheHashKey getTypeAliasInstantiationKey(List<Type> types, TypeAlias alias, Checker verificationOwner = null) => getTypeInstantiationKey(types, alias, false, verificationOwner);
     private static (CacheHashKey key, bool constrained) getRelationKey(Type source, Type target, IntersectionState intersectionState, bool isIdentity, bool ignoreConstraints)
     {
         if (isIdentity && source.id > target.id)
@@ -6595,8 +6652,9 @@ public sealed partial class Checker
         }
 
         b.writeUint32((uint)intersectionState);
-        var key = b.hash();
-        (source.checker ?? target.checker)?.verificationCollectionsCaptureRelationInputs(source, target, key);
+        var owner = source.checker ?? target.checker;
+        var key = b.hash(owner != null && owner.authoredCollectionsProfile ? owner : null);
+        owner?.verificationCollectionsCaptureRelationInputs(source, target, key);
         return (key, constrained);
     }
 
@@ -7640,10 +7698,7 @@ public sealed partial class Checker
 
                 if (((right.Text() != "") && !this.checkAndReportErrorForExtendingInterface(node)))
                 {
-                    this.addDeferredDiagnostic(() =>
-                    {
-                        this.reportNonexistentProperty(right, Core.IfElse(isThisTypeParameter(leftType), apparentType, leftType), isUncheckedJS);
-                    });
+                    this.deferNonexistentPropertyDiagnostic(right, leftType, apparentType, isUncheckedJS);
                 }
 
                 return this.errorType;
@@ -7711,6 +7766,17 @@ public sealed partial class Checker
         }
 
         return this.getFlowTypeOfAccessExpression(node, prop, propType, right, checkMode);
+    }
+
+    // checker.go:11583. Create the escaping callback only on this error path,
+    // avoiding a managed capture frame on successful property accesses. Keep
+    // the type choice and error materialization deferred to the original queue.
+    private void deferNonexistentPropertyDiagnostic(Node right, Type leftType, Type apparentType, bool isUncheckedJS)
+    {
+        addDeferredDiagnostic(() =>
+        {
+            reportNonexistentProperty(right, Core.IfElse(isThisTypeParameter(leftType), apparentType, leftType), isUncheckedJS);
+        });
     }
 
     private Symbol getResolvedSymbolOrNil(Node node) => symbolNodeLinks.Get(node).resolvedSymbol;
@@ -9006,7 +9072,7 @@ public sealed partial class Checker
             }
         }
 
-        var key = getIntersectionKey(typeSet, flags, alias);
+        var key = getIntersectionKey(typeSet, flags, alias, verificationOwner: authoredCollectionsProfile ? this : null);
         if (intersectionTypes.TryGetValue(key, out var result))
             return result;
         if ((includes & TypeFlags.Union) != 0)
@@ -9335,11 +9401,13 @@ public sealed partial class Checker
 
         var props = this.getPropertiesOfType(t);
         var indexInfos = this.getIndexInfosOfType(t);
-        var types = GoRuntime.MakeSlice<Type>(0);
+        // checker.go:27262. This owned output buffer has the source capacity;
+        // local appends must not clone the complete prefix on every key.
+        var types = new List<Type>(GoRuntime.Len(props) + GoRuntime.Len(indexInfos));
         {
             foreach (var prop in GoRuntime.RangeValues(props))
             {
-                types = GoRuntime.Append(types, this.getLiteralTypeFromProperty(prop, include, false));
+                types.Add(this.getLiteralTypeFromProperty(prop, include, false));
             }
         }
 
@@ -9352,11 +9420,11 @@ public sealed partial class Checker
                 {
                     if (((info.keyType == this.stringType) && ((include & TypeFlags.Number) != 0)))
                     {
-                        types = GoRuntime.Append(types, this.stringOrNumberType);
+                        types.Add(this.stringOrNumberType);
                     }
                     else
                     {
-                        types = GoRuntime.Append(types, info.keyType);
+                        types.Add(info.keyType);
                     }
                 }
             }
@@ -9418,7 +9486,7 @@ public sealed partial class Checker
             }
 
             var persistentAccessFlags = (accessFlags & AccessFlags.Persistent);
-            var key = getIndexedAccessKey(objectType, indexType, accessFlags, alias);
+            var key = getIndexedAccessKey(objectType, indexType, accessFlags, alias, verificationOwner: authoredCollectionsProfile ? this : null);
             this.indexedAccessTypes.TryGetValue(key, out var t);
             if ((t == null))
             {
@@ -10010,10 +10078,13 @@ public sealed partial class Checker
 
             case true when ((t.flags & TypeFlags.UnionOrIntersection) != 0):
                 {
-                    return Core.Some(t.Types(), (s) =>
-                    {
-                        return this.isConstTypeVariable(s, depth);
-                    });
+                    // Go checker.go:13924: preserve ordered short-circuit evaluation without a managed capturing delegate.
+                    var types = t.Types();
+                    if (types != null)
+                        foreach (var s in types)
+                            if (this.isConstTypeVariable(s, depth))
+                                return true;
+                    return false;
                 }
 
             case true when ((t.flags & TypeFlags.IndexedAccess) != 0):
@@ -10106,7 +10177,7 @@ public sealed partial class Checker
                 {
                     links.typeParameters = typeParameters;
                     links.instantiations = new Dictionary<CacheHashKey, Type>();
-                    links.instantiations[getTypeListKey(typeParameters)] = t;
+                    links.instantiations[getTypeListKey(typeParameters, verificationOwner: authoredCollectionsProfile ? this : null)] = t;
                 }
 
                 if (((t == this.intrinsicMarkerType) && (symbol.Name == "BuiltinIteratorReturn")))
@@ -10313,7 +10384,7 @@ public sealed partial class Checker
                 symbol = symbol,
                 typeArguments = Core.Map(typeArguments, this.getTypeFromTypeNode)
             };
-            var key = getAliasKey(alias);
+            var key = getAliasKey(alias, verificationOwner: authoredCollectionsProfile ? this : null);
             this.errorTypes.TryGetValue(key, out var errorType);
             if ((errorType == null))
             {
@@ -10437,7 +10508,7 @@ public sealed partial class Checker
                 var sourceFile = Ast.GetSourceFileOfNode(node);
                 if ((TypeScript.Scanner.Scanner.ScanTokenAtPosition(sourceFile, data.TypeName.End()) == Kind.DotToken))
                 {
-                    this.grammarErrorAtPos(node, TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), data.TypeName.End()), 1, Diagnostics.JSDoc_types_can_only_be_used_inside_documentation_comments);
+                    this.grammarErrorAtPos(node, TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), data.TypeName.End()), 1, Diagnostics.JSDoc_types_can_only_be_used_inside_documentation_comments);
                 }
             }
         }
@@ -10491,7 +10562,7 @@ public sealed partial class Checker
                 d.outerTypeParameterCount = outerParameters?.Count ?? 0;
                 d.resolvedTypeArguments = d.TypeParameters();
                 d.instantiations = new();
-                d.instantiations[getTypeListKey(d.resolvedTypeArguments)] = t;
+                d.instantiations[getTypeListKey(d.resolvedTypeArguments, verificationOwner: authoredCollectionsProfile ? this : null)] = t;
                 d.target = t;
             }
         }
@@ -10611,7 +10682,7 @@ public sealed partial class Checker
     internal Type createTypeReference(Type target, List<Type> arguments) => createTypeReferenceEx(target, arguments, ObjectFlags.None);
     private Type createTypeReferenceEx(Type target, List<Type> arguments, ObjectFlags objectFlags)
     {
-        var key = getTypeListKey(arguments);
+        var key = getTypeListKey(arguments, verificationOwner: authoredCollectionsProfile ? this : null);
         var data = target.AsInterfaceType();
         if (data.instantiations.TryGetValue(key, out var cached))
             return cached;
@@ -11152,7 +11223,7 @@ public sealed partial class Checker
     internal Type instantiateType(Type t, TypeMapper mapper) => instantiateTypeWithAlias(t, mapper, null);
     private Type instantiateTypeWithAlias(Type t, TypeMapper mapper, TypeAlias alias)
     {
-        if (t == null || mapper == null || !(couldContainTypeVariables(t) || t.alias != null && (t.alias.typeArguments?.Any(couldContainTypeVariables) ?? false)))
+        if (t == null || mapper == null || !(couldContainTypeVariables(t) || t.alias != null && someTypeCouldContainTypeVariables(t.alias.typeArguments)))
             return t;
         if (instantiationStack.Count == 100 || instantiationCount >= 5_000_000)
         {
@@ -11166,13 +11237,13 @@ public sealed partial class Checker
             return errorType;
         }
 
-        int index = activeMappers.FindLastIndex(m => m == mapper);
+        int index = findActiveMapper(mapper);
         if (index == -1)
             pushActiveMapper(mapper);
         var b = new keyBuilder();
         b.writeType(t);
         b.writeAlias(alias);
-        var key = b.hash();
+        var key = b.hash(authoredCollectionsProfile ? this : null);
         var cache = activeTypeMappersCaches[index != -1 ? index : activeTypeMappersCaches.Count - 1];
         if (cache.TryGetValue(key, out var cached))
             return cached;
@@ -11224,6 +11295,26 @@ public sealed partial class Checker
         activeTypeMappersCaches.RemoveAt(activeTypeMappersCaches.Count - 1);
     }
 
+    // checker.go:22659. Scan the original predicate's order without a managed capture frame.
+    private int findActiveMapper(TypeMapper mapper)
+    {
+        for (int i = activeMappers.Count - 1; i >= 0; i--)
+            if (activeMappers[i] == mapper)
+                return i;
+        return -1;
+    }
+
+    // checker.go:22567,22681,22875. Ordered core.Some calls share this direct
+    // short-circuit loop instead of recreating instance-method delegates.
+    private bool someTypeCouldContainTypeVariables(List<Type> types)
+    {
+        if (types != null)
+            foreach (var type in types)
+                if (couldContainTypeVariables(type))
+                    return true;
+        return false;
+    }
+
     private bool couldContainTypeVariables(Type t) => couldContainTypeVariablesWorker(t);
     private bool couldContainTypeVariablesWorker(Type t)
     {
@@ -11232,7 +11323,7 @@ public sealed partial class Checker
         var flags = t.objectFlags;
         if ((flags & ObjectFlags.CouldContainTypeVariablesComputed) != 0)
             return (flags & ObjectFlags.CouldContainTypeVariables) != 0;
-        bool result = (t.flags & TypeFlags.Instantiable) != 0 || (t.flags & TypeFlags.Object) != 0 && !isNonGenericTopLevelType(t) && ((flags & ObjectFlags.Reference) != 0 && (t.AsTypeReference().node != null || (getTypeArguments(t)?.Any(couldContainTypeVariables) ?? false)) || (flags & ObjectFlags.Anonymous) != 0 && t.symbol != null && (t.symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.TypeLiteral | SymbolFlags.ObjectLiteral)) != 0 && t.symbol.Declarations != null || (flags & (ObjectFlags.Mapped | ObjectFlags.ReverseMapped | ObjectFlags.ObjectRestType | ObjectFlags.InstantiationExpressionType)) != 0) || (t.flags & TypeFlags.UnionOrIntersection) != 0 && (t.flags & TypeFlags.EnumLiteral) == 0 && !isNonGenericTopLevelType(t) && t.Types().Any(couldContainTypeVariables);
+        bool result = (t.flags & TypeFlags.Instantiable) != 0 || (t.flags & TypeFlags.Object) != 0 && !isNonGenericTopLevelType(t) && ((flags & ObjectFlags.Reference) != 0 && (t.AsTypeReference().node != null || someTypeCouldContainTypeVariables(getTypeArguments(t))) || (flags & ObjectFlags.Anonymous) != 0 && t.symbol != null && (t.symbol.Flags & (SymbolFlags.Function | SymbolFlags.Method | SymbolFlags.Class | SymbolFlags.TypeLiteral | SymbolFlags.ObjectLiteral)) != 0 && t.symbol.Declarations != null || (flags & (ObjectFlags.Mapped | ObjectFlags.ReverseMapped | ObjectFlags.ObjectRestType | ObjectFlags.InstantiationExpressionType)) != 0) || (t.flags & TypeFlags.UnionOrIntersection) != 0 && (t.flags & TypeFlags.EnumLiteral) == 0 && !isNonGenericTopLevelType(t) && someTypeCouldContainTypeVariables(t.Types());
         t.objectFlags |= ObjectFlags.CouldContainTypeVariablesComputed | (result ? ObjectFlags.CouldContainTypeVariables : 0);
         return result;
     }
@@ -11494,11 +11585,11 @@ public sealed partial class Checker
         }
 
         var data = target.AsObjectType();
-        var key = getTypeInstantiationKey(typeArguments, newAlias, ((t.objectFlags & ObjectFlags.SingleSignatureType) != 0));
+        var key = getTypeInstantiationKey(typeArguments, newAlias, ((t.objectFlags & ObjectFlags.SingleSignatureType) != 0), verificationOwner: authoredCollectionsProfile ? this : null);
         if ((data.instantiations == null))
         {
             data.instantiations = new Dictionary<CacheHashKey, Type>();
-            data.instantiations[getTypeInstantiationKey(typeParameters, target.alias, false)] = target;
+            data.instantiations[getTypeInstantiationKey(typeParameters, target.alias, false, verificationOwner: authoredCollectionsProfile ? this : null)] = target;
         }
 
         var result = data.instantiations.GetValueOrDefault(key);
@@ -11534,7 +11625,7 @@ public sealed partial class Checker
             data.instantiations[key] = result;
             if ((((result.flags & TypeFlags.ObjectFlagsType) != 0) && ((result.objectFlags & ObjectFlags.CouldContainTypeVariablesComputed) == 0)))
             {
-                var resultCouldContainObjectFlags = Core.Some(typeArguments, this.couldContainTypeVariables);
+                var resultCouldContainObjectFlags = someTypeCouldContainTypeVariables(typeArguments);
                 if (((result.objectFlags & ObjectFlags.CouldContainTypeVariablesComputed) == 0))
                 {
                     if (((result.objectFlags & (((ObjectFlags.Mapped | ObjectFlags.Anonymous) | ObjectFlags.Reference))) != 0))
@@ -11926,7 +12017,8 @@ public sealed partial class Checker
             case true when ((t.flags & TypeFlags.UnionOrIntersection) != 0):
                 {
                     var types = t.Types();
-                    var constraints = GoRuntime.MakeSlice<Type>(0);
+                    // checker.go:28035. The local output has no aliases before publication.
+                    var constraints = new List<Type>(GoRuntime.Len(types));
                     var different = false;
                     {
                         foreach (var s in GoRuntime.RangeValues(types))
@@ -11939,7 +12031,7 @@ public sealed partial class Checker
                                     different = true;
                                 }
 
-                                constraints = GoRuntime.Append(constraints, constraint2);
+                                constraints.Add(constraint2);
                             }
                             else
                             {
@@ -11986,7 +12078,8 @@ public sealed partial class Checker
             case true when ((t.flags & TypeFlags.TemplateLiteral) != 0):
                 {
                     var types2 = t.Types();
-                    var constraints2 = GoRuntime.MakeSlice<Type>(0);
+                    // checker.go:28068. Preserve the source's maximum output capacity.
+                    var constraints2 = new List<Type>(GoRuntime.Len(types2));
                     {
                         foreach (var range2 in GoRuntime.Range(types2))
                         {
@@ -11995,7 +12088,7 @@ public sealed partial class Checker
                             var constraint3 = this.getNextBaseConstraint(s2, stack);
                             if ((constraint3 != null))
                             {
-                                constraints2 = GoRuntime.Append(constraints2, constraint3);
+                                constraints2.Add(constraint3);
                             }
                         }
                     }
@@ -12058,7 +12151,8 @@ public sealed partial class Checker
                 {
                     var elementTypes = this.getElementTypes(t);
                     var elementInfos = t.TargetTupleType().elementInfos;
-                    var newElements = GoRuntime.MakeSlice<Type>(0);
+                    // checker.go:28108. One result element for each tuple element.
+                    var newElements = new List<Type>(GoRuntime.Len(elementTypes));
                     {
                         foreach (var range3 in GoRuntime.Range(elementTypes))
                         {
@@ -12077,7 +12171,7 @@ public sealed partial class Checker
                                 }
                             }
 
-                            newElements = GoRuntime.Append(newElements, newElement);
+                            newElements.Add(newElement);
                         }
                     }
 
@@ -12237,20 +12331,40 @@ public sealed partial class Checker
     private static IndexInfo findIndexInfo(List<IndexInfo> infos, Type keyType) => infos?.Find(info => info.keyType == keyType);
     private IndexInfo getIndexInfoOfType(Type t, Type keyType) => findIndexInfo(getIndexInfosOfType(t), keyType);
     private IndexInfo getApplicableIndexInfo(Type t, Type keyType) => findApplicableIndexInfo(getIndexInfosOfType(t), keyType);
+    // Go checker.go:19426. Delay the managed scratch list until two matches require it;
+    // zero/one matches retain scalar locals rather than allocating Go's temporary cap-8 slice on the heap.
     private IndexInfo findApplicableIndexInfo(List<IndexInfo> infos, Type keyType)
     {
         IndexInfo stringInfo = null;
-        List<IndexInfo> applicable = new(8);
-        foreach (var info in infos ?? [])
-            if (info.keyType == stringType)
-                stringInfo = info;
-            else if (isApplicableIndexType(keyType, info.keyType))
-                applicable.Add(info);
-        if (applicable.Count == 0)
+        IndexInfo firstApplicable = null;
+        List<IndexInfo> applicable = null;
+        if (infos != null)
+            foreach (var info in infos)
+                if (info.keyType == stringType)
+                    stringInfo = info;
+                else if (isApplicableIndexType(keyType, info.keyType))
+                {
+                    if (firstApplicable == null)
+                        firstApplicable = info;
+                    else
+                    {
+                        applicable ??= new List<IndexInfo>(8) { firstApplicable };
+                        applicable.Add(info);
+                    }
+                }
+        if (firstApplicable == null)
             return stringInfo != null && isApplicableIndexType(keyType, stringType) ? stringInfo : null;
-        if (applicable.Count == 1)
-            return applicable[0];
-        return newIndexInfo(unknownType, getIntersectionType(applicable.Select(info => info.valueType).ToList()), applicable.All(info => info.isReadonly), null, null);
+        if (applicable == null)
+            return firstApplicable;
+        bool isReadonly = true;
+        var types = new List<Type>(applicable.Count);
+        foreach (var info in applicable)
+        {
+            types.Add(info.valueType);
+            if (!info.isReadonly)
+                isReadonly = false;
+        }
+        return newIndexInfo(unknownType, getIntersectionType(types), isReadonly, null, null);
     }
 
     private bool isApplicableIndexType(Type source, Type target) => isTypeAssignableTo(source, target) || target == stringType && isTypeAssignableTo(source, numberType) || target == numberType && (source == numericStringType || (source.flags & TypeFlags.StringLiteral) != 0 && isNumericLiteralName(getStringLiteralValue(source)));
@@ -12339,7 +12453,7 @@ public sealed partial class Checker
     {
         if (types.Count < 2)
             return types;
-        var key = getTypeListKey(types);
+        var key = getTypeListKey(types, verificationOwner: authoredCollectionsProfile ? this : null);
         if (subtypeReductionCache.TryGetValue(key, out var cached))
             return cached;
         bool hasEmptyObject = hasObjectTypes && types.Any(t => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t) && isEmptyResolvedType(resolveStructuredTypeMembers(t)));
@@ -14230,7 +14344,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:93/172. Full-preimage managed cache keys preserve source equality.
+    // Go checker.go:93/172. Original hashed signature-key sentinels.
     private enum WideningKind
     {
         Normal,
@@ -14241,7 +14355,7 @@ public sealed partial class Checker
 
     internal readonly record struct CachedSignatureKey(Signature sig, CacheHashKey key);
     internal readonly Dictionary<CachedSignatureKey, Signature> cachedSignatures = new();
-    internal static readonly CacheHashKey SignatureKeyErased = new("LQ=="), SignatureKeyCanonical = new("Kg=="), SignatureKeyBase = new("Iw=="), SignatureKeyInner = new("PA=="), SignatureKeyOuter = new("Pg==");
+    internal static readonly CacheHashKey SignatureKeyErased = CacheHashKey.FromBytes("-"u8), SignatureKeyCanonical = CacheHashKey.FromBytes("*"u8), SignatureKeyBase = CacheHashKey.FromBytes("#"u8), SignatureKeyInner = CacheHashKey.FromBytes("<"u8), SignatureKeyOuter = CacheHashKey.FromBytes(">"u8);
     internal TypeMapper permissiveMapper, reportUnreliableMapper;
     // checker.go:19800/19813: nongeneric signatures require no erasure/canonical cache.
     private Signature getErasedSignature(Signature signature)
@@ -15771,7 +15885,7 @@ public sealed partial class Checker
                 Diagnostic relatedInformation = default;
                 if ((GoRuntime.Len(node.Arguments()) == 1))
                 {
-                    var text = Ast.GetSourceFileOfNode(node).Text();
+                    var text = Ast.GetSourceFileOfNode(node).TextView();
                     var options = new SkipTriviaOptions { StopAfterLineBreak = true };
                     if (StringUtil.IsLineBreak((int)(text[(TypeScript.Scanner.Scanner.SkipTriviaEx(text, node.Expression().End(), options) - 1)])))
                     {
@@ -15879,7 +15993,8 @@ public sealed partial class Checker
         int cutoffIndex = default;
         int spliceIndex = default;
         var specializedIndex = -1;
-        var result = GoRuntime.MakeSlice<Signature>(0);
+        // checker.go:9186/9224: owned output capacity and slices.Insert.
+        var result = new List<Signature>(GoRuntime.Len(signatures));
         {
             foreach (var sourceSignature in GoRuntime.RangeValues(signatures))
             {
@@ -15928,7 +16043,7 @@ public sealed partial class Checker
                     signature = this.getOptionalCallSignature(signature, callChainFlags);
                 }
 
-                result = GoRuntime.Append(GoRuntime.Append(GoRuntime.Slice(result, 0, spliceIndex), signature), GoRuntime.Slice(result, spliceIndex));
+                result.Insert(spliceIndex, signature);
             }
         }
 
@@ -17105,7 +17220,7 @@ public sealed partial class Checker
                         end++;
                     }
 
-                    pos = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), pos);
+                    pos = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), pos);
                     if ((end < pos))
                     {
                         end = pos;
@@ -19586,7 +19701,7 @@ public sealed partial class Checker
 
         var links = this.typeAliasLinks.Get(symbol);
         var typeParameters = links.typeParameters;
-        var key = getTypeAliasInstantiationKey(typeArguments, alias);
+        var key = getTypeAliasInstantiationKey(typeArguments, alias, verificationOwner: authoredCollectionsProfile ? this : null);
         links.instantiations.TryGetValue(key, out var instantiation);
         if ((instantiation == null))
         {
@@ -20141,7 +20256,7 @@ public sealed partial class Checker
                     if (this.compilerOptions.AllowUnreachableCode != Tristate.True && this.isSideEffectFree(left) && !this.isIndirectCall(left.Parent))
                     {
                         var sf = Ast.GetSourceFileOfNode(left);
-                        var start = TypeScript.Scanner.Scanner.SkipTrivia(sf.Text(), left.Pos());
+                        var start = TypeScript.Scanner.Scanner.SkipTrivia(sf.TextView(), left.Pos());
                         var isInDiag2657 = Core.Some(sf.Diagnostics(), d => d.Code() == Diagnostics.JSX_expressions_must_have_one_parent_element.Code() && d.Loc().Contains(start));
                         if (!isInDiag2657) this.error(left, Diagnostics.Left_side_of_comma_operator_is_unused_and_has_no_side_effects);
                     }
@@ -23080,7 +23195,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static CacheHashKey getTupleKey(List<TupleElementInfo> elementInfos, bool @readonly)
+    private static CacheHashKey getTupleKey(List<TupleElementInfo> elementInfos, bool @readonly, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         {
@@ -23125,7 +23240,7 @@ public sealed partial class Checker
             b.writeByte((byte)'!');
         }
 
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 }
 
@@ -23584,7 +23699,7 @@ public sealed partial class Checker
             return this.globalArrayType;
         }
 
-        var key = getTupleKey(elementInfos, @readonly);
+        var key = getTupleKey(elementInfos, @readonly, verificationOwner: authoredCollectionsProfile ? this : null);
         this.tupleTypes.TryGetValue(key, out var t);
         if ((t == null))
         {
@@ -23656,7 +23771,7 @@ public sealed partial class Checker
         d.thisType.AsTypeParameter().constraint = t;
         d.allTypeParameters = GoRuntime.Append(typeParameters, d.thisType);
         d.instantiations = new Dictionary<CacheHashKey, Type>();
-        d.instantiations[getTypeListKey(d.TypeParameters())] = t;
+        d.instantiations[getTypeListKey(d.TypeParameters(), verificationOwner: authoredCollectionsProfile ? this : null)] = t;
         d.target = t;
         d.resolvedTypeArguments = d.TypeParameters();
         d.declaredMembersResolved = true;
@@ -24068,7 +24183,7 @@ public sealed partial class Checker
         if ((GoRuntime.Len(root.outerTypeParameters) != 0))
         {
             var typeArguments = Core.Map(root.outerTypeParameters, mapper.Map);
-            var key = getConditionalTypeKey(typeArguments, alias, forConstraint);
+            var key = getConditionalTypeKey(typeArguments, alias, forConstraint, verificationOwner: authoredCollectionsProfile ? this : null);
             root.instantiations.TryGetValue(key, out var result);
             if ((result == null))
             {
@@ -24359,7 +24474,7 @@ public sealed partial class Checker
             if ((outerTypeParameters != null))
             {
                 root.instantiations = new Dictionary<CacheHashKey, Type>();
-                root.instantiations[getConditionalTypeKey(outerTypeParameters, null, false)] = links.resolvedType;
+                root.instantiations[getConditionalTypeKey(outerTypeParameters, null, false, verificationOwner: authoredCollectionsProfile ? this : null)] = links.resolvedType;
             }
         }
 
@@ -24969,7 +25084,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static CacheHashKey getConditionalTypeKey(List<Type> typeArguments, TypeAlias alias, bool forConstraint)
+    private static CacheHashKey getConditionalTypeKey(List<Type> typeArguments, TypeAlias alias, bool forConstraint, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(typeArguments);
@@ -24979,7 +25094,7 @@ public sealed partial class Checker
             b.writeByte((byte)'!');
         }
 
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 }
 
@@ -25080,14 +25195,14 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static CacheHashKey getIndexedAccessKey(Type objectType, Type indexType, AccessFlags accessFlags, TypeAlias alias)
+    private static CacheHashKey getIndexedAccessKey(Type objectType, Type indexType, AccessFlags accessFlags, TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeType(objectType);
         b.writeType(indexType);
         b.writeUint32((uint)(accessFlags));
         b.writeAlias(alias);
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 }
 
@@ -25198,7 +25313,7 @@ public sealed partial class Checker
             result = this.getUnionType(keyTypes);
         }
 
-        if (((((result.flags & TypeFlags.Union) != 0) && ((constraintType.flags & TypeFlags.Union) != 0)) && (getTypeListKey(result.Types()) == getTypeListKey(constraintType.Types()))))
+        if (((((result.flags & TypeFlags.Union) != 0) && ((constraintType.flags & TypeFlags.Union) != 0)) && (getTypeListKey(result.Types(), verificationOwner: authoredCollectionsProfile ? this : null) == getTypeListKey(constraintType.Types(), verificationOwner: authoredCollectionsProfile ? this : null))))
         {
             return constraintType;
         }
@@ -25689,7 +25804,7 @@ public sealed partial class Checker
         var key = new CachedSignatureKey
         {
             sig = sig,
-            key = getTypeListKey(typeArguments)
+            key = getTypeListKey(typeArguments, verificationOwner: authoredCollectionsProfile ? this : null)
         };
         this.cachedSignatures.TryGetValue(key, out var instantiation);
         if ((instantiation == null))
@@ -26756,7 +26871,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static CacheHashKey getTemplateTypeKey(List<string> texts, List<Type> types)
+    private static CacheHashKey getTemplateTypeKey(List<string> texts, List<Type> types, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
@@ -26778,7 +26893,7 @@ public sealed partial class Checker
             }
         }
 
-        return b.hash();
+        return b.hash(verificationOwner);
     }
 }
 
@@ -27042,7 +27157,7 @@ public sealed partial class Checker
             }
         }
 
-        var key = getTemplateTypeKey(newTexts, newTypes);
+        var key = getTemplateTypeKey(newTexts, newTypes, verificationOwner: authoredCollectionsProfile ? this : null);
         this.templateLiteralTypes.TryGetValue(key, out var t6);
         if ((t6 == null))
         {
@@ -28153,15 +28268,17 @@ public sealed partial class Checker
             {
                 return newInferenceInfo(info.typeParameter);
             });
-            this.applyToParameterTypes(instantiatedSignature, contextualSignature, (source, target) =>
+            // checker.go:7848. Pass the closure's checker/inference references
+            // as value state instead of creating a managed display class.
+            this.applyToParameterTypes(instantiatedSignature, contextualSignature, (checker: this, inferences), static (source, target, state) =>
             {
-                this.inferTypes(inferences, source, target, InferencePriority.None, true);
+                state.checker.inferTypes(state.inferences, source, target, InferencePriority.None, true);
             });
             if (Core.Some(inferences, hasInferenceCandidates))
             {
-                this.applyToReturnTypes(instantiatedSignature, contextualSignature, (source2, target2) =>
+                this.applyToReturnTypes(instantiatedSignature, contextualSignature, (checker: this, inferences), static (source2, target2, state) =>
                 {
-                    this.inferTypes(inferences, source2, target2, InferencePriority.None, false);
+                    state.checker.inferTypes(state.inferences, source2, target2, InferencePriority.None, false);
                 });
                 if (!hasOverlappingInferences(context.inferences, inferences))
                 {
@@ -28702,7 +28819,7 @@ public sealed partial class Checker
         var argCount = GoRuntime.Len(typeArguments);
         var sourceFile = Ast.GetSourceFileOfNode(node);
         var typeArgumentList = node.TypeArgumentList();
-        var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeArgumentList.Loc.Pos()), typeArgumentList.Loc.End());
+        var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), typeArgumentList.Loc.Pos()), typeArgumentList.Loc.End());
         if ((GoRuntime.Len(signatures) == 1))
         {
             var sig = signatures[0];
@@ -33017,14 +33134,16 @@ public sealed partial class Checker
     {
         var sourceFile = Ast.GetSourceFileOfNode(node);
         var links = this.sourceFileLinks.Get(sourceFile.AsNode());
-        links.identifierCheckNodes = GoRuntime.Append(links.identifierCheckNodes, node);
+        // checker.go:7245. Append updates the per-file slice header and reuses
+        // its capacity; no snapshot or mutable public list shares this header.
+        links.identifierCheckNodes = links.identifierCheckNodes.Append(node);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:7248:1.
-    private void checkUnusedIdentifiers(List<Node> potentiallyUnusedIdentifiers)
+    private void checkUnusedIdentifiers(Slice<Node> potentiallyUnusedIdentifiers)
     {
         {
-            foreach (var node in GoRuntime.RangeValues(potentiallyUnusedIdentifiers))
+            foreach (var node in potentiallyUnusedIdentifiers)
             {
                 switch (node.Kind)
                 {
@@ -37628,7 +37747,7 @@ public sealed partial class Checker
         if ((errorType != null))
         {
             var sourceFile = Ast.GetSourceFileOfNode(node);
-            var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeArguments.Pos()), typeArguments.End());
+            var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), typeArguments.Pos()), typeArguments.End());
             this.addDiagnostic(Ast.NewDiagnostic(sourceFile, loc, Diagnostics.Type_0_has_no_signatures_for_which_the_type_argument_list_is_applicable, this.typeToStringByteString(errorType)));
         }
         return result3;
@@ -37789,7 +37908,7 @@ public sealed partial class Checker
             }
             if (this.shouldCheckErasableSyntax(node))
             {
-                this.addDiagnostic(Ast.NewDiagnostic(Ast.GetSourceFileOfNode(node), Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(Ast.GetSourceFileOfNode(node).Text(), node.Pos()), node.Expression().Pos()), Diagnostics.This_syntax_is_not_allowed_when_erasableSyntaxOnly_is_enabled));
+                this.addDiagnostic(Ast.NewDiagnostic(Ast.GetSourceFileOfNode(node), Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(Ast.GetSourceFileOfNode(node).TextView(), node.Pos()), node.Expression().Pos()), Diagnostics.This_syntax_is_not_allowed_when_erasableSyntaxOnly_is_enabled));
             }
         }
         var typeNode = node.Type();
@@ -38679,7 +38798,7 @@ public sealed partial class Checker
         var sourceFile = Ast.GetSourceFileOfNode(node);
         if (!this.hasParseDiagnostics(sourceFile))
         {
-            var start = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), node.Pos());
+            var start = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), node.Pos());
             var end = node.Statement().Pos();
             this.grammarErrorAtPos(sourceFile.AsNode(), start, (end - start), Diagnostics.The_with_statement_is_not_supported_All_symbols_in_a_with_block_will_have_type_any);
         }

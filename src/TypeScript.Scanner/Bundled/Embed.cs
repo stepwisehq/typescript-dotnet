@@ -14,21 +14,21 @@ public static partial class Bundled
     private static (string Remaining, bool Ok) SplitPath(string path) => path.StartsWith(scheme, StringComparison.Ordinal) ? (path[scheme.Length..], true) : ("", false);
     private static string LibPathText() => scheme + "libs";
     public static bool IsBundled(string path) => SplitPath(path).Ok;
-    private static readonly Lazy<Dictionary<string, string>> embeddedContents = new(() =>
+    private static readonly Lazy<Dictionary<string, ByteStringView>> embeddedContents = new(() =>
     {
-        var files = new Dictionary<string, string>(StringComparer.Ordinal);
+        var files = new Dictionary<string, ByteStringView>(StringComparer.Ordinal);
         foreach (string name in LibNames!)
         {
             using Stream input = typeof(Bundled).Assembly.GetManifestResourceStream("TypeScript.Bundled.Libs." + name)
                 ?? throw new InvalidDataException("Bundled library resource is missing: " + name);
             using var bytes = new MemoryStream();
             input.CopyTo(bytes);
-            files.Add("libs/" + name, GoString.FromBytes(bytes.ToArray()));
+            files.Add("libs/" + name, ByteStringView.FromOwnedBytes(bytes.ToArray()));
         }
         return files;
     });
 
-    private sealed class WrappedFS(IFS fs) : IFS
+    private sealed class WrappedFS(IFS fs) : IFS, ISourceTextFileSystem
     {
         public CaseSensitivity CaseSensitivity() => fs.CaseSensitivity();
         public bool FileExists(RootedFilePath path)
@@ -40,7 +40,13 @@ public static partial class Bundled
         {
             var (rest, ok) = SplitPath(path.AsString());
             if (!ok) return fs.ReadFile(path);
-            return embeddedContents.Value.TryGetValue(rest, out var content) ? (content, true) : ("", false);
+            return embeddedContents.Value.TryGetValue(rest, out var content) ? (content.Materialize(), true) : ("", false);
+        }
+        public (ByteStringView Contents, bool Ok) ReadSourceText(RootedFilePath path)
+        {
+            var (rest, ok) = SplitPath(path.AsString());
+            if (!ok) return SourceTextReaders.Read(fs, path);
+            return embeddedContents.Value.TryGetValue(rest, out var content) ? (content, true) : (default, false);
         }
         public bool DirectoryExists(RootedDirectoryPath path)
         {

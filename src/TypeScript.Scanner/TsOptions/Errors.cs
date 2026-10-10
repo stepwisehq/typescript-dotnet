@@ -32,7 +32,7 @@ public static partial class TsOptions
         return possibleOption != null ? CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, node, didYouMean!, errorText, possibleOption.Name) : CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, node, unknownDiagnostic, errorText);
     }
 
-    public static Diagnostic CreateDiagnosticForNodeInSourceFile(SourceFile sourceFile, Node node, Message message, params object[] args) => Ast.NewDiagnostic(sourceFile, new TextRange(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(sourceFile.Text(), node.Pos()), node.End()), message, args);
+    public static Diagnostic CreateDiagnosticForNodeInSourceFile(SourceFile sourceFile, Node node, Message message, params object[] args) => Ast.NewDiagnostic(sourceFile, new TextRange(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(sourceFile.TextView(), node.Pos()), node.End()), message, args);
     public static Diagnostic CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(SourceFile? sourceFile, Node? node, Message message, params object[] args) => sourceFile != null && node != null ? CreateDiagnosticForNodeInSourceFile(sourceFile, node, message, args) : Ast.NewCompilerDiagnostic(message, args);
     internal static Message? extraKeyDiagnostics(string key) => key switch
     {

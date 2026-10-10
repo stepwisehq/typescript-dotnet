@@ -6,7 +6,15 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] | --project <tscheck.json> [--json]";
+const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] | --project <tscheck.json> [--json]";
+// Authored runtime probe; reports the executing runtime rather than build intent.
+if (args.Length == 1 && args[0] == "--runtime-info")
+{
+    Console.WriteLine("{\"serverGC\":" + (System.Runtime.GCSettings.IsServerGC ? "true" : "false") +
+        ",\"processorCount\":" + Environment.ProcessorCount.ToString(System.Globalization.CultureInfo.InvariantCulture) + "}");
+    return 0;
+}
+
 if (args.Length == 1 && args[0] is "--help" or "-h")
 {
     Console.WriteLine(usage);

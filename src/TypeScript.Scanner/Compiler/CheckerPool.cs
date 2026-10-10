@@ -211,7 +211,7 @@ internal sealed class CheckerPool : ICheckerPool
             long totalBaseWeight = 0, declarationBaseWeight = 0;
             foreach (SourceFile file in program.files)
             {
-                long weight = getCheckerAssociationBaseWeight(file.NodeCount, file.Text().Length);
+                long weight = getCheckerAssociationBaseWeight(file.NodeCount, file.TextView().Length);
                 totalBaseWeight = unchecked(totalBaseWeight + weight);
                 if (file.IsDeclarationFile)
                     declarationBaseWeight = unchecked(declarationBaseWeight + weight);

@@ -1178,7 +1178,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                     break;
                 }
 
-                if (!isCommentOrBlankLine(file.Text(), lineStarts[line]))
+                if (!isCommentOrBlankLine(file.TextView(), lineStarts[line]))
                     break;
             }
 
@@ -1189,7 +1189,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return (filtered, directives);
     }
 
-    internal static bool isCommentOrBlankLine(string text, int position)
+    internal static bool isCommentOrBlankLine(ByteStringView text, int position)
     {
         while (position < text.Length && text[position] is ' ' or '\t')
             position++;

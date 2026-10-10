@@ -13,5 +13,7 @@
     <ProjectReference Include="../../validation/Program.Checks/Program.Checks.csproj" />
     <EmbeddedResource Include="DiscriminantNeverCases.jsonl.gz" LogicalName="Checker.NoEmit.Tests.DiscriminantNeverCases" />
     <EmbeddedResource Include="ProjectDiagnosticPolicyCases.jsonl.gz" LogicalName="Checker.NoEmit.Tests.ProjectDiagnosticPolicyCases" />
+    <EmbeddedResource Include="RegexByteArgumentCases.jsonl.gz" LogicalName="Checker.NoEmit.Tests.RegexByteArgumentCases" />
+    <EmbeddedResource Include="ArrowRuneCases.jsonl.gz" LogicalName="Checker.NoEmit.Tests.ArrowRuneCases" />
   </ItemGroup>
 </Project>

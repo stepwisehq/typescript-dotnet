@@ -7,7 +7,8 @@ using System.Collections.Generic;
 namespace TypeScript.Scanner;
 public partial class Scanner
 {
-    private string text = "";
+    // Existing one-char-per-byte text; slices share storage and bound scanning.
+    private ByteStringView text = "";
     private int end, pos, fullStartPos, tokenStart, skipJSDocLeadingAsterisks;
     private LanguageVariant languageVariant;
     private ScriptTarget scriptTarget;
@@ -15,8 +16,23 @@ public partial class Scanner
     private bool skipTrivia = true;
     private Kind token;
     private global::TypeScript.Scanner.TokenFlags tokenFlags;
-    private string tokenValue = "";
-    private List<CommentDirective>? commentDirectives;
+    // scanner.go tokenValue is a string descriptor. JSDoc comment tokens borrow
+    // the bounded source; ordinary decoded tokens retain their owned string.
+    private string tokenValueString = "";
+    private ByteStringView tokenValueView;
+    private bool tokenValueIsView;
+    private string tokenValue
+    {
+        get => tokenValueIsView ? tokenValueView.Materialize() : tokenValueString;
+        set { tokenValueString = value; tokenValueView = default; tokenValueIsView = false; }
+    }
+    private void setTokenValueView(ByteStringView value)
+    {
+        tokenValueString = "";
+        tokenValueView = value;
+        tokenValueIsView = true;
+    }
+    private Slice<CommentDirective> commentDirectives;
     private Dictionary<string, string>? numberCache, hexNumberCache, hexDigitCache;
     private const int mergeConflictMarkerLength = 7, maxAsciiCharacter = 127;
     private static readonly Dictionary<string, Kind> textToKeyword = new(StringComparer.Ordinal)
@@ -142,7 +158,7 @@ public partial class Scanner
 
     public CommentDirective[]? CommentDirectives()
     {
-        return this.commentDirectives?.ToArray();
+        return this.commentDirectives.IsNil ? null : this.commentDirectives.AsSpan().ToArray();
     }
 
     public void ResetPos(int pos)
@@ -219,23 +235,25 @@ public partial class Scanner
 
     // scanJSDocCommentForTags scans a JSDoc comment for @deprecated, @see, and @link tags,
     // setting the appropriate token flags. Called during scanning when a JSDoc comment is detected.
-    private void scanJSDocCommentForTags(string commentText)
+    private void scanJSDocCommentForTags(ByteStringView commentText)
     {
         while (true)
         {
-            var i = GoStrings.IndexByte(commentText, '@');
+            var i = commentText.AsSpan().IndexOf((byte)'@');
             if (i < 0)
             {
                 return;
             }
 
-            commentText = commentText.Substring(i + 1);
-            if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithDeprecated) == 0 && hasJSDocTag(commentText, "deprecated"))
+            commentText = commentText.Slice(i + 1);
+            if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithDeprecated) == 0 && hasJSDocTag(commentText, "deprecated"u8))
             {
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithDeprecated;
             }
 
-            if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithSeeOrLink) == 0 && hasJSDocTag(commentText, "see", "link", "linkcode", "linkplain"))
+            if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithSeeOrLink) == 0 &&
+                (hasJSDocTag(commentText, "see"u8) || hasJSDocTag(commentText, "link"u8) ||
+                 hasJSDocTag(commentText, "linkcode"u8) || hasJSDocTag(commentText, "linkplain"u8)))
             {
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocWithSeeOrLink;
             }
@@ -247,22 +265,18 @@ public partial class Scanner
         }
     }
 
-    // hasJSDocTag reports whether text starts with one of the given tag names followed
+    // scanner.go:381. The source's ordered variadic tag tests use borrowed static
+    // patterns at the caller; no temporary params array or text encoding is needed.
+    // hasJSDocTag reports whether text starts with the given tag name followed
     // by a valid JSDoc tag terminator (whitespace, '}', '*', or end-of-string).
-    private static bool hasJSDocTag(string text, params string[] tags)
+    private static bool hasJSDocTag(ByteStringView text, ReadOnlySpan<byte> tag)
     {
-        foreach (string tag in tags)
-        {
-            if (!GoStrings.HasPrefix(text, tag))
-                continue;
-            if (text.Length == tag.Length)
-                return true;
-            char ch = text[tag.Length];
-            if (ch is ' ' or '\t' or '\n' or '\r' or '}' or '*')
-                return true;
-        }
-
-        return false;
+        if (!GoStrings.HasPrefix(text.AsSpan(), tag))
+            return false;
+        if (text.Length == tag.Length)
+            return true;
+        char ch = text[tag.Length];
+        return ch is ' ' or '\t' or '\n' or '\r' or '}' or '*';
     }
 
     public void SetOnError(ErrorCallback? errorCallback)
@@ -718,7 +732,7 @@ public partial class Scanner
                         if (isJSDoc)
                         {
                             this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.PrecedingJSDocComment;
-                            this.scanJSDocCommentForTags(this.text.Substring(this.tokenStart, this.pos - this.tokenStart));
+                            this.scanJSDocCommentForTags(this.text.Slice(this.tokenStart, this.pos));
                         }
 
                         this.processCommentDirective(lastLineStart, this.pos, true);
@@ -781,10 +795,11 @@ public partial class Scanner
                             }
                             else
                             {
-                                var rawText = this.text.Substring(start, this.pos - start);
-                                if (GoStrings.HasPrefix(rawText, "0x") && rawText.Substring(2) == digits)
+                                // Go scanner.go:721–727: borrow the comparison slices; retain only the selected token value.
+                                var rawText = this.text.Slice(start, this.pos);
+                                if (GoStrings.HasPrefix(rawText.AsSpan(), "0x"u8) && rawText.Length - 2 == digits.Length && GoStrings.HasPrefix(rawText.AsSpan(2), digits))
                                 {
-                                    this.tokenValue = rawText;
+                                    this.tokenValue = rawText.Materialize();
                                 }
                                 else
                                 {
@@ -1268,13 +1283,13 @@ public partial class Scanner
         CommentDirectiveKind kind = default;
         switch (true)
         {
-            case var case2 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-expect-error"):
+            case var case2 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-expect-error"u8):
             {
                 kind = global::TypeScript.Scanner.CommentDirectiveKind.ExpectError;
                 break;
             }
 
-            case var case1002 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-ignore"):
+            case var case1002 when GoStrings.HasPrefix(this.text.AsSpan(pos), "ts-ignore"u8):
             {
                 kind = global::TypeScript.Scanner.CommentDirectiveKind.Ignore;
                 break;
@@ -1286,7 +1301,7 @@ public partial class Scanner
             }
         }
 
-        (this.commentDirectives ??= new()).Add(new CommentDirective(new TextRange(start, end), kind));
+        this.commentDirectives = this.commentDirectives.Append(new CommentDirective(new TextRange(start, end), kind));
     }
 
     public Kind ReScanLessThanToken()
@@ -1807,7 +1822,7 @@ public partial class Scanner
         return this.ScanJsxAttributeValue();
     }
 
-    // Also returns Kind.JSDocCommentTextToken alongside the usual JSDoc kinds. 
+    // Also returns Kind.JSDocCommentTextToken alongside the usual JSDoc kinds.
     public Kind ScanJSDocCommentTextToken(bool inBackticks)
     {
         this.fullStartPos = this.pos;
@@ -1855,7 +1870,7 @@ public partial class Scanner
             return this.ScanJSDocToken();
         }
 
-        this.tokenValue = this.text.Substring(this.tokenStart, this.pos - this.tokenStart);
+        this.setTokenValueView(this.text.Slice(this.tokenStart, this.pos));
         this.token = Kind.JSDocCommentTextToken;
         return this.token;
     }
@@ -2122,7 +2137,7 @@ public partial class Scanner
                     }, variant == identifierVariant.RegExpGroupName);
                     if (ok)
                     {
-                        sb.WriteString(this.text.Substring(start, escapeStart - start));
+                        sb.WriteString(this.text.AsSpan(start, escapeStart - start));
                         sb.WriteRune(escaped);
                         start = this.pos;
                         continue;
@@ -2133,7 +2148,7 @@ public partial class Scanner
             break;
         }
 
-        sb.WriteString(this.text.Substring(start, this.pos - start));
+        sb.WriteString(this.text.AsSpan(start, this.pos - start));
         return sb.String();
     }
 
@@ -2186,11 +2201,12 @@ public partial class Scanner
 
         if (strLen > 0)
         {
-            var str = this.text.Substring(this.pos, this.pos + strLen - this.pos);
+            // scanner.go:1601. Inspect the borrowed substring before the final token projection.
+            var str = this.text.AsSpan(this.pos, strLen);
             if (jsxAttributeString || GoStrings.IndexByte(str, '\\') < 0 && GoStrings.IndexByte(str, '\r') < 0 && GoStrings.IndexByte(str, '\n') < 0)
             {
                 this.pos += strLen + 1;
-                return str;
+                return GoString.FromBytes(str);
             }
         }
 
@@ -2201,7 +2217,7 @@ public partial class Scanner
             var ch = this.charCode();
             if (ch < 0)
             {
-                sb.WriteString(this.text.Substring(start, this.pos - start));
+                sb.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
                 this.error(Diagnostics.Unterminated_string_literal);
                 break;
@@ -2209,14 +2225,14 @@ public partial class Scanner
 
             if (ch == quote)
             {
-                sb.WriteString(this.text.Substring(start, this.pos - start));
+                sb.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.pos++;
                 break;
             }
 
             if (ch == '\\' && !jsxAttributeString)
             {
-                sb.WriteString(this.text.Substring(start, this.pos - start));
+                sb.WriteString(this.text.AsSpan(start, this.pos - start));
                 sb.WriteString(this.scanEscapeSequence(EscapeSequenceScanningFlags.String | EscapeSequenceScanningFlags.ReportErrors));
                 start = this.pos;
                 continue;
@@ -2224,7 +2240,7 @@ public partial class Scanner
 
             if ((ch == '\n' || ch == '\r') && !jsxAttributeString)
             {
-                sb.WriteString(this.text.Substring(start, this.pos - start));
+                sb.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
                 this.error(Diagnostics.Unterminated_string_literal);
                 break;
@@ -2863,7 +2879,8 @@ public partial class Scanner
                 {
                     allowSeparator = false;
                     isPreviousTokenSeparator = true;
-                    result.WriteString(this.text.Substring(start, this.pos - start));
+                    // scanner.go:2044. Builder consumes the source slice without an intermediate string.
+                    result.WriteString(this.text.AsSpan(start, this.pos - start));
                 }
                 else
                 {
@@ -2897,7 +2914,7 @@ public partial class Scanner
             return this.text.Substring(start, this.pos - start);
         }
 
-        result.WriteString(this.text.Substring(start, this.pos - start));
+        result.WriteString(this.text.AsSpan(start, this.pos - start));
         return result.String();
     }
 
@@ -3163,7 +3180,7 @@ public partial class Scanner
         return skipTriviaEx(GoString.ToUtf8(text), pos, null);
     }
 
-    private static int skipTriviaEx(string text, int pos, SkipTriviaOptions? options)
+    private static int skipTriviaEx(ByteStringView text, int pos, SkipTriviaOptions? options)
     {
         if (pos < 0)
         {
@@ -3325,7 +3342,7 @@ public partial class Scanner
         }
     }
 
-    private static bool isConflictMarkerTrivia(string text, int pos)
+    private static bool isConflictMarkerTrivia(ByteStringView text, int pos)
     {
         if (pos < 0)
         {
@@ -3362,7 +3379,7 @@ public partial class Scanner
         return false;
     }
 
-    private static int scanConflictMarkerTrivia(string text, int pos, ErrorCallback? reportError)
+    private static int scanConflictMarkerTrivia(ByteStringView text, int pos, ErrorCallback? reportError)
     {
         if (reportError != null)
         {
@@ -3401,7 +3418,7 @@ public partial class Scanner
         return pos;
     }
 
-    private static bool isShebangTrivia(string text, int pos)
+    private static bool isShebangTrivia(ByteStringView text, int pos)
     {
         if (text.Length < 2)
         {
@@ -3416,7 +3433,7 @@ public partial class Scanner
         return text[0] == '#' && text[1] == '!';
     }
 
-    private static int scanShebangTrivia(string text, int pos)
+    private static int scanShebangTrivia(ByteStringView text, int pos)
     {
         pos += 2;
         while (pos < text.Length)
@@ -3488,7 +3505,7 @@ public partial class Scanner
     // back to a byte position. The character parameter is measured in UTF-16 code units.
     // It scans from the line start to correctly handle multi-byte characters.
     // When allowEdits is true, out-of-range values are clamped instead of panicking.
-    private static int computePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits)
+    private static int computePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, ByteStringView text, bool allowEdits)
     {
         if (line < 0 || line >= lineStarts.Length)
         {
@@ -3578,7 +3595,7 @@ public partial class Scanner
     public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, GoString.ToUtf8(text), pos, true);
     public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, GoString.FromBytes(text), pos, true);
     // ast.CommentRange is a value struct; NewCommentRange has no node hooks/identity.
-    private static IEnumerable<CommentRange> iterateCommentRanges(NodeFactory? factory, string text, int pos, bool trailing)
+    private static IEnumerable<CommentRange> iterateCommentRanges(NodeFactory? factory, ByteStringView text, int pos, bool trailing)
     {
         int pendingPos = 0, pendingEnd = 0;
         Kind pendingKind = default;
@@ -3639,7 +3656,8 @@ public partial class Scanner
                         }
                         else
                         {
-                            int i = GoStrings.Index(text.Substring(pos), "*/");
+                            // Go searches the shared suffix, not an allocated copy.
+                            int i = GoStrings.Index(text.AsSpan(pos), "*/"u8);
                             pos = i >= 0 ? pos + i + 2 : text.Length;
                         }
 
@@ -3698,19 +3716,19 @@ public partial class Scanner
         token = default;
         tokenValue = "";
         tokenFlags = default;
-        commentDirectives = null;
+        commentDirectives = default;
     }
 
-    public string Text() => GoString.ToString(text);
-    public byte[] TextBytes() => GoString.Bytes(text);
-    public string TokenText() => GoString.ToString(text.Substring(tokenStart, pos - tokenStart));
-    public byte[] TokenTextBytes() => GoString.Bytes(text.Substring(tokenStart, pos - tokenStart));
+    public string Text() => text.DecodeUnicode();
+    public byte[] TextBytes() => text.ToArray();
+    public string TokenText() => text.Slice(tokenStart, pos).DecodeUnicode();
+    public byte[] TokenTextBytes() => text.Slice(tokenStart, pos).ToArray();
     public string TokenValue() => ScannerString.ToJsString(tokenValue);
-    public byte[] TokenValueBytes() => GoString.Bytes(tokenValue);
-    public void SetText(string value) => SetByteText(GoString.ToUtf8(value));
-    public void SetText(byte[] value) => SetByteText(GoString.FromBytes(value));
-    public void SetText(ReadOnlySpan<byte> value) => SetByteText(GoString.FromBytes(value));
-    private void SetByteText(string value)
+    public byte[] TokenValueBytes() => tokenValueIsView ? tokenValueView.ToArray() : GoString.Bytes(tokenValue);
+    public void SetText(string value) => SetByteText(ByteStringView.FromUnicode(value));
+    public void SetText(byte[] value) => SetByteText(ByteStringView.CopyFrom(value));
+    public void SetText(ReadOnlySpan<byte> value) => SetByteText(ByteStringView.CopyFrom(value));
+    private void SetByteText(ByteStringView value)
     {
         text = value;
         end = value.Length;
@@ -3718,7 +3736,7 @@ public partial class Scanner
         token = default;
         tokenFlags = default;
         tokenValue = "";
-        commentDirectives = null;
+        commentDirectives = default;
     }
 
     public ScannerState Mark() => new()
@@ -3727,9 +3745,11 @@ public partial class Scanner
         fullStartPos = fullStartPos,
         tokenStart = tokenStart,
         token = token,
-        tokenValue = tokenValue,
+        tokenValueString = tokenValueString,
+        tokenValueView = tokenValueView,
+        tokenValueIsView = tokenValueIsView,
         tokenFlags = tokenFlags,
-        commentDirectives = commentDirectives?.ToArray(),
+        commentDirectives = commentDirectives,
         skipJSDocLeadingAsterisks = skipJSDocLeadingAsterisks
     };
     public void Rewind(ScannerState state)
@@ -3738,9 +3758,11 @@ public partial class Scanner
         fullStartPos = state.fullStartPos;
         tokenStart = state.tokenStart;
         token = state.token;
-        tokenValue = state.tokenValue;
+        tokenValueString = state.tokenValueString ?? "";
+        tokenValueView = state.tokenValueView;
+        tokenValueIsView = state.tokenValueIsView;
         tokenFlags = state.tokenFlags;
-        commentDirectives = state.commentDirectives is null ? null : new(state.commentDirectives);
+        commentDirectives = state.commentDirectives;
         skipJSDocLeadingAsterisks = state.skipJSDocLeadingAsterisks;
     }
 
@@ -3750,7 +3772,7 @@ public partial class Scanner
     public static string GetShebang(string text) => GoString.ToString(getShebang(GoString.ToUtf8(text)));
     public static byte[] GetShebang(byte[] text) => GoString.Bytes(getShebang(GoString.FromBytes(text)));
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, GoString.ToUtf8(text), allowEdits);
-    public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, byte[] text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, GoString.FromBytes(text), allowEdits);
+    public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, byte[] text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.CopyFrom(text), allowEdits);
     public static Kind GetIdentifierToken(string str)
     {
         if (str.Length >= 2 && str.Length <= 12 && str[0] >= 'a' && str[0] <= 'z' && textToKeyword.TryGetValue(str, out var keyword))
@@ -3861,7 +3883,7 @@ public partial class Scanner
     public static Scanner GetScannerForSourceFile(SourceFile sourceFile, int pos)
     {
         var scanner = NewScanner();
-        scanner.text = sourceFile.Text();
+        scanner.text = sourceFile.TextView();
         scanner.pos = pos;
         scanner.end = scanner.text.Length;
         scanner.languageVariant = sourceFile.LanguageVariant;
@@ -3883,7 +3905,7 @@ public partial class Scanner
     {
         var lineMap = GetECMALineStarts(sourceFile);
         int line = ComputeLineOfPosition(lineMap.ToArray(), pos);
-        int character = Core.UTF16Len(sourceFile.Text()[lineMap[line]..pos]);
+        int character = Core.UTF16Len(sourceFile.TextView().Slice(lineMap[line], pos));
         return (line, character);
     }
 
@@ -3895,14 +3917,14 @@ public partial class Scanner
     }
 
     // scanner.go:2717-2728. Use the internal byte-string directly (no second UTF8 encoding).
-    public static int GetECMAPositionOfLineAndUTF16Character(SourceFileLike sourceFile, int line, int character) => computePositionOfLineAndUTF16Character(GetECMALineStarts(sourceFile).ToArray(), line, character, sourceFile.Text(), false);
+    public static int GetECMAPositionOfLineAndUTF16Character(SourceFileLike sourceFile, int line, int character) => computePositionOfLineAndUTF16Character(GetECMALineStarts(sourceFile).ToArray(), line, character, sourceFile.TextView(), false);
     public static int GetECMAPositionOfLineAndByteOffset(SourceFileLike sourceFile, int line, int byteOffset) => ComputePositionOfLineAndByteOffset(GetECMALineStarts(sourceFile).ToArray(), line, byteOffset);
     public static int GetECMAEndLinePosition(SourceFile sourceFile, int line)
     {
         int pos = GetECMALineStarts(sourceFile)[line];
         while (true)
         {
-            var(ch, size) = Utf8.DecodeRuneInString(sourceFile.Text().AsSpan(pos));
+            var(ch, size) = Utf8.DecodeRuneInString(sourceFile.TextView().AsSpan(pos));
             if (size == 0 || StringUtil.IsLineBreak(ch))
                 return pos - 1;
             pos += size;
@@ -3911,7 +3933,7 @@ public partial class Scanner
 
     private static TextRange getErrorRangeForArrowFunction(SourceFile sourceFile, Node node)
     {
-        int pos = SkipTriviaByteString(sourceFile.Text(), node.Pos());
+        int pos = SkipTriviaByteString(sourceFile.TextView(), node.Pos());
         var body = node.Body();
         if (body != null && body.Kind == Kind.Block)
         {
@@ -3968,8 +3990,8 @@ public partial class Scanner
         {
             case Kind.SourceFile:
             {
-                int pos = SkipTriviaByteString(sourceFile.Text(), 0);
-                if (pos == sourceFile.Text().Length)
+                int pos = SkipTriviaByteString(sourceFile.TextView(), 0);
+                if (pos == sourceFile.TextView().Length)
                     return Core.NewTextRange(0, 0);
                 return GetRangeOfTokenAtPosition(sourceFile, pos);
             }
@@ -4008,7 +4030,7 @@ public partial class Scanner
             case Kind.CaseClause:
             case Kind.DefaultClause:
             {
-                int start = SkipTriviaByteString(sourceFile.Text(), node.Pos());
+                int start = SkipTriviaByteString(sourceFile.TextView(), node.Pos());
                 int end = node.End();
                 var statements = node.Statements();
                 if (GoRuntime.Len(statements) != 0)
@@ -4018,13 +4040,13 @@ public partial class Scanner
 
             case Kind.ReturnStatement:
             case Kind.YieldExpression:
-                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), node.Pos()));
+                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.TextView(), node.Pos()));
             case Kind.SatisfiesExpression:
             {
                 var jsDocSatisfiesTag = findOriginatingJSDocSatisfiesTag(sourceFile, node);
                 if (jsDocSatisfiesTag != null)
-                    return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), jsDocSatisfiesTag.TagName().Pos()));
-                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.Text(), node.AsSatisfiesExpression().Expression.End()));
+                    return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.TextView(), jsDocSatisfiesTag.TagName().Pos()));
+                return GetRangeOfTokenAtPosition(sourceFile, SkipTriviaByteString(sourceFile.TextView(), node.AsSatisfiesExpression().Expression.End()));
             }
 
             case Kind.Constructor:
@@ -4047,7 +4069,7 @@ public partial class Scanner
             return GetRangeOfTokenAtPosition(sourceFile, node.Pos());
         int errorPos = errorNode.Pos();
         if (!Ast.NodeIsMissing(errorNode) && !Ast.IsJsxText(errorNode))
-            errorPos = SkipTriviaByteString(sourceFile.Text(), errorPos);
+            errorPos = SkipTriviaByteString(sourceFile.TextView(), errorPos);
         return Core.NewTextRange(errorPos, errorNode.End());
     }
 
@@ -4057,21 +4079,25 @@ public partial class Scanner
         if (Ast.NodeIsMissing(node))
             return node.Pos();
         if (Ast.IsJSDocNodeKind(node.Kind) || node.Kind == Kind.JsxText)
-            return skipTriviaEx(sourceFile.Text(), node.Pos(), new SkipTriviaOptions { StopAtComments = true });
+            return skipTriviaEx(sourceFile.TextView(), node.Pos(), new SkipTriviaOptions { StopAtComments = true });
         if (includeJSDoc && GoRuntime.Len(node.JSDoc(sourceFile)) > 0)
             return GetTokenPosOfNode(node.JSDoc(sourceFile)[0], sourceFile, false);
-        return skipTriviaEx(sourceFile.Text(), node.Pos(), new SkipTriviaOptions { InJSDoc = (node.Flags & NodeFlags.JSDoc) != 0 });
+        return skipTriviaEx(sourceFile.TextView(), node.Pos(), new SkipTriviaOptions { InJSDoc = (node.Flags & NodeFlags.JSDoc) != 0 });
     }
 }
 
 public delegate void ErrorCallback(Message diagnostic, int start, int length, params object[] args);
-public sealed record ScannerState
+// scanner.go:201,293,297: value snapshots share directive backing storage;
+// restoring a copied header does not clone its mutable backing array.
+public record struct ScannerState
 {
     internal int pos, fullStartPos, tokenStart, skipJSDocLeadingAsterisks;
     internal Kind token;
     internal TokenFlags tokenFlags;
-    internal string tokenValue = "";
-    internal CommentDirective[]? commentDirectives;
+    internal string? tokenValueString;
+    internal ByteStringView tokenValueView;
+    internal bool tokenValueIsView;
+    internal Slice<CommentDirective> commentDirectives;
 }
 
 public sealed class SkipTriviaOptions

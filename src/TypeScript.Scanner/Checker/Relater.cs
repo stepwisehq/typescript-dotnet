@@ -541,13 +541,26 @@ public sealed partial class Checker
     }
 
     private readonly record struct RecursionId(object value);
-    private bool isDeeplyNestedType(Type t, List<Type> stack, int maxDepth)
+    // relater.go:765. Descriptor/List adapters borrow the same stack storage;
+    // the original recursion-identity algorithm does not mutate that storage.
+    private bool isDeeplyNestedType(Type t, List<Type> stack, int maxDepth) =>
+        isDeeplyNestedType(t, System.Runtime.InteropServices.CollectionsMarshal.AsSpan(stack), maxDepth);
+    private bool isDeeplyNestedType(Type t, Slice<Type> stack, int maxDepth) =>
+        isDeeplyNestedType(t, stack.AsSpan(), maxDepth);
+    private bool isDeeplyNestedType(Type t, ReadOnlySpan<Type> stack, int maxDepth)
     {
-        if (stack.Count >= maxDepth)
+        if (stack.Length >= maxDepth)
         {
             var target = getRecursionIdentityTarget(t);
             if ((target.flags & TypeFlags.Intersection) != 0)
-                return target.Types().Any(part => isDeeplyNestedType(part, stack, maxDepth));
+            {
+                // A Span cannot be captured by a delegate. Use the original
+                // Go constituent loop rather than materializing a collection.
+                foreach (var part in target.Types())
+                    if (isDeeplyNestedType(part, stack, maxDepth))
+                        return true;
+                return false;
+            }
             var identity = getRecursionIdentityFromTarget(target);
             int count = 0;
             uint lastTypeId = 0;
@@ -2083,7 +2096,10 @@ public sealed partial class Checker
                         var targetString = c.typeToStringByteString(originalTarget.alias != null ? originalTarget : target);
                         var calls = c.getSignaturesOfType(source, SignatureKind.Call);
                         var constructs = c.getSignaturesOfType(source, SignatureKind.Construct);
-                        if (Core.Some(calls, sig => c.isTypeAssignableTo(c.getReturnTypeOfSignature(sig), target)) || Core.Some(constructs, sig => c.isTypeAssignableTo(c.getReturnTypeOfSignature(sig), target)))
+                        // relater.go:2729. Only the first call/construct return is
+                        // checked, using this relation and source-only recursion.
+                        if ((calls?.Count ?? 0) > 0 && isRelatedTo(c.getReturnTypeOfSignature(calls[0]), target, RecursionFlags.Source, false) != Ternary.False ||
+                            (constructs?.Count ?? 0) > 0 && isRelatedTo(c.getReturnTypeOfSignature(constructs[0]), target, RecursionFlags.Source, false) != Ternary.False)
                             reportError(Diagnostics.Value_of_type_0_has_no_properties_in_common_with_type_1_Did_you_mean_to_call_it, sourceString, targetString);
                         else
                             reportError(Diagnostics.Type_0_has_no_properties_in_common_with_type_1, sourceString, targetString);

@@ -230,7 +230,45 @@ internal static partial class Core
 internal static partial class Core
 {
     public static List<int> ComputeECMALineStarts(string text) => ComputeECMALineStartsSeq(text).ToList();
+    // Same core.go line-start algorithm; a borrowed byte-text descriptor avoids
+    // materializing a JSDoc node's bounded source before normalization.
+    public static List<int> ComputeECMALineStarts(ByteStringView text) => ComputeECMALineStartsSeq(text).ToList();
     public static IEnumerable<int> ComputeECMALineStartsSeq(string text)
+    {
+        int textLen = text.Length, pos = 0, lineStart = 0;
+        while (pos < textLen)
+        {
+            int b = text[pos];
+            if (b < Utf8.RuneSelf)
+            {
+                pos++;
+                switch (b)
+                {
+                    case '\r':
+                        if (pos < textLen && text[pos] == '\n')
+                            pos++;
+                        goto case '\n';
+                    case '\n':
+                        yield return lineStart;
+                        lineStart = pos;
+                        break;
+                }
+            }
+            else
+            {
+                var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
+                pos += size;
+                if (StringUtil.IsLineBreak(ch))
+                {
+                    yield return lineStart;
+                    lineStart = pos;
+                }
+            }
+        }
+
+        yield return lineStart;
+    }
+    public static IEnumerable<int> ComputeECMALineStartsSeq(ByteStringView text)
     {
         int textLen = text.Length, pos = 0, lineStart = 0;
         while (pos < textLen)
@@ -375,6 +413,27 @@ internal static partial class Core
     // Input is a Go UTF8 byte-string. Invalid sequences consume one byte and
     // contribute U+FFFD, including each byte of a JS surrogate sentinel.
     public static int UTF16Len(string text)
+    {
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] >= Utf8.RuneSelf)
+            {
+                int length = i;
+                for (int position = i; position < text.Length;)
+                {
+                    var(rune, size) = Utf8.DecodeRuneInString(text.AsSpan(position));
+                    length += rune >= 0x10000 ? 2 : 1;
+                    position += size;
+                }
+
+                return length;
+            }
+        }
+
+        return text.Length;
+    }
+
+    public static int UTF16Len(ByteStringView text)
     {
         for (int i = 0; i < text.Length; i++)
         {

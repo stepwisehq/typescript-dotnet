@@ -274,10 +274,8 @@ public sealed partial class Checker
             var entries = new List<CollectionsTypeCacheEntry>();
             foreach (var(key, value)in indexedAccessTypes)
             {
-                if (key.preimage == null)
-                    throw new InvalidOperationException("Missing indexed-access key preimage");
-                byte[] bytes = Convert.FromBase64String(key.preimage);
-                if (Convert.ToBase64String(bytes) != key.preimage || bytes.Length < 13)
+                byte[] bytes = verificationCollectionsKeyBytes(key);
+                if (bytes.Length < 13)
                     throw new InvalidOperationException("Noncanonical or truncated indexed-access key");
                 int offset = 0;
                 uint read32()

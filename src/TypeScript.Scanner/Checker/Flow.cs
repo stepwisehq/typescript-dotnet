@@ -291,8 +291,8 @@ public sealed partial class Checker
         internal FlowState next;
     }
 
-    // flow.go1651: exact original raw "?" preimage replaces its opaque hash.
-    private static readonly CacheHashKey nonDottedNameCacheKey = new("Pw==");
+    // Go flow.go:1651: original hashed non-dotted-name sentinel.
+    private static readonly CacheHashKey nonDottedNameCacheKey = CacheHashKey.FromBytes("?"u8);
     private readonly record struct FlowLoopKey(FlowNode flowNode, CacheHashKey refKey);
     private readonly record struct FlowLoopInfo(FlowLoopKey key, List<Type> types);
     private readonly Dictionary<FlowLoopKey, Type> flowLoopCache = new();
@@ -3263,7 +3263,7 @@ public sealed partial class Checker
 {
     private FlowType getTypeAtFlowLoopLabel(FlowState f, FlowNode flow)
     {
-        if (f.refKey.preimage is null)
+        if (f.refKey.IsZero())
         {
             f.refKey = this.getFlowReferenceKey(f);
         }
@@ -3524,22 +3524,22 @@ public sealed partial class Checker
     private CacheHashKey getFlowReferenceKey(FlowState f)
     {
         var b = new keyBuilder();
-        verificationCollectionsFlowStart(b);
-        if (this.writeFlowCacheKey(b, f.reference, f.declaredType, f.initialType, f.flowContainer))
+        verificationCollectionsFlowStart(ref b);
+        if (this.writeFlowCacheKey(ref b, f.reference, f.declaredType, f.initialType, f.flowContainer))
         {
-            var key = b.hash();
-            verificationCollectionsFlowEnd(b, key, true);
+            var key = b.hash(authoredCollectionsProfile ? this : null);
+            verificationCollectionsFlowEnd(ref b, key, true);
             return key;
         }
 
-        verificationCollectionsFlowEnd(b, nonDottedNameCacheKey, false);
+        verificationCollectionsFlowEnd(ref b, nonDottedNameCacheKey, false);
         return nonDottedNameCacheKey;
     }
 }
 
 public sealed partial class Checker
 {
-    private bool writeFlowCacheKey(keyBuilder b, Node node, Type declaredType, Type initialType, Node flowContainer)
+    private bool writeFlowCacheKey(ref keyBuilder b, Node node, Type declaredType, Type initialType, Node flowContainer)
     {
         switch (node.Kind)
         {
@@ -3554,7 +3554,7 @@ public sealed partial class Checker
                         }
 
                         b.writeSymbol(symbol);
-                        verificationCollectionsFlowSlot(b, "symbol", symbol, 8);
+                        verificationCollectionsFlowSlot(ref b, "symbol", symbol, 8);
                     }
 
                     goto case Kind.ThisKeyword;
@@ -3564,19 +3564,19 @@ public sealed partial class Checker
                 {
                     b.writeByte((byte)':');
                     b.writeType(declaredType);
-                    verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                    verificationCollectionsFlowSlot(ref b, "type", declaredType, 4);
                     if ((initialType != declaredType))
                     {
                         b.writeByte((byte)'=');
                         b.writeType(initialType);
-                        verificationCollectionsFlowSlot(b, "type", initialType, 4);
+                        verificationCollectionsFlowSlot(ref b, "type", initialType, 4);
                     }
 
                     if ((flowContainer != null))
                     {
                         b.writeByte((byte)'@');
                         b.writeNode(flowContainer);
-                        verificationCollectionsFlowSlot(b, "node", flowContainer, 8);
+                        verificationCollectionsFlowSlot(ref b, "node", flowContainer, 8);
                     }
 
                     return true;
@@ -3585,12 +3585,12 @@ public sealed partial class Checker
             case Kind.NonNullExpression:
             case Kind.ParenthesizedExpression:
                 {
-                    return this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer);
+                    return this.writeFlowCacheKey(ref b, node.Expression(), declaredType, initialType, flowContainer);
                 }
 
             case Kind.QualifiedName:
                 {
-                    if (!this.writeFlowCacheKey(b, node.AsQualifiedName().Left, declaredType, initialType, flowContainer))
+                    if (!this.writeFlowCacheKey(ref b, node.AsQualifiedName().Left, declaredType, initialType, flowContainer))
                     {
                         return false;
                     }
@@ -3609,7 +3609,7 @@ public sealed partial class Checker
                         var ok = tuple1.Item2;
                         if (ok)
                         {
-                            if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                            if (!this.writeFlowCacheKey(ref b, node.Expression(), declaredType, initialType, flowContainer))
                             {
                                 return false;
                             }
@@ -3625,14 +3625,14 @@ public sealed partial class Checker
                         var symbol2 = this.getResolvedSymbol(node.AsElementAccessExpression().ArgumentExpression);
                         if ((this.isConstantVariable(symbol2) || (this.isParameterOrMutableLocalVariable(symbol2) && !this.isSymbolAssigned(symbol2))))
                         {
-                            if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                            if (!this.writeFlowCacheKey(ref b, node.Expression(), declaredType, initialType, flowContainer))
                             {
                                 return false;
                             }
 
                             b.writeString(".@");
                             b.writeSymbol(symbol2);
-                            verificationCollectionsFlowSlot(b, "symbol", symbol2, 8);
+                            verificationCollectionsFlowSlot(ref b, "symbol", symbol2, 8);
                             return true;
                         }
                     }
@@ -3648,10 +3648,10 @@ public sealed partial class Checker
             case Kind.MethodDeclaration:
                 {
                     b.writeNode(node);
-                    verificationCollectionsFlowSlot(b, "node", node, 8);
+                    verificationCollectionsFlowSlot(ref b, "node", node, 8);
                     b.writeByte((byte)'#');
                     b.writeType(declaredType);
-                    verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                    verificationCollectionsFlowSlot(ref b, "type", declaredType, 4);
                     return true;
                 }
         }

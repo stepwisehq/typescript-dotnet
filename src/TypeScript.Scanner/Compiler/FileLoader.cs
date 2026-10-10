@@ -476,13 +476,13 @@ internal sealed class FileLoader
             return TypedFile(task.normalizedFilePath).ExtensionIsOneOf(contentMapperExtensions ?? []) ? ParseContentMappedFile(programParseOptions) : compilerHost!.GetSourceFile(programParseOptions);
         }
         if (!graph) Project.RequireImplementationFile(task.normalizedFilePath);
-        var(text, ok) = host.FS().ReadFile(TypedFile(task.normalizedFilePath));
+        var(text, ok) = SourceTextReaders.Read(host.FS(), TypedFile(task.normalizedFilePath));
         if (!ok) return null;
         var parseOptions = new SourceFileParseOptions(task.normalizedFilePath, task.path,
             graph ? Ast.GetExternalModuleIndicatorOptions(TypedFile(task.normalizedFilePath), options, task.metadata) : default, FileNameIsGoBytes: graph);
         ScriptKind kind = graph ? Core.GetScriptKindFromFileName(task.normalizedFilePath) : ScriptKind.TS;
         if (kind == ScriptKind.Unknown) kind = ScriptKind.TS;
-        return Parser.ParseSourceFile(parseOptions, GoString.Bytes(text), kind);
+        return Parser.ParseSourceFileOwned(parseOptions, text, kind);
     }
 
     // fileloader.go:721. Explicit path references enter the same task scheduler.

@@ -41,13 +41,9 @@ internal sealed class PagedLinkStore<V>
     private const ulong maxPageCount = 65536;
     private Dictionary<ulong, LinkCell<V>[]>? pageMap;
     private readonly List<LinkCell<V>[]?> pageList = [];
-    private static LinkCell<V>[] NewPage()
-    {
-        var page = new LinkCell<V>[pageSize];
-        for (int i = 0; i < page.Length; i++)
-            page[i] = new();
-        return page;
-    }
+    // Go exposes inline zero slots in an allocated page. Managed address cells
+    // are needed only when a caller requests a slot, and remain stable afterward.
+    private static LinkCell<V>[] NewPage() => new LinkCell<V>[pageSize];
 
     public LinkCell<V> Get(ulong key)
     {
@@ -68,11 +64,18 @@ internal sealed class PagedLinkStore<V>
                 pageMap[pageIndex] = page = NewPage();
         }
 
-        return page[(int)(key & pageMask)];
+        return page[(int)(key & pageMask)] ??= new();
     }
 
-    public bool Has(ulong key) => TryGet(key)is not null;
+    // Every slot exists once its page exists, including unexposed zero slots.
+    public bool Has(ulong key) => FindPage(key) is not null;
     public LinkCell<V>? TryGet(ulong key)
+    {
+        var page = FindPage(key);
+        return page is not null ? page[(int)(key & pageMask)] ??= new() : null;
+    }
+
+    private LinkCell<V>[]? FindPage(ulong key)
     {
         LinkCell<V>[]? page = null;
         var pageIndex = key >> pageShift;
@@ -83,6 +86,6 @@ internal sealed class PagedLinkStore<V>
         }
         else if (pageMap is not null)
             pageMap.TryGetValue(pageIndex, out page);
-        return page is not null ? page[(int)(key & pageMask)] : null;
+        return page;
     }
 }

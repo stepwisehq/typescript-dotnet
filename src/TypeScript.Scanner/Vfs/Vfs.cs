@@ -17,6 +17,24 @@ public interface IFS
     RootedPath Realpath(RootedPath path);
 }
 
+// Optional internal transport for privately owned immutable source bytes. The
+// public filesystem contract continues to return original Go byte strings.
+internal interface ISourceTextFileSystem
+{
+    (ByteStringView Contents, bool Ok) ReadSourceText(RootedFilePath path);
+}
+
+internal static class SourceTextReaders
+{
+    internal static (ByteStringView Contents, bool Ok) Read(IFS fs, RootedFilePath path)
+    {
+        if (fs is ISourceTextFileSystem sourceText)
+            return sourceText.ReadSourceText(path);
+        var (contents, ok) = fs.ReadFile(path);
+        return ok ? (ByteStringView.FromGoBytes(contents), true) : (default, false);
+    }
+}
+
 public sealed class Entries
 {
     public List<string>? Files;

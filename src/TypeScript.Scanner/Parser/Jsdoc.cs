@@ -12,8 +12,8 @@ public partial class Parser
     {
         var p = getParser();
         // Go parser-pool return omitted: this port creates an isolated managed parser.
-        p.initializeState(sourceFile.ParseOptions(), sourceFile.Text(), sourceFile.ScriptKind);
-        var ranges = GetJSDocCommentRanges(p.factory, null, node, sourceFile.Text());
+        p.initializeState(sourceFile.ParseOptions(), sourceFile.TextView(), sourceFile.ScriptKind);
+        var ranges = GetJSDocCommentRanges(p.factory, null, node, sourceFile.TextView());
         if ((GoRuntime.Len(ranges) == 0))
         {
             return null;
@@ -170,7 +170,9 @@ public partial class Parser
         var saveDiagnosticsLength = GoRuntime.Len(this.diagnostics);
         var saveHasParseError = this.hasParseError;
         var saveHasAwaitIdentifier = this.statementHasAwaitIdentifier;
-        var initialIndent = ((start + 4) - ((GoStrings.LastIndex(GoRuntime.Slice(this.sourceText, 0, start), "\n") + 1)));
+        var initialIndent = ((start + 4) - ((this.sourceText.AsSpan(0, start).LastIndexOf((byte)'\n') + 1)));
+        // jsdoc.go:162. Go's prefix slice shares source storage; keep a bounded
+        // byte view so the scanner cannot consume the trailing */ or later text.
         this.sourceText = GoRuntime.Slice(this.sourceText, 0, (end - 2));
         this.scanner.SetByteTextInternal(this.sourceText);
         this.scanner.ResetPos((start + 3));
@@ -212,7 +214,7 @@ public partial class Parser
         var commentsPos = -1;
         var linkEnd = start;
         var margin = -1;
-        Action<string> pushComment = (text) =>
+        Action<ByteStringView> pushComment = (text) =>
         {
             if ((margin == -1))
             {
@@ -260,7 +262,7 @@ public partial class Parser
                             state = jsdocState.SavingComments;
                         }
 
-                        pushComment(this.scanner.TokenTextByteString());
+                        pushComment(this.scanner.TokenTextView());
                         break;
                     }
 
@@ -285,7 +287,7 @@ public partial class Parser
 
                 case Kind.NewLineTrivia:
                 {
-                    comments = GoRuntime.Append(comments, this.scanner.TokenTextByteString());
+                    comments = GoRuntime.Append(comments, this.scanner.TokenTextView());
                     state = jsdocState.BeginningOfLine;
                     indent = 0;
                     break;
@@ -293,7 +295,7 @@ public partial class Parser
 
                 case Kind.AsteriskToken:
                 {
-                    var asterisk = this.scanner.TokenTextByteString();
+                    var asterisk = this.scanner.TokenTextView();
                     if ((state == jsdocState.SawAsterisk))
                     {
                         state = jsdocState.SavingComments;
@@ -320,7 +322,7 @@ public partial class Parser
                         throw new InvalidOperationException("whitespace shouldn't come from the scanner while saving top-level comment text");
                     }
 
-                    var whitespace = this.scanner.TokenTextByteString();
+                    var whitespace = this.scanner.TokenTextView();
                     if (((margin > -1) && ((indent + GoRuntime.Len(whitespace)) > margin)))
                     {
                         var existingIndent = (margin - indent);
@@ -360,7 +362,7 @@ public partial class Parser
                         }
                     }
 
-                    pushComment(this.scanner.TokenValueByteString());
+                    pushComment(this.scanner.TokenValueTextView());
                     break;
                 }
 
@@ -376,7 +378,7 @@ public partial class Parser
                         state = jsdocState.SavingBackticks;
                     }
 
-                    pushComment(this.scanner.TokenTextByteString());
+                    pushComment(this.scanner.TokenTextView());
                     break;
                 }
 
@@ -385,7 +387,7 @@ public partial class Parser
                     if (inFencedCodeBlock)
                     {
                         state = jsdocState.SavingBackticks;
-                        pushComment(this.scanner.TokenTextByteString());
+                        pushComment(this.scanner.TokenTextView());
                         break;
                     }
 
@@ -400,7 +402,7 @@ public partial class Parser
                             comments = removeLeadingNewlines(comments);
                         }
 
-                        var jsdocText = this.finishNodeWithEnd(this.factory.NewJSDocText(this.stringSliceArena.Clone(comments)), linkEnd, commentEnd);
+                        var jsdocText = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), linkEnd, commentEnd);
                         commentParts = GoRuntime.Append(commentParts, jsdocText, link);
                         comments = GoRuntime.Slice(comments, 0, 0);
                         linkEnd = this.scanner.TokenEnd();
@@ -424,7 +426,7 @@ public partial class Parser
                         }
                     }
 
-                    pushComment(this.scanner.TokenTextByteString());
+                    pushComment(this.scanner.TokenTextView());
                     break;
                 }
             }
@@ -450,7 +452,7 @@ public partial class Parser
         if ((GoRuntime.Len(comments) > 0))
         {
             comments[(GoRuntime.Len(comments) - 1)] = GoStrings.TrimRightFunc(comments[(GoRuntime.Len(comments) - 1)], GoUnicode.IsSpace);
-            var jsdocText2 = this.finishNodeWithEnd(this.factory.NewJSDocText(this.stringSliceArena.Clone(comments)), linkEnd, commentsPos);
+            var jsdocText2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), linkEnd, commentsPos);
             commentParts = GoRuntime.Append(commentParts, jsdocText2);
         }
 
@@ -470,10 +472,10 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:380:1.
-    private static List<string> removeLeadingNewlines(List<string> comments)
+    private static Slice<ByteStringView> removeLeadingNewlines(Slice<ByteStringView> comments)
     {
         var i = 0;
-        while (((i < GoRuntime.Len(comments)) && (GoStrings.TrimLeft(comments[i], "\r\n") == "")))
+        while (((i < GoRuntime.Len(comments)) && (GoStrings.TrimLeftFunc(comments[i], rune => rune is '\r' or '\n').Length == 0)))
         {
             i++;
         }
@@ -482,13 +484,13 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:388:1.
-    private static string trimEnd(string s)
+    private static ByteStringView trimEnd(ByteStringView s)
     {
         return GoStrings.TrimRightFunc(s, StringUtil.IsWhiteSpaceLike);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:392:1.
-    private static List<string> removeTrailingWhitespace(List<string> comments)
+    private static Slice<ByteStringView> removeTrailingWhitespace(Slice<ByteStringView> comments)
     {
         var end = GoRuntime.Len(comments);
         {
@@ -496,7 +498,7 @@ public partial class Parser
             for (; (i >= 0); i--)
             {
                 var trimmed = trimEnd(comments[i]);
-                if ((trimmed == ""))
+                if ((trimmed.Length == 0))
                 {
                     end = i;
                 }
@@ -547,7 +549,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:431:1.
-    private string skipWhitespaceOrAsterisk()
+    private ByteStringView skipWhitespaceOrAsterisk()
     {
         if (((this.token == Kind.WhitespaceTrivia) || (this.token == Kind.NewLineTrivia)))
         {
@@ -559,10 +561,10 @@ public partial class Parser
 
         var precedingLineBreak = this.scanner.HasPrecedingLineBreak();
         var seenLineBreak = false;
-        var indents = GoRuntime.MakeSlice<string>(0);
+        var indents = Slice<ByteStringView>.Make(0);
         while (((((precedingLineBreak && (this.token == Kind.AsteriskToken))) || (this.token == Kind.WhitespaceTrivia)) || (this.token == Kind.NewLineTrivia)))
         {
-            indents = GoRuntime.Append(indents, this.scanner.TokenTextByteString());
+            indents = GoRuntime.Append(indents, this.scanner.TokenTextView());
             if ((this.token == Kind.NewLineTrivia))
             {
                 precedingLineBreak = true;
@@ -582,7 +584,7 @@ public partial class Parser
 
         if (seenLineBreak)
         {
-            return GoStrings.Join(indents, "");
+            return GoStrings.JoinViews(indents, "");
         }
         else
         {
@@ -765,28 +767,28 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:534:1.
-    private NodeList parseTrailingTagComments(int pos, int end, int margin, string indentText)
+    private NodeList parseTrailingTagComments(int pos, int end, int margin, ByteStringView indentText)
     {
         if ((GoRuntime.Len(indentText) == 0))
         {
             margin += (end - pos);
         }
 
-        string initialMargin = "";
+        ByteStringView initialMargin = "";
         if ((margin < GoRuntime.Len(indentText)))
         {
             initialMargin = GoRuntime.Slice(indentText, margin);
         }
 
-        return this.parseTagComments(margin, new GoRef<string>(() => initialMargin, value => initialMargin = value));
+        return this.parseTagComments(margin, new GoRef<ByteStringView>(() => initialMargin, value => initialMargin = value));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:546:1.
-    private NodeList parseTagComments(int indent, GoRef<string> initialMargin)
+    private NodeList parseTagComments(int indent, GoRef<ByteStringView> initialMargin)
     {
         var commentsPos = this.nodePos();
         var comments = this.jsdocTagCommentsSpace;
-        this.jsdocTagCommentsSpace = null;
+        this.jsdocTagCommentsSpace = default;
         var parts = this.jsdocTagCommentsPartsSpace;
         this.jsdocTagCommentsPartsSpace = null;
         var linkEnd = -1;
@@ -799,7 +801,7 @@ public partial class Parser
         }
 
         var margin = -1;
-        Action<string> pushComment = (text) =>
+        Action<ByteStringView> pushComment = (text) =>
         {
             if ((margin == -1))
             {
@@ -811,7 +813,7 @@ public partial class Parser
         };
         if ((initialMargin != null))
         {
-            if ((initialMargin.Value != ""))
+            if ((initialMargin.Value.Length != 0))
             {
                 pushComment(initialMargin.Value);
             }
@@ -837,7 +839,7 @@ public partial class Parser
                 case Kind.NewLineTrivia:
                 {
                     state = jsdocState.BeginningOfLine;
-                    comments = GoRuntime.Append(comments, this.scanner.TokenTextByteString());
+                    comments = GoRuntime.Append(comments, this.scanner.TokenTextView());
                     indent = 0;
                     break;
                 }
@@ -859,7 +861,7 @@ public partial class Parser
                         state = jsdocState.SavingComments;
                     }
 
-                    pushComment(this.scanner.TokenTextByteString());
+                    pushComment(this.scanner.TokenTextView());
                     break;
                 }
 
@@ -875,7 +877,7 @@ public partial class Parser
                         throw new InvalidOperationException("whitespace shouldn't come from the scanner while saving comment text");
                     }
 
-                    var whitespace = this.scanner.TokenTextByteString();
+                    var whitespace = this.scanner.TokenTextView();
                     if (((margin > -1) && ((indent + GoRuntime.Len(whitespace)) > margin)))
                     {
                         comments = GoRuntime.Append(comments, GoRuntime.Slice(whitespace, Math.Max((margin - indent), 0)));
@@ -898,7 +900,7 @@ public partial class Parser
                     if (inFencedCodeBlock)
                     {
                         state = jsdocState.SavingBackticks;
-                        pushComment(this.scanner.TokenTextByteString());
+                        pushComment(this.scanner.TokenTextView());
                         break;
                     }
 
@@ -918,7 +920,7 @@ public partial class Parser
                             commentStart = commentsPos;
                         }
 
-                        var text2 = this.finishNodeWithEnd(this.factory.NewJSDocText(this.stringSliceArena.Clone(comments)), commentStart, commentEnd);
+                        var text2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), commentStart, commentEnd);
                         parts = GoRuntime.Append(parts, text2);
                         parts = GoRuntime.Append(parts, link);
                         comments = GoRuntime.Slice(comments, 0, 0);
@@ -926,7 +928,7 @@ public partial class Parser
                     }
                     else
                     {
-                        pushComment(this.scanner.TokenTextByteString());
+                        pushComment(this.scanner.TokenTextView());
                     }
 
                     break;
@@ -944,7 +946,7 @@ public partial class Parser
                         state = jsdocState.SavingBackticks;
                     }
 
-                    pushComment(this.scanner.TokenTextByteString());
+                    pushComment(this.scanner.TokenTextView());
                     break;
                 }
 
@@ -962,7 +964,7 @@ public partial class Parser
                         }
                     }
 
-                    pushComment(this.scanner.TokenValueByteString());
+                    pushComment(this.scanner.TokenValueTextView());
                     break;
                 }
 
@@ -992,7 +994,7 @@ public partial class Parser
                         }
                     }
 
-                    pushComment(this.scanner.TokenTextByteString());
+                    pushComment(this.scanner.TokenTextView());
                     break;
                 }
             }
@@ -1024,7 +1026,7 @@ public partial class Parser
                 commentStart2 = commentsPos;
             }
 
-            var text3 = this.finishNode(this.factory.NewJSDocText(this.stringSliceArena.Clone(comments)), commentStart2);
+            var text3 = this.finishNode(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), commentStart2);
             parts = GoRuntime.Append(parts, text3);
         }
 
@@ -1053,10 +1055,10 @@ public partial class Parser
         this.nextTokenJSDoc();
         this.skipWhitespace();
         var name = this.parseJSDocLinkName();
-        List<string> text = default;
+        Slice<ByteStringView> text = default;
         while ((((this.token != Kind.CloseBraceToken) && (this.token != Kind.NewLineTrivia)) && (this.token != Kind.EndOfFile)))
         {
-            text = GoRuntime.Append(text, this.scanner.TokenTextByteString());
+            text = GoRuntime.Append(text, this.scanner.TokenTextView());
             this.nextTokenJSDoc();
         }
 
@@ -1065,19 +1067,19 @@ public partial class Parser
         {
             case "link":
             {
-                create = this.factory.NewJSDocLink(name, text);
+                create = this.factory.NewJSDocLinkWithFragments(name, JSDocTextFragments.FromViews(text));
                 break;
             }
 
             case "linkcode":
             {
-                create = this.factory.NewJSDocLinkCode(name, text);
+                create = this.factory.NewJSDocLinkCodeWithFragments(name, JSDocTextFragments.FromViews(text));
                 break;
             }
 
             default:
             {
-                create = this.factory.NewJSDocLinkPlain(name, text);
+                create = this.factory.NewJSDocLinkPlainWithFragments(name, JSDocTextFragments.FromViews(text));
                 break;
             }
         }
@@ -1143,7 +1145,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:780:1.
-    private Node parseUnknownTag(int start, Node tagName, int indent, string indentText)
+    private Node parseUnknownTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
         return this.finishNode(this.factory.NewJSDocUnknownTag(tagName, this.parseTrailingTagComments(start, this.nodePos(), indent, indentText)), start);
     }
@@ -1301,7 +1303,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:884:1.
-    private Node parseReturnTag(List<Node> previousTags, int start, Node tagName, int indent, string indentText)
+    private Node parseReturnTag(List<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
     {
         if (Core.Some(previousTags, Ast.IsJSDocReturnTag))
         {
@@ -1314,7 +1316,7 @@ public partial class Parser
 
     // pass indent=-1 to skip parsing trailing comments (as when a type tag is nested in a typedef)
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:894:1.
-    private Node parseTypeTag(List<Node> previousTags, int start, Node tagName, int indent, string indentText)
+    private Node parseTypeTag(List<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
     {
         if (Core.Some(previousTags, Ast.IsJSDocTypeTag))
         {
@@ -1332,9 +1334,9 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:907:1.
-    private Node parseSeeTag(int start, Node tagName, int indent, string indentText)
+    private Node parseSeeTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
-        var hasNameReference = ((this.isIdentifier() && !GoStrings.HasPrefix(GoRuntime.Slice(this.sourceText, this.scanner.TokenEnd()), "://")) || ((this.token == Kind.OpenBraceToken) && this.lookAhead((parserCallback) => parserCallback.nextTokenIsIdentifierOrKeyword())));
+        var hasNameReference = ((this.isIdentifier() && !GoStrings.HasPrefix(this.sourceText.AsSpan(this.scanner.TokenEnd()), "://"u8)) || ((this.token == Kind.OpenBraceToken) && this.lookAhead((parserCallback) => parserCallback.nextTokenIsIdentifierOrKeyword())));
         Node nameExpression = default;
         if (hasNameReference)
         {
@@ -1346,21 +1348,21 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:918:1.
-    private Node parseImplementsTag(int start, Node tagName, int margin, string indentText)
+    private Node parseImplementsTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var className = this.parseExpressionWithTypeArgumentsForAugments();
         return this.finishNode(this.factory.NewJSDocImplementsTag(tagName, className, this.parseTrailingTagComments(start, this.nodePos(), margin, indentText)), start);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:923:1.
-    private Node parseAugmentsTag(int start, Node tagName, int margin, string indentText)
+    private Node parseAugmentsTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var className = this.parseExpressionWithTypeArgumentsForAugments();
         return this.finishNode(this.factory.NewJSDocAugmentsTag(tagName, className, this.parseTrailingTagComments(start, this.nodePos(), margin, indentText)), start);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:928:1.
-    private Node parseSatisfiesTag(int start, Node tagName, int margin, string indentText)
+    private Node parseSatisfiesTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var typeExpression = this.parseJSDocTypeExpression(false);
         var comments = this.parseTrailingTagComments(start, this.nodePos(), margin, indentText);
@@ -1368,7 +1370,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:934:1.
-    private Node parseThrowsTag(int start, Node tagName, int margin, string indentText)
+    private Node parseThrowsTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var typeExpression = this.tryParseTypeExpression();
         var comment = this.parseTrailingTagComments(start, this.nodePos(), margin, indentText);
@@ -1376,7 +1378,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:940:1.
-    private Node parseImportTag(int start, Node tagName, int margin, string indentText)
+    private Node parseImportTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var afterImportTagPos = this.scanner.TokenFullStart();
         Node identifier = default;
@@ -1426,13 +1428,13 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:981:1.
-    private Node parseSimpleTag(int start, Func<Node, NodeList, Node> createTag, Node tagName2, int margin, string indentText)
+    private Node parseSimpleTag(int start, Func<Node, NodeList, Node> createTag, Node tagName2, int margin, ByteStringView indentText)
     {
         return this.finishNode(createTag(tagName2, this.parseTrailingTagComments(start, this.nodePos(), margin, indentText)), start);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:985:1.
-    private Node parseThisTag(int start, Node tagName, int margin, string indentText)
+    private Node parseThisTag(int start, Node tagName, int margin, ByteStringView indentText)
     {
         var typeExpression = this.parseJSDocTypeExpression(true);
         this.skipWhitespace();
@@ -1471,7 +1473,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:1018:1.
-    private Node parseTypedefTag(int start, Node tagName, int indent, string indentText)
+    private Node parseTypedefTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
         var typeExpression = this.tryParseTypeExpression();
         this.skipWhitespaceOrAsterisk();
@@ -1659,7 +1661,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:1138:1.
-    private Node parseCallbackTag(int start, Node tagName, int indent, string indentText)
+    private Node parseCallbackTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
         var fullName = this.parseJSDocTypeNameWithNamespace(false);
         if ((fullName == null))
@@ -1689,7 +1691,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:1158:1.
-    private Node parseOverloadTag(int start, Node tagName, int indent, string indentText)
+    private Node parseOverloadTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
         this.skipWhitespace();
         var comment = this.parseTagComments(indent, null);
@@ -1916,7 +1918,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:1293:1.
-    private Node parseTemplateTag(int start, Node tagName, int indent, string indentText)
+    private Node parseTemplateTag(int start, Node tagName, int indent, ByteStringView indentText)
     {
         Node constraint = default;
         if ((this.token == Kind.OpenBraceToken))
@@ -1978,7 +1980,7 @@ public partial class Parser
             {
                 if (isReservedWord(this.token))
                 {
-                    this.parseErrorAtCurrentToken(Diagnostics.Identifier_expected_0_is_a_reserved_word_that_cannot_be_used_here, this.scanner.TokenTextByteString());
+                    this.parseErrorAtCurrentToken(Diagnostics.Identifier_expected_0_is_a_reserved_word_that_cannot_be_used_here, this.scanner.TokenTextView().Materialize());
                 }
             }
 

@@ -94,7 +94,7 @@ public partial class Scanner
             this.scanner.errorAt(msg, pos, length, args);
         }
 
-        private string text()
+        private ByteStringView text()
         {
             return this.scanner.text;
         }
@@ -758,15 +758,15 @@ public partial class Scanner
             }
             var start = this.pos();
             string operand = "";
-            var twoChars = "";
+            // Go regexp.go:607–619/698–710: these bounded slices only select ASCII operators.
+            ReadOnlySpan<byte> twoChars = default;
             if (((this.pos() + 1) < this.end))
             {
-                twoChars = this.text().Substring(this.pos(), (this.pos() + 2) - (this.pos()));
+                twoChars = this.text().AsSpan(this.pos(), 2);
             }
-            switch (twoChars)
+            switch (true)
             {
-                case "--":
-                case "&&":
+                case true when GoStrings.Equal(twoChars, "--"u8) || GoStrings.Equal(twoChars, "&&"u8):
                     {
                         this.error(Diagnostics.Expected_a_class_set_operand, this.pos(), 0);
                         this.mayContainStrings = false;
@@ -897,15 +897,14 @@ public partial class Scanner
                     break;
                 }
                 start = this.pos();
-                twoChars = "";
+                twoChars = default;
                 if (((this.pos() + 1) < this.end))
                 {
-                    twoChars = this.text().Substring(this.pos(), (this.pos() + 2) - (this.pos()));
+                    twoChars = this.text().AsSpan(this.pos(), 2);
                 }
-                switch (twoChars)
+                switch (true)
                 {
-                    case "--":
-                    case "&&":
+                    case true when GoStrings.Equal(twoChars, "--"u8) || GoStrings.Equal(twoChars, "&&"u8):
                         {
                             this.error(Diagnostics.Operators_must_not_be_mixed_within_a_character_class_Wrap_it_in_a_nested_class_instead, this.pos(), 2);
                             this.incPos(2);

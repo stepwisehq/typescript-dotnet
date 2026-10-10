@@ -60,6 +60,9 @@ def fields(n):
                 if f not in out:out.append(f)
     out.extend(structs[n][1])
     return out
+# Managed compatibility for Go JSDoc []string text descriptors. Keep only these
+# four payloads borrowed internally; public mutable List<string> APIs stay intact.
+jsdoc_fragment_models = {'JSDocText', 'JSDocLink', 'JSDocLinkPlain', 'JSDocLinkCode'}
 def composite(n):
     return n=='CompositeBase' or any(composite(e) for e in structs.get(n,([],[]))[0])
 def typ(t):
@@ -108,7 +111,18 @@ for n in concrete:
     if composite(n):parts.append('    internal override bool CacheSubtreeFacts => true;')
     for f,t in ff:
         ct=typ(t);initial=' = "";' if ct=='string' else ''
-        parts.append('    public '+ct+' '+cname(f)+' { get; set; }'+initial)
+        if n in jsdoc_fragment_models and f == 'text':
+            assert ct == 'List<string>', (n, f, ct)
+            parts.append("""    // Managed JSDoc-only storage bridge; public list mutation remains visible.
+    internal JSDocTextFragments TextFragments { get; private set; }
+    public List<string> text
+    {
+        get => TextFragments?.AsList();
+        set => TextFragments = JSDocTextFragments.FromStrings(value);
+    }
+    internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;""")
+        else:
+            parts.append('    public '+ct+' '+cname(f)+' { get; set; }'+initial)
     if any(f=='name' for f,t in ff):parts.append('    public override Node Name() => name;')
     if any(f=='modifiers' for f,t in ff):parts.append('    public override ModifierList Modifiers() => modifiers;\n    public override void SetModifiers(ModifierList value) => modifiers = value;')
     child=next((b for (recv,rtype,fn,ps,rt),b in fs if rtype==n and fn=='ForEachChild'),None)
@@ -118,7 +132,10 @@ for n in concrete:
         ce=expr(child[7:]).replace('forEachChild_JSDocParameterOrPropertyTag(node,', 'Ast.ForEachChildJSDocParameterOrPropertyTag(this,').replace('visitNodeList(', 'Ast.VisitNodeList(').replace('visitModifiers(', 'Ast.VisitModifiers(').replace('visit(', 'Ast.Visit(').replace('visitNodes(', 'Ast.VisitNodes(')
         parts.append('    public override bool ForEachChild(Visitor v) => '+ce+';')
     clone=next((b for (recv,rtype,fn,ps,rt),b in fs if rtype==n and fn=='Clone'),None)
-    if clone:
+    if clone and n in jsdoc_fragment_models:
+        args = 'this.TextFragments' if n == 'JSDocText' else 'this.name, this.TextFragments'
+        parts.append('    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().New'+n+'WithFragments('+args+'), this.AsNode(), f.AsNodeFactory().hooks);')
+    elif clone:
         ce=expr(clone.replace('f.', 'cloneFactory.')).replace('cloneFactory.', 'f.').replace('cloneNode(', 'Ast.CloneNode(')
         if ce.startswith('return '):parts.append('    public override Node Clone(NodeFactoryCoercible f) => '+ce[7:]+';')
         else:
@@ -129,7 +146,11 @@ for n in concrete:
             parts.append('    public override Node Clone(NodeFactoryCoercible f)\n    {\n'+ce+'\n    }')
     visit_each=next((b for (recv,rtype,fn,ps,rt),b in fs if rtype==n and fn=='VisitEachChild'),None)
     if visit_each:
-        if n=='SyntaxList':
+        if n in jsdoc_fragment_models:
+            # JSDocText has no VisitEachChild source method; named link nodes do.
+            assert n != 'JSDocText', n
+            parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.Update'+n+'WithFragments(this, v.visitNode(this.name), this.TextFragments);')
+        elif n=='SyntaxList':
             parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateSyntaxList(this, Ast.SameMapNodes(Children, v.visitNode));')
         elif n=='JSDocTypeLiteral':
             parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocTypeLiteral(this, Ast.SameMapNodes(JSDocPropertyTags, v.visitNode), IsArrayType);')
@@ -183,6 +204,13 @@ for (recv,rtype,fn,ps,rt),body in fs:
         else:raise ValueError((fn,line))
     parts.append('    public Node '+fn+'('+', '.join(args)+')\n    {\n'+''.join('        '+l+'\n' for l in lines)+'    }')
     count+=1
+    if fn[3:] in jsdoc_fragment_models:
+        model = fn[3:]
+        borrowed_args = 'JSDocTextFragments text' if model == 'JSDocText' else 'Node name, JSDocTextFragments text'
+        borrowed_lines = ['var data = new '+model+'();']
+        if model != 'JSDocText': borrowed_lines.append('data.name = name;')
+        borrowed_lines += ['data.SetTextFragments(text);', 'textCount++;', 'return this.newNode(Kind.'+model+', data);']
+        parts.append('    // Managed JSDoc view bridge; assign before OnCreate publication.\n    internal Node '+fn+'WithFragments('+borrowed_args+')\n    {\n'+''.join('        '+l+'\n' for l in borrowed_lines)+'    }')
 for (recv,rtype,fn,ps,rt),body in fs:
     if rtype!='NodeFactory' or not fn.startswith('Update') or fn=='UpdateSyntheticExpression':continue
     args=[]
@@ -196,6 +224,10 @@ for (recv,rtype,fn,ps,rt),body in fs:
     b=re.sub(r'panic\(([^\n]+)\)',r'throw new InvalidOperationException(\1)',b)
     b=re.sub(r'(?m)^(\s*(?:return |throw )[^\n]+)$',r'\1;',b)
     parts.append('    public Node '+fn+'('+', '.join(args)+')\n    {\n'+''.join('        '+l+'\n' for l in b.splitlines())+'    }')
+# Borrowed visitor updates retain the same source storage before any public
+# projection. Public Update methods above keep source SameSyntaxSlice semantics.
+for model in ['JSDocLink', 'JSDocLinkPlain', 'JSDocLinkCode']:
+    parts.append('    internal Node Update'+model+'WithFragments('+model+' node, Node name, JSDocTextFragments text)\n    {\n        if (name != node.name || !ReferenceEquals(text, node.TextFragments))\n            return Ast.UpdateNode(this.New'+model+'WithFragments(name, text), node.AsNode(), hooks);\n        return node.AsNode();\n    }')
 parts.append('}\npublic sealed partial class Node\n{')
 for n in concrete:parts.append('    public '+n+' As'+n+'() => ('+n+')data;')
 parts.append('    public SourceFile AsSourceFile() => (SourceFile)data;')

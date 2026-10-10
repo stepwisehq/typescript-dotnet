@@ -48,8 +48,9 @@ public sealed class PositionMap
 public static partial class Ast
 {
     public static PositionMap ComputePositionMap(string text) => ComputePositionMapByteString(GoString.ToUtf8(text));
-    public static PositionMap ComputePositionMap(byte[] text) => ComputePositionMapByteString(GoString.FromBytes(text));
-    internal static PositionMap ComputePositionMapByteString(string text)
+    public static PositionMap ComputePositionMap(byte[] text) => ComputePositionMapByteString(ByteStringView.CopyFrom(text));
+    internal static PositionMap ComputePositionMapByteString(string text) => ComputePositionMapByteString(ByteStringView.FromGoBytes(text));
+    internal static PositionMap ComputePositionMapByteString(ByteStringView text)
     {
         var pm = new PositionMap();
         int delta = 0;

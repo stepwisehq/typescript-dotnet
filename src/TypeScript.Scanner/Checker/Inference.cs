@@ -17,7 +17,7 @@ public sealed partial class Checker
         internal bool contravariant, bivariant;
         internal ExpandingFlags expandingFlags;
         internal Dictionary<InferenceKey, InferencePriority> visited;
-        internal List<Type> sourceStack, targetStack;
+        internal Slice<Type> sourceStack, targetStack;
         internal InferenceState next;
     }
 
@@ -41,8 +41,9 @@ public sealed partial class Checker
     {
         n.visited?.Clear();
         n.inferences = n.inferences == null ? null : [];
-        n.sourceStack = n.sourceStack == null ? null : [];
-        n.targetStack = n.targetStack == null ? null : [];
+        // inference.go:49/50. Reset only the headers; retain backing capacity.
+        n.sourceStack = n.sourceStack.Slice2(0, 0);
+        n.targetStack = n.targetStack.Slice2(0, 0);
         n.originalSource = n.originalTarget = n.propagationType = null;
         n.priority = n.inferencePriority = InferencePriority.None;
         n.contravariant = n.bivariant = false;
@@ -141,9 +142,25 @@ public sealed partial class Checker
         }
         else
         {
-            if ((((target.flags & TypeFlags.Intersection) != 0) && !Core.Every(target.Types(), this.isNonGenericObjectType)))
+            if (((target.flags & TypeFlags.Intersection) != 0))
             {
-                if (((source.flags & TypeFlags.Union) == 0))
+                // inference.go:125 / core.go:199: preserve Every's order and first-false stop
+                // without allocating a Checker-bound predicate delegate on each inference.
+                bool allNonGenericObjectTypes = true;
+                var targetTypes = target.Types();
+                if (targetTypes != null)
+                {
+                    foreach (var constituent in targetTypes)
+                    {
+                        if (!this.isNonGenericObjectType(constituent))
+                        {
+                            allNonGenericObjectTypes = false;
+                            break;
+                        }
+                    }
+                }
+
+                if ((!allNonGenericObjectTypes && ((source.flags & TypeFlags.Union) == 0)))
                 {
                     List<Type> sourceTypes2 = default;
                     if (((source.flags & TypeFlags.Intersection) != 0))
@@ -490,8 +507,8 @@ public sealed partial class Checker
         var saveInferencePriority = n.inferencePriority;
         n.inferencePriority = InferencePriority.MaxValue;
         var saveExpandingFlags = n.expandingFlags;
-        n.sourceStack = GoRuntime.Append(n.sourceStack, source);
-        n.targetStack = GoRuntime.Append(n.targetStack, target);
+        n.sourceStack = n.sourceStack.Append(source);
+        n.targetStack = n.targetStack.Append(target);
         if (this.isDeeplyNestedType(source, n.sourceStack, 2))
         {
             n.expandingFlags |= ExpandingFlags.Source;
@@ -511,8 +528,8 @@ public sealed partial class Checker
             n.inferencePriority = InferencePriority.Circularity;
         }
 
-        n.targetStack = GoRuntime.Slice(n.targetStack, 0, (GoRuntime.Len(n.targetStack) - 1));
-        n.sourceStack = GoRuntime.Slice(n.sourceStack, 0, (GoRuntime.Len(n.sourceStack) - 1));
+        n.targetStack = n.targetStack.Slice2(0, n.targetStack.Length - 1);
+        n.sourceStack = n.sourceStack.Slice2(0, n.sourceStack.Length - 1);
         n.expandingFlags = saveExpandingFlags;
         n.visited[key] = n.inferencePriority;
         n.inferencePriority = (InferencePriority)Math.Min((int)n.inferencePriority, (int)saveInferencePriority);
@@ -1103,7 +1120,12 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:879:1.
-    private void applyToParameterTypes(Signature source, Signature target, Action<Type, Type> callback)
+    private void applyToParameterTypes(Signature source, Signature target, Action<Type, Type> callback) =>
+        applyToParameterTypes(source, target, callback, static (s, t, action) => action(s, t));
+
+    // inference.go:879. Explicit value state avoids managed capture frames;
+    // legacy callbacks and state callbacks share this original traversal.
+    private void applyToParameterTypes<TState>(Signature source, Signature target, TState state, Action<Type, Type, TState> callback)
     {
         var sourceCount = this.getParameterCount(source);
         var targetCount = this.getParameterCount(target);
@@ -1127,25 +1149,30 @@ public sealed partial class Checker
             var targetThisType = this.getThisTypeOfSignature(target);
             if ((targetThisType != null))
             {
-                callback(sourceThisType, targetThisType);
+                callback(sourceThisType, targetThisType, state);
             }
         }
 
         {
             foreach (var i in GoRuntime.RangeKeys(paramCount))
             {
-                callback(this.getTypeAtPosition(source, i), this.getTypeAtPosition(target, i));
+                callback(this.getTypeAtPosition(source, i), this.getTypeAtPosition(target, i), state);
             }
         }
 
         if ((targetRestType != null))
         {
-            callback(this.getRestTypeAtPosition(source, paramCount, (this.isConstTypeVariable(targetRestType, 0) && !someType(targetRestType, this.isMutableArrayLikeType))), targetRestType);
+            callback(this.getRestTypeAtPosition(source, paramCount, (this.isConstTypeVariable(targetRestType, 0) && !someType(targetRestType, this.isMutableArrayLikeType))), targetRestType, state);
         }
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:907:1.
-    private void applyToReturnTypes(Signature source, Signature target, Action<Type, Type> callback)
+    private void applyToReturnTypes(Signature source, Signature target, Action<Type, Type> callback) =>
+        applyToReturnTypes(source, target, callback, static (s, t, action) => action(s, t));
+
+    // inference.go:907. Keep predicate-before-return ordering with the same
+    // explicit-state adapter used by parameter traversal.
+    private void applyToReturnTypes<TState>(Signature source, Signature target, TState state, Action<Type, Type, TState> callback)
     {
         var targetTypePredicate = this.getTypePredicateOfSignature(target);
         if ((targetTypePredicate != null))
@@ -1153,7 +1180,7 @@ public sealed partial class Checker
             var sourceTypePredicate = this.getTypePredicateOfSignature(source);
             if (((((sourceTypePredicate != null) && this.typePredicateKindsMatch(sourceTypePredicate, targetTypePredicate)) && (sourceTypePredicate.t != null)) && (targetTypePredicate.t != null)))
             {
-                callback(sourceTypePredicate.t, targetTypePredicate.t);
+                callback(sourceTypePredicate.t, targetTypePredicate.t, state);
                 return;
             }
         }
@@ -1161,7 +1188,7 @@ public sealed partial class Checker
         var targetReturnType = this.getReturnTypeOfSignature(target);
         if (this.couldContainTypeVariables(targetReturnType))
         {
-            callback(this.getReturnTypeOfSignature(source), targetReturnType);
+            callback(this.getReturnTypeOfSignature(source), targetReturnType, state);
         }
     }
 

@@ -987,7 +987,8 @@ public static partial class Ast
     }
 
     // Upstream function: findImportOrRequire
-    public static (int, int) findImportOrRequire(string text, int start)
+    public static (int, int) findImportOrRequire(string text, int start) => findImportOrRequire(ByteStringView.FromGoBytes(text), start);
+    internal static (int, int) findImportOrRequire(ByteStringView text, int start)
     {
         int index = default;
         int size = default;
@@ -995,26 +996,26 @@ public static partial class Ast
         var n = GoRuntime.Len(text);
         while ((index < n))
         {
-            var next = text.AsSpan(index).IndexOfAny('i', 'r');
+            var next = text.AsSpan(index).IndexOfAny((byte)'i', (byte)'r');
             if ((next < 0))
             {
                 break;
             }
 
             index += next;
-            string expected = "";
+            ReadOnlySpan<byte> expected;
             if ((text[index] == 'i'))
             {
                 size = 6;
-                expected = "import";
+                expected = "import"u8;
             }
             else
             {
                 size = 7;
-                expected = "require";
+                expected = "require"u8;
             }
 
-            if ((((index + size) <= n) && (text.Substring(index, (index + size) - (index)) == expected)))
+            if ((((index + size) <= n) && (GoStrings.Equal(text.AsSpan(index, size), expected))))
             {
                 return (index, size);
             }
@@ -1029,7 +1030,7 @@ public static partial class Ast
     public static bool ForEachDynamicImportOrRequireCall(SourceFile file, bool includeTypeSpaceImports, bool requireStringLiteralLikeArgument, Func<Node, Node, bool> cb)
     {
         var isJavaScriptFile = IsInJSFile(file.AsNode());
-        var(lastIndex, size) = findImportOrRequire(file.Text(), 0);
+        var(lastIndex, size) = findImportOrRequire(file.TextView(), 0);
         while ((lastIndex >= 0))
         {
             var node = GetNodeAtPosition(file, lastIndex, (isJavaScriptFile && includeTypeSpaceImports));
@@ -1062,7 +1063,7 @@ public static partial class Ast
             }
 
             lastIndex += size;
-            (lastIndex, size) = findImportOrRequire(file.Text(), lastIndex);
+            (lastIndex, size) = findImportOrRequire(file.TextView(), lastIndex);
         }
 
         return false;

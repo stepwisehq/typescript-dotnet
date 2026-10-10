@@ -354,7 +354,7 @@ public class ObjectType : StructuredType
 {
     internal Type target;
     internal TypeMapper mapper;
-    // The checker key preserves the original complete key preimage.
+    // The checker key is the original opaque XXH3-128 value.
     internal Dictionary<CacheHashKey, Type> instantiations;
     public override ObjectType AsObjectType() => this;
 }
@@ -778,7 +778,8 @@ internal sealed class SourceFileLinks
     internal Symbol externalHelpersModule = null;
     internal ExternalEmitHelpers requestedExternalEmitHelpers = 0;
     internal GoOrderedNodeSet deferredNodes = new();
-    internal List<Node> identifierCheckNodes = null;
+    // checker.go:7245,7248. Per-file append header, read by the unused pass.
+    internal Slice<Node> identifierCheckNodes;
     internal string localJsxNamespace = "", localJsxFragmentNamespace = "";
     internal Node localJsxFactory = null, localJsxFragmentFactory = null;
     internal Type jsxFragmentType = null;

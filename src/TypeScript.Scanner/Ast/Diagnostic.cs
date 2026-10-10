@@ -98,12 +98,12 @@ public sealed class Diagnostic
         var (segment, ok) = TypeScript.SpanMap.SpanMaps.AliasForVirtualSpan(file.SpanMap(), loc);
         if (!ok)
             return messageArgs;
-        string virtualText = file.Text();
+        var virtualText = file.TextView();
         string originalText = file.OriginalText();
         if (segment.VirtualStart < 0 || segment.VirtualEnd > virtualText.Length ||
             segment.OriginalStart < 0 || segment.OriginalEnd > originalText.Length)
             return messageArgs;
-        string virtualName = virtualText[segment.VirtualStart..segment.VirtualEnd];
+        string virtualName = virtualText.Slice(segment.VirtualStart, segment.VirtualEnd).Materialize();
         string originalName = originalText[segment.OriginalStart..segment.OriginalEnd];
         List<string> result = null;
         for (int index = 0; index < (messageArgs?.Count ?? 0); index++)

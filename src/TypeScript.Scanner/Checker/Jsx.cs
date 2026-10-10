@@ -780,7 +780,7 @@ public sealed partial class Checker
                     this.checkSourceElements(typeArguments);
                     var sourceFile = Ast.GetSourceFileOfNode(node);
                     var typeArgumentList = node.TypeArgumentList();
-                    var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeArgumentList.Loc.Pos()), typeArgumentList.Loc.End());
+                    var loc = Core.NewTextRange(TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.TextView(), typeArgumentList.Loc.Pos()), typeArgumentList.Loc.End());
                     this.addDiagnostic(Ast.NewDiagnostic(sourceFile, loc, Diagnostics.Expected_0_type_arguments_but_got_1, 0, GoRuntime.Len(typeArguments)));
                 }
 

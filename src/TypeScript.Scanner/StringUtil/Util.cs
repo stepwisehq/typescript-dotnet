@@ -26,6 +26,13 @@ internal static partial class StringUtil
         return Utf8.DecodeRuneInString(s);
     }
 
+    public static (int Rune, int Size) DecodeJSStringRune(ReadOnlySpan<byte> s)
+    {
+        if (s.Length >= 3 && s[0] == 0xED && s[1] is >= 0xA0 and <= 0xBF && s[2] is >= 0x80 and <= 0xBF)
+            return (0xD000 | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F), 3);
+        return Utf8.DecodeRuneInString(s);
+    }
+
     public static string CombineSurrogatePairs(string s)
     {
         if (!s.Contains((char)0xED))

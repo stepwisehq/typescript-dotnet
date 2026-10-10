@@ -49,7 +49,7 @@ public static partial class ContentMappers
                     Force = true
                 }
             };
-        var source = Parser.ParseSourceFile(parseOptions, GoString.Bytes(result.Text), Core.GetScriptKindFromFileName(virtualFileName));
+        var source = Parser.ParseSourceFileOwned(parseOptions, ByteStringView.FromGoBytes(result.Text), Core.GetScriptKindFromFileName(virtualFileName));
         if ((result.Diagnostics?.Count ?? 0) > 0)
         {
             foreach (var diagnostic in result.Diagnostics!)
@@ -86,7 +86,7 @@ public static partial class ContentMappers
                         Force = true
                     }
                 };
-            files.Supplemental.Add(Parser.ParseSourceFile(supplementalOptions, GoString.Bytes(supplemental.Text), Core.GetScriptKindFromFileName(supplementalName)));
+            files.Supplemental.Add(Parser.ParseSourceFileOwned(supplementalOptions, ByteStringView.FromGoBytes(supplemental.Text), Core.GetScriptKindFromFileName(supplementalName)));
         }
 
         string mapperIdentity = mapper.Identity();

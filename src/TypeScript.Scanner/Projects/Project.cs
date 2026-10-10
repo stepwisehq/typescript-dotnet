@@ -118,12 +118,7 @@ public sealed class Project : ICheckerProgramHost
         // original bytes through FileNameGoBytes and unchanged typed path keys.
         foreach (var file in program.SourceFiles())
         {
-            var parseOptions = file.ParseOptions();
-            file.parseOptions = parseOptions with
-            {
-                FileName = RootedFilePath.FromGoString(file.FileNameGoBytes()).ToUnicode(),
-                FileNameIsGoBytes = false
-            };
+            file.SetFileNameToUnicode();
         }
         sourceFiles.AddRange(program.SourceFiles());
         foreach (var pair in program.FilesByPath())
