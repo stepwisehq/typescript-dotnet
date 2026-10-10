@@ -617,7 +617,14 @@ public sealed partial class Checker
     {
         public int len() => props.Count;
         public string name(int index) => props[index].Name;
-        public bool matches(int index, Type t) => c.getTypeOfSymbol(props[index]).Distributed().Any(s => isRelatedTo(s, t) != Ternary.False);
+        // checker/relater.go:1044. Go ranges over nil for a never property type.
+        public bool matches(int index, Type t)
+        {
+            foreach (var s in c.getTypeOfSymbol(props[index]).Distributed() ?? [])
+                if (isRelatedTo(s, t) != Ternary.False)
+                    return true;
+            return false;
+        }
     }
 
     private Type discriminateTypeByDiscriminableItems(Type target, Discriminator discriminator)

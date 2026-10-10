@@ -1,5 +1,17 @@
 # Current project state
 
+**Post-acceptance VS Code follow-up:** the nil-distribution crash and ordinary
+CLI raw-binding diagnostic policy are repaired; 14 focused xUnit cases and actual
+Linux x64 Native AOT policy controls pass. The corrected full native check completes
+in 62.37s with ten diagnostics matching the exact pinned Go (9.61s), including
+owners, codes, locations and full rendered chains. Installed Go 7.0.2 reports zero;
+this is revision divergence, not grounds to alter pinned relation behavior. No
+optimization was made. This checkpoint preserves the fixes and tests; see
+[findings and reproduction](VSCODE-CHECK-STATUS.md).
+Historical acceptance proof and corpus remain unchanged. This follow-up completes
+the authorized diagnostic repair and bounded performance assessment; no broader
+campaign or speculative performance tuning is underway.
+
 **Accepted: whole-checker no-emit completion from `bb035b3`.** Read the
 [mandate](CHECKER-COMPLETION-PROMPT.md) and [live checkpoint](CHECKER-COMPLETION-STATUS.md).
 The [L1–L6 contract](LANGUAGE-CONTRACT.md) and whole-checker gate pass actual Linux x64

@@ -97,9 +97,9 @@ public sealed class Project : ICheckerProgramHost
 
     public static ConfigurationInspection InspectConfiguration(string configPath) => new(configPath);
     public static ResolvedProjectGraph InspectResolvedGraph(string configPath) => new(InspectConfiguration(configPath));
-    public static Project LoadConfiguration(string configPath)
+    public static Project LoadConfiguration(string configPath, CompilerOptions? existingOptions = null)
     {
-        ConfigurationInspection inspection = InspectConfiguration(configPath);
+        ConfigurationInspection inspection = new(configPath, existingOptions);
         inspection.RequireValid();
         var fs = TypeScript.Bundled.Bundled.WrapFS(TypeScript.Vfs.OsVfs.OsVfs.FS());
         var host = CompilerHosts.NewCachedFSCompilerHost(fs, TypeScript.Bundled.Bundled.LibPath());
@@ -205,13 +205,31 @@ public sealed class Project : ICheckerProgramHost
     {
         if (genuineProgram is not null)
         {
-            var diagnostics = new List<Diagnostic>();
-            diagnostics.AddRange(genuineProgram.GetConfigFileParsingDiagnostics() ?? []);
-            diagnostics.AddRange(genuineProgram.GetSyntacticDiagnostics() ?? []);
-            diagnostics.AddRange(genuineProgram.GetProgramDiagnostics() ?? []);
-            diagnostics.AddRange(genuineProgram.GetBindDiagnostics() ?? []);
-            diagnostics.AddRange(genuineProgram.GetSemanticDiagnostics() ?? []);
-            diagnostics.AddRange(genuineProgram.GetGlobalDiagnostics() ?? []);
+            // compiler/program.go:GetDiagnosticsOfAnyProgram (2033). Binding is
+            // performed early; its raw diagnostics are published only through
+            // semantic policy (SkipTypeChecking and preceding directives).
+            var diagnostics = (genuineProgram.GetConfigFileParsingDiagnostics() ?? []).ToList();
+            int configDiagnosticCount = diagnostics.Count;
+            var syntactic = genuineProgram.GetSyntacticDiagnostics();
+            if (syntactic is { Count: > 0 })
+                diagnostics.AddRange(genuineProgram.GetContentMapperDiagnostics() ?? []);
+            diagnostics.AddRange(syntactic ?? []);
+            if (diagnostics.Count == configDiagnosticCount)
+            {
+                diagnostics.AddRange(genuineProgram.GetProgramDiagnostics() ?? []);
+                _ = genuineProgram.GetBindDiagnostics();
+                if (Options.ListFilesOnly != Tristate.True)
+                {
+                    diagnostics.AddRange(genuineProgram.GetGlobalDiagnostics() ?? []);
+                    if (diagnostics.Count == configDiagnosticCount)
+                    {
+                        diagnostics.AddRange(genuineProgram.GetSemanticDiagnostics() ?? []);
+                        diagnostics.AddRange(genuineProgram.GetGlobalDiagnostics() ?? []);
+                    }
+                }
+            }
+            // Declaration-output diagnostics remain outside this no-emit disk
+            // adapter; this consumer does not acquire an emitter.
             return Program.SortAndDeduplicateDiagnostics(diagnostics) ?? [];
         }
 

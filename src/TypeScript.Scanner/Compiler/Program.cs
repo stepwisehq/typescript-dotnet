@@ -141,6 +141,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public List<SourceFile> SourceFiles() => files;
     public List<SourceFile> GetSourceFiles() => files;
     public List<DuplicateSourceFile>? DuplicateSourceFiles() => processedFiles.duplicateSourceFiles;
+
+    // program.go:2058. Managed assembly adapter for syntax-phase mapper diagnostics.
+    internal List<Diagnostic>? GetContentMapperDiagnostics() => processedFiles.contentMapperDiagnostics;
     public List<string>? ContentMapperExtensions() => opts.Config.ContentMapperExtensions();
     public List<Diagnostic>? GetConfigFileParsingDiagnostics() => opts.Config.GetConfigFileParsingDiagnostics();
     public Exception? ModuleResolutionError() => moduleResolutionError;

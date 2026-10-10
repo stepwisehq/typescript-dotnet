@@ -14,7 +14,7 @@ public sealed class ConfigurationInspection
     public ParsedCommandLine? Parsed { get; }
     public IReadOnlyList<Diagnostic> Diagnostics { get; }
 
-    internal ConfigurationInspection(string path)
+    internal ConfigurationInspection(string path, CompilerOptions? existingOptions = null)
     {
         if (string.IsNullOrWhiteSpace(path) || path.IndexOf('\0') >= 0)
             throw new ProjectException("configurationPath", "The configuration path must be nonempty and contain no NUL characters.", path);
@@ -30,7 +30,7 @@ public sealed class ConfigurationInspection
         }
 
         configFileName = file;
-        var(parsed, errors) = ConfigParser.GetParsedCommandLineOfConfigFile(file, null, null, OsVfs.FS());
+        var(parsed, errors) = ConfigParser.GetParsedCommandLineOfConfigFile(file, existingOptions, null, OsVfs.FS());
         Parsed = parsed;
         Diagnostics = (parsed?.GetConfigFileParsingDiagnostics() ?? errors ?? []).AsReadOnly();
     }

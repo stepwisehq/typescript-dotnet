@@ -49,6 +49,11 @@ command smoke can select one existing checking row with
 `--filter 'DisplayName~compiler/2dArrays.ts'`; this is a smoke, not whole-corpus
 qualification.
 
+The project now also contains three Go-backed `DiscriminantNeverTests` regressions
+and eleven `ProjectDiagnosticPolicyTests` cases from the subsequent VS Code repairs,
+so an unfiltered current project run has 15,354 cases. The historical acceptance totals above remain unchanged. The focused
+repair and actual Native AOT retry are recorded in [the VS Code findings](VSCODE-CHECK-STATUS.md).
+
 The documented Release project build and filter were smoke-tested with exactly
 one executed, passing row. The documented native project published successfully;
 the same selected native record matched the committed reference with process

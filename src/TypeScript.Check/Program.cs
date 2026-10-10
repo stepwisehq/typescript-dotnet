@@ -6,15 +6,29 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] | --project <tscheck.json> [--json]";
+const string usage = "Usage: tscheck --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] | --project <tscheck.json> [--json]";
 if (args.Length == 1 && args[0] is "--help" or "-h")
 {
     Console.WriteLine(usage);
     return 0;
 }
 
-bool json = args.Length == 3 && args[2] == "--json";
-if (args.Length is not (2 or 3) || args[0] is not ("--project" or "--config" or "--inspect-config" or "--inspect-project" or "--inspect-program") || (args.Length == 3 && !json))
+// This authored CLI accepts only its existing modes plus the source noEmit
+// override for ordinary --config checking; it is not a general flag parser.
+bool json = false, noEmit = false;
+bool validArguments = args.Length >= 2 && args[0] is
+    "--project" or "--config" or "--inspect-config" or "--inspect-project" or "--inspect-program";
+if (validArguments)
+    foreach (string argument in args.Skip(2))
+    {
+        if (argument == "--json" && !json)
+            json = true;
+        else if (argument == "--noEmit" && args[0] == "--config" && !noEmit)
+            noEmit = true;
+        else
+            validArguments = false;
+    }
+if (!validArguments)
 {
     Console.Error.WriteLine(usage);
     return 2;
@@ -82,7 +96,7 @@ try
         return output.ExitCode;
     }
 
-    Project project = fullConfiguration ? Project.LoadConfiguration(args[1]) : Project.Load(args[1]);
+    Project project = fullConfiguration ? Project.LoadConfiguration(args[1], noEmit ? new CompilerOptions { NoEmit = Tristate.True } : null) : Project.Load(args[1]);
     IReadOnlyList<Diagnostic> diagnostics = project.Check();
     var checkedOutput = new CliResult
     {

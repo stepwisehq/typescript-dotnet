@@ -1,0 +1,56 @@
+{
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 10,
+  "upstreamAggregation": {
+    "path": "upstream/TypeScript/tsc/internal/compiler/program.go",
+    "function": "GetDiagnosticsOfAnyProgram",
+    "sha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c"
+  },
+  "observer": {
+    "path": "tools/cli-diagnostic-policy-oracle/main.go",
+    "sha256": "6714db503ede26382c69f9537b74b0ee296f97f74f1709b6e6c153205dc3e21e"
+  },
+  "original": {
+    "executable": "artifacts/vscode-first-check/cli-diagnostic-policy/original",
+    "sha256": "4f4ff8bf8418d7a77c8afe8e4e939206ece7141b948f1e600312455211ee5ec4",
+    "requests": "artifacts/vscode-first-check/cli-diagnostic-policy/requests.jsonl",
+    "requestsSha256": "838f9427f62641ce1e5223dd4ca8cb4c38a4ba6198ea4c429a9e493983fbac86",
+    "output": "artifacts/vscode-first-check/cli-diagnostic-policy/original.jsonl",
+    "outputSha256": "b294c184a64201f2d224ea05d9167adbcdd0e9e546544aff7a52c4e7d1d2716c"
+  },
+  "resource": {
+    "path": "tests/Checker.NoEmit.Tests/ProjectDiagnosticPolicyCases.jsonl.gz",
+    "sha256": "a52c452d44969cb3a0faf1ffc9d3ce2462076d6d2dd42ecae9432c589b8413fc",
+    "uncompressedSha256": "90f3f09ed3ddf0fca167a259a25106bcf9faa6283afed87b7af3824f57ea1a69"
+  },
+  "adaptations": [
+    "Exact virtual fixture root is rerooted to an isolated disk directory for Project.LoadConfiguration; only diagnostic File fields use this declared path substitution.",
+    "Invalid parsed configuration is returned before checking by the authored disk API.",
+    "Existing-options NoEmit override uses the original config parser; ListFilesOnly override exercises the source phase gate at API level only, not a new CLI option.",
+    "Original aggregation declaration-output channel remains outside this no-emit adapter.",
+    "Expected ExitCode 0/1 is the existing authored Project CLI contract; actual upstream CLI semantic failure exit status may be 2."
+  ],
+  "diagnosticCounts": {
+    "library-binding-skipped": 0,
+    "library-binding-reported": 2,
+    "binding-ignore-directives": 0,
+    "binding-without-directives": 2,
+    "syntax-stops-semantics": 1,
+    "invalid-config-stops-entry": 1,
+    "program-options-stop-semantics": 1,
+    "noemit-override-enables-semantics": 1,
+    "listfilesonly-stops-checking": 0,
+    "globals-stop-semantics": 10
+  },
+  "actualPinnedCLI": {
+    "report": "artifacts/vscode-first-check/cli-diagnostic-policy/actual-cli-report.json",
+    "sha256": "6c2c23623647b883ffb6ecbfaea18bd8bf86966878c14e407b18ab0de0bf8a01",
+    "cases": 10,
+    "qualification": "Diagnostic code/count equality only, complete raw output retained; source API references retain all diagnostic fields."
+  },
+  "beforeFix": {
+    "report": "artifacts/vscode-first-check/cli-diagnostic-policy/before-fix-report.json",
+    "sha256": "4443142402bf04aa5a86d968b2d3db8ead336df87e94fdd1582fd99b5c12026c",
+    "cases": 2
+  }
+}
