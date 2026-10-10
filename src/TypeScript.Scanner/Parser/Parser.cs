@@ -2800,7 +2800,7 @@ public partial class Parser
     private Node tryParseConstructorDeclaration(int pos, jsdocScannerInfo jsdoc, ModifierList modifiers)
     {
         var state = this.mark();
-        if (((this.token == Kind.ConstructorKeyword) || (((this.token == Kind.StringLiteral) && (this.scanner.TokenValueByteString() == "constructor")) && this.lookAhead((parserCallback) => parserCallback.nextTokenIsOpenParen()))))
+        if (((this.token == Kind.ConstructorKeyword) || (((this.token == Kind.StringLiteral) && this.scanner.TokenValueEquals("constructor"u8)) && this.lookAhead((parserCallback) => parserCallback.nextTokenIsOpenParen()))))
         {
             this.nextToken();
             var typeParameters = this.parseTypeParameters();
@@ -3330,23 +3330,10 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2341:1.
     private Kind currentImportPhaseModifier()
     {
-        switch (this.scanner.TokenTextByteString())
-        {
-            case "defer":
-            {
-                return Kind.DeferKeyword;
-            }
-
-            case "source":
-            {
-                return Kind.SourceKeyword;
-            }
-
-            default:
-            {
-                return Kind.Unknown;
-            }
-        }
+        var text = this.scanner.TokenTextView().AsSpan();
+        if (text.SequenceEqual("defer"u8)) return Kind.DeferKeyword;
+        if (text.SequenceEqual("source"u8)) return Kind.SourceKeyword;
+        return Kind.Unknown;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2352:1.

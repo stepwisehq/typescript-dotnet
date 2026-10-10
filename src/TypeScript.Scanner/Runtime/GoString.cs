@@ -174,7 +174,16 @@ internal sealed class GoBuilder
         // this constructed output crosses that compatibility boundary.
         foreach (byte b in bytes) value.Append((char)b);
     }
-    public void WriteRune(int rune) => value.Append(GoString.FromRune(rune));
+    // strings.Builder.WriteRune owns only the encoded output; preserve FromRune's
+    // invalid-scalar replacement without materializing an intermediate raw string.
+    public void WriteRune(int rune)
+    {
+        if (rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF)
+            rune = 0xFFFD;
+        Span<byte> bytes = stackalloc byte[4];
+        int size = new Rune(rune).EncodeToUtf8(bytes);
+        WriteString(bytes[..size]);
+    }
     public void WriteByte(int b) => value.Append((char)b);
     public string String() => value.ToString();
     public int Len() => value.Length;

@@ -117,7 +117,7 @@ public sealed partial class Checker
     }
 
     internal (bool IsNull, int Count, List<(FlowNode Flow, bool Value)> Entries, FlowNode LastFlow, bool LastReachable) VerificationCollectionsReachableFlows() => (false, flowNodeReachable.Count, flowNodeReachable.Select(pair => (pair.Key, pair.Value)).ToList(), lastFlowNode, lastFlowNodeReachable);
-    internal (bool LoopStackNull, int LoopStackCount, int ActiveMapperCount, int ActiveMapperCacheCount) VerificationCollectionsFlowLifetime() => (flowLoopStack == null, flowLoopStack?.Count ?? 0, activeMappers.Count, activeTypeMappersCaches.Count);
+    internal (bool LoopStackNull, int LoopStackCount, int ActiveMapperCount, int ActiveMapperCacheCount) VerificationCollectionsFlowLifetime() => (flowLoopStack.IsNil, flowLoopStack.Length, activeMappers.Count, activeTypeMappersCaches.Count);
     internal List<(string Name, bool IsNull, int Count, List<(Node Node, Type Value)> Entries)> VerificationCollectionsExpressionCaches()
     {
         var result = new List<(string, bool, int, List<(Node, Type)>)>();

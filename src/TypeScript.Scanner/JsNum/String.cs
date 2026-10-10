@@ -92,9 +92,15 @@ internal static partial class JsNum
                 return new(double.NegativeInfinity);
         }
 
-        foreach (int r in GoString.Runes(s))
+        // jsnum/string.go:66: range decodes the existing raw UTF-8 string.
+        // Validation does not need an owned array of all decoded runes.
+        for (int offset = 0; offset < s.Length;)
+        {
+            var (r, size) = Utf8.DecodeRuneInString(s.AsSpan(offset));
             if (!isNumberRune(r))
                 return new(double.NaN);
+            offset += size;
+        }
         var(n, ok) = tryParseInt(s);
         if (ok)
             return n;

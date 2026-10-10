@@ -1129,11 +1129,11 @@ public partial class Parser
         this.skipWhitespaceOrAsterisk();
         if ((((this.token == Kind.OpenBraceToken) && (this.nextTokenJSDoc() == Kind.AtToken)) && tokenIsIdentifierOrKeyword(this.nextTokenJSDoc())))
         {
-            var kind = this.scanner.TokenValueByteString();
-            if (isJSDocLinkTag(kind))
-            {
-                return (kind, true);
-            }
+            // jsdoc.go:765: link-kind selection needs only the borrowed bytes;
+            // return the existing canonical tag strings for factory dispatch.
+            if (this.scanner.TokenValueEquals("link"u8)) return ("link", true);
+            if (this.scanner.TokenValueEquals("linkcode"u8)) return ("linkcode", true);
+            if (this.scanner.TokenValueEquals("linkplain"u8)) return ("linkplain", true);
         }
 
         return ("NONE", false);

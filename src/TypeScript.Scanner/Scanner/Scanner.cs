@@ -16,19 +16,20 @@ public partial class Scanner
     private bool skipTrivia = true;
     private Kind token;
     private global::TypeScript.Scanner.TokenFlags tokenFlags;
-    // scanner.go tokenValue is a string descriptor. JSDoc comment tokens borrow
-    // the bounded source; ordinary decoded tokens retain their owned string.
-    private string tokenValueString = "";
+    // scanner.go tokenValue is a string descriptor. Unchanged token text borrows
+    // source bytes; decoded output owns a string. Legacy raw string projection is
+    // cached on first access, without replacing the borrowed descriptor.
+    private string? tokenValueString = "";
     private ByteStringView tokenValueView;
     private bool tokenValueIsView;
     private string tokenValue
     {
-        get => tokenValueIsView ? tokenValueView.Materialize() : tokenValueString;
+        get => tokenValueString ??= tokenValueView.Materialize();
         set { tokenValueString = value; tokenValueView = default; tokenValueIsView = false; }
     }
     private void setTokenValueView(ByteStringView value)
     {
-        tokenValueString = "";
+        tokenValueString = null;
         tokenValueView = value;
         tokenValueIsView = true;
     }
@@ -472,7 +473,7 @@ public partial class Scanner
                 case '"':
                 case '\'':
                 {
-                    this.tokenValue = this.scanString(false);
+                    this.scanString(false);
                     this.token = Kind.StringLiteral;
                     break;
                 }
@@ -1139,7 +1140,7 @@ public partial class Scanner
                 {
                     if (this.scanIdentifier(0, identifierVariant.Standard))
                     {
-                        this.token = GetIdentifierToken(this.tokenValue);
+                        this.token = this.getIdentifierToken();
                     }
                     else
                     {
@@ -1193,7 +1194,7 @@ public partial class Scanner
 
                     if (this.scanIdentifier(0, identifierVariant.Standard))
                     {
-                        this.token = GetIdentifierToken(this.tokenValue);
+                        this.token = this.getIdentifierToken();
                         break;
                     }
 
@@ -1624,7 +1625,7 @@ public partial class Scanner
             }
 
             this.pos = p;
-            this.tokenValue = this.text.Substring(this.tokenStart, this.pos - this.tokenStart);
+            this.setTokenValueView(this.text.Slice(this.tokenStart, this.pos));
             this.token = Kind.RegularExpressionLiteral;
         }
 
@@ -1760,7 +1761,7 @@ public partial class Scanner
                     this.pos += size;
                 }
 
-                this.tokenValue = this.text.Substring(this.fullStartPos, this.pos - this.fullStartPos);
+                this.setTokenValueView(this.text.Slice(this.fullStartPos, this.pos));
                 this.token = Kind.JsxText;
                 if (firstNonWhitespace == -1)
                 {
@@ -1780,7 +1781,7 @@ public partial class Scanner
         if (tokenIsIdentifierOrKeyword(this.token))
         {
             this.tokenValue += this.scanIdentifierParts(identifierVariant.JSX);
-            this.token = GetIdentifierToken(this.tokenValue);
+            this.token = this.getIdentifierToken();
         }
 
         return this.token;
@@ -1803,7 +1804,7 @@ public partial class Scanner
             case '"':
             case '\'':
             {
-                this.tokenValue = this.scanString(true);
+                this.scanString(true);
                 this.token = Kind.StringLiteral;
                 return this.token;
             }
@@ -2032,7 +2033,7 @@ public partial class Scanner
         this.pos = this.tokenStart;
         if (this.scanIdentifier(0, identifierVariant.JSX))
         {
-            this.token = GetIdentifierToken(this.tokenValue);
+            this.token = this.getIdentifierToken();
             return this.token;
         }
 
@@ -2057,7 +2058,7 @@ public partial class Scanner
             ch = this.charCode();
             if (ch < Utf8.RuneSelf && ch != '\\')
             {
-                this.tokenValue = this.text.Substring(start, this.pos - start);
+                this.setTokenValueView(this.text.Slice(start, this.pos));
                 return true;
             }
 
@@ -2084,10 +2085,13 @@ public partial class Scanner
                 }
             }
 
-            this.tokenValue = this.text.Substring(start, this.pos - start);
+            this.setTokenValueView(this.text.Slice(start, this.pos));
             if (ch == '\\')
             {
-                this.tokenValue += this.scanIdentifierParts(variant);
+                var builder = new GoBuilder();
+                builder.WriteString(this.text.AsSpan(start, this.pos - start));
+                this.scanIdentifierParts(variant, builder);
+                this.tokenValue = builder.String();
             }
 
             return true;
@@ -2099,7 +2103,11 @@ public partial class Scanner
                 var(escaped, ok) = this.scanIdentifierEscape(IsIdentifierStart, variant == identifierVariant.RegExpGroupName);
                 if (ok)
                 {
-                    this.tokenValue = this.text.Substring(start, identifierStart - start) + GoString.FromRune(escaped) + this.scanIdentifierParts(variant);
+                    var builder = new GoBuilder();
+                    builder.WriteString(this.text.AsSpan(start, identifierStart - start));
+                    builder.WriteRune(escaped);
+                    this.scanIdentifierParts(variant, builder);
+                    this.tokenValue = builder.String();
                     return true;
                 }
             }
@@ -2110,7 +2118,15 @@ public partial class Scanner
 
     private string scanIdentifierParts(identifierVariant variant)
     {
-        GoBuilder sb = new GoBuilder();
+        var sb = new GoBuilder();
+        this.scanIdentifierParts(variant, sb);
+        return sb.String();
+    }
+
+    // scanner.go:1529: reuse the same traversal when an identifier prefix and
+    // escape already belong to the final builder, avoiding a temporary suffix.
+    private void scanIdentifierParts(identifierVariant variant, GoBuilder sb)
+    {
         var start = this.pos;
         var languageVariant = LanguageVariant.Standard;
         if (variant == identifierVariant.JSX)
@@ -2149,7 +2165,6 @@ public partial class Scanner
         }
 
         sb.WriteString(this.text.AsSpan(start, this.pos - start));
-        return sb.String();
     }
 
     private (int, bool) scanIdentifierEscape(Func<int, bool> isValid, bool allowSurrogatePairEscape)
@@ -2183,7 +2198,9 @@ public partial class Scanner
         return (0, false);
     }
 
-    private string scanString(bool jsxAttributeString)
+    // scanner.go:1586: publish a borrowed token on the unchanged fast path;
+    // only escape/newline processing constructs an owned decoded value.
+    private void scanString(bool jsxAttributeString)
     {
         var quote = this.charCode();
         if (quote == '\'')
@@ -2196,7 +2213,8 @@ public partial class Scanner
         if (strLen == 0)
         {
             this.pos++;
-            return "";
+            this.setTokenValueView(this.text.Slice(this.pos - 1, this.pos - 1));
+            return;
         }
 
         if (strLen > 0)
@@ -2205,19 +2223,23 @@ public partial class Scanner
             var str = this.text.AsSpan(this.pos, strLen);
             if (jsxAttributeString || GoStrings.IndexByte(str, '\\') < 0 && GoStrings.IndexByte(str, '\r') < 0 && GoStrings.IndexByte(str, '\n') < 0)
             {
+                this.setTokenValueView(this.text.Slice(this.pos, this.pos + strLen));
                 this.pos += strLen + 1;
-                return GoString.FromBytes(str);
+                return;
             }
         }
 
-        GoBuilder sb = new GoBuilder();
+        GoBuilder? sb = null;
+        var valueStart = this.pos;
+        var valueEnd = this.pos;
         var start = this.pos;
         while (true)
         {
             var ch = this.charCode();
             if (ch < 0)
             {
-                sb.WriteString(this.text.AsSpan(start, this.pos - start));
+                valueEnd = this.pos;
+                sb?.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
                 this.error(Diagnostics.Unterminated_string_literal);
                 break;
@@ -2225,13 +2247,15 @@ public partial class Scanner
 
             if (ch == quote)
             {
-                sb.WriteString(this.text.AsSpan(start, this.pos - start));
+                valueEnd = this.pos;
+                sb?.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.pos++;
                 break;
             }
 
             if (ch == '\\' && !jsxAttributeString)
             {
+                sb ??= new GoBuilder();
                 sb.WriteString(this.text.AsSpan(start, this.pos - start));
                 sb.WriteString(this.scanEscapeSequence(EscapeSequenceScanningFlags.String | EscapeSequenceScanningFlags.ReportErrors));
                 start = this.pos;
@@ -2240,7 +2264,8 @@ public partial class Scanner
 
             if ((ch == '\n' || ch == '\r') && !jsxAttributeString)
             {
-                sb.WriteString(this.text.AsSpan(start, this.pos - start));
+                valueEnd = this.pos;
+                sb?.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.Unterminated;
                 this.error(Diagnostics.Unterminated_string_literal);
                 break;
@@ -2249,7 +2274,10 @@ public partial class Scanner
             this.pos++;
         }
 
-        return sb.String();
+        if (sb is null)
+            this.setTokenValueView(this.text.Slice(valueStart, valueEnd));
+        else
+            this.tokenValue = sb.String();
     }
 
     private Kind scanTemplateAndSetTokenValue(bool shouldEmitInvalidEscapeError)
@@ -2257,7 +2285,11 @@ public partial class Scanner
         var startedWithBacktick = this.charCode() == '`';
         this.pos++;
         var start = this.pos;
-        var parts = new List<string>();
+        // scanner.go:1638: source fragments borrow; transformed output is joined
+        // directly into its final owner instead of copied temporary strings.
+        GoBuilder? builder = null;
+        var valueStart = start;
+        var valueEnd = start;
         Kind token = default;
         while (true)
         {
@@ -2268,7 +2300,8 @@ public partial class Scanner
             var ch = this.charCode();
             if (ch < 0 || ch == '`')
             {
-                parts.Add(this.text.Substring(start, this.pos - start));
+                valueEnd = this.pos;
+                builder?.WriteString(this.text.AsSpan(start, this.pos - start));
                 if (ch == '`')
                 {
                     this.pos++;
@@ -2285,7 +2318,8 @@ public partial class Scanner
 
             if (ch == '$' && this.charAt(1) == '{')
             {
-                parts.Add(this.text.Substring(start, this.pos - start));
+                valueEnd = this.pos;
+                builder?.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.pos += 2;
                 token = Core.IfElse(startedWithBacktick, Kind.TemplateHead, Kind.TemplateMiddle);
                 break;
@@ -2293,22 +2327,24 @@ public partial class Scanner
 
             if (ch == '\\')
             {
-                parts.Add(this.text.Substring(start, this.pos - start));
-                parts.Add(this.scanEscapeSequence(EscapeSequenceScanningFlags.String | Core.IfElse(shouldEmitInvalidEscapeError, EscapeSequenceScanningFlags.ReportErrors, (EscapeSequenceScanningFlags)0)));
+                builder ??= new GoBuilder();
+                builder.WriteString(this.text.AsSpan(start, this.pos - start));
+                builder.WriteString(this.scanEscapeSequence(EscapeSequenceScanningFlags.String | Core.IfElse(shouldEmitInvalidEscapeError, EscapeSequenceScanningFlags.ReportErrors, (EscapeSequenceScanningFlags)0)));
                 start = this.pos;
                 continue;
             }
 
             if (ch == '\r')
             {
-                parts.Add(this.text.Substring(start, this.pos - start));
+                builder ??= new GoBuilder();
+                builder.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.pos++;
                 if (this.charCode() == '\n')
                 {
                     this.pos++;
                 }
 
-                parts.Add("\n");
+                builder.WriteByte((byte)'\n');
                 start = this.pos;
                 continue;
             }
@@ -2316,7 +2352,10 @@ public partial class Scanner
             this.pos++;
         }
 
-        this.tokenValue = GoStrings.Join(parts, "");
+        if (builder is null)
+            this.setTokenValueView(this.text.Slice(valueStart, valueEnd));
+        else
+            this.tokenValue = builder.String();
         return token;
     }
 
@@ -2804,7 +2843,7 @@ public partial class Scanner
         }
         else
         {
-            this.tokenValue = this.text.Substring(start, end - start);
+            this.setTokenValueView(this.text.Slice(start, end));
         }
 
         if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.ContainsLeadingZero) != 0)
@@ -3758,7 +3797,7 @@ public partial class Scanner
         fullStartPos = state.fullStartPos;
         tokenStart = state.tokenStart;
         token = state.token;
-        tokenValueString = state.tokenValueString ?? "";
+        tokenValueString = state.tokenValueIsView ? state.tokenValueString : state.tokenValueString ?? "";
         tokenValueView = state.tokenValueView;
         tokenValueIsView = state.tokenValueIsView;
         tokenFlags = state.tokenFlags;
@@ -3773,6 +3812,23 @@ public partial class Scanner
     public static byte[] GetShebang(byte[] text) => GoString.Bytes(getShebang(GoString.FromBytes(text)));
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, GoString.ToUtf8(text), allowEdits);
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, byte[] text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.CopyFrom(text), allowEdits);
+    // scanner.go getIdentifierToken: the keyword table uses raw byte strings.
+    // Its bounded keys can use .NET's ordinal alternate lookup without owning
+    // a temporary token string or encoding non-ASCII source bytes again.
+    private Kind getIdentifierToken()
+    {
+        if (!tokenValueIsView)
+            return GetIdentifierToken(tokenValue);
+        var bytes = tokenValueView.AsSpan();
+        if (bytes.Length < 2 || bytes.Length > 12 || bytes[0] < 'a' || bytes[0] > 'z')
+            return Kind.Identifier;
+        Span<char> chars = stackalloc char[12];
+        for (int i = 0; i < bytes.Length; i++)
+            chars[i] = (char)bytes[i];
+        return textToKeyword.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(chars[..bytes.Length], out var keyword)
+            ? keyword : Kind.Identifier;
+    }
+
     public static Kind GetIdentifierToken(string str)
     {
         if (str.Length >= 2 && str.Length <= 12 && str[0] >= 'a' && str[0] <= 'z' && textToKeyword.TryGetValue(str, out var keyword))
@@ -3782,13 +3838,14 @@ public partial class Scanner
 
     public static bool IsValidIdentifier(string value) => isValidIdentifier(GoString.ToUtf8(value));
     public static bool IsValidIdentifier(byte[] value) => isValidIdentifier(GoString.FromBytes(value));
+    // scanner.go:2224 range decodes the shared byte-string suffix without copying it.
     private static bool isValidIdentifier(string value)
     {
         if (value.Length == 0)
             return false;
         for (int i = 0; i < value.Length;)
         {
-            var(ch, size) = Utf8.DecodeRuneInString(value.Substring(i));
+            var(ch, size) = Utf8.DecodeRuneInString(value.AsSpan(i));
             if (i == 0 && !IsIdentifierStart(ch) || i != 0 && !IsIdentifierPart(ch))
                 return false;
             i += size;

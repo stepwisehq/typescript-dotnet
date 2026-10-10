@@ -294,9 +294,10 @@ public sealed partial class Checker
     // Go flow.go:1651: original hashed non-dotted-name sentinel.
     private static readonly CacheHashKey nonDottedNameCacheKey = CacheHashKey.FromBytes("?"u8);
     private readonly record struct FlowLoopKey(FlowNode flowNode, CacheHashKey refKey);
-    private readonly record struct FlowLoopInfo(FlowLoopKey key, List<Type> types);
+    // checker.go:258; flow.go:1322/1354. Loop entries retain a copied header, not a clone.
+    private readonly record struct FlowLoopInfo(FlowLoopKey key, Slice<Type> types);
     private readonly Dictionary<FlowLoopKey, Type> flowLoopCache = new();
-    private List<FlowLoopInfo> flowLoopStack;
+    private Slice<FlowLoopInfo> flowLoopStack;
     private readonly record struct SharedFlow(FlowNode flow, FlowType flowType);
     private readonly List<SharedFlow> sharedFlows = new();
     private FlowState freeFlowState;
@@ -313,7 +314,8 @@ public sealed partial class Checker
     };
     private bool flowAnalysisDisabled;
     private int inlineLevel;
-    private List<Type> antecedentTypes;
+    // flow.go:1254. Recursive branch analysis appends and restores this shared header.
+    private Slice<Type> antecedentTypes;
     private readonly record struct NarrowedTypeKey(Type t, Type candidate, bool assumeTrue, bool checkDerived);
     private readonly Dictionary<NarrowedTypeKey, Type> narrowedTypes = new();
     private readonly HashSet<Symbol> resolvingExplicitTypeOfSymbol = new();
@@ -2305,15 +2307,15 @@ public sealed partial class Checker
             var flowType = getTypeAtFlowNode(f, antecedent);
             if (flowType.t == f.declaredType && f.declaredType == f.initialType)
             {
-                antecedentTypes = GoRuntime.Slice(antecedentTypes, 0, antecedentStart);
+                antecedentTypes = antecedentTypes.Slice2(0, antecedentStart);
                 return new FlowType
                 {
                     t = flowType.t
                 };
             }
 
-            if (!(GoRuntime.Slice(antecedentTypes, antecedentStart)?.Contains(flowType.t) ?? false))
-                antecedentTypes = GoRuntime.Append(antecedentTypes, flowType.t);
+            if (!GoSlices.Contains(antecedentTypes.Slice2(antecedentStart), flowType.t))
+                antecedentTypes = antecedentTypes.Append(flowType.t);
             if (!isTypeSubsetOf(flowType.t, f.initialType))
                 subtypeReduction = true;
             if (flowType.incomplete)
@@ -2324,15 +2326,15 @@ public sealed partial class Checker
         {
             var flowType = getTypeAtFlowNode(f, bypassFlow);
             if ((flowType.t.flags & TypeFlags.Never) == 0 &&
-                !(GoRuntime.Slice(antecedentTypes, antecedentStart)?.Contains(flowType.t) ?? false) &&
+                !GoSlices.Contains(antecedentTypes.Slice2(antecedentStart), flowType.t) &&
                 !isExhaustiveSwitchStatement(bypassFlow.Node.AsFlowSwitchClauseData().SwitchStatement))
             {
                 if (flowType.t == f.declaredType && f.declaredType == f.initialType)
                 {
-                    antecedentTypes = GoRuntime.Slice(antecedentTypes, 0, antecedentStart);
+                    antecedentTypes = antecedentTypes.Slice2(0, antecedentStart);
                     return new FlowType(flowType.t);
                 }
-                antecedentTypes = GoRuntime.Append(antecedentTypes, flowType.t);
+                antecedentTypes = antecedentTypes.Append(flowType.t);
                 if (!isTypeSubsetOf(flowType.t, f.initialType))
                     subtypeReduction = true;
                 if (flowType.incomplete)
@@ -2340,8 +2342,8 @@ public sealed partial class Checker
             }
         }
 
-        var result = newFlowType(getUnionOrEvolvingArrayType(f, GoRuntime.Slice(antecedentTypes, antecedentStart), subtypeReduction ? UnionReduction.Subtype : UnionReduction.Literal), seenIncomplete);
-        antecedentTypes = GoRuntime.Slice(antecedentTypes, 0, antecedentStart);
+        var result = newFlowType(getUnionOrEvolvingArrayType(f, antecedentTypes.Slice2(antecedentStart), subtypeReduction ? UnionReduction.Subtype : UnionReduction.Literal), seenIncomplete);
+        antecedentTypes = antecedentTypes.Slice2(0, antecedentStart);
         return result;
     }
 }
@@ -3076,11 +3078,11 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getUnionOrEvolvingArrayType(FlowState f, List<Type> types, UnionReduction subtypeReduction)
+    private Type getUnionOrEvolvingArrayType(FlowState f, Slice<Type> types, UnionReduction subtypeReduction)
     {
         if (isEvolvingArrayTypeList(types))
         {
-            return this.getEvolvingArrayType(this.getUnionType(Core.Map(types, this.getElementTypeOfEvolvingArrayType)));
+            return this.getEvolvingArrayType(this.getUnionType(Core.MapSlice(types, this.getElementTypeOfEvolvingArrayType)));
         }
 
         var result = this.recombineUnknownType(this.getUnionTypeEx(Core.SameMap(types, this.finalizeEvolvingArrayType), subtypeReduction, null, null));
@@ -3309,7 +3311,8 @@ public sealed partial class Checker
             }
         }
 
-        var antecedentTypes = GoRuntime.MakeSlice<Type>(0);
+        // flow.go:1354. Each loop owns cap4 scratch; stack entries copy its header.
+        var antecedentTypes = Slice<Type>.Make(0, 4);
         var subtypeReduction = false;
         FlowType firstAntecedentType = default;
         {
@@ -3324,12 +3327,12 @@ public sealed partial class Checker
                 }
                 else
                 {
-                    this.flowLoopStack = GoRuntime.Append(this.flowLoopStack, new FlowLoopInfo(key, new List<Type>(antecedentTypes)));
+                    this.flowLoopStack = this.flowLoopStack.Append(new FlowLoopInfo(key, antecedentTypes));
                     var saveFlowTypeCache = this.flowTypeCache;
                     this.flowTypeCache = null;
                     flowType = this.getTypeAtFlowNode(f, list.Flow);
                     this.flowTypeCache = saveFlowTypeCache;
-                    this.flowLoopStack = GoRuntime.Slice(this.flowLoopStack, 0, (GoRuntime.Len(this.flowLoopStack) - 1));
+                    this.flowLoopStack = this.flowLoopStack.Slice2(0, this.flowLoopStack.Length - 1);
                     {
                         var cached2 = this.flowLoopCache.GetValueOrDefault(key);
                         if ((cached2 != null))
@@ -3455,7 +3458,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static bool isEvolvingArrayTypeList(List<Type> types)
+    private static bool isEvolvingArrayTypeList(Slice<Type> types)
     {
         var hasEvolvingArrayType = false;
         {

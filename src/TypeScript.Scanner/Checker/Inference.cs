@@ -668,7 +668,11 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:459:1.
-    private void inferToMultipleTypes(InferenceState n, Type source, List<Type> targets, TypeFlags targetFlags)
+    private void inferToMultipleTypes(InferenceState n, Type source, List<Type> targets, TypeFlags targetFlags) =>
+        inferToMultipleTypes(n, source, System.Runtime.InteropServices.CollectionsMarshal.AsSpan(targets), targetFlags);
+
+    // inference.go:459. Targets are a borrowed input header, never retained.
+    private void inferToMultipleTypes(InferenceState n, Type source, ReadOnlySpan<Type> targets, TypeFlags targetFlags)
     {
         var typeVariableCount = 0;
         if (((targetFlags & TypeFlags.Union) != 0))
@@ -690,7 +694,7 @@ public sealed partial class Checker
             var matched = GoRuntime.MakeSlice<bool>(GoRuntime.Len(sources));
             var inferenceCircularity = false;
             {
-                foreach (var t in GoRuntime.RangeValues(targets))
+                foreach (var t in targets)
                 {
                     if ((getInferenceInfoForType(n, t) != null))
                     {
@@ -754,10 +758,8 @@ public sealed partial class Checker
         else
         {
             {
-                foreach (var range15 in GoRuntime.Range(targets))
+                foreach (var t2 in targets)
                 {
-                    var _2 = range15.Key;
-                    var t2 = range15.Value;
                     if ((getInferenceInfoForType(n, t2) != null))
                     {
                         typeVariableCount++;
@@ -773,10 +775,8 @@ public sealed partial class Checker
         if (((((targetFlags & TypeFlags.Intersection) != 0) && (typeVariableCount == 1)) || (((targetFlags & TypeFlags.Intersection) == 0) && (typeVariableCount > 0))))
         {
             {
-                foreach (var range16 in GoRuntime.Range(targets))
+                foreach (var t3 in targets)
                 {
-                    var _3 = range16.Key;
-                    var t3 = range16.Value;
                     if ((getInferenceInfoForType(n, t3) != null))
                     {
                         this.inferWithPriority(n, source, t3, InferencePriority.NakedTypeVariable);
@@ -787,11 +787,11 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:543:1.
-    private static Type getSingleTypeVariableFromIntersectionTypes(InferenceState n, List<Type> types)
+    private static Type getSingleTypeVariableFromIntersectionTypes(InferenceState n, ReadOnlySpan<Type> types)
     {
         Type typeVariable = default;
         {
-            foreach (var t in GoRuntime.RangeValues(types))
+            foreach (var t in types)
             {
                 if (((t.flags & TypeFlags.Intersection) == 0))
                 {
@@ -815,7 +815,11 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:558:1.
-    private void inferToMultipleTypesWithPriority(InferenceState n, Type source, List<Type> targets, TypeFlags targetFlags, InferencePriority newPriority)
+    private void inferToMultipleTypesWithPriority(InferenceState n, Type source, List<Type> targets, TypeFlags targetFlags, InferencePriority newPriority) =>
+        inferToMultipleTypesWithPriority(n, source, System.Runtime.InteropServices.CollectionsMarshal.AsSpan(targets), targetFlags, newPriority);
+
+    // inference.go:558. The borrowed targets remain synchronous across priority restoration.
+    private void inferToMultipleTypesWithPriority(InferenceState n, Type source, ReadOnlySpan<Type> targets, TypeFlags targetFlags, InferencePriority newPriority)
     {
         var savePriority = n.priority;
         n.priority |= newPriority;
@@ -835,11 +839,12 @@ public sealed partial class Checker
         }
         else
         {
-            var targetTypes = new List<Type>
-            {
+            // inference.go:572. Nonescaping two-slot literal; evaluate true before false.
+            ReadOnlySpan<Type> targetTypes =
+            [
                 this.getTrueTypeFromConditionalType(target),
                 this.getFalseTypeFromConditionalType(target)
-            };
+            ];
             this.inferToMultipleTypesWithPriority(n, source, targetTypes, target.flags, Core.IfElse(n.contravariant, InferencePriority.ContravariantConditional, InferencePriority.None));
         }
     }

@@ -1548,14 +1548,22 @@ public sealed partial class Checker
     }
 
     internal Type getUnionType(List<Type> types) => getUnionTypeEx(types, UnionReduction.Literal, null, null);
+    private Type getUnionType(Slice<Type> types) => getUnionTypeEx(types.AsSpan(), UnionReduction.Literal, null, null);
     // checker.go:26162–26270. Canonical union construction and reduction.
-    private Type getUnionTypeEx(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
+    private Type getUnionTypeEx(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin) =>
+        getUnionTypeEx(CollectionsMarshal.AsSpan(types), reduction, alias, origin);
+    private Type getUnionTypeEx(Slice<Type> types, UnionReduction reduction, TypeAlias alias, Type origin) =>
+        getUnionTypeEx(types.AsSpan(), reduction, alias, origin);
+
+    // checker.go:26162. Borrow the input header; only the union producer's
+    // independently owned output collection is retained after this call.
+    private Type getUnionTypeEx(ReadOnlySpan<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
     {
-        if (GoRuntime.Len(types) == 0)
+        if (types.Length == 0)
             return neverType;
-        if (types.Count == 1)
+        if (types.Length == 1)
             return types[0];
-        if (types.Count == 2 && origin == null && ((types[0].flags | types[1].flags) & TypeFlags.Union) != 0)
+        if (types.Length == 2 && origin == null && ((types[0].flags | types[1].flags) & TypeFlags.Union) != 0)
         {
             uint id1 = types[0].id, id2 = types[1].id;
             if (id1 > id2)
@@ -1568,7 +1576,7 @@ public sealed partial class Checker
         return getUnionTypeWorker(types, reduction, alias, origin);
     }
 
-    private Type getUnionTypeWorker(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
+    private Type getUnionTypeWorker(ReadOnlySpan<Type> types, UnionReduction reduction, TypeAlias alias, Type origin)
     {
         var (typeSet, includes) = addTypesToUnion(types);
         if (reduction != UnionReduction.None)
@@ -1641,9 +1649,9 @@ public sealed partial class Checker
         return getUnionTypeFromSortedList(typeSet, objectFlags, alias, origin);
     }
 
-    private (List<Type>, TypeFlags) addTypesToUnion(List<Type> sourceTypes)
+    private (List<Type>, TypeFlags) addTypesToUnion(ReadOnlySpan<Type> sourceTypes)
     {
-        var types = new List<Type>(sourceTypes.Count);
+        var types = new List<Type>(sourceTypes.Length);
         TypeFlags includes = 0;
         void addType(Type t)
         {
@@ -2863,7 +2871,7 @@ public sealed partial class Checker
         {
             var savedFlowLoopStack = flowLoopStack;
             var savedFlowTypeCache = flowTypeCache;
-            flowLoopStack = null;
+            flowLoopStack = default;
             flowTypeCache = null;
             links.resolvedType = checkExpressionEx(node, checkMode);
             flowTypeCache = savedFlowTypeCache;
@@ -9237,12 +9245,12 @@ public sealed partial class Checker
             {
                 var containedUndefined = typeSet.Any(containsMissingType) ? missingType : undefinedType;
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Undefined) == 0);
-                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), containedUndefined], UnionReduction.Literal, alias, null);
+                result = getUnionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet, flags, null), containedUndefined], UnionReduction.Literal, alias, null);
             }
             else if (typeSet.All(isUnionWithNull))
             {
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Null) == 0);
-                result = getUnionTypeEx([getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, alias, null);
+                result = getUnionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, alias, null);
             }
             else if (typeSet.Count >= 3 && types.Count > 2)
             {
@@ -12399,9 +12407,9 @@ public sealed partial class Checker
         return result;
     }
 
-    private List<Type> addNamedUnions(List<Type> named, List<Type> types)
+    private List<Type> addNamedUnions(List<Type> named, ReadOnlySpan<Type> types)
     {
-        foreach (var t in types ?? [])
+        foreach (var t in types)
             if ((t.flags & TypeFlags.Union) != 0)
             {
                 var origin = t.AsUnionType().origin;
@@ -12411,7 +12419,7 @@ public sealed partial class Checker
                         named = GoRuntime.Append(named, t);
                 }
                 else if (origin != null && (origin.flags & TypeFlags.Union) != 0)
-                    named = addNamedUnions(named, origin.Types());
+                    named = addNamedUnions(named, CollectionsMarshal.AsSpan(origin.Types()));
             }
 
         return named;
@@ -15930,7 +15938,7 @@ public sealed partial class Checker
                 result = links.resolvedSignature;
             }
 
-            links.resolvedSignature = (flowLoopStack?.Count ?? 0) == 0 ? result : cached;
+            links.resolvedSignature = flowLoopStack.Length == 0 ? result : cached;
         }
 
         return result;

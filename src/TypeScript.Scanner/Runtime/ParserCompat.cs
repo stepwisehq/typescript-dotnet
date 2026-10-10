@@ -183,10 +183,7 @@ internal static class GoRuntime
     public static GoSliceRange<T> Range<T>(Slice<T> source) => new(source);
     public static Slice<T> Slice<T>(Slice<T> source, int start) => source.Slice2(start);
     public static Slice<T> Slice<T>(Slice<T> source, int start, int end) => source.Slice2(start, end);
-    public static IEnumerable<int> RangeKeys<T>(Slice<T> source)
-    {
-        for (int i = 0; i < source.Length; i++) yield return i;
-    }
+    public static GoIntegerRange RangeKeys<T>(Slice<T> source) => new(source.Length);
     public static List<T> MakeSlice<T>(int length) => Enumerable.Repeat(default(T), length).ToList();
     public static int Len(string s) => s?.Length ?? 0;
     public static int Len(ByteStringView s) => s.Length;

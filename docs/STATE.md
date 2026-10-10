@@ -1,11 +1,11 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `0fe82b3` commits the qualified checker/flow callback packet.
+**Resume here:** HEAD `08d2294` commits qualified path/ASCII/singleton reductions after checker/flow callbacks.
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
 or committing a checkpoint does not finish the work. Native AOT VS Code first,
 focused checks next; comprehensive regressions remain deferred until finalization.
 
-**Qualified path packet, staged:** Path/PathByteText/DiskHost/ParserCompat plus
+**Qualified path packet, committed `08d2294`:** Path/PathByteText/DiskHost/ParserCompat plus
 existing ProjectSupport controls and a nil-aware signature-slice observer adapter.
 Restores upstream normalization fast path, avoids ASCII encode/decode round trips,
 and gives singleton arena compatibility lists exact capacity. Frozen library
@@ -32,13 +32,48 @@ Native VS Code and 11 focused checks passed, but three alternating runs each gav
 benefit established. Removed only our nine-line source experiment; evidence retained
 at `artifacts/vscode-mapper-union-frame/`. No further repeats planned.
 
-**Active next work:** scanner agent owns isValidIdentifier substring-to-span and
-GoBuilder.WriteRune temporary-string removal with exact rune semantics; support
-reviews and investigates measured Type list/array churn for the next substantive
-Go-faithful migration. Verifier owns sole heavy build/workload/profile window.
-No builds before source ready; next native VS Code run first. Existing b81a profile
-has roughly 1,046 MiB Type[] and 689 MiB List<Type> sampled allocation weight;
-use caller attribution before choosing storage changes.
+**Comprehensive rollout authorized:** user explicitly requests rolling out all
+identified Go-faithful allocation patterns, not repeatedly deferring wider adoption.
+- Scanner agent: borrowed byte views/span operations across scanner/parser/JSDoc;
+  first ready packet removes isValidIdentifier suffix strings and per-rune builder
+  temporaries. Identify persistent token/AST boundaries requiring propagation.
+- Support agent: checker/relater/flow Type slice sharing, capacity, scratch reuse and
+  explicit callback state. First coherent batch: Flow antecedent storage and union
+  consumers; next assess inference object callback arrays/lists. Preserve source
+  ownership, independent headers, nil/empty, order and cache behavior.
+- Verification agent: sole heavy window; existing profile attribution and runtime
+  slice/common support. Batch ready source, Native AOT VS Code first, focused checks
+  next. Profile after substantive batches; no repeated captures for tiny edits.
+Measured b81a Type[] ~1,046 MiB and List<Type> ~689 MiB; infer-object callback
+Type[]257 MB/List143 MB and flow-branch List146 MB are allocation buckets, not
+promised savings. Scope coverage is implementation work, not another audit framework.
+
+**Implementation sequence now underway:** combined reviewed batch includes borrowed
+scanner token views/cached projection, parser fixed-token byte comparisons,
+shared flow branch/loop Type slices through borrowed union inputs, conditional
+inference two-target span, JsNum span iteration, and initial runtime string fixes.
+Verifier froze all235 source files at library `93159964`, native `b62aaf99`.
+Root staged the exact eleven changed source files before further source edits;
+DO NOT stage later changes into that index until separately qualified. Clean retry
+9.22s, native publish10.81s after four finite compile-binding fixes. Native VS Code
+passes exact ten complete diagnostics and pinned chains: 24.34 wall /96.57 CPU
+seconds, peak9,829,460 KiB, no swaps/major faults. This single observation does not
+show a speedup. Focused controls passed: managed scanner3842 +13 original flow/conditional records
++5shared; native539 complete scanner records +5shared. Cumulative sampled allocation
+capture vs b81a:16.404452 ->15.453668GiB (-5.7959%), zero loss/truncation; all147193
+candidate ticks typed with named stacks. No native throughput win established. Evidence:
+`artifacts/vscode-scanner-token-views/`. Source-only next work has resumed.
+
+**Next source ownership:** support continues remaining checker/relater/inference
+callback state; scanner adds allocation-free rune enumeration/count and exact owned
+rune output, verifier updates genuine upstream range/count consumers. Next scanner
+stage is AST/parser/binder text propagation with generated-source updates: 16-byte
+dual-backed immutable raw-string/byte-array view, public Text projections and
+setters retained, borrowed internal reads and standard ordinal SymbolTable alternate
+lookup. No dictionary replacement/interner. Extra per-node header footprint must be
+measured. CLR ReferenceEquals between separately materialized borrowed text is not
+Go string behavior; supplied owned-string/null/set semantics remain. Inserted string
+keys are an explicit intermediate boundary, not comprehensive rollout completion.
 
 **Current timing context:** callback packet 7c0f reduced sampled allocations
 17.107677 -> 16.497538 GiB (-3.57%), but its three-each native comparison against

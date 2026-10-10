@@ -1356,6 +1356,29 @@ fell 16.497538→16.404452GiB (−0.5642%) for the combined path/ASCII/singleton
 Each role has one trace with zero loss/truncation or missing stacks; weights are
 sampled interval estimates, not exact Native AOT bytes or per-change savings.
 
+## Borrowed tokens, flow slices and conditional targets
+
+The [frozen93159964 packet](../artifacts/vscode-scanner-token-views/build/snapshot-1/snapshot.json)
+borrows ordinary unchanged token values and projects cached raw strings only when
+needed. Flow scratch/loop descriptors preserve Go header sharing and restoration;
+union input workers borrow spans while retaining owned persistent outputs.
+Conditional target spans preserve true-before-false evaluation and original
+inference priority/order. Identifier and numeric rune traversal and builder rune
+writes avoid temporary owned input/output conversions without changing decoders.
+
+[Native VS Code](../artifacts/vscode-scanner-token-views/first-vscode/result.json)
+retained all ten complete diagnostics and available pinned chains at 24.34s wall /
+96.57s CPU /9,829,460 KiB peak. [Managed checks](../artifacts/vscode-scanner-token-views/focused/report.json)
+passed 3,842 scanner cases, 13 unchanged original complete Program records and five
+shared token controls; [native checks](../artifacts/vscode-scanner-token-views/focused/native-report.json)
+compared 539 original scanner records and the same five shared controls exactly.
+Expected records are unchanged. The [matched CoreCLR allocation comparison](../artifacts/vscode-scanner-token-views/allocation-comparison.json)
+reports sampled interval weight16.404452→15.453668GiB (−5.7959%), one trace per role,
+zero event loss/truncation and all147,193 candidate allocations typed/stack-resolved.
+This estimates the combined packet, not exact native bytes or per-site savings; the
+single native observation establishes no speedup. Subsequent callback source edits
+and expanded authored token-lifetime assertions are outside this qualified snapshot.
+
 ## Reproduction and records
 
 ```bash
