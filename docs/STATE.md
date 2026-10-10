@@ -1,17 +1,18 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest committed checkpoint is `162cdc2` (contextual/deprecation
-loops and explicit relation callbacks), following `b2ce0f6`. Continue Go-faithful
-allocation work; no blocker or instruction to stop at a commit. Full regression
-acceptance remains deferred; Native AOT VS Code first, then focused checks.
+**Resume here:** latest committed checkpoint `609aae9` preserves template local
+helpers after `162cdc2` relation/predicate callbacks. Continue Go-faithful allocation
+work; no blocker or instruction to stop at a commit. Native AOT VS Code first,
+then focused checks; comprehensive final regressions remain deferred.
 
-**Qualified, staged next packet:** two direct template inference local functions
-in Relater.cs. Frozen library `8fcc3d0e`, native `9f342201`: clean build8.951s;
-Linux x64 Native AOT VS Code22.54s wall /99.99s CPU /9,903,144KiB peak,
-exact ten records/chains. Six unchanged original template-inference records pass.
-Compiled metadata confirms both local helpers use direct calls and by-ref
-value-type state, with no constructors in the outer method. Support reviewed the
-whole upstream function/direct helpers. Evidence: `artifacts/vscode-template-inference-locals/`.
+**Qualified, staged next packet:** two contextual map callbacks in Checker.cs use
+existing generic explicit-state/static mapTypeEx (Go31235/30521). Frozen library
+`affe6316`, source `a3e14ea3`, native `c09070be`: clean build9.207s;
+Native VS Code23.33s wall /97.80s CPU /9,959,248KiB peak with exact ten records/chains.
+Eight unchanged original contextual tuple/spread/object/JSX/mapped records pass.
+Source independently reviewed. Evidence: `artifacts/vscode-contextual-callback-state/`.
+No isolated profile or speedup claim. Current index holds this exact frozen source;
+newer scratch changes remain UNSTAGED. Never indiscriminately stage the file.
 
 **Latest allocation evidence:** one cumulative matched CoreCLR profile versus
 ownership/reporter frozen `282c618e`:18.701305→18.122111GiB sampled intervals
@@ -21,19 +22,15 @@ arrays essentially flat. Includes prior162cdc2 plus template locals, not per-cha
 attribution, exact byte census or Native AOT speedup. All ten diagnostics exact.
 `artifacts/vscode-template-inference-locals/allocation-comparison.json`.
 
-**Active next packet, UNSTAGED Checker.cs:** two contextual map callbacks use
-existing generic explicit-state/static mapTypeEx (Go31235/30521). Sourcea3e14ea3
-independently reviewed; verifier owns sole heavy window build/NativeVSCode-first
-then focused tuple/spread/object/JSX/mapped comparisons. No separate allocation
-profile for this small pair. Freeze must precede next same-file edit.
-
-**Next approved source packet:** scanner will restore upstream mapTypeEx cap16
-local scratch using InlineArray plus spill and a detached changed-output List
-snapshot; preserve existing public storage. Only proven unaliased contextual
-intersection local Append copies become amortized Add. No blanket migration;
-prior stack experiment regressed, so qualify actual native workload first.
-Wait until verifier freezes contextual callback binary before editing Checker.cs.
-Support reviews; no competing build. Coordinator owns this state file.
+**Active next packet:** scanner restored upstream mapTypeEx cap16 local scratch
+using InlineArray plus Slice spill and detached changed-output List publication.
+Proven unaliased contextual intersection scratch Append copies become amortized
+Add; public Type/List models unchanged. Checker source `2dd175ae` independently
+review pending; verifier owns next build/NativeVSCode-first, focused scratch/spill
+and contextual tests, then cumulative allocation profile versus frozen8fcc.
+Prior stack experiment regressed, so assess actual workload rather than assuming
+stack storage wins. Evidence: `artifacts/vscode-map-scratch/`. Support owns review
+and qualified mapping/status notes; coordinator owns this state file.
 
 **Timing context:** six alternating frozen native runs compare signature baseline
 `cd2b47bb` to direct-slot candidate `c385e71b`: mean 23.17→21.36s wall (−7.81%),

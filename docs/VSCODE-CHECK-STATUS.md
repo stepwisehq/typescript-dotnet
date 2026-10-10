@@ -1256,6 +1256,22 @@ and [evidence review](../artifacts/vscode-template-inference-locals/acceptance-r
 retain the attribution and sampling limits. These are estimates, separate from
 NativeAOT timing.
 
+## Contextual callback state
+
+The [qualified contextual snapshot](../artifacts/vscode-contextual-callback-state/build/snapshot-1/snapshot.json)
+uses the existing generic mapper with static callbacks and explicit receiver/index/
+length/spread state. The [source review](../artifacts/vscode-contextual-callback-state/build/independent-review.json)
+confirms the complete apparent-type and tuple-element branches retain lazy callback
+work, recursive mapping order and `noReductions=true`.
+
+The [native workload](../artifacts/vscode-contextual-callback-state/first-vscode/result.json)
+took 23.33 seconds wall and 97.80 seconds CPU, peaking at 9,959,248 KiB, with all ten
+complete diagnostic records and available pinned-Go chains exact. The
+[focused controls](../artifacts/vscode-contextual-callback-state/focused/report.json)
+passed eight unchanged original full records with zero skips. This qualifies the
+`affe6316` snapshot; the later mapper scratch-buffer proposal is separate. There
+is no matched allocation result or causal speedup claim for this packet.
+
 ## Reproduction and records
 
 ```bash

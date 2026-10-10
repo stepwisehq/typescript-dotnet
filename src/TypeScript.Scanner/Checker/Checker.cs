@@ -5927,13 +5927,14 @@ public sealed partial class Checker
         var instantiatedType = this.instantiateContextualType(contextualType, node, contextFlags);
         if (((instantiatedType != null) && !((((contextFlags & ContextFlags.NoConstraints) != 0) && ((instantiatedType.flags & TypeFlags.TypeVariable) != 0)))))
         {
-            var apparentType = this.mapTypeEx(instantiatedType, (t) =>
+            // checker.go:31235. Keep the original callback receiver explicit without a per-query bound delegate.
+            var apparentType = this.mapTypeEx(instantiatedType, this, static (t, checker) =>
 {
     if (((t.objectFlags & ObjectFlags.Mapped) != 0))
     {
         return t;
     }
-    return this.getApparentType(t);
+    return checker.getApparentType(t);
 }, true);
             switch (true)
             {
@@ -28228,13 +28229,15 @@ public sealed partial class Checker
             return null;
         }
 
-        return this.mapTypeEx(t, (t2) =>
+        // checker.go:30521. The callback borrows the same receiver and immutable index/spread values.
+        return this.mapTypeEx(t, (checker: this, index, length, firstSpreadIndex, lastSpreadIndex), static (t2, state) =>
         {
+            var (checker, index, length, firstSpreadIndex, lastSpreadIndex) = state;
             if (isTupleType(t2))
             {
                 if (((((firstSpreadIndex < 0) || (index < firstSpreadIndex))) && (index < t2.TargetTupleType().fixedLength)))
                 {
-                    return this.removeMissingType(this.getTypeArguments(t2)[index], ((t2.TargetTupleType().elementInfos[index].flags & ElementFlags.Optional) != 0));
+                    return checker.removeMissingType(checker.getTypeArguments(t2)[index], ((t2.TargetTupleType().elementInfos[index].flags & ElementFlags.Optional) != 0));
                 }
 
                 var offset = 0;
@@ -28251,7 +28254,7 @@ public sealed partial class Checker
 
                 if (((offset > 0) && (offset <= fixedEndLength)))
                 {
-                    return this.getTypeArguments(t2)[(this.getTypeReferenceArity(t2) - offset)];
+                    return checker.getTypeArguments(t2)[(checker.getTypeReferenceArity(t2) - offset)];
                 }
 
                 var tupleIndex = t2.TargetTupleType().fixedLength;
@@ -28266,19 +28269,19 @@ public sealed partial class Checker
                     endSkipCount = Math.Min(fixedEndLength, (length - lastSpreadIndex));
                 }
 
-                return this.getElementTypeOfSliceOfTupleType(t2, tupleIndex, endSkipCount, false, true);
+                return checker.getElementTypeOfSliceOfTupleType(t2, tupleIndex, endSkipCount, false, true);
             }
 
             if (((firstSpreadIndex < 0) || (index < firstSpreadIndex)))
             {
-                var propType = this.getTypeOfPropertyOfContextualType(t2, Strconv.Itoa(index));
+                var propType = checker.getTypeOfPropertyOfContextualType(t2, Strconv.Itoa(index));
                 if ((propType != null))
                 {
                     return propType;
                 }
             }
 
-            return this.getIteratedTypeOrElementType(IterationUse.Element, t2, this.undefinedType, null, false);
+            return checker.getIteratedTypeOrElementType(IterationUse.Element, t2, checker.undefinedType, null, false);
         }, true);
     }
 }

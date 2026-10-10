@@ -1083,6 +1083,16 @@
         "state": "Complete affected source/direct helpers independently reviewed; clean Release build and native VS Code ten complete diagnostic records/available pinned-Go chains exact. Eight existing original full-record comparisons pass with zero failures/skips and no expected changes. No matched allocation capture for this batch or causal native speedup claim.",
         "nativeEvidence": "artifacts/vscode-relater-callbacks/first-vscode/result.json",
         "focusedEvidence": "artifacts/vscode-relater-callbacks/focused/report.json"
+      },
+      "contextualCallbackStateAdaptation": {
+        "sourceResponsibilities": "checker.go31235 getApparentTypeOfContextualType;30521 getContextualTypeForElementExpression; unchanged shared mapper26099.",
+        "adaptation": "Existing mapTypeEx<TState> receives static callbacks with explicit Checker or immutable tuple of Checker/index/length/firstSpreadIndex/lastSpreadIndex. Complete mapped-type bypass/object-JSX discrimination and tuple/optional/spread/property/iteration branches remain in original order; callback work remains lazy and noReductions=true.",
+        "review": "artifacts/vscode-contextual-callback-state/build/independent-review.json",
+        "snapshot": "artifacts/vscode-contextual-callback-state/build/snapshot-1/snapshot.json",
+        "state": "Qualified affe6316 library: native VS Code complete ten diagnostic records/available pinned-Go chains exact; eight unchanged original full-record controls pass zero skips. Source a3e14ea3; later temporary mapper buffer changes are separate and not qualified here.",
+        "nativeEvidence": "artifacts/vscode-contextual-callback-state/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-contextual-callback-state/focused/report.json",
+        "limits": "Single native observation23.33wall/97.80CPU/9959248KiB; no matched allocation result or causal speedup claim for this packet."
       }
     },
     {
