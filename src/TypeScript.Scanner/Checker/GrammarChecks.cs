@@ -869,10 +869,122 @@ public sealed partial class Checker
 
         if (((flags & ModifierFlags.Async) != 0))
         {
-            throw unsupported("checkGrammarModifiers: async modifier");
+            return checkGrammarAsyncModifier(node, lastAsync);
         }
 
         return false;
+    }
+
+    // grammarchecks.go:659. The enclosing modifier walk owns modifier order.
+    private bool checkGrammarAsyncModifier(Node node, Node asyncModifier)
+    {
+        switch (node.Kind)
+        {
+            case Kind.MethodDeclaration:
+            case Kind.FunctionDeclaration:
+            case Kind.FunctionExpression:
+            case Kind.ArrowFunction:
+                return false;
+        }
+        return grammarErrorOnNode(asyncModifier, Diagnostics.X_0_modifier_cannot_be_used_here, "async");
+    }
+
+    // grammarchecks.go:1658. Parse-error policy differs deliberately for static
+    // blocks/parameter initializers and contextual/top-level diagnostics.
+    private bool checkGrammarAwaitOrAwaitUsing(Node node)
+    {
+        bool hasError = false;
+        var container = getContainingFunctionOrClassStaticBlock(node);
+        if (container != null && Ast.IsClassStaticBlockDeclaration(container))
+        {
+            error(node, Ast.IsAwaitExpression(node)
+                ? Diagnostics.X_await_expression_cannot_be_used_inside_a_class_static_block
+                : Diagnostics.X_await_using_statements_cannot_be_used_inside_a_class_static_block);
+            hasError = true;
+        }
+        else if ((node.Flags & NodeFlags.AwaitContext) == 0)
+        {
+            var sourceFile = Ast.GetSourceFileOfNode(node);
+            if (Ast.IsInTopLevelContext(node))
+            {
+                if (!hasParseDiagnostics(sourceFile))
+                {
+                    TextRange span = default;
+                    bool spanCalculated = false;
+                    if (!Ast.IsEffectiveExternalModule(sourceFile, compilerOptions))
+                    {
+                        span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(sourceFile, node.Pos());
+                        spanCalculated = true;
+                        addDiagnostic(Ast.NewDiagnostic(sourceFile, span, Ast.IsAwaitExpression(node)
+                            ? Diagnostics.X_await_expressions_are_only_allowed_at_the_top_level_of_a_file_when_that_file_is_a_module_but_this_file_has_no_imports_or_exports_Consider_adding_an_empty_export_to_make_this_file_a_module
+                            : Diagnostics.X_await_using_statements_are_only_allowed_at_the_top_level_of_a_file_when_that_file_is_a_module_but_this_file_has_no_imports_or_exports_Consider_adding_an_empty_export_to_make_this_file_a_module));
+                        hasError = true;
+                    }
+                    switch (moduleKind)
+                    {
+                        case ModuleKind.Node16:
+                        case ModuleKind.Node18:
+                        case ModuleKind.Node20:
+                        case ModuleKind.NodeNext:
+                            if (program.GetSourceFileMetaData(PathKey.FromGoString(sourceFile.PathKey())).ImpliedNodeFormat == ResolutionMode.CommonJS)
+                            {
+                                if (!spanCalculated) span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(sourceFile, node.Pos());
+                                addDiagnostic(Ast.NewDiagnostic(sourceFile, span, Diagnostics.The_current_file_is_a_CommonJS_module_and_cannot_use_await_at_the_top_level));
+                                hasError = true;
+                                break;
+                            }
+                            goto case ModuleKind.ES2022;
+                        case ModuleKind.ES2022:
+                        case ModuleKind.ESNext:
+                        case ModuleKind.Preserve:
+                        case ModuleKind.System:
+                            if (languageVersion >= ScriptTarget.ES2017) break;
+                            goto default;
+                        default:
+                            if (!spanCalculated) span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(sourceFile, node.Pos());
+                            addDiagnostic(Ast.NewDiagnostic(sourceFile, span, Ast.IsAwaitExpression(node)
+                                ? Diagnostics.Top_level_await_expressions_are_only_allowed_when_the_module_option_is_set_to_es2022_esnext_system_node16_node18_node20_nodenext_or_preserve_and_the_target_option_is_set_to_es2017_or_higher
+                                : Diagnostics.Top_level_await_using_statements_are_only_allowed_when_the_module_option_is_set_to_es2022_esnext_system_node16_node18_node20_nodenext_or_preserve_and_the_target_option_is_set_to_es2017_or_higher));
+                            hasError = true;
+                            break;
+                    }
+                }
+            }
+            else if (!hasParseDiagnostics(sourceFile))
+            {
+                var span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(sourceFile, node.Pos());
+                var diagnostic = Ast.NewDiagnostic(sourceFile, span, Ast.IsAwaitExpression(node)
+                    ? Diagnostics.X_await_expressions_are_only_allowed_within_async_functions_and_at_the_top_levels_of_modules
+                    : Diagnostics.X_await_using_statements_are_only_allowed_within_async_functions_and_at_the_top_levels_of_modules);
+                if (container != null && container.Kind != Kind.Constructor && !hasAsyncModifier(container))
+                    diagnostic.AddRelatedInfo(createDiagnosticForNode(container, Diagnostics.Did_you_mean_to_mark_this_function_as_async));
+                addDiagnostic(diagnostic);
+                hasError = true;
+            }
+        }
+        if (Ast.IsAwaitExpression(node) && isInParameterInitializerBeforeContainingFunction(node))
+        {
+            error(node, Diagnostics.X_await_expressions_cannot_be_used_in_a_parameter_initializer);
+            hasError = true;
+        }
+        return hasError;
+    }
+
+    // grammarchecks.go:1759. Context and parameter-initializer errors both publish.
+    private bool checkGrammarYieldExpression(Node node)
+    {
+        bool hasError = false;
+        if ((node.Flags & NodeFlags.YieldContext) == 0)
+        {
+            grammarErrorOnFirstToken(node, Diagnostics.A_yield_expression_is_only_allowed_in_a_generator_body);
+            hasError = true;
+        }
+        if (isInParameterInitializerBeforeContainingFunction(node))
+        {
+            error(node, Diagnostics.X_yield_expressions_cannot_be_used_in_a_parameter_initializer);
+            hasError = true;
+        }
+        return hasError;
     }
 
     private bool checkGrammarSourceFile(SourceFile node)
@@ -924,8 +1036,21 @@ public sealed partial class Checker
             return grammarErrorAtPos(node, declarations.Pos(), declarations.End() - declarations.Pos(), Diagnostics.Variable_declaration_list_cannot_be_empty);
         var flags = node.Flags & NodeFlags.BlockScoped;
         if (flags is NodeFlags.Using or NodeFlags.AwaitUsing)
-            throw unsupported("checkGrammarVariableDeclarationList: using");
-        return false;
+        {
+            if (Ast.IsForInStatement(node.Parent))
+                return grammarErrorOnNode(node, flags == NodeFlags.Using
+                    ? Diagnostics.The_left_hand_side_of_a_for_in_statement_cannot_be_a_using_declaration
+                    : Diagnostics.The_left_hand_side_of_a_for_in_statement_cannot_be_an_await_using_declaration);
+            if ((node.Flags & NodeFlags.Ambient) != 0)
+                return grammarErrorOnNode(node, flags == NodeFlags.Using
+                    ? Diagnostics.X_using_declarations_are_not_allowed_in_ambient_contexts
+                    : Diagnostics.X_await_using_declarations_are_not_allowed_in_ambient_contexts);
+            if (Ast.IsVariableStatement(node.Parent) && (Ast.IsCaseClause(node.Parent.Parent) || Ast.IsDefaultClause(node.Parent.Parent)))
+                return grammarErrorOnNode(node, flags == NodeFlags.Using
+                    ? Diagnostics.X_using_declarations_are_not_allowed_in_case_or_default_clauses_unless_contained_within_a_block
+                    : Diagnostics.X_await_using_declarations_are_not_allowed_in_case_or_default_clauses_unless_contained_within_a_block);
+        }
+        return flags == NodeFlags.AwaitUsing && checkGrammarAwaitOrAwaitUsing(node);
     }
 
     // grammarchecks.go:1518. Rest binding syntax also applies to ambient signatures.
@@ -2099,7 +2224,55 @@ public sealed partial class Checker
         }
 
         if (forInOrOfStatement.Kind == Kind.ForOfStatement && forInOrOfStatement.AwaitModifier != null)
-            throw unsupported("checkGrammarForInOrForOfStatement: for-await outside Collections contract");
+        {
+            if ((forInOrOfStatement.Flags & NodeFlags.AwaitContext) == 0)
+            {
+                var sourceFile = Ast.GetSourceFileOfNode(asNode);
+                if (Ast.IsInTopLevelContext(asNode))
+                {
+                    if (!hasParseDiagnostics(sourceFile))
+                    {
+                        if (!Ast.IsEffectiveExternalModule(sourceFile, compilerOptions))
+                            addDiagnostic(createDiagnosticForNode(forInOrOfStatement.AwaitModifier, Diagnostics.X_for_await_loops_are_only_allowed_at_the_top_level_of_a_file_when_that_file_is_a_module_but_this_file_has_no_imports_or_exports_Consider_adding_an_empty_export_to_make_this_file_a_module));
+                        switch (moduleKind)
+                        {
+                            case ModuleKind.Node16:
+                            case ModuleKind.Node18:
+                            case ModuleKind.Node20:
+                            case ModuleKind.NodeNext:
+                                if (program.GetSourceFileMetaData(PathKey.FromGoString(sourceFile.PathKey())).ImpliedNodeFormat == ResolutionMode.CommonJS)
+                                {
+                                    addDiagnostic(createDiagnosticForNode(forInOrOfStatement.AwaitModifier, Diagnostics.The_current_file_is_a_CommonJS_module_and_cannot_use_await_at_the_top_level));
+                                    break;
+                                }
+                                goto case ModuleKind.ES2022;
+                            case ModuleKind.ES2022:
+                            case ModuleKind.ESNext:
+                            case ModuleKind.Preserve:
+                            case ModuleKind.System:
+                                if (languageVersion >= ScriptTarget.ES2017) break;
+                                goto default;
+                            default:
+                                addDiagnostic(createDiagnosticForNode(forInOrOfStatement.AwaitModifier, Diagnostics.Top_level_for_await_loops_are_only_allowed_when_the_module_option_is_set_to_es2022_esnext_system_node16_node18_node20_nodenext_or_preserve_and_the_target_option_is_set_to_es2017_or_higher));
+                                break;
+                        }
+                    }
+                }
+                else if (!hasParseDiagnostics(sourceFile))
+                {
+                    var diagnostic = createDiagnosticForNode(forInOrOfStatement.AwaitModifier, Diagnostics.X_for_await_loops_are_only_allowed_within_async_functions_and_at_the_top_levels_of_modules);
+                    var containingFunc = Ast.GetContainingFunction(asNode);
+                    if (containingFunc != null && containingFunc.Kind != Kind.Constructor)
+                    {
+                        if ((Ast.GetFunctionFlags(containingFunc) & FunctionFlags.Async) != 0)
+                            throw new InvalidOperationException("Enclosing function should never be an async function.");
+                        diagnostic.AddRelatedInfo(createDiagnosticForNode(containingFunc, Diagnostics.Did_you_mean_to_mark_this_function_as_async));
+                    }
+                    addDiagnostic(diagnostic);
+                    return true;
+                }
+            }
+        }
         if ((((Ast.IsForOfStatement(asNode) && ((forInOrOfStatement.Flags & NodeFlags.AwaitContext) == 0)) && Ast.IsIdentifier(forInOrOfStatement.Initializer)) && (forInOrOfStatement.Initializer.Text() == "async")))
         {
             this.grammarErrorOnNode(forInOrOfStatement.Initializer, Diagnostics.The_left_hand_side_of_a_for_of_statement_may_not_be_async);

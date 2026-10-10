@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/flow.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Synchronous TypeScript flow, assignment, narrowing and reachability responsibilities.
-// The for-await consumer remains explicitly external; enabled tracing is not implemented.
+// Async protocol consumers use the original iteration flags; enabled tracing is not implemented.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -3117,9 +3117,9 @@ public sealed partial class Checker
                         var expressionType = getTypeOfDottedName(statement.Expression(), null);
                         if (expressionType != null)
                         {
-                            if (statement.AsForInOrOfStatement().AwaitModifier != null)
-                                throw unsupported("getExplicitTypeOfSymbol: excluded for-await-of");
-                            return checkIteratedTypeOrElementType(IterationUse.ForOf, expressionType, undefinedType, null);
+                            var use = statement.AsForInOrOfStatement().AwaitModifier != null
+                                ? IterationUse.ForAwaitOf : IterationUse.ForOf;
+                            return checkIteratedTypeOrElementType(use, expressionType, undefinedType, null);
                         }
                     }
 

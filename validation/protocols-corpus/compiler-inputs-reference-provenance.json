@@ -1,0 +1,42 @@
+{
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "pinned-original-Go-genuine-Program-reference-for-compiler-input-reuse-not-original-baseline-pass",
+  "requests": "validation/protocols-corpus/requests-compiler-inputs.jsonl",
+  "requestsSha256": "d4833fe2153c0f519edd4495903b2d90e4caec9c9f3bcf1068193ae46909ae58",
+  "cases": 52,
+  "expected": "validation/protocols-corpus/expected-compiler-inputs.jsonl.gz",
+  "expectedSha256": "33ae69fc5976db0a8f9f8e90d42f676effa84c919ee5b34a0d1e327748d7ef1e",
+  "uncompressedExpectedSha256": "36d72f44169f33c38d473a3f694b0791cb0582d35c5787fc3aa5732eea6a75b5",
+  "oracle": {
+    "executable": "tools/.cache/program-oracle",
+    "initialSha256": "81788084c43dbb81a96ef302d22dc0688174ee9cc52046902e325def475cada7",
+    "finalSha256": "81788084c43dbb81a96ef302d22dc0688174ee9cc52046902e325def475cada7",
+    "drift": false,
+    "command": [
+      "/home/greg/projects/typescript-dotnet/tools/.cache/program-oracle"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 0.862,
+    "sourceFiles": {
+      "tools/program-oracle/dependencies.go": "d77614d3a0724d42b25055b51dc2e87a59a3b6f8060aab3d464f5ef54b9b8145",
+      "tools/program-oracle/factory.go": "1ab6a68635e9576121649f5a7c80017b8f3f5fce3ce5d7bf1843ad0652c7da67",
+      "tools/program-oracle/json_error_observe.go": "bb84a440409186e1a01e7471be59fa0492819d77be6635ac7d59573c4a8ae2ae",
+      "tools/program-oracle/main.go": "5a1ddd209d6eb9cc9364ff789b7c6f10b8d89dd7d5591b6cfa801795ab93bec3",
+      "tools/program-oracle/mapper.go": "cc142e99150b37d27832fbea7e2e4f3ffb834c7b47f0b1fcab2b656fdfbaff5a",
+      "tools/program-oracle/semantic.go": "dc04058f4aadd2b3f4deeaf5f82e87ce80baa97501194e112c583cdc5cefde62"
+    }
+  },
+  "generationReport": {
+    "path": "artifacts/protocols-validation/original/compiler-inputs/report.json",
+    "sha256": "7d00c25269dd35e488cf6c7378326d9494356665ec5d93b31388167d7d6890b0"
+  },
+  "extractionReview": {
+    "path": "artifacts/protocols-validation/original/compiler-inputs/extraction-report.json",
+    "sha256": "37e96158617c262901930f858c188e9b0d7a2bc91ddb33f50dab1526989df45b",
+    "cases": 42,
+    "passed": 42,
+    "boundary": "Reuse of source-reviewed parser independently checked against genuine original Go inventory unit paths/text digests/settings/configuration variants. filename/link metadata maps to actual Files roles; no compiler option values normalized."
+  },
+  "observation": "Complete existing Program snapshots and genuine Bind/global-before/bulk/per-file/global-after/repeat semantic channels; same real directive options/libraries. No managed-derived expectations, output filters or path/diagnostic normalization. Emit/declaration-output and full compiler type/symbol baseline traversals remain external/unexecuted as separately declared."
+}

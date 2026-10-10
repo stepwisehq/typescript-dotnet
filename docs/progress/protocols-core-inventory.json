@@ -1,0 +1,364 @@
+{
+  "baseline": "bb035b3",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "P1\u2013P5 source responsibilities; function names establish traceability, not completion. Support counterpart functions recorded separately.",
+  "families": [
+    {
+      "family": "await-and-thenables",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "GetPromisedTypeOfPromise",
+          "line": 29448
+        },
+        {
+          "name": "getPromisedTypeOfPromiseEx",
+          "line": 29455
+        },
+        {
+          "name": "isThenableType",
+          "line": 31998
+        },
+        {
+          "name": "checkAwaitExpression",
+          "line": 11081
+        },
+        {
+          "name": "checkAwaitedType",
+          "line": 31781
+        },
+        {
+          "name": "getAwaitedType",
+          "line": 31802
+        },
+        {
+          "name": "getAwaitedTypeEx",
+          "line": 31806
+        },
+        {
+          "name": "getAwaitedTypeNoAlias",
+          "line": 31815
+        },
+        {
+          "name": "getAwaitedTypeNoAliasEx",
+          "line": 31819
+        },
+        {
+          "name": "isAwaitedTypeInstantiation",
+          "line": 31933
+        },
+        {
+          "name": "isAwaitedTypeNeeded",
+          "line": 31941
+        },
+        {
+          "name": "createAwaitedTypeIfNeeded",
+          "line": 31959
+        },
+        {
+          "name": "tryCreateAwaitedType",
+          "line": 31976
+        },
+        {
+          "name": "unwrapAwaitedType",
+          "line": 31988
+        },
+        {
+          "name": "getAwaitedTypeOfPromise",
+          "line": 32007
+        },
+        {
+          "name": "getAwaitedTypeOfPromiseEx",
+          "line": 32011
+        }
+      ],
+      "implementation": "Source producer packet compiled in snapshot1; retained recursive and synchronous algorithms reused.",
+      "independentReview": "Support complete selected-family branches and final caller join review closed with no substantive finding; core cross-owner review is recorded in protocols-core.md.",
+      "runtime": "Pending genuine Program/original assertions; no per-function instrumentation or execution claim."
+    },
+    {
+      "family": "returns-and-context",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkAsyncFunctionReturnType",
+          "line": 2828
+        },
+        {
+          "name": "getReturnTypeFromBody",
+          "line": 20530
+        },
+        {
+          "name": "checkAndAggregateReturnExpressionTypes",
+          "line": 20663
+        },
+        {
+          "name": "createPromiseType",
+          "line": 20752
+        },
+        {
+          "name": "createPromiseLikeType",
+          "line": 20764
+        },
+        {
+          "name": "createPromiseReturnType",
+          "line": 20776
+        },
+        {
+          "name": "unwrapReturnType",
+          "line": 20792
+        },
+        {
+          "name": "getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded",
+          "line": 20811
+        },
+        {
+          "name": "getWidenedLiteralLikeTypeForContextualIterationTypeIfNeeded",
+          "line": 20827
+        },
+        {
+          "name": "getContextualReturnType",
+          "line": 30214
+        },
+        {
+          "name": "getContextualTypeForReturnExpression",
+          "line": 30170
+        },
+        {
+          "name": "getContextualTypeForAwaitOperand",
+          "line": 30299
+        },
+        {
+          "name": "shouldReportErrorsFromWideningWithContextualSignature",
+          "line": 20867
+        }
+      ],
+      "implementation": "Source producer packet compiled in snapshot1; retained recursive and synchronous algorithms reused.",
+      "independentReview": "Support complete selected-family branches and final caller join review closed with no substantive finding; core cross-owner review is recorded in protocols-core.md.",
+      "runtime": "Pending genuine Program/original assertions; no per-function instrumentation or execution claim."
+    },
+    {
+      "family": "generators",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkYieldExpression",
+          "line": 11188
+        },
+        {
+          "name": "getYieldedTypeOfYieldExpression",
+          "line": 11254
+        },
+        {
+          "name": "checkAndAggregateYieldOperandTypes",
+          "line": 20726
+        },
+        {
+          "name": "createGeneratorType",
+          "line": 20838
+        },
+        {
+          "name": "getIterationTypeOfGeneratorFunctionReturnType",
+          "line": 6417
+        },
+        {
+          "name": "getIterationTypesOfGeneratorFunctionReturnType",
+          "line": 6425
+        },
+        {
+          "name": "getContextualIterationType",
+          "line": 30205
+        },
+        {
+          "name": "checkGeneratorInstantiationAssignabilityToReturnType",
+          "line": 30246
+        },
+        {
+          "name": "getContextualTypeForYieldOperand",
+          "line": 30268
+        },
+        {
+          "name": "hasContextSensitiveYieldExpression",
+          "line": 31500
+        }
+      ],
+      "implementation": "Source producer packet compiled in snapshot1; retained recursive and synchronous algorithms reused.",
+      "independentReview": "Support complete selected-family branches and final caller join review closed with no substantive finding; core cross-owner review is recorded in protocols-core.md.",
+      "runtime": "Pending genuine Program/original assertions; no per-function instrumentation or execution claim."
+    },
+    {
+      "family": "iteration",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "initializeIterationResolvers",
+          "line": 1272
+        },
+        {
+          "name": "checkIteratedTypeOrElementType",
+          "line": 6296
+        },
+        {
+          "name": "getIteratedTypeOrElementType",
+          "line": 6307
+        },
+        {
+          "name": "getIterationTypeOfIterable",
+          "line": 6439
+        },
+        {
+          "name": "getIterationTypesOfIterable",
+          "line": 6466
+        },
+        {
+          "name": "getIterationTypesOfIterableWorker",
+          "line": 6488
+        },
+        {
+          "name": "getIterationTypesOfIterableFast",
+          "line": 6558
+        },
+        {
+          "name": "getAsyncFromSyncIterationTypes",
+          "line": 6637
+        },
+        {
+          "name": "getIterationTypesOfIterableSlow",
+          "line": 6661
+        },
+        {
+          "name": "getIterationTypesOfIterator",
+          "line": 6686
+        },
+        {
+          "name": "getIterationTypesOfIteratorWorker",
+          "line": 6696
+        },
+        {
+          "name": "getIterationTypesOfIteratorFast",
+          "line": 6707
+        },
+        {
+          "name": "getIterationTypesOfIteratorSlow",
+          "line": 6734
+        },
+        {
+          "name": "getIterationTypesOfMethod",
+          "line": 6742
+        },
+        {
+          "name": "getIterationTypesOfIteratorResult",
+          "line": 6850
+        },
+        {
+          "name": "isYieldIteratorResult",
+          "line": 6883
+        },
+        {
+          "name": "isReturnIteratorResult",
+          "line": 6887
+        },
+        {
+          "name": "isIteratorResult",
+          "line": 6891
+        },
+        {
+          "name": "reportTypeNotIterableError",
+          "line": 6900
+        },
+        {
+          "name": "getIterationDiagnosticDetails",
+          "line": 6915
+        },
+        {
+          "name": "checkForOfStatement",
+          "line": 4063
+        },
+        {
+          "name": "checkRightHandSideOfForOf",
+          "line": 18081
+        }
+      ],
+      "implementation": "Source producer packet compiled in snapshot1; retained recursive and synchronous algorithms reused.",
+      "independentReview": "Support complete selected-family branches and final caller join review closed with no substantive finding; core cross-owner review is recorded in protocols-core.md.",
+      "runtime": "Pending genuine Program/original assertions; no per-function instrumentation or execution claim."
+    },
+    {
+      "family": "disposal-and-consumer-joins",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker.go",
+      "counterpart": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "functions": [
+        {
+          "name": "checkVariableDeclarationList",
+          "line": 5960
+        },
+        {
+          "name": "checkVariableLikeDeclaration",
+          "line": 5977
+        },
+        {
+          "name": "checkSignatureDeclaration",
+          "line": 2769
+        },
+        {
+          "name": "checkFunctionDeclaration",
+          "line": 3434
+        },
+        {
+          "name": "checkFunctionOrMethodDeclaration",
+          "line": 3440
+        },
+        {
+          "name": "checkFunctionExpressionOrObjectLiteralMethodDeferred",
+          "line": 10437
+        },
+        {
+          "name": "checkReturnExpression",
+          "line": 4162
+        },
+        {
+          "name": "getQuickTypeOfExpression",
+          "line": 7563
+        },
+        {
+          "name": "isContextSensitiveFunctionLikeDeclaration",
+          "line": 31480
+        },
+        {
+          "name": "checkExpressionWorker",
+          "line": 7933
+        },
+        {
+          "name": "checkDeferredNode",
+          "line": 2547
+        },
+        {
+          "name": "checkExternalEmitHelpers",
+          "line": 29105
+        },
+        {
+          "name": "getHelperNames",
+          "line": 29152
+        },
+        {
+          "name": "resolveHelpersModule",
+          "line": 29202
+        }
+      ],
+      "implementation": "Source producer packet compiled in snapshot1; retained recursive and synchronous algorithms reused.",
+      "independentReview": "Support complete selected-family branches and final caller join review closed with no substantive finding; core cross-owner review is recorded in protocols-core.md.",
+      "runtime": "Pending genuine Program/original assertions; no per-function instrumentation or execution claim."
+    }
+  ],
+  "modelDependencies": [
+    "IterationUse",
+    "IterationTypes",
+    "IterationTypeKind",
+    "IterationTypesResolver",
+    "LanguageFeatureMinimumTarget"
+  ]
+}

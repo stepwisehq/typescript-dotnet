@@ -1,0 +1,1753 @@
+{
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "pinned-compiler-input-reuse-not-original-test-body-or-baseline-pass",
+  "fixtures": 46,
+  "reusedFixtures": 42,
+  "excludedFixtures": 4,
+  "requests": 52,
+  "requestsSha256": "d4833fe2153c0f519edd4495903b2d90e4caec9c9f3bcf1068193ae46909ae58",
+  "sourceFiles": {
+    "tools/protocols-generate-compiler-inputs.py": "dfbc26dccebd73516aa13b36a0f67da708c2b5869474990dd61ad356c3d4ecbe",
+    "tools/resolution-generate-compiler-inputs.py": "bdbebabc540924cd14067b8769ba0650576c34f97f1b48bf6a6580fbf08db7a3",
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/options_generated.go": "ec1f8e29fc24155d717d717b90089208d771923465f1ff7eb67c80cb2fc89451",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/tsoptions/declarations_generated.go": "13d6ef2de232b16ff818c8ec9e5d5075e62ae511e5254fb4286293b49fa2cc09"
+  },
+  "inputs": [
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncFunctionReturnNonPromiseThenable.ts",
+      "sourceSha256": "89573c572787cd3aa12db7b416bf939b2352305b14d56fe7be0e107aa4611fe1",
+      "domain": "P1 malformed callable thenables and async annotation",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-01-01-asyncFunctionReturnNonPromiseThenable"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-01-01-asyncFunctionReturnNonPromiseThenable",
+          "compilerDirectives": {
+            "strict": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "acd7515e0f50f5350814eec382893f7996c7fdd49f7769fc1d124daf70b9af8f"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnNonPromiseThenable.errors.txt": "ecd5fd75b96046a0e9c63a585cc951520fd8575614503a44820566f7823537cb",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnNonPromiseThenable.symbols": "bb8a64c8e43e01c1cce636eaa245df85328fb5553281577663c0c14debecd20d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnNonPromiseThenable.types": "15cf1e90ad76f294a1eb55fb131e84ca3535bc7079d65e8399110c27c9c1cac3"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/unresolvableSelfReferencingAwaitedUnion.ts",
+      "sourceSha256": "b57b827ba6039e256611ae11d781476552001e5e358394f78f22408efe4c85e4",
+      "domain": "P1 recursive awaited union/cycle errors",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-02-01-unresolvableSelfReferencingAwaitedUnion"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-02-01-unresolvableSelfReferencingAwaitedUnion",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "noemit": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "641bd32b3049ed832eacc8e3a04e55dc1f429a6caa5b339a54a4a10417bba8d7"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/unresolvableSelfReferencingAwaitedUnion.errors.txt": "3ddb74423fe96239c0af6afced52412792d4cf0cb6c39df47e9d2afc45e3897a",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/unresolvableSelfReferencingAwaitedUnion.symbols": "1d352c1b7980085bf77dc0d335838b03ac48415275bcf00fafb421a853a5b921",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/unresolvableSelfReferencingAwaitedUnion.types": "466ecec98396c986f6a20a768cff3ce1a5ec381e8bd269be745046439b3a65b6"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/awaitedTypeNoLib.ts",
+      "sourceSha256": "e00ccb398d383060857cb0abcbb746371ef6eff8b60d19b4e724ce5f66060201",
+      "domain": "P1 thenable constraints with original absent libraries",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-03-01-awaitedTypeNoLib"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-03-01-awaitedTypeNoLib",
+          "compilerDirectives": {
+            "nolib": "true",
+            "strictfunctiontypes": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "2f70a6c3727f13f97e4993a304bb63ab9a21c461a6a25ebedd60fffbb9dcb074"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitedTypeNoLib.errors.txt": "8efec80cf98afcd85955a8593d2dc48b781d63bf0a7904e7b85471e3551a698f",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitedTypeNoLib.symbols": "9f6d254a10494c2964a5b8ae9100d16c59ea594b2d714bd6189de0b201fd40c3",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitedTypeNoLib.types": "2665b8d81ae9f78f4c00ba118c0ade37e24f258508f905f4614ddc0279128932"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncFunctionReturnType.ts",
+      "sourceSha256": "6d3fc6b87bf06b6c2854d928cba3d7fd685600966c17f0e866d0ab1db80de540",
+      "domain": "P1 contextual tuples/indexed/generic async returns",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-04-01-asyncFunctionReturnType"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-04-01-asyncFunctionReturnType",
+          "compilerDirectives": {
+            "target": "ES6"
+          },
+          "requestSha256": "82b8d7879c875338d41e9f6e49d6d190948e64b0957f0d2d1a0e5cd1aed19de9"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnType.2.symbols": "a2445d0a29632b527382d37bb283c136d5108e9e415569baa7295e2472103a6d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnType.2.types": "4f4b9933394ccf07bcc4de090dc045383c7bed5a261bee4513724192ca450881",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnType.symbols": "a4f970347766555ed9bc9e1912c1e946c3f4e427c001badf51fbb31028d5bace",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnType.types": "411b95ef66b431e6263aa44a7992babc55f99b68f320d4d154890c65a40ee957"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncFunctionReturnExpressionErrorSpans.ts",
+      "sourceSha256": "29c86b00ee94b4865ebfbb4c427b611f938bde6a4bf937c54bac1b260fb73a0f",
+      "domain": "P1 nested async-return diagnostic locations",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-05-01-asyncFunctionReturnExpressionErrorSpans"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-05-01-asyncFunctionReturnExpressionErrorSpans",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "7f21782616157b3524898de585bac7f4f3be8abc3c9e3b293870c9dd8ff4f779"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnExpressionErrorSpans.errors.txt": "70f5a57a4c4c277cbbd855bdbf02015e4f2078a476c20f0c0cd417d6ea87a14f",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnExpressionErrorSpans.symbols": "96da63fb5ec59dfc0adfd2e1cd06e70205ed3a8ba5f67803a93cd5d13c4b8c55",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionReturnExpressionErrorSpans.types": "4d04adeb9f9a4987bfcf16800550e44cc21887d0fbd8f07b4708ab503e76eede"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncFunctionsAndStrictNullChecks.ts",
+      "sourceSha256": "7f74eda01d7e2066e74a75cb4db0ff87ab3101a08b69be41350032226310d350",
+      "domain": "P1 overloaded nullable thenable callbacks",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-06-01-asyncFunctionsAndStrictNullChecks"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-06-01-asyncFunctionsAndStrictNullChecks",
+          "compilerDirectives": {
+            "strictnullchecks": "true",
+            "target": "es6"
+          },
+          "requestSha256": "2f1486350c19ed4495c57a7017ba9189662f3c5924be6f09053ea3fa164a52c1"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionsAndStrictNullChecks.symbols": "96cb320e35759ca0c2125e3f50f8ecea0175068f2f506d1495d0ed41ba770dc0",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncFunctionsAndStrictNullChecks.types": "25b90a7d3fd7a8c823006c117431b202253be4ad4bd00d6f10937023cbcc8e95"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/contextuallyTypeAsyncFunctionReturnTypeFromUnion.ts",
+      "sourceSha256": "f8ffe08cadbe0f8b988560d5ec7af07da97ef1d4d9a70398e3a2465bf56b652f",
+      "domain": "P1 union-filtered async contextual inference",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-07-01-contextuallyTypeAsyncFunctionReturnTypeFromUnion"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-07-01-contextuallyTypeAsyncFunctionReturnTypeFromUnion",
+          "compilerDirectives": {
+            "noemit": "true",
+            "strict": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "8cebd05a294450037936f2fa5e06a85954a77ad55553b8f675ceb5aeb0a35758"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/contextuallyTypeAsyncFunctionReturnTypeFromUnion.symbols": "294cbc98055e10cd9190421e09e25ffdc7a6a43f1db6ae1f32e3fe3030389b9e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/contextuallyTypeAsyncFunctionReturnTypeFromUnion.types": "88b987af6defca7aec86823199f0413ed198ca07297fd867aa5de46f413613bd"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitReturnsInAsync1.ts",
+      "sourceSha256": "09494303a0ef4cce4592f06b2510e692fde9d52d8ec1631091fd242fa9cbeb99",
+      "domain": "P1 source noImplicitReturns policy",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-08-01-noImplicitReturnsInAsync1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-08-01-noImplicitReturnsInAsync1",
+          "compilerDirectives": {
+            "noimplicitreturns": "true",
+            "target": "es6"
+          },
+          "requestSha256": "7672bc2924eafd798c26364ce9b51e83de63f67b3f50bb61ec9769e9598219fb"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noImplicitReturnsInAsync1.symbols": "7563b6add88349074f5693d6f9820304b32d3d6d467b29ed94efcfe89856611e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/noImplicitReturnsInAsync1.types": "bb20ff08d5f4d5d244148fa2484c6ea6a3a4047da2c6353cc859f2ec960fa0a9"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/awaitInNonAsyncFunction.ts",
+      "sourceSha256": "cae1a4e9659bab711f4e77056aad6ecc4d9956e805dd97fa56c14bbe2ae91427",
+      "domain": "P1 await context grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-09-01-awaitInNonAsyncFunction"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-09-01-awaitInNonAsyncFunction",
+          "compilerDirectives": {
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "b703df696e19f48693c53fc15c4150c54f0ba65ac6175053fe2b84a51b433ac9"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitInNonAsyncFunction.errors.txt": "e892224ed44119b626571cecbe78f5680c907431f54ef2c34f517d234f957198",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitInNonAsyncFunction.symbols": "521f3cdd407950897a8a50d6aa20f3e268bef2d11f677ece4894e9d0afbdbcec",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitInNonAsyncFunction.types": "3c2de01bf9cc1056fbb7a537e0b8dda7358565cfec4af8dd5e57d60f3da0d695"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/awaitObjectLiteral.ts",
+      "sourceSha256": "75401398d30fcb10d776c734534865933666c6cf437156454332157d5b0e16f6",
+      "domain": "P1 top-level await suggestion and source module context",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-10-01-awaitObjectLiteral"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-10-01-awaitObjectLiteral",
+          "compilerDirectives": {
+            "module": "esnext",
+            "target": "esnext"
+          },
+          "requestSha256": "5e9b9cd592b3788e5e0f3dc5e1f45ac7e2a54217b431f5c26f04606637b9a7c1"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitObjectLiteral.symbols": "ac59b18e0d88396233aee5cca6ea76b980018ed4d768543cdef44957cb968d30",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/awaitObjectLiteral.types": "1d4eb507628023f80d54b071c29f98c0a4cab3ba13d00007dbfbc25c7c33a278"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/modulePreserveTopLevelAwait1.ts",
+      "sourceSha256": "2bf8ae54623253801af8a0d71b8807d65831fdc22f13571b57bd51e7cd45905c",
+      "domain": "P1 original module Preserve await policy",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-11-01-modulePreserveTopLevelAwait1",
+        "protocol-input-11-02-modulePreserveTopLevelAwait1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-11-01-modulePreserveTopLevelAwait1",
+          "compilerDirectives": {
+            "module": "preserve",
+            "noemit": "true",
+            "strict": "false",
+            "target": "es2016"
+          },
+          "requestSha256": "221601f40af81080a1dcdb3ff542769bffcf05c4da4bb056eb0e95da880dee78"
+        },
+        {
+          "name": "protocol-input-11-02-modulePreserveTopLevelAwait1",
+          "compilerDirectives": {
+            "module": "preserve",
+            "noemit": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "7d2ccae30beac47d5feaeb7c2d85226fc640bedeba8a136b5c826f73e9a99a9e"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/modulePreserveTopLevelAwait1(target=es2016).errors.txt": "3c523e9e5c2fc1c336f0a602efeebc029297a600e140794621d3de503633270d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/modulePreserveTopLevelAwait1(target=es2016).symbols": "21d7dac26068406fd3826db3e26e87983aa50cb26e5d60dd1c723a4443ca31ba",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/modulePreserveTopLevelAwait1(target=es2016).types": "db3985d1bdb14a9db483979c32ca151aa113cc2b5353c89c65a1956df6664ff8",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/modulePreserveTopLevelAwait1(target=esnext).symbols": "abd1795e050b1d97c77ee7397bc2695e6d008c0087144dc9e300aeedc99f897e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/modulePreserveTopLevelAwait1(target=esnext).types": "db3985d1bdb14a9db483979c32ca151aa113cc2b5353c89c65a1956df6664ff8"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/generatorReturnExpressionIsChecked.ts",
+      "sourceSha256": "0a253d8c7ae80308ac22bf77c96febbf2fd9abe84da1ae815e07dea0f6021037",
+      "domain": "P2 checked generator return expression",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-12-01-generatorReturnExpressionIsChecked"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-12-01-generatorReturnExpressionIsChecked",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "target": "esnext"
+          },
+          "requestSha256": "8b4e1b7f136e1c2782b7c897338d5d613815c05eeb06b063b3df260a64dfddc2"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/generatorReturnExpressionIsChecked.errors.txt": "aae2072bbf756f6bde8aea54ad3cfac4535b8a24a860655529ee1820ce1894f6",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/generatorReturnExpressionIsChecked.symbols": "0cfa095bbe07a76119b6637eada39ca83070a806bbea0bf06492cb16d786dc4d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/generatorReturnExpressionIsChecked.types": "5065823deaa84cca85b81116f23abcc600e9fcdea15bcb06378c01ced8178df0"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/yieldStarContextualType.ts",
+      "sourceSha256": "ecdc6b192ccd959e99de9368e8862be45f0ef5e200ebadd1e62002fa4c4bc88f",
+      "domain": "P2 delegated yield contextual return/next inference",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-13-01-yieldStarContextualType"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-13-01-yieldStarContextualType",
+          "compilerDirectives": {
+            "noemit": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "b1219a48cbad18cefcd391ed326b6fb867fd9af74069699ddb2622d6d236f103"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/yieldStarContextualType.symbols": "9f4cac4cdeca7917c9276302bc52d49620b92166452ef0a9cf7db1b9ca66acd3",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/yieldStarContextualType.types": "9bb69564d3be31e02eaaac55c2c5086b0011cd429947cf26f1083c62f47f188f"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncYieldStarContextualType.ts",
+      "sourceSha256": "5502327cb6523269e56e64a1ce6b5ed2b5d58ca4f76044eda2b518b428e07355",
+      "domain": "P2 async delegation/generic yielded result context",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-14-01-asyncYieldStarContextualType"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-14-01-asyncYieldStarContextualType",
+          "compilerDirectives": {
+            "noemit": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "e8268f1e273c473d6ba6d6e696afde0feeb840aaaef2700babf0e5db67eedbb1"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncYieldStarContextualType.symbols": "1baa82d05c998bf470aaeafcafcde52b4b3bc781edc370465c2859d600f597c1",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncYieldStarContextualType.types": "73ba6a353330a12322c7ea5f4ed9f15695b69b44f689d96e90d8ef7289876471"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/typeOfYieldWithUnionInContextualReturnType.ts",
+      "sourceSha256": "b2876b251ae3e9fc6f1be2c856cf754b5a0b36eb92e659afa72ac5962f763457",
+      "domain": "P2 synchronous/asynchronous union context",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-15-01-typeOfYieldWithUnionInContextualReturnType"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-15-01-typeOfYieldWithUnionInContextualReturnType",
+          "compilerDirectives": {
+            "target": "esnext"
+          },
+          "requestSha256": "30dd87c109ed3950272ccd5c85f61ae4e86a7e4644ad522a5ff25b5a49a67186"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/typeOfYieldWithUnionInContextualReturnType.symbols": "657be1795835d3012392d118ae10a20b47fb3032b24e5ea04f2f130fc5dd706d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/typeOfYieldWithUnionInContextualReturnType.types": "86eb9a49fdef9c264203178e5743900dbb35186df39121c1b226ec5a857040f2"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/contextualTypeOnYield1.ts",
+      "sourceSha256": "5dc34fd12213b0df6e5aa24c4e16c321b0a072b122709ba5d7c0c60472af330c",
+      "domain": "P2 yield-operand generic contextual inference",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-16-01-contextualTypeOnYield1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-16-01-contextualTypeOnYield1",
+          "compilerDirectives": {
+            "strict": "true",
+            "target": "ES6"
+          },
+          "requestSha256": "45b2da07892c5bbf762eb8af520b82e3cb7e510c0e1e6c6a52ca3725b232569a"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/contextualTypeOnYield1.symbols": "92d02f2081a094f8e1213cb9ba950c67be02bc9a9a0c9a605350f5a2cd8c6ad7",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/contextualTypeOnYield1.types": "d148f67f1a8a5ce429e1492b6f8efa032014f68a33df05efcd242e7677c33073"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/customAsyncIterator.ts",
+      "sourceSha256": "5136269097ea6658fd1b13366593bb9c6de91f8c371bb027b16e6d621086e566",
+      "domain": "P3 custom AsyncIterator method/result model",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-17-01-customAsyncIterator"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-17-01-customAsyncIterator",
+          "compilerDirectives": {
+            "target": "esnext",
+            "usedefineforclassfields": "false"
+          },
+          "requestSha256": "1879724b498696ff4b45d5507e74f01d0485b3f0dcb7f548ff12a038f3f4bbe3"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/customAsyncIterator.symbols": "9d0bf216888d98c7ff19dc5f1b9e079a733ea6484cd9da9ba663c417681e4ad8",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/customAsyncIterator.types": "d5c1571b24e6bb7cc82e8cd40d31e748b5834f28d7dff9af37694475472e0ca3"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncIteratorExtraParameters.ts",
+      "sourceSha256": "c18238496cdc4fb6f92490af716a7b78599135465dc6d90d3917c724505f770d",
+      "domain": "P3 malformed async iterable required parameter",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-18-01-asyncIteratorExtraParameters"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-18-01-asyncIteratorExtraParameters",
+          "compilerDirectives": {
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "b00ed62d68667bb9f64b56b2dc007b6045a75cbc65a5aa8c650260e95ede9ea7"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/asyncIteratorExtraParameters.errors.txt": "f2c5cb2400473b6c83a3696847a1bf2422361b67ca7cfdfe168369e9a341bf98"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/iteratorExtraParameters.ts",
+      "sourceSha256": "f41be78b18425c9530b66d406d2c3b4d5775159042f4464c0f684ea865838ba1",
+      "domain": "P3 malformed synchronous iterable required parameter",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-19-01-iteratorExtraParameters"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-19-01-iteratorExtraParameters",
+          "compilerDirectives": {
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "f5c28d02ffa3eea73a04f224a85c88493c1cd3a5e66188fc379709f8619bc635"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/iteratorExtraParameters.errors.txt": "12fd538c17d5b7d789cabe99340d139cb047f6f62feb9e4325edcadb55f41c2a"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/forAwaitForUnion.ts",
+      "sourceSha256": "3a3b5a5721a16b6da942ebee4e4a760e2a423b61c25647f63080aec5cf90ffab",
+      "domain": "P3 for-await sync/async union",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-20-01-forAwaitForUnion"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-20-01-forAwaitForUnion",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "target": "es2018"
+          },
+          "requestSha256": "c1f3a991ae7cf8a50896972d36107f8fdffabf5e792f21fcb2b9e515e5dfb78b"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitForUnion.symbols": "7365abd69313edc04aca3454f6ab5066f94a353d75e73762380263e495f96903",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitForUnion.types": "9256985b4746bf345cc19495e471b5fd870dc4d10f1b6fc9c107ff6e0e5c4cb9"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/forAwaitForIntersection1.ts",
+      "sourceSha256": "f39c69acbec608bf66051a9ed9a85b88a3661e45459afb0906931128a62be941",
+      "domain": "P3 separate sync/async lookup order/cache behavior",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-21-01-forAwaitForIntersection1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-21-01-forAwaitForIntersection1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "noemit": "true",
+            "strict": "true",
+            "target": "es2018"
+          },
+          "requestSha256": "b14c2a08d942fe5fa690b0bdb500c2cc155cbb4c70e7f5f39e665c6917110b20"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitForIntersection1.symbols": "99097cd959ebfe8318060f4916383314c8f697898153511a603625f9dc228961",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitForIntersection1.types": "ecd4508d9354049d9c3f36550e941fae7dc1bf530ecd87fe5c9bace1d241bf50"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/forAwaitInAsyncAccessor.ts",
+      "sourceSha256": "5772278a977807b33786bf589effbe0b4ba09e2e5eb43eea12ddf61ace060931",
+      "domain": "P3 invalid async accessor/for-await context",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-22-01-forAwaitInAsyncAccessor"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-22-01-forAwaitInAsyncAccessor",
+          "compilerDirectives": {},
+          "requestSha256": "2385379a8b51c1831c5d82d6d62bc940f2abd4e43b0730132ba4ef5741fbe285"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitInAsyncAccessor.errors.txt": "0228aed10c21eb21fa32e0656a9fd47453f279d18024430a4103e8cc809b1332",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitInAsyncAccessor.symbols": "bb3861a9763d9b7462d283ff279110b026c343826872e80fd73c4e413fc19233",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forAwaitInAsyncAccessor.types": "6caff0e67eaaab2cea926cab47ff41a76da234036f50a75c6123ff3df6ebbd4d"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/iteratorsAndStrictNullChecks.ts",
+      "sourceSha256": "f964dbbac2ef03db0659b0fbdde5a2fe358298d9a78ad745906a6a288c23ff9e",
+      "domain": "P3 nullable iterator method/results",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-23-01-iteratorsAndStrictNullChecks"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-23-01-iteratorsAndStrictNullChecks",
+          "compilerDirectives": {
+            "strictnullchecks": "true",
+            "target": "ES6"
+          },
+          "requestSha256": "25eef2f081a21c55dd18287432d2d01a29b7c2ddeeae5f5b2827ff701260724f"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/iteratorsAndStrictNullChecks.symbols": "56954f9c629df97029c6e3536716b579378ccd280db3c77bc930fdb8f678606c",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/iteratorsAndStrictNullChecks.types": "6e31cf5a4ace37e755c88d433508d34a07181e5baccb709b8ee1b1cc358cf47c"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/usingAsyncDisposable.ts",
+      "sourceSha256": "817a42eaf6625424692a0d614c46e04195c52b8cc119f864e57585feb967f2d4",
+      "domain": "P4 disposable/async-disposable union and suggestion chain",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-24-01-usingAsyncDisposable"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-24-01-usingAsyncDisposable",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "noemit": "true",
+            "strict": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "14aa6a4a0b145117b8e5dc0987318d5421165f72b4dc0a1fc4cbbdc4eae44fc4"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/usingAsyncDisposable.errors.txt": "857c8d18aaccb4aa06b8ddbc1286200b436e35572a44107d9565c316b40d0606",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/usingAsyncDisposable.symbols": "7573952b21527917fe933e9bf916d2484cec72415fe3700568d667d5302b222e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/usingAsyncDisposable.types": "d7fb0eac407749559e235277371b35cb70a29adf2d4f6b6f98e6cc33418742e1"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorTypeCheck2.ts",
+      "sourceSha256": "feb285fbb7c4b62735ca5dd4cbd9bbc595f8391d4aaea51983fd5df58ca0930d",
+      "domain": "P2 no-yield annotated generator",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-25-01-generatorTypeCheck2"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-25-01-generatorTypeCheck2",
+          "compilerDirectives": {
+            "target": "ES6"
+          },
+          "requestSha256": "4ef9fba2ac710d7241a2bdc1d3f5145faa8ec24b688d5bcdb06e2116d3c8b1ce"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck2.symbols": "4557f78832c2881fe1f478d9fbe73181ca7c50d97120ab8aa57269b494ddbf6e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck2.types": "b8702025b287597d35f26dd05978be989b6283ae2488e8d541dbeaa37b593e5f"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorTypeCheck45.ts",
+      "sourceSha256": "7d3e90ff56fdca92cc9b1efbeac12b3a4866e7df604bfdea234634c9db2f803f",
+      "domain": "P2 contextual generic generator callbacks",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-26-01-generatorTypeCheck45"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-26-01-generatorTypeCheck45",
+          "compilerDirectives": {
+            "strict": "false",
+            "target": "ES6"
+          },
+          "requestSha256": "5f25a64a92844e771d72e2b7c1af374e8e56577274ebbc9b6895ee61cbc68ac4"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck45.symbols": "ea6ac061617ccdd11d40bb5156a0d69f147ad862d6e8b84cd6adb0de4dc5aa8c",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck45.types": "2fb301fda6ae5e2b88711affdc6b66512639759ff1d82ad5e169f1ab03e31d1f"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorTypeCheck48.ts",
+      "sourceSha256": "5dbbb6015948ff79a8cfebaec401f0cf4ae99de3f5c74b6a7854dbf419d74c3d",
+      "domain": "P2 noImplicitAny yield/next",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-27-01-generatorTypeCheck48"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-27-01-generatorTypeCheck48",
+          "compilerDirectives": {
+            "noimplicitany": "true",
+            "target": "ES6"
+          },
+          "requestSha256": "375107421debb4d242bfb59dabcc4499f2aa8dc2e4a6671e68e6e34816cecbe6"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck48.symbols": "399619b07e447eac2ba6a94456f932f3b8c01982b4c46c878a87a98c8b9f89ca",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorTypeCheck48.types": "f4431a96fcbfa7c7afe22ec26fd87b13bcf6a6b5d72f92c6e497dc7da60af133"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorOverloads1.ts",
+      "sourceSha256": "34d7bbe73d3532bc88e58b07fcf3e2239f0243b45c80becfefe9fdb91d7490f2",
+      "domain": "P2 generator overload grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-28-01-generatorOverloads1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-28-01-generatorOverloads1",
+          "compilerDirectives": {
+            "target": "ES6"
+          },
+          "requestSha256": "e2271f728080bb66367348c172b3e7e7ba94bbe3c67e2e78d317e2cc0efbdf31"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorOverloads1.errors.txt": "c97ac8ac5e26e1a076bbd49f0bf1116723f4665eb5e58f0feed277e0d1d59286",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorOverloads1.symbols": "6606c2db5084ef77032b0d5116c1d02fd4a7bf2ea82f7d1b4a9f9f00d78fe977",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorOverloads1.types": "b8f56a24ce48a4e5cf2466b658c30a262ffb46641b90d35f4348e23a92b73d6a"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorInAmbientContext1.ts",
+      "sourceSha256": "388c8688032f3ad5f7b231e29f935e2a2518d03060dd13562588b050e127ddb7",
+      "domain": "P2 ambient generator grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-29-01-generatorInAmbientContext1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-29-01-generatorInAmbientContext1",
+          "compilerDirectives": {
+            "target": "ES6"
+          },
+          "requestSha256": "6dd0512efcb685d47b94222e8d4a556efbde8db212b2584f604f4a4ac58a148b"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorInAmbientContext1.errors.txt": "be0480a14a6c660e4b5116c56d9214b063473495c278b016af8b8552df05be34",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorInAmbientContext1.symbols": "297e59400814591c5ade592656c940a39a9c6dfeb64845b707412807f6afd8d2",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorInAmbientContext1.types": "edba3ea23b7942b8a70000f5c48f1372c61b58cde02a328b3210c86fcd335f45"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/yieldExpressions/generatorNoImplicitReturns.ts",
+      "sourceSha256": "0326c151021e0c9461157d652b66283a17f3230259a5f79e6ef5816a32f0a51f",
+      "domain": "P2 generator return-path policy",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-30-01-generatorNoImplicitReturns"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-30-01-generatorNoImplicitReturns",
+          "compilerDirectives": {
+            "noimplicitreturns": "true",
+            "strictnullchecks": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "332890bf06683934ec80e1e8be261da3959e1f7b5677c886a60113054684ed7d"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorNoImplicitReturns.symbols": "f252615e6be0c208e192995cad3d6e8547a23ee49f20deb436441d4362218b82",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/generatorNoImplicitReturns.types": "651557b0ad9baa8f0b9de50ae08ce3f472faab0c22ec125f64c85f0818b44881"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarations.1.ts",
+      "sourceSha256": "bfdd3cf7cf40df0fe50ec1c42034c2e0778937963d3ca06f61bd098ca2832a6b",
+      "domain": "P4 using scopes/targets/functions/classes/loops",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-31-01-usingDeclarations.1",
+        "protocol-input-31-02-usingDeclarations.1",
+        "protocol-input-31-03-usingDeclarations.1",
+        "protocol-input-31-04-usingDeclarations.1",
+        "protocol-input-31-05-usingDeclarations.1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-31-01-usingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "596b05fa740105ed5041be15392eac31cdc7561a5392b9d410db78a78a730760"
+        },
+        {
+          "name": "protocol-input-31-02-usingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2022"
+          },
+          "requestSha256": "5fff1f55ea79f8f8ff7358d4ae54418e9e56d57fdc955f766161375736fb1706"
+        },
+        {
+          "name": "protocol-input-31-03-usingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2017"
+          },
+          "requestSha256": "106e9d204cb6bc4273861c07c687bf4f05813393b5d40fffa435af60b69ee8ce"
+        },
+        {
+          "name": "protocol-input-31-04-usingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2015"
+          },
+          "requestSha256": "380ed73efe3a383da9a790b5693004c610b987af9fb42b3f95a2a4fbf1705c11"
+        },
+        {
+          "name": "protocol-input-31-05-usingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es5"
+          },
+          "requestSha256": "6b72d6166271076f17f4fe466ad961909cbee3e25b0bbca1b3f9d0f6558ea0fb"
+        }
+      ],
+      "baselineSourceFiles": {},
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarations.9.ts",
+      "sourceSha256": "80812138e15bef439e8c0e973ec0849106cde03e75b7ee7844cce75edd3b90a5",
+      "domain": "P4 genuine missing Disposable global",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-32-01-usingDeclarations.9"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-32-01-usingDeclarations.9",
+          "compilerDirectives": {
+            "lib": "es2022",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "dbd06e5e88f7c40d331dc49440982a290a75a845b8fd26ec661d5ad5a0c3ab0a"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/usingDeclarations.9.errors.txt": "024bc10c67acb07cc98a6dd8226527aef4a32be57e45cc61200f42b3ac12f25a"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarations.13.ts",
+      "sourceSha256": "ca23e25539961c71598d42bbd5be5ec86d2c186bf5d8d4c41f228fc214a80622",
+      "domain": "P4 exported/ambient using grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-33-01-usingDeclarations.13"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-33-01-usingDeclarations.13",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "107d4b4d4cfb102e661419009f89b3bc72086d066231ebe1ecc8f2f5f493155d"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/usingDeclarations.13.errors.txt": "5aae4c09e780cb4489cc9c92321ac668e596a99ec4c49ad42b887e2040663f51"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarationsInForIn.ts",
+      "sourceSha256": "092f2d2694fbdc00e6061debb590289190fde08a252a5a53ec41b8fb57df2f03",
+      "domain": "P4 for-in using rejection",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-34-01-usingDeclarationsInForIn"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-34-01-usingDeclarationsInForIn",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "2de87afa5afe3e7ccac354573a3739059a197d3fba5c2a7a1132cc50f8ad15ab"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/usingDeclarationsInForIn.errors.txt": "ddabe398b1c8238bfca3a1f05f0df59ac9141f694c236ed654d08f4470047441"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarations.1.ts",
+      "sourceSha256": "3d31dceb8b2800249945dec70a1bf81afeb3b9474294adf2ed688d1e2864cfd6",
+      "domain": "P4 await-using scopes/targets",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-35-01-awaitUsingDeclarations.1",
+        "protocol-input-35-02-awaitUsingDeclarations.1",
+        "protocol-input-35-03-awaitUsingDeclarations.1",
+        "protocol-input-35-04-awaitUsingDeclarations.1",
+        "protocol-input-35-05-awaitUsingDeclarations.1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-35-01-awaitUsingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "d7196e76abc93d94895be36e42eea762b5b25f3d1f40fd75cf82afaf0595d143"
+        },
+        {
+          "name": "protocol-input-35-02-awaitUsingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2022"
+          },
+          "requestSha256": "be9449f5eff402fd8bc2cd6b72cc8e76e6bac0df60f9206fce0462cbe89efdaa"
+        },
+        {
+          "name": "protocol-input-35-03-awaitUsingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2017"
+          },
+          "requestSha256": "2ec9386324c8d0b6b9ac037cee1f37d7948ccb530eac32275fa8164cc5e01db4"
+        },
+        {
+          "name": "protocol-input-35-04-awaitUsingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2015"
+          },
+          "requestSha256": "1cd919057f5a43819a3018c1c2bdb1ff0d39b156dec0905d843ed6dfff21e4e9"
+        },
+        {
+          "name": "protocol-input-35-05-awaitUsingDeclarations.1",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es5"
+          },
+          "requestSha256": "3f9e06be62afb18d8c6d5ba11cbe1a8091daead21921a56813ec975e3058cd43"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarations.1(target=es2015).errors.txt": "a4cb6d746b1f143e6ab8243afcbcd1d6fc59bfdabcbcf58ca72d38e2c3a5b5ee"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarations.4.ts",
+      "sourceSha256": "bad545c5910510f8b44e84a873b4f58cbb45f4d970ac2387f7a8c7b5b556115d",
+      "domain": "P4 await-using binding grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-36-01-awaitUsingDeclarations.4"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-36-01-awaitUsingDeclarations.4",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "7945a38ca0184753cdeda6a0ae125c356ec0b6f8fc8f6371868a80e2ffd6cd84"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarations.4.errors.txt": "a008c9a8a31d1174e8fe064c1862035cdd342c19449d24ab8de6d57e7d3d6feb"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarations.16.ts",
+      "sourceSha256": "47c829350a018fc2fea1396a5fd41313be4ad6a9997cf304c34c80d6ee45e2ba",
+      "domain": "P4 ambient await-using grammar",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-37-01-awaitUsingDeclarations.16"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-37-01-awaitUsingDeclarations.16",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "3238af178fb7ed696e2b4cc06183ac9dc367f5f053bee8035bfe869534f54945"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarations.16.errors.txt": "56e6eac17c720a6401226d5bec64b0d4ccfb2667a7c463b9eb979ff174c3e1f5"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarationsInForIn.ts",
+      "sourceSha256": "2c4a4a865f7b7a4e5a6032c53cbc6fdaebc491a294059940940e0369d3e212e0",
+      "domain": "P4 for-in await-using rejection",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-38-01-awaitUsingDeclarationsInForIn"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-38-01-awaitUsingDeclarationsInForIn",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "esnext"
+          },
+          "requestSha256": "0fed417316ec30f2aa2bb73e86dfbd21eec44957c43e140cb22b76577e0e6c16"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarationsInForIn.errors.txt": "cff8cd805fd32d93ce3f43454e4a6872db3ef221ab258bb085ca3ddbf4ebddd2"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarationsTopLevelOfModule.1.ts",
+      "sourceSha256": "e169874cfb0acb96ea51e7c000dc1fee8dcf001867829c26774c3370e87b12d6",
+      "domain": "P4 module/target top-level await-using",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-39-01-awaitUsingDeclarationsTopLevelOfModule.1",
+        "protocol-input-39-02-awaitUsingDeclarationsTopLevelOfModule.1"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-39-01-awaitUsingDeclarationsTopLevelOfModule.1",
+          "compilerDirectives": {
+            "lib": "esnext,dom",
+            "module": "system",
+            "noemithelpers": "true",
+            "notypesandsymbols": "true",
+            "target": "es2022"
+          },
+          "requestSha256": "b7eec168bf2fe608682ef29294edd89313fb131ecf451d48f07e221a47901052"
+        },
+        {
+          "name": "protocol-input-39-02-awaitUsingDeclarationsTopLevelOfModule.1",
+          "compilerDirectives": {
+            "lib": "esnext,dom",
+            "module": "esnext",
+            "noemithelpers": "true",
+            "notypesandsymbols": "true",
+            "target": "es2022"
+          },
+          "requestSha256": "1f42cb34eea52b93f8b5d17b79ba8543a3239604d3a349f0d9ebce563dcfb88f"
+        }
+      ],
+      "baselineSourceFiles": {},
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarationsWithImportHelpers.ts",
+      "sourceSha256": "24f7f7d9f10fe676b6b2787e3865f7267bbce5705dc4a0818910204725f40f96",
+      "domain": "P4 genuine missing disposal helper diagnostics",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-40-01-usingDeclarationsWithImportHelpers"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-40-01-usingDeclarationsWithImportHelpers",
+          "compilerDirectives": {
+            "importhelpers": "true",
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2022"
+          },
+          "requestSha256": "9b99643397e7279d1e949010e4db1e2436d432cafed4afaefc7085e36e4320d7"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/usingDeclarationsWithImportHelpers.errors.txt": "6f67bac7de6d46f32c4ddf8c611d41ca1f9a89cb04480113b1272e9a52894cf5"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarationsWithImportHelpers.ts",
+      "sourceSha256": "d88c81e26f11cf11d19280849cbde5ec8b486ae831b944fb7bad54cd02a78783",
+      "domain": "P4 genuine missing async-disposal helper diagnostics",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-41-01-awaitUsingDeclarationsWithImportHelpers"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-41-01-awaitUsingDeclarationsWithImportHelpers",
+          "compilerDirectives": {
+            "importhelpers": "true",
+            "lib": "esnext",
+            "module": "esnext",
+            "notypesandsymbols": "true",
+            "strict": "false",
+            "target": "es2022"
+          },
+          "requestSha256": "9c141a668d9f3bc2ee2f2e12dc68a173a5896e9af946ac7014d1dc3eaabfd3ae"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarationsWithImportHelpers.errors.txt": "4abea8ce8693ccbb00b8a1fb9432b049853633a4631a621fd7ea78bd6d02fb7c"
+      },
+      "adaptations": {
+        "harnessOnly": {
+          "notypesandsymbols": "true"
+        },
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/awaitUsingDeclarationsWithAsyncIteratorObject.ts",
+      "sourceSha256": "730d5ec91d71f1ff48f3d2da790c01c8920bf78f5d118353abf61347791665fd",
+      "domain": "P3/P4 built-in async iterator disposal",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "protocol-input-42-01-awaitUsingDeclarationsWithAsyncIteratorObject"
+      ],
+      "variants": [
+        {
+          "name": "protocol-input-42-01-awaitUsingDeclarationsWithAsyncIteratorObject",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "module": "esnext",
+            "noemit": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "f7eaab3de6fe437466b91a024074a211eedeeb0727945bda905c8a0e1949b897"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarationsWithAsyncIteratorObject.errors.txt": "a10752347f753fc3c157670b7567f71ec09304923105b6245ff973a0493ddf17",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarationsWithAsyncIteratorObject.symbols": "7b075028f0163f689871850b351d4b99aa4299240f45ddcf6196732534e0e82c",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/awaitUsingDeclarationsWithAsyncIteratorObject.types": "be0adc62e669c69a27b9e5f4b070273c3a4cbddf0768dc5fb825cb5ee9a5ae46"
+      },
+      "adaptations": {
+        "harnessOnly": {},
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original declaration-diagnostic/output, Emit-induced diagnostics and pre/post-emit invariant, JS/source-map output and full type/symbol baseline traversal not executed. Genuine pre-emit config/Program/syntactic/semantic/global records compared; original baseline bytes are source provenance, not baseline-pass claims."
+      },
+      "execution": {
+        "original": "reference recorded separately in compiler-inputs-reference-provenance.json",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/jsFileCompilationAwaitModifier.ts",
+      "sourceSha256": "14ccb220f87944c73a28dd449bd999c1cc31a210dc35182f3f977e432f86a169",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "boundary": "subsequent-language-consumer",
+      "reason": "Whole JS file/declaration producer is subsequent JS campaign; original source/settings preserved, no JS erasure.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarationsWithESClassDecorators.1.ts",
+      "sourceSha256": "265f77bafcc7f98815b5b6c640f4d783e3b856e039d6f9bf05bb317639c1ca20",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "boundary": "subsequent-language-consumer",
+      "reason": "Whole decorator/resource interaction is subsequent decorator campaign; no decorator stripping or option replacement.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/asyncImportNestedYield.ts",
+      "sourceSha256": "7cf43aff675496ed1656b27afdc0519f0a837af7f4d1df5a5a946abdcb4ce826",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "boundary": "subsequent-language-consumer",
+      "reason": "Whole nested dynamic-import consumer is subsequent module/options campaign; await/yield/import source retained without consumer suppression.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/importHelpersNoHelpersForAsyncGenerators.ts",
+      "sourceSha256": "397d4ca239e61af475596d0cb60e19a022cc7ec73a615a5e7f9bed07489baa78",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "boundary": "original-removed-option",
+      "reason": "Whole input requests original removed moduleResolution classic; no rewrite to another mode. Original option disposition remains explicit, not a pass.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    }
+  ]
+}

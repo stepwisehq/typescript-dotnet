@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted scanner/parser/syntax-AST and source-file binding foundations; accepted bounded scalar/object/named-data, callable, generic-collection and ES-module checking. Configuration/discovery, source-import resolution and the defined Program/environment construction contract are accepted with actual Linux x64 Native AOT evidence. Broader checker/library semantics, emit/build/watch and services remain separate. Historical scopes and fingerprints are retained below. Genuine checker initialization and declaration/object responsibility closure D1\u2013D6 is now accepted with genuine Program environments and retained regressions; whole checker counterparts remain partial. Synchronous TypeScript expression/statement/checker-flow E1\u2013E6 is accepted with actual Linux x64 Native AOT and retained regressions; external protocol/JS responsibilities remain explicit. Shared TypeScript type-system T1\u2013T6 responsibilities are now accepted with source-family reconciliation, original casing support, public semantic comparisons, actual Linux x64 Native AOT and all retained regressions; whole checker files and external consumers remain partial.",
+  "checkpoint": "Accepted scanner/parser/syntax-AST and source-file binding foundations; accepted bounded scalar/object/named-data, callable, generic-collection and ES-module checking. Configuration/discovery, source-import resolution and the defined Program/environment construction contract are accepted with actual Linux x64 Native AOT evidence. Broader checker/library semantics, emit/build/watch and services remain separate. Historical scopes and fingerprints are retained below. Genuine checker initialization and declaration/object responsibility closure D1\u2013D6 is now accepted with genuine Program environments and retained regressions; whole checker counterparts remain partial. Synchronous TypeScript expression/statement/checker-flow E1\u2013E6 is accepted with actual Linux x64 Native AOT and retained regressions; external protocol/JS responsibilities remain explicit. Shared TypeScript type-system T1\u2013T6 responsibilities are now accepted with source-family reconciliation, original casing support, public semantic comparisons, actual Linux x64 Native AOT and all retained regressions; whole checker files and external consumers remain partial. Async/generator/runtime-protocol P1\u2013P6 source closure is accepted with complete selected Go comparisons, actual Linux x64 Native AOT and retained regressions; whole-checker completion remains active.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -828,7 +828,11 @@
       "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
       "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
+      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -866,7 +870,11 @@
       "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
       "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
+      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -935,7 +943,11 @@
       "expressionsCampaignScope": "Synchronous TS source flow responsibilities: switch/optional/property presence/private-in/instanceof/predicate effects and binding/assignment transfers, existing loop/capture/cache algorithms. JS and async/protocol consumers explicit external; E5 underway, not accepted.",
       "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
+      "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
+      "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
+      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -972,7 +984,11 @@
       "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
       "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
+      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -1004,7 +1020,11 @@
       "expressionsCampaignScope": "Runtime binding/names/labels/switch/regex/tagged/meta/bigint grammar and target diagnostics. Genuine Program module lookup preserved; named hostless adapters use captured module option.",
       "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
+      "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
+      "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
+      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -4338,7 +4358,15 @@
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     }
   ],
-  "activePhase": null,
+  "activePhase": {
+    "name": "whole-checker-no-emit-completion",
+    "baselineCommit": "bb035b3",
+    "status": "P1\u2013P6 protocol contract accepted; L1\u2013L6 remaining language and whole-checker verification in progress, not whole-checker acceptance",
+    "mandate": "docs/CHECKER-COMPLETION-PROMPT.md",
+    "state": "docs/CHECKER-COMPLETION-STATUS.md",
+    "checkerRoadmap": "docs/CHECKER-COMPLETION-ROADMAP.md",
+    "contract": "docs/LANGUAGE-CONTRACT.md"
+  },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
     "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
@@ -4615,6 +4643,34 @@
     "protectedHistoricalFiles": 256,
     "platform": "Linux x64",
     "elapsedGateSeconds": 1492.728,
-    "scope": "Shared TypeScript generic/advanced-type/inference/relation and required tuple/callable/predicate algorithms, demanded Unicode casing/display dependencies; genuine Program options/unchanged libraries, complete selected diagnostics and finite public semantic observations. Source reconciliation is separate from finite coverage. Whole checker/printer, external async/JS/module consumers, emit and other platforms remain incomplete or unverified. Delivery commit contains this manifest."
+    "scope": "Shared TypeScript generic/advanced-type/inference/relation and required tuple/callable/predicate algorithms, demanded Unicode casing/display dependencies; genuine Program options/unchanged libraries, complete selected diagnostics and finite public semantic observations. Source reconciliation is separate from finite coverage. Whole checker/printer, external async/JS/module consumers, emit and other platforms remain incomplete or unverified. Delivery commit contains this manifest.",
+    "commit": "bb035b3"
+  },
+  "acceptedProtocolsCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "bb035b3",
+    "contract": "docs/PROTOCOLS-CONTRACT.md",
+    "assessment": "docs/PROTOCOLS-ASSESSMENT.md",
+    "evidence": "validation/results/protocols-verified.json",
+    "sourceSha256": "e13c234e666672b10dbe423fa04aa43b3e2e270ca8dccece8404dc1cfe3f1533",
+    "verificationAssetsSha256": "b6023e284b75a7d3fd9284b8cc3ce69590b1c69dce7fc2964a382d134d74cd6c",
+    "xUnitSelectedSuiteCaseExecutions": 24951,
+    "newXUnitCases": 102,
+    "nativeComparisonCases": 94,
+    "nativeSharedChecks": 8,
+    "orderExecutionsPerRuntime": 22,
+    "ordinaryNativeCliCases": 2,
+    "originalAssertionBodies": 7,
+    "newlyRestoredOriginalBodies": 1,
+    "authoredSharedControls": 1,
+    "authoredSourceFamilyRecords": 40,
+    "upstreamCompilerInputsInventoried": 46,
+    "upstreamCompilerInputsReused": 42,
+    "upstreamCompilerInputRequestVariants": 52,
+    "externalWholeCompilerInputs": 4,
+    "protectedHistoricalFiles": 271,
+    "platform": "Linux x64",
+    "elapsedGateSeconds": 1518.981,
+    "scope": "P1\u2013P6 async/await, generator, iteration and disposal checking, demanded consumers and complete original mapper generator assertions; genuine options/libraries and full selected diagnostics/public types. Source closure distinct from finite coverage. Whole checker, emit, services and other platforms not accepted. Delivery commit contains this manifest."
   }
 }

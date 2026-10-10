@@ -9,13 +9,15 @@ To restart work, give the new session this instruction:
 
 Follow the active phase in [STATE.md](./docs/STATE.md). If it records no active
 work, report that checkpoint and wait for a new bounded mandate; this resume
-instruction does not authorize starting the full compiler.
+instruction does not authorize emit or unrelated compiler infrastructure. The whole-checker
+mandate below authorizes successive no-emit checking campaigns until its final gate.
 
-Latest accepted campaign: [shared TypeScript type-system completion](./docs/TYPESYSTEM-ASSESSMENT.md),
-from baseline `09630d6`. The delivery commit contains its [checkpoint](./docs/TYPESYSTEM-STATUS.md)
-and proof. No new campaign is active; report that checkpoint and wait for a mandate.
-Recommended next: async/generator/runtime protocols under the [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
-Do not restart accepted work, large-project comparison or optimization.
+Active mandate: [autonomous whole-checker no-emit completion](./docs/CHECKER-COMPLETION-PROMPT.md)
+from accepted `bb035b3`. Resume the [live checkpoint](./docs/CHECKER-COMPLETION-STATUS.md).
+Continue through successive campaigns without renewed authorization; an accepted
+intermediate campaign or context reset is not a stopping point. Stop after the whole-
+checker gate passes, or for a genuine material blocker. Large-project comparisons and
+optimization remain deferred. The prior campaign's “no active campaign” state is historical.
 
 ## User mandate
 

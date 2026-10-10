@@ -7,6 +7,65 @@ using TypeScript.Scanner;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    // utilities.go:1203. The source caller supplies a valid parent pointer.
+    private static bool expressionResultIsUnused(Node node)
+    {
+        while (true)
+        {
+            var parent = node.Parent;
+            if (Ast.IsParenthesizedExpression(parent))
+            {
+                node = parent;
+                continue;
+            }
+            if (Ast.IsExpressionStatement(parent) || Ast.IsVoidExpression(parent) ||
+                Ast.IsForStatement(parent) && (parent.Initializer() == node || parent.AsForStatement().Incrementor == node))
+                return true;
+            if (Ast.IsBinaryExpression(parent) && parent.AsBinaryExpression().OperatorToken.Kind == Kind.CommaToken)
+            {
+                if (node == parent.AsBinaryExpression().Left)
+                    return true;
+                node = parent;
+                continue;
+            }
+            return false;
+        }
+    }
+
+    // utilities.go:59 and 1264. Yield traversal excludes nested function bodies,
+    // while retaining computed names evaluated in the containing generator.
+    private static bool hasAsyncModifier(Node node) => Ast.HasSyntacticModifier(node, ModifierFlags.Async);
+
+    private static bool forEachYieldExpression(Node body, Func<Node, bool> visitor)
+    {
+        bool Traverse(Node node)
+        {
+            switch (node.Kind)
+            {
+                case Kind.YieldExpression:
+                    if (visitor(node)) return true;
+                    var operand = node.Expression();
+                    return operand != null && Traverse(operand);
+                case Kind.EnumDeclaration:
+                case Kind.InterfaceDeclaration:
+                case Kind.ModuleDeclaration:
+                case Kind.TypeAliasDeclaration:
+                    break;
+                default:
+                    if (Ast.IsFunctionLike(node))
+                    {
+                        if (node.Name() != null && Ast.IsComputedPropertyName(node.Name()))
+                            return Traverse(node.Name().Expression());
+                    }
+                    else if (!Ast.IsPartOfTypeNode(node))
+                        return node.ForEachChild(Traverse);
+                    break;
+            }
+            return false;
+        }
+        return Traverse(body);
+    }
+
     // utilities.go:1150. Entity-name callers supply a parent, as in the source precondition.
     private static bool isInRightSideOfImportOrExportAssignment(Node node)
     {

@@ -10,6 +10,8 @@ using TypeScript.Modules;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Checks")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TypeSystem.Validation")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Protocols.Checks")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Protocols.Validation")]
 
 namespace TypeScript.Checking;
 
@@ -894,8 +896,9 @@ public sealed partial class Checker
 
     private void checkVariableDeclarationList(Node node)
     {
-        if ((Ast.GetCombinedNodeFlags(node) & NodeFlags.BlockScoped) is NodeFlags.Using or NodeFlags.AwaitUsing)
-            throw unsupported("checkVariableDeclarationList: using");
+        var blockScopeKind = Ast.GetCombinedNodeFlags(node) & NodeFlags.BlockScoped;
+        if ((blockScopeKind is NodeFlags.Using or NodeFlags.AwaitUsing) && languageVersion < LanguageFeatureMinimumTarget.UsingAndAwaitUsing)
+            checkExternalEmitHelpers(node, ExternalEmitHelpers.AddDisposableResourceAndDisposeResources);
         checkSourceElements(node.AsVariableDeclarationList().Declarations.Nodes);
     }
 
@@ -1012,8 +1015,36 @@ public sealed partial class Checker
                 var initializerType = checkExpressionCached(initializer);
                 checkTypeAssignableToAndOptionallyElaborate(initializerType, t, node, initializer);
                 var blockScopeKind = getCombinedNodeFlagsCached(node) & NodeFlags.BlockScoped;
-                if (blockScopeKind == NodeFlags.AwaitUsing || blockScopeKind == NodeFlags.Using)
-                    throw unsupported("resource-management declaration validation");
+                if (blockScopeKind == NodeFlags.AwaitUsing)
+                {
+                    var globalAsyncDisposableType = getGlobalAsyncDisposableType();
+                    var globalDisposableType = getGlobalDisposableType();
+                    if (globalAsyncDisposableType != emptyObjectType && globalDisposableType != emptyObjectType)
+                    {
+                        var optionalDisposableType = getUnionType([globalAsyncDisposableType, globalDisposableType, nullType, undefinedType]);
+                        checkTypeAssignableTo(widenTypeForVariableLikeDeclaration(initializerType, node, false), optionalDisposableType, initializer,
+                            Diagnostics.The_initializer_of_an_await_using_declaration_must_be_either_an_object_with_a_Symbol_asyncDispose_or_Symbol_dispose_method_or_be_null_or_undefined);
+                    }
+                }
+                else if (blockScopeKind == NodeFlags.Using)
+                {
+                    var globalDisposableType = getGlobalDisposableType();
+                    if (globalDisposableType != emptyObjectType)
+                    {
+                        var optionalDisposableType = getUnionType([globalDisposableType, nullType, undefinedType]);
+                        var widenedInitializerType = widenTypeForVariableLikeDeclaration(initializerType, node, false);
+                        var diags = new List<Diagnostic>();
+                        if (!checkTypeAssignableToEx(widenedInitializerType, optionalDisposableType, initializer,
+                            Diagnostics.The_initializer_of_a_using_declaration_must_be_either_an_object_with_a_Symbol_dispose_method_or_be_null_or_undefined, diags))
+                        {
+                            var globalAsyncDisposableType = getGlobalAsyncDisposableType();
+                            var optionalAsyncDisposableType = getUnionType([globalAsyncDisposableType, nullType, undefinedType]);
+                            if (globalAsyncDisposableType != emptyObjectType && isTypeAssignableTo(widenedInitializerType, optionalAsyncDisposableType))
+                                diags[0].AddMessageChain(Ast.NewDiagnosticChain(null, Diagnostics.This_initializer_has_a_Symbol_asyncDispose_method_Did_you_mean_to_use_await_using));
+                            addDiagnostic(diags[0]);
+                        }
+                    }
+                }
             }
             if (GoRuntime.Len(symbol.Declarations) > 1 && Core.Some(symbol.Declarations,
                 d => d != node && Ast.IsVariableLike(d) && !areDeclarationFlagsIdentical(d, node)))
@@ -2465,7 +2496,8 @@ public sealed partial class Checker
         {
             case true when Ast.IsAwaitExpression(expr):
                 {
-                    throw unsupported("getQuickTypeOfExpression: source await");
+                    var t = getQuickTypeOfExpression(expr.Expression());
+                    return t != null ? getAwaitedType(t) : null;
                 }
 
             case true when ((((Ast.IsCallExpression(expr) && (expr.Expression().Kind != Kind.SuperKeyword)) && !Ast.IsRequireCall(expr, true)) && !this.isSymbolOrSymbolForCall(expr)) && !Ast.IsImportCall(expr)):
@@ -2656,6 +2688,10 @@ public sealed partial class Checker
                 return checkTypeOfExpression(node);
             case Kind.VoidExpression:
                 return checkVoidExpression(node);
+            case Kind.AwaitExpression:
+                return checkAwaitExpression(node);
+            case Kind.YieldExpression:
+                return checkYieldExpression(node);
             case Kind.FunctionExpression:
             case Kind.ArrowFunction:
                 return checkFunctionExpressionOrObjectLiteralMethod(node, checkMode);
@@ -4784,12 +4820,12 @@ public sealed partial class Checker
 
             case Kind.YieldExpression:
                 {
-                    throw unsupported("getContextualType: source YieldExpression");
+                    return getContextualTypeForYieldOperand(parent, contextFlags);
                 }
 
             case Kind.AwaitExpression:
                 {
-                    throw unsupported("getContextualType: source AwaitExpression");
+                    return getContextualTypeForAwaitOperand(parent, contextFlags);
                 }
 
             case Kind.CallExpression:
@@ -7524,7 +7560,7 @@ public sealed partial class Checker
     private IndexInfo getApplicableIndexInfoForName(Type t, string name) => getApplicableIndexInfo(t, isLateBoundName(name) ? esSymbolType : getStringLiteralType(name));
     private Type globalPromiseType;
     private Type getGlobalPromiseType() => globalPromiseType ??= getGlobalType("Promise", 1, false);
-    private Type GetPromisedTypeOfPromise(Type t) => getPromisedTypeOfPromiseEx(t, null, null);
+    public Type GetPromisedTypeOfPromise(Type t) => getPromisedTypeOfPromiseEx(t, null, null);
     private Type getPromisedTypeOfPromiseEx(Type t, Node errorNode, GoRef<Type> thisTypeForErrorOut)
     {
         if (IsTypeAny(t))
@@ -9252,7 +9288,8 @@ public sealed partial class Checker
 
             case Kind.YieldExpression:
                 {
-                    throw unsupported("isContextSensitive: source YieldExpression");
+                    var expression = node.Expression();
+                    return expression != null && isContextSensitive(expression);
                 }
         }
 
@@ -12416,120 +12453,301 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:20530. Async/generator branches are excluded by admission and guarded here.
+    // checker.go:20530. Body inference retains return, yield and next contributions.
     private Type getReturnTypeFromBody(Node fn, CheckMode checkMode)
     {
         var body = fn.Body();
-        if (body == null)
-            return errorType;
+        if ((body == null))
+        {
+            return this.errorType;
+        }
         var functionFlags = Ast.GetFunctionFlags(fn);
-        if ((functionFlags & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
-            throw unsupported("getReturnTypeFromBody: async/generator");
-        Type returnType;
-        if (!Ast.IsBlock(body))
+        var isAsync = (((functionFlags & FunctionFlags.Async)) != 0);
+        var isGenerator = (((functionFlags & FunctionFlags.Generator)) != 0);
+        Type returnType = default;
+        Type yieldType = default;
+        Type nextType = default;
+        Type fallbackReturnType = this.voidType;
+        switch (true)
         {
-            returnType = checkExpressionCachedEx(body, checkMode & ~CheckMode.SkipGenericFunctions);
-            if (isConstContext(body))
-                returnType = getRegularTypeOfLiteralType(returnType);
-        }
-        else
-        {
-            var (types, isNeverReturning) = checkAndAggregateReturnExpressionTypes(fn, checkMode);
-            if (isNeverReturning)
-                return neverType;
-            if ((types?.Count ?? 0) == 0)
+            case true when !Ast.IsBlock(body):
             {
-                var contextualReturnType = getContextualReturnType(fn);
-                return contextualReturnType != null && someType(contextualReturnType, t => (t.flags & TypeFlags.Undefined) != 0) ? undefinedType : voidType;
+                returnType = this.checkExpressionCachedEx(body, (checkMode & ~CheckMode.SkipGenericFunctions));
+                if (this.isConstContext(body))
+                {
+                    returnType = this.getRegularTypeOfLiteralType(returnType);
+                }
+                if (isAsync)
+                {
+                    returnType = this.unwrapAwaitedType(this.checkAwaitedType(returnType, false, fn, Diagnostics.The_return_type_of_an_async_function_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member));
+                }
+                break;
             }
-
-            returnType = getUnionTypeEx(types, UnionReduction.Subtype, null, null);
-        }
-
-        if (returnType != null)
-        {
-            reportErrorsFromWidening(fn, returnType, WideningKind.FunctionReturn);
-            if (isUnitType(returnType))
+            case true when isGenerator:
             {
-                var contextualSignature = getContextualSignatureForFunctionLikeDeclaration(fn);
-                Type contextualType = null;
-                if (contextualSignature != null)
-                    contextualType = contextualSignature == getSignatureFromDeclaration(fn) ? returnType : instantiateContextualType(getReturnTypeOfSignature(contextualSignature), fn, ContextFlags.None);
-                returnType = getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded(returnType, contextualType, false);
+                var tuple1 = this.checkAndAggregateReturnExpressionTypes(fn, checkMode); var returnTypes = tuple1.Item1; var isNeverReturning = tuple1.Item2;
+                if (isNeverReturning)
+                {
+                    fallbackReturnType = this.neverType;
+                }
+                else
+                {
+                    if ((GoRuntime.Len(returnTypes) != 0))
+                    {
+                        returnType = this.getUnionTypeEx(returnTypes, UnionReduction.Subtype, null, null);
+                    }
+                }
+                var tuple2 = this.checkAndAggregateYieldOperandTypes(fn, checkMode); var yieldTypes = tuple2.Item1; var nextTypes = tuple2.Item2;
+                if ((GoRuntime.Len(yieldTypes) != 0))
+                {
+                    yieldType = this.getUnionTypeEx(yieldTypes, UnionReduction.Subtype, null, null);
+                }
+                if ((GoRuntime.Len(nextTypes) != 0))
+                {
+                    nextType = this.getIntersectionType(nextTypes);
+                }
+                break;
             }
-
-            returnType = getWidenedType(returnType);
+            default:
+            {
+                var tuple3 = this.checkAndAggregateReturnExpressionTypes(fn, checkMode); var types = tuple3.Item1; var isNeverReturning2 = tuple3.Item2;
+                if (isNeverReturning2)
+                {
+                    if (((functionFlags & FunctionFlags.Async) != 0))
+                    {
+                        return this.createPromiseReturnType(fn, this.neverType);
+                    }
+                    return this.neverType;
+                }
+                if ((GoRuntime.Len(types) == 0))
+                {
+                    var contextualReturnType = this.getContextualReturnType(fn, ContextFlags.None);
+                    Type returnType2 = default;
+                    if (((contextualReturnType != null) && someType(Core.OrElse(this.unwrapReturnType(contextualReturnType, functionFlags), this.voidType), (t) =>
+                    {
+                        return ((t.flags & TypeFlags.Undefined) != 0);
+                    })))
+                    {
+                        returnType2 = this.undefinedType;
+                    }
+                    else
+                    {
+                        returnType2 = this.voidType;
+                    }
+                    if (((functionFlags & FunctionFlags.Async) != 0))
+                    {
+                        return this.createPromiseReturnType(fn, returnType2);
+                    }
+                    return returnType2;
+                }
+                returnType = this.getUnionTypeEx(types, UnionReduction.Subtype, null, null);
+                break;
+            }
         }
-
-        return returnType ?? voidType;
+        if ((((returnType != null) || (yieldType != null)) || (nextType != null)))
+        {
+            if ((yieldType != null))
+            {
+                this.reportErrorsFromWidening(fn, yieldType, WideningKind.GeneratorYield);
+            }
+            if ((returnType != null))
+            {
+                this.reportErrorsFromWidening(fn, returnType, WideningKind.FunctionReturn);
+            }
+            if ((nextType != null))
+            {
+                this.reportErrorsFromWidening(fn, nextType, WideningKind.GeneratorNext);
+            }
+            if (((((returnType != null) && isUnitType(returnType)) || ((yieldType != null) && isUnitType(yieldType))) || ((nextType != null) && isUnitType(nextType))))
+            {
+                var contextualSignature = this.getContextualSignatureForFunctionLikeDeclaration(fn);
+                Type contextualType = default;
+                switch (true)
+                {
+                    case true when (contextualSignature == null):
+                    {
+                        break;
+                    }
+                    case true when (contextualSignature == this.getSignatureFromDeclaration(fn)):
+                    {
+                        if (!isGenerator)
+                        {
+                            contextualType = returnType;
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        contextualType = this.instantiateContextualType(this.getReturnTypeOfSignature(contextualSignature), fn, ContextFlags.None);
+                        break;
+                    }
+                }
+                if (isGenerator)
+                {
+                    yieldType = this.getWidenedLiteralLikeTypeForContextualIterationTypeIfNeeded(yieldType, contextualType, IterationTypeKind.Yield, isAsync);
+                    returnType = this.getWidenedLiteralLikeTypeForContextualIterationTypeIfNeeded(returnType, contextualType, IterationTypeKind.Return, isAsync);
+                    nextType = this.getWidenedLiteralLikeTypeForContextualIterationTypeIfNeeded(nextType, contextualType, IterationTypeKind.Next, isAsync);
+                }
+                else
+                {
+                    returnType = this.getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded(returnType, contextualType, isAsync);
+                }
+            }
+            if ((yieldType != null))
+            {
+                yieldType = this.getWidenedType(yieldType);
+            }
+            if ((returnType != null))
+            {
+                returnType = this.getWidenedType(returnType);
+            }
+            if ((nextType != null))
+            {
+                nextType = this.getWidenedType(nextType);
+            }
+        }
+        if ((returnType == null))
+        {
+            returnType = fallbackReturnType;
+        }
+        if (isGenerator)
+        {
+            if ((yieldType == null))
+            {
+                yieldType = this.neverType;
+            }
+            if ((nextType == null))
+            {
+                nextType = this.getContextualIterationType(IterationTypeKind.Next, fn);
+                if ((nextType == null))
+                {
+                    nextType = this.unknownType;
+                }
+            }
+            return this.createGeneratorType(yieldType, returnType, nextType, isAsync);
+        }
+        if (isAsync)
+        {
+            return this.createPromiseType(returnType);
+        }
+        return returnType;
     }
 
-    // checker.go:20663. The async unwrapping arm is rejected before aggregation.
+    // checker.go:20663. Async returns assimilate their actual awaited type.
     private (List<Type>, bool) checkAndAggregateReturnExpressionTypes(Node fn, CheckMode checkMode)
     {
         var functionFlags = Ast.GetFunctionFlags(fn);
-        if ((functionFlags & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
-            throw unsupported("checkAndAggregateReturnExpressionTypes: async/generator");
-        List<Type> aggregatedTypes = null;
-        bool hasReturnWithNoExpression = functionHasImplicitReturn(fn), hasReturnOfTypeNever = false;
-        Ast.ForEachReturnStatement(fn.Body(), returnStatement =>
+        List<Type> aggregatedTypes = default;
+        var hasReturnWithNoExpression = this.functionHasImplicitReturn(fn);
+        var hasReturnOfTypeNever = false;
+        Ast.ForEachReturnStatement(fn.Body(), (returnStatement) =>
         {
             var expr = returnStatement.Expression();
-            if (expr == null)
+            if ((expr == null))
             {
                 hasReturnWithNoExpression = true;
                 return false;
             }
-
             expr = Ast.SkipParentheses(expr);
-            if (Ast.IsCallExpression(expr) && Ast.IsIdentifier(expr.Expression()) && checkExpressionCached(expr.Expression()).symbol == getMergedSymbol(fn.Symbol()) && (!Ast.IsFunctionExpressionOrArrowFunction(fn.Symbol().ValueDeclaration) || isConstantReference(expr.Expression())))
+            if ((((functionFlags & FunctionFlags.Async) != 0) && Ast.IsAwaitExpression(expr)))
+            {
+                expr = Ast.SkipParentheses(expr.Expression());
+            }
+            if ((((Ast.IsCallExpression(expr) && Ast.IsIdentifier(expr.Expression())) && (this.checkExpressionCached(expr.Expression()).symbol == this.getMergedSymbol(fn.Symbol()))) && ((!Ast.IsFunctionExpressionOrArrowFunction(fn.Symbol().ValueDeclaration) || this.isConstantReference(expr.Expression())))))
             {
                 hasReturnOfTypeNever = true;
                 return false;
             }
-
-            var t = checkExpressionCachedEx(expr, checkMode & ~CheckMode.SkipGenericFunctions);
-            if ((t.flags & TypeFlags.Never) != 0)
+            var t = this.checkExpressionCachedEx(expr, (checkMode & ~CheckMode.SkipGenericFunctions));
+            if (((functionFlags & FunctionFlags.Async) != 0))
+            {
+                t = this.unwrapAwaitedType(this.checkAwaitedType(t, false, fn, Diagnostics.The_return_type_of_an_async_function_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member));
+            }
+            if (((t.flags & TypeFlags.Never) != 0))
+            {
                 hasReturnOfTypeNever = true;
-            if (isConstContext(expr))
-                t = getRegularTypeOfLiteralType(t);
-            if (!(aggregatedTypes?.Contains(t) ?? false))
-                aggregatedTypes = GoRuntime.Append(aggregatedTypes, t);
+            }
+            if (this.isConstContext(expr))
+            {
+                t = this.getRegularTypeOfLiteralType(t);
+            }
+            aggregatedTypes = Core.AppendIfUnique(aggregatedTypes, t);
             return false;
         });
-        if ((aggregatedTypes?.Count ?? 0) == 0 && !hasReturnWithNoExpression && (hasReturnOfTypeNever || mayReturnNever(fn)))
+        if ((((GoRuntime.Len(aggregatedTypes) == 0) && !hasReturnWithNoExpression) && ((hasReturnOfTypeNever || mayReturnNever(fn)))))
+        {
             return (null, true);
-        if (strictNullChecks && (aggregatedTypes?.Count ?? 0) != 0 && hasReturnWithNoExpression && !aggregatedTypes.Contains(undefinedType))
-            aggregatedTypes = GoRuntime.Append(aggregatedTypes, undefinedType);
+        }
+        if (((this.strictNullChecks && (GoRuntime.Len(aggregatedTypes) != 0)) && hasReturnWithNoExpression))
+        {
+            aggregatedTypes = Core.AppendIfUnique(aggregatedTypes, this.undefinedType);
+        }
         return (aggregatedTypes, false);
     }
 
-    // checker.go:20811; ordinary returns retain literal contextual widening.
+    // checker.go:20811. Return literal widening uses the contextual promised type.
     private Type getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded(Type t, Type contextualSignatureReturnType, bool isAsync)
     {
-        if (isAsync)
-            throw unsupported("getWidenedLiteralLikeTypeForContextualReturnTypeIfNeeded: async");
-        if (t != null && isUnitType(t))
-            t = getWidenedLiteralLikeTypeForContextualType(t, contextualSignatureReturnType);
+        if (((t != null) && isUnitType(t)))
+        {
+            Type contextualType = default;
+            switch (true)
+            {
+                case true when (contextualSignatureReturnType == null):
+                {
+                    break;
+                }
+                case true when isAsync:
+                {
+                    contextualType = this.GetPromisedTypeOfPromise(contextualSignatureReturnType);
+                    break;
+                }
+                default:
+                {
+                    contextualType = contextualSignatureReturnType;
+                    break;
+                }
+            }
+            t = this.getWidenedLiteralLikeTypeForContextualType(t, contextualType);
+        }
         return t;
     }
 
-    // checker.go:30214/30260. No async/generator or annotated accessor/constructor admission.
-    private Type getContextualReturnType(Node functionDecl)
+    // checker.go:30214. Contextual signatures are filtered for the actual function kind.
+    private Type getContextualReturnType(Node functionDecl, ContextFlags contextFlags = ContextFlags.None)
     {
-        var returnType = getReturnTypeFromAnnotation(functionDecl);
-        if (returnType != null)
-            return returnType;
-        var signature = getContextualSignatureForFunctionLikeDeclaration(functionDecl);
-        if (signature != null && !isResolvingReturnTypeOfSignature(signature))
+        var returnType = this.getReturnTypeFromAnnotation(functionDecl);
+        if ((returnType != null))
         {
-            if (Ast.GetFunctionFlags(functionDecl) != FunctionFlags.Normal)
-                throw unsupported("getContextualReturnType: async/generator");
-            return getReturnTypeOfSignature(signature);
+            return returnType;
         }
-
+        var signature = this.getContextualSignatureForFunctionLikeDeclaration(functionDecl);
+        if (((signature != null) && !this.isResolvingReturnTypeOfSignature(signature)))
+        {
+            var returnType2 = this.getReturnTypeOfSignature(signature);
+            var functionFlags = Ast.GetFunctionFlags(functionDecl);
+            if (((functionFlags & FunctionFlags.Generator) != 0))
+            {
+                return this.filterType(returnType2, (t) =>
+                {
+                    return (((t.flags & (((TypeFlags.AnyOrUnknown | TypeFlags.Void) | TypeFlags.InstantiableNonPrimitive))) != 0) || this.checkGeneratorInstantiationAssignabilityToReturnType(t, functionFlags, null));
+                });
+            }
+            if (((functionFlags & FunctionFlags.Async) != 0))
+            {
+                return this.filterType(returnType2, (t2) =>
+                {
+                    return (((t2.flags & (((TypeFlags.AnyOrUnknown | TypeFlags.Void) | TypeFlags.InstantiableNonPrimitive))) != 0) || (this.getAwaitedTypeOfPromise(t2) != null));
+                });
+            }
+            return returnType2;
+        }
         var iife = Ast.GetImmediatelyInvokedFunctionExpression(functionDecl);
-        return iife != null ? getContextualType(iife) : null;
+        if ((iife != null))
+        {
+            return this.getContextualType(iife, contextFlags);
+        }
+        return null;
     }
 
     private Signature getContextualSignatureForFunctionLikeDeclaration(Node node) => Ast.IsFunctionExpressionOrArrowFunction(node) || Ast.IsObjectLiteralMethod(node) ? getContextualSignature(node) : null;
@@ -13429,20 +13647,41 @@ public sealed partial class Checker
 
     private bool shouldReportErrorsFromWideningWithContextualSignature(Node declaration, WideningKind wideningKind)
     {
-        var signature = getContextualSignatureForFunctionLikeDeclaration(declaration);
-        if (signature == null)
-            return true;
-        var returnType = getReturnTypeOfSignature(signature);
-        var flags = Ast.GetFunctionFlags(declaration);
-        if (wideningKind == WideningKind.FunctionReturn)
+        var signature = this.getContextualSignatureForFunctionLikeDeclaration(declaration);
+        if ((signature == null))
         {
-            if (flags != FunctionFlags.Normal)
-                throw unsupported("shouldReportErrorsFromWideningWithContextualSignature: async/generator");
-            return isGenericType(returnType);
+            return true;
         }
-
-        if (wideningKind is WideningKind.GeneratorNext or WideningKind.GeneratorYield)
-            throw unsupported("shouldReportErrorsFromWideningWithContextualSignature: generator");
+        var returnType = this.getReturnTypeOfSignature(signature);
+        var flags = Ast.GetFunctionFlags(declaration);
+        switch (wideningKind)
+        {
+            case WideningKind.FunctionReturn:
+            {
+                if (((flags & FunctionFlags.Generator) != 0))
+                {
+                    returnType = Core.OrElse(this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, returnType, ((flags & FunctionFlags.Async) != 0)), returnType);
+                }
+                else
+                {
+                    if (((flags & FunctionFlags.Async) != 0))
+                    {
+                        returnType = Core.OrElse(this.getAwaitedTypeNoAlias(returnType), returnType);
+                    }
+                }
+                return this.isGenericType(returnType);
+            }
+            case WideningKind.GeneratorYield:
+            {
+                var yieldType = this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Yield, returnType, ((flags & FunctionFlags.Async) != 0));
+                return ((yieldType != null) && this.isGenericType(yieldType));
+            }
+            case WideningKind.GeneratorNext:
+            {
+                var nextType = this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Next, returnType, ((flags & FunctionFlags.Async) != 0));
+                return ((nextType != null) && this.isGenericType(nextType));
+            }
+        }
         return false;
     }
 
@@ -13551,8 +13790,13 @@ public sealed partial class Checker
         }
 
         var functionFlags = Ast.GetFunctionFlags(node);
-        if ((functionFlags & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
-            throw unsupported("checkSignatureDeclaration: async/generator");
+        if ((functionFlags & FunctionFlags.Invalid) == 0)
+        {
+            if ((functionFlags & FunctionFlags.AsyncGenerator) == FunctionFlags.AsyncGenerator && languageVersion < LanguageFeatureMinimumTarget.AsyncGenerators)
+                checkExternalEmitHelpers(node, ExternalEmitHelpers.AsyncGeneratorIncludes);
+            if ((functionFlags & FunctionFlags.AsyncGenerator) == FunctionFlags.Async && languageVersion < LanguageFeatureMinimumTarget.AsyncFunctions)
+                checkExternalEmitHelpers(node, ExternalEmitHelpers.Awaiter);
+        }
         this.checkTypeParameters(node.TypeParameters());
         this.checkUnmatchedJSDocParameters(node);
         this.checkSourceElements(node.Parameters());
@@ -13580,6 +13824,20 @@ public sealed partial class Checker
             }
         }
 
+        if (returnTypeNode != null)
+        {
+            if ((functionFlags & (FunctionFlags.Invalid | FunctionFlags.Generator)) == FunctionFlags.Generator)
+            {
+                var returnType = getTypeFromTypeNode(returnTypeNode);
+                if (returnType == voidType)
+                    error(returnTypeNode, Diagnostics.A_generator_cannot_have_a_void_type_annotation);
+                else
+                    checkGeneratorInstantiationAssignabilityToReturnType(returnType, functionFlags, returnTypeNode);
+            }
+            else if ((functionFlags & FunctionFlags.AsyncGenerator) == FunctionFlags.Async)
+                checkAsyncFunctionReturnType(node, returnTypeNode);
+        }
+
         if (!Ast.IsIndexSignatureDeclaration(node))
         {
             this.registerForUnusedIdentifiersCheck(node);
@@ -13592,8 +13850,7 @@ public sealed partial class Checker
     private void checkFunctionDeclaration(Node node)
     {
         this.checkFunctionOrMethodDeclaration(node);
-        if ((Ast.GetFunctionFlags(node) & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
-            throw unsupported("checkFunctionDeclaration: generator/async");
+        checkGrammarForGenerator(node);
         this.checkCollisionsForDeclarationName(node, node.Name());
     }
 }
@@ -13641,7 +13898,7 @@ public sealed partial class Checker
             }
             if ((((functionFlags & FunctionFlags.Generator) != 0) && Ast.NodeIsPresent(body)))
             {
-                throw unsupported("generator body return-type validation");
+                getReturnTypeOfSignature(getSignatureFromDeclaration(node));
             }
         }
     }
@@ -14199,7 +14456,8 @@ public sealed partial class Checker
         var inReturnStatement = (node.Kind == Kind.ReturnStatement);
         if (((functionFlags & FunctionFlags.Async) != 0))
         {
-            throw unsupported("checkReturnExpression: async");
+            unwrappedExprType = checkAwaitedType(exprType, false, node,
+                Diagnostics.The_return_type_of_an_async_function_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member);
         }
 
         var effectiveExpr = expr;
@@ -15657,8 +15915,25 @@ public sealed partial class Checker
 {
     private Type unwrapReturnType(Type returnType, FunctionFlags functionFlags)
     {
-        if ((functionFlags & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
-            throw unsupported("unwrapReturnType: async/generator");
+        var isGenerator = ((functionFlags & FunctionFlags.Generator) != 0);
+        var isAsync = ((functionFlags & FunctionFlags.Async) != 0);
+        if (isGenerator)
+        {
+            var returnIterationType = this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, returnType, isAsync);
+            if ((returnIterationType == null))
+            {
+                return this.errorType;
+            }
+            if (isAsync)
+            {
+                return this.getAwaitedTypeNoAlias(this.unwrapAwaitedType(returnIterationType));
+            }
+            return returnIterationType;
+        }
+        if (isAsync)
+        {
+            return Core.OrElse(this.getAwaitedTypeNoAlias(returnType), this.errorType);
+        }
         return returnType;
     }
 }
@@ -16738,7 +17013,7 @@ public sealed partial class Checker
 {
     private bool isContextSensitiveFunctionLikeDeclaration(Node node)
     {
-        return ((Ast.HasContextSensitiveParameters(node) || this.hasContextSensitiveReturnExpression(node)) || (Ast.GetFunctionFlags(node) & FunctionFlags.Generator) != 0);
+        return Ast.HasContextSensitiveParameters(node) || hasContextSensitiveReturnExpression(node) || hasContextSensitiveYieldExpression(node);
     }
 }
 
@@ -17182,24 +17457,39 @@ public sealed partial class Checker
         var fn = Ast.GetContainingFunction(node);
         if ((fn != null))
         {
-            var contextualReturnType = this.getContextualReturnType(fn);
+            var contextualReturnType = this.getContextualReturnType(fn, contextFlags);
             if ((contextualReturnType != null))
             {
                 var functionFlags = Ast.GetFunctionFlags(fn);
                 if (((functionFlags & FunctionFlags.Generator) != 0))
                 {
-                    throw unsupported("getContextualTypeForReturnExpression: generator");
+                    var isAsyncGenerator = (((functionFlags & FunctionFlags.Async)) != 0);
+                    if (((contextualReturnType.flags & TypeFlags.Union) != 0))
+                    {
+                        contextualReturnType = this.filterType(contextualReturnType, (t) =>
+{
+    return (this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, t, isAsyncGenerator) != null);
+});
+                    }
+                    var iterationReturnType = this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, contextualReturnType, (((functionFlags & FunctionFlags.Async)) != 0));
+                    if ((iterationReturnType == null))
+                    {
+                        return null;
+                    }
+                    contextualReturnType = iterationReturnType;
                 }
-
                 if (((functionFlags & FunctionFlags.Async) != 0))
                 {
-                    throw unsupported("getContextualTypeForReturnExpression: async");
+                    var contextualAwaitedType = this.mapType(contextualReturnType, this.getAwaitedTypeNoAlias);
+                    if ((contextualAwaitedType == null))
+                    {
+                        return null;
+                    }
+                    return this.getUnionType(new List<Type> { contextualAwaitedType, this.createPromiseLikeType(contextualAwaitedType) });
                 }
-
                 return contextualReturnType;
             }
         }
-
         return null;
     }
 }
@@ -18013,7 +18303,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // checker.go:842/843/31976. Diagnostic-only dependency; written async remains excluded.
+    // checker.go:842/843/31976. Awaited alias factories and recursion state.
     private Func<Symbol> getGlobalAwaitedSymbol, getGlobalAwaitedSymbolOrNil;
     private List<Type> awaitedTypeStack;
     private Type tryCreateAwaitedType(Type t)
@@ -26412,11 +26702,18 @@ public sealed partial class Checker
     private readonly record struct IterationTypes(Type yieldType, Type returnType, Type nextType)
     {
         internal bool hasTypes() => yieldType != null || returnType != null || nextType != null;
+        internal Type getType(IterationTypeKind kind) => kind switch
+        {
+            IterationTypeKind.Yield => yieldType,
+            IterationTypeKind.Return => returnType,
+            IterationTypeKind.Next => nextType,
+            _ => throw new InvalidOperationException("Unhandled case in getType(IterationTypeKind)")
+        };
     }
 
     private enum IterationTypeKind { Yield, Return, Next }
 
-    // checker.go:524. Source protocol-type resolver model; async execution is external.
+    // checker.go:524. Source synchronous and asynchronous protocol-type resolver model.
     private sealed class IterationTypesResolver
     {
         internal string iteratorSymbolName;
@@ -26434,7 +26731,7 @@ public sealed partial class Checker
     }
 
     private IterationTypesResolver syncIterationTypesResolver, asyncIterationTypesResolver;
-    // checker.go:1272. Full source resolver setup; unsupported async consumers remain explicit.
+    // checker.go:1272. Original protocol globals, diagnostics and type resolution callbacks.
     private void initializeIterationResolvers()
     {
         syncIterationTypesResolver = new IterationTypesResolver
@@ -26515,20 +26812,34 @@ public sealed partial class Checker
             return combineIterationTypes(all);
         }
 
-        if ((use & IterationUse.AllowsAsyncIterablesFlag) != 0)
-            throw unsupported("getIterationTypesOfIterableWorker: async iterator environment");
         var diags = new List<Diagnostic>();
-        if ((use & IterationUse.AllowsSyncIterablesFlag) != 0)
+        if ((use & IterationUse.AllowsAsyncIterablesFlag) != 0)
         {
-            var types = getIterationTypesOfIterableFast(t, syncIterationTypesResolver);
+            var types = getIterationTypesOfIterableFast(t, asyncIterationTypesResolver);
             if (types.hasTypes())
-                return types;
-            types = getIterationTypesOfIterableSlow(t, syncIterationTypesResolver, errorNode, diags);
+                return (use & IterationUse.ForOfFlag) != 0
+                    ? getAsyncFromSyncIterationTypes(types, errorNode) : types;
+            types = getIterationTypesOfIterableSlow(t, asyncIterationTypesResolver, errorNode, diags);
             if (types.hasTypes())
             {
                 foreach (var diagnostic in diags)
                     addDiagnostic(diagnostic);
                 return types;
+            }
+        }
+        if ((use & IterationUse.AllowsSyncIterablesFlag) != 0)
+        {
+            var types = getIterationTypesOfIterableFast(t, syncIterationTypesResolver);
+            if (types.hasTypes())
+                return (use & IterationUse.AllowsAsyncIterablesFlag) != 0
+                    ? getAsyncFromSyncIterationTypes(types, errorNode) : types;
+            types = getIterationTypesOfIterableSlow(t, syncIterationTypesResolver, errorNode, diags);
+            if (types.hasTypes())
+            {
+                foreach (var diagnostic in diags)
+                    addDiagnostic(diagnostic);
+                return (use & IterationUse.AllowsAsyncIterablesFlag) != 0
+                    ? getAsyncFromSyncIterationTypes(types, errorNode) : types;
             }
         }
 
@@ -28046,8 +28357,22 @@ public sealed partial class Checker
     {
         var data = node.AsForInOrOfStatement();
         this.checkGrammarForInOrForOfStatement(data);
-        if (data.AwaitModifier != null)
-            throw unsupported("checkForOfStatement: for-await");
+        var container = getContainingFunctionOrClassStaticBlock(node);
+        if ((data.AwaitModifier != null))
+        {
+            if (((container != null) && Ast.IsClassStaticBlockDeclaration(container)))
+            {
+                this.grammarErrorOnNode(data.AwaitModifier, Diagnostics.X_for_await_loops_cannot_be_used_inside_a_class_static_block);
+            }
+            else
+            {
+                var functionFlags = Ast.GetFunctionFlags(container);
+                if ((((functionFlags & ((FunctionFlags.Invalid | FunctionFlags.Async))) == FunctionFlags.Async) && (this.languageVersion < LanguageFeatureMinimumTarget.ForAwaitOf)))
+                {
+                    this.checkExternalEmitHelpers(node, ExternalEmitHelpers.ForAwaitOfIncludes);
+                }
+            }
+        }
         if (Ast.IsVariableDeclarationList(data.Initializer))
         {
             this.checkVariableDeclarationList(data.Initializer);
@@ -28058,7 +28383,7 @@ public sealed partial class Checker
             var iteratedType = this.checkRightHandSideOfForOf(node);
             if ((Ast.IsArrayLiteralExpression(varExpr) || Ast.IsObjectLiteralExpression(varExpr)))
             {
-                this.checkDestructuringAssignment(varExpr, iteratedType ?? this.errorType, CheckMode.Normal, false);
+                this.checkDestructuringAssignment(varExpr, Core.OrElse(iteratedType, this.errorType), CheckMode.Normal, false);
             }
             else
             {
@@ -28070,7 +28395,6 @@ public sealed partial class Checker
                 }
             }
         }
-
         this.checkSourceElement(data.Statement);
         if ((node.Locals() != null))
         {
@@ -39223,5 +39547,423 @@ public sealed partial class Checker
             leftType = this.checkNonNullExpression(left);
         }
         return this.checkPropertyAccessExpressionOrQualifiedName(node, left, leftType, node.AsQualifiedName().Right, checkMode, false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind typeKind, Type returnType, bool isAsyncGenerator)
+    {
+        if (IsTypeAny(returnType))
+        {
+            return null;
+        }
+        var iterationTypes = this.getIterationTypesOfGeneratorFunctionReturnType(returnType, isAsyncGenerator);
+        return iterationTypes.getType(typeKind);
+    }
+}
+
+public sealed partial class Checker
+{
+    private IterationTypes getIterationTypesOfGeneratorFunctionReturnType(Type t, bool isAsyncGenerator)
+    {
+        if (IsTypeAny(t))
+        {
+            return new IterationTypes(this.anyType, this.anyType, this.anyType);
+        }
+        var use = Core.IfElse(isAsyncGenerator, IterationUse.AsyncGeneratorReturnType, IterationUse.GeneratorReturnType);
+        var resolver = Core.IfElse(isAsyncGenerator, this.asyncIterationTypesResolver, this.syncIterationTypesResolver);
+        var result = this.getIterationTypesOfIterable(t, use, null);
+        if (result.hasTypes())
+        {
+            return result;
+        }
+        return this.getIterationTypesOfIterator(t, resolver, null, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private IterationTypes getAsyncFromSyncIterationTypes(IterationTypes iterationTypes, Node errorNode)
+    {
+        if ((!iterationTypes.hasTypes() || (((iterationTypes.yieldType == this.anyType) && (iterationTypes.returnType == this.anyType)) && (iterationTypes.nextType == this.anyType))))
+        {
+            return iterationTypes;
+        }
+        if ((errorNode != null))
+        {
+            this.getGlobalAwaitedSymbol();
+        }
+        return new IterationTypes(
+            this.getAwaitedTypeEx(iterationTypes.yieldType, errorNode, null) ?? this.anyType,
+            this.getAwaitedTypeEx(iterationTypes.returnType, errorNode, null) ?? this.anyType,
+            iterationTypes.nextType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getYieldedTypeOfYieldExpression(Node node, Type expressionType, Type sentType, bool isAsync)
+    {
+        var errorNode = Core.OrElse(node.Expression(), node);
+        var isYieldStar = (node.AsYieldExpression().AsteriskToken != null);
+        var yieldedType = expressionType;
+        if (isYieldStar)
+        {
+            yieldedType = this.checkIteratedTypeOrElementType(Core.IfElse(isAsync, IterationUse.AsyncYieldStar, IterationUse.YieldStar), expressionType, sentType, errorNode);
+        }
+        if (!isAsync)
+        {
+            return yieldedType;
+        }
+        return this.getAwaitedTypeEx(yieldedType, errorNode, Core.IfElse(isYieldStar, Diagnostics.Type_of_iterated_elements_of_a_yield_Asterisk_operand_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member, Diagnostics.Type_of_yield_operand_in_an_async_generator_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createPromiseLikeType(Type promisedType)
+    {
+        var globalPromiseLikeType = this.getGlobalPromiseLikeType();
+        if ((globalPromiseLikeType != this.emptyGenericType))
+        {
+            promisedType = Core.OrElse(this.getAwaitedTypeNoAlias(this.unwrapAwaitedType(promisedType)), this.unknownType);
+            return this.createTypeReference(globalPromiseLikeType, new List<Type> { promisedType });
+        }
+        return this.unknownType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createPromiseReturnType(Node fn, Type promisedType)
+    {
+        var promiseType = this.createPromiseType(promisedType);
+        if ((promiseType == this.unknownType))
+        {
+            this.error(fn, Core.IfElse(Ast.IsImportCall(fn), Diagnostics.A_dynamic_import_call_returns_a_Promise_Make_sure_you_have_a_declaration_for_Promise_or_include_ES2015_in_your_lib_option, Diagnostics.An_async_function_or_method_must_return_a_Promise_Make_sure_you_have_a_declaration_for_Promise_or_include_ES2015_in_your_lib_option));
+            return this.errorType;
+        }
+        if ((this.getGlobalPromiseConstructorSymbol() == null))
+        {
+            this.error(fn, Core.IfElse(Ast.IsImportCall(fn), Diagnostics.A_dynamic_import_call_in_ES5_requires_the_Promise_constructor_Make_sure_you_have_a_declaration_for_the_Promise_constructor_or_include_ES2015_in_your_lib_option, Diagnostics.An_async_function_or_method_in_ES5_requires_the_Promise_constructor_Make_sure_you_have_a_declaration_for_the_Promise_constructor_or_include_ES2015_in_your_lib_option));
+        }
+        return promiseType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createGeneratorType(Type yieldType, Type returnType, Type nextType, bool isAsyncGenerator)
+    {
+        var resolver = Core.IfElse(isAsyncGenerator, this.asyncIterationTypesResolver, this.syncIterationTypesResolver);
+        var globalGeneratorType = resolver.getGlobalGeneratorType();
+        yieldType = Core.OrElse(resolver.resolveIterationType(yieldType, null), this.unknownType);
+        returnType = Core.OrElse(resolver.resolveIterationType(returnType, null), this.unknownType);
+        if ((globalGeneratorType == this.emptyGenericType))
+        {
+            var globalIterableIteratorType = resolver.getGlobalIterableIteratorType();
+            if ((globalIterableIteratorType != this.emptyGenericType))
+            {
+                return this.createTypeFromGenericGlobalType(globalIterableIteratorType, new List<Type> { yieldType, returnType, nextType });
+            }
+            resolver.getGlobalIterableIteratorTypeChecked();
+            return this.emptyObjectType;
+        }
+        return this.createTypeFromGenericGlobalType(globalGeneratorType, new List<Type> { yieldType, returnType, nextType });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualIterationType(IterationTypeKind kind, Node functionDecl)
+    {
+        var isAsync = ((Ast.GetFunctionFlags(functionDecl) & FunctionFlags.Async) != 0);
+        var contextualReturnType = this.getContextualReturnType(functionDecl, ContextFlags.None);
+        if ((contextualReturnType != null))
+        {
+            return this.getIterationTypeOfGeneratorFunctionReturnType(kind, contextualReturnType, isAsync);
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGeneratorInstantiationAssignabilityToReturnType(Type returnType, FunctionFlags functionFlags, Node errorNode)
+    {
+        var generatorYieldType = Core.OrElse(this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Yield, returnType, (((functionFlags & FunctionFlags.Async)) != 0)), this.anyType);
+        var generatorReturnType = Core.OrElse(this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, returnType, (((functionFlags & FunctionFlags.Async)) != 0)), generatorYieldType);
+        var generatorNextType = Core.OrElse(this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Next, returnType, (((functionFlags & FunctionFlags.Async)) != 0)), this.unknownType);
+        var generatorInstantiation = this.createGeneratorType(generatorYieldType, generatorReturnType, generatorNextType, ((functionFlags & FunctionFlags.Async) != 0));
+        return this.checkTypeAssignableTo(generatorInstantiation, returnType, errorNode, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualTypeForYieldOperand(Node node, ContextFlags contextFlags)
+    {
+        var fn = Ast.GetContainingFunction(node);
+        if ((fn != null))
+        {
+            var functionFlags = Ast.GetFunctionFlags(fn);
+            var contextualReturnType = this.getContextualReturnType(fn, contextFlags);
+            if ((contextualReturnType != null))
+            {
+                var isAsyncGenerator = ((functionFlags & FunctionFlags.Async) != 0);
+                var isYieldStar = (node.AsYieldExpression().AsteriskToken != null);
+                if ((!isYieldStar && ((contextualReturnType.flags & TypeFlags.Union) != 0)))
+                {
+                    contextualReturnType = this.filterType(contextualReturnType, (t) =>
+{
+    return (this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Return, t, isAsyncGenerator) != null);
+});
+                }
+                if (isYieldStar)
+                {
+                    var iterationTypes = this.getIterationTypesOfGeneratorFunctionReturnType(contextualReturnType, isAsyncGenerator);
+                    var yieldType = Core.OrElse(iterationTypes.yieldType, this.silentNeverType);
+                    var returnType = Core.OrElse(this.getContextualType(node, contextFlags), this.silentNeverType);
+                    var nextType = Core.OrElse(iterationTypes.nextType, this.unknownType);
+                    var generatorType = this.createGeneratorType(yieldType, returnType, nextType, false);
+                    if (isAsyncGenerator)
+                    {
+                        var asyncGeneratorType = this.createGeneratorType(yieldType, returnType, nextType, true);
+                        return this.getUnionType(new List<Type> { generatorType, asyncGeneratorType });
+                    }
+                    return generatorType;
+                }
+                return this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Yield, contextualReturnType, isAsyncGenerator);
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualTypeForAwaitOperand(Node node, ContextFlags contextFlags)
+    {
+        var contextualType = this.getContextualType(node, contextFlags);
+        if ((contextualType != null))
+        {
+            var contextualAwaitedType = this.getAwaitedTypeNoAlias(contextualType);
+            if ((contextualAwaitedType != null))
+            {
+                return this.getUnionType(new List<Type> { contextualAwaitedType, this.createPromiseLikeType(contextualAwaitedType) });
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkAwaitedType(Type t, bool withAlias, Node errorNode, Message diagnosticMessage)
+    {
+        Type awaitedType = default;
+        if (withAlias)
+        {
+            awaitedType = this.getAwaitedTypeEx(t, errorNode, diagnosticMessage);
+        }
+        else
+        {
+            awaitedType = this.getAwaitedTypeNoAliasEx(t, errorNode, diagnosticMessage);
+        }
+        if ((awaitedType != null))
+        {
+            return awaitedType;
+        }
+        return this.errorType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private (List<Type>, List<Type>) checkAndAggregateYieldOperandTypes(Node fn, CheckMode checkMode)
+    {
+        List<Type> yieldTypes = default;
+        List<Type> nextTypes = default;
+        var isAsync = (((Ast.GetFunctionFlags(fn) & FunctionFlags.Async)) != 0);
+        forEachYieldExpression(fn.Body(), (yieldExpr) =>
+        {
+            var yieldExprType = this.undefinedWideningType;
+            if ((yieldExpr.Expression() != null))
+            {
+                yieldExprType = this.checkExpressionEx(yieldExpr.Expression(), (checkMode & ~CheckMode.SkipGenericFunctions));
+            }
+            if (((yieldExpr.Expression() != null) && this.isConstContext(yieldExpr.Expression())))
+            {
+                yieldExprType = this.getRegularTypeOfLiteralType(yieldExprType);
+            }
+            yieldTypes = Core.AppendIfUnique(yieldTypes, this.getYieldedTypeOfYieldExpression(yieldExpr, yieldExprType, this.anyType, isAsync));
+            Type nextType = default;
+            if ((yieldExpr.AsYieldExpression().AsteriskToken != null))
+            {
+                var iterationTypes = this.getIterationTypesOfIterable(yieldExprType, Core.IfElse(isAsync, IterationUse.AsyncYieldStar, IterationUse.YieldStar), yieldExpr.Expression());
+                nextType = iterationTypes.nextType;
+            }
+            else
+            {
+                nextType = this.getContextualType(yieldExpr, ContextFlags.None);
+            }
+            if ((nextType != null))
+            {
+                nextTypes = Core.AppendIfUnique(nextTypes, nextType);
+            }
+            return false;
+        });
+        return (yieldTypes, nextTypes);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getWidenedLiteralLikeTypeForContextualIterationTypeIfNeeded(Type t, Type contextualSignatureReturnType, IterationTypeKind kind, bool isAsyncGenerator)
+    {
+        if (((t != null) && isUnitType(t)))
+        {
+            Type contextualType = default;
+            if ((contextualSignatureReturnType != null))
+            {
+                contextualType = this.getIterationTypeOfGeneratorFunctionReturnType(kind, contextualSignatureReturnType, isAsyncGenerator);
+            }
+            t = this.getWidenedLiteralLikeTypeForContextualType(t, contextualType);
+        }
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkAsyncFunctionReturnType(Node node, Node returnTypeNode)
+    {
+        var returnType = this.getTypeFromTypeNode(returnTypeNode);
+        if (this.isErrorType(returnType))
+        {
+            return ;
+        }
+        var globalPromiseType = this.getGlobalPromiseTypeChecked();
+        if (((globalPromiseType != this.emptyGenericType) && !this.isReferenceToType(returnType, globalPromiseType)))
+        {
+            this.error(returnTypeNode, Diagnostics.The_return_type_of_an_async_function_or_method_must_be_the_global_Promise_T_type_Did_you_mean_to_write_Promise_0, this.typeToStringByteString(Core.OrElse(this.getAwaitedTypeNoAlias(returnType), this.voidType)));
+            return ;
+        }
+        this.checkAwaitedType(returnType, false, node, Diagnostics.The_return_type_of_an_async_function_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIterationTypeOfIterable(IterationUse use, IterationTypeKind typeKind, Type inputType, Node errorNode)
+    {
+        if (IsTypeAny(inputType))
+        {
+            return null;
+        }
+        var iterationTypes = this.getIterationTypesOfIterable(inputType, use, errorNode);
+        return iterationTypes.getType(typeKind);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkAwaitExpression(Node node)
+    {
+        this.checkGrammarAwaitOrAwaitUsing(node);
+        var operandType = this.checkExpression(node.Expression());
+        var awaitedType = this.checkAwaitedType(operandType, true, node, Diagnostics.Type_of_await_operand_must_either_be_a_valid_promise_or_must_not_contain_a_callable_then_member);
+        if ((((awaitedType == operandType) && !this.isErrorType(awaitedType)) && ((operandType.flags & TypeFlags.AnyOrUnknown) == 0)))
+        {
+            this.addErrorOrSuggestion(false, createDiagnosticForNode(node, Diagnostics.X_await_has_no_effect_on_the_type_of_this_expression));
+        }
+        return awaitedType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkYieldExpression(Node node)
+    {
+        this.checkGrammarYieldExpression(node);
+        Type yieldExpressionType = default;
+        if ((node.Expression() != null))
+        {
+            yieldExpressionType = this.checkExpression(node.Expression());
+        }
+        else
+        {
+            yieldExpressionType = this.undefinedWideningType;
+        }
+        var fn = Ast.GetContainingFunction(node);
+        if ((fn == null))
+        {
+            return this.anyType;
+        }
+        var functionFlags = Ast.GetFunctionFlags(fn);
+        if (((functionFlags & FunctionFlags.Generator) == 0))
+        {
+            return this.anyType;
+        }
+        var isAsync = (((functionFlags & FunctionFlags.Async)) != 0);
+        if ((node.AsYieldExpression().AsteriskToken != null))
+        {
+            if ((isAsync && (this.languageVersion < LanguageFeatureMinimumTarget.AsyncGenerators)))
+            {
+                this.checkExternalEmitHelpers(node, ExternalEmitHelpers.AsyncDelegatorIncludes);
+            }
+        }
+        var returnType = this.getReturnTypeFromAnnotation(fn);
+        if (((returnType != null) && ((returnType.flags & TypeFlags.Union) != 0)))
+        {
+            returnType = this.filterType(returnType, (t) =>
+{
+    return this.checkGeneratorInstantiationAssignabilityToReturnType(t, functionFlags, null);
+});
+        }
+        IterationTypes iterationTypes = default;
+        if ((returnType != null))
+        {
+            iterationTypes = this.getIterationTypesOfGeneratorFunctionReturnType(returnType, isAsync);
+        }
+        var signatureYieldType = Core.OrElse(iterationTypes.yieldType, this.anyType);
+        var signatureNextType = Core.OrElse(iterationTypes.nextType, this.anyType);
+        var yieldedType = this.getYieldedTypeOfYieldExpression(node, yieldExpressionType, signatureNextType, isAsync);
+        if (((returnType != null) && (yieldedType != null)))
+        {
+            this.checkTypeAssignableToAndOptionallyElaborate(yieldedType, signatureYieldType, Core.OrElse(node.Expression(), node), node.Expression(), null, null);
+        }
+        if ((node.AsYieldExpression().AsteriskToken != null))
+        {
+            var use = Core.IfElse(isAsync, IterationUse.AsyncYieldStar, IterationUse.YieldStar);
+            return Core.OrElse(this.getIterationTypeOfIterable(use, IterationTypeKind.Return, yieldExpressionType, node.Expression()), this.anyType);
+        }
+        if ((returnType != null))
+        {
+            return Core.OrElse(this.getIterationTypeOfGeneratorFunctionReturnType(IterationTypeKind.Next, returnType, isAsync), this.anyType);
+        }
+        var t2 = this.getContextualIterationType(IterationTypeKind.Next, fn);
+        if ((t2 == null))
+        {
+            t2 = this.anyType;
+            if ((this.noImplicitAny && !expressionResultIsUnused(node)))
+            {
+                var contextualType = this.getContextualType(node, ContextFlags.None);
+                if (((contextualType == null) || IsTypeAny(contextualType)))
+                {
+                    this.error(node, Diagnostics.X_yield_expression_implicitly_results_in_an_any_type_because_its_containing_generator_lacks_a_return_type_annotation);
+                }
+            }
+        }
+        return t2;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasContextSensitiveYieldExpression(Node node)
+    {
+        return ((((Ast.GetFunctionFlags(node) & FunctionFlags.Generator) != 0) && (node.Body() != null)) && forEachYieldExpression(node.Body(), this.isContextSensitive));
     }
 }

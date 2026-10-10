@@ -109,6 +109,28 @@ def compare_group(group, executable, output, managed=False):
 
 
 
+def validate_mapper_restoration(mapper):
+    original = {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+        "validation/Program.Checks/CompilerMapperChecks.cs": "70e3ab0c91e91399f40d04c6ac9218db45b4dde90d248784e44fa7ff29d61adf",
+        "validation/Declarations.Checks/MapperSemanticChecks.cs": "66ec6825057ac454f1d71389fa5818a90f42836c2feb2a2e75e0585224bfabc0",
+        "tests/Declarations.Tests/MapperSemanticTests.cs": "591e621c545340566cc9873661d9a6eba8cdd89932447cb7f0c3727633c6529a",
+    }
+    if mapper["sourceFiles"] != original:
+        raise RuntimeError("Original mapper restoration source set changed")
+    if all(sha(name) == digest for name, digest in original.items()):
+        return
+    path = "validation/protocols-corpus/mapper-generator-restoration-provenance.json"
+    checked_path(path, "f6ca7cb9147e9d8a43623c9c31cfd878c9915f86bfcb45a5a91b7f06f81f4a91")
+    extension = read(path)
+    if (extension["classification"] != "original-generator-full-assertion-restoration"
+            or extension["originalSourceFiles"] != original
+            or set(extension["sourceFiles"]) != set(original)
+            or extension["originalFunctions"] != ["TestContentMapperDirectivesPreserveIncrementalGlobals"]
+            or any(sha(name) != digest for name, digest in extension["sourceFiles"].items())):
+        raise RuntimeError("Unreviewed original generator assertion restoration")
+
+
 def obligations():
     inventory = read("docs/declarations-tests.json")
     full = inventory["directOriginalFunctions"]
@@ -116,9 +138,7 @@ def obligations():
         if sha(row["source"]) != row["sourceSha256"]:
             raise RuntimeError("Original checker assertion source changed")
     mapper = read("validation/Declarations.Checks/mapper-semantic-restoration-provenance.json")
-    for name, digest in mapper["sourceFiles"].items():
-        if sha(name) != digest:
-            raise RuntimeError("Restored mapper consumer/assertion source changed")
+    validate_mapper_restoration(mapper)
     def stable(value):
         omitted = {"execution", "status", "managed", "native", "xUnit", "proof", "managedReport", "originalReport", "representativeReport", "report"}
         if isinstance(value, dict):

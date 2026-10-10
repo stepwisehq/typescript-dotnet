@@ -1,6 +1,29 @@
 # Current project state
 
-**Accepted: shared TypeScript type-system contract T1–T6. No active campaign.**
+**Active: autonomous whole-checker no-emit completion from `bb035b3`.** Read the
+[mandate](CHECKER-COMPLETION-PROMPT.md) and [live checkpoint](CHECKER-COMPLETION-STATUS.md).
+The P1–P6 protocol campaign is accepted with actual Linux x64 Native AOT and retained
+regressions. Continue directly with [L1–L6 remaining language checking](LANGUAGE-CONTRACT.md)
+and the whole original no-emit gate. Preserve historical evidence; do not restart accepted
+work or wait for another assignment. Emit/services and large-project comparisons remain external.
+
+## Accepted protocol checkpoint
+
+[Assessment](PROTOCOLS-ASSESSMENT.md), [reproduction](PROTOCOLS-VERIFY.md),
+[contract](PROTOCOLS-CONTRACT.md) and [proof](../validation/results/protocols-verified.json).
+All 94 managed/native Go records, eight shared checks, 102 new xUnit cases, 22 order
+observations per runtime and both native disk CLI examples pass. Seven original test
+bodies are complete, including the restored generator mapper assertions. Selected TRX
+aggregate: 24,951 passed case executions, zero failures/skips; not a unique-test count.
+Gate: 1,518.981 seconds, five drift guards clear, 271 historical files unchanged.
+
+The future whole-checker inventory records 12,824 original inputs, 15,190 configurations
+and 42 original skips; those are obligations, not completed semantic comparisons.
+Read the live checkpoint for isolated next-language work and integration ownership.
+
+## Accepted type-system baseline
+
+**Accepted historical baseline: shared TypeScript type-system contract T1–T6 (`bb035b3`).**
 Baseline `09630d6`; delivery commit contains this state and the
 [durable proof](../validation/results/typesystem-verified.json). Read the
 [assessment](TYPESYSTEM-ASSESSMENT.md), [checkpoint](TYPESYSTEM-STATUS.md),
@@ -25,8 +48,7 @@ exact-version observer provenance adaptation without changed expectations.
 
 Recommended next: async, generators and runtime protocol checking, then remaining
 JS/JSDoc/JSX/decorator/module/options consumers and whole-checker reconciliation under
-the [roadmap](CHECKER-COMPLETION-ROADMAP.md). Wait for the next user mandate; do not start
-it automatically. Large-project comparisons, .NET upgrades and optimization remain
+the [roadmap](CHECKER-COMPLETION-ROADMAP.md). The current whole-checker mandate above now authorizes this sequence autonomously. Large-project comparisons, .NET upgrades and optimization remain
 deferred. No new private-state instrumentation or token/cost estimates were added.
 
 ## Prior expression checkpoint

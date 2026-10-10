@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "campaign": "typescript-async-generator-runtime-protocols",
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "contract": "docs/PROTOCOLS-CONTRACT.md",
+  "directOriginalFunctions": [
+    {
+      "package": "./internal/checker",
+      "function": "TestGetSymbolAtLocation",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/checker/checker_test.go": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b"
+      }
+    },
+    {
+      "package": "./internal/checker",
+      "function": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/checker/checker_test.go": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestCompositeProjectContentMapperSupplementalRoots",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestContentMapperInvalidMappings",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestContentMapperSourceFileState",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "function": "TestContentMapperDirectivesPreserveIncrementalGlobals",
+      "classification": "restored-full-original-body",
+      "responsibilities": "P2/P5/P6",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/stringutil",
+      "function": "TestJSCasing",
+      "classification": "retained-full-original-body",
+      "responsibilities": "P6 regression",
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/stringutil/js_case_test.go": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5"
+      }
+    }
+  ],
+  "sharedChecks": {
+    "count": 8,
+    "newlyRestoredOriginalBodies": 1,
+    "retainedOriginalBodies": 6,
+    "authoredChecks": 1,
+    "originalNewPorts": 0
+  },
+  "sourceFamilyResponsibilities": {
+    "await-primitive-promise-union": "P1",
+    "await-generic-recursive-assimilation": "P1/T1",
+    "await-custom-thenable-valid": "P1",
+    "await-invalid-then-callback": "P1",
+    "await-incompatible-then-this": "P1",
+    "await-recursive-thenable-cycle": "P1",
+    "await-nullish-then-union": "P1",
+    "async-contextual-return-inference": "P1/T3",
+    "async-return-annotation-errors": "P1",
+    "async-es5-promise-annotation": "P1",
+    "async-es5-missing-promise-value": "P1/P5",
+    "await-context-and-module-errors": "P1/P5",
+    "await-node-commonjs-top-level": "P1/P5",
+    "generator-yield-return-next": "P2",
+    "generator-inferred-return-yield": "P2/T3",
+    "generator-contextual-signature": "P2/T3",
+    "generator-invalid-next-return": "P2",
+    "generator-yield-star-return": "P2/P3",
+    "generator-yield-star-sent-mismatch": "P2/P3",
+    "generator-generic-callback": "P2/T3",
+    "async-generator-awaited-yield-return": "P1/P2",
+    "async-generator-inferred-protocol": "P1/P2",
+    "async-generator-invalid-annotation": "P2",
+    "async-generator-delegation-sync-fallback": "P2/P3",
+    "for-await-custom-slow-protocol": "P3",
+    "for-await-sync-promises-fallback": "P1/P3",
+    "for-await-union-protocol": "P3",
+    "for-await-malformed-next-result": "P3",
+    "for-await-malformed-method-parameters": "P3",
+    "for-await-invalid-sync-fallback": "P3",
+    "for-await-explicit-binding-types": "P3/P5",
+    "using-nullish-and-valid-protocol": "P4",
+    "await-using-async-and-sync-fallback": "P4",
+    "using-async-only-suggestion": "P4",
+    "using-invalid-dispose-signatures": "P4",
+    "await-using-invalid-result": "P4",
+    "using-invalid-grammar": "P4/P5",
+    "using-loop-context-grammar": "P4/P5",
+    "using-missing-disposable-library": "P4/P5",
+    "protocol-import-helpers-missing": "P1/P2/P4/P5"
+  },
+  "corpus": {
+    "cases": 94,
+    "authoredFamilies": 40,
+    "authoredDiskCases": 2,
+    "compilerInputs": {
+      "selectedInventoriedFixtures": 46,
+      "wholeInputsReused": 42,
+      "explicitWholeInputDispositions": 4,
+      "actualDirectiveVariants": 52,
+      "provenance": "validation/protocols-corpus/requests-compiler-inputs-provenance.json",
+      "classification": "Finite source-selected input reuse with complete semantic observations; not complete original compiler assertions or exhaustive inventory."
+    }
+  },
+  "wholeCheckerInventory": {
+    "provenance": {
+      "provenance": "validation/checker-noemit-inventory/provenance.json",
+      "provenanceSha256": "01a6667c881a5fea505259d5e19f4913559db2be057c7fd7471df61c66d64051"
+    },
+    "inputs": 12824,
+    "configurations": 15190,
+    "originalSkips": 42,
+    "classification": "complete obligation inventory only, not semantic runtime coverage",
+    "remainingAssertions": "Applicable pre-emit diagnostics and original type/symbol walkers must execute in the whole-checker gate; genuine built-API declaration inputs still under investigation."
+  },
+  "observation": {
+    "producer": "unchanged genuine Program observer",
+    "channels": "Complete bulk/per-file/incremental/repeat/global diagnostics plus finite owned public identifier queries; complete ordinary disk CLI diagnostics and exits",
+    "notClaimed": "No private protocol graph, emitted execution, whole original compiler baselines, or whole-checker acceptance."
+  },
+  "review": {
+    "mapperBody": "independent support source/assertion review passed; exact10 fixed-source guard controls passed",
+    "source": "core/support selected-family review closed; runtime qualification remains final gate responsibility"
+  },
+  "execution": {
+    "status": "passed-complete-frozen-gate",
+    "proof": "validation/results/protocols-verified.json",
+    "proofSha256": "fa2e2653042e7b581b15750eaf090ebd086e18714783973a185ec334bc9d2a77",
+    "gateReport": "artifacts/protocols-validation/final-gate.json",
+    "exitCode": 0,
+    "elapsedSeconds": 1518.981,
+    "original": "All seven source-qualified original bodies passed pinned Go; all 94 fresh original semantic records matched.",
+    "managed": "All 94 complete records, eight shared checks, 22 order observations and two complete ordinary CLI results passed.",
+    "native": "Actual Linux x64 NativeAOT passed all 94 complete records, eight shared checks, 22 order observations and ordinary CLI exits 0/1 with all six invalid diagnostics.",
+    "xUnit": {
+      "report": "artifacts/protocols-validation/protocols.trx",
+      "passed": 102,
+      "failed": 0,
+      "skipped": 0
+    },
+    "retained": "Exactly one complete retained type-system cascade passed, including the fixed current checking context and all retained foundations.",
+    "selectedAggregateXUnitExecutions": {
+      "passed": 24951,
+      "failed": 0,
+      "skipped": 0,
+      "interpretation": "Sum of explicitly selected TRX execution records, not a distinct-test count or every repeated execution."
+    },
+    "physicalLinuxX64ElfPaths": 23,
+    "unchangedHistoricalFiles": 271,
+    "sourceSha256": "e13c234e666672b10dbe423fa04aa43b3e2e270ca8dccece8404dc1cfe3f1533",
+    "verificationAssetsSha256": "b6023e284b75a7d3fd9284b8cc3ce69590b1c69dce7fc2964a382d134d74cd6c",
+    "drift": {
+      "sourceDrift": false,
+      "assetDrift": false,
+      "historicalAssetDrift": false,
+      "upstreamDrift": false,
+      "obligationDrift": false
+    },
+    "wholeCheckerInventory": "Obligation inventory only; applicable full original type/symbol traversal and whole no-emit execution remain future acceptance work."
+  }
+}

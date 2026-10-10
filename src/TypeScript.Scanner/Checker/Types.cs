@@ -951,3 +951,28 @@ internal sealed class AssertionNodeLinks
 {
     internal Type exprType;
 }
+
+// checker/types.go:1448–1492. Original language-feature target table.
+internal static class LanguageFeatureMinimumTarget
+{
+    internal const ScriptTarget Exponentiation = ScriptTarget.ES2016;
+    internal const ScriptTarget AsyncFunctions = ScriptTarget.ES2017;
+    internal const ScriptTarget ForAwaitOf = ScriptTarget.ES2018;
+    internal const ScriptTarget AsyncGenerators = ScriptTarget.ES2018;
+    internal const ScriptTarget AsyncIteration = ScriptTarget.ES2018;
+    internal const ScriptTarget ObjectSpreadRest = ScriptTarget.ES2018;
+    internal const ScriptTarget RegularExpressionFlagsDotAll = ScriptTarget.ES2018;
+    internal const ScriptTarget BindinglessCatch = ScriptTarget.ES2019;
+    internal const ScriptTarget BigInt = ScriptTarget.ES2020;
+    internal const ScriptTarget NullishCoalesce = ScriptTarget.ES2020;
+    internal const ScriptTarget OptionalChaining = ScriptTarget.ES2020;
+    internal const ScriptTarget LogicalAssignment = ScriptTarget.ES2021;
+    internal const ScriptTarget TopLevelAwait = ScriptTarget.ES2022;
+    internal const ScriptTarget ClassFields = ScriptTarget.ES2022;
+    internal const ScriptTarget PrivateNamesAndClassStaticBlocks = ScriptTarget.ES2022;
+    internal const ScriptTarget RegularExpressionFlagsHasIndices = ScriptTarget.ES2022;
+    internal const ScriptTarget ShebangComments = ScriptTarget.ESNext;
+    internal const ScriptTarget UsingAndAwaitUsing = ScriptTarget.ESNext;
+    internal const ScriptTarget ClassAndClassElementDecorators = ScriptTarget.ESNext;
+    internal const ScriptTarget RegularExpressionFlagsUnicodeSets = ScriptTarget.ESNext;
+}

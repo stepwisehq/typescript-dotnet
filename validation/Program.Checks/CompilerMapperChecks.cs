@@ -3,9 +3,9 @@
 // compiler/contentmapper_test.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Five complete environment/error assertion domains. The three historical
 // diagnostic-channel adaptations now use the genuine upstream semantic API.
-// The incremental-generator
-// body retains its exact inputs and construction subset; its unsupported checker
-// assertions are explicitly excluded in compiler-mapper-test-provenance.json.
+// The generator body now retains the complete original bulk/incremental
+// assertions; historical construction-only provenance remains immutable.
+// Current restoration: validation/protocols-corpus/mapper-generator-restoration-provenance.json.
 using Configuration.Checks;
 using TypeScript.Compiler;
 using TypeScript.ContentMapper;
@@ -109,26 +109,29 @@ public static class CompilerMapperChecks
                 }]
             }, null)), new() { ["/src/Component.vue"] = text }, ["/src/Component.vue"],
                 new() { Lib = ["lib.es5.d.ts"], SkipLibCheck = Tristate.True, Module = ModuleKind.ESNext, ModuleResolution = ModuleResolutionKind.Bundler });
-            // The original bulk global query acquires the checker. It is part
-            // of the explicitly blocked semantic body, not an environment API.
-            // Additional construction assertions retain exact source/directive
-            // inputs without pretending that generator semantic checking exists.
+            Check.Equal(program.GetGlobalDiagnostics()?.Count ?? 0, 0, "original pre-incremental global count");
             var file = program.GetSourceFile(RootedFilePath.FromGoString("/src/Component.vue"));
-            Check.True(file is not null, "generator construction");
-            Check.Equal(file!.Text(), text, "generator transformed text");
-            Check.Equal(file.OriginalText(), text, "generator original text");
-            var directives = file.DiagnosticDirectives();
-            Check.Equal(directives.Count, 1, "generator directive count");
-            Check.Equal(directives[0].Policy, policy, "generator policy");
-            Check.Equal(directives[0].VirtualRange, new TextRange(0, text.Length), "generator virtual range");
-            Check.Equal(directives[0].OriginalRange, new TextRange(0, text.Length), "generator original range");
-            Check.Equal(directives[0].Source, "vue", "generator diagnostic source");
-            Check.Equal(directives[0].UnusedCode, 2578, "generator unused code");
-            Check.Equal(directives[0].UnusedMessageText, "Unused mapped expect directive.", "generator unused message");
-            Check.True(program.SourceFiles().Any(source => source.FileNameGoBytes().EndsWith("/lib.es5.d.ts", StringComparison.Ordinal)), "actual ES5 library loaded");
-            // Original GetSemanticDiagnosticsForIncremental/fileless 2318 for
-            // IterableIterator and policy-dependent 2578 assertions are blocked
-            // by the explicitly unsupported generator checker, not synthesized.
+            Check.True(file is not null, "original mapped file exists");
+            var diagnostics = program.GetSemanticDiagnosticsForIncremental(default, [file!])[file!];
+            int globals = 0, unused = 0;
+            foreach (var diagnostic in diagnostics ?? [])
+            {
+                if (diagnostic.File() is null)
+                {
+                    Check.Equal(diagnostic.Code(), Diagnostics.Cannot_find_global_type_0.Code(), "original fileless diagnostic code");
+                    Check.Equal(diagnostic.MessageArgs()[0], "IterableIterator", "original missing global name");
+                    globals++;
+                }
+                else
+                {
+                    Check.True(ReferenceEquals(diagnostic.File(), file), "original mapped diagnostic file identity");
+                    Check.Equal(diagnostic.Source(), "vue", "original mapped diagnostic source");
+                    Check.Equal(diagnostic.Code(), 2578, "original unused expect diagnostic code");
+                    unused++;
+                }
+            }
+            Check.Equal(globals, 1, "original incremental missing global count");
+            Check.Equal(unused, policy == MappedDiagnosticDirectivePolicy.Expect ? 1 : 0, "original policy-dependent unused directive count");
         }
     }
 

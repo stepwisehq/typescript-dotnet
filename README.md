@@ -1,35 +1,27 @@
 # TypeScript port feasibility study
 
-The **shared TypeScript type-system contract T1–T6 is complete**, verified under actual
-**Linux x64 Native AOT** on the accepted syntax/binder, Program/environment,
-declaration/object and synchronous expression/flow foundations. Ordinary
-`tscheck --config <tsconfig> --json` uses genuine Program options and unchanged upstream
-libraries, without hidden library injection.
+The **async, generator and runtime-protocol contract P1–P6 is complete**, verified under
+actual **Linux x64 Native AOT** with retained syntax/binder, Program, declaration,
+expression/flow and shared type-system regressions. The whole-checker no-emit campaign
+remains active; JS/JSDoc/JSX, decorators, remaining module/options and final full upstream
+verification are next. This is not whole-checker or full-compiler parity.
 
-The reconciled capability includes generic instantiation/constraints/variance,
-union/intersection/indexed/mapped/conditional/template/intrinsic types, inference and
-relationships, and required tuple/variadic/callable/predicate consumers. The strict ES2022
-[event-client project](./examples/typesystem/event-client/) combines these across three
-files and checks successfully. Its [invalid variant](./examples/typesystem/event-client-invalid/)
-reports all six expected diagnostics and exits 1, with no missing globals. See the
-[usage/reproduction guide](./docs/TYPESYSTEM-VERIFY.md),
-[contract assessment](./docs/TYPESYSTEM-ASSESSMENT.md),
-[proof](./validation/results/typesystem-verified.json), [source mapping](./source-map.json)
-and [checker roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
+Ordinary `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged
+upstream libraries. The strict ES2022 [job-stream project](./examples/protocols/job-stream/)
+combines promises, synchronous/asynchronous generators, for-await and disposable resources
+across files. Its [invalid variant](./examples/protocols/job-stream-invalid/) reports six
+complete diagnostics and exits 1; the valid project has none and exits 0. No emitted
+runtime behavior is claimed. See the [usage guide](./docs/PROTOCOLS-VERIFY.md),
+[assessment](./docs/PROTOCOLS-ASSESSMENT.md), [proof](./validation/results/protocols-verified.json),
+[source mapping](./source-map.json) and [live checker checkpoint](./docs/CHECKER-COMPLETION-STATUS.md).
 
-Acceptance includes 84 new xUnit cases, 77 complete pinned-Go managed/native comparisons,
-seven shared checks (six original bodies plus one authored control), 42 public
-assignability observations, repeated-order checks and all retained regressions.
-The 24,849 selected-suite TRX aggregate counts passed case executions, not unique
-upstream tests or every repeated invocation. Reused compiler inputs are not full
-compiler-test passes. Source review is distinct from finite runtime coverage.
-
-Async/generators/disposal execution, JS/JSDoc/JSX/decorators and remaining module/option
-consumers are unfinished. This is not whole-checker parity or support for every API
-in the genuine libraries. Private-state observations remain diagnostic aids, not
-independent exhaustive acceptance requirements. The next recommended campaign is
-async, generators and runtime protocol checking; large-project comparisons remain
-deferred until whole-checker no-emit acceptance.
+Acceptance includes 94 complete managed/native Go records, 102 new xUnit cases, eight
+shared checks (seven original bodies and one authored control), order/CLI checks and all
+retained gates. The 24,951 selected-suite TRX aggregate counts passed executions, not
+unique upstream tests or every repeated invocation. Compiler-input reuse is distinct from
+full original test assertions; source review is distinct from finite runtime coverage.
+The complete upstream no-emit inventory and its full type/symbol assertion runner remain
+required before checker completion. Large-project comparisons and optimization are deferred.
 
 All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and

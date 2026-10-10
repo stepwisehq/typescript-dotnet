@@ -116,9 +116,7 @@ def obligations():
         if sha(row["source"]) != row["sourceSha256"]:
             raise RuntimeError("Original checker assertion source changed")
     mapper = read("validation/Declarations.Checks/mapper-semantic-restoration-provenance.json")
-    for name, digest in mapper["sourceFiles"].items():
-        if sha(name) != digest:
-            raise RuntimeError("Restored mapper consumer/assertion source changed")
+    retained.validate_mapper_restoration(mapper)
     def stable(value):
         omitted = {"execution", "status", "managed", "native", "xUnit", "proof", "managedReport", "originalReport", "representativeReport", "report"}
         if isinstance(value, dict):

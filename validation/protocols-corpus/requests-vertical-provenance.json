@@ -1,0 +1,17 @@
+{
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "authored-genuine-Program-semantic-inputs-not-original-test-bodies",
+  "cases": 2,
+  "requestsSha256": "ad6bcbc861f0c153cd6141ee0bdce344433d2a107f01c0f3abb46fb40c4352b8",
+  "sourceFiles": {
+    "examples/protocols/job-stream/src/main.ts": "cfcb0a8531d179b7095b5325860c5b09c9d47e686c4b6842101b24d0a18941b1",
+    "examples/protocols/job-stream/src/model.ts": "83666997284321566882942fdc666ff05577ee4c177f78344dc3734b87c559fc",
+    "examples/protocols/job-stream/src/stream.ts": "5234e666594440cd8bf3330599ef763de5aca600a6dc47adebf6e55ff734a70e",
+    "examples/protocols/job-stream/tsconfig.json": "fd45c60a803497821ee7f5fc71a1a2cccc742a12d702927537332c69b195193d",
+    "examples/protocols/job-stream-invalid/src/main.ts": "4aa683e88f8d688591559ffd2c413d5b9037ec8be40f67db7a0dbe4068bad118",
+    "examples/protocols/job-stream-invalid/tsconfig.json": "fd45c60a803497821ee7f5fc71a1a2cccc742a12d702927537332c69b195193d"
+  },
+  "optionsAndLibraries": "Actual tsconfig parsing and Bundled.WrapFS; strict ES2022 plus genuine ESNext.Disposable demos. No option or library substitution.",
+  "observation": "Full retained Program records plus actual global-before/bulk/per-file/incremental/global-after/repeat and finite public type semantic channels; no expected data derived from managed output."
+}

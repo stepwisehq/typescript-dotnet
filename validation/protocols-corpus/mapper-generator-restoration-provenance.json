@@ -1,0 +1,46 @@
+{
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "original-generator-full-assertion-restoration",
+  "originalSourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "70e3ab0c91e91399f40d04c6ac9218db45b4dde90d248784e44fa7ff29d61adf",
+    "validation/Declarations.Checks/MapperSemanticChecks.cs": "66ec6825057ac454f1d71389fa5818a90f42836c2feb2a2e75e0585224bfabc0",
+    "tests/Declarations.Tests/MapperSemanticTests.cs": "591e621c545340566cc9873661d9a6eba8cdd89932447cb7f0c3727633c6529a"
+  },
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "3fd1b2e64eb1ad75182d2300d7a353e2a9fc98b7835bed31a7a798ed1002fb11",
+    "validation/Declarations.Checks/MapperSemanticChecks.cs": "66ec6825057ac454f1d71389fa5818a90f42836c2feb2a2e75e0585224bfabc0",
+    "tests/Declarations.Tests/MapperSemanticTests.cs": "591e621c545340566cc9873661d9a6eba8cdd89932447cb7f0c3727633c6529a"
+  },
+  "originalFunctions": [
+    "TestContentMapperDirectivesPreserveIncrementalGlobals"
+  ],
+  "policies": [
+    "ignore",
+    "expect"
+  ],
+  "originalAssertionDomains": [
+    "pre-incremental genuine GetGlobalDiagnostics count0",
+    "GetSemanticDiagnosticsForIncremental on exact mapped file",
+    "each fileless diagnostic code2318 and MessageArgs[0] IterableIterator",
+    "each owned mapped diagnostic identical file, source vue, code2578",
+    "globals count1, unused count0ignore/1expect"
+  ],
+  "inputsUnchanged": "Original exact generator/yield text, ES5 library, SkipLibChecktrue, ESNext/Bundler, wholefile verbatim mapping and both diagnostic policies. No unsupported catch, fakeglobals or option/library changes.",
+  "historicalProvenance": [
+    "validation/Program.Checks/compiler-mapper-test-provenance.json",
+    "validation/Declarations.Checks/mapper-semantic-restoration-provenance.json"
+  ],
+  "adaptations": [
+    "Sequential t.Parallel/subtests; original actual Program callback host and read-only map setup retained.",
+    "Go nil diagnostic slices enumerate as empty; standard CancellationToken default mirrors original test context without an assertion change."
+  ],
+  "onlyChangedBody": "TestContentMapperDirectivesPreserveIncrementalGlobals and its header; all other original bodies retained byte-for-byte.",
+  "execution": {
+    "original": "passed: artifacts/protocols-validation/mapper-restoration/original.jsonl; both original policies",
+    "managed": "pending",
+    "native": "pending"
+  }
+}

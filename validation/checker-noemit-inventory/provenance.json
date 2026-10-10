@@ -1,0 +1,30 @@
+{
+  "baseline": "bb035b3",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "complete-original-compiler-harness-inventory-not-runtime-coverage",
+  "inputs": 12824,
+  "suites": {
+    "compiler": 6890,
+    "conformance": 5934
+  },
+  "configurations": 15190,
+  "originalPreConfigurationSkips": 42,
+  "extractionErrors": 0,
+  "inventory": "validation/checker-noemit-inventory/fixtures.jsonl.gz",
+  "inventorySha256": "80cee1601588212d34cdc41cd4550f5083800ecb51d04c7630fdb543a91bf160",
+  "uncompressedSha256": "6269a484a8f626ed9bfb5bb5973fff28abea4a14da72acdfad4e51152a447b94",
+  "sourceFiles": {
+    "tools/generate-checker-noemit-inventory.py": "d5c64a45aac18b474ee5b06e84238a19160bb9d05eb4a87eafe4c6d5b986c20c",
+    "tools/compiler-noemit-inventory/inventory_test.go": "d32e30029e65e39c76883882a9df3b9aac181bd219c5f0c15dadd648b3ccf9c2",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner_test.go": "078d12320c71775433d41fa6c8ff4ee552a61a24d7d578d8c2f8458f7d620d03",
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testrunner/options_generated.go": "ec1f8e29fc24155d717d717b90089208d771923465f1ff7eb67c80cb2fc89451",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/testutil/tsbaseline/type_symbol_baseline.go": "3f9c61c9864973c09bf4da47ab17737f973a2627fcaf3f7cfa9de4f806800f45",
+    "upstream/TypeScript/tsc/internal/testutil/tsbaseline/error_baseline.go": "4f9f45448ecdd2082621b5b89428b75fb17f209b11fcb04ddfca8f978c3765e7"
+  },
+  "observationBoundary": "Original compiler/conformance enumeration, settings extraction, file/configuration expansion and unit extraction. Canonical configuration presentation sorts names only; no search/diagnostic/type ordering changes. No original source replaced; one authored Go test file overlay.",
+  "optionPolicy": "Do not force noEmit/skip flags/library substitutions. Final semantic and type/symbol assertions remain pending; output writing is a separate operation.",
+  "originalSkipPolicy": "42 original pre-configuration skips retained as dispositions, not passes or automatic whole-checker exclusions. Built-API fixture source obligations and removed options require separate final accounting."
+}
