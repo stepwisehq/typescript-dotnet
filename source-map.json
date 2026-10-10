@@ -405,6 +405,12 @@
         "review": "artifacts/vscode-cached-assignable-comparer/build/verification-source-review.json",
         "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
         "state": "Independent source review clear; native ten records exact, original inference4/TypeSystem77/JSDoc21 managed checks pass. Selected copies removed structurally; no new measured savings/speedup claim."
+      },
+      "localListScratchAdaptation": {
+        "sourceResponsibilities": "parser.go612/617/641 parseListIndex and651/655/705 parseDelimitedList.",
+        "adaptation": "InlineArray16 local references plus Slice spill preserve list index, reparse and recovery ordering. GoArena span clone publishes the same detached mutable List; public AST storage unchanged.",
+        "evidence": "artifacts/vscode-parser-inline-scratch/",
+        "qualification": "Frozen075799: native VSCode exact10; two shared scratch controls and nine complete parser comparison records pass in managed/native runs. Sampled4089 17.572668 to075799 17.107677GiB (-2.6461%), zero lost/truncated events, one missing candidate stack. Recursion/frame cost remains a tradeoff; no causal speedup claim."
       }
     },
     {
@@ -591,7 +597,8 @@
         "evidence": "docs/VSCODE-CHECK-STATUS.md",
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
-      }
+      },
+      "spanCloneAdaptation": "GoArena.CloneAsList accepts a borrowed ReadOnlySpan solely while constructing the same nil-aware detached mutable List. Slice overload delegates to it. This does not implement upstream persistent arena slabs; public AST List storage remains unchanged. Evidence: artifacts/vscode-parser-inline-scratch/."
     },
     {
       "upstream": null,
@@ -1093,6 +1100,12 @@
         "nativeEvidence": "artifacts/vscode-contextual-callback-state/first-vscode/result.json",
         "focusedEvidence": "artifacts/vscode-contextual-callback-state/focused/report.json",
         "limits": "Single native observation23.33wall/97.80CPU/9959248KiB; no matched allocation result or causal speedup claim for this packet."
+      },
+      "localScratchAdaptation": {
+        "sourceResponsibilities": "checker.go26099/26111/26131 mapTypeEx; contextual property scratch31104/31220.",
+        "adaptation": "InlineArray16 reference scratch spills to Slice at17; changed nonempty results publish a detached List clone. Unchanged/empty/null/origin/recursive callback order and reduction retained. Proven unaliased contextual scratch uses local Add instead of repeated copying.",
+        "evidence": "artifacts/vscode-map-scratch/",
+        "qualification": "Frozen4089: native VSCode exact10; ten existing full Program comparisons and one authored15/16/17 case pass; same authored case passes actual NativeAOT. Sampled cumulative8fcc18.122111 to4089 17.572668GiB (-3.0319%), includes preceding contextual callback changes; not exact allocations or isolated speedup."
       }
     },
     {

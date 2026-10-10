@@ -26,10 +26,16 @@ public static class ParserListScratchChecks
     private static void Detached()
     {
         var arena = new GoArena<Node>();
-        Require(arena.CloneAsList(default) is null, "Nil scratch publishes nil node storage");
+        Require(arena.CloneAsList(default(Slice<Node>)) is null, "Nil scratch publishes nil node storage");
         Require(arena.CloneAsList(Slice<Node>.Make(0, 16)) is null, "Allocated empty scratch also publishes nil node storage");
+        Require(arena.CloneAsList(ReadOnlySpan<Node>.Empty) is null, "Empty borrowed span publishes nil node storage");
         var factory = new NodeFactory();
         Node first = factory.NewIdentifier("first"), second = factory.NewIdentifier("second"), replacement = factory.NewIdentifier("replacement");
+        Node[] borrowed = [replacement, first, second, replacement];
+        var spanPublished = arena.CloneAsList(borrowed.AsSpan(1, 2));
+        borrowed[1] = replacement;
+        spanPublished[1] = replacement;
+        Require(spanPublished.Count == 2 && ReferenceEquals(first, spanPublished[0]) && ReferenceEquals(second, borrowed[2]), "Borrowed offset span and published list have detached storage with shallow node identity");
         var scratch = Slice<Node>.Make(0, 16).Append(first).Append(second);
         var published = arena.CloneAsList(scratch);
         Require(published.Count == 2 && ReferenceEquals(first, published[0]) && ReferenceEquals(second, published[1]), "Clone is shallow, ordered and preserves node identity");
@@ -45,7 +51,12 @@ public static class ParserListScratchChecks
 
     private static void Nested()
     {
-        const int count = 20; // Every list exceeds the source's initial capacity16.
+        foreach (int count in new[] { 15, 16, 17, 20 }) Nested(count);
+    }
+
+    private static void Nested(int count)
+    {
+        // Cover both sides of the source's initial capacity16, including its exact boundary.
         string parameters = string.Join(",", Enumerable.Range(0, count).Select(i => "p" + i));
         string elements = string.Join(",", Enumerable.Range(0, count));
         string body = string.Join("", Enumerable.Range(0, count).Select(i => "const v" + i + "=[" + elements + "];"));

@@ -714,6 +714,27 @@ public partial class Parser
         return result;
     }
 
+    // parser.go:617/655. Inline references preserve each invocation's local cap16 scratch.
+    [System.Runtime.CompilerServices.InlineArray(16)]
+    private struct ParseNodeBuffer { private Node first; }
+
+    // Shared managed append adapter for the two private parser list buffers; no header escapes.
+    private static void appendListNode(ref ParseNodeBuffer inlineNodes, ref Slice<Node> spilledNodes, ref int count, Node node)
+    {
+        if (count < 16)
+            inlineNodes[count] = node;
+        else
+        {
+            if (spilledNodes.IsNil)
+            {
+                spilledNodes = Slice<Node>.Make(16, 32);
+                ((ReadOnlySpan<Node>)inlineNodes).CopyTo(spilledNodes.AsSpan());
+            }
+            spilledNodes = spilledNodes.Append(node);
+        }
+        count++;
+    }
+
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:612:1.
     private List<Node> parseListIndex(ParsingContext kind, Func<Parser, int, Node> parseElement)
     {
@@ -721,14 +742,16 @@ public partial class Parser
         this.parsingContexts |= (1 << (int)(kind));
         var outerReparseList = this.reparseList;
         this.reparseList = null;
-        var list = Slice<Node>.Make(0, 16);
+        ParseNodeBuffer inlineNodes = default;
+        Slice<Node> spilledNodes = default;
+        int listLength = 0;
         {
             var i = 0;
             for (; !this.isListTerminator(kind); i++)
             {
                 if (this.isListElement(kind, false))
                 {
-                    var elt = parseElement(this, GoRuntime.Len(list));
+                    var elt = parseElement(this, listLength);
                     if ((GoRuntime.Len(this.reparseList) != 0))
                     {
                         {
@@ -740,7 +763,7 @@ public partial class Parser
                                 }
                                 else
                                 {
-                                    list = GoRuntime.Append(list, e);
+                                    appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, e);
                                 }
                             }
                         }
@@ -748,7 +771,7 @@ public partial class Parser
                         this.reparseList = null;
                     }
 
-                    list = GoRuntime.Append(list, elt);
+                    appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, elt);
                     continue;
                 }
 
@@ -761,7 +784,7 @@ public partial class Parser
 
         this.reparseList = outerReparseList;
         this.parsingContexts = saveParsingContexts;
-        return this.nodeSliceArena.CloneAsList(list);
+        return this.nodeSliceArena.CloneAsList(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:644:1.
@@ -782,7 +805,9 @@ public partial class Parser
         var pos = this.nodePos();
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(kind));
-        var list = Slice<Node>.Make(0, 16);
+        ParseNodeBuffer inlineNodes = default;
+        Slice<Node> spilledNodes = default;
+        int listLength = 0;
         while (true)
         {
             if (this.isListElement(kind, false))
@@ -795,7 +820,7 @@ public partial class Parser
                     return null;
                 }
 
-                list = GoRuntime.Append(list, element);
+                appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, element);
                 if (this.parseOptional(Kind.CommaToken))
                 {
                     continue;
@@ -840,7 +865,7 @@ public partial class Parser
         }
 
         this.parsingContexts = saveParsingContexts;
-        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneAsList(list));
+        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneAsList(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan()));
     }
 
     // Return a non-nil (but possibly empty) NodeList if parsing was successful, a missing NodeList if the opening

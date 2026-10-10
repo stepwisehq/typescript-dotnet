@@ -19,11 +19,14 @@ internal sealed class GoArena<T>
     public List<T> Clone(List<T> list) => list is null || list.Count == 0 ? null : new(list);
 
     // Go core/arena.go:Clone: retain the final detached clone at the mutable List boundary.
-    public List<T> CloneAsList(Slice<T> slice)
+    public List<T> CloneAsList(Slice<T> slice) => CloneAsList(slice.AsSpan());
+
+    // Borrow stack scratch only while producing the same detached mutable List boundary.
+    public List<T> CloneAsList(ReadOnlySpan<T> slice)
     {
         if (slice.Length == 0) return null;
         var result = new List<T>(slice.Length);
-        result.AddRange(slice.AsSpan());
+        result.AddRange(slice);
         return result;
     }
 }

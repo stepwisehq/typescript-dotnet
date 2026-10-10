@@ -1,0 +1,17 @@
+{
+  "classification": "One authored finite public Program input, with genuine complete pinned-Go result; not an original upstream test body or private mapper identity/threshold observation.",
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "command": [
+    "/home/greg/projects/typescript-dotnet/tools/.cache/program-oracle"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.026870886998949572,
+  "records": 1,
+  "behavior": "Distinct union-of-tuple types widths15/16/17; first/last/repeated array initialization, invalid element and15 public type queries, bulk/perfile/repeat diagnostics. Contextual tuple element mapping provides changed outputs; apparent union mapping provides unchanged outputs. Source review covers underlying scratch threshold/detached publication; no claim this DTO observes private capacity or identity.",
+  "files": {
+    "tools/.cache/program-oracle": "81788084c43dbb81a96ef302d22dc0688174ee9cc52046902e325def475cada7",
+    "validation/map-scratch-corpus/requests.jsonl": "e94f8d87a59cdc63ab9adf43b090212f9aa9dc72fc953876d51557c42e9bb2fa",
+    "validation/map-scratch-corpus/program-pairs.jsonl.gz": "d2258a1dc3edd2a78dab44a756448cddf6d407bb2a6be9ed1bfc67e47e9fd2c1",
+    "artifacts/vscode-map-scratch/reference/original.jsonl": "06b02079d4be50ad899d975039c8f9f599302205e9048c4340521dc396781966"
+  }
+}

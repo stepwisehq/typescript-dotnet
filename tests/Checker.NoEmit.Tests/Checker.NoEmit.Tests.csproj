@@ -17,4 +17,5 @@
     <EmbeddedResource Include="ArrowRuneCases.jsonl.gz" LogicalName="Checker.NoEmit.Tests.ArrowRuneCases" />
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../validation/signature-slice-corpus/program-pairs.jsonl.gz" LogicalName="Checker.NoEmit.Tests.SignatureSliceProgramCases" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../../validation/map-scratch-corpus/program-pairs.jsonl.gz" LogicalName="Checker.NoEmit.Tests.MapScratchProgramCases" /></ItemGroup>
 </Project>

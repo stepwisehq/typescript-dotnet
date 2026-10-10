@@ -1,36 +1,47 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest committed checkpoint `609aae9` preserves template local
-helpers after `162cdc2` relation/predicate callbacks. Continue Go-faithful allocation
-work; no blocker or instruction to stop at a commit. Native AOT VS Code first,
-then focused checks; comprehensive final regressions remain deferred.
+**Resume here:** current HEAD `6eebf68` preserves contextual callbacks; mapper and
+parser scratch below are qualified for one combined checkpoint. Continue
+Go-faithful allocation work autonomously; no blocker. Native AOT VS Code first,
+focused checks next; comprehensive final regressions remain deferred.
 
-**Qualified, staged next packet:** two contextual map callbacks in Checker.cs use
-existing generic explicit-state/static mapTypeEx (Go31235/30521). Frozen library
-`affe6316`, source `a3e14ea3`, native `c09070be`: clean build9.207s;
-Native VS Code23.33s wall /97.80s CPU /9,959,248KiB peak with exact ten records/chains.
-Eight unchanged original contextual tuple/spread/object/JSX/mapped records pass.
-Source independently reviewed. Evidence: `artifacts/vscode-contextual-callback-state/`.
-No isolated profile or speedup claim. Current index holds this exact frozen source;
-newer scratch changes remain UNSTAGED. Never indiscriminately stage the file.
+**Qualified scratch checkpoint:** staged Checker2dd175ae / library4089b764 restores
+Go mapTypeEx cap16 local scratch+Slice spill+changed-result detached publication;
+unaliased contextual scratch uses Add. Native23.23wall/94.05CPU/exact10;
+10existing Program records+1authored15/16/17xUnit/nativeProgram case pass.
+Parser/ParserCompat2productionfiles and existing scratch test leaf also qualified:
+library07579924/native1a293ae1, Native23.63wall/98.38CPU/exact10;2shared checks and
+9complete parser records pass managed/native (8upstream compiler inputs reused for
+parser-only comparisons+1authoredUnicode). Source reviews retain clone/recovery/
+reentry boundaries. Evidence: `artifacts/vscode-map-scratch/` and
+`artifacts/vscode-parser-inline-scratch/`. Current Checker index holds2dd175ae;
+newer callback code in samefile is UNSTAGED. Do not indiscriminately stage it.
 
-**Latest allocation evidence:** one cumulative matched CoreCLR profile versus
-ownership/reporter frozen `282c618e`:18.701305→18.122111GiB sampled intervals
-(−3.0971%), zero lost/truncated events, no candidate missing stacks/type names.
-Closure weights1,670,351,776→1,337,218,456B; delegate weights1,650,916,648→1,407,964,728B;
-arrays essentially flat. Includes prior162cdc2 plus template locals, not per-change
-attribution, exact byte census or Native AOT speedup. All ten diagnostics exact.
-`artifacts/vscode-template-inference-locals/allocation-comparison.json`.
+**Allocation evidence:** cumulative8fcc18.122111→4089 17.572668GiB(-3.0319%, includes
+preceding contextual callbacks), then075799 17.107677GiB(-2.6461%). Both zero lost/
+truncated events; parsercandidate1missingstack. These are sampled CoreCLR intervals,
+not exact nativebytes or per-site/isolated speedup. Public AST List storage and
+persistent allocations remain; broad arena/Slice migration deferred given scope.
 
-**Active next packet:** scanner restored upstream mapTypeEx cap16 local scratch
-using InlineArray plus Slice spill and detached changed-output List publication.
-Proven unaliased contextual intersection scratch Append copies become amortized
-Add; public Type/List models unchanged. Checker source `2dd175ae` independently
-review pending; verifier owns next build/NativeVSCode-first, focused scratch/spill
-and contextual tests, then cumulative allocation profile versus frozen8fcc.
-Prior stack experiment regressed, so assess actual workload rather than assuming
-stack storage wins. Evidence: `artifacts/vscode-map-scratch/`. Support owns review
-and qualified mapping/status notes; coordinator owns this state file.
+**Current frozen callback packet:** Checker45a1b98b+Flow48683c65, reciprocal Sol
+whole-function reviews pass. Shared generic mapper/filter/state adapters retain
+ONE original traversal, lazy predicate.t/property reads, clone-on-change/order.
+Frozen7c0f3e3e/native df488877: native22.93wall/96.33CPU/exact10;10unchanged Program
+comparisons pass. Verifier owns sole heavywindow running predefined A,B,B,A,A,B
+three-each native timing vs282c ownership baseline, then one reused nativeCPU
+capture and cumulative allocation capture. Evidence:
+`artifacts/vscode-checker-state-filters/`; no source changes to this packet.
+
+**Next source-only path packet:** scanner restored pinned simpleNormalizePath and
+NormalizePath entry fastpath, reconciled existing matching relative-segment helper,
+and borrowed fallback prefix span. Path.cs9db06294 pending peerreview. Support
+owns ASCII guards in PathByteText/DecodeModuleReference with identical null/empty/
+strict nonASCII/WTF8 fallbacks. Reciprocal review, onecombinedbuild only after
+current heavywindow. No global interner or ByteStringView name-storage migration.
+
+**Process:** batch related qualification docs/checkpoints, reuse existing evidence;
+no elaborate per-change acceptance reports. Source-only next work may proceed
+against frozen binary evidence without invalidating it. Coordinator owns STATE.
 
 **Timing context:** six alternating frozen native runs compare signature baseline
 `cd2b47bb` to direct-slot candidate `c385e71b`: mean 23.17→21.36s wall (−7.81%),

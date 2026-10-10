@@ -1484,6 +1484,10 @@ public sealed partial class Checker
     private Type mapTypeEx(Type t, Func<Type, Type> f, bool noReductions) =>
         mapTypeEx(t, f, static (s, callback) => callback(s), noReductions);
 
+    // checker.go:26111. Managed inline references preserve the original local cap16 scratch.
+    [System.Runtime.CompilerServices.InlineArray(16)]
+    private struct MappedTypeBuffer { private Type first; }
+
     // checker.go:26099 mapTypeEx. Explicit callback state avoids managed capture frames;
     // both callback forms use the same ordered union mapping and reduction algorithm.
     private Type mapTypeEx<TState>(Type t, TState state, Func<Type, TState, Type> f, bool noReductions)
@@ -1494,7 +1498,9 @@ public sealed partial class Checker
             return f(t, state);
         var u = t.AsUnionType();
         var types = u.origin != null && (u.origin.flags & TypeFlags.Union) != 0 ? u.origin.Types() : u.types;
-        var mappedTypes = new List<Type>(16);
+        MappedTypeBuffer inlineTypes = default;
+        Slice<Type> spilledTypes = default;
+        int mappedCount = 0;
         bool changed = false;
         foreach (var s in types)
         {
@@ -1502,13 +1508,32 @@ public sealed partial class Checker
             if (mapped != s)
                 changed = true;
             if (mapped != null)
-                mappedTypes.Add(mapped);
+            {
+                if (mappedCount < 16)
+                    inlineTypes[mappedCount] = mapped;
+                else
+                {
+                    if (spilledTypes.IsNil)
+                    {
+                        spilledTypes = Slice<Type>.Make(16, 32);
+                        ((ReadOnlySpan<Type>)inlineTypes).CopyTo(spilledTypes.AsSpan());
+                    }
+                    spilledTypes = spilledTypes.Append(mapped);
+                }
+                mappedCount++;
+            }
         }
 
         if (!changed)
             return t;
-        if (mappedTypes.Count == 0)
+        if (mappedCount == 0)
             return null;
+        // checker.go:26131 slices.Clone: the published input detaches from local scratch.
+        var mappedTypes = new List<Type>(mappedCount);
+        if (spilledTypes.IsNil)
+            mappedTypes.AddRange(((ReadOnlySpan<Type>)inlineTypes).Slice(0, mappedCount));
+        else
+            mappedTypes.AddRange(spilledTypes.AsSpan());
         return getUnionTypeEx(mappedTypes, noReductions ? UnionReduction.None : UnionReduction.Literal, null, null);
     }
 
@@ -5745,7 +5770,7 @@ public sealed partial class Checker
                 if (propertyType == null)
                 {
                     if (!ignoreIndexInfos)
-                        indexCandidates = GoRuntime.Append(indexCandidates, memberType);
+                        (indexCandidates ??= new()).Add(memberType);
                     continue;
                 }
 
@@ -5809,7 +5834,13 @@ public sealed partial class Checker
         return indexInfo.valueType;
     }
 
-    private List<Type> appendContextualPropertyTypeConstituent(List<Type> types, Type t) => t == null ? types : GoRuntime.Append(types, (t.flags & TypeFlags.Any) != 0 ? unknownType : t);
+    // checker.go:31220. The three callers own this private scratch until final intersection construction.
+    private List<Type> appendContextualPropertyTypeConstituent(List<Type> types, Type t)
+    {
+        if (t != null)
+            (types ??= new()).Add((t.flags & TypeFlags.Any) != 0 ? unknownType : t);
+        return types;
+    }
     internal Type instantiateContextualType(Type contextualType, Node node, ContextFlags contextFlags)
     {
         if (((contextualType != null) && this.maybeTypeOfKind(contextualType, TypeFlags.Instantiable)))

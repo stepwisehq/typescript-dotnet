@@ -1272,6 +1272,41 @@ passed eight unchanged original full records with zero skips. This qualifies the
 `affe6316` snapshot; the later mapper scratch-buffer proposal is separate. There
 is no matched allocation result or causal speedup claim for this packet.
 
+## Local mapper and parser scratch
+
+The [mapper snapshot](../artifacts/vscode-map-scratch/build/snapshot-1/snapshot.json)
+and [parser snapshot](../artifacts/vscode-parser-inline-scratch/build/snapshot-1/snapshot.json)
+restore upstream local capacity-16 scratch with inline reference buffers and a
+slice spill above sixteen elements. Published lists remain detached, and public
+AST/type storage remains unchanged. Proven unaliased contextual-property scratch
+also uses amortized append. Both changes received independent whole-function
+reviews; the extra reference slots in recursive stack frames remain a cost to
+measure, not an automatic performance benefit.
+
+Native VS Code retained all ten complete diagnostics and available pinned chains:
+mapper23.23s wall/94.05s CPU; parser23.63s wall/98.38s CPU. These are single runs.
+The [mapper controls](../artifacts/vscode-map-scratch/focused/report.json) retain ten
+existing complete Program comparisons. One additional authored15/16/17-member
+case has a genuine pinned-Go reference, xUnit registration and an exact
+[Native AOT comparison](../artifacts/vscode-map-scratch/focused/native-boundary-report.json).
+The [parser controls](../artifacts/vscode-parser-inline-scratch/focused/report.json)
+pass two shared scratch cases and nine complete parser records under managed and
+Native AOT execution, including list widths, detached publication, recovery,
+reentry, Unicode and parent-pointer observations. The parser records reuse eight
+upstream compiler inputs plus one authored Unicode case; this does not claim
+those full compiler tests passed. Expected records were unchanged. An initial
+native test flag typo was rejected by the harness and corrected without rerunning
+already successful managed work or changing production behavior.
+
+Matched sampled CoreCLR allocation intervals fell
+[18.122111→17.572668GiB](../artifacts/vscode-map-scratch/allocation-comparison.json)
+(−3.0319%, includes preceding contextual callbacks), then
+[17.572668→17.107677GiB](../artifacts/vscode-parser-inline-scratch/allocation-comparison.json)
+(−2.6461%). Both comparisons have zero lost/truncated events; the parser candidate
+has one event without a stack. These are sampled estimates, not exact Native AOT
+bytes or isolated timing effects. Persistent public lists and their array
+allocations remain; upstream arena slabs require a broader storage-boundary change.
+
 ## Reproduction and records
 
 ```bash
