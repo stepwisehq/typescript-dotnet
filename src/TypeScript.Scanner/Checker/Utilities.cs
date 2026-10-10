@@ -7,6 +7,91 @@ using TypeScript.Scanner;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    // utilities.go:38. Nil maps have no entries; an unmatched value is Go's zero value.
+    private static TValue findInMap<TKey, TValue>(Dictionary<TKey, TValue> map, Func<TValue, bool> predicate) where TKey : notnull
+    {
+        if (map != null)
+            foreach (var value in map.Values)
+                if (predicate(value))
+                    return value;
+        return default;
+    }
+
+    // utilities.go:143. Let the export-assignment checker decide value-usage errors.
+    private static bool isExportAssignmentExpressionName(Node node)
+    {
+        if (node == null)
+            return false;
+        var current = node;
+        while (current.Parent != null && Ast.IsPropertyAccessOrQualifiedName(current.Parent))
+            current = current.Parent;
+        return current.Parent != null && Ast.IsExportAssignment(current.Parent) && current.Parent.Expression() == current;
+    }
+
+    // utilities.go:55/1923.
+    private static bool hasOverrideModifier(Node node) => Ast.HasSyntacticModifier(node, ModifierFlags.Override);
+    private static string quotedAndCommaSeparated(List<string> items) => string.Join(", ", items.Select(item => "'" + item + "'"));
+
+    // utilities.go:1906.
+    private static Node walkUpOuterExpressions(Node node)
+    {
+        var parent = node.Parent;
+        while (parent != null && Ast.IsOuterExpression(parent, OuterExpressionKinds.All))
+            parent = parent.Parent;
+        return parent;
+    }
+
+    // utilities.go:63.
+    private static ModifierFlags getSelectedModifierFlags(Node node, ModifierFlags flags) => node.ModifierFlags() & flags;
+
+    // utilities.go:1232. Computed names and decorators are evaluated outside their member body.
+    private static Node getSuperContainer(Node node, bool stopOnFunctions)
+    {
+        for (;;)
+        {
+            node = node.Parent;
+            if (node == null)
+                return null;
+            switch (node.Kind)
+            {
+                case Kind.ComputedPropertyName:
+                    node = node.Parent;
+                    break;
+                case Kind.FunctionDeclaration:
+                case Kind.FunctionExpression:
+                case Kind.ArrowFunction:
+                    if (!stopOnFunctions)
+                        continue;
+                    return node;
+                case Kind.PropertyDeclaration:
+                case Kind.PropertySignature:
+                case Kind.MethodDeclaration:
+                case Kind.MethodSignature:
+                case Kind.Constructor:
+                case Kind.GetAccessor:
+                case Kind.SetAccessor:
+                case Kind.ClassStaticBlockDeclaration:
+                    return node;
+                case Kind.Decorator:
+                    if (Ast.IsParameterDeclaration(node.Parent) && Ast.IsClassElement(node.Parent.Parent))
+                        node = node.Parent.Parent;
+                    else if (Ast.IsClassElement(node.Parent))
+                        node = node.Parent;
+                    break;
+            }
+        }
+    }
+
+    // checker.go:8927. Same-package predicate dependency, placed beside other checker utility leaves.
+    private static bool someSignature(List<Signature> signatures, Func<Signature, bool> predicate)
+    {
+        foreach (var signature in signatures ?? [])
+            if (signature.composite != null && signature.composite.isUnion && Core.Some(signature.composite.signatures, predicate) ||
+                signature.composite == null && predicate(signature))
+                return true;
+        return false;
+    }
+
     // utilities.go:912.
     private static bool isNodeDescendantOf(Node node, Node ancestor)
     {
@@ -626,9 +711,13 @@ public sealed partial class Checker
 
         if (symbol.ValueDeclaration != null)
         {
-            if ((symbol.Flags & SymbolFlags.Accessor) != 0)
-                throw unsupported("getDeclarationModifierFlagsFromSymbolEx: accessor");
-            var flags = Ast.GetCombinedModifierFlags(symbol.ValueDeclaration);
+            Node declaration = null;
+            if (isWrite)
+                declaration = Core.Find(symbol.Declarations, Ast.IsSetAccessorDeclaration);
+            if (declaration == null && (symbol.Flags & SymbolFlags.GetAccessor) != 0)
+                declaration = Core.Find(symbol.Declarations, Ast.IsGetAccessorDeclaration);
+            declaration ??= symbol.ValueDeclaration;
+            var flags = Ast.GetCombinedModifierFlags(declaration);
             return symbol.Parent != null && (symbol.Parent.Flags & SymbolFlags.Class) != 0 ? flags : flags & ~ModifierFlags.AccessibilityModifier;
         }
 
@@ -1563,4 +1652,168 @@ public sealed partial class Checker
         Kind.ImportSpecifier => node.Parent.Parent.Parent,
         _ => null
     };
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1609. Type-parameter list positions use source byte offsets.
+    private static TextRange rangeOfTypeParameters(SourceFile sourceFile, NodeList typeParameters) =>
+        new(typeParameters.Pos() - 1, Math.Min(sourceFile.Text().Length,
+            TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeParameters.End()) + 1));
+
+    // utilities.go:1633. Declaration identity, rather than equivalent filenames.
+    private static bool allDeclarationsInSameSourceFile(Symbol symbol)
+    {
+        if ((symbol.Declarations?.Count ?? 0) > 1)
+        {
+            var file = Ast.GetSourceFileOfNode(symbol.Declarations[0]);
+            for (int i = 1; i < symbol.Declarations.Count; i++)
+                if (Ast.GetSourceFileOfNode(symbol.Declarations[i]) != file)
+                    return false;
+        }
+        return true;
+    }
+
+    // utilities.go:1914. A setter's optional this parameter precedes its value.
+    private static Node GetSetAccessorValueParameter(Node accessor)
+    {
+        var parameters = accessor.Parameters();
+        if ((parameters?.Count ?? 0) > 0)
+            return parameters[parameters.Count == 2 && Ast.IsThisParameter(parameters[0]) ? 1 : 0];
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1037. Class decorators are evaluated outside their class scope.
+    private static Node getContainingClassExcludingClassDecorators(Node node)
+    {
+        var decorator = Ast.FindAncestorOrQuit(node.Parent, ancestor =>
+            Ast.IsClassLike(ancestor) ? FindAncestorResult.Quit :
+            Ast.IsDecorator(ancestor) ? FindAncestorResult.True : FindAncestorResult.False);
+        if (decorator != null && Ast.IsClassLike(decorator.Parent))
+            return Ast.GetContainingClass(decorator.Parent);
+        if (decorator != null)
+            return Ast.GetContainingClass(decorator);
+        return Ast.GetContainingClass(node);
+    }
+}
+
+public sealed partial class Checker
+{
+    // utilities.go:1830–1905. Shared source details for initial module diagnostics;
+    // incremental builder replay remains outside the declaration campaign.
+    private readonly record struct DiagnosticDetails(Message Message, object[] Args);
+    private static DiagnosticDetails CreateModuleNotFoundChain(TypeScript.Compiler.ICheckerProgramHost program,
+        SourceFile file, string moduleReference, ResolutionMode mode, string packageName)
+    {
+        var resolved = program.GetResolvedModule(file, moduleReference, mode);
+        if (resolved != null && resolved.AlternateResult != default)
+        {
+            if (resolved.AlternateResult.ContainsLowercaseDirectorySequence("/node_modules/@types/"))
+                packageName = "@types/" + TypeScript.Modules.ModuleUtilities.MangleScopedPackageName(packageName);
+            return new(Diagnostics.There_are_types_at_0_but_this_result_could_not_be_resolved_when_respecting_package_json_exports_The_1_library_may_need_to_update_its_package_json_or_typings,
+                new object[] { resolved.AlternateResult, packageName });
+        }
+        var packages = program.GetPackagesMap();
+        if (packages != null && packages.ContainsKey(TypeScript.Modules.ModuleUtilities.GetTypesPackageName(packageName)))
+            return new(Diagnostics.If_the_0_package_actually_exposes_this_module_consider_sending_a_pull_request_to_amend_https_Colon_Slash_Slashgithub_com_SlashDefinitelyTyped_SlashDefinitelyTyped_Slashtree_Slashmaster_Slashtypes_Slash_1,
+                new object[] { packageName, TypeScript.Modules.ModuleUtilities.MangleScopedPackageName(packageName) });
+        if (packages != null && packages.GetValueOrDefault(packageName))
+            return new(Diagnostics.If_the_0_package_actually_exposes_this_module_try_adding_a_new_declaration_d_ts_file_containing_declare_module_1,
+                new object[] { packageName, moduleReference });
+        return new(Diagnostics.Try_npm_i_save_dev_types_Slash_1_if_it_exists_or_add_a_new_declaration_d_ts_file_containing_declare_module_0,
+            new object[] { moduleReference, TypeScript.Modules.ModuleUtilities.MangleScopedPackageName(packageName) });
+    }
+
+    private static DiagnosticDetails CreateModeMismatchDetails(TypeScript.Compiler.ICheckerProgramHost program, SourceFile file)
+    {
+        var extension = RootedFilePath.FromGoString(file.FileNameGoBytes()).Extension();
+        var target = extension == TsPath.ExtensionTs ? TsPath.ExtensionMts : extension == TsPath.ExtensionJs ? TsPath.ExtensionMjs : "";
+        var metadata = program.GetSourceFileMetaData(PathKey.FromGoString(file.PathKey()));
+        if (metadata.PackageJsonDirectory != default && metadata.PackageJsonType == "")
+        {
+            string package = metadata.PackageJsonDirectory.ResolveFile("package.json").AsString();
+            return target != ""
+                ? new(Diagnostics.To_convert_this_file_to_an_ECMAScript_module_change_its_file_extension_to_0_or_add_the_field_type_Colon_module_to_1, new object[] { target, package })
+                : new(Diagnostics.To_convert_this_file_to_an_ECMAScript_module_add_the_field_type_Colon_module_to_0, new object[] { package });
+        }
+        return target != ""
+            ? new(Diagnostics.To_convert_this_file_to_an_ECMAScript_module_change_its_file_extension_to_0_or_create_a_local_package_json_file_with_type_Colon_module, new object[] { target })
+            : new(Diagnostics.To_convert_this_file_to_an_ECMAScript_module_create_a_local_package_json_file_with_type_Colon_module, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isClassInstanceProperty(Node node)
+    {
+        if ((Ast.IsInJSFile(node) && Ast.IsExpandoPropertyDeclaration(node)))
+        {
+            var left = node.AsBinaryExpression().Left;
+            return (((!Ast.IsBindableStaticAccessExpression(left, false) || !Ast.IsPrototypeAccess(left.Expression()))) && !Ast.IsBindableStaticNameExpression(left, true));
+        }
+        return ((((node.Parent != null) && Ast.IsClassLike(node.Parent)) && Ast.IsPropertyDeclaration(node)) && !Ast.HasAccessorModifier(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isThisInitializedObjectBindingExpression(Node node)
+    {
+        return (((((node != null) && ((Ast.IsShorthandPropertyAssignment(node) || Ast.IsPropertyAssignment(node)))) && Ast.IsBinaryExpression(node.Parent.Parent)) && (node.Parent.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)) && (node.Parent.Parent.AsBinaryExpression().Right.Kind == Kind.ThisKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool isThisInitializedDeclaration(Node node)
+    {
+        return ((((node != null) && Ast.IsVariableDeclaration(node)) && (node.Initializer() != null)) && (node.Initializer().Kind == Kind.ThisKeyword));
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getBindingElementPropertyName(Node node)
+    {
+        return node.PropertyNameOrName();
+    }
+}
+
+public sealed partial class Checker
+{
+    private static Node getThisParameterFromNodeContext(Node node)
+    {
+        var thisContainer = Ast.GetThisContainer(node, false, false);
+        if (((thisContainer != null) && Ast.IsFunctionLike(thisContainer)))
+        {
+            return Ast.GetThisParameter(thisContainer);
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private static bool nodeStartsNewLexicalEnvironment(Node node)
+    {
+        switch (node.Kind)
+        {
+            case Kind.Constructor:
+            case Kind.FunctionExpression:
+            case Kind.FunctionDeclaration:
+            case Kind.ArrowFunction:
+            case Kind.MethodDeclaration:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
+            case Kind.ModuleDeclaration:
+            case Kind.SourceFile:
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

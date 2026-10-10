@@ -1,0 +1,38 @@
+{
+  "classification": "authored-public-property-display-observation-correction",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "previousField": "nameBase64 raw Symbol.Name escaped storage key",
+  "currentField": "displayNameBase64 actual public Checker.SymbolToString returned bytes",
+  "operation": "properties",
+  "producers": {
+    "Go": "Checker.SymbolToString(prop) on each actual Type.GetPropertiesOfType returned property",
+    "CSharp": "GoString.ToUtf8(checker.SymbolToString(property)) on each same actual returned property; public API returns Unicode like TypeToString"
+  },
+  "preserved": [
+    "Actual input files/options/library bytes and queries unchanged.",
+    "Member sequence, each same property/type association, nil/empty records and complete diagnostics remain exact.",
+    "No ID text stripping, regex substitution, expected normalization or production allocation-counter adjustment.",
+    "Direct symbol names and constructor parameter observations remain unchanged."
+  ],
+  "limits": [
+    "Displayed names do not establish arbitrary cross-property identity; distinct private/unique symbols may have identical displays.",
+    "Raw escaped allocation IDs are incidental compiler representation and remain archived diagnostic evidence, not portable display parity."
+  ],
+  "previousEvidence": "artifacts/declarations-validation/observer-property-display-correction/before/files.json",
+  "mismatches": "artifacts/declarations-validation/build10/paired/triage.json",
+  "freshReports": [
+    "artifacts/declarations-validation/original-property-display/families/report.json",
+    "artifacts/declarations-validation/original-property-display/vertical/report.json",
+    "artifacts/declarations-validation/original-property-display/compiler-inputs/report.json"
+  ],
+  "sourceFiles": {
+    "tools/program-oracle/semantic.go": "8d654a79545abf458fc53ded0821508b2af84e2d99818c072ea900d559a780e6",
+    "validation/Program.Checks/ProgramSemanticRunner.cs": "73f261a91252d698407d9b0bbd6cb8d3476a3623d25b8fc25da2d57a2fe7b22e"
+  },
+  "runtime": {
+    "original": "70 complete fresh records from pristine pinned source observer",
+    "managed": "both prior incidental-key mismatch cases complete-record exact on immutable11; focused12 remaining source representatives exact",
+    "report": "artifacts/declarations-validation/build11/focused/report.json",
+    "latestSourceRepresentatives": "artifacts/declarations-validation/build12/representative/report.json"
+  }
+}

@@ -1,11 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/flow.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Original selected branch, assignment, capture, predicate-call, array evolution and loop flow paths.
+// Original selected branch, assignment, capture, predicate-call, array evolution, loop,
+// constructor/static property and post-super flow paths; broader body families remain external.
 #nullable disable
 using TypeScript.Scanner;
 
 namespace TypeScript.Checking;
+
 public sealed partial class Checker
 {
     private struct FlowType
@@ -339,114 +341,114 @@ public sealed partial class Checker
         {
             case Kind.ParenthesizedExpression:
             case Kind.NonNullExpression:
-            {
-                return this.isMatchingReference(source, target.Expression());
-            }
+                {
+                    return this.isMatchingReference(source, target.Expression());
+                }
 
             case Kind.BinaryExpression:
-            {
-                return ((Ast.IsAssignmentExpression(target, false) && this.isMatchingReference(source, target.AsBinaryExpression().Left)) || ((Ast.IsBinaryExpression(target) && (target.AsBinaryExpression().OperatorToken.Kind == Kind.CommaToken)) && this.isMatchingReference(source, target.AsBinaryExpression().Right)));
-            }
+                {
+                    return ((Ast.IsAssignmentExpression(target, false) && this.isMatchingReference(source, target.AsBinaryExpression().Left)) || ((Ast.IsBinaryExpression(target) && (target.AsBinaryExpression().OperatorToken.Kind == Kind.CommaToken)) && this.isMatchingReference(source, target.AsBinaryExpression().Right)));
+                }
         }
 
         switch (source.Kind)
         {
             case Kind.MetaProperty:
-            {
-                return ((Ast.IsMetaProperty(target) && (source.AsMetaProperty().KeywordToken == target.AsMetaProperty().KeywordToken)) && (source.Name().Text() == target.Name().Text()));
-            }
+                {
+                    return ((Ast.IsMetaProperty(target) && (source.AsMetaProperty().KeywordToken == target.AsMetaProperty().KeywordToken)) && (source.Name().Text() == target.Name().Text()));
+                }
 
             case Kind.Identifier:
             case Kind.PrivateIdentifier:
-            {
-                if (Ast.IsThisInTypeQuery(source))
+                {
+                    if (Ast.IsThisInTypeQuery(source))
+                    {
+                        return (target.Kind == Kind.ThisKeyword);
+                    }
+
+                    return ((Ast.IsIdentifier(target) && (this.getResolvedSymbol(source) == this.getResolvedSymbol(target))) || (((Ast.IsVariableDeclaration(target) || Ast.IsBindingElement(target))) && (this.getExportSymbolOfValueSymbolIfExported(this.getResolvedSymbol(source)) == this.getSymbolOfDeclaration(target))));
+                }
+
+            case Kind.ThisKeyword:
                 {
                     return (target.Kind == Kind.ThisKeyword);
                 }
 
-                return ((Ast.IsIdentifier(target) && (this.getResolvedSymbol(source) == this.getResolvedSymbol(target))) || (((Ast.IsVariableDeclaration(target) || Ast.IsBindingElement(target))) && (this.getExportSymbolOfValueSymbolIfExported(this.getResolvedSymbol(source)) == this.getSymbolOfDeclaration(target))));
-            }
-
-            case Kind.ThisKeyword:
-            {
-                return (target.Kind == Kind.ThisKeyword);
-            }
-
             case Kind.SuperKeyword:
-            {
-                return (target.Kind == Kind.SuperKeyword);
-            }
+                {
+                    return (target.Kind == Kind.SuperKeyword);
+                }
 
             case Kind.NonNullExpression:
             case Kind.ParenthesizedExpression:
             case Kind.SatisfiesExpression:
-            {
-                return this.isMatchingReference(source.Expression(), target);
-            }
+                {
+                    return this.isMatchingReference(source.Expression(), target);
+                }
 
             case Kind.PropertyAccessExpression:
             case Kind.ElementAccessExpression:
-            {
                 {
-                    var tuple4 = this.getAccessedPropertyName(source);
-                    var sourcePropertyName = tuple4.Item1;
-                    var ok = tuple4.Item2;
-                    if (ok)
                     {
-                        if (Ast.IsAccessExpression(target))
+                        var tuple4 = this.getAccessedPropertyName(source);
+                        var sourcePropertyName = tuple4.Item1;
+                        var ok = tuple4.Item2;
+                        if (ok)
                         {
+                            if (Ast.IsAccessExpression(target))
                             {
-                                var tuple5 = this.getAccessedPropertyName(target);
-                                var targetPropertyName = tuple5.Item1;
-                                var ok2 = tuple5.Item2;
-                                if (ok2)
                                 {
-                                    return ((targetPropertyName == sourcePropertyName) && this.isMatchingReference(source.Expression(), target.Expression()));
+                                    var tuple5 = this.getAccessedPropertyName(target);
+                                    var targetPropertyName = tuple5.Item1;
+                                    var ok2 = tuple5.Item2;
+                                    if (ok2)
+                                    {
+                                        return ((targetPropertyName == sourcePropertyName) && this.isMatchingReference(source.Expression(), target.Expression()));
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                if ((Ast.IsElementAccessExpression(source) && Ast.IsElementAccessExpression(target)))
-                {
-                    var sourceArg = source.AsElementAccessExpression().ArgumentExpression;
-                    var targetArg = target.AsElementAccessExpression().ArgumentExpression;
-                    if ((Ast.IsIdentifier(sourceArg) && Ast.IsIdentifier(targetArg)))
+                    if ((Ast.IsElementAccessExpression(source) && Ast.IsElementAccessExpression(target)))
                     {
-                        var symbol = this.getResolvedSymbol(sourceArg);
-                        if (((symbol == this.getResolvedSymbol(targetArg)) && ((this.isConstantVariable(symbol) || (this.isParameterOrMutableLocalVariable(symbol) && !this.isSymbolAssigned(symbol))))))
+                        var sourceArg = source.AsElementAccessExpression().ArgumentExpression;
+                        var targetArg = target.AsElementAccessExpression().ArgumentExpression;
+                        if ((Ast.IsIdentifier(sourceArg) && Ast.IsIdentifier(targetArg)))
                         {
-                            return this.isMatchingReference(source.Expression(), target.Expression());
+                            var symbol = this.getResolvedSymbol(sourceArg);
+                            if (((symbol == this.getResolvedSymbol(targetArg)) && ((this.isConstantVariable(symbol) || (this.isParameterOrMutableLocalVariable(symbol) && !this.isSymbolAssigned(symbol))))))
+                            {
+                                return this.isMatchingReference(source.Expression(), target.Expression());
+                            }
                         }
                     }
-                }
 
-                break;
-            }
+                    break;
+                }
 
             case Kind.QualifiedName:
-            {
-                if (Ast.IsAccessExpression(target))
                 {
+                    if (Ast.IsAccessExpression(target))
                     {
-                        var tuple6 = this.getAccessedPropertyName(target);
-                        var targetPropertyName2 = tuple6.Item1;
-                        var ok3 = tuple6.Item2;
-                        if (ok3)
                         {
-                            return ((source.AsQualifiedName().Right.Text() == targetPropertyName2) && this.isMatchingReference(source.AsQualifiedName().Left, target.Expression()));
+                            var tuple6 = this.getAccessedPropertyName(target);
+                            var targetPropertyName2 = tuple6.Item1;
+                            var ok3 = tuple6.Item2;
+                            if (ok3)
+                            {
+                                return ((source.AsQualifiedName().Right.Text() == targetPropertyName2) && this.isMatchingReference(source.AsQualifiedName().Left, target.Expression()));
+                            }
                         }
                     }
+
+                    break;
                 }
 
-                break;
-            }
-
             case Kind.BinaryExpression:
-            {
-                return ((Ast.IsBinaryExpression(source) && (source.AsBinaryExpression().OperatorToken.Kind == Kind.CommaToken)) && this.isMatchingReference(source.AsBinaryExpression().Right, target));
-            }
+                {
+                    return ((Ast.IsBinaryExpression(source) && (source.AsBinaryExpression().OperatorToken.Kind == Kind.CommaToken)) && this.isMatchingReference(source.AsBinaryExpression().Right, target));
+                }
         }
 
         return false;
@@ -608,87 +610,87 @@ public sealed partial class Checker
             switch (true)
             {
                 case true when ((flags & (((FlowFlags.Assignment | FlowFlags.Condition) | FlowFlags.ArrayMutation))) != 0):
-                {
-                    flow = flow.Antecedent;
-                    break;
-                }
+                    {
+                        flow = flow.Antecedent;
+                        break;
+                    }
 
                 case true when ((flags & FlowFlags.Call) != 0):
-                {
                     {
-                        var signature = this.getEffectsSignature(flow.Node);
-                        if ((signature != null))
                         {
+                            var signature = this.getEffectsSignature(flow.Node);
+                            if ((signature != null))
                             {
-                                var predicate = this.getTypePredicateOfSignature(signature);
-                                if ((((predicate != null) && (predicate.kind == TypePredicateKind.AssertsIdentifier)) && (predicate.t == null)))
                                 {
+                                    var predicate = this.getTypePredicateOfSignature(signature);
+                                    if ((((predicate != null) && (predicate.kind == TypePredicateKind.AssertsIdentifier)) && (predicate.t == null)))
                                     {
-                                        var arguments = flow.Node.Arguments();
-                                        if ((((predicate.parameterIndex >= 0) && ((int)(predicate.parameterIndex) < GoRuntime.Len(arguments))) && this.isFalseExpression(arguments[predicate.parameterIndex])))
                                         {
-                                            return false;
+                                            var arguments = flow.Node.Arguments();
+                                            if ((((predicate.parameterIndex >= 0) && ((int)(predicate.parameterIndex) < GoRuntime.Len(arguments))) && this.isFalseExpression(arguments[predicate.parameterIndex])))
+                                            {
+                                                return false;
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            if (((this.getReturnTypeOfSignature(signature).flags & TypeFlags.Never) != 0))
-                            {
-                                return false;
+                                if (((this.getReturnTypeOfSignature(signature).flags & TypeFlags.Never) != 0))
+                                {
+                                    return false;
+                                }
                             }
                         }
-                    }
 
-                    flow = flow.Antecedent;
-                    break;
-                }
+                        flow = flow.Antecedent;
+                        break;
+                    }
 
                 case true when ((flags & FlowFlags.BranchLabel) != 0):
-                {
                     {
-                        var list = getBranchLabelAntecedents(flow, f.reduceLabels);
-                        for (; (list != null); list = list.Next)
                         {
-                            if (this.isReachableFlowNodeWorker(f, list.Flow, false))
+                            var list = getBranchLabelAntecedents(flow, f.reduceLabels);
+                            for (; (list != null); list = list.Next)
                             {
-                                return true;
+                                if (this.isReachableFlowNodeWorker(f, list.Flow, false))
+                                {
+                                    return true;
+                                }
                             }
                         }
-                    }
 
-                    return false;
-                }
-
-                case true when ((flags & FlowFlags.LoopLabel) != 0):
-                {
-                    if ((flow.Antecedents == null))
-                    {
                         return false;
                     }
 
-                    flow = flow.Antecedents.Flow;
-                    break;
-                }
+                case true when ((flags & FlowFlags.LoopLabel) != 0):
+                    {
+                        if ((flow.Antecedents == null))
+                        {
+                            return false;
+                        }
+
+                        flow = flow.Antecedents.Flow;
+                        break;
+                    }
 
                 case true when ((flags & FlowFlags.SwitchClause) != 0):
-                {
-                    throw unsupported("isReachableFlowNodeWorker: excluded switch");
-                }
+                    {
+                        throw unsupported("isReachableFlowNodeWorker: excluded switch");
+                    }
 
                 case true when ((flags & FlowFlags.ReduceLabel) != 0):
-                {
-                    this.lastFlowNode = null;
-                    f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
-                    var result = this.isReachableFlowNodeWorker(f, flow.Antecedent, false);
-                    f.reduceLabels = GoRuntime.Slice(f.reduceLabels, 0, (GoRuntime.Len(f.reduceLabels) - 1));
-                    return result;
-                }
+                    {
+                        this.lastFlowNode = null;
+                        f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
+                        var result = this.isReachableFlowNodeWorker(f, flow.Antecedent, false);
+                        f.reduceLabels = GoRuntime.Slice(f.reduceLabels, 0, (GoRuntime.Len(f.reduceLabels) - 1));
+                        return result;
+                    }
 
                 default:
-                {
-                    return ((flags & FlowFlags.Unreachable) == 0);
-                }
+                    {
+                        return ((flags & FlowFlags.Unreachable) == 0);
+                    }
             }
         }
     }
@@ -727,65 +729,65 @@ public sealed partial class Checker
         switch (node.Kind)
         {
             case Kind.Identifier:
-            {
-                var assignmentKind = getAssignmentTargetKind(node);
-                if ((assignmentKind != AssignmentKind.None))
                 {
-                    var symbol = this.getResolvedSymbol(node);
-                    if (this.isParameterOrMutableLocalVariable(symbol))
+                    var assignmentKind = getAssignmentTargetKind(node);
+                    if ((assignmentKind != AssignmentKind.None))
                     {
-                        var links = this.markedAssignmentSymbolLinks.Get(symbol);
+                        var symbol = this.getResolvedSymbol(node);
+                        if (this.isParameterOrMutableLocalVariable(symbol))
                         {
-                            var pos = links.lastAssignmentPos;
-                            if (((pos == 0) || (pos != int.MaxValue)))
+                            var links = this.markedAssignmentSymbolLinks.Get(symbol);
                             {
-                                var referencingFunction = Ast.FindAncestor(node, Ast.IsFunctionOrSourceFile);
-                                var declaringFunction = Ast.FindAncestor(symbol.ValueDeclaration, Ast.IsFunctionOrSourceFile);
-                                if ((referencingFunction == declaringFunction))
+                                var pos = links.lastAssignmentPos;
+                                if (((pos == 0) || (pos != int.MaxValue)))
                                 {
-                                    links.lastAssignmentPos = (int)(this.extendAssignmentPosition(node, symbol.ValueDeclaration));
-                                }
-                                else
-                                {
-                                    links.lastAssignmentPos = int.MaxValue;
+                                    var referencingFunction = Ast.FindAncestor(node, Ast.IsFunctionOrSourceFile);
+                                    var declaringFunction = Ast.FindAncestor(symbol.ValueDeclaration, Ast.IsFunctionOrSourceFile);
+                                    if ((referencingFunction == declaringFunction))
+                                    {
+                                        links.lastAssignmentPos = (int)(this.extendAssignmentPosition(node, symbol.ValueDeclaration));
+                                    }
+                                    else
+                                    {
+                                        links.lastAssignmentPos = int.MaxValue;
+                                    }
                                 }
                             }
-                        }
 
-                        if ((assignmentKind == AssignmentKind.Definite))
-                        {
-                            links.hasDefiniteAssignment = true;
+                            if ((assignmentKind == AssignmentKind.Definite))
+                            {
+                                links.hasDefiniteAssignment = true;
+                            }
                         }
                     }
-                }
 
-                return false;
-            }
+                    return false;
+                }
 
             case Kind.ExportSpecifier:
-            {
-                var exportDeclaration = node.AsExportSpecifier().Parent.Parent.AsExportDeclaration();
-                var name = node.PropertyNameOrName();
-                if ((((!node.IsTypeOnly() && !exportDeclaration.IsTypeOnly) && (exportDeclaration.ModuleSpecifier == null)) && !Ast.IsStringLiteral(name)))
                 {
-                    var symbol2 = this.resolveEntityName(name, SymbolFlags.Value, true, true, null);
-                    if (((symbol2 != null) && this.isParameterOrMutableLocalVariable(symbol2)))
+                    var exportDeclaration = node.AsExportSpecifier().Parent.Parent.AsExportDeclaration();
+                    var name = node.PropertyNameOrName();
+                    if ((((!node.IsTypeOnly() && !exportDeclaration.IsTypeOnly) && (exportDeclaration.ModuleSpecifier == null)) && !Ast.IsStringLiteral(name)))
                     {
-                        var links2 = this.markedAssignmentSymbolLinks.Get(symbol2);
-                        links2.lastAssignmentPos = int.MaxValue;
+                        var symbol2 = this.resolveEntityName(name, SymbolFlags.Value, true, true, null);
+                        if (((symbol2 != null) && this.isParameterOrMutableLocalVariable(symbol2)))
+                        {
+                            var links2 = this.markedAssignmentSymbolLinks.Get(symbol2);
+                            links2.lastAssignmentPos = int.MaxValue;
+                        }
                     }
-                }
 
-                return false;
-            }
+                    return false;
+                }
 
             case Kind.InterfaceDeclaration:
             case Kind.TypeAliasDeclaration:
             case Kind.JSTypeAliasDeclaration:
             case Kind.EnumDeclaration:
-            {
-                return false;
-            }
+                {
+                    return false;
+                }
         }
 
         if (Ast.IsTypeNode(node))
@@ -845,7 +847,7 @@ public sealed partial class Checker
 {
     private bool isEmptyArrayAssignment(Node node)
     {
-        return Ast.IsVariableDeclaration(node) && node.Initializer()is not null && Ast.IsEmptyArrayLiteral(node.Initializer()) || !Ast.IsBindingElement(node) && Ast.IsBinaryExpression(node.Parent) && Ast.IsEmptyArrayLiteral(node.Parent.AsBinaryExpression().Right);
+        return Ast.IsVariableDeclaration(node) && node.Initializer() is not null && Ast.IsEmptyArrayLiteral(node.Initializer()) || !Ast.IsBindingElement(node) && Ast.IsBinaryExpression(node.Parent) && Ast.IsEmptyArrayLiteral(node.Parent.AsBinaryExpression().Right);
     }
 
     private FlowType getTypeAtFlowCall(FlowState f, FlowNode flow)
@@ -862,22 +864,22 @@ public sealed partial class Checker
                 switch (true)
                 {
                     case true when (predicate.t != null):
-                    {
-                        narrowedType = this.narrowTypeByTypePredicate(f, t, predicate, flow.Node, true);
-                        break;
-                    }
+                        {
+                            narrowedType = this.narrowTypeByTypePredicate(f, t, predicate, flow.Node, true);
+                            break;
+                        }
 
                     case true when (((predicate.kind == TypePredicateKind.AssertsIdentifier) && (predicate.parameterIndex >= 0)) && ((int)(predicate.parameterIndex) < GoRuntime.Len(flow.Node.Arguments()))):
-                    {
-                        narrowedType = this.narrowTypeByAssertion(f, t, flow.Node.Arguments()[predicate.parameterIndex]);
-                        break;
-                    }
+                        {
+                            narrowedType = this.narrowTypeByAssertion(f, t, flow.Node.Arguments()[predicate.parameterIndex]);
+                            break;
+                        }
 
                     default:
-                    {
-                        narrowedType = t;
-                        break;
-                    }
+                        {
+                            narrowedType = t;
+                            break;
+                        }
                 }
 
                 if ((narrowedType == t))
@@ -998,60 +1000,60 @@ public sealed partial class Checker
         switch (expr.Kind)
         {
             case Kind.Identifier:
-            {
-                if ((!this.isMatchingReference(f.reference, expr) && (this.inlineLevel < 5)))
                 {
-                    var symbol = this.getResolvedSymbol(expr);
-                    if (this.isConstantVariable(symbol))
+                    if ((!this.isMatchingReference(f.reference, expr) && (this.inlineLevel < 5)))
                     {
-                        var declaration = symbol.ValueDeclaration;
-                        if ((((((declaration != null) && Ast.IsVariableDeclaration(declaration)) && (declaration.Type() == null)) && (declaration.Initializer() != null)) && this.isConstantReference(f.reference)))
+                        var symbol = this.getResolvedSymbol(expr);
+                        if (this.isConstantVariable(symbol))
                         {
-                            this.inlineLevel++;
-                            var result = this.narrowType(f, t, declaration.Initializer(), assumeTrue);
-                            this.inlineLevel--;
-                            return result;
+                            var declaration = symbol.ValueDeclaration;
+                            if ((((((declaration != null) && Ast.IsVariableDeclaration(declaration)) && (declaration.Type() == null)) && (declaration.Initializer() != null)) && this.isConstantReference(f.reference)))
+                            {
+                                this.inlineLevel++;
+                                var result = this.narrowType(f, t, declaration.Initializer(), assumeTrue);
+                                this.inlineLevel--;
+                                return result;
+                            }
                         }
                     }
-                }
 
-                goto case Kind.ThisKeyword;
-            }
+                    goto case Kind.ThisKeyword;
+                }
 
             case Kind.ThisKeyword:
             case Kind.SuperKeyword:
             case Kind.PropertyAccessExpression:
             case Kind.ElementAccessExpression:
-            {
-                return this.narrowTypeByTruthiness(f, t, expr, assumeTrue);
-            }
+                {
+                    return this.narrowTypeByTruthiness(f, t, expr, assumeTrue);
+                }
 
             case Kind.CallExpression:
-            {
-                return this.narrowTypeByCallExpression(f, t, expr, assumeTrue);
-            }
+                {
+                    return this.narrowTypeByCallExpression(f, t, expr, assumeTrue);
+                }
 
             case Kind.ParenthesizedExpression:
             case Kind.NonNullExpression:
             case Kind.SatisfiesExpression:
-            {
-                return this.narrowType(f, t, expr.Expression(), assumeTrue);
-            }
-
-            case Kind.BinaryExpression:
-            {
-                return this.narrowTypeByBinaryExpression(f, t, expr.AsBinaryExpression(), assumeTrue);
-            }
-
-            case Kind.PrefixUnaryExpression:
-            {
-                if ((expr.AsPrefixUnaryExpression().Operator == Kind.ExclamationToken))
                 {
-                    return this.narrowType(f, t, expr.AsPrefixUnaryExpression().Operand, !assumeTrue);
+                    return this.narrowType(f, t, expr.Expression(), assumeTrue);
                 }
 
-                break;
-            }
+            case Kind.BinaryExpression:
+                {
+                    return this.narrowTypeByBinaryExpression(f, t, expr.AsBinaryExpression(), assumeTrue);
+                }
+
+            case Kind.PrefixUnaryExpression:
+                {
+                    if ((expr.AsPrefixUnaryExpression().Operator == Kind.ExclamationToken))
+                    {
+                        return this.narrowType(f, t, expr.AsPrefixUnaryExpression().Operand, !assumeTrue);
+                    }
+
+                    break;
+                }
         }
 
         return t;
@@ -1161,122 +1163,122 @@ public sealed partial class Checker
             case Kind.BarBarEqualsToken:
             case Kind.AmpersandAmpersandEqualsToken:
             case Kind.QuestionQuestionEqualsToken:
-            {
-                return this.narrowTypeByTruthiness(f, this.narrowType(f, t, expr.Right, assumeTrue), expr.Left, assumeTrue);
-            }
+                {
+                    return this.narrowTypeByTruthiness(f, this.narrowType(f, t, expr.Right, assumeTrue), expr.Left, assumeTrue);
+                }
 
             case Kind.EqualsEqualsToken:
             case Kind.ExclamationEqualsToken:
             case Kind.EqualsEqualsEqualsToken:
             case Kind.ExclamationEqualsEqualsToken:
-            {
-                var @operator = expr.OperatorToken.Kind;
-                var left = this.getReferenceCandidate(expr.Left);
-                var right = this.getReferenceCandidate(expr.Right);
-                if (((left.Kind == Kind.TypeOfExpression) && Ast.IsStringLiteralLike(right)))
                 {
-                    return this.narrowTypeByTypeof(f, t, left.AsTypeOfExpression(), @operator, right, assumeTrue);
-                }
-
-                if (((right.Kind == Kind.TypeOfExpression) && Ast.IsStringLiteralLike(left)))
-                {
-                    return this.narrowTypeByTypeof(f, t, right.AsTypeOfExpression(), @operator, left, assumeTrue);
-                }
-
-                if (this.isMatchingReference(f.reference, left))
-                {
-                    return this.narrowTypeByEquality(t, @operator, right, assumeTrue);
-                }
-
-                if (this.isMatchingReference(f.reference, right))
-                {
-                    return this.narrowTypeByEquality(t, @operator, left, assumeTrue);
-                }
-
-                if (this.strictNullChecks)
-                {
-                    if (this.optionalChainContainsReference(left, f.reference))
+                    var @operator = expr.OperatorToken.Kind;
+                    var left = this.getReferenceCandidate(expr.Left);
+                    var right = this.getReferenceCandidate(expr.Right);
+                    if (((left.Kind == Kind.TypeOfExpression) && Ast.IsStringLiteralLike(right)))
                     {
-                        throw unsupported("narrowTypeByOptionalChainContainment: excluded optional chain");
+                        return this.narrowTypeByTypeof(f, t, left.AsTypeOfExpression(), @operator, right, assumeTrue);
                     }
-                    else
+
+                    if (((right.Kind == Kind.TypeOfExpression) && Ast.IsStringLiteralLike(left)))
                     {
-                        if (this.optionalChainContainsReference(right, f.reference))
+                        return this.narrowTypeByTypeof(f, t, right.AsTypeOfExpression(), @operator, left, assumeTrue);
+                    }
+
+                    if (this.isMatchingReference(f.reference, left))
+                    {
+                        return this.narrowTypeByEquality(t, @operator, right, assumeTrue);
+                    }
+
+                    if (this.isMatchingReference(f.reference, right))
+                    {
+                        return this.narrowTypeByEquality(t, @operator, left, assumeTrue);
+                    }
+
+                    if (this.strictNullChecks)
+                    {
+                        if (this.optionalChainContainsReference(left, f.reference))
                         {
                             throw unsupported("narrowTypeByOptionalChainContainment: excluded optional chain");
                         }
+                        else
+                        {
+                            if (this.optionalChainContainsReference(right, f.reference))
+                            {
+                                throw unsupported("narrowTypeByOptionalChainContainment: excluded optional chain");
+                            }
+                        }
                     }
-                }
 
-                var leftAccess = this.getDiscriminantPropertyAccess(f, left, t);
-                if ((leftAccess != null))
-                {
-                    return this.narrowTypeByDiscriminantProperty(t, leftAccess, @operator, right, assumeTrue);
-                }
+                    var leftAccess = this.getDiscriminantPropertyAccess(f, left, t);
+                    if ((leftAccess != null))
+                    {
+                        return this.narrowTypeByDiscriminantProperty(t, leftAccess, @operator, right, assumeTrue);
+                    }
 
-                var rightAccess = this.getDiscriminantPropertyAccess(f, right, t);
-                if ((rightAccess != null))
-                {
-                    return this.narrowTypeByDiscriminantProperty(t, rightAccess, @operator, left, assumeTrue);
-                }
+                    var rightAccess = this.getDiscriminantPropertyAccess(f, right, t);
+                    if ((rightAccess != null))
+                    {
+                        return this.narrowTypeByDiscriminantProperty(t, rightAccess, @operator, left, assumeTrue);
+                    }
 
-                if (this.isMatchingConstructorReference(f, left))
-                {
-                    return this.narrowTypeByConstructor(t, @operator, right, assumeTrue);
-                }
+                    if (this.isMatchingConstructorReference(f, left))
+                    {
+                        return this.narrowTypeByConstructor(t, @operator, right, assumeTrue);
+                    }
 
-                if (this.isMatchingConstructorReference(f, right))
-                {
-                    return this.narrowTypeByConstructor(t, @operator, left, assumeTrue);
-                }
+                    if (this.isMatchingConstructorReference(f, right))
+                    {
+                        return this.narrowTypeByConstructor(t, @operator, left, assumeTrue);
+                    }
 
-                if ((Ast.IsBooleanLiteral(right) && !Ast.IsAccessExpression(left)))
-                {
-                    return this.narrowTypeByBooleanComparison(f, t, left, right, @operator, assumeTrue);
-                }
+                    if ((Ast.IsBooleanLiteral(right) && !Ast.IsAccessExpression(left)))
+                    {
+                        return this.narrowTypeByBooleanComparison(f, t, left, right, @operator, assumeTrue);
+                    }
 
-                if ((Ast.IsBooleanLiteral(left) && !Ast.IsAccessExpression(right)))
-                {
-                    return this.narrowTypeByBooleanComparison(f, t, right, left, @operator, assumeTrue);
-                }
+                    if ((Ast.IsBooleanLiteral(left) && !Ast.IsAccessExpression(right)))
+                    {
+                        return this.narrowTypeByBooleanComparison(f, t, right, left, @operator, assumeTrue);
+                    }
 
-                break;
-            }
+                    break;
+                }
 
             case Kind.InstanceOfKeyword:
-            {
-                throw unsupported("narrowTypeByBinaryExpression: excluded instanceof");
-            }
+                {
+                    throw unsupported("narrowTypeByBinaryExpression: excluded instanceof");
+                }
 
             case Kind.InKeyword:
-            {
-                throw unsupported("narrowTypeByBinaryExpression: excluded in");
-            }
+                {
+                    throw unsupported("narrowTypeByBinaryExpression: excluded in");
+                }
 
             case Kind.CommaToken:
-            {
-                return this.narrowType(f, t, expr.Right, assumeTrue);
-            }
+                {
+                    return this.narrowType(f, t, expr.Right, assumeTrue);
+                }
 
             case Kind.AmpersandAmpersandToken:
-            {
-                if (assumeTrue)
                 {
-                    return this.narrowType(f, this.narrowType(f, t, expr.Left, true), expr.Right, true);
-                }
+                    if (assumeTrue)
+                    {
+                        return this.narrowType(f, this.narrowType(f, t, expr.Left, true), expr.Right, true);
+                    }
 
-                return this.getUnionType(new List<Type> { this.narrowType(f, t, expr.Left, false), this.narrowType(f, t, expr.Right, false) });
-            }
+                    return this.getUnionType(new List<Type> { this.narrowType(f, t, expr.Left, false), this.narrowType(f, t, expr.Right, false) });
+                }
 
             case Kind.BarBarToken:
-            {
-                if (assumeTrue)
                 {
-                    return this.getUnionType(new List<Type> { this.narrowType(f, t, expr.Left, true), this.narrowType(f, t, expr.Right, true) });
-                }
+                    if (assumeTrue)
+                    {
+                        return this.getUnionType(new List<Type> { this.narrowType(f, t, expr.Left, true), this.narrowType(f, t, expr.Right, true) });
+                    }
 
-                return this.narrowType(f, this.narrowType(f, t, expr.Left, false), expr.Right, false);
-            }
+                    return this.narrowType(f, this.narrowType(f, t, expr.Left, false), expr.Right, false);
+                }
         }
 
         return t;
@@ -1310,22 +1312,22 @@ public sealed partial class Checker
             switch (true)
             {
                 case true when doubleEquals:
-                {
-                    facts = Core.IfElse(assumeTrue, TypeFacts.EQUndefinedOrNull, TypeFacts.NEUndefinedOrNull);
-                    break;
-                }
+                    {
+                        facts = Core.IfElse(assumeTrue, TypeFacts.EQUndefinedOrNull, TypeFacts.NEUndefinedOrNull);
+                        break;
+                    }
 
                 case true when ((valueType.flags & TypeFlags.Null) != 0):
-                {
-                    facts = Core.IfElse(assumeTrue, TypeFacts.EQNull, TypeFacts.NENull);
-                    break;
-                }
+                    {
+                        facts = Core.IfElse(assumeTrue, TypeFacts.EQNull, TypeFacts.NENull);
+                        break;
+                    }
 
                 default:
-                {
-                    facts = Core.IfElse(assumeTrue, TypeFacts.EQUndefined, TypeFacts.NEUndefined);
-                    break;
-                }
+                    {
+                        facts = Core.IfElse(assumeTrue, TypeFacts.EQUndefined, TypeFacts.NEUndefined);
+                        break;
+                    }
             }
 
             return this.getAdjustedTypeWithFacts(t, facts);
@@ -1442,54 +1444,54 @@ public sealed partial class Checker
         switch (typeName)
         {
             case "string":
-            {
-                return this.narrowTypeByTypeFacts(t, this.stringType, TypeFacts.TypeofEQString);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.stringType, TypeFacts.TypeofEQString);
+                }
 
             case "number":
-            {
-                return this.narrowTypeByTypeFacts(t, this.numberType, TypeFacts.TypeofEQNumber);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.numberType, TypeFacts.TypeofEQNumber);
+                }
 
             case "bigint":
-            {
-                return this.narrowTypeByTypeFacts(t, this.bigintType, TypeFacts.TypeofEQBigInt);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.bigintType, TypeFacts.TypeofEQBigInt);
+                }
 
             case "boolean":
-            {
-                return this.narrowTypeByTypeFacts(t, this.booleanType, TypeFacts.TypeofEQBoolean);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.booleanType, TypeFacts.TypeofEQBoolean);
+                }
 
             case "symbol":
-            {
-                return this.narrowTypeByTypeFacts(t, this.esSymbolType, TypeFacts.TypeofEQSymbol);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.esSymbolType, TypeFacts.TypeofEQSymbol);
+                }
 
             case "object":
-            {
-                if (((t.flags & TypeFlags.Any) != 0))
                 {
-                    return t;
-                }
+                    if (((t.flags & TypeFlags.Any) != 0))
+                    {
+                        return t;
+                    }
 
-                return this.getUnionType(new List<Type> { this.narrowTypeByTypeFacts(t, this.nonPrimitiveType, TypeFacts.TypeofEQObject), this.narrowTypeByTypeFacts(t, this.nullType, TypeFacts.EQNull) });
-            }
+                    return this.getUnionType(new List<Type> { this.narrowTypeByTypeFacts(t, this.nonPrimitiveType, TypeFacts.TypeofEQObject), this.narrowTypeByTypeFacts(t, this.nullType, TypeFacts.EQNull) });
+                }
 
             case "function":
-            {
-                if (((t.flags & TypeFlags.Any) != 0))
                 {
-                    return t;
+                    if (((t.flags & TypeFlags.Any) != 0))
+                    {
+                        return t;
+                    }
+
+                    return this.narrowTypeByTypeFacts(t, this.globalFunctionType, TypeFacts.TypeofEQFunction);
                 }
 
-                return this.narrowTypeByTypeFacts(t, this.globalFunctionType, TypeFacts.TypeofEQFunction);
-            }
-
             case "undefined":
-            {
-                return this.narrowTypeByTypeFacts(t, this.undefinedType, TypeFacts.EQUndefined);
-            }
+                {
+                    return this.narrowTypeByTypeFacts(t, this.undefinedType, TypeFacts.EQUndefined);
+                }
         }
 
         return this.narrowTypeByTypeFacts(t, this.nonPrimitiveType, TypeFacts.TypeofEQHostObject);
@@ -1505,24 +1507,24 @@ public sealed partial class Checker
             switch (true)
             {
                 case true when this.isTypeRelatedTo(t2, impliedType, this.strictSubtypeRelation):
-                {
-                    if (this.hasTypeFacts(t2, facts))
                     {
-                        return t2;
+                        if (this.hasTypeFacts(t2, facts))
+                        {
+                            return t2;
+                        }
+
+                        return this.neverType;
                     }
 
-                    return this.neverType;
-                }
-
                 case true when this.isTypeSubtypeOf(impliedType, t2):
-                {
-                    return impliedType;
-                }
+                    {
+                        return impliedType;
+                    }
 
                 case true when this.hasTypeFacts(t2, facts):
-                {
-                    return this.getIntersectionType(new List<Type> { t2, impliedType });
-                }
+                    {
+                        return this.getIntersectionType(new List<Type> { t2, impliedType });
+                    }
             }
 
             return this.neverType;
@@ -1723,14 +1725,14 @@ public sealed partial class Checker
                     switch (true)
                     {
                         case true when this.isTypeDerivedFrom(t4, n):
-                        {
-                            return t4;
-                        }
+                            {
+                                return t4;
+                            }
 
                         case true when this.isTypeDerivedFrom(n, t4):
-                        {
-                            return n;
-                        }
+                            {
+                                return n;
+                            }
                     }
 
                     return this.neverType;
@@ -1743,24 +1745,24 @@ public sealed partial class Checker
                     switch (true)
                     {
                         case true when this.isTypeStrictSubtypeOf(t5, n):
-                        {
-                            return t5;
-                        }
+                            {
+                                return t5;
+                            }
 
                         case true when this.isTypeStrictSubtypeOf(n, t5):
-                        {
-                            return n;
-                        }
+                            {
+                                return n;
+                            }
 
                         case true when this.isTypeSubtypeOf(t5, n):
-                        {
-                            return t5;
-                        }
+                            {
+                                return t5;
+                            }
 
                         case true when this.isTypeSubtypeOf(n, t5):
-                        {
-                            return n;
-                        }
+                            {
+                                return n;
+                            }
                     }
 
                     return this.neverType;
@@ -1800,24 +1802,24 @@ public sealed partial class Checker
         switch (true)
         {
             case true when ((narrowedType.flags & TypeFlags.Never) == 0):
-            {
-                return narrowedType;
-            }
+                {
+                    return narrowedType;
+                }
 
             case true when this.isTypeSubtypeOf(candidate, t):
-            {
-                return candidate;
-            }
+                {
+                    return candidate;
+                }
 
             case true when this.isTypeAssignableTo(t, candidate):
-            {
-                return t;
-            }
+                {
+                    return t;
+                }
 
             case true when this.isTypeAssignableTo(candidate, t):
-            {
-                return candidate;
-            }
+                {
+                    return candidate;
+                }
         }
 
         return this.getIntersectionType(new List<Type> { t, candidate });
@@ -1900,54 +1902,54 @@ public sealed partial class Checker
         switch (true)
         {
             case true when ((Ast.IsBindingPattern(f.reference) || Ast.IsFunctionExpressionOrArrowFunction(f.reference)) || Ast.IsObjectLiteralMethod(f.reference)):
-            {
-                if (Ast.IsIdentifier(expr))
                 {
-                    var symbol = this.getResolvedSymbol(expr);
-                    var declaration = this.getExportSymbolOfValueSymbolIfExported(symbol).ValueDeclaration;
-                    if ((((((declaration != null) && ((Ast.IsBindingElement(declaration) || Ast.IsParameterDeclaration(declaration)))) && (f.reference == declaration.Parent)) && (declaration.Initializer() == null)) && !hasDotDotDotToken(declaration)))
+                    if (Ast.IsIdentifier(expr))
                     {
-                        return declaration;
-                    }
-                }
-
-                break;
-            }
-
-            case true when Ast.IsAccessExpression(expr):
-            {
-                if (this.isMatchingReference(f.reference, expr.Expression()))
-                {
-                    return expr;
-                }
-
-                break;
-            }
-
-            case true when Ast.IsIdentifier(expr):
-            {
-                var symbol2 = this.getResolvedSymbol(expr);
-                if (this.isConstantVariable(symbol2))
-                {
-                    var declaration2 = symbol2.ValueDeclaration;
-                    var initializer = getCandidateVariableDeclarationInitializer(declaration2);
-                    if ((((initializer != null) && Ast.IsAccessExpression(initializer)) && this.isMatchingReference(f.reference, initializer.Expression())))
-                    {
-                        return initializer;
-                    }
-
-                    if ((Ast.IsBindingElement(declaration2) && (declaration2.Initializer() == null)))
-                    {
-                        initializer = getCandidateVariableDeclarationInitializer(declaration2.Parent.Parent);
-                        if ((((initializer != null) && ((Ast.IsIdentifier(initializer) || Ast.IsAccessExpression(initializer)))) && this.isMatchingReference(f.reference, initializer)))
+                        var symbol = this.getResolvedSymbol(expr);
+                        var declaration = this.getExportSymbolOfValueSymbolIfExported(symbol).ValueDeclaration;
+                        if ((((((declaration != null) && ((Ast.IsBindingElement(declaration) || Ast.IsParameterDeclaration(declaration)))) && (f.reference == declaration.Parent)) && (declaration.Initializer() == null)) && !hasDotDotDotToken(declaration)))
                         {
-                            return declaration2;
+                            return declaration;
                         }
                     }
+
+                    break;
                 }
 
-                break;
-            }
+            case true when Ast.IsAccessExpression(expr):
+                {
+                    if (this.isMatchingReference(f.reference, expr.Expression()))
+                    {
+                        return expr;
+                    }
+
+                    break;
+                }
+
+            case true when Ast.IsIdentifier(expr):
+                {
+                    var symbol2 = this.getResolvedSymbol(expr);
+                    if (this.isConstantVariable(symbol2))
+                    {
+                        var declaration2 = symbol2.ValueDeclaration;
+                        var initializer = getCandidateVariableDeclarationInitializer(declaration2);
+                        if ((((initializer != null) && Ast.IsAccessExpression(initializer)) && this.isMatchingReference(f.reference, initializer.Expression())))
+                        {
+                            return initializer;
+                        }
+
+                        if ((Ast.IsBindingElement(declaration2) && (declaration2.Initializer() == null)))
+                        {
+                            initializer = getCandidateVariableDeclarationInitializer(declaration2.Parent.Parent);
+                            if ((((initializer != null) && ((Ast.IsIdentifier(initializer) || Ast.IsAccessExpression(initializer)))) && this.isMatchingReference(f.reference, initializer)))
+                            {
+                                return declaration2;
+                            }
+                        }
+                    }
+
+                    break;
+                }
         }
 
         return null;
@@ -2019,41 +2021,41 @@ public sealed partial class Checker
         switch (node.Kind)
         {
             case Kind.ThisKeyword:
-            {
-                return true;
-            }
-
-            case Kind.Identifier:
-            {
-                if (!Ast.IsThisInTypeQuery(node))
                 {
-                    var symbol = this.getResolvedSymbol(node);
-                    return ((this.isConstantVariable(symbol) || (this.isParameterOrMutableLocalVariable(symbol) && !this.isSymbolAssigned(symbol))) || ((symbol.ValueDeclaration != null) && Ast.IsFunctionExpression(symbol.ValueDeclaration)));
+                    return true;
                 }
 
-                break;
-            }
+            case Kind.Identifier:
+                {
+                    if (!Ast.IsThisInTypeQuery(node))
+                    {
+                        var symbol = this.getResolvedSymbol(node);
+                        return ((this.isConstantVariable(symbol) || (this.isParameterOrMutableLocalVariable(symbol) && !this.isSymbolAssigned(symbol))) || ((symbol.ValueDeclaration != null) && Ast.IsFunctionExpression(symbol.ValueDeclaration)));
+                    }
+
+                    break;
+                }
 
             case Kind.PropertyAccessExpression:
             case Kind.ElementAccessExpression:
-            {
-                if (this.isConstantReference(node.Expression()))
                 {
-                    var symbol2 = this.getResolvedSymbolOrNil(node);
-                    if ((symbol2 != null))
+                    if (this.isConstantReference(node.Expression()))
                     {
-                        return this.isReadonlySymbol(symbol2);
+                        var symbol2 = this.getResolvedSymbolOrNil(node);
+                        if ((symbol2 != null))
+                        {
+                            return this.isReadonlySymbol(symbol2);
+                        }
                     }
-                }
 
-                break;
-            }
+                    break;
+                }
 
             case Kind.ObjectBindingPattern:
             case Kind.ArrayBindingPattern:
-            {
-                throw unsupported("isConstantReference: excluded binding pattern");
-            }
+                {
+                    throw unsupported("isConstantReference: excluded binding pattern");
+                }
         }
 
         return false;
@@ -2084,30 +2086,30 @@ public sealed partial class Checker
         switch (node.Kind)
         {
             case Kind.ParenthesizedExpression:
-            {
-                return this.getReferenceCandidate(node.Expression());
-            }
-
-            case Kind.BinaryExpression:
-            {
-                switch (node.AsBinaryExpression().OperatorToken.Kind)
                 {
-                    case Kind.EqualsToken:
-                    case Kind.BarBarEqualsToken:
-                    case Kind.AmpersandAmpersandEqualsToken:
-                    case Kind.QuestionQuestionEqualsToken:
-                    {
-                        return this.getReferenceCandidate(node.AsBinaryExpression().Left);
-                    }
-
-                    case Kind.CommaToken:
-                    {
-                        return this.getReferenceCandidate(node.AsBinaryExpression().Right);
-                    }
+                    return this.getReferenceCandidate(node.Expression());
                 }
 
-                break;
-            }
+            case Kind.BinaryExpression:
+                {
+                    switch (node.AsBinaryExpression().OperatorToken.Kind)
+                    {
+                        case Kind.EqualsToken:
+                        case Kind.BarBarEqualsToken:
+                        case Kind.AmpersandAmpersandEqualsToken:
+                        case Kind.QuestionQuestionEqualsToken:
+                            {
+                                return this.getReferenceCandidate(node.AsBinaryExpression().Left);
+                            }
+
+                        case Kind.CommaToken:
+                            {
+                                return this.getReferenceCandidate(node.AsBinaryExpression().Right);
+                            }
+                    }
+
+                    break;
+                }
         }
 
         return node;
@@ -2170,29 +2172,29 @@ public sealed partial class Checker
                 switch (true)
                 {
                     case true when ((t.flags & TypeFlags.String) != 0):
-                    {
-                        return this.extractTypesOfKind(typeWithLiterals, (((TypeFlags.String | TypeFlags.StringLiteral) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping));
-                    }
+                        {
+                            return this.extractTypesOfKind(typeWithLiterals, (((TypeFlags.String | TypeFlags.StringLiteral) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping));
+                        }
 
                     case true when (this.isPatternLiteralType(t) && !this.maybeTypeOfKind(typeWithLiterals, ((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping))):
-                    {
-                        return this.extractTypesOfKind(typeWithLiterals, TypeFlags.StringLiteral);
-                    }
+                        {
+                            return this.extractTypesOfKind(typeWithLiterals, TypeFlags.StringLiteral);
+                        }
 
                     case true when ((t.flags & TypeFlags.Number) != 0):
-                    {
-                        return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.Number | TypeFlags.NumberLiteral));
-                    }
+                        {
+                            return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.Number | TypeFlags.NumberLiteral));
+                        }
 
                     case true when ((t.flags & TypeFlags.BigInt) != 0):
-                    {
-                        return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.BigInt | TypeFlags.BigIntLiteral));
-                    }
+                        {
+                            return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.BigInt | TypeFlags.BigIntLiteral));
+                        }
 
                     default:
-                    {
-                        return t;
-                    }
+                        {
+                            return t;
+                        }
                 }
             });
         }
@@ -2254,16 +2256,16 @@ public sealed partial class Checker
             switch (true)
             {
                 case true when ((GoRuntime.Len(signatures) == 1) && (GoRuntime.Len(signatures[0].typeParameters) == 0)):
-                {
-                    signature = signatures[0];
-                    break;
-                }
+                    {
+                        signature = signatures[0];
+                        break;
+                    }
 
                 case true when Core.Some(signatures, this.hasTypePredicateOrNeverReturnType):
-                {
-                    signature = this.getResolvedSignature(node, null, CheckMode.Normal);
-                    break;
-                }
+                    {
+                        signature = this.getResolvedSignature(node, null, CheckMode.Normal);
+                        break;
+                    }
             }
 
             if (!(((signature != null) && this.hasTypePredicateOrNeverReturnType(signature))))
@@ -2292,53 +2294,53 @@ public sealed partial class Checker
             switch (node.Kind)
             {
                 case Kind.Identifier:
-                {
-                    var symbol = this.getExportSymbolOfValueSymbolIfExported(this.getResolvedSymbol(node));
-                    return this.getExplicitTypeOfSymbol(symbol, diagnostic);
-                }
-
-                case Kind.ThisKeyword:
-                {
-                    return this.getExplicitThisType(node);
-                }
-
-                case Kind.SuperKeyword:
-                {
-                    throw unsupported("getTypeOfDottedName: excluded super");
-                }
-
-                case Kind.PropertyAccessExpression:
-                {
-                    var t = this.getTypeOfDottedName(node.Expression(), diagnostic);
-                    if ((t != null))
                     {
-                        var name = node.Name();
-                        Symbol prop = default;
-                        if (Ast.IsPrivateIdentifier(name))
-                        {
-                            if ((t.symbol != null))
-                            {
-                                prop = this.getPropertyOfType(t, Binder.GetSymbolNameForPrivateIdentifier(t.symbol, name.Text()));
-                            }
-                        }
-                        else
-                        {
-                            prop = this.getPropertyOfType(t, name.Text());
-                        }
-
-                        if ((prop != null))
-                        {
-                            return this.getExplicitTypeOfSymbol(prop, diagnostic);
-                        }
+                        var symbol = this.getExportSymbolOfValueSymbolIfExported(this.getResolvedSymbol(node));
+                        return this.getExplicitTypeOfSymbol(symbol, diagnostic);
                     }
 
-                    break;
-                }
+                case Kind.ThisKeyword:
+                    {
+                        return this.getExplicitThisType(node);
+                    }
+
+                case Kind.SuperKeyword:
+                    {
+                        return this.checkSuperExpression(node);
+                    }
+
+                case Kind.PropertyAccessExpression:
+                    {
+                        var t = this.getTypeOfDottedName(node.Expression(), diagnostic);
+                        if ((t != null))
+                        {
+                            var name = node.Name();
+                            Symbol prop = default;
+                            if (Ast.IsPrivateIdentifier(name))
+                            {
+                                if ((t.symbol != null))
+                                {
+                                    prop = this.getPropertyOfType(t, Binder.GetSymbolNameForPrivateIdentifier(t.symbol, name.Text()));
+                                }
+                            }
+                            else
+                            {
+                                prop = this.getPropertyOfType(t, name.Text());
+                            }
+
+                            if ((prop != null))
+                            {
+                                return this.getExplicitTypeOfSymbol(prop, diagnostic);
+                            }
+                        }
+
+                        break;
+                    }
 
                 case Kind.ParenthesizedExpression:
-                {
-                    return this.getTypeOfDottedName(node.Expression(), diagnostic);
-                }
+                    {
+                        return this.getTypeOfDottedName(node.Expression(), diagnostic);
+                    }
             }
         }
 
@@ -2521,10 +2523,10 @@ public sealed partial class Checker
                 case Kind.SwitchStatement:
                 case Kind.TryStatement:
                 case Kind.ClassDeclaration:
-                {
-                    pos = node.End();
-                    break;
-                }
+                    {
+                        pos = node.End();
+                        break;
+                    }
             }
 
             node = node.Parent;
@@ -3001,14 +3003,14 @@ public sealed partial class Checker
         switch (true)
         {
             case true when ((elementType.flags & TypeFlags.Never) != 0):
-            {
-                return this.autoArrayType;
-            }
+                {
+                    return this.autoArrayType;
+                }
 
             case true when ((elementType.flags & TypeFlags.Union) != 0):
-            {
-                return this.createArrayType(this.getUnionTypeEx(elementType.Types(), UnionReduction.Subtype, null, null));
-            }
+                {
+                    return this.createArrayType(this.getUnionTypeEx(elementType.Types(), UnionReduction.Subtype, null, null));
+                }
         }
 
         return this.createArrayType(elementType);
@@ -3040,101 +3042,101 @@ public sealed partial class Checker
         switch (node.Kind)
         {
             case Kind.Identifier:
-            {
-                if (!Ast.IsThisInTypeQuery(node))
                 {
-                    var symbol = this.getResolvedSymbol(node);
-                    if ((symbol == this.unknownSymbol))
+                    if (!Ast.IsThisInTypeQuery(node))
+                    {
+                        var symbol = this.getResolvedSymbol(node);
+                        if ((symbol == this.unknownSymbol))
+                        {
+                            return false;
+                        }
+
+                        b.writeSymbol(symbol);
+                        verificationCollectionsFlowSlot(b, "symbol", symbol, 8);
+                    }
+
+                    goto case Kind.ThisKeyword;
+                }
+
+            case Kind.ThisKeyword:
+                {
+                    b.writeByte((byte)':');
+                    b.writeType(declaredType);
+                    verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                    if ((initialType != declaredType))
+                    {
+                        b.writeByte((byte)'=');
+                        b.writeType(initialType);
+                        verificationCollectionsFlowSlot(b, "type", initialType, 4);
+                    }
+
+                    if ((flowContainer != null))
+                    {
+                        b.writeByte((byte)'@');
+                        b.writeNode(flowContainer);
+                        verificationCollectionsFlowSlot(b, "node", flowContainer, 8);
+                    }
+
+                    return true;
+                }
+
+            case Kind.NonNullExpression:
+            case Kind.ParenthesizedExpression:
+                {
+                    return this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer);
+                }
+
+            case Kind.QualifiedName:
+                {
+                    if (!this.writeFlowCacheKey(b, node.AsQualifiedName().Left, declaredType, initialType, flowContainer))
                     {
                         return false;
                     }
 
-                    b.writeSymbol(symbol);
-                    verificationCollectionsFlowSlot(b, "symbol", symbol, 8);
+                    b.writeByte((byte)'.');
+                    b.writeString(node.AsQualifiedName().Right.Text());
+                    return true;
                 }
-
-                goto case Kind.ThisKeyword;
-            }
-
-            case Kind.ThisKeyword:
-            {
-                b.writeByte((byte)':');
-                b.writeType(declaredType);
-                verificationCollectionsFlowSlot(b, "type", declaredType, 4);
-                if ((initialType != declaredType))
-                {
-                    b.writeByte((byte)'=');
-                    b.writeType(initialType);
-                    verificationCollectionsFlowSlot(b, "type", initialType, 4);
-                }
-
-                if ((flowContainer != null))
-                {
-                    b.writeByte((byte)'@');
-                    b.writeNode(flowContainer);
-                    verificationCollectionsFlowSlot(b, "node", flowContainer, 8);
-                }
-
-                return true;
-            }
-
-            case Kind.NonNullExpression:
-            case Kind.ParenthesizedExpression:
-            {
-                return this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer);
-            }
-
-            case Kind.QualifiedName:
-            {
-                if (!this.writeFlowCacheKey(b, node.AsQualifiedName().Left, declaredType, initialType, flowContainer))
-                {
-                    return false;
-                }
-
-                b.writeByte((byte)'.');
-                b.writeString(node.AsQualifiedName().Right.Text());
-                return true;
-            }
 
             case Kind.PropertyAccessExpression:
             case Kind.ElementAccessExpression:
-            {
                 {
-                    var tuple1 = this.getAccessedPropertyName(node);
-                    var propName = tuple1.Item1;
-                    var ok = tuple1.Item2;
-                    if (ok)
                     {
-                        if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                        var tuple1 = this.getAccessedPropertyName(node);
+                        var propName = tuple1.Item1;
+                        var ok = tuple1.Item2;
+                        if (ok)
                         {
-                            return false;
+                            if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                            {
+                                return false;
+                            }
+
+                            b.writeByte((byte)'.');
+                            b.writeString(propName);
+                            return true;
                         }
-
-                        b.writeByte((byte)'.');
-                        b.writeString(propName);
-                        return true;
                     }
-                }
 
-                if ((Ast.IsElementAccessExpression(node) && Ast.IsIdentifier(node.AsElementAccessExpression().ArgumentExpression)))
-                {
-                    var symbol2 = this.getResolvedSymbol(node.AsElementAccessExpression().ArgumentExpression);
-                    if ((this.isConstantVariable(symbol2) || (this.isParameterOrMutableLocalVariable(symbol2) && !this.isSymbolAssigned(symbol2))))
+                    if ((Ast.IsElementAccessExpression(node) && Ast.IsIdentifier(node.AsElementAccessExpression().ArgumentExpression)))
                     {
-                        if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                        var symbol2 = this.getResolvedSymbol(node.AsElementAccessExpression().ArgumentExpression);
+                        if ((this.isConstantVariable(symbol2) || (this.isParameterOrMutableLocalVariable(symbol2) && !this.isSymbolAssigned(symbol2))))
                         {
-                            return false;
+                            if (!this.writeFlowCacheKey(b, node.Expression(), declaredType, initialType, flowContainer))
+                            {
+                                return false;
+                            }
+
+                            b.writeString(".@");
+                            b.writeSymbol(symbol2);
+                            verificationCollectionsFlowSlot(b, "symbol", symbol2, 8);
+                            return true;
                         }
-
-                        b.writeString(".@");
-                        b.writeSymbol(symbol2);
-                        verificationCollectionsFlowSlot(b, "symbol", symbol2, 8);
-                        return true;
                     }
-                }
 
-                break;
-            }
+                    break;
+                }
 
             case Kind.ObjectBindingPattern:
             case Kind.ArrayBindingPattern:
@@ -3142,14 +3144,14 @@ public sealed partial class Checker
             case Kind.FunctionExpression:
             case Kind.ArrowFunction:
             case Kind.MethodDeclaration:
-            {
-                b.writeNode(node);
-                verificationCollectionsFlowSlot(b, "node", node, 8);
-                b.writeByte((byte)'#');
-                b.writeType(declaredType);
-                verificationCollectionsFlowSlot(b, "type", declaredType, 4);
-                return true;
-            }
+                {
+                    b.writeNode(node);
+                    verificationCollectionsFlowSlot(b, "node", node, 8);
+                    b.writeByte((byte)'#');
+                    b.writeType(declaredType);
+                    verificationCollectionsFlowSlot(b, "type", declaredType, 4);
+                    return true;
+                }
         }
 
         return false;
@@ -3163,14 +3165,14 @@ public sealed partial class Checker
         switch (true)
         {
             case true when Ast.IsStringOrNumericLiteralLike(node.ArgumentExpression):
-            {
-                return (node.ArgumentExpression.Text(), true);
-            }
+                {
+                    return (node.ArgumentExpression.Text(), true);
+                }
 
             case true when Ast.IsEntityNameExpression(node.ArgumentExpression):
-            {
-                return this.tryGetNameFromEntityNameExpression(node.ArgumentExpression);
-            }
+                {
+                    return this.tryGetNameFromEntityNameExpression(node.ArgumentExpression);
+                }
         }
 
         return ("", false);
@@ -3197,7 +3199,7 @@ public sealed partial class Checker
         if ((t != null))
         {
             {
-                var tuple1 = tryGetNameFromType(t);
+                var tuple1 = tryGetFlowNameFromType(t);
                 var name = tuple1.Item1;
                 var ok = tuple1.Item2;
                 if (ok)
@@ -3217,7 +3219,7 @@ public sealed partial class Checker
                         var initializerType = this.getTypeOfExpression(initializer);
                         if ((initializerType != null))
                         {
-                            return tryGetNameFromType(initializerType);
+                            return tryGetFlowNameFromType(initializerType);
                         }
                     }
                 }
@@ -3237,19 +3239,19 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static (string, bool) tryGetNameFromType(Type t)
+    private static (string, bool) tryGetFlowNameFromType(Type t)
     {
         switch (true)
         {
             case true when ((t.flags & TypeFlags.UniqueESSymbol) != 0):
-            {
-                return (t.AsUniqueESSymbolType().name, true);
-            }
+                {
+                    return (t.AsUniqueESSymbolType().name, true);
+                }
 
             case true when ((t.flags & TypeFlags.StringOrNumberLiteral) != 0):
-            {
-                return (Evaluator.AnyToString(t.AsLiteralType().value), true);
-            }
+                {
+                    return (Evaluator.AnyToString(t.AsLiteralType().value), true);
+                }
         }
 
         return ("", false);
@@ -3285,5 +3287,195 @@ public sealed partial class Checker
         if (compilerOptions.NoUncheckedIndexedAccess == Tristate.True)
             return getUnionType(new List<Type> { t, missingType });
         return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private readonly Dictionary<FlowNode, bool> flowNodePostSuper = new(ReferenceEqualityComparer.Instance);
+}
+
+public sealed partial class Checker
+{
+    private Type getFlowTypeInConstructor(Symbol symbol, Node constructor)
+    {
+        Node accessName = default;
+        if (GoStrings.HasPrefix(symbol.Name, (Ast.InternalSymbolNamePrefix + "#")))
+        {
+            accessName = this.factory.NewPrivateIdentifier(GoRuntime.Slice(symbol.Name, (GoStrings.Index(symbol.Name, "@") + 1)));
+        }
+        else
+        {
+            accessName = this.factory.NewIdentifier(symbol.Name);
+        }
+        var reference = this.factory.NewPropertyAccessExpression(this.factory.NewKeywordExpression(Kind.ThisKeyword), null, accessName, NodeFlags.None);
+        reference.Expression().Parent = reference;
+        reference.Parent = constructor;
+        reference.FlowNodeData().FlowNode = constructor.AsConstructorDeclaration().ReturnFlowNode;
+        var flowType = this.getFlowTypeOfProperty(reference, symbol);
+        if ((this.noImplicitAny && (((flowType == this.autoType) || (flowType == this.autoArrayType)))))
+        {
+            this.error(symbol.ValueDeclaration, Diagnostics.Member_0_implicitly_has_an_1_type, this.symbolToString(symbol), this.typeToStringByteString(flowType));
+        }
+        if (everyType(flowType, this.IsNullableType))
+        {
+            return null;
+        }
+        return this.convertAutoToAny(flowType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getFlowTypeInStaticBlocks(Symbol symbol, List<Node> staticBlocks)
+    {
+        Node accessName = default;
+        if (GoStrings.HasPrefix(symbol.Name, (Ast.InternalSymbolNamePrefix + "#")))
+        {
+            accessName = this.factory.NewPrivateIdentifier(GoRuntime.Slice(symbol.Name, (GoStrings.Index(symbol.Name, "@") + 1)));
+        }
+        else
+        {
+            accessName = this.factory.NewIdentifier(symbol.Name);
+        }
+        {
+            foreach (var staticBlock in GoRuntime.RangeValues(staticBlocks))
+            {
+                var reference = this.factory.NewPropertyAccessExpression(this.factory.NewKeywordExpression(Kind.ThisKeyword), null, accessName, NodeFlags.None);
+                reference.Expression().Parent = reference;
+                reference.Parent = staticBlock;
+                reference.FlowNodeData().FlowNode = staticBlock.AsClassStaticBlockDeclaration().ReturnFlowNode;
+                var flowType = this.getFlowTypeOfProperty(reference, symbol);
+                if ((this.noImplicitAny && (((flowType == this.autoType) || (flowType == this.autoArrayType)))))
+                {
+                    this.error(symbol.ValueDeclaration, Diagnostics.Member_0_implicitly_has_an_1_type, this.symbolToString(symbol), this.typeToStringByteString(flowType));
+                }
+                if (everyType(flowType, this.IsNullableType))
+                {
+                    continue;
+                }
+                return this.convertAutoToAny(flowType);
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isPostSuperFlowNode(FlowNode flow, bool noCacheCheck)
+    {
+        var f = this.getFlowState();
+        var result = this.isPostSuperFlowNodeWorker(f, flow, noCacheCheck);
+        this.putFlowState(f);
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isPostSuperFlowNodeWorker(FlowState f, FlowNode flow, bool noCacheCheck)
+    {
+        while (true)
+        {
+            var flags = flow.Flags;
+            if (((flags & FlowFlags.Shared) != 0))
+            {
+                if (!noCacheCheck)
+                {
+                    {
+                        var ok = this.flowNodePostSuper.TryGetValue(flow, out var postSuper);
+                        if (ok)
+                        {
+                            return postSuper;
+                        }
+                    }
+                    var postSuper2 = this.isPostSuperFlowNodeWorker(f, flow, true);
+                    this.flowNodePostSuper[flow] = postSuper2;
+                }
+                noCacheCheck = false;
+            }
+            switch (true)
+            {
+                case true when ((flags & ((((FlowFlags.Assignment | FlowFlags.Condition) | FlowFlags.ArrayMutation) | FlowFlags.SwitchClause))) != 0):
+                    {
+                        flow = flow.Antecedent;
+                        break;
+                    }
+                case true when ((flags & FlowFlags.Call) != 0):
+                    {
+                        if ((flow.Node.Expression().Kind == Kind.SuperKeyword))
+                        {
+                            return true;
+                        }
+                        flow = flow.Antecedent;
+                        break;
+                    }
+                case true when ((flags & FlowFlags.BranchLabel) != 0):
+                    {
+                        {
+                            var list = getBranchLabelAntecedents(flow, f.reduceLabels);
+                            for (; (list != null); list = list.Next)
+                            {
+                                if (!this.isPostSuperFlowNodeWorker(f, list.Flow, false))
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                case true when ((flags & FlowFlags.LoopLabel) != 0):
+                    {
+                        flow = flow.Antecedents.Flow;
+                        break;
+                    }
+                case true when ((flags & FlowFlags.ReduceLabel) != 0):
+                    {
+                        f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
+                        var result = this.isPostSuperFlowNodeWorker(f, flow.Antecedent, false);
+                        f.reduceLabels = GoRuntime.Slice(f.reduceLabels, 0, (GoRuntime.Len(f.reduceLabels) - 1));
+                        return result;
+                    }
+                default:
+                    {
+                        return ((flags & FlowFlags.Unreachable) != 0);
+                    }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private (string, bool) getDestructuringPropertyName(Node node)
+    {
+        var parent = node.Parent;
+        if ((Ast.IsBindingElement(node) && Ast.IsObjectBindingPattern(parent)))
+        {
+            return this.getLiteralPropertyNameText(getBindingElementPropertyName(node));
+        }
+        if ((Ast.IsPropertyAssignment(node) || Ast.IsShorthandPropertyAssignment(node)))
+        {
+            return this.getLiteralPropertyNameText(node.Name());
+        }
+        if ((Ast.IsArrayLiteralExpression(parent) || Ast.IsArrayBindingPattern(parent)))
+        {
+            return (Strconv.Itoa(GoSlices.Index(parent.Elements(), node)), true);
+        }
+        return ("", false);
+    }
+}
+
+public sealed partial class Checker
+{
+    private (string, bool) getLiteralPropertyNameText(Node name)
+    {
+        var t = this.getLiteralTypeFromPropertyName(name);
+        if (((t.flags & ((TypeFlags.StringLiteral | TypeFlags.NumberLiteral))) != 0))
+        {
+            return (Evaluator.AnyToString(t.AsLiteralType().value), true);
+        }
+        return ("", false);
     }
 }

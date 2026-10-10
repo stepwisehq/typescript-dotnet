@@ -1,4 +1,4 @@
-// Authored regressions for full interpretation versus bounded checker admission.
+// Authored regressions for full interpretation and genuine Program checking.
 // These assertions are shared by xUnit and the native dispatcher; no original
 // compiler test body is claimed for these disk integration inputs.
 using System.Text.Json.Nodes;
@@ -21,7 +21,7 @@ public static class IntegrationChecks
             File.WriteAllText(Path.Combine(root, "base.json"), """
                 {"compilerOptions": {
                     "target":"ESNext", "module":"ESNext", "moduleResolution":"Bundler",
-                    "noEmit":true, "noLib":true, "skipLibCheck":true, "types":[], "resolveJsonModule":false,
+                    "noEmit":true, "noLib":false, "lib":["es5"], "skipLibCheck":true, "types":[], "resolveJsonModule":false,
                     "allowImportingTsExtensions":true, "noUncheckedSideEffectImports":true,
                     "forceConsistentCasingInFileNames":true, "strict":false, "strictNullChecks":true,
                     "strictFunctionTypes":true, "noImplicitAny":true, "noImplicitThis":true,

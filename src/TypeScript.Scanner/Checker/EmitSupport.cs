@@ -5,6 +5,7 @@
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
+using TypeScript.DiagnosticPrinting;
 
 namespace TypeScript.Checking;
 public sealed partial class Checker
@@ -25,59 +26,107 @@ public sealed partial class Checker
     {
         switch (node.Kind)
         {
+            case Kind.JSDocCallbackTag:
+            case Kind.JSDocTypedefTag:
+            {
+                return ((((node.Parent != null) && (node.Parent.Parent != null)) && (node.Parent.Parent.Parent != null)) && Ast.IsSourceFile(node.Parent.Parent.Parent));
+            }
+            case Kind.BindingElement:
+            {
+                return this.isDeclarationVisible(node.Parent.Parent);
+            }
             case Kind.VariableDeclaration:
-            case Kind.FunctionDeclaration:
+            case Kind.ModuleDeclaration:
+            case Kind.ClassDeclaration:
             case Kind.InterfaceDeclaration:
             case Kind.TypeAliasDeclaration:
-                if (Ast.IsVariableDeclaration(node) && Ast.IsBindingPattern(node.Name()) && (node.Name().Elements()?.Count ?? 0) == 0)
-                    return false;
+            case Kind.JSTypeAliasDeclaration:
+            case Kind.FunctionDeclaration:
+            case Kind.EnumDeclaration:
+            case Kind.ImportEqualsDeclaration:
+            {
+                if (Ast.IsVariableDeclaration(node))
+                {
+                    if ((Ast.IsBindingPattern(node.Name()) && (GoRuntime.Len(node.Name().Elements()) == 0)))
+                    {
+                        return false;
+                    }
+                }
+                if ((Ast.IsExternalModuleAugmentation(node) || Ast.IsImplicitlyExportedJSDocDeclaration(node)))
+                {
+                    return true;
+                }
                 var parent = Ast.GetDeclarationContainer(node);
-                if ((getCombinedModifierFlagsCached(node) & ModifierFlags.Export) == 0 && !(parent.Kind != Kind.SourceFile && (parent.Flags & NodeFlags.Ambient) != 0))
+                if ((((this.getCombinedModifierFlagsCached(node) & ModifierFlags.Export) == 0) && !((((node.Kind != Kind.ImportEqualsDeclaration) && (parent.Kind != Kind.SourceFile)) && ((parent.Flags & NodeFlags.Ambient) != 0)))))
+                {
                     return Ast.IsGlobalSourceFile(parent);
-                return isDeclarationVisible(parent);
+                }
+                return this.isDeclarationVisible(parent);
+            }
+            case Kind.PropertyDeclaration:
             case Kind.PropertySignature:
+            case Kind.GetAccessor:
+            case Kind.SetAccessor:
             case Kind.MethodDeclaration:
             case Kind.MethodSignature:
-                if (getEffectiveDeclarationFlags(node, ModifierFlags.Private | ModifierFlags.Protected) != 0)
+            {
+                if ((this.getEffectiveDeclarationFlags(node, (ModifierFlags.Private | ModifierFlags.Protected)) != 0))
+                {
                     return false;
-                return isDeclarationVisible(node.Parent);
-            case Kind.CallSignature:
+                }
+                return this.isDeclarationVisible(node.Parent);
+            }
+            case Kind.Constructor:
             case Kind.ConstructSignature:
+            case Kind.CallSignature:
             case Kind.IndexSignature:
             case Kind.Parameter:
+            case Kind.ModuleBlock:
             case Kind.FunctionType:
+            case Kind.ConstructorType:
             case Kind.TypeLiteral:
             case Kind.TypeReference:
             case Kind.ArrayType:
             case Kind.TupleType:
-            case Kind.NamedTupleMember:
             case Kind.UnionType:
             case Kind.IntersectionType:
             case Kind.ParenthesizedType:
-                return isDeclarationVisible(node.Parent);
-            case Kind.TypeParameter:
-            case Kind.SourceFile:
-                return true;
-            case Kind.ExportSpecifier:
-                var exportDeclaration = node.Parent.Parent;
-                return Ast.IsExportDeclaration(exportDeclaration) && exportDeclaration.ModuleSpecifier() == null && isDeclarationVisible(exportDeclaration.Parent);
+            case Kind.NamedTupleMember:
+            {
+                return this.isDeclarationVisible(node.Parent);
+            }
             case Kind.ImportClause:
             case Kind.NamespaceImport:
             case Kind.ImportSpecifier:
+            {
+                return false;
+            }
+            case Kind.TypeParameter:
+            {
+                return true;
+            }
+            case Kind.SourceFile:
+            case Kind.NamespaceExportDeclaration:
+            {
+                return true;
+            }
             case Kind.ExportAssignment:
-            case Kind.Block:
-            case Kind.VariableStatement:
-            case Kind.VariableDeclarationList:
-            case Kind.FunctionExpression:
-            case Kind.ArrowFunction:
-            case Kind.TypePredicate:
-                return false; // Original switch default, not a manufactured visibility.
-            case Kind.ClassDeclaration:
-            case Kind.ModuleDeclaration:
-            case Kind.EnumDeclaration:
-                throw unsupported("determineIfDeclarationIsVisible: excluded class/namespace/enum producer");
+            {
+                return false;
+            }
+            case Kind.ExportSpecifier:
+            {
+                var exportDecl = node.Parent.Parent;
+                if ((Ast.IsExportDeclaration(exportDecl) && (exportDecl.AsExportDeclaration().ModuleSpecifier == null)))
+                {
+                    return this.isDeclarationVisible(exportDecl.Parent);
+                }
+                return false;
+            }
             default:
-                return false; // Original default (including import/export declarations).
+            {
+                return false;
+            }
         }
     }
 
@@ -186,5 +235,41 @@ public sealed partial class Checker
         }
 
         return true;
+    }
+}
+
+public sealed partial class Checker
+{
+    internal SymbolAccessibilityResult isEntityNameVisible(Node entityName, Node enclosingDeclaration, bool shouldComputeAliasToMakeVisible)
+    {
+        if (!Ast.IsParseTreeNode(entityName))
+        {
+            return new SymbolAccessibilityResult { Accessibility = SymbolAccessibility.NotAccessible };
+        }
+        var meaning = getMeaningOfEntityNameReference(entityName);
+        var firstIdentifier = Ast.GetFirstIdentifier(entityName);
+        var symbol = this.resolveName(enclosingDeclaration, firstIdentifier.Text(), meaning, null, false, false);
+        if ((((symbol != null) && ((symbol.Flags & SymbolFlags.TypeParameter) != 0)) && ((meaning & SymbolFlags.Type) != 0)))
+        {
+            return new SymbolAccessibilityResult { Accessibility = SymbolAccessibility.Accessible };
+        }
+        if (((symbol == null) && Ast.IsThisIdentifier(firstIdentifier)))
+        {
+            var sym = this.getSymbolOfDeclaration(this.getThisContainer(firstIdentifier, false, false));
+            if ((this.IsSymbolAccessible(sym, enclosingDeclaration, meaning, false).Accessibility == SymbolAccessibility.Accessible))
+            {
+                return new SymbolAccessibilityResult { Accessibility = SymbolAccessibility.Accessible };
+            }
+        }
+        if ((symbol == null))
+        {
+            return new SymbolAccessibilityResult { Accessibility = SymbolAccessibility.NotResolved, ErrorSymbolName = firstIdentifier.Text(), ErrorNode = firstIdentifier };
+        }
+        var visible = this.hasVisibleDeclarations(symbol, shouldComputeAliasToMakeVisible);
+        if ((visible != null))
+        {
+            return visible;
+        }
+        return new SymbolAccessibilityResult { Accessibility = SymbolAccessibility.NotAccessible, ErrorSymbolName = firstIdentifier.Text(), ErrorNode = firstIdentifier };
     }
 }

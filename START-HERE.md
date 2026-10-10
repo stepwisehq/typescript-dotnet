@@ -11,6 +11,13 @@ Follow the active phase in [STATE.md](./docs/STATE.md). If it records no active
 work, report that checkpoint and wait for a new bounded mandate; this resume
 instruction does not authorize starting the full compiler.
 
+Latest completed campaign: [genuine initialization and declaration/object models](./docs/DECLARATIONS-ASSESSMENT.md).
+Its [proof](./validation/results/declarations-verified.json) includes actual Linux x64
+Native AOT and all retained regressions. No implementation campaign is currently active;
+if delivery is not yet committed, finish the reviewed commit rather than rerunning
+acceptance. The [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md) recommends TS body/control-flow
+completion next, subject to a new mandate.
+
 ## User mandate
 
 Read [the original prompt, preserved verbatim](./docs/INITIAL-PROMPT.md).
@@ -219,6 +226,24 @@ Later user directions, in chronological order:
     before large-project Go/JavaScript-tsc comparisons with emit disabled. Continue
     through independent review, actual Native AOT, retained regressions and clean
     committed delivery. Prior efficiency/fidelity requirements remain in force.
+
+25. **Genuine checker initialization and declaration/object-model completion.**
+    Baseline `e7b81a2`; follow the [mandate](./docs/DECLARATIONS-PROMPT.md),
+    [fixed contract](./docs/DECLARATIONS-CONTRACT.md) and
+    [checkpoint](./docs/DECLARATIONS-STATUS.md). Implement actual semantic initialization
+    and declaration relationships over unchanged genuine environments; complete review,
+    actual Linux x64 Native AOT and retained regressions, then commit cleanly. Continue
+    autonomously; do not stop at planning or an internal milestone. Earlier no-active-work
+    statements describe historical checkpoints. Large-project comparisons stay deferred.
+
+26. **Direct parity convergence.** The user clarified: “we are wanting to converge
+    on that very direct and parity port of the golang code to c#. So we should be
+    looking to strip out any temporary hacks put in place to support the "vertical
+    slice" campaigns and replace them with the comprehensive golang port work.”
+    Replace obsolete slice scaffolding when completing its upstream responsibilities;
+    retain only justified language adaptations and clearly authored test adapters.
+    Regression assertions remain evidence, not a requirement to preserve temporary
+    production architecture. Explicit unsupported paths remain until actually ported.
 
 ## Recovery sequence
 

@@ -257,29 +257,8 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public (TypeScript.Checking.Checker Checker, Action Done) GetTypeCheckerForFile(CancellationToken context, SourceFile file) => compilerCheckerPool is not null ? compilerCheckerPool.getCheckerForFileNonExclusive(file) : checkerPool.GetChecker(context, file);
     public (TypeScript.Checking.Checker Checker, Action Done) GetTypeCheckerForFileExclusive(CancellationToken context, SourceFile file) => compilerCheckerPool is not null ? compilerCheckerPool.getCheckerForFileExclusive(context, file) : checkerPool.GetChecker(context, file);
     public void ForEachCheckerParallel(Action<int, TypeScript.Checking.Checker> callback) => compilerCheckerPool?.forEachCheckerParallel(callback);
-    internal TypeScript.Checking.Checker CreateActualChecker()
-    {
-        // Authored semantic capability boundary: construction and its source data
-        // remain unrestricted. Acquiring the existing checker requires the already
-        // accepted semantic profile and declaration environment, without rewriting
-        // options, dropping declarations or injecting a fixed library set.
-        if (!files.Any(file => !file.IsDeclarationFile))
-            throw new TypeScript.Checking.UnsupportedSemanticFeatureException("declaration-only Program checking is outside the accepted checker profile");
-        try
-        {
-            ProjectCheckingAdmission.Validate(opts.Config, Options().ConfigFilePath.AsString());
-        }
-        catch (ProjectException error)
-        {
-            throw new TypeScript.Checking.UnsupportedSemanticFeatureException(error.Message);
-        }
-
-        var expected = TypeScript.Checking.FixedLibraryEnvironment.Load();
-        var declarations = files.Where(file => file.IsDeclarationFile).ToList();
-        if (declarations.Count != expected.Count || expected.Any(library => !declarations.Any(file => RootedFilePath.FromGoString(file.FileNameGoBytes()).BaseName() == RootedFilePath.FromUnicode(library.FileName()).BaseName() && file.Text() == library.Text())))
-            throw new TypeScript.Checking.UnsupportedSemanticFeatureException("Program declaration environment is outside the accepted checker profile");
-        return TypeScript.Checking.Checker.CreateForProgram(this);
-    }
+    internal TypeScript.Checking.Checker CreateActualChecker() =>
+        TypeScript.Checking.Checker.NewChecker(this).Checker;
 
     public List<Diagnostic>? GetGlobalDiagnostics(CancellationToken context = default) => files.Count == 0 ? null : compilerCheckerPool?.GetGlobalDiagnostics();
     public Dictionary<string, bool> GetPackagesMap()
@@ -519,6 +498,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     bool ICheckerProgramHost.AllowsNonRelativeModuleSpecifiers => true;
 
     string ICheckerProgramHost.GetSourceFileNameGoBytes(SourceFile file) => file.FileNameGoBytes();
+    ModuleKind ICheckerProgramHost.GetImpliedNodeFormatForEmit(SourceFile file) => (ModuleKind)(int)GetImpliedNodeFormatForEmit(file);
     bool ICheckerProgramHost.IsSourceFileDefaultLibrary(SourceFile file) => IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()));
     bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileNamesAreGoBytes => true;
 
@@ -1104,6 +1084,17 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     }
 
     public List<Diagnostic>? GetSemanticDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectCheckerDiagnostics(context, source, getSemanticDiagnosticsWithChecker);
+    // program.go:828. Newly discovered globals belong to each requested file;
+    // noEmit filtering remains the builder's responsibility.
+    public Dictionary<SourceFile, List<Diagnostic>?> GetSemanticDiagnosticsForIncremental(CancellationToken context, List<SourceFile> sourceFiles)
+    {
+        var diagnostics = collectCheckerDiagnosticsFromFiles(context, sourceFiles,
+            (token, checker, file) => getBindAndCheckDiagnosticsWithChecker(token, checker, file, true));
+        var result = new Dictionary<SourceFile, List<Diagnostic>?>(ReferenceEqualityComparer.Instance);
+        for (int i = 0; i < diagnostics.Count; i++)
+            result[sourceFiles[i]] = filterAndSortDiagnostics(diagnostics[i]);
+        return result;
+    }
     internal List<Diagnostic>? getSemanticDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file) => Core.Concatenate(FilterNoEmitSemanticDiagnostics(getBindAndCheckDiagnosticsWithChecker(context, checker, file, false), Options()), GetIncludeProcessorDiagnostics(file));
     internal List<Diagnostic>? getBindAndCheckDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file, bool includeDeferredGlobals)
     {
@@ -1111,7 +1102,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             return null;
         var previous = includeDeferredGlobals ? checker.GetGlobalDiagnostics() : null;
         var diagnostics = file.BindDiagnostics()?.ToList();
-        diagnostics = Core.Concatenate(diagnostics, checker.GetDiagnostics(file));
+        diagnostics = Core.Concatenate(diagnostics, checker.GetDiagnostics(context, file));
         if (includeDeferredGlobals)
         {
             var globals = checker.GetGlobalDiagnostics();

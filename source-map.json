@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted scanner/parser/syntax-AST and source-file binding foundations; accepted bounded scalar/object/named-data, callable, generic-collection and ES-module checking. Configuration/discovery, source-import resolution and the defined Program/environment construction contract are accepted with actual Linux x64 Native AOT evidence. Broader checker/library semantics, emit/build/watch and services remain separate. Historical scopes and fingerprints are retained below.",
+  "checkpoint": "Accepted scanner/parser/syntax-AST and source-file binding foundations; accepted bounded scalar/object/named-data, callable, generic-collection and ES-module checking. Configuration/discovery, source-import resolution and the defined Program/environment construction contract are accepted with actual Linux x64 Native AOT evidence. Broader checker/library semantics, emit/build/watch and services remain separate. Historical scopes and fingerprints are retained below. Genuine checker initialization and declaration/object responsibility closure D1\u2013D6 is now accepted with genuine Program environments and retained regressions; whole checker counterparts remain partial.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -162,7 +162,11 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 2,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Original relative-import rewrite predicate for diagnostic helper callers.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -411,7 +415,11 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 1,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Module-not-found/mode-mismatch diagnostic metadata; service replay external.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/parseoptions.go",
@@ -446,7 +454,11 @@
       "foundationEvidence": "validation/results/foundation-verified.json",
       "collectionsCampaignScope": "Authored Go-semantics collection/slice compatibility needed by selected checker families; assertion applicability and runtime verification pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Negative signed integer range yields zero iterations like Go; avoids Enumerable.Range negative-count exception. Shared compatibility fix exposed by library tuples.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -533,7 +545,11 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 1,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Class-like symbol declaration lookup and effective-external-module predicate.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -563,7 +579,11 @@
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
       "configurationCampaignBaselineScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup. Foundation adds GetRootLength and normalized base-filename extraction required by declaration-file recognition. Managed separator replacement retains original normalization semantics.",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Original byte-string basename extension predicate.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -785,7 +805,11 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Actual Program initializer/options/global/resolver setup and diagnostic lifecycle; selected class/base/constructor/member/accessor/private/enum/namespace/augmentation model and checking; demanded object literal/assertion/deprecation/intrinsic-declaration/binding-element/synchronous-iterator type helpers. Runtime destructuring, generator/async execution and operational string mapping remain external.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -810,7 +834,11 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Selected class/constructor/enum model and iteration resolver fields/callbacks.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -818,7 +846,10 @@
       "status": "ported",
       "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Managed cells/classes replace Go struct slot addresses and arena pointers, preserving page presence, nil indirect slots and object identity; no general Go arena runtime.",
       "upstreamSha256": "afa761a66e450720a7193ab885047e0cc0c480c4abe59deaa9ad0e5223254841",
-      "dataTypesUse": "Original paged node/symbol stores remain ported. Checker nodeLinks/typeNodeLinks fields are now correctly core.LinkStore identity dictionaries; symbol stores retain original arena/page addressing. No change to foundation paged utility acceptance."
+      "dataTypesUse": "Original paged node/symbol stores remain ported. Checker nodeLinks/typeNodeLinks fields are now correctly core.LinkStore identity dictionaries; symbol stores retain original arena/page addressing. No change to foundation paged utility acceptance.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/relater.go",
@@ -838,7 +869,11 @@
       "scopeBeforeCallables": "Selected named/recursive/composite data relationships retaining original ternary relation/maybe caches, recursive source-target stacks, reference/hidden-this constraint and zero-declared-parameter variance paths, identity/missing/optional/readonly/excess/weak properties, union/intersection reductions/discrimination including Cartesian fallback, synthetic internal index relations, diagnostic chains/error snapshots and elaboration. Written generic/callable/class/array/mapped/operator paths remain guarded; no replacement property-only checker.",
       "collectionsCampaignScope": "Selected generic, array/tuple, mapped/indexed/conditional relationships. Integration and valid/invalid differential coverage pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Enum relations/cache, private/protected origins, class/computed/accessor elaboration, export-import retry, const assertions and actual NoCheck policy.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -855,7 +890,11 @@
       "scopeBeforeCallables": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
       "collectionsCampaignScope": "Selected original loop/array evolution and assignment flow families for the Collections contract. Independent review and runtime verification pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Constructor/static property inference, return flow and post-super initialization; broader statements/protocol consumers remain external.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -879,7 +918,11 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Declaration/accessor/class/super/modifier/binding/signature helpers, module/mode chains and map lookup; Go nil-range/zero-return semantics.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -903,7 +946,11 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Selected class/constructor/accessor/private/property/unique-symbol/ambient grammar, suggestion collection and binding rest syntax.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -971,7 +1018,10 @@
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
-      "scopeBeforeCallables": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded."
+      "scopeBeforeCallables": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
@@ -1000,7 +1050,11 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Narrow diagnostic filename fallback uses explicit source filename byte role.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Class/constructor/enum diagnostic display; computed/private names, accessor signatures and mapped member types; no declaration emit.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -1017,7 +1071,11 @@
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
-      "scopeBeforeCallables": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded."
+      "scopeBeforeCallables": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Original construct-signature and binding-pattern parameter diagnostic rendering, recursive binding names/elements, rest/elisions/property names, source spacing/trailing-comma rules, and public SymbolToString wrapper. No independent text shortcut or emitter completion claim.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/printer.go",
@@ -1041,7 +1099,10 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignScope": "Original recursive binding-name/element diagnostic printing, rest/elisions/property names/trailing commas; no emitter-completion claim.",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 dependency",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
@@ -1190,7 +1251,11 @@
       "collectionsCampaignScope": "Selected generic/mapped/conditional syntax-node reuse for diagnostics; no transformation/emit parity claim.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsParameterTrackingRepair": "Restore actual nodecopy.go function-scoped parameter short-circuit before symbol accessibility/tracker work. Invalid predicate callback rich comparison exposed extra accessibility cache state; unchanged original expected output remains the reference. Runtime/native confirmation pending.",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Nonserializable-property diagnostic callback forwarding.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderscopes.go",
@@ -1221,7 +1286,11 @@
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
-      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded."
+      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Nonserializable-property diagnostic callback/state.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/emitsupport.go",
@@ -1244,7 +1313,11 @@
       "projectsCampaignScope": "Only demanded diagnostic type-node/display support; no JavaScript or declaration emit milestone.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Declaration/entity-name visibility and parameter-property implicit-undefined rules for diagnostics; no emitter execution.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitcontext.go",
@@ -1432,7 +1505,11 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Class type-parameter/self-name accessibility; broader serializers external.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/emitresolver.go",
@@ -1466,7 +1543,11 @@
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
-      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded."
+      "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Original nonserializable-property tracker method.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -1736,7 +1817,11 @@
       "scope": "Original selected constant-evaluation helpers required by callable operator and diagnostic paths; source enums, element access and template interpolation remain excluded.",
       "upstreamSha256": "4dfe5a4e7f33c838bfaf3c28be4c4c547d49a84390186002f6e7f83efb6d4ef3",
       "callablesCampaignState": "accepted-callables",
-      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Original enum entity-name element-access delegate arm.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/jsnum/jsnum.go",
@@ -1873,7 +1958,10 @@
       "scope": "Original inference contexts/candidates/fixing/priority/recursive inference algorithms for selected generic collection dependencies; implementation integrating, not accepted.",
       "collectionsCampaignState": "accepted-collections-contract",
       "upstreamSha256": "83f6bce6296df35258ba9886ea3bfda491e000e2439cd49cc66cc531ac55aff0",
-      "collectionsCampaignEvidence": "validation/results/collections-verified.json"
+      "collectionsCampaignEvidence": "validation/results/collections-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -1952,7 +2040,11 @@
         "HandleNoEmitOptions",
         "GetDiagnosticsOfAnyProgram"
       ],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Genuine semantic acquisition over actual files/options/libraries and incremental semantic diagnostic collector; no emit/scheduler execution.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -2271,7 +2363,11 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Actual Program semantic host surface; authored C# interface adapter.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -2310,7 +2406,11 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Genuine Program configuration checking replaces hidden-library injection and obsolete admission gate. Named legacy fixture adapter separate; public Unicode filenames retain explicit internal Go-byte accessors.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -3252,20 +3352,6 @@
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
     },
     {
-      "upstream": null,
-      "destination": "src/TypeScript.Scanner/Projects/ProjectCheckingAdmission.cs",
-      "status": "new",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
-      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
-      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
-      "resolutionCampaignBaselineScope": "Authored explicit capability admission for the existing bounded checker after genuine configuration interpretation; retains all settings/files or rejects unsupported downstream execution.",
-      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
-      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
-      "resolutionCampaignExtension": "Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
-    },
-    {
       "repository": "https://go.googlesource.com/go",
       "revision": "go1.27.1",
       "upstream": "src/encoding/json/internal/jsonwire/decode.go",
@@ -3687,7 +3773,11 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 18,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Actual lazy acquisition/synchronization; enabled type tracing explicitly external.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/vfs/cachedvfs/cachedvfs.go",
@@ -3871,7 +3961,10 @@
       "upstreamSha256": "c07a04620cc353529f969a1bb1c48dbf26bcfa395216cbb7755ff4e4424ff38f",
       "programSelectedDeclarations": 2,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -3916,7 +4009,11 @@
       "scope": "Authored observer calling pristine pinned Go NewProgram and genuine dependency producers; equivalent explicit hosts/factories/options. No upstream source overlays.",
       "programCampaignState": "accepted selected responsibility or authored adapter; broader scope as documented",
       "programCampaignContract": "docs/PROGRAM-CONTRACT.md",
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignScope": "Opt-in genuine Program semantic/public-query observation; default preexisting Program observations unchanged. Public SymbolToString property display removes observer dependence on incidental escaped allocation IDs; raw direct symbol queries unchanged.",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": null,
@@ -3945,19 +4042,78 @@
       "programCampaignState": "accepted selected responsibility or authored adapter; broader scope as documented",
       "programCampaignContract": "docs/PROGRAM-CONTRACT.md",
       "programCampaignEvidence": "validation/results/program-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Declarations.Checks",
+      "status": "new",
+      "scope": "Authored shared dispatcher and external-consumer controls around original checker and restored mapper assertion ports; per-body provenance in docs/declarations-tests.json.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Declarations.Tests",
+      "status": "new",
+      "scope": "Authored xUnit adapters for shared assertion groups and the current genuine Program comparison corpus; original bodies, compiler input reuse and authored cases distinguished in docs/declarations-tests.json.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Declarations.Validation",
+      "status": "new",
+      "scope": "Authored AOT-safe executable dispatcher using real Program/checker and shared assertions; no alternate semantic implementation.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Program.Checks/ProgramSemanticRunner.cs",
+      "status": "new",
+      "scope": "Opt-in authored public semantic observations for actual Program: complete diagnostics/lifecycle and selected symbol/type/member/base/constructor queries; public property display rather than internal allocation-ID spelling.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/declarations-corpus",
+      "status": "new",
+      "scope": "Pinned Go diagnostic and public semantic outputs with request/source/provenance hashes. Compiler-input reuse is not full compiler-test success; explicit current CLI migration preserves historical records.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "examples/declarations",
+      "status": "new",
+      "scope": "Authored actual-disk genuine ES2022 warehouse valid/invalid demonstrations; unchanged bundled declarations, actual parsed options, no hidden library injection.",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/checker_test.go",
+      "destination": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "status": "partial",
+      "scope": "Both original behavioral test bodies preserve their assertions, actual default libraries/options and type reference identity; original parallel scheduling is sequential in shared dispatcher. Benchmark is not a correctness assertion body. See docs/declarations-tests.json.",
+      "upstreamSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
+      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     }
   ],
   "activePhase": {
-    "name": "program-environment-completion",
-    "status": "accepted-contract",
-    "baselineCommit": "1d6bd61",
-    "contract": "docs/PROGRAM-CONTRACT.md",
-    "state": "docs/PROGRAM-STATUS.md",
-    "functionInventory": "docs/program-functions.json",
-    "testInventory": "docs/program-tests.json",
-    "checkerRoadmap": "docs/CHECKER-COMPLETION-ROADMAP.md",
-    "evidence": "validation/results/program-verified.json",
-    "note": "Defined P1-P6 contract accepted. No active implementation remains; finish authorized delivery if interrupted, otherwise await next mandate. General checker/emit/build/services remain separate."
+    "name": null,
+    "status": "No active implementation campaign; declaration D1\u2013D6 accepted. Delivery commit contains this manifest.",
+    "recommendedNext": "TypeScript expressions/statements and control-flow completion",
+    "state": "docs/DECLARATIONS-STATUS.md",
+    "checkerRoadmap": "docs/CHECKER-COMPLETION-ROADMAP.md"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -4142,5 +4298,43 @@
     "ordinaryNativeCliCases": 2,
     "platform": "Linux x64",
     "scope": "Actual Program construction/local lifecycle, library/type/reference environments and Program diagnostics, required read-side hosts and in-process mapper/SpanMap. Selected291/303 compiler declarations and173 supporting declarations; external responsibilities and semantic consumer limits are recorded separately. Not the whole Compiler package or broad checker/library parity. Delivery commit contains this manifest."
+  },
+  "retiredArtifacts": [
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Projects/ProjectCheckingAdmission.cs",
+      "status": "retired",
+      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
+      "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
+      "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "resolutionCampaignBaselineScope": "Authored explicit capability admission for the existing bounded checker after genuine configuration interpretation; retains all settings/files or rejects unsupported downstream execution.",
+      "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
+      "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
+      "resolutionCampaignExtension": "Resolution-only option bans are removed after genuine graph construction; semantic settings/file forms remain explicitly admitted or rejected.",
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "retiredByCampaign": "docs/DECLARATIONS-CONTRACT.md",
+      "retirementReason": "Obsolete authored fixed-option/profile gate replaced by genuine Program initialization; original options and libraries are consumed unchanged, unfinished semantic algorithms remain explicit."
+    }
+  ],
+  "acceptedDeclarationsCheckpoint": {
+    "status": "accepted-contract",
+    "baselineCommit": "e7b81a2",
+    "contract": "docs/DECLARATIONS-CONTRACT.md",
+    "assessment": "docs/DECLARATIONS-ASSESSMENT.md",
+    "evidence": "validation/results/declarations-verified.json",
+    "sourceSha256": "6e1085728d699b7af4bde1bed561aecd7d11dbbb622e74b38ba7120f4c3e16dd",
+    "verificationAssetsSha256": "947cbbad282bdf92f725ea953dd2aa35b1acbe6a000c6c16cb1805539ef13acc",
+    "xUnitSelectedSuiteCaseExecutions": 24674,
+    "newXUnitCases": 77,
+    "nativeComparisonCases": 71,
+    "nativeSharedGroups": 6,
+    "orderExecutionsPerRuntime": 26,
+    "ordinaryNativeCliCases": 2,
+    "originalAssertionBodies": 5,
+    "upstreamCompilerInputsReused": 20,
+    "upstreamCompilerInputRequestVariants": 21,
+    "platform": "Linux x64",
+    "scope": "Actual Program initializer and D1\u2013D6 declaration/object/required library closure; unchanged upstream libraries, full diagnostics and selected public semantic observations. Named legacy adapters retained explicitly. No whole checker, all library API, emit or other-platform claim; delivery commit contains this manifest."
   }
 }

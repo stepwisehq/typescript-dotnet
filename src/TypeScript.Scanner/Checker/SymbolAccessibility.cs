@@ -207,7 +207,7 @@ public sealed partial class Checker
                 if (callback(symbol.Exports, symbolTableIDFromExports(symbol), false, true, location))
                     return true;
             }
-            else if (location.Kind == Kind.InterfaceDeclaration)
+            else if (location.Kind is Kind.ClassDeclaration or Kind.ClassExpression or Kind.InterfaceDeclaration)
             {
                 var symbol = getSymbolOfDeclaration(location);
                 SymbolTable types = null;
@@ -216,9 +216,13 @@ public sealed partial class Checker
                         (types ??= new())[entry.Key] = entry.Value;
                 if (types != null && callback(types, symbolTableIDFromMembers(symbol), false, false, location))
                     return true;
+                if (Ast.IsClassExpression(location) && location.Name() != null)
+                {
+                    var names = getClassExpressionNameTable(location);
+                    if (names != null && callback(names, symbolTableIDFromLocals(location), false, true, location))
+                        return true;
+                }
             }
-            else if (location.Kind is Kind.ClassDeclaration or Kind.ClassExpression)
-                throw unsupported("someSymbolTableInScope: excluded class producer");
         }
 
         return callback(globals, symbolTableIDFromGlobals(), false, true, null);
@@ -444,8 +448,13 @@ public sealed partial class Checker
                 }
             }
 
-            if (Ast.IsClassExpression(declaration))
-                throw unsupported("getContainersOfSymbol: excluded CommonJS class-assignment producer");
+            // symbolaccessibility.go:368. Only the CommonJS property-assignment
+            // producer is external; ordinary class expressions are in scope.
+            if (Ast.IsClassExpression(declaration) && Ast.IsBinaryExpression(declaration.Parent) &&
+                declaration.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken &&
+                Ast.IsAccessExpression(declaration.Parent.AsBinaryExpression().Left) &&
+                Ast.IsEntityNameExpression(declaration.Parent.AsBinaryExpression().Left.Expression()))
+                throw unsupported("getContainersOfSymbol: CommonJS class-assignment producer");
         }
 
         if (candidates is not { Count: > 0 })
@@ -580,4 +589,22 @@ public sealed partial class Checker
 
     internal static bool hasNonGlobalAugmentationExternalModuleSymbol(Node node) => Ast.IsModuleWithStringLiteralName(node) || node.Kind == Kind.SourceFile && Ast.IsExternalOrCommonJSModule(node.AsSourceFile());
     internal static SymbolFlags getQualifiedLeftMeaning(SymbolFlags meaning) => meaning == SymbolFlags.Value ? SymbolFlags.Value : SymbolFlags.Namespace;
+}
+
+public sealed partial class Checker
+{
+    // symbolaccessibility.go:883. Anonymous class bindings do not live in locals.
+    private SymbolTable getClassExpressionNameTable(Node location)
+    {
+        var id = Ast.GetNodeId(location);
+        if (classExpressionNameTables != null && classExpressionNameTables.TryGetValue(id, out var cached))
+            return cached;
+        var symbol = getSymbolOfDeclaration(location);
+        var name = location.Name().Text();
+        if (name.Length == 0 || symbol == null)
+            return null;
+        var table = new SymbolTable { [name] = symbol };
+        (classExpressionNameTables ??= new())[id] = table;
+        return table;
+    }
 }

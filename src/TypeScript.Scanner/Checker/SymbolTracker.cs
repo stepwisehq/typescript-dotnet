@@ -68,6 +68,13 @@ internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
         inner?.ReportInaccessibleUniqueSymbolError();
     }
 
+    // symboltracker.go:98. Preserve the default tracker diagnostic state too.
+    public void ReportNonSerializableProperty(string propertyName)
+    {
+        onDiagnosticReported();
+        inner?.ReportNonSerializableProperty(propertyName);
+    }
+
     private void onDiagnosticReported() => context.reportedDiagnostic = true;
     public void ReportInferenceFallback(Node node)
     {

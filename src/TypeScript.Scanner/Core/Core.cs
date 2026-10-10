@@ -5,6 +5,11 @@
 namespace TypeScript.Scanner;
 internal static partial class Core
 {
+    // core.go:723.
+    public static bool ShouldRewriteModuleSpecifier(string specifier, CompilerOptions compilerOptions) =>
+        compilerOptions.RewriteRelativeImportExtensions == Tristate.True &&
+        TsPath.PathIsRelative(specifier) && !TsPath.IsDeclarationFileName(specifier) && TsPath.HasTSFileExtension(specifier);
+
     // core.go:828. Preserve the source list unless a duplicate requires a copy.
     public static List<T>? Deduplicate<T>(List<T>? values)
     {

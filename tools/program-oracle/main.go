@@ -49,6 +49,7 @@ type request struct {
 	Dependency                                                         *dependencyInput
 	ResolverDecorator                                                  *resolverDecoratorInput
 	MapperProject                                                      *mapperProjectInput
+	Semantic                                                           *semanticInput
 }
 
 func inputBytes(text string, raw *string) string {
@@ -260,7 +261,7 @@ func makeFileSystem(contents, links map[string]string, sensitivity tspath.CaseSe
 	return bundled.WrapFS(vfstest.FromMap(entries, sensitivity))
 }
 
-func snapshot(o *observer, p *compiler.Program, bind bool) any {
+func snapshot(o *observer, p *compiler.Program, bind bool, semantic *semanticInput) any {
 	files := []any{}
 	for _, file := range p.SourceFiles() {
 		id := o.file(file)
@@ -360,6 +361,9 @@ func snapshot(o *observer, p *compiler.Program, bind bool) any {
 	} else {
 		result["bindDiagnostics"] = nil
 	}
+	if semantic != nil {
+		result["semantic"] = observeSemantics(o, p, semantic)
+	}
 	return result
 }
 
@@ -405,7 +409,7 @@ func observe(input request) any {
 			}
 		}
 		p := compiler.NewProgram(compiler.ProgramOptions{ProgramConfig: compiler.ProgramConfig{Config: parsed, UseSourceOfProjectReference: input.UseSourceOfProjectReference, SingleThreaded: single, SkipModuleResolution: input.SkipModuleResolution, TypingsLocation: tspath.RootedDirectoryPath(input.TypingsLocation)}, ProgramHosts: compiler.ProgramHosts{Host: host}, ProgramFactories: factory})
-		result["snapshots"] = append(result["snapshots"].([]any), snapshot(o, p, input.Bind))
+		result["snapshots"] = append(result["snapshots"].([]any), snapshot(o, p, input.Bind, input.Semantic))
 		for _, change := range input.Changes {
 			more, moreLinks := fixtureFiles(change.Files)
 			for key, text := range more {
@@ -432,7 +436,7 @@ func observe(input request) any {
 			if p == nil {
 				p = old
 			} else {
-				result["snapshots"] = append(result["snapshots"].([]any), snapshot(o, p, input.Bind))
+				result["snapshots"] = append(result["snapshots"].([]any), snapshot(o, p, input.Bind, input.Semantic))
 			}
 		}
 	}

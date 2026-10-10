@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Program.Checks/Program.Checks.csproj" />
+    <Compile Include="../Configuration.Checks/Check.cs" Link="Retained/Check.cs" />
+    <Compile Include="../Configuration.Checks/IntegrationChecks.cs" Link="Retained/IntegrationChecks.cs" />
+  </ItemGroup>
+</Project>

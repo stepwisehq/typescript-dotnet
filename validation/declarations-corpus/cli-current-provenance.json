@@ -1,0 +1,72 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "e7b81a2",
+  "classification": "current-authored-cli-replacements-not-upstream-original-bodies",
+  "cases": 14,
+  "originalCases": 13,
+  "authoredBoundaryCases": 1,
+  "historicalRequests": "validation/configuration-corpus/cli-requests.jsonl",
+  "historicalRequestsSha256": "2625367ef1bca6f0b77e465803bd1a70a18ea878ba68ad7b159d7f6ed78d2bb3",
+  "historicalExpected": "validation/configuration-corpus/cli-expected.jsonl",
+  "historicalExpectedSha256": "f707ebbdd9172d29b24baf5daa01c69f01b36e4d6b5aae3b539fc07482e129cf",
+  "sourceFiles": {
+    "examples/configuration/checking-base.json": "0921710296837742d6ac732b1570ffcea75f17ecedac086488b7beb9408e3ef1",
+    "tools/declarations-generate-cli-requests.py": "fbe2271ef1947f10447324e6f7e590738948bcdc30196c4b1dea50eb9693c2f6",
+    "tools/configuration-oracle/cli_observe.go": "91ed541778e4a41b4580112729294c96f9049a667f61b2742cb98236db53e211",
+    "tools/configuration-oracle/main.go": "516ec8b22580d10ccc6959da259e708ad03818279872f57d63c441b103cec12f",
+    "upstream/TypeScript/tsc/internal/compiler/program.go": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c"
+  },
+  "replacements": [
+    {
+      "previous": "checking-demo-valid-inspect",
+      "current": "checking-demo-valid-inspect",
+      "reason": "Explicit source ES5 library option replaces hidden host library roots.",
+      "previousRequestSha256": "0566eb2087b17ba284972cee5377857519655780e007cdbf418feb81f296f972"
+    },
+    {
+      "previous": "checking-demo-valid-check",
+      "current": "checking-demo-valid-check",
+      "reason": "Explicit source ES5 library option replaces hidden host library roots.",
+      "previousRequestSha256": "0c8a46455af29e3a18d8632d6e26de0e8288d0dc83c30218c604827987117a29"
+    },
+    {
+      "previous": "checking-demo-invalid-inspect",
+      "current": "checking-demo-invalid-inspect",
+      "reason": "Explicit source ES5 library option replaces hidden host library roots.",
+      "previousRequestSha256": "b132d8d3e3bfea97e167395a5e15b665822683b15dde457f1c86d652078e3ee3"
+    },
+    {
+      "previous": "checking-demo-invalid-check",
+      "current": "checking-demo-invalid-check",
+      "reason": "Explicit source ES5 library option replaces hidden host library roots.",
+      "previousRequestSha256": "16f3e7e16c2a370dea9d7458bd6c7e2267fca5417be880481f4d07d13df8795d"
+    },
+    {
+      "previous": "check-unsupported-settings",
+      "current": "check-declaration-only-source-environment",
+      "reason": "Authored project-reference/profile rejection retired; actual reference construction is retained Program responsibility. Current control checks genuine declaration-only semantic acquisition."
+    }
+  ],
+  "unchangedNames": [
+    "inspect-unsupported-checker-settings",
+    "invalid-option-config-inspect",
+    "invalid-option-config-check",
+    "invalid-jsonc-config-inspect",
+    "invalid-jsonc-config-check",
+    "missing-config-inspect",
+    "missing-config-check",
+    "raw-native-directory-name-rejected",
+    "valid-replacement-supplementary-filenames"
+  ],
+  "retainedBoundary": "Raw non-scalar Linux directory path rejection remains directly checked; no arbitrary diagnostic/path normalization.",
+  "observation": "Complete source Program/options/libraries/diagnostics and exits. Config-only controls retain actual configuration parsing. Historical captured corpus/proofs remain immutable.",
+  "expected": "validation/declarations-corpus/cli-expected-current.jsonl",
+  "expectedSha256": "1677d7807bb49539c78d7262d2092fcf8bb1f45f124b310277ece38ad92fc959",
+  "originalReport": "artifacts/declarations-validation/cli-current-reference/report.json",
+  "originalBinarySha256": "fb10886e210cdfab3e93ef27c9c008931ba6e2684cbf6b3b8f2c424fc13a5832",
+  "command": [
+    "tools/.cache/configuration-oracle",
+    "--cli-projections"
+  ],
+  "originalObservation": "Actual parsed configuration; real Bundled.WrapFS Program root/options/library selection; syntax/bind/Program/semantic/global diagnostics and full original DTO. Config-only inspection unchanged. No source instrumentation or profile globals."
+}

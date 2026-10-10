@@ -790,11 +790,9 @@ public sealed partial class Checker
         return false;
     }
 
-    private bool checkGrammarSourceFile(SourceFile sourceFile)
+    private bool checkGrammarSourceFile(SourceFile node)
     {
-        if ((sourceFile.Flags & NodeFlags.Ambient) != 0)
-            throw unsupported("checkGrammarSourceFile: ambient script");
-        return false;
+        return (((node.Flags & NodeFlags.Ambient) != 0) && this.checkGrammarTopLevelElementsForRequiredDeclareModifier(node));
     }
 
     private bool checkGrammarStatementInAmbientContext(Node node)
@@ -842,6 +840,24 @@ public sealed partial class Checker
         var flags = node.Flags & NodeFlags.BlockScoped;
         if (flags is NodeFlags.Using or NodeFlags.AwaitUsing)
             throw unsupported("checkGrammarVariableDeclarationList: using");
+        return false;
+    }
+
+    // grammarchecks.go:1518. Rest binding syntax also applies to ambient signatures.
+    private bool checkGrammarBindingElement(BindingElement node)
+    {
+        var declaration = node.AsNode();
+        if (node.DotDotDotToken != null)
+        {
+            var elements = declaration.Parent.ElementList();
+            if (declaration != Core.LastOrNil(elements.Nodes))
+                return grammarErrorOnNode(declaration, Diagnostics.A_rest_element_must_be_last_in_a_destructuring_pattern);
+            checkGrammarForDisallowedTrailingComma(elements, Diagnostics.A_rest_parameter_or_binding_pattern_may_not_have_a_trailing_comma);
+            if (node.PropertyName != null)
+                return grammarErrorOnNode(node.Name(), Diagnostics.A_rest_element_cannot_have_a_property_name);
+        }
+        if (node.DotDotDotToken != null && node.Initializer != null)
+            return grammarErrorAtPos(declaration, node.Initializer.Pos() - 1, 1, Diagnostics.A_rest_element_cannot_have_an_initializer);
         return false;
     }
 
@@ -914,7 +930,7 @@ public sealed partial class Checker
         suggestionDiagnostics.Add(NewDiagnosticForNode(node, Diagnostics.Numeric_literals_with_absolute_values_equal_to_2_53_or_greater_are_too_large_to_be_represented_accurately_as_integers));
     }
 
-    private readonly List<Diagnostic> suggestionDiagnostics = new();
+    private readonly DiagnosticsCollection suggestionDiagnostics = new();
 }
 
 public sealed partial class Checker
@@ -1128,14 +1144,95 @@ public sealed partial class Checker
 
     private bool checkGrammarProperty(Node node)
     {
-        if (node.Parent.Kind is not (Kind.TypeLiteral or Kind.InterfaceDeclaration) || node.Kind != Kind.PropertySignature)
-            throw unsupported("checkGrammarProperty: source class property");
-        if (node.Name().Kind == Kind.ComputedPropertyName)
-            throw unsupported("checkGrammarProperty: computed name");
-        if (node.Initializer() != null)
-            return grammarErrorOnNode(node.Initializer(), node.Parent.Kind == Kind.InterfaceDeclaration ? Diagnostics.An_interface_property_cannot_have_an_initializer : Diagnostics.A_type_literal_property_cannot_have_an_initializer);
-        if ((node.Flags & NodeFlags.Ambient) != 0)
-            checkAmbientInitializer(node);
+        var propertyName = node.Name();
+        if (((Ast.IsComputedPropertyName(propertyName) && Ast.IsBinaryExpression(propertyName.Expression())) && (propertyName.Expression().AsBinaryExpression().OperatorToken.Kind == Kind.InKeyword)))
+        {
+            return this.grammarErrorOnNode(node.Parent.Members()[0], Diagnostics.A_mapped_type_may_not_declare_properties_or_methods);
+        }
+        if (Ast.IsClassLike(node.Parent))
+        {
+            if ((Ast.IsStringLiteral(propertyName) && (propertyName.Text() == "constructor")))
+            {
+                return this.grammarErrorOnNode(propertyName, Diagnostics.Classes_may_not_have_a_field_named_constructor);
+            }
+            if (this.checkGrammarForInvalidDynamicName(propertyName, Diagnostics.A_computed_property_name_in_a_class_property_declaration_must_have_a_simple_literal_type_or_a_unique_symbol_type))
+            {
+                return true;
+            }
+            if ((Ast.IsAutoAccessorPropertyDeclaration(node) && this.checkGrammarForInvalidQuestionMark(node.PostfixToken(), Diagnostics.An_accessor_property_cannot_be_declared_optional)))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (Ast.IsInterfaceDeclaration(node.Parent))
+            {
+                if (this.checkGrammarForInvalidDynamicName(propertyName, Diagnostics.A_computed_property_name_in_an_interface_must_refer_to_an_expression_whose_type_is_a_literal_type_or_a_unique_symbol_type))
+                {
+                    return true;
+                }
+                if (!Ast.IsPropertySignatureDeclaration(node))
+                {
+                    throw new InvalidOperationException("Unexpected node kind: " + node.Kind.String());
+                }
+                {
+                    var initializer = node.Initializer();
+                    if ((initializer != null))
+                    {
+                        return this.grammarErrorOnNode(initializer, Diagnostics.An_interface_property_cannot_have_an_initializer);
+                    }
+                }
+            }
+            else
+            {
+                if (Ast.IsTypeLiteralNode(node.Parent))
+                {
+                    if (this.checkGrammarForInvalidDynamicName(node.Name(), Diagnostics.A_computed_property_name_in_a_type_literal_must_refer_to_an_expression_whose_type_is_a_literal_type_or_a_unique_symbol_type))
+                    {
+                        return true;
+                    }
+                    if (!Ast.IsPropertySignatureDeclaration(node))
+                    {
+                        throw new InvalidOperationException("Unexpected node kind: " + node.Kind.String());
+                    }
+                    {
+                        var initializer2 = node.Initializer();
+                        if ((initializer2 != null))
+                        {
+                            return this.grammarErrorOnNode(initializer2, Diagnostics.A_type_literal_property_cannot_have_an_initializer);
+                        }
+                    }
+                }
+            }
+        }
+        if (((node.Flags & NodeFlags.Ambient) != 0))
+        {
+            this.checkAmbientInitializer(node);
+        }
+        if (Ast.IsPropertyDeclaration(node))
+        {
+            var propDecl = node.AsPropertyDeclaration();
+            var postfixToken = propDecl.PostfixToken;
+            if (((postfixToken != null) && (postfixToken.Kind == Kind.ExclamationToken)))
+            {
+                switch (true)
+                {
+                    case true when (propDecl.Initializer != null):
+                    {
+                        return this.grammarErrorOnNode(postfixToken, Diagnostics.Declarations_with_initializers_cannot_also_have_definite_assignment_assertions);
+                    }
+                    case true when (propDecl.Type == null):
+                    {
+                        return this.grammarErrorOnNode(postfixToken, Diagnostics.Declarations_with_definite_assignment_assertions_must_also_have_type_annotations);
+                    }
+                    case true when (((!Ast.IsClassLike(node.Parent) || ((node.Flags & NodeFlags.Ambient) != 0)) || Ast.IsStatic(node)) || Ast.HasAbstractModifier(node)):
+                    {
+                        return this.grammarErrorOnNode(postfixToken, Diagnostics.A_definite_assignment_assertion_is_not_permitted_in_this_context);
+                    }
+                }
+            }
+        }
         return false;
     }
 }
@@ -1428,11 +1525,10 @@ public sealed partial class Checker
 {
     private bool checkGrammarForInvalidDynamicName(Node node, Message message)
     {
-        if (!Ast.HasDynamicName(node.Parent))
+        if (!this.isNonBindableDynamicName(node))
         {
             return false;
         }
-
         Node expression = default;
         if (Ast.IsElementAccessExpression(node))
         {
@@ -1442,12 +1538,10 @@ public sealed partial class Checker
         {
             expression = node.Expression();
         }
-
         if (!Ast.IsEntityNameExpression(expression))
         {
             return this.grammarErrorOnNode(node, message);
         }
-
         return false;
     }
 }
@@ -1790,12 +1884,11 @@ public sealed partial class Checker
         {
             return ((this.checkExpressionCached(expr).flags & TypeFlags.EnumLike) != 0);
         }
-
         if (Ast.IsElementAccessExpression(expr))
         {
-            throw unsupported("isInitializerSimpleLiteralEnumReference: element access");
+            var elementAccess = expr.AsElementAccessExpression();
+            return ((isInitializerStringOrNumberLiteralExpression(elementAccess.ArgumentExpression) && Ast.IsEntityNameExpression(elementAccess.Expression)) && ((this.checkExpressionCached(expr).flags & TypeFlags.EnumLike) != 0));
         }
-
         return false;
     }
 }
@@ -2017,15 +2110,66 @@ public sealed partial class Checker
     // grammarchecks.go:1351 selected type operators. Written unique symbol is outside profile.
     private bool checkGrammarTypeOperatorNode(TypeOperatorNode node)
     {
-        if (node.Operator == Kind.UniqueKeyword)
-            throw unsupported("checkGrammarTypeOperatorNode: source unique symbol");
-        if (node.Operator == Kind.ReadonlyKeyword)
+        if ((node.Operator == Kind.UniqueKeyword))
         {
             var innerType = node.Type;
-            if (innerType.Kind != Kind.ArrayType && innerType.Kind != Kind.TupleType)
-                return grammarErrorOnFirstToken(node.AsNode(), Diagnostics.X_readonly_type_modifier_is_only_permitted_on_array_and_tuple_literal_types, TypeScript.Scanner.Scanner.TokenToString(Kind.SymbolKeyword));
+            if ((innerType.Kind != Kind.SymbolKeyword))
+            {
+                return this.grammarErrorOnNode(innerType, Diagnostics.X_0_expected, TypeScript.Scanner.Scanner.TokenToString(Kind.SymbolKeyword));
+            }
+            var parent = Ast.WalkUpParenthesizedTypes(node.Parent);
+            switch (parent.Kind)
+            {
+                case Kind.VariableDeclaration:
+                {
+                    var decl = parent.AsVariableDeclaration();
+                    if ((decl.Name().Kind != Kind.Identifier))
+                    {
+                        return this.grammarErrorOnNode(node.AsNode(), Diagnostics.X_unique_symbol_types_may_not_be_used_on_a_variable_declaration_with_a_binding_name);
+                    }
+                    if (!isVariableDeclarationInVariableStatement(decl.AsNode()))
+                    {
+                        return this.grammarErrorOnNode(node.AsNode(), Diagnostics.X_unique_symbol_types_are_only_allowed_on_variables_in_a_variable_statement);
+                    }
+                    if (((decl.Parent.Flags & NodeFlags.Const) == 0))
+                    {
+                        return this.grammarErrorOnNode(parent.AsVariableDeclaration().Name(), Diagnostics.A_variable_whose_type_is_a_unique_symbol_type_must_be_const);
+                    }
+                    break;
+                }
+                case Kind.PropertyDeclaration:
+                {
+                    if ((!Ast.IsStatic(parent) || !hasReadonlyModifier(parent)))
+                    {
+                        return this.grammarErrorOnNode(parent.AsPropertyDeclaration().Name(), Diagnostics.A_property_of_a_class_whose_type_is_a_unique_symbol_type_must_be_both_static_and_readonly);
+                    }
+                    break;
+                }
+                case Kind.PropertySignature:
+                {
+                    if (!Ast.HasSyntacticModifier(parent, ModifierFlags.Readonly))
+                    {
+                        return this.grammarErrorOnNode(parent.AsPropertySignatureDeclaration().Name(), Diagnostics.A_property_of_an_interface_or_type_literal_whose_type_is_a_unique_symbol_type_must_be_readonly);
+                    }
+                    break;
+                }
+                default:
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.X_unique_symbol_types_are_not_allowed_here);
+                }
+            }
         }
-
+        else
+        {
+            if ((node.Operator == Kind.ReadonlyKeyword))
+            {
+                var innerType2 = node.Type;
+                if (((innerType2.Kind != Kind.ArrayType) && (innerType2.Kind != Kind.TupleType)))
+                {
+                    return this.grammarErrorOnFirstToken(node.AsNode(), Diagnostics.X_readonly_type_modifier_is_only_permitted_on_array_and_tuple_literal_types, TypeScript.Scanner.Scanner.TokenToString(Kind.SymbolKeyword));
+                }
+            }
+        }
         return false;
     }
 }
@@ -2115,6 +2259,301 @@ public sealed partial class Checker
             }
         }
 
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarPrivateIdentifierExpression(PrivateIdentifier privId)
+    {
+        var privIdAsNode = privId.AsNode();
+        if ((Ast.GetContainingClass(privId.AsNode()) == null))
+        {
+            return this.grammarErrorOnNode(privId.AsNode(), Diagnostics.Private_identifiers_are_not_allowed_outside_class_bodies);
+        }
+        if (!Ast.IsForInStatement(privId.Parent))
+        {
+            if (!Ast.IsExpressionNode(privIdAsNode))
+            {
+                return this.grammarErrorOnNode(privIdAsNode, Diagnostics.Private_identifiers_are_only_allowed_in_class_bodies_and_may_only_be_used_as_part_of_a_class_member_declaration_property_access_or_on_the_left_hand_side_of_an_in_expression);
+            }
+            var isInOperation = (Ast.IsBinaryExpression(privId.Parent) && (privId.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.InKeyword));
+            if (((this.getSymbolForPrivateIdentifierExpression(privIdAsNode) == null) && !isInOperation))
+            {
+                return this.grammarErrorOnNode(privIdAsNode, Diagnostics.Cannot_find_name_0, privId.Text);
+            }
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarClassLikeDeclaration(Node node)
+    {
+        var file = Ast.GetSourceFileOfNode(node);
+        return (this.checkGrammarClassDeclarationHeritageClauses(node, file) || this.checkGrammarTypeParameterList(node.TypeParameterList(), file));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarClassDeclarationHeritageClauses(Node node, SourceFile file)
+    {
+        var seenExtendsClause = false;
+        var seenImplementsClause = false;
+        var classLikeData = node.ClassLikeData();
+        if ((!this.checkGrammarModifiers(node) && (classLikeData.HeritageClauses != null)))
+        {
+            {
+                foreach (var heritageClauseNode in GoRuntime.RangeValues(classLikeData.HeritageClauses.Nodes))
+                {
+                    var heritageClause = heritageClauseNode.AsHeritageClause();
+                    if ((heritageClause.Token == Kind.ExtendsKeyword))
+                    {
+                        if (seenExtendsClause)
+                        {
+                            return this.grammarErrorOnFirstToken(heritageClauseNode, Diagnostics.X_extends_clause_already_seen);
+                        }
+                        if (seenImplementsClause)
+                        {
+                            return this.grammarErrorOnFirstToken(heritageClauseNode, Diagnostics.X_extends_clause_must_precede_implements_clause);
+                        }
+                        var typeNodes = heritageClause.Types.Nodes;
+                        if ((GoRuntime.Len(typeNodes) > 1))
+                        {
+                            return this.grammarErrorOnFirstToken(typeNodes[1], Diagnostics.Classes_can_only_extend_a_single_class);
+                        }
+                        seenExtendsClause = true;
+                    }
+                    else
+                    {
+                        if ((heritageClause.Token != Kind.ImplementsKeyword))
+                        {
+                            throw new InvalidOperationException("Unexpected heritage token: " + heritageClause.Token.String());
+                        }
+                        if (seenImplementsClause)
+                        {
+                            return this.grammarErrorOnFirstToken(heritageClauseNode, Diagnostics.X_implements_clause_already_seen);
+                        }
+                        seenImplementsClause = true;
+                    }
+                    this.checkGrammarHeritageClause(heritageClause);
+                }
+            }
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarAccessor(Node accessor)
+    {
+        var body = accessor.Body();
+        if (((((accessor.Flags & NodeFlags.Ambient) == 0) && ((accessor.Parent.Kind != Kind.TypeLiteral))) && ((accessor.Parent.Kind != Kind.InterfaceDeclaration))))
+        {
+            if (((body == null) && !Ast.HasSyntacticModifier(accessor, ModifierFlags.Abstract)))
+            {
+                return this.grammarErrorAtPos(accessor, (accessor.End() - 1), GoRuntime.Len(";"), Diagnostics.X_0_expected, "{");
+            }
+        }
+        if ((body != null))
+        {
+            if (Ast.HasSyntacticModifier(accessor, ModifierFlags.Abstract))
+            {
+                return this.grammarErrorOnNode(accessor, Diagnostics.An_abstract_accessor_cannot_have_an_implementation);
+            }
+            if (((accessor.Parent.Kind == Kind.TypeLiteral) || (accessor.Parent.Kind == Kind.InterfaceDeclaration)))
+            {
+                return this.grammarErrorOnNode(body, Diagnostics.An_implementation_cannot_be_declared_in_ambient_contexts);
+            }
+        }
+        var funcData = accessor.FunctionLikeData();
+        NodeList typeParameters = default;
+        if ((funcData != null))
+        {
+            typeParameters = funcData.TypeParameters;
+        }
+        if ((typeParameters != null))
+        {
+            return this.grammarErrorOnNode(accessor.Name(), Diagnostics.An_accessor_cannot_have_type_parameters);
+        }
+        if (!this.doesAccessorHaveCorrectParameterCount(accessor))
+        {
+            return this.grammarErrorOnNode(accessor.Name(), Core.IfElse((accessor.Kind == Kind.GetAccessor), Diagnostics.A_get_accessor_cannot_have_parameters, Diagnostics.A_set_accessor_must_have_exactly_one_parameter));
+        }
+        if ((accessor.Kind == Kind.SetAccessor))
+        {
+            if ((funcData.Type != null))
+            {
+                return this.grammarErrorOnNode(accessor.Name(), Diagnostics.A_set_accessor_cannot_have_a_return_type_annotation);
+            }
+            var parameterNode = GetSetAccessorValueParameter(accessor);
+            if ((parameterNode == null))
+            {
+                throw new InvalidOperationException("Return value does not match parameter count assertion.");
+            }
+            var parameter = parameterNode.AsParameterDeclaration();
+            if ((parameter.DotDotDotToken != null))
+            {
+                return this.grammarErrorOnNode(parameter.DotDotDotToken, Diagnostics.A_set_accessor_cannot_have_rest_parameter);
+            }
+            if ((parameter.QuestionToken != null))
+            {
+                return this.grammarErrorOnNode(parameter.QuestionToken, Diagnostics.A_set_accessor_cannot_have_an_optional_parameter);
+            }
+            if ((parameter.Initializer != null))
+            {
+                return this.grammarErrorOnNode(accessor.Name(), Diagnostics.A_set_accessor_parameter_cannot_have_an_initializer);
+            }
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool doesAccessorHaveCorrectParameterCount(Node accessor)
+    {
+        return ((this.getAccessorThisParameter(accessor) != null) || (GoRuntime.Len(accessor.Parameters()) == Core.IfElse((accessor.Kind == Kind.GetAccessor), 0, 1)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isNonBindableDynamicName(Node node)
+    {
+        return (Ast.IsDynamicName(node) && !this.isLateBindableName(node));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarConstructorTypeParameters(ConstructorDeclaration node)
+    {
+        var range_ = node.TypeParameters;
+        if ((range_ != null))
+        {
+            int pos = default;
+            if ((range_.Pos() == range_.End()))
+            {
+                pos = range_.Pos();
+            }
+            else
+            {
+                pos = TypeScript.Scanner.Scanner.SkipTrivia(Ast.GetSourceFileOfNode(node.AsNode()).Text(), range_.Pos());
+            }
+            return this.grammarErrorAtPos(node.AsNode(), pos, (range_.End() - pos), Diagnostics.Type_parameters_cannot_appear_on_a_constructor_declaration);
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarConstructorTypeAnnotation(ConstructorDeclaration node)
+    {
+        var t = node.Type;
+        if ((t != null))
+        {
+            return this.grammarErrorOnNode(t, Diagnostics.Type_annotation_cannot_appear_on_a_constructor_declaration);
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarTopLevelElementForRequiredDeclareModifier(Node node)
+    {
+        if ((((((((((node.Kind == Kind.InterfaceDeclaration) || (node.Kind == Kind.TypeAliasDeclaration)) || (node.Kind == Kind.ImportDeclaration)) || (node.Kind == Kind.JSImportDeclaration)) || (node.Kind == Kind.ImportEqualsDeclaration)) || (node.Kind == Kind.ExportDeclaration)) || (node.Kind == Kind.ExportAssignment)) || (node.Kind == Kind.NamespaceExportDeclaration)) || Ast.HasSyntacticModifier(node, ((ModifierFlags.Ambient | ModifierFlags.Export) | ModifierFlags.Default))))
+        {
+            return false;
+        }
+        return this.grammarErrorOnFirstToken(node, Diagnostics.Top_level_declarations_in_d_ts_files_must_start_with_either_a_declare_or_export_modifier);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarTopLevelElementsForRequiredDeclareModifier(SourceFile file)
+    {
+        {
+            foreach (var decl in GoRuntime.RangeValues(file.Statements.Nodes))
+            {
+                if ((Ast.IsDeclarationNode(decl) || (decl.Kind == Kind.VariableStatement)))
+                {
+                    if (this.checkGrammarTopLevelElementForRequiredDeclareModifier(decl))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool checkGrammarImportAttributesType(TypeLiteralNode attributes)
+    {
+        var members = attributes.Members;
+        if ((members == null))
+        {
+            return false;
+        }
+        {
+            foreach (var member in GoRuntime.RangeValues(members.Nodes))
+            {
+                if ((member.Kind != Kind.PropertySignature))
+                {
+                    return this.grammarErrorOnNode(member, Diagnostics.An_import_attributes_type_may_only_contain_property_signatures);
+                }
+                var propertySignature = member.AsPropertySignatureDeclaration();
+                {
+                    var modifiers = propertySignature.Modifiers();
+                    if ((modifiers != null))
+                    {
+                        {
+                            foreach (var range2 in GoRuntime.Range(modifiers.Nodes))
+                            {
+                                var _2 = range2.Key;
+                                var modifier = range2.Value;
+                                if ((modifier.Kind == Kind.ReadonlyKeyword))
+                                {
+                                    return this.grammarErrorOnNode(modifier, Diagnostics.An_import_attributes_property_cannot_have_a_readonly_modifier);
+                                }
+                            }
+                        }
+                    }
+                }
+                if ((propertySignature.Type == null))
+                {
+                    return this.grammarErrorOnNode(member, Diagnostics.An_import_attributes_property_must_have_a_type_annotation);
+                }
+                if ((propertySignature.PostfixToken != null))
+                {
+                    return this.grammarErrorOnNode(member, Diagnostics.An_import_attributes_property_cannot_be_optional);
+                }
+                var name = propertySignature.Name();
+                if (!((Ast.IsStringLiteralLike(name) || Ast.IsIdentifier(name))))
+                {
+                    return this.grammarErrorOnNode(name, Diagnostics.An_import_attributes_property_must_have_a_string_literal_or_identifier_name);
+                }
+                if ((name.Text() == "resolution-mode"))
+                {
+                    return this.grammarErrorOnNode(name, Diagnostics.X_0_is_not_a_valid_key_for_an_import_attributes_type, name.Text());
+                }
+                var typeNode = propertySignature.Type;
+                if ((!Ast.IsLiteralTypeNode(typeNode) || !Ast.IsStringLiteral(typeNode.AsLiteralTypeNode().Literal)))
+                {
+                    return this.grammarErrorOnNode(typeNode, Diagnostics.An_import_attributes_property_must_have_a_string_literal_type_annotation);
+                }
+            }
+        }
         return false;
     }
 }

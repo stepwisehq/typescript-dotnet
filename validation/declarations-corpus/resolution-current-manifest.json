@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "campaign": "complete-source-import-module-resolution",
+  "baseline": "37bd57d",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 216,
+  "groups": [
+    {
+      "name": "core",
+      "requests": "validation/resolution-corpus/requests-core.jsonl",
+      "expected": "validation/resolution-corpus/expected-core.jsonl.gz",
+      "cases": 69,
+      "requestsSha256": "83fc2b26ccd3bc129bbecbdf690dc48d6e66ef5db41c0da7d82ba0d5cf482628",
+      "expectedSha256": "7f355faa6df364cef71f077dc4924712a1c500acdf05115157d527f2ba15be35"
+    },
+    {
+      "name": "compiler-inputs",
+      "requests": "validation/resolution-corpus/requests-compiler-inputs.jsonl",
+      "expected": "validation/resolution-corpus/expected-compiler-inputs.jsonl.gz",
+      "cases": 105,
+      "requestsSha256": "1d84b6843ebbca148ea00c9cf41097bc39a569e33f842e50da48e951b251ab3e",
+      "expectedSha256": "38b1eb2495cb005258a98fe7228d224a2a4d94c7a93eefd4cb3a4ef92a3e3cad"
+    },
+    {
+      "name": "graph",
+      "requests": "validation/resolution-corpus/requests-graph.jsonl",
+      "expected": "validation/resolution-corpus/expected-graph.jsonl.gz",
+      "cases": 16,
+      "requestsSha256": "c5870cfa27a0206981658868b1ae39db9632f14e4ea9dc4c37a22526d8ad573f",
+      "expectedSha256": "ab47f977b01d0bea490bec3f46d5a9119e6e1ade4d9eff2696a8339a5cd138b6"
+    },
+    {
+      "name": "utilities",
+      "requests": "validation/resolution-corpus/requests-utilities.jsonl",
+      "expected": "validation/resolution-corpus/expected-utilities.jsonl.gz",
+      "cases": 22,
+      "requestsSha256": "c80df9e4c68dec9fb306ef54a90347d8d56ac2d3c3bb620ec6b1a3df6ee808d3",
+      "expectedSha256": "dcde41e655951fcb0b907f29540c244de1390c932b5bd34eedd6feff39618f5b"
+    },
+    {
+      "name": "examples-api",
+      "requests": "validation/resolution-corpus/requests-examples-api.jsonl",
+      "expected": "validation/resolution-corpus/expected-examples-api.jsonl.gz",
+      "cases": 4,
+      "requestsSha256": "c50466ae31fde0590d6499a78f0d7b6381cf5de1d25924c413335c0169032e3a",
+      "expectedSha256": "6859f53161dd241fd9351387d6cc9ef33756a1f7d553c76954c563ac32e0a48c"
+    }
+  ],
+  "sharedChecks": {
+    "count": 40,
+    "groups": [
+      {
+        "flag": "--static-checks",
+        "count": 1,
+        "classNames": [
+          "Resolution.Tests.StaticResolverTests"
+        ],
+        "originalNames": [
+          "TestStaticResolver"
+        ]
+      },
+      {
+        "flag": "--basic-checks",
+        "count": 3,
+        "classNames": [
+          "Resolution.Tests.ResolverBasicTests"
+        ],
+        "originalNames": [
+          "TestResolveModuleNameTrailingSlash",
+          "TestResolveModuleNameBlockedByNullExport",
+          "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile"
+        ]
+      },
+      {
+        "flag": "--concurrency-checks",
+        "count": 3,
+        "classNames": [
+          "Resolution.Tests.ResolverConcurrencyTests"
+        ],
+        "originalNames": [
+          "TestResolveModuleNameTrailingSlashRace",
+          "TestResolveSubpathNilContentsRace",
+          "TestResolvePeerDependencyNilContentsRace"
+        ]
+      },
+      {
+        "flag": "--data-checks",
+        "count": 3,
+        "classNames": [
+          "Resolution.Tests.ResolutionDataTests"
+        ],
+        "originalNames": [
+          "TestResolverSharedData",
+          "TestResolutionDataCaches",
+          "TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity"
+        ]
+      },
+      {
+        "flag": "--candidate-checks",
+        "count": 1,
+        "classNames": [
+          "Resolution.Tests.ModuleCandidateTests"
+        ],
+        "originalNames": [
+          "TestNormalizePathForCJSResolutionPreservesDirectoryIntent"
+        ]
+      },
+      {
+        "flag": "--package-root-checks",
+        "count": 1,
+        "classNames": [
+          "Resolution.Tests.ModulePackageRootTests"
+        ],
+        "originalNames": [
+          "TestNodeModulePackageRoot"
+        ]
+      },
+      {
+        "flag": "--internal-checks",
+        "count": 3,
+        "classNames": [
+          "Resolution.Tests.ResolverInternalTests"
+        ],
+        "originalNames": [
+          "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+          "TestExtensionReplacementPreservesEmptyAndDotStems",
+          "TestOutputDirectoriesRemoveTrailingSeparators"
+        ]
+      },
+      {
+        "flag": "--dynamic-checks",
+        "count": 10,
+        "classNames": [
+          "Resolution.Tests.ResolverDynamicTests"
+        ],
+        "originalNames": [
+          "TestResolveDynamicModuleNameUsingRootDirs",
+          "TestRootDirsPreservesExceptionalDynamicSegments",
+          "TestRootDirsRejectsUnrepresentableDiskSegments",
+          "TestRootDirsEscapesRootLikeDynamicSegments",
+          "TestRootDirsPreservesRelativeDiskSuffixes",
+          "TestRootDirsPreservesRelativeDirectoryIntent",
+          "TestResolveDynamicPackageJSONPath",
+          "TestResolveDynamicPackageSubpathFile",
+          "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+          "TestResolveDynamicDottedDirectory"
+        ]
+      },
+      {
+        "flag": "--entrypoint-checks",
+        "count": 13,
+        "classNames": [
+          "Resolution.Tests.ResolverEntrypointTests"
+        ],
+        "originalNames": [
+          "TestResolvedModuleCarriesCaseInsensitivePath",
+          "TestResolvedTypeReferenceDirectiveCarriesPath",
+          "TestResolvedEntrypointCarriesPath",
+          "TestDynamicExportPatternEntrypointUsesLogicalName",
+          "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+          "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+          "TestDynamicExportPatternPreservesStaticSourcePrefix",
+          "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+          "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+          "TestDiskExportPatternKeepsReservedPrefixLiteral",
+          "TestDynamicExportPatternUnderExceptionalParent",
+          "TestDynamicExportPatternWithEmptyMatch",
+          "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint"
+        ]
+      },
+      {
+        "flag": "--dependency-checks",
+        "count": 1,
+        "classNames": [
+          "Resolution.Tests.ResolutionDependencyTests"
+        ],
+        "originalNames": [
+          "Core.Deduplicate.NilAliasAndMutation"
+        ]
+      },
+      {
+        "flag": "--graph-byte-role-checks",
+        "count": 1,
+        "classNames": [
+          "Resolution.Tests.GraphByteRoleTests"
+        ],
+        "originalNames": [
+          "Graph.UnicodeFileNameBinderAndDiagnosticRoles"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "Resolution.Tests.StaticResolverTests": 1,
+      "Resolution.Tests.ResolverBasicTests": 3,
+      "Resolution.Tests.ResolverConcurrencyTests": 3,
+      "Resolution.Tests.ResolutionDataTests": 3,
+      "Resolution.Tests.ModuleCandidateTests": 1,
+      "Resolution.Tests.ModulePackageRootTests": 1,
+      "Resolution.Tests.ResolverInternalTests": 3,
+      "Resolution.Tests.ResolverDynamicTests": 10,
+      "Resolution.Tests.ResolverEntrypointTests": 13,
+      "Resolution.Tests.ResolutionDependencyTests": 1,
+      "Resolution.Tests.GraphByteRoleTests": 1
+    }
+  },
+  "corpusXUnitClass": "Resolution.Tests.ResolutionOracleTests",
+  "originalTests": [
+    {
+      "package": "./internal/module",
+      "functions": [
+        "TestNormalizePathForCJSResolutionPreservesDirectoryIntent",
+        "TestPackageJSONPathWithTrailingSeparatorDoesNotResolveAsFile",
+        "TestExtensionReplacementPreservesEmptyAndDotStems",
+        "TestOutputDirectoriesRemoveTrailingSeparators",
+        "TestResolverSharedData",
+        "TestResolveModuleNameTrailingSlash",
+        "TestResolutionDataCaches",
+        "TestResolveDynamicModuleNameUsingRootDirs",
+        "TestRootDirsPreservesExceptionalDynamicSegments",
+        "TestRootDirsRejectsUnrepresentableDiskSegments",
+        "TestRootDirsEscapesRootLikeDynamicSegments",
+        "TestRootDirsPreservesRelativeDiskSuffixes",
+        "TestRootDirsPreservesRelativeDirectoryIntent",
+        "TestResolveDynamicPackageJSONPath",
+        "TestResolveDynamicPackageSubpathFile",
+        "TestResolveDynamicESMPackageIndexFromReservedDirectory",
+        "TestResolveDynamicDottedDirectory",
+        "TestResolvedModuleCarriesCaseInsensitivePath",
+        "TestResolvedTypeReferenceDirectiveCarriesPath",
+        "TestResolvedEntrypointCarriesPath",
+        "TestDynamicExportPatternEntrypointUsesLogicalName",
+        "TestGeneratedDynamicEntrypointSpecifierResolvesEncodedFile",
+        "TestDynamicEntrypointsEncodePhysicalPackageNameAndRootLikePath",
+        "TestDynamicExportPatternPreservesStaticSourcePrefix",
+        "TestDynamicExportPatternKeepsPackageForRootLikeMatch",
+        "TestDynamicEntrypointsPreserveCaseDistinctFiles",
+        "TestDiskExportPatternKeepsReservedPrefixLiteral",
+        "TestDynamicExportPatternUnderExceptionalParent",
+        "TestDynamicExportPatternWithEmptyMatch",
+        "TestUnaddressableEmptyExportPatternIsNotAnEntrypoint",
+        "TestResolverRejectsMismatchedPackageJsonCacheCaseSensitivity",
+        "TestResolveModuleNameBlockedByNullExport",
+        "TestResolveModuleNameExportTargetWithTrailingSlashDoesNotResolveAsFile",
+        "TestResolveModuleNameTrailingSlashRace",
+        "TestResolveSubpathNilContentsRace",
+        "TestNodeModulePackageRoot",
+        "TestResolvePeerDependencyNilContentsRace",
+        "TestStaticResolver"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/module/resolver_internal_test.go": "d50ad33d0d1b32ab21ccc688bdb5dc94e8910ef2b0a4b3b878536810bdfa11fc",
+        "upstream/TypeScript/tsc/internal/module/resolver_test.go": "242498fe189663bcc8d618ae45a1b7e4ac9d2b8e90c0ca096cfac8409d15025f",
+        "upstream/TypeScript/tsc/internal/module/staticresolver_test.go": "4d0841fb322ff010922760cccdcbcb2094b96ec538bbb5877772cd4ef9ea642c"
+      }
+    }
+  ],
+  "orderControls": {
+    "cases": 14,
+    "requests": "validation/resolution-corpus/order-requests.jsonl",
+    "requestsSha256": "1f292e45c524942e4cb3bb595a716794ad9d458f4241a30b61d9b2ba44733113",
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 30
+  },
+  "acceptance": "pending; canonical expected bytes are actual pinned Go only",
+  "cliControls": {
+    "cases": 11,
+    "originalCases": 9,
+    "authoredBoundaryCases": 2,
+    "runner": "tools/check-resolution-cli.py",
+    "runnerSha256": "a11047836d3afd5c4c60d66586f4e2b2cce4a93d3d3e833a5d15dce49a313831",
+    "semanticObserver": "tools/resolution-cli-oracle/main.go",
+    "semanticObserverSha256": "887d169f97d76623efba66645c56f91d6fd563c2256b2336dc506aa8be6b9379",
+    "sourceFiles": {
+      "examples/resolution/package-graph-invalid/package.json": "3a762014ad034ea379eb230953c8bf377def6e0c2c21d866e10e997d3bd8078c",
+      "examples/resolution/package-graph-invalid/tsconfig.json": "cf7c04a8d6d9912bd6217a160c3ebd99fdcd92a9564d2d5b4dabb87bc366bdc0",
+      "examples/resolution/package-graph/package.json": "3a762014ad034ea379eb230953c8bf377def6e0c2c21d866e10e997d3bd8078c",
+      "examples/resolution/package-graph/tsconfig.json": "cf7c04a8d6d9912bd6217a160c3ebd99fdcd92a9564d2d5b4dabb87bc366bdc0",
+      "examples/resolution/package-checking/package.json": "e95a25c61ecc852b87cf2e84fd7c2602d2bbec264c58c5ade871e44c3e10e904",
+      "examples/resolution/package-checking/tsconfig.json": "11c58b038e232fd79225efaa12da67d892dc3160de8beb5593e12d1cd4c02e28",
+      "examples/resolution/package-checking-invalid/package.json": "e95a25c61ecc852b87cf2e84fd7c2602d2bbec264c58c5ade871e44c3e10e904",
+      "examples/resolution/package-checking-invalid/tsconfig.json": "11c58b038e232fd79225efaa12da67d892dc3160de8beb5593e12d1cd4c02e28",
+      "examples/resolution/package-checking-invalid/src/main.ts": "66a55bd12001c33436d82d51d130a800351a838bbc70c496eebab0d9ad523483",
+      "examples/resolution/package-checking-invalid/node_modules/record-kit/index.ts": "e54571919a4a84aad9fd803b88d33220c3d5bc2d6d3af2c4002ffe1f11043799",
+      "examples/resolution/package-checking-invalid/node_modules/record-kit/package.json": "eec0ee458ab774c7e97e446fcf8200e4f87bec35b087a7187f0a134874e37df8",
+      "examples/resolution/package-checking/src/main.ts": "79ce37eadd1a5216b0f6541540a8ed2f7aea3664bf046dd11c4e99f5350761e2",
+      "examples/resolution/package-checking/node_modules/record-kit/index.ts": "e54571919a4a84aad9fd803b88d33220c3d5bc2d6d3af2c4002ffe1f11043799",
+      "examples/resolution/package-checking/node_modules/record-kit/package.json": "eec0ee458ab774c7e97e446fcf8200e4f87bec35b087a7187f0a134874e37df8",
+      "examples/resolution/package-graph/src/common.cts": "28c542ed4ea903780a7095a8ef4da64322ed5fada40b520a196f199662653736",
+      "examples/resolution/package-graph/src/data.json": "d7c68f0ee695dad32f08c15e118bb8c46b1a38842903f77d38f5ac7cad590d35",
+      "examples/resolution/package-graph/src/view.tsx": "701d03bb4aa7518102b00c863a7ac337a0b042829917a1b4f32f7930027d2f5d",
+      "examples/resolution/package-graph/src/main.ts": "4978c6579304288dbc70c38561e46be8d7e221aade1f111363616318c07d9b7d",
+      "examples/resolution/package-graph/src/extra.js": "6732a3995342c7e0c592c4bf12d2ada5459481fa6c73ac99658dbf7e80a06d63",
+      "examples/resolution/package-graph/src/local.ts": "4ae16105119e42e8419a22e2ca184f8d384940fc2d7196e62b6ebcaa425faf0e",
+      "examples/resolution/package-graph/node_modules/react/jsx-runtime.d.ts": "5a7cc93c55a45bdb5e7574a81c616597196a2473ed03c74b6d589102f295ec1c",
+      "examples/resolution/package-graph/node_modules/react/package.json": "a2ea608f430d48c2b0a08e03664c197e538e725330ab52acb8bce67de667f380",
+      "examples/resolution/package-graph/node_modules/record-kit/esm.mts": "c14e674bdc4ca130161d500ef69c6049572212ad4f1e0bd27c25e7359c79b5e2",
+      "examples/resolution/package-graph/node_modules/record-kit/cjs.cts": "a826da46a4c01d4bb46bb4a23da07130cebc22447ea7f05fb4fb438537aa290f",
+      "examples/resolution/package-graph/node_modules/record-kit/package.json": "4c5b38b07b82f992d8b420dbc5a6ac02af3d95e68ab0a3f698b95e4824147d11",
+      "examples/resolution/package-graph/src/model/record.ts": "66b0b12b00c1306f1074b6ac2fd666a6c6639172ebbc3ce73d4485fd76ed7709",
+      "examples/resolution/package-graph/src/cycle/a.ts": "c15671be483a79972fdd5283df31db22b825dd5bc9cfd04de07d2c013ccbfd85",
+      "examples/resolution/package-graph/src/cycle/b.ts": "22022b0b7f07c13d9e4f08b1eecd4ec8a32dc8bf4eed5c132c76f95712f54cba",
+      "examples/resolution/package-graph-invalid/src/common.cts": "28c542ed4ea903780a7095a8ef4da64322ed5fada40b520a196f199662653736",
+      "examples/resolution/package-graph-invalid/src/data.json": "d7c68f0ee695dad32f08c15e118bb8c46b1a38842903f77d38f5ac7cad590d35",
+      "examples/resolution/package-graph-invalid/src/view.tsx": "701d03bb4aa7518102b00c863a7ac337a0b042829917a1b4f32f7930027d2f5d",
+      "examples/resolution/package-graph-invalid/src/main.ts": "47d969b87ddeaa2e4167c109f1e0d1607e287b4fd1ccb46a34b56c33633fede6",
+      "examples/resolution/package-graph-invalid/src/extra.js": "6732a3995342c7e0c592c4bf12d2ada5459481fa6c73ac99658dbf7e80a06d63",
+      "examples/resolution/package-graph-invalid/src/local.ts": "4ae16105119e42e8419a22e2ca184f8d384940fc2d7196e62b6ebcaa425faf0e",
+      "examples/resolution/package-graph-invalid/node_modules/react/jsx-runtime.d.ts": "5a7cc93c55a45bdb5e7574a81c616597196a2473ed03c74b6d589102f295ec1c",
+      "examples/resolution/package-graph-invalid/node_modules/react/package.json": "a2ea608f430d48c2b0a08e03664c197e538e725330ab52acb8bce67de667f380",
+      "examples/resolution/package-graph-invalid/node_modules/record-kit/esm.mts": "c14e674bdc4ca130161d500ef69c6049572212ad4f1e0bd27c25e7359c79b5e2",
+      "examples/resolution/package-graph-invalid/node_modules/record-kit/cjs.cts": "a826da46a4c01d4bb46bb4a23da07130cebc22447ea7f05fb4fb438537aa290f",
+      "examples/resolution/package-graph-invalid/node_modules/record-kit/package.json": "4c5b38b07b82f992d8b420dbc5a6ac02af3d95e68ab0a3f698b95e4824147d11",
+      "examples/resolution/package-graph-invalid/src/model/record.ts": "66b0b12b00c1306f1074b6ac2fd666a6c6639172ebbc3ce73d4485fd76ed7709",
+      "examples/resolution/package-graph-invalid/src/cycle/a.ts": "c15671be483a79972fdd5283df31db22b825dd5bc9cfd04de07d2c013ccbfd85",
+      "examples/resolution/package-graph-invalid/src/cycle/b.ts": "22022b0b7f07c13d9e4f08b1eecd4ec8a32dc8bf4eed5c132c76f95712f54cba",
+      "examples/configuration/checking-base.json": "0921710296837742d6ac732b1570ffcea75f17ecedac086488b7beb9408e3ef1"
+    },
+    "currentCheckingBoundaries": "validation/declarations-corpus/resolution-current-boundaries.json",
+    "currentCheckingBoundariesSha256": "a295dc592ccaf7905ebadac4e28d6a667cbc251da1131429cbeb80200e376b82"
+  },
+  "graphOracle": {
+    "overlay": "artifacts/resolution-validation/original-graph-overlay/overlay.json",
+    "provenance": "artifacts/resolution-validation/original-graph-overlay/provenance.json",
+    "sourceFiles": {
+      "tools/resolution-oracle/main.go": "89912221518f33ae4d0627b43a2e73d1d379289453978d2e9eab5055e6d560f2",
+      "tools/resolution-oracle/extensions.go": "17e322e665d915f9253b35676b1f63444a417cd9efb791e42bf20cbae463acc3",
+      "tools/resolution-oracle/graph.go": "c1d2079c426153afeba2b22b9f2a390fff50af5e72e79e6600d6ab1d8b1f002f",
+      "tools/resolution-oracle/graph_access.go.inc": "71ada7518c9ef2ea95442089656c428cf394e67c92097323c018268f59590966",
+      "tools/resolution-oracle/instrument_graph.py": "4626f3cbe6d8110e76058cd98a6ba9debd2f169711f44a291bbd9d0b21e5ab4f",
+      "tools/resolution-oracle/prepare.py": "47ef3b227764b4099912f8b9d1f9dea9d6997aa6012f6f53916559ec99fd4f30",
+      "tools/build-resolution-oracle.sh": "0360f1ae750cc7eb9585eabcdd22bf1e90abf300796396de832e2f3443552d08",
+      "upstream/TypeScript/tsc/internal/module/cache.go": "25373957c5793ea28d9607da2b2bf380d0910e13fe6dfce960c328e136e541c0",
+      "upstream/TypeScript/tsc/internal/module/resolver.go": "6d777861fd8f7ea2599a7e4a8748b302a99c850591a14c1aa0f2bc681f4f3aae",
+      "upstream/TypeScript/tsc/internal/module/staticresolver.go": "073aac87b458fdd8838b2df553a530110b83f89587b65371a6b57fe10f75d286",
+      "upstream/TypeScript/tsc/internal/module/types.go": "9edc252a17ac658642948add1c5fff9ca03cb3bc0081c7a610dc58c26f2b39f7",
+      "upstream/TypeScript/tsc/internal/module/util.go": "debcdf2dded6e32253190a06c1404ced620b5d532ff98ecc55089ad436ed0969",
+      "upstream/TypeScript/tsc/internal/compiler/fileloader.go": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "upstream/TypeScript/tsc/internal/compiler/filesparser.go": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1"
+    },
+    "pristineOracle": "tools/.cache/resolution-pristine-oracle",
+    "ordinaryGroups": [
+      "core",
+      "utilities",
+      "examples-api"
+    ],
+    "parityReport": "artifacts/resolution-validation/current-metadata-parity/report.json",
+    "overlaySha256": "a8fb86f31650c11ac4a221c00e5a516d4172e4afce7d61e62c2c88b66d3f97e2",
+    "provenanceSha256": "97d8998c033945582e65ca8afd2cde7ae3ee5be0cb74375cb8999399ba8b09c7"
+  },
+  "observationLimits": [
+    "Complete reached source result records, diagnostics, ordered search/traces and selected API identities are compared; no exhaustive private cache/storage equivalence claim.",
+    "Nonempty type ResolutionDiagnostics publication is implemented/source-reviewed but unexercised; actual nil and missing-type diagnostics are exercised.",
+    "Graph observers omit only explicit external default-library/automatic-global-type/project-reference-build/content-mapper execution stages and retain their source syntax metadata.",
+    "Unordered task-map acquisition is not an upstream ordered contract; casing witnesses use a source-supported deterministic root constructor, preserving full correlated records.",
+    "Backing virtual-host UTF8 and stored-case adaptations are explicit; arbitrary-byte disk paths and universal virtual-filesystem equivalence are unclaimed."
+  ],
+  "currentCheckingReplacement": {
+    "baseline": "e7b81a2",
+    "historicalManifest": "validation/resolution-corpus/manifest.json",
+    "historicalManifestSha256": "dd2c1482a70eb2cf0e2d2b2e9ff688de9ffbe10d8792ba2027cfd44f6c147638",
+    "retiredAuthoredControls": [
+      "package-graph-check",
+      "package-graph-invalid-check"
+    ],
+    "replacement": "Same graph fixture/imports/config and nine complete Go comparisons retained. Two authored option/profile rejection messages replaced by concrete remaining external JSON checking failure, exact exit2/error/empty diagnostic payload. Not Go semantic comparison.",
+    "sourceConsumer": "src/TypeScript.Scanner/Checker/Checker.cs",
+    "sourceGuard": "Semantic checking does not support JSON source variable type.",
+    "libraryEnvironment": "Checking examples now explicit noLib:false/lib:[es5] and real bundled host selection; no library roots injected."
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "extends": "../warehouse/tsconfig.json",
+  "files": ["../warehouse/audit.d.ts", "../warehouse/audit-stock.d.ts", "main.ts"]
+}

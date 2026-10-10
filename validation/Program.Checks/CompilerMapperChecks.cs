@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // compiler/contentmapper_test.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Five complete environment/error assertion domains, with three explicitly
-// adapted diagnostic collection channels. The incremental-generator
+// Five complete environment/error assertion domains. The three historical
+// diagnostic-channel adaptations now use the genuine upstream semantic API.
+// The incremental-generator
 // body retains its exact inputs and construction subset; its unsupported checker
 // assertions are explicitly excluded in compiler-mapper-test-provenance.json.
 using Configuration.Checks;
@@ -71,15 +72,14 @@ public static class CompilerMapperChecks
         });
     }
 
-    private static List<Diagnostic> CollectConstructionDiagnostics(CompilerProgram program)
+    private static List<Diagnostic> CollectContentMapperDiagnostics(CompilerProgram program)
     {
-        // The original helper also called semantic diagnostics. Its asserted
-        // environment/error values are published by these actual construction
-        // and file-inclusion APIs; no unsupported checker is acquired here.
+        // Original collectContentMapperDiagnostics: preserve all three actual
+        // producers and their order. No additional raw inclusion channel.
         List<Diagnostic> diagnostics = [];
         diagnostics.AddRange(program.GetSyntacticDiagnostics() ?? []);
+        diagnostics.AddRange(program.GetSemanticDiagnostics() ?? []);
         diagnostics.AddRange(program.GetProgramDiagnostics() ?? []);
-        foreach (var file in program.SourceFiles()) diagnostics.AddRange(program.GetFileInclusionDiagnostics(file) ?? []);
         return diagnostics;
     }
 
@@ -142,9 +142,9 @@ public static class CompilerMapperChecks
         CompilerOptions Options() => new() { Composite = Tristate.True, SkipLibCheck = Tristate.True, Module = ModuleKind.ESNext, ModuleResolution = ModuleResolutionKind.Bundler };
         int code = Diagnostics.File_0_is_not_listed_within_the_file_list_of_project_1_Projects_must_list_all_files_or_use_an_include_pattern.Code();
         var listed = NewProgram(project, new() { ["/src/Component.vue"] = "<template />" }, ["/src/Component.vue"], Options());
-        Check.True(!CollectConstructionDiagnostics(listed).Any(diagnostic => diagnostic.Code() == code), "supplemental covered by listed canonical root");
+        Check.True(!CollectContentMapperDiagnostics(listed).Any(diagnostic => diagnostic.Code() == code), "supplemental covered by listed canonical root");
         var imported = NewProgram(project, new() { ["/src/index.ts"] = "import \"./Component.vue\";", ["/src/Component.vue"] = "<template />" }, ["/src/index.ts"], Options());
-        Check.Equal(CollectConstructionDiagnostics(imported).Count(diagnostic => diagnostic.Code() == code), 2, "imported canonical and supplemental unlisted count");
+        Check.Equal(CollectContentMapperDiagnostics(imported).Count(diagnostic => diagnostic.Code() == code), 2, "imported canonical and supplemental unlisted count");
     }
 
     private static void TestContentMapperInvalidMappings()
@@ -153,7 +153,7 @@ public static class CompilerMapperChecks
         var mappings = SpanMaps.New([new(0, 10, 0, 0, SpanKind.Atom, Feature.None), new(5, transformed.Length, 0, 0, SpanKind.Atom, Feature.None)]);
         var program = NewProgram(new((_, _) => (new() { Text = transformed, VirtualExtension = ".ts", Mappings = mappings }, null)),
             new() { ["/src/app.ts"] = "import \"./Component.vue\";", ["/src/Component.vue"] = original }, ["/src/app.ts"]);
-        Check.True(CollectConstructionDiagnostics(program).Any(diagnostic => diagnostic.Code() == Diagnostics.The_content_mapper_0_produced_overlapping_or_out_of_order_position_mappings_near_virtual_offset_1.Code()), "invalid mapping diagnostic");
+        Check.True(CollectContentMapperDiagnostics(program).Any(diagnostic => diagnostic.Code() == Diagnostics.The_content_mapper_0_produced_overlapping_or_out_of_order_position_mappings_near_virtual_offset_1.Code()), "invalid mapping diagnostic");
     }
 
     private static void TestContentMapperSourceFileState()
@@ -171,7 +171,7 @@ public static class CompilerMapperChecks
         Check.Equal(file.ContentMapper(), "vue-mapper@1.0.0", "failed mapper");
         Check.True(file.IsContentMapperFailureStub(), "failed transform retains stub");
         var localized = NewProgram(new((_, _) => (default, TransformError.NewTransformError(TransformErrorKind.Project, new ProjectError { Kind = ProjectErrorKind.MalformedResponse }))), new() { ["/src/fail.vue"] = "original" }, ["/src/fail.vue"]);
-        Check.True(CollectConstructionDiagnostics(localized).Any(diagnostic => diagnostic.MessageChain()?.Any(message => message.Code() == Diagnostics.The_content_mapper_returned_a_project_response_that_could_not_be_decoded.Code()) == true), "localized project response diagnostic");
+        Check.True(CollectContentMapperDiagnostics(localized).Any(diagnostic => diagnostic.MessageChain()?.Any(message => message.Code() == Diagnostics.The_content_mapper_returned_a_project_response_that_could_not_be_decoded.Code()) == true), "localized project response diagnostic");
     }
 
     private static void TestContentMapperProjectErrorDiagnostics()

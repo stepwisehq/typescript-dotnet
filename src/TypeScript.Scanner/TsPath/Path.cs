@@ -5,6 +5,9 @@
 namespace TypeScript.Scanner;
 public static partial class TsPath
 {
+    // path.go:1180. Structural operation over original Go bytes.
+    public static bool HasExtension(string fileName) => GetBaseFileName(fileName).Contains('.');
+
     private const string DynamicURIFileNamePrefix = "^/~ts-uri~/";
     private const string urlSchemeSeparator = "://";
     public static bool IsVolumeCharacter(int ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';

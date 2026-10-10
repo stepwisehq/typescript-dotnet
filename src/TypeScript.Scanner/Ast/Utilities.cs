@@ -6,6 +6,12 @@
 namespace TypeScript.Scanner;
 public static partial class Ast
 {
+    // utilities.go:1695/1699.
+    public static bool IsEffectiveExternalModule(SourceFile node, CompilerOptions compilerOptions) =>
+        IsExternalModule(node) || isCommonJSContainingModuleKind(compilerOptions.GetEmitModuleKind()) && node.CommonJSModuleIndicator != null;
+    // utilities.go:3025.
+    public static Node GetClassLikeDeclarationOfSymbol(Symbol symbol) => Core.Find(symbol.Declarations, IsClassLike);
+
     // utilities.go:2632–2671. Typed filenames contain original Go bytes.
     public static ModuleKind GetImpliedNodeFormatForFile(RootedFilePath fileName, string packageJsonType)
     {

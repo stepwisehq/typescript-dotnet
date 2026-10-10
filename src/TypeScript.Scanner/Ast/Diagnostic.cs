@@ -4,8 +4,20 @@
 // Port of tsc/internal/ast/diagnostic.go; parse/bind diagnostics plus selected checker collection/comparison slice.
 #nullable disable
 namespace TypeScript.Scanner;
+public enum RepopulateDiagnosticKind { ModeMismatch = 1, ModuleNotFound = 2 }
+public sealed class RepopulateDiagnosticInfo
+{
+    public RepopulateDiagnosticKind Kind;
+    public string ModuleReference = "";
+    public ResolutionMode Mode;
+    public string PackageName = "";
+}
+
 public sealed class Diagnostic
 {
+    internal RepopulateDiagnosticInfo repopulateInfo;
+    public RepopulateDiagnosticInfo RepopulateInfo() => repopulateInfo;
+    public void SetRepopulateInfo(RepopulateDiagnosticInfo info) => repopulateInfo = info;
     internal SourceFile file;
     internal TextRange loc;
     internal Message message;

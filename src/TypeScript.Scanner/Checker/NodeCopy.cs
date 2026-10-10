@@ -81,6 +81,7 @@ internal sealed partial class NodeBuilderImpl
             return false;
         }
 
+        public void ReportNonSerializableProperty(string propertyName) => bound.markError(() => wrapped.ReportNonSerializableProperty(propertyName));
         public void ReportCyclicStructureError() => bound.markError(wrapped.ReportCyclicStructureError);
         public void ReportInaccessibleThisError() => bound.markError(wrapped.ReportInaccessibleThisError);
         public void ReportInaccessibleUniqueSymbolError() => bound.markError(wrapped.ReportInaccessibleUniqueSymbolError);

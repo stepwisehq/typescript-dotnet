@@ -1,5 +1,32 @@
 # Current project state
 
+**Accepted: genuine checker initialization and declaration/object-model completion,
+D1–D6.** Baseline `e7b81a2`; delivery commit contains this state and
+[durable proof](../validation/results/declarations-verified.json). No active implementation
+campaign remains. Follow the [assessment](DECLARATIONS-ASSESSMENT.md),
+[contract](DECLARATIONS-CONTRACT.md), [checkpoint](DECLARATIONS-STATUS.md) and
+[reproduction guide](DECLARATIONS-VERIFY.md).
+
+Actual Linux x64 Native AOT and managed execution pass 71 complete Go comparisons,
+six shared groups, 26 order/repeat executions per runtime and both ordinary disk
+checking cases (valid exit 0, invalid exit 1 with all six diagnostics). New 77 xUnit
+cases and the full retained cascade pass. The selected-suite TRX aggregate is 24,674
+passed case executions with zero failures/skips, not a distinct upstream-test inventory;
+cheap affected-suite repeats are recorded separately. The frozen gate took 1,163.022
+seconds, all five drift checks clear and 218 historical fixture/proof files unchanged.
+Independent GPT-6.1 Sol source/assertion/evidence reviews report no unresolved
+substantive in-contract finding.
+
+Ordinary `--config` now checks genuine Program options and unchanged source libraries;
+the exact-library admission gate and hidden library injection are removed. Historical
+profiles remain named test adapters. Whole checker files are still partial. Runtime
+body/flow, operational string mappings, async/generator and JS/JSX/JSDoc/decorator work
+remain separate; see the [refreshed roadmap](CHECKER-COMPLETION-ROADMAP.md).
+Recommended next: complete TypeScript expressions/statements and control flow over
+these accepted declaration models. Do not start another campaign or repeat accepted
+gates without a new mandate or concrete regression. Finish checker/infrastructure
+before large-project comparisons; .NET 11/optimization remains deferred.
+
 **Accepted: Program construction and environment assembly, P1–P6.** Baseline
 `1d6bd61`; pin `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
 See the [guide](PROGRAM.md), [assessment](PROGRAM-ASSESSMENT.md),
@@ -20,8 +47,8 @@ remain explicit. Local Program reuse and in-process mapper/SpanMap are included;
 emit/build/watch/services, mapper processes and broader checker computations remain
 separate. Native platforms other than Linux x64 are unverified.
 
-No active implementation task remains. If interrupted before delivery, finish the
-authorized commit and confirm a clean tree; otherwise await another campaign mandate.
+Program delivery was committed as `e7b81a2`. The accepted declaration campaign above
+supersedes this historical stopping point.
 Next recommendation: genuine checker initialization and declaration/object-model
 completion, following the [checker roadmap](CHECKER-COMPLETION-ROADMAP.md).
 Finish checker/required infrastructure before large-project Go/JavaScript-tsc no-emit

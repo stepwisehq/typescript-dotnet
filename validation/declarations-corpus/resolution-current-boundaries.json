@@ -1,0 +1,15 @@
+{
+  "classification": "authored-current-semantic-boundaries",
+  "cases": {
+    "package-graph-check": {
+      "ExitCode": 2,
+      "Error": "Semantic checking does not support JSON source variable type.",
+      "Diagnostics": []
+    },
+    "package-graph-invalid-check": {
+      "ExitCode": 2,
+      "Error": "Semantic checking does not support JSON source variable type.",
+      "Diagnostics": []
+    }
+  }
+}

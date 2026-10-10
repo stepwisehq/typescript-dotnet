@@ -165,9 +165,24 @@ def main():
     parser.add_argument("--go", required=True, type=Path, help="Pinned actual loader observer")
     parser.add_argument("--semantic-go", required=True, type=Path, help="Pinned genuine Program observer")
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--current-checking-boundaries", type=Path,
+                        help="Explicit current authored boundary replacements; historical default stays unchanged")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     hashes = {"cli": digest(args.executable), "go": digest(args.go), "semanticGo": digest(args.semantic_go)}
+    boundaries = None
+    boundary_hash = None
+    if args.current_checking_boundaries is not None:
+        boundary_hash = digest(args.current_checking_boundaries)
+        context = compare.parse(args.current_checking_boundaries.read_bytes())
+        if set(context) != {"classification", "cases"} or context["classification"] != "authored-current-semantic-boundaries":
+            raise ValueError("Unknown current checking boundary context")
+        boundaries = context["cases"]
+        if set(boundaries) != {"package-graph-check", "package-graph-invalid-check"}:
+            raise ValueError("Current boundary context must replace exactly the two authored mixed-graph controls")
+        for expected_boundary in boundaries.values():
+            if set(expected_boundary) != {"ExitCode", "Error", "Diagnostics"} or expected_boundary["ExitCode"] != 2 or expected_boundary["Diagnostics"] != [] or not isinstance(expected_boundary["Error"], str) or not expected_boundary["Error"]:
+                raise ValueError("Current unsupported boundary must retain explicit failure and empty diagnostic payload")
     failures, records, fixture_hashes = [], [], {}
     start = time.monotonic()
     cases = [("package-checking", "check", "semantic", 0), ("package-checking-invalid", "check", "semantic", 1),
@@ -239,7 +254,8 @@ def main():
                     raise ValueError("Ordinary CLI exit differs")
                 if reference == "unsupported":
                     error = "Checking requires noEmit, noLib and skipLibCheck; its three genuine libraries are loaded explicitly. Use --inspect-config to inspect this configuration without checking."
-                    if actual != dict(ExitCode=2, Error=error, Diagnostics=[]):
+                    boundary = boundaries[row_name] if boundaries is not None else dict(ExitCode=2, Error=error, Diagnostics=[])
+                    if actual != boundary:
                         raise ValueError("Explicit checking capability response differs")
                 else:
                     view = cli_graph_view(actual) if reference == "graph" else actual
@@ -253,10 +269,14 @@ def main():
             records.append(dict(name=row_name, reference=reference, exitCode=process.returncode, expectedExitCode=exit_code, exact=reason is None,
                                 requestSha256=hashlib.sha256(raw).hexdigest(), stdoutSha256=hashlib.sha256(process.stdout).hexdigest(), stderrSha256=hashlib.sha256(process.stderr).hexdigest()))
     drift = hashes != {"cli": digest(args.executable), "go": digest(args.go), "semanticGo": digest(args.semantic_go)}
+    if boundary_hash is not None and boundary_hash != digest(args.current_checking_boundaries):
+        drift = True
     if drift: failures.append(dict(reason="Executable drift"))
     report = dict(cases=len(cases), exact=sum(row["exact"] for row in records), failures=failures, records=records, managed=args.managed,
                   seconds=round(time.monotonic()-start, 3), executableHashes=hashes, executableDrift=drift, fixtureHashes=fixture_hashes,
                   runnerSha256=digest(Path(__file__)), semanticObserverSha256=digest(ROOT / "tools/resolution-cli-oracle/main.go"),
+                  currentCheckingBoundaries=None if args.current_checking_boundaries is None else str(args.current_checking_boundaries),
+                  currentCheckingBoundariesSha256=boundary_hash,
                   projectionLimits="Public CLI diagnostics compared completely. Graph DTO fields/payloads compared, original static trace type names are not serialized; explicit package-directory descriptor separately asserted. Pointer topology and host operations remain covered by the full graph protocol, not the CLI.")
     (args.output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({key: report[key] for key in ("cases", "exact", "failures", "seconds")}))

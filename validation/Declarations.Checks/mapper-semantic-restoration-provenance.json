@@ -1,0 +1,41 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "e7b81a2",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "70e3ab0c91e91399f40d04c6ac9218db45b4dde90d248784e44fa7ff29d61adf",
+    "validation/Declarations.Checks/MapperSemanticChecks.cs": "66ec6825057ac454f1d71389fa5818a90f42836c2feb2a2e75e0585224bfabc0",
+    "tests/Declarations.Tests/MapperSemanticTests.cs": "591e621c545340566cc9873661d9a6eba8cdd89932447cb7f0c3727633c6529a"
+  },
+  "functions": [
+    {
+      "name": "TestCompositeProjectContentMapperSupplementalRoots",
+      "disposition": "original-semantic-channel-restored",
+      "fixturesAndAssertions": "All original source inputs, options, mappings, literals/counts/identity assertions unchanged.",
+      "producer": "Original collectContentMapperDiagnostics concat order: GetSyntacticDiagnostics, GetSemanticDiagnostics, GetProgramDiagnostics."
+    },
+    {
+      "name": "TestContentMapperInvalidMappings",
+      "disposition": "original-semantic-channel-restored",
+      "fixturesAndAssertions": "All original source inputs, options, mappings, literals/counts/identity assertions unchanged.",
+      "producer": "Original collectContentMapperDiagnostics concat order: GetSyntacticDiagnostics, GetSemanticDiagnostics, GetProgramDiagnostics."
+    },
+    {
+      "name": "TestContentMapperSourceFileState",
+      "disposition": "original-semantic-channel-restored",
+      "fixturesAndAssertions": "All original source inputs, options, mappings, literals/counts/identity assertions unchanged.",
+      "producer": "Original collectContentMapperDiagnostics concat order: GetSyntacticDiagnostics, GetSemanticDiagnostics, GetProgramDiagnostics."
+    }
+  ],
+  "historicalProvenance": "validation/Program.Checks/compiler-mapper-test-provenance.json",
+  "historicalStatus": "Accepted Program proof/generation metadata remains historical; this campaign establishes restored semantic-call execution.",
+  "remainingDebt": "TestContentMapperDirectivesPreserveIncrementalGlobals still construction subset; generator/yield/IterableIterator bulk/incremental assertions are external to D1-D6.",
+  "execution": {
+    "original": "passed-targeted3",
+    "managed": "passed-immutable-snapshot5",
+    "native": "pending",
+    "xUnit": "pending",
+    "originalReport": "artifacts/declarations-validation/original-mapper-restoration/report.json",
+    "managedReport": "artifacts/declarations-validation/build5/focused/mapper-semantic-checks/report.json"
+  }
+}

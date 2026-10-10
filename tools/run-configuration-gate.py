@@ -5,8 +5,10 @@ import base64
 import collections
 import datetime
 import gzip
+import hashlib
 import importlib.util
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -17,7 +19,11 @@ import xml.etree.ElementTree as ET
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "artifacts/configuration-validation"
 BASELINE = "2c850db"
-MANIFEST = "validation/configuration-corpus/manifest.json"
+CURRENT_CHECKING = os.environ.get("DECLARATIONS_CURRENT_CHECKING")
+if CURRENT_CHECKING not in (None, "1"):
+    raise RuntimeError("DECLARATIONS_CURRENT_CHECKING must be the explicit current-control value 1")
+HISTORICAL_MANIFEST = "validation/configuration-corpus/manifest.json"
+MANIFEST = "validation/declarations-corpus/configuration-current-manifest.json" if CURRENT_CHECKING else HISTORICAL_MANIFEST
 GO = ROOT / "tools/.cache/configuration-oracle"
 GO_TOOL = ROOT / "tools/.cache/go/bin/go"
 NATIVE = OUT / "native/Configuration.Validation"
@@ -72,7 +78,12 @@ def oracle_snapshot():
 
 def corpus_asset(name, digest):
     path = pathlib.PurePosixPath(name)
-    if path.is_absolute() or ".." in path.parts or path.parts[:2] != ("validation", "configuration-corpus") or sha(name) != digest:
+    current_cli = CURRENT_CHECKING and name in {
+        "validation/declarations-corpus/cli-requests-current.jsonl",
+        "validation/declarations-corpus/cli-expected-current.jsonl",
+        "validation/declarations-corpus/cli-current-provenance.json",
+    }
+    if path.is_absolute() or ".." in path.parts or (path.parts[:2] != ("validation", "configuration-corpus") and not current_cli) or sha(name) != digest:
         raise RuntimeError("Invalid configuration asset/digest: " + name)
 
 
@@ -174,7 +185,17 @@ def validate_demonstrations(manifest, requests, cli_rows):
         config_path = "/repo/" + (directory / demo["configuration"]).as_posix()
         for name in (demo["name"], demo["name"] + "-inspect", demo["name"] + "-check"):
             row = requests.get(name) if name == demo["name"] else cli.get(name)
-            if row is None or row["mode"] != "file" or row["configPath"] != config_path or len(row["files"]) != len(shipped) or {file["path"]: file_bytes(file) for file in row["files"]} != shipped:
+            required = shipped
+            if CURRENT_CHECKING and name == demo["name"]:
+                # The canonical interpretation record keeps its historical input.
+                # Only ordinary checking's authored library environment is replaced.
+                migration = read(manifest["currentCheckingReplacement"]["migration"])
+                base = "examples/configuration/checking-base.json"
+                previous = base64.b64decode(migration["previousBytesBase64"], validate=True)
+                if hashlib.sha256(previous).hexdigest() != migration["previousSha256"] or sha(base) != migration["currentSha256"]:
+                    raise RuntimeError("Explicit checking environment migration bytes differ")
+                required = {**shipped, "/repo/" + base: previous}
+            if row is None or row["mode"] != "file" or row["configPath"] != config_path or len(row["files"]) != len(required) or {file["path"]: file_bytes(file) for file in row["files"]} != required:
                 raise RuntimeError("Demonstration fixture bytes differ from shipped files: " + name)
         required_exit = 0 if demo["name"] == "checking-demo-valid" else 1
         if demo["exitCode"] != required_exit:
@@ -189,6 +210,15 @@ def validate_demonstrations(manifest, requests, cli_rows):
 
 def manifest_groups():
     manifest = read(MANIFEST)
+    if CURRENT_CHECKING:
+        historical = read(HISTORICAL_MANIFEST)
+        replacement = manifest.get("currentCheckingReplacement", {})
+        unchanged = {key: value for key, value in manifest.items() if key != "currentCheckingReplacement"}
+        unchanged["cliControls"] = historical["cliControls"]
+        if unchanged != historical or replacement.get("historicalManifest") != HISTORICAL_MANIFEST or replacement.get("historicalManifestSha256") != sha(HISTORICAL_MANIFEST):
+            raise RuntimeError("Current checking context altered historical configuration obligations/corpus")
+        if replacement.get("baseline") != "e7b81a2" or sha(replacement["migration"]) != replacement["migrationSha256"]:
+            raise RuntimeError("Current checking migration provenance differs")
     if manifest["upstreamRevision"] != read("upstream.lock.json")["revision"]:
         raise RuntimeError("Configuration upstream pin differs")
     groups = manifest["groups"]
@@ -396,7 +426,7 @@ def check_execution():
     binaries, oracles = native_snapshot(), oracle_snapshot()
     (OUT / "native-after-configuration.json").write_text(json.dumps(binaries, indent=2) + "\n")
     (OUT / "oracle-after-configuration.json").write_text(json.dumps(oracles, indent=2) + "\n")
-    return {"native": native, "originalGo": original, "configurationXUnit": tests, "retainedExecution": old, "order": order, "cli": cli, "originalHelpers": helpers, "originalDirectTests": direct, "originalOracleBinaries": oracles}
+    return {"native": native, "originalGo": original, "configurationXUnit": tests, "retainedExecution": old, "order": order, "cli": cli, "originalHelpers": helpers, "originalDirectTests": direct, "originalOracleBinaries": oracles, "currentCheckingReplacement": manifest.get("currentCheckingReplacement"), "currentCheckingEnvironment": {"DECLARATIONS_CURRENT_CHECKING": "1"} if CURRENT_CHECKING else None}
 
 
 def run_gate():

@@ -1,6 +1,8 @@
-// Authored bounded host contract for the original checker Program dependency.
+// Managed interface for the selected original checker Program/Host dependency;
+// actual Program services and named legacy adapter ownership are explicit.
 using TypeScript.Modules;
 using TypeScript.Scanner;
+using TypeScript.TsOptions;
 
 namespace TypeScript.Compiler;
 internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost
@@ -8,6 +10,18 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
     IReadOnlyList<SourceFile> SourceFiles { get; }
 
     CompilerOptions Options { get; }
+    void BindSourceFiles();
+    bool FileExists(RootedFilePath fileName);
+    Dictionary<string, ModeAwareCache<ResolvedModule?>> GetResolvedModules();
+    Dictionary<string, bool> GetPackagesMap();
+    SourceFileMetaData GetSourceFileMetaData(PathKey path);
+    (string ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifier(PathKey path);
+    Node? GetImportHelpersImportSpecifier(PathKey path);
+    bool SourceFileMayBeEmitted(SourceFile sourceFile, bool forceDtsEmit);
+    SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path);
+    SourceOutputAndProjectReference? GetProjectReferenceFromOutputDts(PathKey path);
+    ParsedCommandLine? GetRedirectForResolution(SourceFile sourceFile);
+    RootedDirectoryPath CommonSourceDirectory();
 
     // Authored semantic admission: full graph resolution versus named legacy policy.
     bool AllowsNonRelativeModuleSpecifiers { get; }
@@ -19,6 +33,6 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
     SourceFile? GetSourceFileForResolvedModule(ResolvedModule module);
     ModuleKind GetEmitModuleFormatOfFile(SourceFile sourceFile);
     ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile sourceFile, Node location);
-    ResolutionMode GetImpliedNodeFormatForEmit(SourceFile sourceFile);
+    ModuleKind GetImpliedNodeFormatForEmit(SourceFile sourceFile);
     bool IsSourceFileDefaultLibrary(SourceFile sourceFile);
 }

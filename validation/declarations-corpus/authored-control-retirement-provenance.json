@@ -1,0 +1,60 @@
+{
+  "classification": "authored-capability-restriction-retirement-with-genuine-source-positive-replacement",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "historicalAsset": "validation/data-types-corpus/admission-controls.json",
+  "historicalSha256": "2e0369bd47ec74d5be2cf881ed6d054e231dcbfd8009ef600846101f39dcd555",
+  "retiredControls": [
+    {
+      "adapter": "TypeScript.Checking.Tests.BoundaryTests.ExplicitAdmissionIsIndependentOfGoSemanticAgreement",
+      "name": "builtin-globalThis-read",
+      "previous": {
+        "name": "builtin-globalThis-read",
+        "text": "const x=globalThis;",
+        "admissionOnly": true,
+        "expectedFeature": "checkIdentifier: object value"
+      },
+      "reason": "Actual source checkIdentifier now supports this globalThis value; authored restriction is obsolete, not an original upstream assertion."
+    },
+    {
+      "adapter": "validation/Checker.Validation/SelfTests.cs",
+      "name": "api.builtin-object-read-unsupported",
+      "source": "const x=globalThis;",
+      "reason": "Replaced with actual admitted file diagnostics, symbol/type cache and visible missing-global assertions on the same named legacy adapter input."
+    }
+  ],
+  "replacement": {
+    "name": "global-this-read-current-capability",
+    "requests": "validation/declarations-corpus/requests-families.jsonl",
+    "source": "const x=globalThis;",
+    "domain": "genuine Program with actual family strict ES2022/noLib:true options, no library/global injection",
+    "originalReport": "artifacts/declarations-validation/original-globalthis-retirement/report.json",
+    "assertions": [
+      "Complete Program/options/diagnostic records, including ten real missing-global2318 diagnostics for this ES2022 environment, all byte ranges/chains/related data unchanged.",
+      "Bulk/per-file/repeated semantic diagnostics and public x/globalThis type/symbol records are exact.",
+      "The named legacy adapter SelfTests retains its own eight-global representation; this is not the genuine Program reference count. No source result is normalized to match it."
+    ],
+    "preservedPrefixCases": 46
+  },
+  "previousFiles": "artifacts/declarations-validation/globalthis-control-retirement/before/files.json",
+  "failedGate": "artifacts/declarations-validation/gate-attempt1/final-gate.json",
+  "sourceFiles": {
+    "tests/Checker.Tests/BoundaryTests.cs": "3528e8fe42c28b732b861b97678090238c9a978d5f54fe6f48dd148971008f3a",
+    "validation/Checker.Validation/SelfTests.cs": "0eb1b196bcc57acf04100ceece6ccf1563034a26b1e9b863a6de07b693bba0ef",
+    "tools/check-data-types-boundary.py": "16e6c7233d52856ea7a29c1e587a39af7609b9bd2d7f666939c2937e055affd5"
+  },
+  "limits": [
+    "Historical admission-control JSON, expectation streams and accepted proofs remain byte-identical.",
+    "Only this authored obsolete negative is retired; every other current admission/ownership assertion remains.",
+    "New source-positive case runs through original, managed, xUnit, native and complete record comparison; retirement is not a silent skip."
+  ],
+  "retainedNativeBoundary": {
+    "tool": "tools/check-data-types-boundary.py",
+    "context": {
+      "DECLARATIONS_CURRENT_CHECKING": "1"
+    },
+    "retiredName": "builtin-globalThis-read",
+    "currentSelfTestNames": 14,
+    "behavior": "Only exact historical row and current 14 named positive/foreign assertions are selected under explicit fixed-provenance context; default historical tool path is retained.",
+    "priorTool": "artifacts/declarations-validation/globalthis-control-retirement/before/tools__check-data-types-boundary.py"
+  }
+}

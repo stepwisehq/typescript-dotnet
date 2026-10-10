@@ -95,7 +95,6 @@ internal static class Evaluator
                 case Kind.Identifier:
                     return evaluateEntity(expr, location);
                 case Kind.ElementAccessExpression:
-                    throw TypeScript.Checking.Checker.unsupported("Evaluator: source element access");
                 case Kind.PropertyAccessExpression:
                     if (Ast.IsEntityNameExpression(expr.Expression()))
                         return evaluateEntity(expr, location);

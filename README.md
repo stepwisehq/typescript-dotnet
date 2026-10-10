@@ -1,24 +1,31 @@
 # TypeScript port feasibility study
 
-The **Program construction and environment assembly contract is complete**, verified
-under actual **Linux x64 Native AOT**. Use `tscheck --inspect-program <tsconfig>` to
-construct genuine source/library/type/reference environments and inspect their diagnostics.
-The port embeds all 115 unchanged pinned standard-library files. Environment construction
-is independent of the current checker's supported semantic profiles; inspection does not
-imply successful semantic checking.
+The **genuine checker initialization and declaration/object-model contract is complete**,
+verified under actual **Linux x64 Native AOT**, building on accepted Program construction,
+configuration, resolution, scanner/parser/AST and binder foundations. Ordinary
+`tscheck --config <tsconfig> --json` now uses actual Program options and unchanged upstream
+libraries, with no fixed-library admission gate or hidden library injection.
 
-The final gate passes **24,598 xUnit cases** with zero failures/skips and all retained
-native regressions. New evidence includes 186 paired comparisons, 78 shared groups,
-76 repeated-order executions per runtime and two ordinary disk examples. See the
-[guide](./docs/PROGRAM.md), [contract assessment](./docs/PROGRAM-ASSESSMENT.md),
-[proof](./validation/results/program-verified.json), [source mapping](./source-map.json)
-and [checker completion roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
+Supported declaration behavior includes classes and constructors, inheritance, member
+visibility and initialization, accessors, enums, TS namespaces/augmentation/merging and
+their necessary semantic dependencies. The [warehouse example](./examples/declarations/)
+checks successfully with genuine ES2022 libraries; its invalid variant reports all six
+expected diagnostics and exits 1. See the [usage/reproduction guide](./docs/DECLARATIONS-VERIFY.md),
+[contract assessment](./docs/DECLARATIONS-ASSESSMENT.md), [proof](./validation/results/declarations-verified.json),
+[source mapping](./source-map.json) and [checker roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
 
-Accepted configuration/discovery and source-import resolution remain available through
-`--inspect-config` and `--inspect-project`; `--config` checks the supported semantic
-project profile. See their [configuration](./docs/CONFIGURATION.md) and
-[resolution](./docs/RESOLUTION.md) guides. Broad checker/library semantics, emit,
-build/watch and language services remain separate work.
+Acceptance includes 77 new xUnit cases, 71 complete pinned-Go comparisons in managed
+and native execution, six shared assertion groups, repeated-order checks and all retained
+regression stages. The 24,674 selected-suite TRX aggregate counts passed case executions,
+not unique upstream tests. Broad remaining body/control-flow, advanced type, async/generator,
+JS/JSDoc/JSX/decorator and option/module semantics are unfinished. This is not full
+checker parity or support for every API in the embedded libraries.
+
+All 115 pinned library files remain embedded unchanged. `--inspect-config`,
+`--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and
+genuine Program environments independently of unfinished semantic consumers. See their
+[configuration](./docs/CONFIGURATION.md), [resolution](./docs/RESOLUTION.md) and
+[Program](./docs/PROGRAM.md) guides. Emit, build/watch and language services remain external.
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained
@@ -29,6 +36,9 @@ checkpoints, plus the fixed callable and generic-collection contracts, passed ac
 [foundation assessment](./docs/FOUNDATION-ASSESSMENT.md),
 [completion contract](./docs/FOUNDATION-CONTRACT.md) and
 [verification](./docs/FOUNDATION-VERIFICATION.md) for scope and evidence.
+
+The following historical named profiles are explicit compatibility/test adapters,
+not the ordinary `--config` environment.
 
 The default `Legacy` profile retains standalone scalar/object data checking. The
 explicit `Callable` profile adds ordinary functions/arrows/methods, overloads,

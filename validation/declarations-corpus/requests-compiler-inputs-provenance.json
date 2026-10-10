@@ -1,0 +1,758 @@
+{
+  "baseline": "e7b81a2",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "pinned-compiler-input-reuse-not-original-test-body-or-baseline-pass",
+  "fixtures": 23,
+  "reusedFixtures": 20,
+  "excludedFixtures": 3,
+  "requests": 21,
+  "requestsSha256": "c6ed7b5e42fa0d0eb807e86e33e185efeba9cccdf1b8e85c1513c9436092f97a",
+  "sourceFiles": {
+    "tools/resolution-generate-compiler-inputs.py": "bdbebabc540924cd14067b8769ba0650576c34f97f1b48bf6a6580fbf08db7a3",
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/options_generated.go": "ec1f8e29fc24155d717d717b90089208d771923465f1ff7eb67c80cb2fc89451",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/tsoptions/declarations_generated.go": "13d6ef2de232b16ff818c8ec9e5d5075e62ae511e5254fb4286293b49fa2cc09"
+  },
+  "inputs": [
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/classConstructorOverloadsAccessibility.ts",
+      "sourceSha256": "ea3cb0940b63314352fe483844e4ddabf2e7bf48be228e1162607dba3693fa6f",
+      "domain": "D2/D3 accessibility and signature consistency",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-01-01-classConstructorOverloadsAccessibility"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-01-01-classConstructorOverloadsAccessibility",
+          "compilerDirectives": {
+            "declaration": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "016cd78c39b5b43de098de54ce98d3d4cf98bf0853f8940621d8c9714f919a36"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/classConstructorOverloadsAccessibility.errors.txt": "a029cdc26067d0153eac9484cc20410f20476007c7b93c7aead38673df4b5cfb",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/classConstructorOverloadsAccessibility.symbols": "2f782ebf1fbad870904b0c853005f4cdd93ad187888f23bd4c7327adaac408f7",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/classConstructorOverloadsAccessibility.types": "83fff9c8aa5c93b5c747cc8e4f65ca6d6df130b0a51fc4b78ce1aed7ff6f279a"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/constructorWithExpressionLessReturn.ts",
+      "sourceSha256": "2e52dfd01372a3090d315fbfde6311ede942b61842619a76af83e8a354bf81ab",
+      "domain": "D3 constructor return flow",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-02-01-constructorWithExpressionLessReturn"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-02-01-constructorWithExpressionLessReturn",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "40b7d527d4fceb99778534f08586a3371b89b53c2713c4c8c5f452c585d0b936"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/constructorWithExpressionLessReturn.errors.txt": "04c70e0fd26fc67b42c36d8242c20b8488f335e1b2f2c86bd7782437810aa734",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/constructorWithExpressionLessReturn.symbols": "ed6bc14cc832eca3f42b09e6b28ea6bf674a98a4d9bcb4282df2564476e1d902",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/constructorWithExpressionLessReturn.types": "5db492cdc05c802b1429c6d6188a88b6048baf832db51528d68e7bc403f7f3ac"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/automaticConstructors/derivedClassWithoutExplicitConstructor.ts",
+      "sourceSha256": "10ea7a1aec96fd2cd75bd51013ea2a4767d35b60eb4ea32ba18a3212f2f027f4",
+      "domain": "D2 inherited generic default signatures",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-03-01-derivedClassWithoutExplicitConstructor"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-03-01-derivedClassWithoutExplicitConstructor",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "daf4d823af732a44c7c527bae06c3808f43312ac19ad4a7480897f9924183911"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassWithoutExplicitConstructor.errors.txt": "e5d8cb7e72cbf2fff68740e22214d8b7becdf50618d8bfddfba639e98a41a5e9",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassWithoutExplicitConstructor.symbols": "0cf169d3b7e79f2fb53696b6081b7bd4cd8b55ec4e80b968d41cd5ce7f7182e8",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassWithoutExplicitConstructor.types": "6bfe7c8cf68f1221cb6d6da8c82ec444f0dc4e39fda91e1a1fb27291a931a26b"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/superCalls/derivedClassConstructorWithoutSuperCall.ts",
+      "sourceSha256": "e5ddf464af207e278c25a3722f2dae394e3537484374a7bde5cf794731b3887e",
+      "domain": "D3 actual super-flow validation including nested scopes",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-04-01-derivedClassConstructorWithoutSuperCall"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-04-01-derivedClassConstructorWithoutSuperCall",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "24c110e53df189ae3d3e1a33e40d0a1d26a66bed82021d92bc5c9d5a0864f61e"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassConstructorWithoutSuperCall.errors.txt": "3cab4ad3c868ce4cc8e74524a7265ac3945bf031131257bfd8fd9675fd063644",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassConstructorWithoutSuperCall.symbols": "594b3a03851380c4669fa504dcc5b4eab3c34e8a172453b6bbe26c305954763d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/derivedClassConstructorWithoutSuperCall.types": "a7bd47d4ebd7195d071cab7b0e3f8868203b665f99953d89c90419c8295a76a2"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/superCalls/superPropertyInConstructorBeforeSuperCall.ts",
+      "sourceSha256": "3e15a11793a63cea7fb1f3bc61ce826266cb6c1d5da71afd358fa9e1bd024988",
+      "domain": "D3 pre-super property use",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-05-01-superPropertyInConstructorBeforeSuperCall"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-05-01-superPropertyInConstructorBeforeSuperCall",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "6b499783e22cf5ada7addeb1e1dd259df928eb120380120eadbe8433d9031882"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/superPropertyInConstructorBeforeSuperCall.errors.txt": "3a0b7f23d130cf001d6b7f4964381823ca644aa2dc9a965cdc4f91bdc0988e07",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/superPropertyInConstructorBeforeSuperCall.symbols": "ea36fa7f5ce56e51512da0e1918c306a25ee10d3c5e24b9fb1cd54862c547a98",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/superPropertyInConstructorBeforeSuperCall.types": "d95c65d749bcf292848bb02034363da726c91ec420f15d6bfe639b23c72efe9f"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/constructorDeclarations/constructorParameters/readonlyConstructorAssignment.ts",
+      "sourceSha256": "d9b65f427de11c1623578d593e69e6a7250e477cfc604d9f57e44ea9fc53ebf9",
+      "domain": "D3 readonly parameter-property redeclaration and assignment",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-06-01-readonlyConstructorAssignment"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-06-01-readonlyConstructorAssignment",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "20b00bb775b2367fe39fdade9706854d57d8423e0d9802a199245f09eadde2fc"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/readonlyConstructorAssignment.errors.txt": "41fc67d362a980eb5904dc4e61833a8a19d86e6d106c927fe0f30a208a5eb9cc",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/readonlyConstructorAssignment.symbols": "8c91e4588f2c3223cb12c6fef03e54847820f5ed88415ee3a781b961a662081d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/readonlyConstructorAssignment.types": "37351b151a3149e6c5a97e53173ab26aaae917a1f566e4a846c38e2769ec5002"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/propertyMemberDeclarations/strictPropertyInitialization.ts",
+      "sourceSha256": "72872e9393d09bed709a08e707c25dc221d34685f6702695ace25db5232cc975",
+      "domain": "D3 full branch/return/#/ambient/static/computed initialization input",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-07-01-strictPropertyInitialization"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-07-01-strictPropertyInitialization",
+          "compilerDirectives": {
+            "declaration": "true",
+            "strict": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "c2fa45cd1ef23c2e3996ae48bfcefd38e4a8db817e39a7b326b698f271407205"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/strictPropertyInitialization.errors.txt": "e76de485f9c9f324c595c7307aef049818436603865ac3578f52318cdd845f24",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/strictPropertyInitialization.symbols": "1abd628a007dc6e5edeca5d0bacad2a176e1fe843035cc08718c9d4f65af4150",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/strictPropertyInitialization.types": "446a538e06223aa4b0b2f50d403ac607ddfbbc1c41e81f15af21d0ee2f5f5c18"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/propertyMemberDeclarations/autoAccessorDisallowedModifiers.ts",
+      "sourceSha256": "68a53aead3cc2733148493039ead854548aec709f7be52bdcc248290a54454d6",
+      "domain": "D3 malformed auto-accessor modifier/parser recovery",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-08-01-autoAccessorDisallowedModifiers",
+        "declaration-input-08-02-autoAccessorDisallowedModifiers"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-08-01-autoAccessorDisallowedModifiers",
+          "compilerDirectives": {
+            "notypesandsymbols": "true",
+            "target": "esnext"
+          },
+          "requestSha256": "b915296bf60e613911d9abc9a493eb140cdecb1d3266c0be7338b34d2d929029"
+        },
+        {
+          "name": "declaration-input-08-02-autoAccessorDisallowedModifiers",
+          "compilerDirectives": {
+            "notypesandsymbols": "true",
+            "target": "es2017"
+          },
+          "requestSha256": "7a5f5cecbfb8283a948167d8ff37238d51e07102af63f52ceeacd15caab19a45"
+        }
+      ],
+      "baselineSourceFiles": {},
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/classExpression.ts",
+      "sourceSha256": "1adf9d1a422a1054540eb41999d76567ef7f7b1c0f25c2293ce445424b46b9f1",
+      "domain": "D2 anonymous/named/contextual class expressions",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-09-01-classExpression"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-09-01-classExpression",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "02b8ebf4072419b19d06d384e330f88b22115d9a047119c4b30591862d79145c"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/classExpression.symbols": "63c21e0807af072d0a13c1360946d21a6c8e1a8298e3a890ca33791ebfd57ddf",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/classExpression.types": "f118860ed699914aa1e096cc664edbd88f549e334acc520ee2558061c1e3750f"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/mixinClassesAnonymous.ts",
+      "sourceSha256": "4b475fd0703f54753740f4cbadb5f558a144986f395fd7c5af0984f28b5d4ebd",
+      "domain": "D2 generic anonymous mixin and spread constructor",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-10-01-mixinClassesAnonymous"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-10-01-mixinClassesAnonymous",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "47f877f359b37c8b94cbc1f043f80d4a121fc6975dd250150bef1cbaa0658ec2"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mixinClassesAnonymous.symbols": "f7d8cd99adf52f653073dd0a11ff66c3ed94a01d43749ef0ffda1b9ce67e4d5c",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mixinClassesAnonymous.types": "b1cf8719650e076108a21433e0d429af544f3188c7c51066adeaf0dda41b6e27"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/mixinAccessModifiers.ts",
+      "sourceSha256": "070b2bd456cc005cf773da744563798dd4b995172ac991cbf09d113a57728006",
+      "domain": "D2/D3 private/protected intersection mixin origins",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-11-01-mixinAccessModifiers"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-11-01-mixinAccessModifiers",
+          "compilerDirectives": {
+            "declaration": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "973d0eeea93d0dc490e56089665cdd4c5acdabe581c9a513d0a5c16cc8ef8348"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mixinAccessModifiers.errors.txt": "d7238b7a6215fc4c0d272a43d67ddff1e454ed8f8c8c81422938d24f2fbcbcd9",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mixinAccessModifiers.symbols": "e6b33f80620efb4980ae855115f55ad76545f61240852996147bd12821d88981",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mixinAccessModifiers.types": "b9076873657f15af091292cdd47c5d7dcf690a70f4f73cd8dd25cabf3f22e7f0"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/members/privateNames/privateNameUnused.ts",
+      "sourceSha256": "1b4c6dd1d50e76eb8de3040a0364dd70954db4210054ec474d66346211baac58",
+      "domain": "D3/D5 lexical-private unused lifecycle",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-12-01-privateNameUnused"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-12-01-privateNameUnused",
+          "compilerDirectives": {
+            "noemit": "true",
+            "nounusedlocals": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "0cb9409350956d79d2d8d7732c91fc3f0d582caccb91b5aaf7af4114c6732e67"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameUnused.errors.txt": "97a022e8954f57b2435b853a5a6d1e4fef3478c3760134da5df01697458cf449",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameUnused.symbols": "649b60766459bbaf62297ebc3c4fd26a24436c46698dc675dbe41798256ee0bc",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameUnused.types": "c40683da19ed70f25f31461e851bd8d224324af72ade3961992d013a86fc54cc"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/enums/enumConstantMembers.ts",
+      "sourceSha256": "3d1c3b285a95b6745bcac19212909682656711bddc60627fc0a0614132e75fdb",
+      "domain": "D4 numeric/string/nonfinite const and ambient enum values",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-13-01-enumConstantMembers"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-13-01-enumConstantMembers",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "8d14c33e79bff93e3f41603b6b80e8934ddf1af8e726a29304e7b0ed4ef0ce68"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumConstantMembers.errors.txt": "95f2540d7d39a51e00a79a4817976d2c0e79ddc42b54abdcc91dc77a42123959",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumConstantMembers.symbols": "4de0b1244ab686547ad01806ce970d0f03aa98519a9b1cf9c1eccb39ea463952",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumConstantMembers.types": "feec24a89ba88969feaa5a6ebc2b74e2b9e7f7df0942a4d6b83d4965bb86c96a"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/enums/enumMergingErrors.ts",
+      "sourceSha256": "cb78ada28807814eb6bccfa5047394b8db72cddf7898955f1202aa7b30e6d29d",
+      "domain": "D4 full merged enum numbering/errors",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-14-01-enumMergingErrors"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-14-01-enumMergingErrors",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "c5d5562b411822e5f254645e2dce275d9a139e4ef1b352081054aa6981b3531f"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumMergingErrors.errors.txt": "9c01632b213cf38b0ee75c222f4a2797a85c05f3a7633bb234d777923599aa2e",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumMergingErrors.symbols": "ade92a589b81e22f937daa4a8ec3cf1709b90ddff8cbc5a0df3ff286d290396f",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/enumMergingErrors.types": "9c7d065becf226a7033902aea645df7f6ca9a1e1b7f8c41b78e09fc14b3f26a0"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/internalModules/DeclarationMerging/ModuleAndClassWithSameNameAndCommonRoot.ts",
+      "sourceSha256": "77f27ab3b41c78b0f70e4b5c0f920e8797a661fcd830394fde32cfe3e5fc3c6b",
+      "domain": "D4 cross-file namespace/class ordering and merged roots",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-15-01-ModuleAndClassWithSameNameAndCommonRoot"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-15-01-ModuleAndClassWithSameNameAndCommonRoot",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "e5725ba608a5a2f0632ffdc321e506974f0ff0569b66ea9d2f63cb696086e51f"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/ModuleAndClassWithSameNameAndCommonRoot.errors.txt": "5a7c33506b2de1ca02ed15cb5b19480ca2680bad69839143c86272011443d5cf",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/ModuleAndClassWithSameNameAndCommonRoot.symbols": "8baddbc02e7610db5e5b17be1466ddd882b3151684b6c52bd9cc4b57cc53dfd2",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/ModuleAndClassWithSameNameAndCommonRoot.types": "28d548c4dddaee5409f87f6a002b003a2bb951d84c33ac6d7e10786976ac8e48"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/internalModules/DeclarationMerging/ModuleAndEnumWithSameNameAndCommonRoot.ts",
+      "sourceSha256": "fd5501b4327f283a2b6d7276ad37b5926a53deaea819754b7312bb306830d080",
+      "domain": "D4 enum/namespace merge relationships",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-16-01-ModuleAndEnumWithSameNameAndCommonRoot"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-16-01-ModuleAndEnumWithSameNameAndCommonRoot",
+          "compilerDirectives": {
+            "target": "es2015"
+          },
+          "requestSha256": "53ba7818b9f7cac5016e8e315352046d4cce303d0850e554a863030542fb29c8"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/ModuleAndEnumWithSameNameAndCommonRoot.symbols": "99dc5424b8dd0b76557bad4546390767b6eeea06abd09149d6db82eeb0cd6fcf",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/ModuleAndEnumWithSameNameAndCommonRoot.types": "178705e75d476a73c29e6efd2b812a4a8deff8f5e1288dab1bda0a9997a08cbc"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/interfaces/declarationMerging/mergedInterfaceAugmentationDiagnostics.ts",
+      "sourceSha256": "08003d7d27752b226546a1c29e869c4e39b601c0fb26dc1c8f835ecdcf87aa80",
+      "domain": "D1/D4 actual global/ambient/external incompatible augmentation",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-17-01-mergedInterfaceAugmentationDiagnostics"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-17-01-mergedInterfaceAugmentationDiagnostics",
+          "compilerDirectives": {
+            "noemit": "true",
+            "notypesandsymbols": "true",
+            "strict": "true"
+          },
+          "requestSha256": "c18b8b789d3d72b30d96410ba6b2d7c6ec0262ad375d9ba40609979578e69ffe"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/mergedInterfaceAugmentationDiagnostics.errors.txt": "7c540f7d4e85c6db16fc5a1129f813215863c218cb11102fec4bd98b4ef19370"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsPropertyNames.ts",
+      "sourceSha256": "7a8449abb30fc4543f55add560196a0619ebabf13b7753289c24db124102a2c7",
+      "domain": "D5 unique symbol property declarations",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-18-01-uniqueSymbolsPropertyNames"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-18-01-uniqueSymbolsPropertyNames",
+          "compilerDirectives": {
+            "lib": "esnext",
+            "target": "esnext"
+          },
+          "requestSha256": "3ca3b37ee1d0161544ddaee31db8f5509b9f157a199a96abaf07b6754d9b107c"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/uniqueSymbolsPropertyNames.errors.txt": "d56f2889fd522527e7a4a1c1b2d7115561be41cbc58ef5a5c3ae5ac2b1bffc37",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/uniqueSymbolsPropertyNames.symbols": "74c30a553b124edb074c9c863a9a10baf3c522e9095f8c0eba7a0ba4ce9300c9",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/uniqueSymbolsPropertyNames.types": "890d43b752be57481cc01b72879d8f1625b5dd57069ac61f18817290912e3dd5"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/members/privateNames/privateNameEmitHelpers.ts",
+      "sourceSha256": "6985d8bb1d828c89a95284f8dcfda761deeafbc8edc0b6165093f8af48525bec",
+      "domain": "D3/D5 original old tslib imported private get/set helper arity",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-19-01-privateNameEmitHelpers"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-19-01-privateNameEmitHelpers",
+          "compilerDirectives": {
+            "importhelpers": "true",
+            "isolatedmodules": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "f66d2bdcad2ad7246cb881db7a32afba2044db28db864c812003fe800b293108"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameEmitHelpers.errors.txt": "0a51022e611459ef37e2152adff1e1abe756fdb805514e18bb502bfa6bf95015",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameEmitHelpers.symbols": "caea748a4bdc4b35dd80f69bbc00558101ccd8cba1a6047db980fdcb3589809d",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameEmitHelpers.types": "e363ae470e7025dcccdc5c7f2605e1041217dc871d0d9a87f3b57d6243e9f799"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/members/privateNames/privateNameStaticEmitHelpers.ts",
+      "sourceSha256": "c5a4c8bc7bd8870efd62708e5f1f784ea67da3a8c6e76f6c6f2397bfc864b29e",
+      "domain": "D3/D5 original old tslib imported static private helper arity",
+      "disposition": "reused-compiler-input-semantic-differential",
+      "originalAssertionsClaimed": 0,
+      "requestNames": [
+        "declaration-input-20-01-privateNameStaticEmitHelpers"
+      ],
+      "variants": [
+        {
+          "name": "declaration-input-20-01-privateNameStaticEmitHelpers",
+          "compilerDirectives": {
+            "importhelpers": "true",
+            "isolatedmodules": "true",
+            "target": "es2015"
+          },
+          "requestSha256": "5de5f8dd4b55b0d443779a1c7aff8e1b5620d48b96ea993c3bd37ed18fb871cc"
+        }
+      ],
+      "baselineSourceFiles": {
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameStaticEmitHelpers.errors.txt": "85e233cd21675ada9772f84f31de429a8874d2ebf84e11029a0475f19d18e09c",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameStaticEmitHelpers.symbols": "b1ce36dd97101bf43452e5ec9849b9d07d2a4e47c49d3af39a28967890ae47ac",
+        "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/privateNameStaticEmitHelpers.types": "5ac72a08f81580507114f1b4687e2f4c85891ff6c7bc8c5022aee51443bd5c6b"
+      },
+      "adaptations": {
+        "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+        "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+        "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+        "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+      },
+      "execution": {
+        "original": "pending",
+        "managed": "pending",
+        "native": "pending"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/members/accessibility/privateProtectedMembersAreNotAccessibleDestructuring.ts",
+      "sourceSha256": "e3068ce8287ca4cbf979aa9301f5f8d34747e78cac8aae749bf5bc94318df903",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "reason": "Contains selected member visibility plus contract-external destructuring consumers; whole original input excluded, authored property-access origins covered separately.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/classes/members/privateNames/privateNameStaticMethodAsync.ts",
+      "sourceSha256": "390f8ee8b0b66bf2a5742531640b991636d68668029fe9761f1e9fc231ae77ef",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "reason": "Async/protocol body consumers external under D1-D6; no source rewrite.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    },
+    {
+      "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/decorators/class/accessor/decoratorOnClassAccessor1.ts",
+      "sourceSha256": "580cc62f5b7314d0db5aeba240fbb946a5139f07eeb6870a2cbb817e482c6b2b",
+      "disposition": "excluded-whole-input-external-body-consumer",
+      "reason": "Decorator execution external under D1-D6; no decorator erasure or expected suppression.",
+      "requestNames": [],
+      "originalAssertionsClaimed": 0
+    }
+  ]
+}

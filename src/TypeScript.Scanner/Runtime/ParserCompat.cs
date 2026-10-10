@@ -63,8 +63,13 @@ internal static class GoRuntime
         }
     }
 
-    public static IEnumerable<ParsingContext> RangeKeys(ParsingContext count) => Enumerable.Range(0, (int)count).Select(x => (ParsingContext)x);
-    public static IEnumerable<int> RangeKeys(int count) => Enumerable.Range(0, count);
+    public static IEnumerable<ParsingContext> RangeKeys(ParsingContext count) => RangeKeys((int)count).Select(x => (ParsingContext)x);
+    // Go integer range produces no values for zero or negative signed bounds.
+    public static IEnumerable<int> RangeKeys(int count)
+    {
+        for (int i = 0; i < count; i++)
+            yield return i;
+    }
     public static IEnumerable<K> RangeKeys<K, V>(Dictionary<K, V> source) => source?.Keys ?? Enumerable.Empty<K>();
     public static IEnumerable<KeyValuePair<int, T>> Range<T>(List<T> source)
     {

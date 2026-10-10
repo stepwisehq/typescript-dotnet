@@ -1,11 +1,12 @@
 {
-    // These settings are explicit checking admission, not parser defaults.
+    // Checking uses the authentic ES5 library environment selected by these options.
     "compilerOptions": {
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "Bundler",
         "noEmit": true,
-        "noLib": true,
+        "noLib": false,
+        "lib": ["es5"],
         "skipLibCheck": true,
         "types": [],
         "allowImportingTsExtensions": true,

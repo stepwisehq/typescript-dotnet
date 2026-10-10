@@ -1,4 +1,4 @@
-// Authored checks of Program's lazy semantic admission and the selected scheduler.
+// Authored checks of Program's lazy genuine checker acquisition and scheduler.
 // These are behavioral controls, not translations of upstream test bodies.
 using Configuration.Checks;
 using TypeScript.Checking;
@@ -59,21 +59,48 @@ public static class ConstructionBoundaryChecks
 
     private static void SemanticAdmission()
     {
+        // Authored Go signed-integer range witness: tuple normalization reaches
+        // the shared runtime adapter with a negative upper bound.
+        Check.Sequence(GoRuntime.RangeKeys(-1).ToList(), Array.Empty<int>(), "negative Go integer range is empty");
+        Check.Sequence(GoRuntime.RangeKeys(0).ToList(), Array.Empty<int>(), "zero Go integer range is empty");
+        Check.Sequence(GoRuntime.RangeKeys(3).ToList(), new[] { 0, 1, 2 }, "positive Go integer range");
+
         var declarations = Construct(new Dictionary<string, string>
         {
             ["/src/tsconfig.json"] = "{\"compilerOptions\":{\"noLib\":true,\"types\":[]},\"files\":[\"ambient.d.ts\"]}",
             ["/src/ambient.d.ts"] = "declare interface Ambient { value: string; }"
         });
         Check.Equal(declarations.GetSourceFiles().Count, 1, "declaration environment construction is unrestricted");
-        Throws<UnsupportedSemanticFeatureException>(() => declarations.GetTypeChecker(), "declaration-only acquisition fails explicitly");
+        var declarationChecker = declarations.GetTypeChecker();
+        try
+        {
+            var file = declarations.GetSourceFile(RootedFilePath.FromGoString("/src/ambient.d.ts"))!;
+            Check.True(declarationChecker.Checker.GetSymbolAtLocation(file.Statements.Nodes[0].Name()) is not null,
+                "declaration-only acquisition binds actual ambient interface");
+        }
+        finally { declarationChecker.Done(); }
+        var missingGlobals = declarations.GetGlobalDiagnostics();
+        Check.Equal(missingGlobals?.Count ?? 0, 10, "actual noLib environment reports missing globals");
+        Check.True(missingGlobals!.All(diagnostic => diagnostic.Code() == Diagnostics.Cannot_find_global_type_0.Code()),
+            "missing globals are real source diagnostics, not acquisition rejection");
 
         var fullEnvironment = Construct(new Dictionary<string, string>
         {
             ["/src/tsconfig.json"] = "{\"compilerOptions\":{\"target\":\"esnext\",\"types\":[]},\"files\":[\"main.ts\"]}",
             ["/src/main.ts"] = "export const value = 1;"
         }, bundled: true);
-        Check.True(fullEnvironment.GetSourceFiles().Count > 4, "full genuine bundled environment loads before checker admission");
-        Throws<UnsupportedSemanticFeatureException>(() => fullEnvironment.GetTypeChecker(), "unadmitted environment acquisition fails explicitly");
+        Check.True(fullEnvironment.GetSourceFiles().Count > 4, "full genuine bundled environment loads before checker acquisition");
+        var fullChecker = fullEnvironment.GetTypeChecker();
+        try
+        {
+            var file = fullEnvironment.GetSourceFile(RootedFilePath.FromGoString("/src/main.ts"))!;
+            var declaration = file.Statements.Nodes[0].AsVariableStatement().DeclarationList
+                .AsVariableDeclarationList().Declarations.Nodes[0];
+            Check.True(fullChecker.Checker.GetSymbolAtLocation(declaration.Name()) is not null,
+                "actual later-library environment supports public source symbol query");
+        }
+        finally { fullChecker.Done(); }
+        Check.Equal(fullEnvironment.GetGlobalDiagnostics()?.Count ?? 0, 0, "actual later library globals initialize");
 
         var libraries = FixedLibraryEnvironment.Load();
         var inputs = new Dictionary<string, string>

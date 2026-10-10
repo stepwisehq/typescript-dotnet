@@ -1,0 +1,59 @@
+{
+  "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+  "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+  "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+  "counterpartSha256": "e2b071655985289269d4048c683c851cce44c2ec8df678489a55ab1cec906145",
+  "functions": [
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetSymbolAtLocation",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "All three actual source node symbol queries are non-null."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "original": "passed",
+        "report": "artifacts/declarations-validation/original-checker-tests/report.json",
+        "managed": "passed-immutable-snapshot5",
+        "native": "pending",
+        "xUnit": "pending",
+        "managedReport": "artifacts/declarations-validation/build5/focused/checker-checks/report.json"
+      }
+    },
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "Both type-only nondefault import clause types are non-null and reference-equal to the regular import clause type.",
+        "Default import clause type is reference-equal to the actual default interface reference type."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "original": "passed",
+        "report": "artifacts/declarations-validation/original-checker-tests/report.json",
+        "managed": "passed-immutable-snapshot5",
+        "native": "pending",
+        "xUnit": "pending",
+        "managedReport": "artifacts/declarations-validation/build5/focused/checker-checks/report.json"
+      }
+    }
+  ],
+  "originalReport": "artifacts/declarations-validation/original-checker-tests/report.json",
+  "scope": "Two complete pinned original behavioral bodies. No checker benchmarks, tracer body, authored oracle tests, or compiler fixtures counted as new original unit bodies."
+}

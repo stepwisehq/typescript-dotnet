@@ -7,6 +7,7 @@ import datetime
 import gzip
 import importlib.util
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -17,7 +18,11 @@ import xml.etree.ElementTree as ET
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "artifacts/resolution-validation"
 BASELINE = "37bd57d"
-MANIFEST = "validation/resolution-corpus/manifest.json"
+CURRENT_CHECKING = os.environ.get("DECLARATIONS_CURRENT_CHECKING")
+if CURRENT_CHECKING not in (None, "1"):
+    raise RuntimeError("DECLARATIONS_CURRENT_CHECKING must be the explicit current-control value 1")
+HISTORICAL_MANIFEST = "validation/resolution-corpus/manifest.json"
+MANIFEST = "validation/declarations-corpus/resolution-current-manifest.json" if CURRENT_CHECKING else HISTORICAL_MANIFEST
 GO = ROOT / "tools/.cache/resolution-oracle"
 GO_TOOL = ROOT / "tools/.cache/go/bin/go"
 SEMANTIC_GO = ROOT / "tools/.cache/resolution-cli-oracle"
@@ -169,6 +174,11 @@ def validate_cli(manifest):
     shipped["examples/configuration/checking-base.json"] = sha("examples/configuration/checking-base.json")
     if cli["sourceFiles"] != shipped:
         raise RuntimeError("CLI fixture registry omits/changes shipped source/config files")
+    if CURRENT_CHECKING:
+        expected = "validation/declarations-corpus/resolution-current-boundaries.json"
+        if cli.get("currentCheckingBoundaries") != expected:
+            raise RuntimeError("Current resolution checking boundary context missing")
+        checked_path(expected, cli["currentCheckingBoundariesSha256"])
 
 
 def validate_graph_oracle(manifest):
@@ -221,8 +231,11 @@ def validate_graph_oracle(manifest):
 
 
 def cli_command(output):
-    return [sys.executable, "tools/check-resolution-cli.py", "--executable", str(CLI),
-            "--go", str(GO), "--semantic-go", str(SEMANTIC_GO), "--output", str(output)]
+    command = [sys.executable, "tools/check-resolution-cli.py", "--executable", str(CLI),
+               "--go", str(GO), "--semantic-go", str(SEMANTIC_GO), "--output", str(output)]
+    if CURRENT_CHECKING:
+        command += ["--current-checking-boundaries", manifest_groups()["cliControls"]["currentCheckingBoundaries"]]
+    return command
 
 
 def reproduce_pristine(manifest):
@@ -273,6 +286,15 @@ def check_pristine(manifest):
 
 def manifest_groups():
     manifest = read(MANIFEST)
+    if CURRENT_CHECKING:
+        historical = read(HISTORICAL_MANIFEST)
+        replacement = manifest.get("currentCheckingReplacement", {})
+        unchanged = {key: value for key, value in manifest.items() if key != "currentCheckingReplacement"}
+        unchanged["cliControls"] = historical["cliControls"]
+        if unchanged != historical or replacement.get("historicalManifest") != HISTORICAL_MANIFEST or replacement.get("historicalManifestSha256") != sha(HISTORICAL_MANIFEST):
+            raise RuntimeError("Current checking context altered historical resolution obligations/corpus")
+        if replacement.get("baseline") != "e7b81a2":
+            raise RuntimeError("Unexpected current checking replacement baseline")
     if manifest["upstream"] != read("upstream.lock.json")["revision"] or manifest["baseline"] != BASELINE:
         raise RuntimeError("Resolution upstream pin differs")
     groups = manifest["groups"]
@@ -431,6 +453,8 @@ def check_execution():
         raise RuntimeError("Resolution CLI producer changed")
     if cli["fixtureHashes"] != manifest["cliControls"]["sourceFiles"]:
         raise RuntimeError("Resolution ordinary CLI shipped fixture bytes differ")
+    if CURRENT_CHECKING and cli.get("currentCheckingBoundariesSha256") != manifest["cliControls"]["currentCheckingBoundariesSha256"]:
+        raise RuntimeError("Current authored boundary observations changed/incomplete")
     original_cli = sum(row["reference"] != "unsupported" for row in cli["records"])
     if len(cli["records"]) != cli["cases"] or original_cli != manifest["cliControls"]["originalCases"] or cli["cases"] - original_cli != manifest["cliControls"]["authoredBoundaryCases"] or any(not row["exact"] for row in cli["records"]):
         raise RuntimeError("Resolution CLI original/boundary executions incomplete")
@@ -456,7 +480,7 @@ def check_execution():
     binaries, oracles = native_snapshot(), oracle_snapshot()
     (OUT / "native-after-resolution.json").write_text(json.dumps(binaries, indent=2) + "\n")
     (OUT / "oracle-after-resolution.json").write_text(json.dumps(oracles, indent=2) + "\n")
-    return {"native": native, "originalGo": original, "resolutionXUnit": tests, "retainedExecution": old, "order": order, "cli": cli, "originalDirectTests": direct, "originalOracleBinaries": oracles, "pristineParity": check_pristine(manifest), "graphOracle": manifest["graphOracle"]}
+    return {"native": native, "originalGo": original, "resolutionXUnit": tests, "retainedExecution": old, "order": order, "cli": cli, "originalDirectTests": direct, "originalOracleBinaries": oracles, "currentCheckingReplacement": manifest.get("currentCheckingReplacement"), "currentCheckingEnvironment": {"DECLARATIONS_CURRENT_CHECKING": "1"} if CURRENT_CHECKING else None, "pristineParity": check_pristine(manifest), "graphOracle": manifest["graphOracle"]}
 
 
 def run_gate():

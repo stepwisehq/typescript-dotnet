@@ -46,7 +46,16 @@ public static class SelfTests
         Check("api.repeat-diagnostics", checker.GetDiagnostics()is null && checker.GetDiagnostics()is null);
         Check("api.repeat-type-identity", ReferenceEquals(checker.GetTypeAtLocation(Name(file)), checker.GetTypeAtLocation(Name(file))));
         var objectFile = Parse("const x=globalThis;");
-        Check("api.builtin-object-read-unsupported", Rejected(() => Checker.Create(objectFile).GetDiagnostics(), "checkIdentifier: object value"));
+        var objectChecker = Checker.Create(objectFile);
+        Check("api.builtin-object-read-admitted", objectChecker.GetDiagnostics() is null);
+        var objectGlobals = objectChecker.GetGlobalDiagnostics();
+        Check("api.builtin-object-missing-globals-visible", objectGlobals.Count == 8 && objectGlobals.All(d => d.Code() == 2318));
+        var objectDeclaration = objectFile.Statements.Nodes[0].AsVariableStatement().DeclarationList
+            .AsVariableDeclarationList().Declarations.Nodes[0].AsVariableDeclaration();
+        Check("api.builtin-object-symbol", ReferenceEquals(objectChecker.GetSymbolAtLocation(objectDeclaration.Initializer), objectChecker.GlobalThisSymbol));
+        var objectType = objectChecker.GetTypeAtLocation(objectDeclaration.Initializer);
+        Check("api.builtin-object-type", ReferenceEquals(objectType, objectChecker.GetTypeAtLocation(objectDeclaration.Name())));
+        Check("api.builtin-object-type-identity", ReferenceEquals(objectType, objectChecker.GetTypeAtLocation(objectDeclaration.Initializer)));
         return result;
     }
 }

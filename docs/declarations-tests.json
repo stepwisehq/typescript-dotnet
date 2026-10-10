@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "baseline": "e7b81a2",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "accepted-D1-D6-source13-managed-native-retained-qualified",
+  "directOriginalFunctions": [
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetSymbolAtLocation",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "All three actual source node symbol queries are non-null."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "original": "passed-final-pinned-Go",
+        "report": "artifacts/declarations-validation/original-checker-tests/report.json",
+        "managed": "passed-final-source13",
+        "native": "passed-final-linux-x64-AOT",
+        "xUnit": "passed-final",
+        "managedReport": "artifacts/declarations-validation/build12/shared/report.json",
+        "proof": "validation/results/declarations-verified.json"
+      }
+    },
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "Both type-only nondefault import clause types are non-null and reference-equal to the regular import clause type.",
+        "Default import clause type is reference-equal to the actual default interface reference type."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "original": "passed-final-pinned-Go",
+        "report": "artifacts/declarations-validation/original-checker-tests/report.json",
+        "managed": "passed-final-source13",
+        "native": "passed-final-linux-x64-AOT",
+        "xUnit": "passed-final",
+        "managedReport": "artifacts/declarations-validation/build12/shared/report.json",
+        "proof": "validation/results/declarations-verified.json"
+      }
+    }
+  ],
+  "otherPinnedCheckerDomains": [
+    {
+      "name": "TestTracerPushPreservesEndArgMutations",
+      "source": "upstream/TypeScript/tsc/internal/checker/tracer_test.go",
+      "disposition": "existing-tracing-responsibility-not-new-declaration-body"
+    },
+    {
+      "name": "BenchmarkNewChecker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "disposition": "benchmark-not-correctness-body-not-selected"
+    }
+  ],
+  "compilerInputs": {
+    "status": "original-managed-native21-complete-record-exact",
+    "classification": "compiler-input/baseline reuse is separate from direct assertion bodies",
+    "domains": [
+      "initialization/global/ambient/augmentation merge",
+      "class and constructor instance/static/base/implements/mixin/null/cycle",
+      "private/protected/# origin and constructor/static-flow initialization",
+      "accessors/autoaccessors/override",
+      "enums/namespaces/ambient/import-equals/export-equals merges",
+      "computed/unique-symbol names",
+      "noUnused/directive/skip option behavior"
+    ],
+    "fixtures": 23,
+    "reusedFixtures": 20,
+    "excludedFixtures": 3,
+    "requests": 21,
+    "provenance": "validation/declarations-corpus/requests-compiler-inputs-provenance.json",
+    "originalReport": "artifacts/declarations-validation/original-property-display/compiler-inputs/report.json",
+    "originalAssertionsClaimed": 0,
+    "managedReport": "artifacts/declarations-validation/managed-corpus/compiler-inputs/report.json",
+    "representativeReport": "artifacts/declarations-validation/build12/representative/report.json",
+    "execution": {
+      "native": "passed-final21",
+      "proof": "validation/results/declarations-verified.json",
+      "nativeReport": "artifacts/declarations-validation/native-corpus/compiler-inputs/report.json"
+    }
+  },
+  "mapperSemanticDebts": [
+    {
+      "name": "TestCompositeProjectContentMapperSupplementalRoots",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "status": "original-semantic-call-restored-original-managed-native-xUnit-passed",
+      "managedReport": "artifacts/declarations-validation/build12/shared/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    },
+    {
+      "name": "TestContentMapperInvalidMappings",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "status": "original-semantic-call-restored-original-managed-native-xUnit-passed",
+      "managedReport": "artifacts/declarations-validation/build12/shared/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    },
+    {
+      "name": "TestContentMapperSourceFileState",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "status": "original-semantic-call-restored-original-managed-native-xUnit-passed",
+      "managedReport": "artifacts/declarations-validation/build12/shared/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    }
+  ],
+  "externalMapperProtocolDebt": {
+    "name": "TestContentMapperDirectivesPreserveIncrementalGlobals",
+    "reason": "Original generator/yield and missing IterableIterator bulk-global/incremental semantic assertions remain later protocol dependency; no source or expectation substitution."
+  },
+  "execution": {
+    "referenceVertical": "artifacts/declarations-validation/original-property-display/vertical/report.json",
+    "managed": "passed-final71-shared6-order26-cli2",
+    "native": "passed-final-linux-x64-AOT71-shared6-order26-cli2",
+    "proof": "validation/results/declarations-verified.json",
+    "managedReport": "artifacts/declarations-validation/managed-corpus/families/report.json",
+    "retainedConstructionReport": "artifacts/declarations-validation/build3/retained-construction-checks/report.json",
+    "retainedIntegrationReport": "artifacts/declarations-validation/build3/retained-config-integration-checks/report.json",
+    "latestFocusedReport": "artifacts/declarations-validation/build13/globalthis-positive/report.json",
+    "currentSemanticReferenceCases": 71,
+    "lastCompleteReplayCases": 71,
+    "currentSharedGroups": 6,
+    "currentSharedComposition": {
+      "originalChecker": 2,
+      "restoredOriginalMapperSemantic": 3,
+      "authoredExternalConsumer": 1
+    },
+    "reproducibleManifest": "validation/declarations-corpus/manifest.json",
+    "newXUnitCases": 77,
+    "semanticObservationProvenance": "validation/declarations-corpus/semantic-observation-provenance.json",
+    "failedGate": "artifacts/declarations-validation/gate-attempt1/final-gate.json",
+    "authoredCapabilityRetirement": "validation/declarations-corpus/authored-control-retirement-provenance.json",
+    "focusedRetainedCorrection": "artifacts/declarations-validation/build13/retained-boundary-focus/report.json",
+    "nativeReport": "artifacts/declarations-validation/native-corpus/families/report.json",
+    "finalGate": "artifacts/declarations-validation/final-gate.json",
+    "elapsedSeconds": 1163.022,
+    "selectedTrxCaseExecutions": 24674,
+    "aggregationLimit": "Selected suite TRXs counted once; cheap repeated affected checks recorded separately. Not a distinct-test inventory or all repeated run executions.",
+    "failedGates": [
+      "artifacts/declarations-validation/gate-attempt1/final-gate.json",
+      "artifacts/declarations-validation/gate-attempt2/final-gate.json"
+    ]
+  },
+  "authoredSourceFamilies": {
+    "cases": 47,
+    "classification": "source-family-public-Program-semantic-inputs-not-original-test-bodies",
+    "requests": "validation/declarations-corpus/requests-families.jsonl",
+    "provenance": "validation/declarations-corpus/requests-families-provenance.json",
+    "execution": {
+      "original": "passed",
+      "report": "artifacts/declarations-validation/original-globalthis-retirement/report.json",
+      "managed": "passed-final47-complete-record-exact",
+      "native": "passed-final47-complete-record-exact",
+      "managedReport": "artifacts/declarations-validation/managed-corpus/families/report.json",
+      "representativeReport": "artifacts/declarations-validation/build13/globalthis-positive/report.json",
+      "skipPolicyReport": "artifacts/declarations-validation/build4/representative/report.json",
+      "nativeReport": "artifacts/declarations-validation/native-corpus/families/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    }
+  },
+  "currentAuthoredCheckingMigration": {
+    "classification": "obsolete-hidden-library/profile-controls-retired-explicit-source-environment",
+    "provenance": "validation/declarations-corpus/checking-environment-migration.json",
+    "configuration": {
+      "cases": 14,
+      "genuineGoCases": 13,
+      "authoredHostBoundaryCases": 1,
+      "report": "artifacts/declarations-validation/build3/current-configuration-cli/report.json",
+      "managed": "14exact14",
+      "native": "passed-final-linux-x64-AOT-14-exact",
+      "nativeReport": "artifacts/configuration-validation/native-cli/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    },
+    "resolution": {
+      "cases": 11,
+      "genuineGoCases": 9,
+      "authoredExternalSemanticBoundaryCases": 2,
+      "report": "artifacts/declarations-validation/build3/current-resolution-cli-replacements/report.json",
+      "managed": "11exact11",
+      "native": "passed-final-linux-x64-AOT-11-exact",
+      "nativeReport": "artifacts/resolution-validation/native-cli/report.json",
+      "proof": "validation/results/declarations-verified.json"
+    },
+    "gateContext": {
+      "DECLARATIONS_CURRENT_CHECKING": "1"
+    },
+    "historicalRequestExpectedProofBytes": "unchanged"
+  },
+  "authoredExternalSemanticControl": {
+    "name": "Authored.ExternalSemanticConsumers",
+    "counterpart": "validation/Declarations.Checks/ExternalSemanticBoundaryChecks.cs",
+    "classification": "authored-external-consumer-contract; no Go unsupported-result parity or original-body claim",
+    "assertions": [
+      "Checked JS actual semantic consumer returns javascriptSemantics.",
+      "CheckJs false skips semantic checking while explicit owned JS type query rejects and retains file/kind/byte span.",
+      "Actual JSX and decorator semantic consumers explicitly reject external semantics.",
+      "All fixtures acquire genuine ES5 global environment with original options."
+    ],
+    "execution": {
+      "managed": "passed-final-source13",
+      "managedReport": "artifacts/declarations-validation/build5/focused/external-semantic-boundary-checks/report.json",
+      "native": "passed-final-linux-x64-AOT",
+      "xUnit": "passed-final",
+      "proof": "validation/results/declarations-verified.json"
+    }
+  }
+}

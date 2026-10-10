@@ -1,0 +1,19 @@
+{
+  "baseline": "e7b81a2",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "authored-genuine-Program-semantic-inputs-not-original-test-bodies",
+  "cases": 3,
+  "requestsSha256": "6c3c060da229032445ff6c34a103b1502c89fb572363d2c4cd944421deed55f7",
+  "sourceFiles": {
+    "examples/declarations/warehouse/audit-stock.d.ts": "e2cc357d17589c88b7b586245c270a726bccf8310facde701e634852e6aec5b3",
+    "examples/declarations/warehouse/audit.d.ts": "e463059faa5128de5f040ace6bdad4c38c0b9b8a9a1b3fdd4f4aabceb7c2cadd",
+    "examples/declarations/warehouse/domain.ts": "689c61cdcd3cdf21a06411556eb4367a221973bafd8e1e97d5f13f38acaeff25",
+    "examples/declarations/warehouse/main.ts": "7e714c57caad76fdcf3c46279236e8ad10ae4f0b378310014a2f0d04d12caaa5",
+    "examples/declarations/warehouse/tsconfig.json": "289cccf80869f33c222e9719117cffa768fd3a705e4a43e1feec0ce5d67aff68",
+    "examples/declarations/warehouse/warehouse.ts": "6fa68b867dd7484cd4048b1bc5bd5ef73155ec79a0dad2bf921401a1007e37f7",
+    "examples/declarations/warehouse-invalid/main.ts": "88fc19689a64d79c1dbcdca7988259b8ccb12a6917be88c8fcbec2d99ef546d4",
+    "examples/declarations/warehouse-invalid/tsconfig.json": "154f4bc288796423e836b502a7e72bc52bf29a69d72f93b41481d11d4bcef68a"
+  },
+  "optionsAndLibraries": "Actual tsconfig parsing and Bundled.WrapFS; strict ES2022 demos and default options/library interface input. No option or library substitution.",
+  "observation": "Full retained Program records plus actual global-before/bulk/per-file/global-after/repeat semantic channels; no expected data derived from managed output."
+}

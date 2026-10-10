@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "campaign": "checker-initialization-declaration-object-model",
+  "baseline": "e7b81a2",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 71,
+  "groups": [
+    {
+      "name": "families",
+      "requests": "validation/declarations-corpus/requests-families.jsonl",
+      "expected": "validation/declarations-corpus/expected-families.jsonl.gz",
+      "cases": 47,
+      "requestsSha256": "ad35df62a1af4aba46cf21b7ee1efd9eaeee67e99d73a13752fde8535fc9eb07",
+      "expectedSha256": "e5b3221c453ea64881902a795d1cb0aff5549ddbbb0b05fa2f15b271f158fe5f",
+      "provenance": "validation/declarations-corpus/requests-families-provenance.json",
+      "provenanceSha256": "c2c86d36b94ab2ce85f485dfa82361caeafd2f4d86783702351966fe59a6a7d7",
+      "originalOutputSha256": "868a29e9783015f7b3a3387120f0be7b708cae0473474c6f10b118e3c96f49ea",
+      "originalReport": "artifacts/declarations-validation/original-globalthis-retirement/report.json"
+    },
+    {
+      "name": "vertical",
+      "requests": "validation/declarations-corpus/requests-vertical.jsonl",
+      "expected": "validation/declarations-corpus/expected-vertical.jsonl.gz",
+      "cases": 3,
+      "requestsSha256": "6c3c060da229032445ff6c34a103b1502c89fb572363d2c4cd944421deed55f7",
+      "expectedSha256": "4fe1b50629dc7015b6f56a52e8cd1f16cfcbc955d7a466a25a63bd3275ac4df6",
+      "provenance": "validation/declarations-corpus/requests-vertical-provenance.json",
+      "provenanceSha256": "cb490f72ad6db9ba4733af131309c4ccd7d7b80d1a79f12ff633ecc989c4eab6",
+      "originalOutputSha256": "8f3b9a347bfc7df5e16df04296eb69f718e324a2bbf5a71b102fb1eb2b58628f",
+      "originalReport": "artifacts/declarations-validation/original-property-display/vertical/report.json"
+    },
+    {
+      "name": "compiler-inputs",
+      "requests": "validation/declarations-corpus/requests-compiler-inputs.jsonl",
+      "expected": "validation/declarations-corpus/expected-compiler-inputs.jsonl.gz",
+      "cases": 21,
+      "requestsSha256": "c6ed7b5e42fa0d0eb807e86e33e185efeba9cccdf1b8e85c1513c9436092f97a",
+      "expectedSha256": "c0820384496192836dba054f5f7d3887e47193272779bf22c3dadf96f10120f3",
+      "provenance": "validation/declarations-corpus/requests-compiler-inputs-provenance.json",
+      "provenanceSha256": "1882758e4e1427e81a5c537b1e6c820182a6ebda00d65703441a16f729814480",
+      "originalOutputSha256": "f3de4d08bbc6e8f05dff3f9dda6fdedf7956d8143a100c3c1aac17f8ab28bebb",
+      "originalReport": "artifacts/declarations-validation/original-property-display/compiler-inputs/report.json"
+    }
+  ],
+  "sharedChecks": {
+    "count": 6,
+    "groups": [
+      {
+        "flag": "--checker-checks",
+        "count": 2,
+        "classNames": [
+          "Declarations.Tests.CheckerOriginalTests"
+        ],
+        "names": [
+          "TestGetSymbolAtLocation",
+          "TestGetTypeAtLocationOfTypeOnlyImportClause"
+        ]
+      },
+      {
+        "flag": "--mapper-semantic-checks",
+        "count": 3,
+        "classNames": [
+          "Declarations.Tests.MapperSemanticTests"
+        ],
+        "names": [
+          "TestCompositeProjectContentMapperSupplementalRoots",
+          "TestContentMapperInvalidMappings",
+          "TestContentMapperSourceFileState"
+        ]
+      },
+      {
+        "flag": "--external-semantic-boundary-checks",
+        "count": 1,
+        "classNames": [
+          "Declarations.Tests.ExternalSemanticBoundaryTests"
+        ],
+        "names": [
+          "Authored.ExternalSemanticConsumers"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "Declarations.Tests.CheckerOriginalTests": 2,
+      "Declarations.Tests.MapperSemanticTests": 3,
+      "Declarations.Tests.ExternalSemanticBoundaryTests": 1
+    }
+  },
+  "corpusXUnitClass": "Declarations.Tests.DeclarationsOracleTests",
+  "originalTests": [
+    {
+      "package": "./internal/checker",
+      "functions": [
+        "TestGetSymbolAtLocation",
+        "TestGetTypeAtLocationOfTypeOnlyImportClause"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/checker/checker_test.go": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestCompositeProjectContentMapperSupplementalRoots",
+        "TestContentMapperInvalidMappings",
+        "TestContentMapperSourceFileState"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    }
+  ],
+  "orderControls": {
+    "requests": "validation/declarations-corpus/requests-order.jsonl",
+    "requestsSha256": "96e1f3c795a19f169f21ec26dad72c5f8c4304763b76bcaf4ed2712c5fee1811",
+    "cases": 12,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 26
+  },
+  "currentCheckingEnvironment": {
+    "DECLARATIONS_CURRENT_CHECKING": "1"
+  },
+  "currentCheckingReplacement": {
+    "configurationManifest": "validation/declarations-corpus/configuration-current-manifest.json",
+    "resolutionManifest": "validation/declarations-corpus/resolution-current-manifest.json",
+    "migration": "validation/declarations-corpus/checking-environment-migration.json",
+    "migrationSha256": "4db955a73815d0e2d5d67d60ffd4725db527b3854c8b6fdd0a87aff3d81b176f",
+    "configurationManifestSha256": "a92a7b9f1a9e63227c9959e023ffce8e4d34d7c301e3afdd5655d36897749256",
+    "resolutionManifestSha256": "cb5e53a601331638e23190e3975c14a302f784d31a9db61514e7cfa5113dd976"
+  },
+  "cliControls": {
+    "cases": 2,
+    "requests": "validation/declarations-corpus/requests-cli.jsonl",
+    "requestsSha256": "ed4ee952add68f6c2aa9a15811cdf8ea98c87979f36a87d0cfa245d99ff2b194",
+    "provenance": "validation/declarations-corpus/cli-provenance.json",
+    "provenanceSha256": "05489e8f3cfd366717cacf5eaf5d2c5216c7571e202cc847803a0a9a408109f1",
+    "runner": "tools/check-declarations-cli.py",
+    "runnerSha256": "7ca39261cf4b683d122996f5afacae4297fa38b21b48015103e0bad16aeab578",
+    "sourceFiles": {
+      "examples/declarations/warehouse/audit.d.ts": "e463059faa5128de5f040ace6bdad4c38c0b9b8a9a1b3fdd4f4aabceb7c2cadd",
+      "examples/declarations/warehouse/domain.ts": "689c61cdcd3cdf21a06411556eb4367a221973bafd8e1e97d5f13f38acaeff25",
+      "examples/declarations/warehouse/audit-stock.d.ts": "e2cc357d17589c88b7b586245c270a726bccf8310facde701e634852e6aec5b3",
+      "examples/declarations/warehouse/tsconfig.json": "289cccf80869f33c222e9719117cffa768fd3a705e4a43e1feec0ce5d67aff68",
+      "examples/declarations/warehouse/warehouse.ts": "6fa68b867dd7484cd4048b1bc5bd5ef73155ec79a0dad2bf921401a1007e37f7",
+      "examples/declarations/warehouse/main.ts": "7e714c57caad76fdcf3c46279236e8ad10ae4f0b378310014a2f0d04d12caaa5",
+      "examples/declarations/warehouse-invalid/tsconfig.json": "154f4bc288796423e836b502a7e72bc52bf29a69d72f93b41481d11d4bcef68a",
+      "examples/declarations/warehouse-invalid/main.ts": "88fc19689a64d79c1dbcdca7988259b8ccb12a6917be88c8fcbec2d99ef546d4"
+    },
+    "expectedExits": {
+      "warehouse-valid": 0,
+      "warehouse-invalid": 1
+    },
+    "semanticObserver": "tools/resolution-cli-oracle/main.go",
+    "semanticObserverSha256": "887d169f97d76623efba66645c56f91d6fd563c2256b2336dc506aa8be6b9379"
+  },
+  "jsonErrorProjection": {
+    "controls": 6,
+    "expected": "validation/program-corpus/json-error-controls-expected.json",
+    "expectedSha256": "31115caa8aa1ff8b5bc1190d9b29aaaa581e403ec6f11fa984ad4a047937d8db",
+    "provenance": "validation/program-corpus/json-error-controls-provenance.json",
+    "provenanceSha256": "7ac1c7310473382b06251d3911f66d28ffe3724c4a3f9e5a8fd78ab4f7564625"
+  },
+  "semanticObservation": {
+    "provenance": "validation/declarations-corpus/semantic-observation-provenance.json",
+    "provenanceSha256": "0604e69f15f8534063dbf2eaf7d95c886746824ef34a4862ff94c1b2cf24b981"
+  },
+  "authoredControlRetirement": {
+    "provenance": "validation/declarations-corpus/authored-control-retirement-provenance.json",
+    "provenanceSha256": "5e0ffd4ddc03d2cd9e1a13f96e486e84adeb7685b553faa8fba5356945fc4b84"
+  }
+}

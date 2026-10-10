@@ -1,4 +1,4 @@
-// Authored behavioral observer of actual Program APIs; no checker acquisition.
+// Authored behavioral observer of actual Program APIs; checking is explicit opt-in.
 // Static value projection reuses accepted Resolution roles, without reflection.
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -195,7 +195,7 @@ public static partial class ProgramRunner
         internal JsonNode? Directive(ResolvedTypeReferenceDirective? result) => result is null ? null : Object(("ResolutionDiagnostics", Diagnostics(result.ResolutionDiagnostics)), ("Primary", result.Primary), ("ResolvedFileName", result.ResolvedFileName), ("ResolvedPath", result.ResolvedPath), ("OriginalPath", result.OriginalPath), ("PackageId", result.PackageId), ("IsExternalLibraryImport", result.IsExternalLibraryImport));
     }
 
-    private static JsonObject Snapshot(Observer observer, CompilerProgram program, bool bind)
+    private static JsonObject Snapshot(Observer observer, CompilerProgram program, bool bind, JsonObject? semantic = null)
     {
         JsonArray files = [];
         foreach (var file in program.SourceFiles())
@@ -247,7 +247,7 @@ public static partial class ProgramRunner
         });
         using var explain = new MemoryStream();
         program.ExplainFiles(explain, TypeScript.Locale.Locales.Default, RootedDirectoryPath.FromGoString("/"));
-        return new JsonObject
+        var snapshot = new JsonObject
         {
             ["files"] = files, ["filesByPath"] = aliases, ["duplicateSources"] = Value(program.DuplicateSourceFiles()), ["options"] = Value(program.Options()), ["roots"] = Value(program.CommandLine().FileNames()),
             ["configDiagnostics"] = observer.Diagnostics(program.GetConfigFileParsingDiagnostics()), ["programDiagnostics"] = observer.Diagnostics(program.GetProgramDiagnostics()),
@@ -260,6 +260,8 @@ public static partial class ProgramRunner
             ["deepImports"] = Value(program.DeepImportPackageNames().OrderBy(value => value, StringComparer.Ordinal).ToList()),
             ["explainFilesBase64"] = Convert.ToBase64String(explain.ToArray()), ["moduleResolutionErrorBase64"] = program.ModuleResolutionError() is Exception error ? Bytes(error.Message) : null
         };
+        if (semantic is not null) snapshot["semantic"] = ObserveSemantics(observer, program, semantic);
+        return snapshot;
     }
 
     private static void Keys(JsonObject value, params string[] allowed)
@@ -271,7 +273,9 @@ public static partial class ProgramRunner
     public static string Run(string line)
     {
         var request = (JsonObject)JsonNode.Parse(line)!;
-        Keys(request, "Name", "ConfigPath", "Files", "CaseInsensitive", "UseSourceOfProjectReference", "SkipModuleResolution", "SingleThreaded", "TypingsLocation", "Bind", "Changes", "Dependency", "ResolverDecorator", "MapperProject");
+        Keys(request, "Name", "ConfigPath", "Files", "CaseInsensitive", "UseSourceOfProjectReference", "SkipModuleResolution", "SingleThreaded", "TypingsLocation", "Bind", "Changes", "Dependency", "ResolverDecorator", "MapperProject", "Semantic");
+        if (request["Semantic"] is not null && request["Semantic"] is not JsonObject)
+            throw new ArgumentException("Semantic request must be an object.");
         if (request["ResolverDecorator"] is not null &&
             (request["SingleThreaded"]?.GetValue<bool>() != true || request["Changes"] is JsonArray { Count: > 0 }))
             throw new ArgumentException("Authored resolver callback host requires single-threaded fresh construction");
@@ -320,7 +324,7 @@ public static partial class ProgramRunner
                 TypingsLocation = RootedDirectoryPath.FromGoString(Input(request, "TypingsLocation")),
                 CreateModuleResolver = resolverFactory
             });
-            snapshots.Add((JsonNode)Snapshot(observer, program, bind));
+            snapshots.Add((JsonNode)Snapshot(observer, program, bind, request["Semantic"] as JsonObject));
             foreach (JsonObject change in ((JsonArray?)request["Changes"] ?? []).Cast<JsonObject>())
             {
                 Keys(change, "Kind", "File", "Files");
@@ -337,7 +341,7 @@ public static partial class ProgramRunner
                 };
                 changes.Add((JsonNode)new JsonObject { ["kind"] = kind, ["reused"] = changed.Reused, ["changedFile"] = observer.File(changed.NewFile),
                     ["programReturned"] = changed.Program is not null, ["sameFileNames"] = changed.Program is not null && changed.Program.HasSameFileNames(old) });
-                if (changed.Program is not null) { program = changed.Program; snapshots.Add((JsonNode)Snapshot(observer, program, bind)); }
+                if (changed.Program is not null) { program = changed.Program; snapshots.Add((JsonNode)Snapshot(observer, program, bind, request["Semantic"] as JsonObject)); }
             }
         }
         result["owners"] = observer.Owners.Count == 0 ? null : observer.Owners;

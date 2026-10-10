@@ -8,7 +8,11 @@ namespace TypeScript.Checking;
 public sealed partial class Checker
 {
     private int serializationLevel;
+    // printer.go:249. Preserve the source numeric/string display producer.
+    private string valueToString(object value) => ValueToString(value);
     public string TypeToString(Type t) => ScannerString.ToJsString(typeToStringByteString(t));
+    // printer.go:120. Public display follows the existing Unicode API boundary.
+    public string SymbolToString(Symbol symbol) => ScannerString.ToJsString(symbolToString(symbol));
     internal string typeToStringByteString(Type t) => typeToString(t, null);
     private string typeToStringNoTypeReduction(Type t) => typeToStringEx(t, null, flags: TypeScript.NodeBuilding.Flags.NoTypeReduction);
     // checker.go:19952 selects WriteArrayAsGenericType without the default alias flags.
@@ -40,7 +44,7 @@ public sealed partial class Checker
     }
 
     // printer.go:126/133. Default All meaning and AllowAnyNodeKind select SymbolToNode.
-    private string symbolToString(Symbol symbol) => symbolToStringEx(symbol, null, SymbolFlags.All);
+    internal string symbolToString(Symbol symbol) => symbolToStringEx(symbol, null, SymbolFlags.All);
     // checker.go:16300 selects All/AllowAnyNodeKind with DoNotIncludeSymbolChain.
     private string symbolToStringWithoutSymbolChain(Symbol symbol, Node enclosingDeclaration) => symbolToStringEx(symbol, enclosingDeclaration, SymbolFlags.All, TypeScript.NodeBuilding.InternalFlags.DoNotIncludeSymbolChain);
     private string symbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, TypeScript.NodeBuilding.InternalFlags internalFlags = TypeScript.NodeBuilding.InternalFlags.None)
@@ -56,10 +60,9 @@ public sealed partial class Checker
     // printer.go:180/224. Default signature and predicate diagnostic flags.
     private string signatureToString(Signature signature)
     {
-        if ((signature.flags & SignatureFlags.Construct) != 0)
-            throw unsupported("signatureToString: construct signature");
+        bool isConstructor = (signature.flags & SignatureFlags.Construct) != 0;
         var builder = getNodeBuilder();
-        var node = builder.SignatureToSignatureDeclaration(signature, Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
+        var node = builder.SignatureToSignatureDeclaration(signature, isConstructor ? Kind.ConstructSignature : Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true).Write(node, writer, null);
         return writer.String();
@@ -87,9 +90,7 @@ public sealed partial class Checker
             {
                 if ((t.flags & TypeFlags.BooleanLiteral) != 0 || (!expandingEnum && (t.flags & TypeFlags.EnumLike) != 0))
                 {
-                    if ((t.flags & TypeFlags.BooleanLiteral) == 0)
-                        throw unsupported("formatUnionTypes: enum");
-                    var baseType = booleanType;
+                    var baseType = (t.flags & TypeFlags.BooleanLiteral) != 0 ? booleanType : getBaseTypeOfEnumLikeType(t);
                     if ((baseType.flags & TypeFlags.Union) != 0)
                     {
                         int count = baseType.AsUnionType().types.Count;

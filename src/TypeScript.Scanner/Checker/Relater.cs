@@ -200,6 +200,8 @@ public sealed partial class Checker
     private readonly Relation assignableRelation = new(), identityRelation = new(), subtypeRelation = new(), strictSubtypeRelation = new(), comparableRelation = new();
     private bool isMarkerType(Type t) => markerTypes.Contains(t);
     private bool checkTypeAssignableTo(Type source, Type target, Node errorNode, Message headMessage) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, null);
+    // relater.go:347. Type assertions use the actual comparable relation and diagnostics.
+    private bool checkTypeComparableTo(Type source, Type target, Node errorNode, Message headMessage) => checkTypeRelatedToEx(source, target, comparableRelation, errorNode, headMessage, null);
     private bool checkTypeAssignableToEx(Type source, Type target, Node errorNode, Message headMessage, List<Diagnostic> output) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, output);
     private bool isTypeAssignableTo(Type source, Type target) => isTypeRelatedTo(source, target, assignableRelation);
     internal bool isTypeIdenticalTo(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation);
@@ -283,43 +285,103 @@ public sealed partial class Checker
         return false;
     }
 
-    // isSimpleTypeRelatedTo (205): selected primitive branches, enum/object throw.
-    private bool isSimpleTypeRelatedTo(Type source, Type target, Relation relation, Action<Message, object[]> errorReporter = null)
+    // Go constant values are nil, float64, or byte strings. Preserve interface
+    // equality without CLR boxed identity or Double.Equals treating NaN as equal.
+    private static bool declarationConstantValuesEqual(object left, object right) =>
+        left is JsNum.Number a && right is JsNum.Number b ? a.Value == b.Value :
+        left is double x && right is double y ? x == y : Equals(left, right);
+
+    // relater.go:205: primitive and enum relationships.
+    private bool isSimpleTypeRelatedTo(Type source, Type target, Relation relation, ErrorReporter errorReporter = null)
     {
         var s = source.flags;
         var t = target.flags;
-        if ((t & TypeFlags.Any) != 0 || (s & TypeFlags.Never) != 0 || source == wildcardType)
-            return true;
-        if ((t & TypeFlags.Unknown) != 0 && !(relation == strictSubtypeRelation && (s & TypeFlags.Any) != 0))
-            return true;
-        if ((t & TypeFlags.Never) != 0)
-            return false;
-        if ((s & TypeFlags.StringLike) != 0 && (t & TypeFlags.String) != 0)
-            return true;
-        if (((s | t) & TypeFlags.EnumLike) != 0)
-            throw unsupported("isSimpleTypeRelatedTo: enum");
-        if ((s & TypeFlags.NumberLike) != 0 && (t & TypeFlags.Number) != 0)
-            return true;
-        if ((s & TypeFlags.BigIntLike) != 0 && (t & TypeFlags.BigInt) != 0)
-            return true;
-        if ((s & TypeFlags.BooleanLike) != 0 && (t & TypeFlags.Boolean) != 0)
-            return true;
-        if ((s & TypeFlags.ESSymbolLike) != 0 && (t & TypeFlags.ESSymbol) != 0)
-            return true;
-        if ((s & TypeFlags.Undefined) != 0 && (!strictNullChecks && (t & TypeFlags.UnionOrIntersection) == 0 || (t & (TypeFlags.Undefined | TypeFlags.Void)) != 0))
-            return true;
-        if ((s & TypeFlags.Null) != 0 && (!strictNullChecks && (t & TypeFlags.UnionOrIntersection) == 0 || (t & TypeFlags.Null) != 0))
-            return true;
-        if ((s & TypeFlags.Object) != 0 && (t & TypeFlags.NonPrimitive) != 0)
-            return !(relation == strictSubtypeRelation && IsEmptyAnonymousObjectType(source) && (source.objectFlags & ObjectFlags.FreshLiteral) == 0);
-        if (relation == assignableRelation || relation == comparableRelation)
+        if (((((t & TypeFlags.Any) != 0) || ((s & TypeFlags.Never) != 0)) || (source == this.wildcardType)))
         {
-            if ((s & TypeFlags.Any) != 0)
-                return true;
-            if (isUnknownLikeUnionType(target))
-                return true;
+            return true;
         }
-
+        if ((((t & TypeFlags.Unknown) != 0) && !(((relation == this.strictSubtypeRelation) && ((s & TypeFlags.Any) != 0)))))
+        {
+            return true;
+        }
+        if (((t & TypeFlags.Never) != 0))
+        {
+            return false;
+        }
+        if ((((s & TypeFlags.StringLike) != 0) && ((t & TypeFlags.String) != 0)))
+        {
+            return true;
+        }
+        if (((((((s & TypeFlags.StringLiteral) != 0) && ((s & TypeFlags.EnumLiteral) != 0)) && ((t & TypeFlags.StringLiteral) != 0)) && ((t & TypeFlags.EnumLiteral) == 0)) && (declarationConstantValuesEqual(source.AsLiteralType().value, target.AsLiteralType().value))))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.NumberLike) != 0) && ((t & TypeFlags.Number) != 0)))
+        {
+            return true;
+        }
+        if (((((((s & TypeFlags.NumberLiteral) != 0) && ((s & TypeFlags.EnumLiteral) != 0)) && ((t & TypeFlags.NumberLiteral) != 0)) && ((t & TypeFlags.EnumLiteral) == 0)) && (declarationConstantValuesEqual(source.AsLiteralType().value, target.AsLiteralType().value))))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.BigIntLike) != 0) && ((t & TypeFlags.BigInt) != 0)))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.BooleanLike) != 0) && ((t & TypeFlags.Boolean) != 0)))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.ESSymbolLike) != 0) && ((t & TypeFlags.ESSymbol) != 0)))
+        {
+            return true;
+        }
+        if ((((((s & TypeFlags.Enum) != 0) && ((t & TypeFlags.Enum) != 0)) && (source.symbol.Name == target.symbol.Name)) && this.isEnumTypeRelatedTo(source.symbol, target.symbol, errorReporter)))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.EnumLiteral) != 0) && ((t & TypeFlags.EnumLiteral) != 0)))
+        {
+            if (((((s & TypeFlags.Union) != 0) && ((t & TypeFlags.Union) != 0)) && this.isEnumTypeRelatedTo(source.symbol, target.symbol, errorReporter)))
+            {
+                return true;
+            }
+            if ((((((s & TypeFlags.Literal) != 0) && ((t & TypeFlags.Literal) != 0)) && (declarationConstantValuesEqual(source.AsLiteralType().value, target.AsLiteralType().value))) && this.isEnumTypeRelatedTo(source.symbol, target.symbol, errorReporter)))
+            {
+                return true;
+            }
+        }
+        if ((((s & TypeFlags.Undefined) != 0) && (((!this.strictNullChecks && ((t & TypeFlags.UnionOrIntersection) == 0)) || ((t & ((TypeFlags.Undefined | TypeFlags.Void))) != 0)))))
+        {
+            return true;
+        }
+        if ((((s & TypeFlags.Null) != 0) && (((!this.strictNullChecks && ((t & TypeFlags.UnionOrIntersection) == 0)) || ((t & TypeFlags.Null) != 0)))))
+        {
+            return true;
+        }
+        if (((((s & TypeFlags.Object) != 0) && ((t & TypeFlags.NonPrimitive) != 0)) && !((((relation == this.strictSubtypeRelation) && this.IsEmptyAnonymousObjectType(source)) && ((source.objectFlags & ObjectFlags.FreshLiteral) == 0)))))
+        {
+            return true;
+        }
+        if (((relation == this.assignableRelation) || (relation == this.comparableRelation)))
+        {
+            if (((s & TypeFlags.Any) != 0))
+            {
+                return true;
+            }
+            if ((((s & TypeFlags.Number) != 0) && ((((t & TypeFlags.Enum) != 0) || (((t & TypeFlags.NumberLiteral) != 0) && ((t & TypeFlags.EnumLiteral) != 0))))))
+            {
+                return true;
+            }
+            if (((((s & TypeFlags.NumberLiteral) != 0) && ((s & TypeFlags.EnumLiteral) == 0)) && ((((t & TypeFlags.Enum) != 0) || ((((t & TypeFlags.NumberLiteral) != 0) && ((t & TypeFlags.EnumLiteral) != 0)) && (declarationConstantValuesEqual(source.AsLiteralType().value, target.AsLiteralType().value)))))))
+            {
+                return true;
+            }
+            if (this.isUnknownLikeUnionType(target))
+            {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -352,9 +414,16 @@ public sealed partial class Checker
         }
         else if (r.errorChain != null)
         {
-            // Export/import retry diagnostics are outside this script-only boundary.
-            if (source.symbol != null && (source.symbol.Flags & SymbolFlags.Alias) != 0)
-                throw unsupported("checkTypeRelatedToEx: export/import retry");
+            if (headMessage != null && errorNode != null && result == Ternary.False && source.symbol != null && exportTypeLinks.Has(source.symbol))
+            {
+                var links = exportTypeLinks.Get(source.symbol);
+                if (links.originatingImport != null && !Ast.IsImportCall(links.originatingImport))
+                {
+                    var helpfulRetry = checkTypeRelatedTo(getTypeOfSymbol(links.target), target, relation, null);
+                    if (helpfulRetry)
+                        r.relatedInfo = GoRuntime.Append(r.relatedInfo, createDiagnosticForNode(links.originatingImport, Diagnostics.Type_originates_at_this_import_A_namespace_style_import_cannot_be_called_or_constructed_and_will_cause_a_failure_at_runtime_Consider_using_a_default_import_or_import_require_here_instead));
+                }
+            }
             reportDiagnostic(createDiagnosticChainFromErrorChain(r.errorChain, r.errorNode, r.relatedInfo), diagnosticOutput);
         }
 
@@ -418,7 +487,7 @@ public sealed partial class Checker
 
     private static void guardFiniteObject(Type t, string branch)
     {
-        if ((t.flags & (TypeFlags.StringMapping | TypeFlags.EnumLike)) != 0 || (t.objectFlags & (ObjectFlags.Class | ObjectFlags.JsxAttributes)) != 0)
+        if ((t.flags & TypeFlags.StringMapping) != 0 || (t.objectFlags & ObjectFlags.JsxAttributes) != 0)
             throw unsupported(branch);
     }
 
@@ -764,11 +833,24 @@ public sealed partial class Checker
 
     private bool isTypeSubsetOfUnion(Type source, Type target)
     {
-        if ((source.flags & TypeFlags.Union) != 0)
-            return source.Types().All(t => target.Types().Contains(t));
-        if ((source.flags & TypeFlags.Enum) != 0)
-            throw unsupported("isTypeSubsetOfUnion: enum");
-        return target.Types().Contains(source);
+        if (((source.flags & TypeFlags.Union) != 0))
+        {
+            {
+                foreach (var t in GoRuntime.RangeValues(source.Types()))
+                {
+                    if (!containsType(target.Types(), t))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        if ((((source.flags & TypeFlags.EnumLike) != 0) && (this.getBaseTypeOfEnumLikeType(source) == target)))
+        {
+            return true;
+        }
+        return containsType(target.Types(), source);
     }
 
     // relater.go:2315. Preserve combined constraints for admitted implicit-this
@@ -901,8 +983,9 @@ public sealed partial class Checker
     {
         foreach (var targetProp in getPropertiesOfType(target) ?? [])
         {
-            if (targetProp.ValueDeclaration?.Name()?.Kind == Kind.PrivateIdentifier)
-                throw unsupported("getUnmatchedPropertiesWorker: static private property");
+            // relater.go:981: static private names are not unmatched-property candidates.
+            if (isStaticPrivateIdentifierProperty(targetProp))
+                continue;
             if (requireOptionalProperties || (targetProp.Flags & SymbolFlags.Optional) == 0 && (targetProp.CheckFlags & CheckFlags.Partial) == 0)
             {
                 var sourceProp = getPropertyOfType(source, targetProp.Name);
@@ -3892,8 +3975,43 @@ public sealed partial class Checker
         {
             var sourceFlags = getDeclarationModifierFlagsFromSymbol(sourceProp);
             var targetFlags = getDeclarationModifierFlagsFromSymbol(targetProp);
-            if (((sourceFlags | targetFlags) & ModifierFlags.NonPublicAccessibilityModifier) != 0)
-                throw unsupported("propertyRelatedTo: private/protected class property");
+            // relater.go:4305. Private members require the same declaration; a
+            // protected target requires a valid override from a derived class.
+            if ((sourceFlags & ModifierFlags.Private) != 0 || (targetFlags & ModifierFlags.Private) != 0)
+            {
+                if (sourceProp.ValueDeclaration != targetProp.ValueDeclaration)
+                {
+                    if (reportErrors)
+                    {
+                        if ((sourceFlags & ModifierFlags.Private) != 0 && (targetFlags & ModifierFlags.Private) != 0)
+                            reportError(Diagnostics.Types_have_separate_declarations_of_a_private_property_0, c.symbolToString(targetProp));
+                        else
+                            reportError(Diagnostics.Property_0_is_private_in_type_1_but_not_in_type_2,
+                                c.symbolToString(targetProp),
+                                c.typeToStringByteString((sourceFlags & ModifierFlags.Private) != 0 ? source : target),
+                                c.typeToStringByteString((sourceFlags & ModifierFlags.Private) != 0 ? target : source));
+                    }
+                    return Ternary.False;
+                }
+            }
+            else if ((targetFlags & ModifierFlags.Protected) != 0)
+            {
+                if (!c.isValidOverrideOf(sourceProp, targetProp))
+                {
+                    if (reportErrors)
+                        reportError(Diagnostics.Property_0_is_protected_but_type_1_is_not_a_class_derived_from_2,
+                            c.symbolToString(targetProp), c.typeToStringByteString(c.getDeclaringClass(sourceProp) ?? source),
+                            c.typeToStringByteString(c.getDeclaringClass(targetProp) ?? target));
+                    return Ternary.False;
+                }
+            }
+            else if ((sourceFlags & ModifierFlags.Protected) != 0)
+            {
+                if (reportErrors)
+                    reportError(Diagnostics.Property_0_is_protected_in_type_1_but_public_in_type_2,
+                        c.symbolToString(targetProp), c.typeToStringByteString(source), c.typeToStringByteString(target));
+                return Ternary.False;
+            }
             if (relation == c.strictSubtypeRelation && c.isReadonlySymbol(sourceProp) && !c.isReadonlySymbol(targetProp))
                 return Ternary.False;
             var related = isPropertySymbolTypeRelated(sourceProp, targetProp, getTypeOfSourceProperty, reportErrors, intersectionState);
@@ -3925,8 +4043,20 @@ public sealed partial class Checker
 
         private void reportUnmatchedProperty(Type source, Type target, Symbol unmatchedProperty, bool requireOptionalProperties)
         {
-            if (unmatchedProperty.ValueDeclaration?.Name()?.Kind == Kind.PrivateIdentifier)
-                throw unsupported("reportUnmatchedProperty: private identifier");
+            // relater.go:4380. Equal private descriptions in different classes
+            // identify distinct members, so prefer the specific access diagnostic.
+            if (unmatchedProperty.ValueDeclaration?.Name()?.Kind == Kind.PrivateIdentifier &&
+                source.symbol != null && (source.symbol.Flags & SymbolFlags.Class) != 0)
+            {
+                var description = unmatchedProperty.ValueDeclaration.Name().Text();
+                var key = Binder.GetSymbolNameForPrivateIdentifier(source.symbol, description);
+                if (c.getPropertyOfType(source, key) != null)
+                {
+                    reportError(Diagnostics.Property_0_in_type_1_refers_to_a_different_member_that_cannot_be_accessed_from_within_type_2,
+                        description, c.symbolToString(source.symbol), c.symbolToString(target.symbol));
+                    return;
+                }
+            }
             var props = c.getUnmatchedProperties(source, target, requireOptionalProperties, false);
             var(sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
             if (props.Count == 1)
@@ -4080,14 +4210,14 @@ public sealed partial class Checker
                 }
             }
 
-            if (c.exactOptionalPropertyTypes)
-                throw unsupported("reportRelationError: exact optional property option");
             if (message == null)
             {
                 if (relation == c.comparableRelation)
                     message = Diagnostics.Type_0_is_not_comparable_to_type_1;
                 else if (sourceType == targetType)
                     message = Diagnostics.Type_0_is_not_assignable_to_type_1_Two_different_types_with_this_name_exist_but_they_are_unrelated;
+                else if (c.exactOptionalPropertyTypes && GoRuntime.Len(c.getExactOptionalUnassignableProperties(source, target)) != 0)
+                    message = Diagnostics.Type_0_is_not_assignable_to_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_types_of_the_target_s_properties;
                 else
                 {
                     if ((source.flags & TypeFlags.StringLiteral) != 0 && (target.flags & TypeFlags.Union) != 0)
@@ -4103,6 +4233,9 @@ public sealed partial class Checker
                     message = Diagnostics.Type_0_is_not_assignable_to_type_1;
                 }
             }
+
+            else if (message == Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1 && c.exactOptionalPropertyTypes && GoRuntime.Len(c.getExactOptionalUnassignableProperties(source, target)) > 0)
+                message = Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_types_of_the_target_s_properties;
 
             var head = getChainMessage(0);
             if (head == Diagnostics.Object_literal_may_only_specify_known_properties_and_0_does_not_exist_in_type_1 || head == Diagnostics.Object_literal_may_only_specify_known_properties_but_0_does_not_exist_in_type_1_Did_you_mean_to_write_2)
@@ -4258,11 +4391,16 @@ public sealed partial class Checker
     {
         if (node == null || isOrHasGenericConditional(target))
             return false;
-        // NoCheck is fixed false in this admitted API.
+        if (compilerOptions.NoCheck == Tristate.True)
+            return false;
         if (elaborateDidYouMeanToCallOrConstruct(node, source, target, relation, SignatureKind.Construct, headMessage, diagnosticOutput) || elaborateDidYouMeanToCallOrConstruct(node, source, target, relation, SignatureKind.Call, headMessage, diagnosticOutput))
             return true;
         switch (node.Kind)
         {
+            case Kind.AsExpression:
+                if (!Ast.IsConstAssertion(node))
+                    break;
+                return elaborateError(node.Expression(), source, target, relation, headMessage, diagnosticOutput);
             case Kind.ParenthesizedExpression:
                 return elaborateError(node.Expression(), source, target, relation, headMessage, diagnosticOutput);
             case Kind.ObjectLiteralExpression:
@@ -4275,10 +4413,9 @@ public sealed partial class Checker
                 return elaborateArrowFunction(node, source, target, relation, diagnosticOutput);
             case Kind.ArrayLiteralExpression:
                 return elaborateArrayLiteral(node, source, target, relation, diagnosticOutput);
-            case Kind.AsExpression:
             case Kind.JsxExpression:
             case Kind.JsxAttributes:
-                throw unsupported("elaborateError: assertions/arrays/JSX");
+                throw unsupported("elaborateError: JSX");
         }
 
         return false;
@@ -4387,18 +4524,16 @@ public sealed partial class Checker
                 continue;
             switch (prop.Kind)
             {
+                case Kind.GetAccessor:
+                case Kind.SetAccessor:
                 case Kind.MethodDeclaration:
                 case Kind.ShorthandPropertyAssignment:
                     reportedError = elaborateElement(source, target, relation, prop.Name(), null, nameType, null, null, diagnosticOutput) || reportedError;
                     break;
                 case Kind.PropertyAssignment:
-                    if (prop.Name().Kind == Kind.ComputedPropertyName)
-                        throw unsupported("elaborateObjectLiteral: computed name");
-                    reportedError = elaborateElement(source, target, relation, prop.Name(), prop.Initializer(), nameType, null, null, diagnosticOutput) || reportedError;
+                    var message = Ast.IsComputedNonLiteralName(prop.Name()) ? Diagnostics.Type_of_computed_property_s_value_is_0_which_is_not_assignable_to_type_1 : null;
+                    reportedError = elaborateElement(source, target, relation, prop.Name(), prop.Initializer(), nameType, message, null, diagnosticOutput) || reportedError;
                     break;
-                case Kind.GetAccessor:
-                case Kind.SetAccessor:
-                    throw unsupported("elaborateObjectLiteral: accessor");
             }
         }
 
@@ -4421,8 +4556,8 @@ public sealed partial class Checker
             specificSource = checkExpressionForMutableLocationWithContextualType(next, sourcePropType);
         if (diagnosticFactory != null)
             diags.Add(diagnosticFactory(prop));
-        else if (exactOptionalPropertyTypes)
-            throw unsupported("elaborateElement: exact optional property option");
+        else if (exactOptionalPropertyTypes && isExactOptionalPropertyMismatch(specificSource, targetPropType))
+            diags.Add(NewDiagnosticForNode(prop, Diagnostics.Type_0_is_not_assignable_to_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_type_of_the_target, typeToStringByteString(specificSource), typeToStringByteString(targetPropType)));
         else
         {
             var propName = getPropertyNameFromIndex(nameType, null);
@@ -5197,5 +5332,77 @@ public sealed partial class Checker
         if ((target.flags & TypeFlags.StringMapping) != 0)
             throw unsupported("isMemberOfStringMapping: intrinsic string mapping");
         return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isEnumTypeRelatedTo(Symbol source, Symbol target, ErrorReporter errorReporter)
+    {
+        var sourceSymbol = ((source.Flags & SymbolFlags.EnumMember) != 0 ? this.getParentOfSymbol(source) : source);
+        var targetSymbol = ((target.Flags & SymbolFlags.EnumMember) != 0 ? this.getParentOfSymbol(target) : target);
+        if ((sourceSymbol == targetSymbol))
+        {
+            return true;
+        }
+        if ((((sourceSymbol.Name != targetSymbol.Name) || ((sourceSymbol.Flags & SymbolFlags.RegularEnum) == 0)) || ((targetSymbol.Flags & SymbolFlags.RegularEnum) == 0)))
+        {
+            return false;
+        }
+        var key = new EnumRelationKey { sourceId = Ast.GetSymbolId(sourceSymbol), targetId = Ast.GetSymbolId(targetSymbol) };
+        {
+            var entry = this.enumRelation.TryGetValue(key, out var cached) ? cached : RelationComparisonResult.None;
+            if (((entry != RelationComparisonResult.None) && !((((entry & RelationComparisonResult.Failed) != 0) && (errorReporter != null)))))
+            {
+                return ((entry & RelationComparisonResult.Succeeded) != 0);
+            }
+        }
+        var targetEnumType = this.getTypeOfSymbol(targetSymbol);
+        {
+            foreach (var sourceProperty in GoRuntime.RangeValues(this.getPropertiesOfType(this.getTypeOfSymbol(sourceSymbol))))
+            {
+                if (((sourceProperty.Flags & SymbolFlags.EnumMember) != 0))
+                {
+                    var targetProperty = this.getPropertyOfType(targetEnumType, sourceProperty.Name);
+                    if (((targetProperty == null) || ((targetProperty.Flags & SymbolFlags.EnumMember) == 0)))
+                    {
+                        if ((errorReporter != null))
+                        {
+                            errorReporter(Diagnostics.Property_0_is_missing_in_type_1, this.symbolToString(sourceProperty), this.typeToStringEx(this.getDeclaredTypeOfSymbol(targetSymbol), null, fullyQualified: true));
+                        }
+                        this.enumRelation[key] = RelationComparisonResult.Failed;
+                        return false;
+                    }
+                    var sourceValue = this.getEnumMemberValue(Ast.GetDeclarationOfKind(sourceProperty, Kind.EnumMember)).Value;
+                    var targetValue = this.getEnumMemberValue(Ast.GetDeclarationOfKind(targetProperty, Kind.EnumMember)).Value;
+                    if (!declarationConstantValuesEqual(sourceValue, targetValue))
+                    {
+                        if (((sourceValue != null) && (targetValue != null)))
+                        {
+                            if ((errorReporter != null))
+                            {
+                                errorReporter(Diagnostics.Each_declaration_of_0_1_differs_in_its_value_where_2_was_expected_but_3_was_given, this.symbolToString(targetSymbol), this.symbolToString(targetProperty), this.valueToString(targetValue), this.valueToString(sourceValue));
+                            }
+                            this.enumRelation[key] = RelationComparisonResult.Failed;
+                            return false;
+                        }
+                        var _2 = sourceValue as string; var sourceIsString = _2 != null;
+                        var _3 = targetValue as string; var targetIsString = _3 != null;
+                        if ((sourceIsString || targetIsString))
+                        {
+                            if ((errorReporter != null))
+                            {
+                                var knownStringValue = (sourceValue ?? targetValue);
+                                errorReporter(Diagnostics.One_value_of_0_1_is_the_string_2_and_the_other_is_assumed_to_be_an_unknown_numeric_value, this.symbolToString(targetSymbol), this.symbolToString(targetProperty), this.valueToString(knownStringValue));
+                            }
+                            this.enumRelation[key] = RelationComparisonResult.Failed;
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        this.enumRelation[key] = RelationComparisonResult.Succeeded;
+        return true;
     }
 }

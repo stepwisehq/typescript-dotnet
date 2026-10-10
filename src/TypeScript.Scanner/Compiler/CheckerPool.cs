@@ -8,6 +8,8 @@ using TypeScript.Modules;
 
 [assembly: InternalsVisibleTo("Program.Checks")]
 [assembly: InternalsVisibleTo("Program.Validation")]
+[assembly: InternalsVisibleTo("Declarations.Checks")]
+[assembly: InternalsVisibleTo("Declarations.Validation")]
 namespace TypeScript.Compiler;
 public interface ICheckerPool
 {
@@ -195,7 +197,7 @@ internal sealed class CheckerPool : ICheckerPool
                 if (tracing is not null)
                     throw new UnsupportedSemanticFeatureException("checker type tracing is outside Program construction");
                 checkers[index] = program.CreateActualChecker();
-                locks[index] = new(1, 1);
+                locks[index] = checkers[index].mu;
             });
         }
 
@@ -287,10 +289,11 @@ internal sealed class CheckerPool : ICheckerPool
         createCheckers();
         var diagnostics = new List<Diagnostic>? [checkers.Length];
         forEachCheckerParallel((index, checker) => diagnostics[index] = checker.GetGlobalDiagnostics());
-        var combined = new List<Diagnostic>();
+        // slices.Concat returns nil when the total length is zero.
+        List<Diagnostic>? combined = null;
         foreach (var list in diagnostics)
-            if (list is not null)
-                combined.AddRange(list);
+            if (list is { Count: > 0 })
+                (combined ??= []).AddRange(list);
         return Program.SortAndDeduplicateDiagnostics(combined);
     }
 

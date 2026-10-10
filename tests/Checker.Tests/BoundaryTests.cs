@@ -26,6 +26,11 @@ public class BoundaryTests
                     continue;
                 if (path.StartsWith("object-corpus/", StringComparison.Ordinal) && (input.GetProperty("name").GetString()is "named-alias" or "interface" or "nested-reference" or "source-union" or "property-union"))
                     continue;
+                // Genuine initialization now supports the actual globalThis value.
+                // Preserve the historical negative bytes; current positive evidence
+                // compares this same input through the genuine pinned Go Program.
+                if (path == "data-corpus/admission-controls.json" && input.GetProperty("name").GetString() == "builtin-globalThis-read")
+                    continue;
                 yield return[input.GetProperty("name").GetString()!, input.GetRawText(), input.GetProperty("expectedFeature").GetString()];
             }
         }

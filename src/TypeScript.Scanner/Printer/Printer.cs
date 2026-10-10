@@ -463,6 +463,7 @@ internal sealed partial class Printer
         CommaDelimited = 1 << 4,
         BarDelimited = 1 << 2,
         AmpersandDelimited = 1 << 3,
+        AllowTrailingComma = 1 << 6,
         SpaceBetweenBraces = 1 << 8,
         SpaceBetweenSiblings = 1 << 9,
         SpaceAfterList = 1 << 21,
@@ -471,6 +472,8 @@ internal sealed partial class Printer
         UnionTypeConstituents = BarDelimited | SpaceBetweenSiblings | SingleLine,
         IntersectionTypeConstituents = AmpersandDelimited | SpaceBetweenSiblings | SingleLine,
         Parameters = CommaDelimited | SpaceBetweenSiblings | SingleLine,
+        ObjectBindingPatternElements = SingleLine | AllowTrailingComma | SpaceBetweenBraces | CommaDelimited | SpaceBetweenSiblings | NoSpaceIfEmpty,
+        ArrayBindingPatternElements = SingleLine | AllowTrailingComma | CommaDelimited | SpaceBetweenSiblings | NoSpaceIfEmpty,
     }
 
     // printer.go:4726/4734. Fixed single-line synthesized lists: no comments,
@@ -493,7 +496,8 @@ internal sealed partial class Printer
         else
         {
             int end = Math.Min(start + count, length);
-            emitListItems(emit, parentNode, children.Nodes.GetRange(start, end - start), format);
+            emitListItems(emit, parentNode, children.Nodes.GetRange(start, end - start), format,
+                (format & ListFormat.AllowTrailingComma) != 0 && hasTrailingComma(parentNode, children));
         }
     }
 
@@ -515,7 +519,25 @@ internal sealed partial class Printer
         }
     }
 
-    private void emitListItems(Action<Node> emit, Node parentNode, List<Node> children, ListFormat format)
+    // printer.go:4800. Selected binding lists correlate transformed nodes with
+    // their original element list before retaining a source trailing comma.
+    private bool hasTrailingComma(Node parentNode, NodeList children)
+    {
+        if (!children.HasTrailingComma())
+            return false;
+        var originalParent = emitContext.MostOriginal(parentNode);
+        if (originalParent == parentNode)
+            return true;
+        if (originalParent.Kind != parentNode.Kind)
+            return false;
+        var originalList = children;
+        if (originalParent.Kind is Kind.ObjectBindingPattern or Kind.ArrayBindingPattern &&
+            children == parentNode.ElementList())
+            originalList = originalParent.ElementList();
+        return originalList != null && originalList.HasTrailingComma();
+    }
+
+    private void emitListItems(Action<Node> emit, Node parentNode, List<Node> children, ListFormat format, bool hasTrailingComma)
     {
         if ((format & ListFormat.SpaceBetweenBraces) != 0)
             writeSpace();
@@ -533,6 +555,9 @@ internal sealed partial class Printer
             previousSibling = child;
         }
 
+        if (hasTrailingComma && (format & ListFormat.CommaDelimited) != 0)
+            writePunctuation(",");
+
         if ((format & (ListFormat.SpaceAfterList | ListFormat.SpaceBetweenBraces)) != 0)
             writeSpace();
     }
@@ -546,13 +571,56 @@ internal sealed partial class Printer
     {
         emitModifierList(node.Modifiers());
         emitTokenNode(node.DotDotDotToken);
-        if (node.Name().Kind != Kind.Identifier)
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitParameter: binding pattern");
-        emitIdentifierReference(node.Name().AsIdentifier());
+        emitBindingName(node.Name());
         emitTokenNode(node.QuestionToken);
         emitTypeAnnotation(node.Type);
         if (node.Initializer != null)
             throw TypeScript.Checking.Checker.unsupported("Printer.emitParameter: source initializer emit");
+    }
+
+    // printer.go:1241/2403–2436. Diagnostic binding names retain their actual
+    // recursive syntax. NodeBuilder removes binding initializers before printing.
+    private void emitBindingName(Node node)
+    {
+        if (node == null)
+            return;
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+                emitIdentifierText(node.AsIdentifier());
+                break;
+            case Kind.ObjectBindingPattern:
+                writePunctuation("{");
+                emitList(n => emitBindingElement(n.AsBindingElement()), node, node.AsBindingPattern().Elements,
+                    ListFormat.ObjectBindingPatternElements);
+                writePunctuation("}");
+                break;
+            case Kind.ArrayBindingPattern:
+                writePunctuation("[");
+                emitList(n => emitBindingElement(n.AsBindingElement()), node, node.AsBindingPattern().Elements,
+                    ListFormat.ArrayBindingPatternElements);
+                writePunctuation("]");
+                break;
+            default:
+                throw new InvalidOperationException($"Unexpected BindingName: {node.Kind}");
+        }
+    }
+
+    private void emitBindingElement(BindingElement node)
+    {
+        emitTokenNode(node.DotDotDotToken);
+        if (node.PropertyName != null)
+        {
+            emitPropertyName(node.PropertyName);
+            writePunctuation(":");
+            writeSpace();
+        }
+        if (node.Name() != null)
+        {
+            emitBindingName(node.Name());
+            if (node.Initializer != null)
+                throw TypeScript.Checking.Checker.unsupported("Printer.emitBindingElement: source initializer emit");
+        }
     }
 
     // printer.go:1545. The original Parameters list mode has comma delimiters,

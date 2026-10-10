@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Partial counterpart of tsc/internal/checker/types.go; generated enum slice.
+// Partial counterpart of tsc/internal/checker/types.go: source flags and selected declaration/type models.
 using TypeScript.Scanner;
 using CacheHashKey = TypeScript.Checking.Checker.CacheHashKey;
 
 namespace TypeScript.Checking;
+
 [Flags]
 public enum TypeFlags : uint
 {
@@ -199,6 +200,7 @@ public sealed class Type
     public UnionOrIntersectionType AsUnionOrIntersectionType() => data.AsUnionOrIntersectionType();
     public ObjectType AsObjectType() => data.AsObjectType();
     public TypeReference AsTypeReference() => data.AsTypeReference();
+    public InstantiationExpressionType AsInstantiationExpressionType() => (InstantiationExpressionType)data;
     public InterfaceType AsInterfaceType() => data.AsInterfaceType();
     // types.go:752/766. Actual target/mapper fields, including nullable origins.
     public Type Target()
@@ -232,7 +234,7 @@ public sealed class Type
             return AsUnionType().types;
         if ((flags & TypeFlags.Never) != 0)
             return null;
-        return[this ];
+        return [this];
     }
 
     // Upstream checker/types.go:780; selected union and intersection payloads.
@@ -266,7 +268,8 @@ public sealed class Type
         TemplateLiteralType => "TemplateLiteralType",
         SubstitutionType => "SubstitutionType",
         ConditionalType => "ConditionalType",
-        _ => throw new NotSupportedException("Unselected type payload")};
+        _ => throw new NotSupportedException("Unselected type payload")
+    };
     public bool IsUnion() => (flags & TypeFlags.Union) != 0;
     public bool IsString() => (flags & TypeFlags.String) != 0;
     public bool IsIntersection() => (flags & TypeFlags.Intersection) != 0;
@@ -313,7 +316,7 @@ public sealed class LiteralType : TypeBase
     public object Value() => value;
     public Type FreshType() => freshType;
     public Type RegularType() => regularType;
-// String() belongs to the selected ValueToString/escaping dependency closure.
+    // String() belongs to the selected ValueToString/escaping dependency closure.
 }
 
 // types.go:920. Internal const Symbol()/Symbol.for() results retain their actual
@@ -355,6 +358,12 @@ public class ObjectType : StructuredType
 
 // types.go:1005/1015. Nongeneric interfaces also embed the reference payload;
 // alias-based heritage can create a real implicit-this parameter/reference.
+// types.go:1103. The source expression is retained across type instantiation.
+public sealed class InstantiationExpressionType : ObjectType
+{
+    internal Node node;
+}
+
 public class TypeReference : ObjectType
 {
     internal Node node;
@@ -894,4 +903,23 @@ public sealed class TemplateLiteralType : ConstrainedType
     internal List<Type> types;
     public List<string> Texts() => texts;
     public List<Type> Types() => types;
+}
+
+internal sealed class EnumMemberLinks
+{
+    internal Evaluator.Result value;
+}
+
+internal sealed class LateBoundLinks
+{
+    internal Symbol lateSymbol;
+}
+
+// types.go:43. Source override check outcome.
+internal enum MemberOverrideStatus { None, NeedsOverride, HasInvalidOverride }
+
+// checker/types.go:379. Type assertions retain the original expression type for deferred comparability.
+internal sealed class AssertionNodeLinks
+{
+    internal Type exprType;
 }
