@@ -1074,6 +1074,15 @@
         "adaptation": "One standalone owner token per checker stamps only prior Symbol/Signature ownership-set insertion paths. Two private nonnull reporter callers use static callbacks with explicit Checker state, matching Go unbound receiver invocation; errors, narrowing and order unchanged.",
         "allocationEvidence": "artifacts/vscode-symbol-ownership-token/allocation-comparison.json",
         "allocationQualification": "One matched ServerGC CoreCLR trace per variant: total sampled interval19.321389\u219218.701305GiB (\u22123.2093%); zero events lost/truncation, one candidate missing stack. Net ownership+reporter batch, not per-change attribution or exact allocations/native speed."
+      },
+      "contextualDeprecationLoopAdaptation": {
+        "sourceResponsibilities": "checker.go:26056 isLiteralOfContextualType,14325 isDeprecatedSymbol and14305 IsDeprecatedDeclaration.",
+        "adaptation": "Direct ordered contextual union/intersection recursion retains first-true/null-empty behavior and unchanged nonunion branches. Deprecated declaration traversal retains parent-first interface-any/noninterface-all, value-declaration-first outside merged-parent and existing cached flags predicate. No new helper/context lifetime or semantic callback ordering change.",
+        "review": "artifacts/vscode-contextual-deprecation-loops/build/independent-review.json",
+        "snapshot": "artifacts/vscode-relater-callbacks/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source/direct helpers independently reviewed; clean Release build and native VS Code ten complete diagnostic records/available pinned-Go chains exact. Eight existing original full-record comparisons pass with zero failures/skips and no expected changes. No matched allocation capture for this batch or causal native speedup claim.",
+        "nativeEvidence": "artifacts/vscode-relater-callbacks/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-relater-callbacks/focused/report.json"
       }
     },
     {
@@ -1223,6 +1232,16 @@
         "adaptation": "Original cached Worker uses the unchanged Simple assignable relation directly, ignoring reportErrors as upstream does; avoids recursive forwarding through the new field. Caller syntax and existing named stored-comparer family/owner/equality observations unchanged.",
         "snapshot": "artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json",
         "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json"
+      },
+      "operationCallbackAdaptation": {
+        "sourceResponsibilities": "relater.go:3293/3298 structured variance local,3896 zero excluded Set,4092/4291/4302/4366 property callback chain.",
+        "adaptation": "Direct variance local calls retain shared mutable per-operation result/variance/error state. Explicit generic property callback state and static callbacks retain deferred source lookup: normal Checker or (combination,index), with read after original target/private/protected/readonly/Any guards. Only source-zero excluded Set argument becomes managed null; readonly identity/tuple/exclusion consumers null-empty equivalent, actual populated discrimination set unchanged.",
+        "loweringEvidence": "artifacts/vscode-relater-callbacks/metadata/result.json: compiled variance capture is a value type passed by reference at two direct local calls. This does not assert all callback/closure allocations disappear or extend to later template-local source edits.",
+        "review": "artifacts/vscode-relater-callbacks/build/independent-review.json",
+        "snapshot": "artifacts/vscode-relater-callbacks/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source/direct helpers independently reviewed; clean Release build and native VS Code ten complete diagnostic records/available pinned-Go chains exact. Eight existing original full-record comparisons pass with zero failures/skips and no expected changes. No matched allocation capture for this batch or causal native speedup claim.",
+        "nativeEvidence": "artifacts/vscode-relater-callbacks/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-relater-callbacks/focused/report.json"
       }
     },
     {

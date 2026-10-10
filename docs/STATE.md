@@ -1,82 +1,59 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest committed checkpoint is `737eead` (direct page slots).
-Frozen ownership-token/static-reporter batch `282c618e` is qualified and its four
-production files plus one Fact are STAGED for a separate checkpoint; newer Checker
-loops and Relater callbacks are UNSTAGED and must not be included accidentally.
-Ownership profile19.321389→18.701305GiB sampled (−3.2093%), zero loss/truncation,
-one missing stack, all ten diagnostics exact. Native22.32s /90.99CPU /10,298,208KiB,
-focused4 original fullrecords+3 public API Facts+14native self+10native callable pass.
-Final reports under `artifacts/vscode-symbol-ownership-token/`.
+**Resume here:** latest committed checkpoint is `b2ce0f6` (ownership tokens and
+static reporter state), following `737eead`. Continue Go-faithful allocation work;
+there is no blocker or instruction to stop at a commit. Full regression acceptance
+remains deferred; use Native AOT VS Code first, then focused checks.
 
-Next combined callback batch is independently reviewed, source ready and verifier
-build/native-VSCode-first authorized: Scanner's two Checker loops (contextual
-literal/deprecation predicates); support's Relater direct local variance helper,
-explicit generic state+static property callback with deferred source read, nil-backed
-empty exclude-set adapter. Artifacts `vscode-contextual-deprecation-loops` and
-`vscode-relater-callbacks`; no runtime/allocation claim for these newer edits yet.
-Do not stop automatically at a commit: user challenged that premature stopping;
-continued allocation work is authorized and no blocker existed.
+**Qualified, staged next packet:** contextual-literal/deprecation loops in
+Checker.cs and variance/property callbacks plus nil-backed empty exclusions in
+Relater.cs. Frozen library `8dcc247f`, native `9934ceeb`: Linux x64 Native AOT
+VS Code 22.43s wall / 97.81s CPU / 10,028,472KiB peak, exact ten diagnostics and
+pinned chains. Eight unchanged original full compiler records pass, zero skipped.
+Compiled metadata confirms variance local state is a value type passed by ref,
+with direct calls and no variance closure/delegate constructor. This establishes
+lowering, not a measured per-change byte/time saving. Evidence:
+`artifacts/vscode-relater-callbacks/{first-vscode/result.json,focused/report.json,metadata/result.json}`.
 
-Latest Native AOT VS Code23.73s /98.32CPU /10.691GiB peak, all ten diagnostics exact;
-pinned Go9.61s /46.86CPU /7.374GiB (single observations, not paired benchmark).
-Latest sampled CoreCLR allocations20.436GiB after signatures vs baseline20.946GiB;
-visitor/union changes have NOT been allocation-profiled. Go sampled5.176GiB uses a
-different profiler/runtime and is not an exact Native AOT allocation comparison.
+**Active next packet, deliberately UNSTAGED:** scanner's two direct template
+inference local functions in Relater.cs, hash `cd7c5df7`. Support independently
+reviewed the entire function and helpers. Verifier owns the sole heavy window. Clean build froze library `8fcc3d0e`;
+Native AOT VS Code passed at 22.54s wall / 99.99s CPU / 9,903,144KiB peak,
+exact ten records/chains. Focused existing template records, cheap lowering check
+and one cumulative allocation profile versus frozen `282c618e` are in progress.
+Evidence: `artifacts/vscode-template-inference-locals/`. Do not stage the entire
+Relater file when committing the preceding packet: its index preserves qualified
+hash `6428403d`. Scanner now owns two next contextual map callbacks in Checker.cs using existing
+generic explicit-state/static mapTypeEx (Go31235/30521). These edits remain
+UNSTAGED, separate from current qualified index and frozen8fcc binary. Support
+reviews complete methods/state semantics. Coordinator owns this file.
 
-Callback and private JSDoc rewind reuse batch qualified: library `02c54a09`, Native
-VS Code24.74s /105.34 CPU seconds /11,188,996KiB peak, all ten diagnostics/chains
-exact;102 focused checks pass (4 genuine Go inference records,77 TypeSystem,
-21 existing JSDoc/source/restoration checks). One clean build9.484s. Evidence:
-`artifacts/vscode-cached-assignable-comparer/{first-vscode/result.json,focused/report.json}`.
-No new allocation capture; no speedup established by these single observations.
+**Latest allocation evidence:** frozen ownership/reporter library `282c618e`
+reduced sampled CoreCLR allocation intervals 19.321389→18.701305GiB (−3.2093%);
+zero lost/truncated events, one missing stack, exact ten diagnostics. Native
+22.32s / 90.99CPU / 10,298,208KiB; focused four original full records, three public
+API Facts, fourteen native self checks and ten native callable cases pass.
+`artifacts/vscode-symbol-ownership-token/`. Current callback/local packets are
+not allocation-profiled yet.
 
-Next selected: replace only PagedLinkStore internal LinkCell wrappers with standard
-ref-return slots in fixed V?[] pages. Actual checker V objects and their identities
-remain unchanged. Has tests page presence; TryGet retains page-present versus
-missing-page distinctions and existing node zero-value materialization rules.
-Separate SymbolAccessibility optional metadata cells remain unchanged. No unsafe
-or escaping custom byrefs. Sol support owns Core/Linkstore.cs and Checker/Links.cs
-and minimal existing raw-page test adapters; scanner reviews, verifier owns one
-native-VSCode-first build and existing focused page/node/symbol controls. Ref-slot code is qualified: DLL `c385e71b`, native VSCode24.94s /101.57CPU
-/10,842,564KiB, ten diagnostics exact;45managed+20same native Utilities observations
-pass. Cumulative frozen profile complete:20.4359845→19.3213894GiB sampled intervals
-(−5.4541%), no lost/truncated events, all diagnostics exact. Includes visitor/union,
-callback/JSDoc and refslots, not per-packet causal attribution or Native AOT bytes.
-Saved under `artifacts/vscode-link-slots/allocation-comparison.json`. Six alternating
-frozen native runs AB/BA/AB completed, all diagnostics exact: signaturebaseline
-mean23.17s/100.017CPU versus refslotcandidate21.36s/95.76CPU (−7.81%wall,−4.26%CPU).
-Three observations each, cumulative changes and descriptive statistics only;
-candidate wall range19.72–23.83s, peakRSSmean+0.90%. Saved paired-native/report.json.
-Linkslot checkpoint is `737eead`; ownership-token/reporter changes remain separate
-and unstaged until independently qualified.
-Existing CoreCLR trace heap history actually reports1→3→9→15 heaps; do not infer
-16 heaps from ProcessorCount16. Native actual heap count remains unqualified. After this next batch, profile cumulative allocation
-against the frozen signature baseline: use exact `cd2b47bb`20.436GiB candidate from
-`artifacts/vscode-signature-slices/candidate-allocation`, not unprofiled02c54a09.
-Full regression gate remains deferred. Inference candidate migration stays deferred.
+**Timing context:** six alternating frozen native runs compare signature baseline
+`cd2b47bb` to direct-slot candidate `c385e71b`: mean 23.17→21.36s wall (−7.81%),
+100.017→95.76 CPU (−4.26%), peak RSS mean +0.90%; all six exact diagnostics.
+Three runs each, descriptive cumulative evidence, not per-packet attribution.
+`artifacts/vscode-link-slots/paired-native/report.json`. Pinned Go saved run was
+9.61s wall / 46.86CPU / 7.374GiB peak; sampled Go alloc_space 5.176GiB uses a
+different profiler/runtime and is not an exact Native AOT byte comparison.
+CoreCLR heap history reported 1→3→9→15 heaps, not automatically sixteen because
+ProcessorCount is sixteen. Native heap count is unverified.
 
-Latest user question: explicit-state + cached-static callback APIs. Existing hot
-mapTypeEx and applyToParameterTypes/applyToReturnTypes already use generic state and
-static callbacks; rollout is incomplete. Receiver-only callbacks were cached once
-per checker following upstream initialization. Prefer state/static for measured
-per-operation captures; keep changing-state semantics exact and avoid a wholesale
-API rewrite. This question steers continuing work, not a stop request.
-
-Next investigation in parallel: instantiateSymbolTable matches upstream core reuse,
-but authoredOwnedSymbols HashSet incurs profile-visible growth. Scanner proposed an
-opaque owner-token reference per Symbol plus one token/checker, preserving existing
-public foreign-symbol guards without retaining checker via token. Support approved exact one-insertion/three-membership token equivalence. Scanner
-implemented Ast/Symbol.cs+Types.cs+Checker.cs+Exports.cs plus two-site non-null
-reporter Action<Checker,Node,TypeFacts> static callbacks. Signature sister ownership
-set also replaced from its single factory and guard. Finalsource independentreview
-passed, one new existing-seam signature admission Fact added. Verifierbuild/nativefirst
-active; do not use stale three-file Symbol-only scope. Stamp ONLY
-newSymbolEx/newSignature; bound/direct-new Symbols retain null tokens and unchanged declaration
-fallback; preserve foreign-transient rejection. No checker backreference. One field
-on every Symbol has a cost; do not claim net savings until measured. This is authored
-compatibility bookkeeping, not an upstream algorithm replacement. Implementation
-runs while the prior frozen binary is profiled; no competing build/workload.
+**Callback approach:** generic explicit state plus static callbacks already serve
+mapTypeEx, inference parameter/return application, property relations and non-null
+reporters. Receiver-only callbacks cache once per checker following upstream
+initialization. Direct-only local delegates become local functions where this
+preserves mutable state/order. Trivial predicates use ordered loops. Rollout is
+incomplete; do not rely on JIT escape optimization or claim all callbacks fixed.
+Keep captured value versus shared mutable state semantics faithful. Inference
+candidate storage migration remains deferred by measured size and alias risk.
 
 **Latest authorization: continue allocation and UTF8 work regardless of GC results.**
 User explicitly directed ongoing allocation/string-copy reduction and byte-backed

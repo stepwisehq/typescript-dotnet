@@ -2501,7 +2501,8 @@ public sealed partial class Checker
             bool varianceCheckFailed = default;
             ErrorChain originalErrorChain = default;
             var saveErrorState = this.getErrorState();
-            Func<List<Type>, List<Type>, List<VarianceFlags>, IntersectionState, (Ternary, bool)> relateVariances = (sourceTypeArguments, targetTypeArguments, variances, intersectionState2) =>
+            // relater.go:3298: direct local calls retain this operation's shared variance/error state.
+            (Ternary, bool) relateVariances(List<Type> sourceTypeArguments, List<Type> targetTypeArguments, List<VarianceFlags> variances, IntersectionState intersectionState2)
             {
                 {
                     result = this.typeArgumentsRelatedTo(sourceTypeArguments, targetTypeArguments, variances, reportErrors, intersectionState2);
@@ -2538,7 +2539,7 @@ public sealed partial class Checker
                 }
 
                 return (Ternary.False, false);
-            };
+            }
             switch (true)
             {
                 case true when (this.relation == this.c.identityRelation):
@@ -3291,7 +3292,8 @@ public sealed partial class Checker
                     if ((((source.flags & ((TypeFlags.Object | TypeFlags.Intersection))) != 0) && ((target.flags & TypeFlags.Object) != 0)))
                     {
                         var reportStructuralErrors = ((reportErrors && (this.errorChain == saveErrorState.errorChain)) && !sourceIsPrimitive);
-                        result = this.propertiesRelatedTo(source, target, reportStructuralErrors, new HashSet<string> { }, false, intersectionState);
+                        // relater.go:3896: zero Set has no backing map; this argument is read-only.
+                        result = this.propertiesRelatedTo(source, target, reportStructuralErrors, null, false, intersectionState);
                         if ((result != Ternary.False))
                         {
                             result &= this.signaturesRelatedTo(source, target, SignatureKind.Call, reportStructuralErrors, intersectionState);
@@ -3495,7 +3497,8 @@ public sealed partial class Checker
                         if (sourceProperty == targetProperty)
                             continue;
                         int index = i;
-                        var related = propertyRelatedTo(source, target, sourceProperty, targetProperty, _ => combination[index], false, IntersectionState.None, c.strictNullChecks || relation == c.comparableRelation);
+                        var related = propertyRelatedTo(source, target, sourceProperty, targetProperty, (combination, index),
+                            static (_, state) => state.combination[state.index], false, IntersectionState.None, c.strictNullChecks || relation == c.comparableRelation);
                         if (related == Ternary.False)
                         {
                             matched = false;
@@ -4005,7 +4008,8 @@ public sealed partial class Checker
                         var sourceProp2 = this.c.getPropertyOfType(source, name);
                         if (((sourceProp2 != null) && (sourceProp2 != targetProp)))
                         {
-                            var related2 = this.propertyRelatedTo(source, target, sourceProp2, targetProp, this.c.getNonMissingTypeOfSymbol, reportErrors, intersectionState, (this.relation == this.c.comparableRelation));
+                            var related2 = this.propertyRelatedTo(source, target, sourceProp2, targetProp, this.c,
+                                static (property, checker) => checker.getNonMissingTypeOfSymbol(property), reportErrors, intersectionState, (this.relation == this.c.comparableRelation));
                             if ((related2 == Ternary.False))
                             {
                                 return Ternary.False;
@@ -4020,7 +4024,8 @@ public sealed partial class Checker
             return result;
         }
 
-        private Ternary propertyRelatedTo(Type source, Type target, Symbol sourceProp, Symbol targetProp, Func<Symbol, Type> getTypeOfSourceProperty, bool reportErrors, IntersectionState intersectionState, bool skipOptional)
+        // relater.go:4302: explicit callback state preserves deferred source-property evaluation.
+        private Ternary propertyRelatedTo<TState>(Type source, Type target, Symbol sourceProp, Symbol targetProp, TState state, Func<Symbol, TState, Type> getTypeOfSourceProperty, bool reportErrors, IntersectionState intersectionState, bool skipOptional)
         {
             var sourceFlags = getDeclarationModifierFlagsFromSymbol(sourceProp);
             var targetFlags = getDeclarationModifierFlagsFromSymbol(targetProp);
@@ -4063,7 +4068,7 @@ public sealed partial class Checker
             }
             if (relation == c.strictSubtypeRelation && c.isReadonlySymbol(sourceProp) && !c.isReadonlySymbol(targetProp))
                 return Ternary.False;
-            var related = isPropertySymbolTypeRelated(sourceProp, targetProp, getTypeOfSourceProperty, reportErrors, intersectionState);
+            var related = isPropertySymbolTypeRelated(sourceProp, targetProp, state, getTypeOfSourceProperty, reportErrors, intersectionState);
             if (related == Ternary.False)
             {
                 if (reportErrors)
@@ -4081,13 +4086,13 @@ public sealed partial class Checker
             return related;
         }
 
-        private Ternary isPropertySymbolTypeRelated(Symbol sourceProp, Symbol targetProp, Func<Symbol, Type> getTypeOfSourceProperty, bool reportErrors, IntersectionState intersectionState)
+        private Ternary isPropertySymbolTypeRelated<TState>(Symbol sourceProp, Symbol targetProp, TState state, Func<Symbol, TState, Type> getTypeOfSourceProperty, bool reportErrors, IntersectionState intersectionState)
         {
             bool targetIsOptional = c.strictNullChecks && (targetProp.CheckFlags & CheckFlags.Partial) != 0;
             var effectiveTarget = c.addOptionalityEx(c.getNonMissingTypeOfSymbol(targetProp), false, targetIsOptional);
             if ((effectiveTarget.flags & (relation == c.strictSubtypeRelation ? TypeFlags.Any : TypeFlags.AnyOrUnknown)) != 0)
                 return Ternary.True;
-            return isRelatedToEx(getTypeOfSourceProperty(sourceProp), effectiveTarget, RecursionFlags.Both, reportErrors, null, intersectionState);
+            return isRelatedToEx(getTypeOfSourceProperty(sourceProp, state), effectiveTarget, RecursionFlags.Both, reportErrors, null, intersectionState);
         }
 
         private void reportUnmatchedProperty(Type source, Type target, Symbol unmatchedProperty, bool requireOptionalProperties)

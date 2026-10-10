@@ -1200,6 +1200,32 @@ trace with zero lost events or truncation; one of 179,980 candidate events has n
 stack. These are sampled estimates, separate from native timing, not an allocation
 census or a native speedup claim.
 
+## Contextual, deprecation and relationship callbacks
+
+The [qualified callback snapshot](../artifacts/vscode-relater-callbacks/build/snapshot-1/snapshot.json)
+retains contextual literal recursion and deprecation any/all decisions through ordered
+loops, with original first-match, parent/value-declaration ordering and cached flags
+checks. Relationship variance evaluation uses direct local calls with the same shared
+per-operation result and error state. Property callbacks carry explicit state and stay
+lazy after the original target/property guards; discrimination reads the same combination
+slot at callback time. The source-zero exclusion set now uses the existing null adapter,
+which all affected read-only consumers treat like an empty set. No public or named
+observation schema changes. [Source reviews](../artifacts/vscode-relater-callbacks/build/independent-review.json)
+and [contextual/deprecation review](../artifacts/vscode-contextual-deprecation-loops/build/independent-review.json)
+cover complete affected functions and direct helpers.
+
+[Compiled metadata](../artifacts/vscode-relater-callbacks/metadata/result.json) verifies
+that this variance capture is a value type passed by reference at two direct calls.
+This is finite lowering evidence, not a claim that every relationship callback is
+allocation-free, nor evidence for subsequent uncompiled template-local changes.
+The [native VS Code run](../artifacts/vscode-relater-callbacks/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly
+in 22.43s wall /97.81s CPU /10,028,472 KiB peak. The [focused report](../artifacts/vscode-relater-callbacks/focused/report.json)
+records eight unchanged original full-record comparisons passing, covering contextual
+literals, deprecated overloads, variance fallback, private/protected properties, tuples
+and discriminated relationships. This is focused qualification with no new matched
+allocation profile or causal native speedup claim.
+
 ## Reproduction and records
 
 ```bash

@@ -5969,7 +5969,13 @@ public sealed partial class Checker
         if (contextualType != null)
         {
             if ((contextualType.flags & TypeFlags.UnionOrIntersection) != 0)
-                return contextualType.Types().Any(t => isLiteralOfContextualType(candidateType, t));
+            {
+                // checker.go:26056/core.Some. Ordered recursion avoids a captured managed predicate.
+                foreach (var t in GoRuntime.RangeValues(contextualType.Types()))
+                    if (isLiteralOfContextualType(candidateType, t))
+                        return true;
+                return false;
+            }
             if ((contextualType.flags & TypeFlags.InstantiableNonPrimitive) != 0)
             {
                 var constraint = getBaseConstraintOfType(contextualType) ?? unknownType;
@@ -6443,13 +6449,32 @@ public sealed partial class Checker
         }
     }
 
+    // checker.go:14325/core.Some/Every. Direct ordered calls avoid per-query bound predicates.
     private bool isDeprecatedSymbol(Symbol symbol)
     {
-        bool isDeprecated(Node declaration) => Ast.IsDeprecatedDeclarationWithCachedFlags(declaration, getCombinedNodeFlagsCached(declaration));
         var parentSymbol = getParentOfSymbol(symbol);
         if (parentSymbol != null && (symbol.Declarations?.Count ?? 0) > 1)
-            return (parentSymbol.Flags & SymbolFlags.Interface) != 0 ? symbol.Declarations.Any(isDeprecated) : symbol.Declarations.All(isDeprecated);
-        return symbol.ValueDeclaration != null && isDeprecated(symbol.ValueDeclaration) || (symbol.Declarations?.Count ?? 0) != 0 && symbol.Declarations.All(isDeprecated);
+        {
+            if ((parentSymbol.Flags & SymbolFlags.Interface) != 0)
+            {
+                foreach (var declaration in symbol.Declarations)
+                    if (IsDeprecatedDeclaration(declaration))
+                        return true;
+                return false;
+            }
+            foreach (var declaration in symbol.Declarations)
+                if (!IsDeprecatedDeclaration(declaration))
+                    return false;
+            return true;
+        }
+        if (symbol.ValueDeclaration != null && IsDeprecatedDeclaration(symbol.ValueDeclaration))
+            return true;
+        if ((symbol.Declarations?.Count ?? 0) == 0)
+            return false;
+        foreach (var declaration in symbol.Declarations)
+            if (!IsDeprecatedDeclaration(declaration))
+                return false;
+        return true;
     }
 }
 
