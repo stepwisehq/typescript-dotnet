@@ -57,7 +57,11 @@ public sealed class Diagnostic
     public Diagnostic AddRelatedInfo(Diagnostic value)
     {
         if (value is not null)
-            (relatedInformation ??= new()).Add(value);
+        {
+            // diagnostic.go:105. Appending updates this diagnostic's slice
+            // header; clones and wrappers retain their previous visible length.
+            relatedInformation = relatedInformation is null ? [value] : [.. relatedInformation, value];
+        }
         return this;
     }
 
@@ -80,11 +84,37 @@ public sealed class Diagnostic
         return this;
     }
 
-    // The ordinary syntax source has no content-mapper span aliases, so display arguments remain stored arguments.
-    public string Localize() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : (message ?? Diagnostics.KeyToMessage(messageKey) ?? throw new InvalidOperationException("Unknown diagnostic message: " + messageKey)).FormatByteArguments(messageArgs);
+    public string Localize() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : (message ?? Diagnostics.KeyToMessage(messageKey) ?? throw new InvalidOperationException("Unknown diagnostic message: " + messageKey)).FormatByteArguments(displayMessageArgs());
     public string String() => Localize();
     public override string ToString() => String();
     public Diagnostic Clone() => (Diagnostic)MemberwiseClone();
+
+    // diagnostic.go:133. Display a complete alias span using its original text;
+    // stored arguments retain the virtual text for serialization and code fixes.
+    private List<string> displayMessageArgs()
+    {
+        if (file is null || source != "")
+            return messageArgs;
+        var (segment, ok) = TypeScript.SpanMap.SpanMaps.AliasForVirtualSpan(file.SpanMap(), loc);
+        if (!ok)
+            return messageArgs;
+        string virtualText = file.Text();
+        string originalText = file.OriginalText();
+        if (segment.VirtualStart < 0 || segment.VirtualEnd > virtualText.Length ||
+            segment.OriginalStart < 0 || segment.OriginalEnd > originalText.Length)
+            return messageArgs;
+        string virtualName = virtualText[segment.VirtualStart..segment.VirtualEnd];
+        string originalName = originalText[segment.OriginalStart..segment.OriginalEnd];
+        List<string> result = null;
+        for (int index = 0; index < (messageArgs?.Count ?? 0); index++)
+        {
+            if (messageArgs[index] != virtualName)
+                continue;
+            result ??= [.. messageArgs];
+            result[index] = originalName;
+        }
+        return result ?? messageArgs;
+    }
 }
 
 public static partial class Ast

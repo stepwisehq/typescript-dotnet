@@ -1,31 +1,38 @@
 # TypeScript port feasibility study
 
-The **async, generator and runtime-protocol contract P1–P6 is complete**, verified under
-actual **Linux x64 Native AOT** with retained syntax/binder, Program, declaration,
-expression/flow and shared type-system regressions. The whole-checker no-emit campaign
-remains active; JS/JSDoc/JSX, decorators, remaining module/options and final full upstream
-verification are next. This is not whole-checker or full-compiler parity.
+The **whole-checker no-emit contract is complete**, verified under actual
+**Linux x64 Native AOT** with retained scanner/parser/AST, binder, semantic,
+configuration, resolution, Program and project regressions.
+
+All **15,304 complete checking records** agree with pinned Go in managed and native
+execution, including full applicable diagnostics, original public type/symbol
+observations and original runtime assertions. All 15,340 new xUnit cases pass;
+40,291 selected aggregate executions include retained tests and are not a distinct
+upstream-test count. The full 12,824-file upstream inventory has explicit checking,
+preparation-failure and environment dispositions. This establishes the agreed
+no-emit contract, not exhaustive correctness or full compiler/emit parity.
+
+See the [assessment and limitations](./docs/CHECKER-NOEMIT-ASSESSMENT.md),
+[saved-reference verification commands](./docs/CHECKER-NOEMIT-REPRODUCTION.md),
+[durable proof](./validation/results/checker-noemit-verified.json),
+[source mapping](./source-map.json) and [current state](./docs/STATE.md).
+Two unavailable historical internal API declarations remain a documented evidence
+limitation; genuine missing-import diagnostics are retained. Only Linux x64 Native
+AOT has been qualified. Emit, language services and incremental builder scheduling
+remain external. Large-project correctness/performance comparisons are the next
+separately authorized evaluation; they have not been started.
 
 Ordinary `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged
 upstream libraries. The strict ES2022 [job-stream project](./examples/protocols/job-stream/)
-combines promises, synchronous/asynchronous generators, for-await and disposable resources
-across files. Its [invalid variant](./examples/protocols/job-stream-invalid/) reports six
-complete diagnostics and exits 1; the valid project has none and exits 0. No emitted
-runtime behavior is claimed. See the [usage guide](./docs/PROTOCOLS-VERIFY.md),
-[assessment](./docs/PROTOCOLS-ASSESSMENT.md), [proof](./validation/results/protocols-verified.json),
-[source mapping](./source-map.json) and [live checker checkpoint](./docs/CHECKER-COMPLETION-STATUS.md).
-
-Acceptance includes 94 complete managed/native Go records, 102 new xUnit cases, eight
-shared checks (seven original bodies and one authored control), order/CLI checks and all
-retained gates. The 24,951 selected-suite TRX aggregate counts passed executions, not
-unique upstream tests or every repeated invocation. Compiler-input reuse is distinct from
-full original test assertions; source review is distinct from finite runtime coverage.
-The complete upstream no-emit inventory and its full type/symbol assertion runner remain
-required before checker completion. Large-project comparisons and optimization are deferred.
+combines promises, synchronous/asynchronous generators, for-await and disposable
+resources across files. Its [invalid variant](./examples/protocols/job-stream-invalid/)
+reports six complete diagnostics and exits 1; the valid project exits 0. See the
+[project usage guide](./examples/protocols/README.md). No Go process is needed to use
+the C# checker or run tests against committed reference records.
 
 All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and
-genuine Program environments independently of unfinished semantic consumers. See their
+genuine Program environments independently of semantic checking. See their
 [configuration](./docs/CONFIGURATION.md), [resolution](./docs/RESOLUTION.md) and
 [Program](./docs/PROGRAM.md) guides. Emit, build/watch and language services remain external.
 

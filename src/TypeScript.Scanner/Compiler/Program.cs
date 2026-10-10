@@ -500,14 +500,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     string ICheckerProgramHost.GetSourceFileNameGoBytes(SourceFile file) => file.FileNameGoBytes();
     ModuleKind ICheckerProgramHost.GetImpliedNodeFormatForEmit(SourceFile file) => (ModuleKind)(int)GetImpliedNodeFormatForEmit(file);
     bool ICheckerProgramHost.IsSourceFileDefaultLibrary(SourceFile file) => IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()));
-    bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileNamesAreGoBytes => true;
 
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.BaseDirectory() => BaseDirectory().AsString();
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => GetSourceOfProjectReferenceIfOutputIncluded(file).AsString();
-    bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileExists(string path) => FileExists(RootedFilePath.FromGoString(path));
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetNearestAncestorDirectoryWithPackageJson(string directory) => GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath.FromGoString(directory)).AsString();
-    TypeScript.PackageJson.InfoCacheEntry? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetPackageJsonInfo(string path) => GetPackageJsonInfo(RootedFilePath.FromGoString(path));
-    IReadOnlyList<string> TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => GetRedirectTargets(path)?.Select(file => file.AsString()).ToList() ?? [];
     // Selected emitter.go:476/538 producers: eligibility and output enumeration only.
     internal static bool sourceFileMayBeEmitted(SourceFile file, Program host, bool forceDtsEmit, bool forceJsEmit)
     {
@@ -1105,6 +1098,8 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         diagnostics = Core.Concatenate(diagnostics, checker.GetDiagnostics(context, file));
         if (includeDeferredGlobals)
         {
+            if (checker.WasCanceled())
+                return null;
             var globals = checker.GetGlobalDiagnostics();
             if ((globals?.Count ?? 0) > (previous?.Count ?? 0))
                 foreach (var diagnostic in globals!)
@@ -1203,7 +1198,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     {
         if (SkipTypeChecking(file, false))
             return null;
-        throw new TypeScript.Checking.UnsupportedSemanticFeatureException("checker suggestion diagnostics are outside the admitted semantic profile");
+        return checker.GetSuggestionDiagnostics(context, file);
     }
 
     public List<Diagnostic>? GetDeclarationDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectDiagnostics(context, source, true, getDeclarationDiagnosticsForFile);

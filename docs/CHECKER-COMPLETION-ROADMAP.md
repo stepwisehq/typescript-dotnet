@@ -1,8 +1,19 @@
 # Completing the checker
 
-**Reviewed source-grounded roadmap from the accepted Program campaign; not a checker
-completion claim.**
-Active [whole-checker completion mandate](CHECKER-COMPLETION-PROMPT.md) from accepted
+**Completed: the whole-checker no-emit gate below is accepted on Linux x64.**
+See the [assessment](CHECKER-NOEMIT-ASSESSMENT.md),
+[reproduction](CHECKER-NOEMIT-REPRODUCTION.md) and
+[proof](../validation/results/checker-noemit-verified.json).
+All 15,304 complete managed/native records and retained regressions pass; independent
+source reconciliation reports no known remaining in-scope no-emit consumer gap.
+Historical internal API artifacts remain an explicit evidence limitation. Emit,
+services and incremental builder scheduling remain external. Stop at this gate;
+large-project no-emit correctness/performance evaluation requires separate authorization.
+The roadmap below preserves its historical dependency assessment and campaign sequence;
+its former active/missing labels are superseded by the final assessment and current
+source-review overlays, not instructions to repeat completed investigations.
+
+The [whole-checker completion mandate](CHECKER-COMPLETION-PROMPT.md) began at accepted
 shared type-system checkpoint `bb035b3`; pinned upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 The [Program contract](PROGRAM-CONTRACT.md) supplies the environment required by
 later checker campaigns. Accepted semantic, configuration and resolution proofs remain
@@ -66,7 +77,7 @@ iteration-related paths in [Flow](../src/TypeScript.Scanner/Checker/Flow.cs); it
 bounded E1–E6 runtime/native acceptance has passed. For-await/protocol consumers are now accepted; JS consumers remain language obligations.
 [Relater](../src/TypeScript.Scanner/Checker/Relater.cs) and
 [Inference](../src/TypeScript.Scanner/Checker/Inference.cs) now include the reconciled
-shared template/string-mapping branches. JS/JSX-only branches remain external.
+shared template/string-mapping branches. JS/JSX-specific joins belong to the active language campaign and remain whole-checker obligations.
 Private-class and declaration option-sensitive branches have been restored.
 Removing obsolete admission must follow completion of actual producers and consumers.
 
@@ -84,9 +95,9 @@ owns context/modifier/source grammar diagnostics;
 [relater.go](../upstream/TypeScript/tsc/internal/checker/relater.go) and
 [inference.go](../upstream/TypeScript/tsc/internal/checker/inference.go)
 own the interacting flow/relation/inference algorithms. The async return and yield producers in
-[checker.go](../upstream/TypeScript/tsc/internal/checker/checker.go) identify actual
-remaining families. Later campaigns must follow those producer
-and consumer chains, not simply enlarge an allowed-kind list.
+[checker.go](../upstream/TypeScript/tsc/internal/checker/checker.go) are now accepted under
+the protocol contract. Remaining JS/JSX and module work follows actual producer and
+consumer chains, rather than enlarging an allowed-kind list.
 
 No-emit correctness also depends on diagnostic display. The selected portions of
 [NodeBuilder](../src/TypeScript.Scanner/Checker/NodeBuilder.cs),
@@ -124,7 +135,7 @@ omitted to avoid that distinction. The declaration campaign restored the three m
 original semantic API channels, which pass managed and actual Native AOT execution. The protocol campaign restored the generator test’s complete original global and
 incremental assertions; all four mapper bodies now pass managed and actual native execution.
 
-**P1–P6 protocols are accepted.** The [assessment](PROTOCOLS-ASSESSMENT.md) records
+**P1–P6 protocols are accepted at `c5e96e1`.** The [assessment](PROTOCOLS-ASSESSMENT.md) records
 94 complete managed/native Go comparisons, eight shared checks, 102 new xUnit cases,
 order/CLI checks and all retained gates. Genuine async/await, generator, iteration and
 disposal checking and the original mapper generator assertions are complete within that
@@ -137,7 +148,10 @@ NodeBuilder context/flags and remaining public wrappers; these are checking depe
 not emit/service expansion. The source indexes and implementation plans frontload them.
 
 The [complete original inventory](../validation/checker-noemit-inventory/provenance.json)
-records 12,824 inputs, 15,190 configurations and 42 original skips as obligations only.
+historically records 12,824 raw inputs, 15,190 configurations and 42 original skips.
+The live original decoded-file preparation reconciliation establishes 15,291 non-skipped
+configuration obligations, 101 additional variants; see the [active status](CHECKER-COMPLETION-STATUS.md).
+Historical input/registry bytes remain preserved, with a source-qualified supplement.
 Use its genuine no-emit runner for targeted feedback and complete final qualification;
 avoid another parallel finite-corpus framework. One final native/retained run may satisfy
 both language and whole-checker acceptance when source and assertion closure are ready.

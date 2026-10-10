@@ -154,4 +154,12 @@ public sealed partial class Checker
         foreach (var declaration in symbol.Declarations)
             validateOwnedDeclaration(declaration);
     }
+
+    // exports.go:296–308. Scalar-role public display, source producers retain Go bytes.
+    public string GetJsxNamespace(Node location) => ScannerString.ToJsString(getJsxNamespace(location));
+    public string GetJsxFragmentFactory(Node location)
+    {
+        var entity = getJsxFragmentFactoryEntity(location);
+        return entity == null ? "" : ScannerString.ToJsString(Ast.GetFirstIdentifier(entity).Text());
+    }
 }

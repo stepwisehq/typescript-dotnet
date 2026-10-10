@@ -19,12 +19,12 @@ internal enum ResultKind : byte
 
 internal sealed class ModuleSpecifiersResult
 {
-    internal List<string>? Specifiers;
+    internal List<ModuleSpecifier>? Specifiers;
     internal ResultKind Kind;
     internal Symbol? AmbientModuleSymbol = null;
 }
 
-internal readonly record struct ModulePath(string FileName, bool IsInNodeModules, bool IsRedirect);
+internal readonly record struct ModulePath(RootedFilePath FileName, bool IsInNodeModules, bool IsRedirect);
 internal enum ImportModuleSpecifierPreference
 {
     None,
@@ -71,19 +71,26 @@ internal enum ModuleSpecifierEnding : byte
     TsExtension
 }
 
-internal interface IModuleSpecifierGenerationHost
+// types.go:51. Paths and names use actual upstream Go-byte value roles.
+internal interface IModuleSpecifierGenerationHost : TypeScript.OutputPaths.IOutputPathsHost
 {
-    // Explicit compatibility role: legacy project names are Unicode; genuine
-    // graph paths and upstream typed path strings are Go byte strings.
-    bool FileNamesAreGoBytes => false;
-    CaseSensitivity CaseSensitivity() => TypeScript.Scanner.CaseSensitivity.CaseSensitive;
-    IReadOnlyList<string> GetRedirectTargets(PathKey path) => [];
-    string BaseDirectory();
-    string GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file);
-    bool FileExists(string path);
-    string GetNearestAncestorDirectoryWithPackageJson(string directory);
-    InfoCacheEntry? GetPackageJsonInfo(string path);
+    TypeScript.Symlinks.KnownSymlinks GetSymlinkCache();
+    RootedDirectoryPath GetGlobalTypingsCacheLocation();
+    RootedDirectoryPath BaseDirectory();
+    TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path);
+    List<RootedFilePath>? GetRedirectTargets(PathKey path);
+    RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file);
+    bool FileExists(RootedFilePath path);
+    RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory);
+    InfoCacheEntry? GetPackageJsonInfo(RootedFilePath path);
     ResolutionMode GetDefaultResolutionModeForFile(SourceFile file);
     ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier);
     ResolutionMode GetModeForUsageLocation(SourceFile file, Node specifier);
+}
+
+internal enum MatchingMode : byte
+{
+    Exact,
+    Directory,
+    Pattern
 }

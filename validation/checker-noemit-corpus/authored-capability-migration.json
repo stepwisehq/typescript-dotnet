@@ -1,0 +1,64 @@
+{
+  "classification": "authored-capability-restrictions-promoted-to-complete-pinned-go-public-observations",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "previousContract": "Declarations D1-D6 left genuine JS/JSX/decorators/JSON semantic consumers external; these authored controls required UnsupportedSemanticFeatureException/CLI exit2.",
+  "currentContract": "LANGUAGE L1-L5 completes these original source algorithms; controls now require unchanged-input complete source diagnostics/environment and explicit skipped-JS public type/symbol observations.",
+  "historicalGroupName": "Authored.ExternalSemanticConsumers",
+  "currentAssertedInputs": 4,
+  "previousFiles": {
+    "validation/Declarations.Checks/ExternalSemanticBoundaryChecks.cs": "f23660123077c17874929775565bb05367a8b834915d0453e16b39e0bcdcc961",
+    "validation/Declarations.Checks/Declarations.Checks.csproj": "2521bcf879f981f4c8c4c6e79aff8eed96f50d5326772834f2efc4f0e056f4d9",
+    "tools/check-resolution-cli.py": "a11047836d3afd5c4c60d66586f4e2b2cce4a93d3d3e833a5d15dce49a313831"
+  },
+  "previousArchive": "artifacts/checker-noemit-validation/authored-capability-migration/before",
+  "sourceFiles": {
+    "validation/Declarations.Checks/ExternalSemanticBoundaryChecks.cs": "9015c527ea922be7219eb40b686d578d5bd69841208e620d232ac57c8f3e916f",
+    "validation/Declarations.Checks/Declarations.Checks.csproj": "b9ca23690eb20efd18239fe1c4ba1184278837b35a06197f6c6269b09a11104e",
+    "tools/check-resolution-cli.py": "19602d5f874809deb440c9195a6079ae42a3beda393540c6dd6f21171d2c3e47"
+  },
+  "assets": {
+    "validation/checker-noemit-corpus/requests-authored-capabilities.jsonl": "e8c5cac157425815e5a3046704ab97df78a659dc0d8d6a76300bcc339e05363e",
+    "validation/checker-noemit-corpus/expected-authored-capabilities.jsonl.gz": "d8e099467570dc90e50ef8faad660193a135b08ab62cd9583f7f17b5c3f7c53f",
+    "validation/checker-noemit-corpus/authored-capability-checks.jsonl.gz": "6cccea4d3a7fe8b464d98965ca2471b7824614612df93f03e49f47d87a7e1395",
+    "validation/checker-noemit-corpus/resolution-current-boundaries.json": "98009f97ec8c4f91c5fbe78380fface915dbfa479c8fc78d1f6c8222409ec457"
+  },
+  "reference": {
+    "requests": "validation/checker-noemit-corpus/requests-authored-capabilities.jsonl",
+    "expected": "validation/checker-noemit-corpus/expected-authored-capabilities.jsonl.gz",
+    "originalReport": "artifacts/checker-noemit-validation/authored-capability-migration/original-report.json",
+    "originalReportSha256": "a8dc8982f1bd57d4b173c9586f4db39e0f42c218434a7b88bcdd9dfb82517c46",
+    "assertionResource": "validation/checker-noemit-corpus/authored-capability-checks.jsonl.gz",
+    "observations": [
+      "Complete Program records: parsed options, roots, loaded authentic library/source environment and all construction/syntactic/bind/global/semantic/per-file/repeated diagnostic channels.",
+      "Same original skipped JS declaration identifier value at occurrence zero: actual public type number and symbol name value/flags2, with diagnostics unchanged.",
+      "Checked JS retains source2322; JSX retains source7026 from missing intrinsic declarations; unchanged valid legacy decorator fixture retains nil semantic diagnostics."
+    ]
+  },
+  "resolutionPromotion": {
+    "context": "validation/checker-noemit-corpus/resolution-current-boundaries.json",
+    "cases": [
+      "package-graph-check",
+      "package-graph-invalid-check"
+    ],
+    "originalEvidence": "artifacts/checker-noemit-validation/authored-capability-migration/resolution/report.json",
+    "originalEvidenceSha256": "aae2946eb678bdcdf536a2b6265bc4af1e1e63d0ab32b6c52246e02684c7ffe0",
+    "currentReadiness": "artifacts/checker-noemit-validation/authored-capability-migration/resolution-current/report.json",
+    "currentReadinessSha256": "50bcebbd7060a15290e116274f8ac554aba11f1fdd93a884fa38c9761db99f4e",
+    "sourceDiagnosticCounts": {
+      "package-graph-check": 15,
+      "package-graph-invalid-check": 17
+    },
+    "exitCodes": {
+      "package-graph-check": 1,
+      "package-graph-invalid-check": 1
+    },
+    "assertion": "Both original authored capability rows now invoke the same genuine pinned-Go semantic observer and full DTO comparison as the other semantic cases; all9 previous Go comparisons and complete graph fixture inputs/inspection assertions remain.",
+    "contextPathNote": "Finite readiness used identical context bytes before the filename was finalized; its exact input is archived as resolution-current/context.json. The final bound context has the same byte digest."
+  },
+  "limits": [
+    "No production algorithm changes, option/library substitutions, fixture edits, diagnostic filters, expected normalization or no-throw success assertions.",
+    "Historical manifests, request/expected/proof bytes, original obsolete boundary context and source-input corpus assets remain unchanged; prior adapter/tool sources are archived.",
+    "Named legacy Checker.Create admission/ownership controls remain separately bounded and unchanged.",
+    "Only the four genuine Program restrictions and the two authored CLI restrictions are promoted; original source results are generated by the unchanged pinned-Go observers before current expectations are written."
+  ]
+}

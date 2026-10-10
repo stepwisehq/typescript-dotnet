@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/pseudochecker/lookup.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only data-property, scalar and non-generic callable reuse; tuple and general emit paths excluded.
+// Syntactic declaration/expression/return skeletons used by actual type-node serialization.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -28,12 +28,18 @@ internal sealed partial class PseudoChecker
             case Kind.CallExpression:
                 return NewPseudoTypeNoResult(node);
             case Kind.PropertySignature:
+            case Kind.PropertyDeclaration:
+            case Kind.JSDocPropertyTag:
                 return typeFromProperty(node);
+            case Kind.BindingElement:
+                return NewPseudoTypeNoResult(node);
+            case Kind.ExportAssignment:
+                return typeFromExpression(node.AsExportAssignment().Expression);
             case Kind.PropertyAssignment:
             case Kind.ShorthandPropertyAssignment:
                 return typeFromPropertyAssignment(node);
             default:
-                throw TypeScript.Checking.Checker.unsupported("PseudoChecker.GetTypeOfDeclaration: unselected declaration");
+                throw new InvalidOperationException("Node needs to be an inferrable node");
         }
     }
 
@@ -61,10 +67,93 @@ internal sealed partial class PseudoChecker
         var t = node.Type();
         if (t != null)
             return NewPseudoTypeDirect(t);
-        if (node.Kind != Kind.PropertySignature)
-            throw TypeScript.Checking.Checker.unsupported("PseudoChecker.typeFromProperty: class/JS");
+        if (Ast.IsPropertyDeclaration(node))
+        {
+            var init = node.Initializer();
+            if (init != null && !isContextuallyTyped(node))
+            {
+                if (Ast.HasModifier(node, ModifierFlags.Readonly) && Ast.IsTemplateExpression(init))
+                    return NewPseudoTypeNoResult(node);
+                var expr = typeFromExpression(init);
+                if (expr != null && (expr.Kind != PseudoTypeKind.Inferred || GoRuntime.Len(expr.AsPseudoTypeInferred().ErrorNodes) > 0))
+                {
+                    if (expr.Kind != PseudoTypeKind.Direct && node.AsPropertyDeclaration().PostfixToken?.Kind == Kind.QuestionToken)
+                        return addUndefinedIfDefinitelyRequired(expr);
+                    return expr;
+                }
+            }
+        }
         return NewPseudoTypeNoResult(node);
     }
+
+    // pseudochecker/lookup.go:26/146–194. Shared accessor annotations and return fallback.
+    internal PseudoType GetTypeOfAccessor(Node accessor) => typeFromAccessor(accessor);
+    private PseudoType typeFromAccessor(Node accessor)
+    {
+        var accessors = Ast.GetAllAccessorDeclarationsForDeclaration(accessor, accessor.DeclarationData().Symbol.Declarations);
+        var annotation = getTypeAnnotationFromAllAccessorDeclarations(accessor, accessors);
+        if (annotation != null && !Ast.IsTypePredicateNode(annotation))
+            return NewPseudoTypeDirect(annotation);
+        if (accessors.GetAccessor != null)
+        {
+            var result = createReturnFromSignature(accessors.GetAccessor.AsNode());
+            if (result.Kind == PseudoTypeKind.Inferred && GoRuntime.Len(result.AsPseudoTypeInferred().ErrorNodes) == 0)
+            {
+                List<Node> errors = [accessors.GetAccessor.AsNode()];
+                if (accessors.SetAccessor != null)
+                    errors.Add(accessors.SetAccessor.AsNode());
+                var inferred = result.AsPseudoTypeInferred();
+                result = NewPseudoTypeInferredWithErrors(inferred.Expression, inferred.IsSignatureReturn, errors);
+            }
+            return result;
+        }
+        return NewPseudoTypeNoResult(accessor);
+    }
+
+    private static Node getTypeAnnotationFromAllAccessorDeclarations(Node node, AllAccessorDeclarations accessors)
+    {
+        var annotation = getTypeAnnotationFromAccessor(node);
+        if (annotation == null && node != accessors.FirstAccessor)
+            annotation = getTypeAnnotationFromAccessor(accessors.FirstAccessor);
+        if (annotation == null && accessors.SecondAccessor != null && node != accessors.SecondAccessor)
+            annotation = getTypeAnnotationFromAccessor(accessors.SecondAccessor);
+        return annotation;
+    }
+
+    private static Node getTypeAnnotationFromAccessor(Node node)
+    {
+        if (node == null)
+            return null;
+        if (node.Kind == Kind.GetAccessor)
+            return node.AsGetAccessorDeclaration().Type;
+        var setter = node.AsSetAccessorDeclaration();
+        if (setter.Parameters == null || GoRuntime.Len(setter.Parameters.Nodes) < 1)
+            return null;
+        var parameter = setter.Parameters.Nodes[0];
+        return Ast.IsParameterDeclaration(parameter) ? parameter.AsParameterDeclaration().Type : null;
+    }
+
+    // pseudochecker/lookup.go:363. Preserve separately annotated getter/setter types.
+    private PseudoObjectElement getAccessorMember(Node accessor, Node name)
+    {
+        var accessors = Ast.GetAllAccessorDeclarationsForDeclaration(accessor, accessor.Symbol().Declarations);
+        if (accessors.GetAccessor != null && accessors.GetAccessor.Type != null &&
+            accessors.SetAccessor != null && GoRuntime.Len(accessors.SetAccessor.Parameters.Nodes) > 0 &&
+            accessors.SetAccessor.Parameters.Nodes[0].AsParameterDeclaration().Type != null)
+        {
+            if (Ast.IsGetAccessorDeclaration(accessor))
+                return NewPseudoGetAccessor(accessor, name, false, typeFromAccessor(accessor));
+            return NewPseudoSetAccessor(accessor, name, false, cloneParameters(accessor.AsSetAccessorDeclaration().Parameters)[0]);
+        }
+        if (accessor == accessors.FirstAccessor)
+            return NewPseudoPropertyAssignment(Ast.IsGetAccessorDeclaration(accessor) && accessors.SecondAccessor == null,
+                name, false, typeFromAccessor(accessor));
+        return null;
+    }
+
+    // pseudochecker/lookup.go:510. Const assertions retain the expression skeleton.
+    private PseudoType typeFromTypeAssertion(Node expression, Node typeNode) =>
+        Ast.IsConstTypeReference(typeNode) ? typeFromExpression(expression) : NewPseudoTypeDirect(typeNode);
 
     private PseudoType typeFromExpression(Node node)
     {
@@ -104,9 +193,13 @@ internal sealed partial class PseudoChecker
                 return typeFromArrayLiteral(node.AsArrayLiteralExpression());
             case Kind.TypeAssertionExpression:
             case Kind.AsExpression:
+                return typeFromTypeAssertion(node.Expression(), node.Type());
             case Kind.ClassExpression:
+                return NewPseudoTypeInferredWithErrors(node, false, [node]);
             case Kind.TemplateExpression:
-                throw TypeScript.Checking.Checker.unsupported("PseudoChecker.typeFromExpression: asserted/array/class/template expression");
+                if (IsInConstContext(node))
+                    return NewPseudoTypeInferred(node, false);
+                return NewPseudoTypeMaybeConstLocation(node, NewPseudoTypeInferred(node, false), PseudoTypeString);
         }
 
         return NewPseudoTypeInferred(node, false);
@@ -134,8 +227,12 @@ internal sealed partial class PseudoChecker
                 case Kind.PropertyAssignment:
                     elements.Add(NewPseudoPropertyAssignment(false, element.Name(), element.AsPropertyAssignment().PostfixToken?.Kind == Kind.QuestionToken, typeFromExpression(element.Initializer())));
                     break;
-                default:
-                    throw TypeScript.Checking.Checker.unsupported("PseudoChecker.typeFromObjectLiteral: accessor");
+                case Kind.SetAccessor:
+                case Kind.GetAccessor:
+                    var member = getAccessorMember(element, element.Name());
+                    if (member != null)
+                        elements.Add(member);
+                    break;
             }
         }
 
@@ -173,8 +270,8 @@ internal sealed partial class PseudoChecker
                 continue;
             }
 
-            if (e.Name().Kind == Kind.ComputedPropertyName)
-                throw TypeScript.Checking.Checker.unsupported("PseudoChecker.canGetTypeFromObjectLiteral: computed name");
+            if (e.Name().Kind == Kind.ComputedPropertyName && !Ast.IsPrimitiveLiteralValue(e.Name().Expression(), false))
+                (errors ??= []).Add(e.Name());
         }
 
         return errors;
@@ -510,7 +607,7 @@ internal sealed partial class PseudoChecker
         var parent = node.Parent;
         if ((parent.Kind == Kind.SetAccessor))
         {
-            throw TypeScript.Checking.Checker.unsupported("PseudoChecker: accessor parameter");
+            return GetTypeOfAccessor(parent);
         }
 
         if ((node.Initializer == null))
@@ -535,7 +632,7 @@ internal sealed partial class PseudoChecker
         var parent = node.Parent;
         if ((parent.Kind == Kind.SetAccessor))
         {
-            throw TypeScript.Checking.Checker.unsupported("PseudoChecker: accessor parameter");
+            return GetTypeOfAccessor(parent);
         }
 
         var hasRequiredAfter = (selfIdx < (lastRequired - 1));
@@ -613,16 +710,24 @@ internal sealed partial class PseudoChecker
     {
         switch (node.Kind)
         {
+            case Kind.GetAccessor:
+                return GetTypeOfAccessor(node);
             case Kind.MethodDeclaration:
             case Kind.FunctionDeclaration:
+            case Kind.Constructor:
             case Kind.MethodSignature:
             case Kind.CallSignature:
+            case Kind.ConstructSignature:
+            case Kind.SetAccessor:
+            case Kind.IndexSignature:
             case Kind.FunctionType:
+            case Kind.ConstructorType:
             case Kind.FunctionExpression:
             case Kind.ArrowFunction:
+            case Kind.JSDocSignature:
                 return createReturnFromSignature(node);
             default:
-                throw TypeScript.Checking.Checker.unsupported("PseudoChecker.GetReturnTypeOfSignature: unselected declaration");
+                throw new InvalidOperationException("Node needs to be an inferrable node");
         }
     }
 
@@ -644,8 +749,8 @@ internal sealed partial class PseudoChecker
             return NewPseudoTypeInferredWithErrors(node.AsNode(), false, errors);
         if (IsInConstContext(node.AsNode()) && isContextuallyTyped(node.AsNode()))
             return NewPseudoTypeInferred(node.AsNode(), false);
-        var results = new List<PseudoType>(node.Elements.Nodes.Count);
-        foreach (var element in node.Elements.Nodes)
+        var results = new List<PseudoType>(node.Elements?.Nodes?.Count ?? 0);
+        foreach (var element in node.Elements?.Nodes ?? [])
             results.Add(typeFromExpression(element));
         return NewPseudoTypeTuple(results);
     }
@@ -654,7 +759,7 @@ internal sealed partial class PseudoChecker
     {
         if (!IsInConstContext(node.AsNode()))
             return[node.AsNode()];
-        foreach (var element in node.Elements.Nodes)
+        foreach (var element in node.Elements?.Nodes ?? [])
             if (element.Kind == Kind.SpreadElement)
                 return[element];
         return null;

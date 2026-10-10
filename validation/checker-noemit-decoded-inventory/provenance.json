@@ -1,0 +1,51 @@
+{
+  "classification": "actual-decoded-original-configuration-reconciliation-not-checker-pass",
+  "fixtures": 12824,
+  "decodedConfigurations": 15330,
+  "decodedConfigurationsWithoutOriginalPreConfigurationSkips": 15291,
+  "originalPreConfigurationSkips": 42,
+  "expansionFailures": 7,
+  "changedFixtures": 862,
+  "changedPreviouslyEnumeratedFixtures": 827,
+  "rawConfigurations": 15190,
+  "previouslyEnumeratedDeltaCauses": {
+    "UTF-8 BOM": 820,
+    "UTF-16 BE BOM": 1,
+    "UTF-16 LE BOM": 6
+  },
+  "changedPreviouslyEnumeratedSettingsConfigurations": 821,
+  "rawInventory": "validation/checker-noemit-inventory/fixtures.jsonl.gz",
+  "rawInventorySha256": "80cee1601588212d34cdc41cd4550f5083800ecb51d04c7630fdb543a91bf160",
+  "rawInventoryProvenanceSha256": "01a6667c881a5fea505259d5e19f4913559db2be057c7fd7471df61c66d64051",
+  "decodedInventorySha256": "f7b4e13be1c5f534c877b4ca6a64f1e90fce42c8dad451dd4d270ddb66e5028e",
+  "sourceFiles": {
+    "tools/reconcile-checker-noemit-configurations.py": "53bbaef7f2366420de3850814179a3d24b5b497cd6eaf0fc566462c8bca34d1e",
+    "tools/checker-noemit-oracle/decoded_inventory_test.go": "bb3f409a4b889617839bf8dd6f40d86a3cb033324d5a130cae9e96e348792c3b",
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testrunner/options_generated.go": "ec1f8e29fc24155d717d717b90089208d771923465f1ff7eb67c80cb2fc89451",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/vfs/osvfs/os.go": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+    "upstream/TypeScript/tsc/internal/vfs/internal/internal.go": "2d641c466808f1417e4e20d46aa4beb7f9dcc1bc5fd872a5d134fb3ae56d1def",
+    "tools/checker-noemit-oracle/api_environment.go": "2c6fb2dbe522530f290a70738b552d2ce3aa9e65547ee8658e563d76003c3656",
+    "tools/checker-noemit-oracle/baseline_bridge.go": "be6b54d56bf0d4df28573b9ad3eaf0faf11713329137d0cee365daaef204cf3b",
+    "tools/checker-noemit-oracle/compiler_noemit_bridge.go": "9691a08e1cefae416d58734d23f8529c5ee229d920a05aabf2c4227967fbe753",
+    "tools/checker-noemit-oracle/diagnostics.go": "dba0ceccc95b8cf49a0b7103af9e7a40ec9187764221ecca80caad2bcc248549",
+    "tools/checker-noemit-oracle/harness_noemit_bridge.go": "899344213b4c6e0a17c93bd4e57002b39a5a41025b386a8f7052b7bdb5496231",
+    "tools/checker-noemit-oracle/runner_test.go": "f578b04a4c6929b074e216d56d941df198032b82b7e56c1a6eac32e037dcf5c9"
+  },
+  "command": [
+    "/home/greg/projects/typescript-dotnet/artifacts/checker-noemit-validation/observer-build/checker-noemit-original-environments",
+    "-test.run=^TestAuthoredDecodedCompilerInventory$",
+    "-test.count=1"
+  ],
+  "exitCode": 1,
+  "originalBinarySha256": "c805cd5f0ce4f8571131b79981d0bba2f89714b2706f1a92c2045fcfe6212703",
+  "originalOutputSha256": "98092a1842668ab9e9bb69fd2c0c8c41876fbf8c113a01aed46fa3841dc51db8",
+  "originalLogSha256": "6bf6bf6d91a384ecf2fa26be4e4b1610f04f61bafffe7cf17f71195fcac69087",
+  "originalStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "originalBinaryDrift": false,
+  "deltaExplanation": "Previously enumerated changes are disk-read BOM decoding only:820 UTF-8,6 UTF-16LE,1 UTF-16BE fixtures.821 change extracted settings/config values; remaining6 change extracted units without settings. Actual original config expansion adds101 net obligations excluding original skips. No options normalization/default merge/source edit is introduced.",
+  "boundary": "Actual getCompilerFileBasedTest/osvfs.ReadFile BOM decoding and original option expansion. All original sources including42 preconfiguration skips are attempted unchanged. Per-fixture original fatal/panic is retained as expansion failure, never success or automatic exclusion. Original map configuration enumeration is presented sorted by original description; semantic/search ordering is untouched. Raw12824 extraction equivalence remains historical raw-parser evidence.",
+  "deltasSha256": "8bddffee6ff17da37d7c6132a61220d4419cf8265a92a7d769a887584df1076b"
+}

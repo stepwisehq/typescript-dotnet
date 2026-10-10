@@ -1,0 +1,25 @@
+{
+  "baseline": "c5e96e1",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "checkingCases": 15304,
+  "preparationCases": 33,
+  "authoredHarnessCases": 3,
+  "standardConfigurations": 15291,
+  "originalSkippedCheckingConfigurations": 13,
+  "originalBinary": "artifacts/checker-noemit-validation/observer-build/checker-noemit-original-environments",
+  "requests": "validation/checker-noemit-corpus/requests.jsonl",
+  "requestsSha256": "f67e31335a943bb0d6274fe0dc5f82e49280f85d9d5d317c6d30b6783291dc9a",
+  "expected": "validation/checker-noemit-corpus/expected.jsonl.gz",
+  "expectedSha256": "f44aed5c331118d4fe412a40536316a5150887f3d3ed2ef11fab0697470a6582",
+  "preparation": "validation/checker-noemit-corpus/preparation-dispositions.json",
+  "preparationSha256": "a3597fdfe502527d64cb365564a39a725398acc19936f229b9e9681017334a8f",
+  "provenance": "validation/checker-noemit-corpus/provenance.json",
+  "provenanceSha256": "ccb2533463f01175fb3c2a3aaee1f09f9dc39a9aa53df7144fb0f65aa1132e26",
+  "authoredCapabilityPromotion": {
+    "provenance": "validation/checker-noemit-corpus/authored-capability-migration.json",
+    "provenanceSha256": "a66b9e07699c34ba705ecb4e7a64671c5f6f8dbb0f8c42c7e4515dd485e92bd2",
+    "retainedSharedCheck": "Authored.ExternalSemanticConsumers",
+    "completeSameInputProgramRecords": 4,
+    "sameInputResolutionSemanticComparisons": 2
+  }
+}

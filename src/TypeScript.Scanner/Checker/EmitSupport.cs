@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/emitsupport.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
+// Declaration visibility and implicit-undefined metadata used by diagnostic/public type-node reuse; emit execution excluded.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
@@ -132,8 +132,14 @@ public sealed partial class Checker
 
     private TypeScript.DiagnosticPrinting.SymbolAccessibilityResult hasVisibleDeclarations(Symbol symbol, bool shouldComputeAliasToMakeVisible)
     {
-        if (shouldComputeAliasToMakeVisible)
-            throw unsupported("hasVisibleDeclarations: declaration emit alias marking");
+        Dictionary<Node, Node> aliasesToMakeVisible = null;
+        void addVisibleAlias(Node declaration, Node aliasingStatement)
+        {
+            if (!shouldComputeAliasToMakeVisible)
+                return;
+            emitResolverLinks.Get(declaration).isVisible = Tristate.True;
+            (aliasesToMakeVisible ??= new())[declaration] = aliasingStatement;
+        }
         foreach (var declaration in symbol.Declarations ?? [])
         {
             if (Ast.IsIdentifier(declaration))
@@ -142,21 +148,58 @@ public sealed partial class Checker
                 continue;
             var importSyntax = getAnyImportSyntax(declaration);
             if (importSyntax != null && !Ast.HasSyntacticModifier(importSyntax, ModifierFlags.Export) && isDeclarationVisible(importSyntax.Parent))
-                continue; // Original noopAddVisibleAlias when shouldComputeAlias=false.
+            {
+                addVisibleAlias(declaration, importSyntax);
+                continue;
+            }
             if (Ast.IsVariableDeclaration(declaration) && Ast.IsVariableStatement(declaration.Parent.Parent) && !Ast.HasSyntacticModifier(declaration.Parent.Parent, ModifierFlags.Export) && isDeclarationVisible(declaration.Parent.Parent.Parent))
+            {
+                addVisibleAlias(declaration, declaration.Parent.Parent);
                 continue;
+            }
             if (Ast.IsLateVisibilityPaintedStatement(declaration) && !Ast.HasSyntacticModifier(declaration, ModifierFlags.Export) && isDeclarationVisible(declaration.Parent))
+            {
+                addVisibleAlias(declaration, declaration);
                 continue;
+            }
             if (Ast.IsBindingElement(declaration))
-                throw unsupported("hasVisibleDeclarations: binding declaration visibility");
+            {
+                if ((symbol.Flags & SymbolFlags.Alias) != 0 && Ast.IsInJSFile(declaration) &&
+                    declaration.Parent != null && declaration.Parent.Parent != null &&
+                    Ast.IsVariableDeclaration(declaration.Parent.Parent) &&
+                    declaration.Parent.Parent.Parent.Parent != null &&
+                    Ast.IsVariableStatement(declaration.Parent.Parent.Parent.Parent) &&
+                    !Ast.HasSyntacticModifier(declaration.Parent.Parent.Parent.Parent, ModifierFlags.Export) &&
+                    declaration.Parent.Parent.Parent.Parent.Parent != null &&
+                    isDeclarationVisible(declaration.Parent.Parent.Parent.Parent.Parent))
+                {
+                    addVisibleAlias(declaration, declaration.Parent.Parent.Parent.Parent);
+                    continue;
+                }
+                if ((symbol.Flags & SymbolFlags.BlockScopedVariable) != 0)
+                {
+                    var rootDeclaration = Ast.WalkUpBindingElementsAndPatterns(declaration);
+                    if (Ast.IsParameterDeclaration(rootDeclaration))
+                        return null;
+                    var variableStatement = rootDeclaration.Parent.Parent;
+                    if (!Ast.IsVariableStatement(variableStatement))
+                        return null;
+                    if (Ast.HasSyntacticModifier(variableStatement, ModifierFlags.Export))
+                        continue;
+                    if (!isDeclarationVisible(variableStatement.Parent))
+                        return null;
+                    addVisibleAlias(declaration, variableStatement);
+                    continue;
+                }
+            }
             return null;
         }
 
-        // Original slices.Collect(maps.Values(nil)) is an allocated empty slice.
+        // Collect retains an allocated empty slice when no aliases were marked.
         return new()
         {
             Accessibility = TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible,
-            AliasesToMakeVisible = new()
+            AliasesToMakeVisible = aliasesToMakeVisible?.Values.ToList() ?? new()
         };
     }
 
@@ -180,6 +223,7 @@ public sealed partial class Checker
         {
             case Kind.PropertyDeclaration:
             case Kind.PropertySignature:
+            case Kind.JSDocPropertyTag:
                 symbol ??= getSymbolOfDeclaration(declaration);
                 var t = getTypeOfSymbol(symbol);
                 _ = mappedSymbolLinks.Has(symbol);
@@ -188,10 +232,8 @@ public sealed partial class Checker
                     ReverseMappedSymbolLinks.Has(symbol) && ReverseMappedSymbolLinks.Get(symbol).mappedType != null &&
                     containsNonMissingUndefinedType(this, t);
             case Kind.Parameter:
-                return requiresAddingImplicitUndefinedWorker(declaration, enclosingDeclaration);
-            case Kind.JSDocPropertyTag:
             case Kind.JSDocParameterTag:
-                throw unsupported("requiresAddingImplicitUndefined: JS");
+                return requiresAddingImplicitUndefinedWorker(declaration, enclosingDeclaration);
             default:
                 throw new InvalidOperationException("Node cannot possibly require adding undefined");
         }

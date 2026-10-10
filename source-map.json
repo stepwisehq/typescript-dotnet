@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Accepted scanner/parser/syntax-AST and source-file binding foundations; accepted bounded scalar/object/named-data, callable, generic-collection and ES-module checking. Configuration/discovery, source-import resolution and the defined Program/environment construction contract are accepted with actual Linux x64 Native AOT evidence. Broader checker/library semantics, emit/build/watch and services remain separate. Historical scopes and fingerprints are retained below. Genuine checker initialization and declaration/object responsibility closure D1\u2013D6 is now accepted with genuine Program environments and retained regressions; whole checker counterparts remain partial. Synchronous TypeScript expression/statement/checker-flow E1\u2013E6 is accepted with actual Linux x64 Native AOT and retained regressions; external protocol/JS responsibilities remain explicit. Shared TypeScript type-system T1\u2013T6 responsibilities are now accepted with source-family reconciliation, original casing support, public semantic comparisons, actual Linux x64 Native AOT and all retained regressions; whole checker files and external consumers remain partial. Async/generator/runtime-protocol P1\u2013P6 source closure is accepted with complete selected Go comparisons, actual Linux x64 Native AOT and retained regressions; whole-checker completion remains active.",
+  "checkpoint": "Whole-checker no-emit contract accepted with actual Linux x64 Native AOT, complete pinned-Go checking comparisons and retained regressions. Earlier foundation, binder, environment and capability checkpoints remain preserved below. This is not exhaustive correctness, full historical compiler-test success or emit/service/incremental-builder completion. Per-file external scopes remain explicit.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -73,7 +73,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "resolutionCampaignBaselineScope": "Accepted foundation extension: full syntax subtree-fact computations/caches and source position, identifier/name/token/declaration services, ordinary node/factory accessors. Bound Symbol identity is read only where original declaration maps require existing binding; no new binding/checking. Explicit function-by-function scope and review dispositions are in the foundation syntax inventory.",
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
@@ -132,7 +132,7 @@
       "upstream": "tsc/internal/core/core.go",
       "destination": "src/TypeScript.Scanner/Core/Core.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: GetScriptKindFromFileName, EnsureScriptKindFromFileName. Broader source file remains within its previously documented scope.",
+      "scope": "Prior accepted core dependencies plus original IndexAfter and CompareBooleans for module naming; broader core scope remains as historically documented.",
       "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
       "parserCheckpointScope": "Scanner spelling suggestions plus parser-required slice/collection combinators and ECMAScript line starts. Managed delegates and lists preserve required Go semantics; unrelated core utilities excluded.",
       "binderCheckpointScope": "Scanner spelling suggestions and parser slice/collection combinators/ECMAScript line starts; binder OrElse restricted to reference zero values and AppendIfUnique with reference identity. Managed delegates/lists implement required Go semantics; unrelated core utilities excluded.",
@@ -164,13 +164,23 @@
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original relative-import rewrite predicate for diagnostic helper callers.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Source shared helpers demanded by synchronous checker/flow closure; existing counterpart maintained.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
+      "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Prior accepted core dependencies plus original IndexAfter and CompareBooleans for module naming; broader core scope remains as historically documented.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: GetScriptKindFromFileName, EnsureScriptKindFromFileName. Broader source file remains within its previously documented scope.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -385,7 +395,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -405,7 +415,7 @@
       "upstream": "tsc/internal/ast/diagnostic.go",
       "destination": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: getDiagnosticPath. Broader source file remains within its previously documented scope.",
+      "scope": "Prior diagnostic model plus original displayMessageArgs mapped-alias text projection and Go related-info slice-header publication. Stored message arguments remain original; copy-on-append changes only receiver visible list while diagnostic element identity remains shared.",
       "upstreamSha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4",
       "parserCheckpointScope": "Parse diagnostic construction, spans, raw arguments and related information; full compiler diagnostic processing excluded.",
       "binderCheckpointScope": "Parser and binder diagnostic construction, spans, raw arguments, ordering and related information; full compiler diagnostic processing excluded.",
@@ -421,9 +431,23 @@
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Module-not-found/mode-mismatch diagnostic metadata; service replay external.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Prior diagnostic model plus original displayMessageArgs mapped-alias text projection and Go related-info slice-header publication. Stored message arguments remain original; copy-on-append changes only receiver visible list while diagnostic element identity remains shared.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: getDiagnosticPath. Broader source file remains within its previously documented scope.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignAdaptations": [
+        "Source displayMessageArgs133–164 maps only exact complete mapped-alias argument spans for display; no stored argument rewrite.",
+        "Source AddRelatedInfo105 append has receiver-local slice header/length across clone/rewrap; managed copy-on-append preserves that publication and shallow diagnostic element identity."
+      ],
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/parseoptions.go",
@@ -460,7 +484,7 @@
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsCampaignState": "accepted-collections-contract",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Negative signed integer range yields zero iterations like Go; avoids Enumerable.Range negative-count exception. Shared compatibility fix exposed by library tuples.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
@@ -528,7 +552,7 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "projectsCampaignScope": "Selected original import/export/declaration helpers demanded by project checker paths; no broad foundation reopening.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -551,7 +575,7 @@
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Class-like symbol declaration lookup and effective-external-module predicate.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
@@ -585,7 +609,7 @@
       "configurationCampaignBaselineScope": "Root/extension predicates required by syntax reference metadata; no filesystem lookup. Foundation adds GetRootLength and normalized base-filename extraction required by declaration-file recognition. Managed separator replacement retains original normalization semantics.",
       "configurationCampaignEvidence": "validation/results/configuration-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original byte-string basename extension predicate.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
@@ -593,7 +617,17 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/ParserStrings.cs",
       "status": "new",
-      "scope": "Compatibility adapters for Go UTF8 string trimming and Unicode whitespace semantics required by parser."
+      "scope": "Authored Go raw-byte string compatibility for accepted parser/checker callers plus Cut/CutLast/Count/Split/Replace. Empty separators preserve original UTF8 rune boundaries; no framework scalar-string substitution.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Authored Go raw-byte string compatibility for accepted parser/checker callers plus Cut/CutLast/Count/Split/Replace. Empty separators preserve original UTF8 rune boundaries; no framework scalar-string substitution.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignBaselineScope": "Compatibility adapters for Go UTF8 string trimming and Unicode whitespace semantics required by parser.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -679,7 +713,7 @@
       "upstreamSha256": "6c7acb7a20064075577af2412f6daf0a7d4eba023a0030fe2f4b060ded336dee",
       "bindingCompletionInventory": "docs/binding-completion-functions.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit.",
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "resolutionCampaignBaselineScope": "Complete source-file binder.go algorithms: 163 emitted functions plus manually adapted getBinder/two ActiveLabel accessors; putBinder/pool-return defer omitted in favor of fresh isolated managed binders. Symbols/scopes/declaration merges, CommonJS/expando/module patterns, ordered diagnostics and cyclic/shared flow graphs retained. Public raw-name wrappers and pinned 64-bit identity formatting explicit. Resolver siblings, checker, cross-file/module resolution, incremental rebinding and emit stages excluded.",
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
@@ -696,7 +730,7 @@
       "bindingCompletionPreviousStatus": "partial",
       "bindingCompletionInventory": "docs/binding-completion-support-inventory.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -712,7 +746,7 @@
       "scope": "Complete flow.go flags, FlowNode/FlowList model and FlowLabel alias adaptation; both KindUnknown synthetic switch-clause/reduce-label payloads, factories and IsEmpty. Shared identity, cyclic graphs, ordered linked antecedents and undefined spans retained; static syntax/bound metadata authored for verification.",
       "upstreamSha256": "6fa8526bbedad06a4e37d8e7957a12cdf8a049daf5bfb7353ffbee4c5cb41d2d",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
-      "bindingCompletionScope": "All required source-file binding behavior under B1\u2013B6; broader file exclusions and historical checkpoint scopes remain explicit."
+      "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit."
     },
     {
       "upstream": "tsc/internal/ast/functionflags.go",
@@ -786,7 +820,7 @@
       "upstream": "tsc/internal/checker/checker.go",
       "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
+      "scope": "Genuine Program initialization/options and shared TS checking plus restored complete JS/JSDoc, CommonJS/prototype/constructor, modules/import-type/attributes/decorators, JSX caller/context/signature, lifecycle and public type/symbol query responsibilities. Prior D/E/T/P families remain inputs; current whole original feedback repairs omitted source branches. Output emission, configured language services and enabled tracing remain external; no blanket JS or advanced-type exclusion.",
       "upstreamSha256": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
       "scalarCheckerCheckpointScope": "Selected scalar declaration, initialization, type creation/cache and resolution branches; scoped initialization, unsupported branches explicit.",
       "objectCheckerCheckpointScope": "Selected scalar and finite anonymous object construction/context/member resolution/property reads/widening/cache/deferred diagnostics/type cycles; actual finite property-key extraction and primitive literal-key intersection reduction for diagnostic best matching. Scoped noLib initialization; named/generic/signature/index/retained intersection paths reject. Complete selected relation-key preimage replaces opaque XXH3 representation, preserving identity-order normalization.",
@@ -811,11 +845,11 @@
       "resolutionCampaignExtension": "Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Actual Program initializer/options/global/resolver setup and diagnostic lifecycle; selected class/base/constructor/member/accessor/private/enum/namespace/augmentation model and checking; demanded object literal/assertion/deprecation/intrinsic-declaration/binding-element/synchronous-iterator type helpers. Runtime destructuring, generator/async execution and operational string mapping remain external.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
-      "expressionsCampaignScope": "Selected synchronous TS expression and statement dispatch/producer closure: runtime binding/default/rest/destructuring assignment, spread/optional/call interactions, operators/literals/meta, statement/option diagnostics; see E1\u2013E4 and shared dependencies. Implementation underway, not accepted.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignScope": "Selected synchronous TS expression and statement dispatch/producer closure: runtime binding/default/rest/destructuring assignment, spread/optional/call interactions, operators/literals/meta, statement/option diagnostics; see E1–E4 and shared dependencies. Implementation underway, not accepted.",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignAdaptations": [
         "Go map missing-key zero values preserved in new pattern/signature caches; existing null-safe SymbolTable semantics reused.",
@@ -825,20 +859,36 @@
       ],
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
       "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
-      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignState": "accepted P1–P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
       "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
-      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Genuine Program initialization/options and shared TS checking plus restored complete JS/JSDoc, CommonJS/prototype/constructor, modules/import-type/attributes/decorators, JSX caller/context/signature, lifecycle and public type/symbol query responsibilities. Prior D/E/T/P families remain inputs; current whole original feedback repairs omitted source branches. Output emission, configured language services and enabled tracing remain external; no blanket JS or advanced-type exclusion.",
+      "languageCampaignRepair": "Whole original feedback restores source primitive-union ordered insertion (26877), generic-mapped-only base rejection (19941), TS/JSTypeAlias metadata (24243/24344/22689), complete public-name query (32333), contextual/type-only caller flags, write-only name resolution (14161), initializer/readonly widening (17269), Function union unknown signature (21460), const-enum access/name diagnostics/arity and pattern discriminant publication (22044). Complete repaired function/direct-helper checks and staged behavioral evidence are recorded in current progress; earlier finite reviews missed branches.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Typed resolution-result consumers and removal of obsolete external-library/relative-spelling rejection; actual upstream builtin missing-types diagnostic selection and direct @types import diagnostic restored. Uses explicit host resolution capability during admission; unsupported semantic forms remain distinct.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignAdaptations": [
+        "Three constructor-local template list appends use amortized List.Add after nonescaping ownership review; original 50M-text/100k-span limits/order/cache retained. This repaired actual excessive-length timeout, not a shared-helper optimization.",
+        "Named legacy profile admission/foreign-node exception and passive Collections metadata are compatibility adapters only; genuine Program semantic path executes source algorithms.",
+        "Go nil map/slice behavior, raw-byte diagnostic arguments and Unicode public API boundaries remain explicit managed adaptations."
+      ],
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
       "destination": "src/TypeScript.Scanner/Checker/Types.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Full original Signature fields, CompositeSignature, TypePredicate, SignatureLinks and internal UniqueESSymbolType storage. Source generics/rest/construct paths remain excluded.",
+      "scope": "Shared source type/signature/predicate/mapper/link/iteration models from accepted D/E/T/P inputs, with actual language display SymbolFormatFlags and source invariant payload defaults. Managed inheritance/records represent embedded Go payloads; impossible kind access is an invariant, not a conditional/template exclusion. Output/service-only wrappers remain individually classified.",
       "upstreamSha256": "0265c1f309f28f4c6a608ea20243fe30625ba055e3b779b662dbec93172f9eb7",
       "generator": "tools/generate-checker-support-enums.py generates enum prefix and preserves handwritten model suffix; scratch reproduction checked.",
       "scalarCheckerCheckpointScope": "Complete TypeFlags/ObjectFlags/NodeCheckFlags enums; stable Type wrapper plus IntrinsicType/LiteralType fresh-regular cycles, UnionType and actual partial ObjectType initialization markers; selected node/symbol/assignment cache records. Managed classes flatten Go embedded payload bases; static DataType is authored AOT-safe graph metadata. Unselected signature/mapper/type-parameter/structured payloads and object signature/index/instantiation state excluded.",
@@ -859,22 +909,32 @@
       "collectionsCampaignState": "accepted-collections-contract",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Selected class/constructor/enum model and iteration resolver fields/callbacks.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Source switch exhaustiveness/cache state and selected model dependencies of synchronous expression/statement/flow algorithms; no whole-file completion claim.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
       "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
-      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignState": "accepted P1–P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
       "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
-      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Shared source type/signature/predicate/mapper/link/iteration models from accepted D/E/T/P inputs, with actual language display SymbolFormatFlags and source invariant payload defaults. Managed inheritance/records represent embedded Go payloads; impossible kind access is an invariant, not a conditional/template exclusion. Output/service-only wrappers remain individually classified.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Full original Signature fields, CompositeSignature, TypePredicate, SignatureLinks and internal UniqueESSymbolType storage. Source generics/rest/construct paths remain excluded.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -884,14 +944,14 @@
       "upstreamSha256": "afa761a66e450720a7193ab885047e0cc0c480c4abe59deaa9ad0e5223254841",
       "dataTypesUse": "Original paged node/symbol stores remain ported. Checker nodeLinks/typeNodeLinks fields are now correctly core.LinkStore identity dictionaries; symbol stores retain original arena/page addressing. No change to foundation paged utility acceptance.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/relater.go",
       "destination": "src/TypeScript.Scanner/Checker/Relater.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original ordered signature comparisons, function variance/method bivariance, callable relationships, recursive/composite interaction and diagnostic elaboration within the fixed contract.",
+      "scope": "Shared TS inference-independent relation algorithms plus original JSX elaboration/hyphenated-name/excess/index/error joins. Full discriminated-type relation and its property/tuple/signature/index helper path include the original tuple/tuple numeric-index skip. Enabled tracing and JSX output emission are external; relation algorithms are not excluded by a feature label.",
       "upstreamSha256": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47",
       "scalarCheckerCheckpointScope": "Selected scalar, literal, boolean and undefined-union relationships; general structured relationships excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/internal-union and finite anonymous structural relations: original ternary recursive cache/maybe/source-target stacks, identity/required-optional/readonly properties, excess/weak/missing-property checks, diagnostics chains/error snapshots, elaboration and discrimination. Actual Construct/Call signature resolution preserves cache side effects while nonempty signatures/indexes/retained intersections/generics reject. Managed prefix-list snapshots preserve Go slice error-state isolation.",
@@ -907,24 +967,35 @@
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsCampaignState": "accepted-collections-contract",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Enum relations/cache, private/protected origins, class/computed/accessor elaboration, export-import retry, const assertions and actual NoCheck policy.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Original spread-property skip in object-literal diagnostic elaboration; other properties continue source diagnostics.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Shared TS inference-independent relation algorithms plus original JSX elaboration/hyphenated-name/excess/index/error joins. Full discriminated-type relation and its property/tuple/signature/index helper path include the original tuple/tuple numeric-index skip. Enabled tracing and JSX output emission are external; relation algorithms are not excluded by a feature label.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Original ordered signature comparisons, function variance/method bivariance, callable relationships, recursive/composite interaction and diagnostic elaboration within the fixed contract.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignRepair": "Original tuple/tuple numeric-index skip at relater.go4132 restored after full discriminated-type/property/rest/signature/index helper review; residual original complete record exact on candidate8. No diagnostic or type-relation normalization.",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
       "destination": "src/TypeScript.Scanner/Checker/Flow.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Accepted synchronous and async/protocol flow algorithms reused by genuine JS/JSX callers. Current fixes restore source callers and type-only/contextual/discriminant flags rather than replacing flow or suppressing diagnostics. No new whole-file service/tracing claim.",
       "upstreamSha256": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c",
       "scalarCheckerCheckpointScope": "Straight-line start/assignment flow paths used by scalar identifier references; branching flow excluded.",
       "objectCheckerCheckpointScope": "Straight-line start/declaration-assignment/shared-flow paths for scalar and dot-property reads; original contains/matching-reference and assignment marking selected syntax traversal. Branch/call/loop/reduce/evolving-array and explicit write flows excluded.",
@@ -937,23 +1008,33 @@
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsCampaignState": "accepted-collections-contract",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Constructor/static property inference, return flow and post-super initialization; broader statements/protocol consumers remain external.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Synchronous TS source flow responsibilities: switch/optional/property presence/private-in/instanceof/predicate effects and binding/assignment transfers, existing loop/capture/cache algorithms. JS and async/protocol consumers explicit external; E5 underway, not accepted.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
-      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignState": "accepted P1–P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
       "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
-      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Accepted synchronous and async/protocol flow algorithms reused by genuine JS/JSX callers. Current fixes restore source callers and type-only/contextual/discriminant flags rather than replacing flow or suppressing diagnostics. No new whole-file service/tracing claim.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
       "destination": "src/TypeScript.Scanner/Checker/Utilities.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Accepted shared checking utilities and original JS/JSDoc/JSX/module/display leaves in their defining counterpart. The checker-local import-equals predicate remains in Checker. Service-only consumers are classified by actual caller; raw-byte roles and Go nil behavior retained.",
       "upstreamSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0",
       "scalarCheckerCheckpointScope": "Selected semantic predicates, literal handling and missing-library feature suggestions.",
       "objectCheckerCheckpointScope": "Selected semantic predicates, literal handling, object/property name helpers, optionality and actual missing-library/name/property suggestions; unselected broad semantic utilities excluded.",
@@ -973,28 +1054,38 @@
       "collectionsCampaignState": "accepted-collections-contract",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Declaration/accessor/class/super/modifier/binding/signature helpers, module/mode chains and map lookup; Go nil-range/zero-return semantics.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Demanded synchronous expression/query/optional/deferred grammar helpers, preserving source predicates rather than caller-specific substitutes.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
       "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
-      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignState": "accepted P1–P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
       "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
-      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Accepted shared checking utilities and original JS/JSDoc/JSX/module/display leaves in their defining counterpart. The checker-local import-equals predicate remains in Checker. Service-only consumers are classified by actual caller; raw-byte roles and Go nil behavior retained.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
       "destination": "src/TypeScript.Scanner/Checker/GrammarChecks.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original TS/protocol grammar plus complete demanded JSX/decorator/import-phase/attribute/dynamic-import grammar and real option/source-context/error recovery. Whole feedback repairs source empty type-argument delimiter span, label-container recursion and top-level verbatim CommonJS export condition. Named hostless adapter uses captured module option only.",
       "upstreamSha256": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9",
       "scalarCheckerCheckpointScope": "Selected scalar declaration/script grammar checks.",
       "objectCheckerCheckpointScope": "Selected script/scalar declaration and anonymous object/data type-literal grammar checks, duplicate names/modifiers and actual numeric-literal suggestions. Methods/indexes/computed names/ambient/classes/unselected declarations excluded.",
@@ -1014,17 +1105,27 @@
       "collectionsCampaignState": "accepted-collections-contract",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Selected class/constructor/accessor/private/property/unique-symbol/ambient grammar, suggestion collection and binding rest syntax.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Runtime binding/names/labels/switch/regex/tagged/meta/bigint grammar and target diagnostics. Genuine Program module lookup preserved; named hostless adapters use captured module option.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "protocolsCampaignContract": "docs/PROTOCOLS-CONTRACT.md",
-      "protocolsCampaignState": "accepted P1\u2013P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
+      "protocolsCampaignState": "accepted P1–P6 source responsibilities with finite managed/native evidence; broader checker consumers remain partial",
       "protocolsCampaignScope": "Complete async/generator/iteration/resource-management checking and demanded consumers in existing direct counterpart; preserve earlier accepted responsibilities and explicit later JS/module/emit/service boundaries.",
-      "protocolsCampaignEvidence": "validation/results/protocols-verified.json"
+      "protocolsCampaignEvidence": "validation/results/protocols-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original TS/protocol grammar plus complete demanded JSX/decorator/import-phase/attribute/dynamic-import grammar and real option/source-context/error recovery. Whole feedback repairs source empty type-argument delimiter span, label-container recursion and top-level verbatim CommonJS export condition. Named hostless adapter uses captured module option only.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -1081,7 +1182,7 @@
       "upstream": "tsc/internal/checker/nodebuilder.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Actual shared-EmitContext type/symbol/signature/declaration serialization entrypoints with explicit source flags/internal flags/tracker and original baseline walker context. Configured verbosity/hover and output declaration execution remain external.",
       "upstreamSha256": "4e8a07599eb531900eabf825a0b6552bc812e0c541cdee5ab261405e39699a46",
       "scalarCheckerCheckpointScope": "Selected TypeToTypeNode and SymbolToNode/context entry-exit branches for synthesized scalar types and unqualified diagnostic identifiers; general declaration serialization, context/tracker/expansion/verbosity options excluded.",
       "objectCheckerCheckpointScope": "Selected TypeToTypeNode/SymbolToNode/context stack/managed cached builder branches for scalar and finite anonymous diagnostic types; actual nonnil enclosing declaration and fully-qualified diagnostic variant retained. External trackers/verbosity/general declaration emit excluded.",
@@ -1094,14 +1195,24 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Selected TypeToTypeNode/SymbolToNode/context stack and cached builder for data diagnostics, including nonnil enclosing declarations and exact default/fully-qualified/no-reduction/circular-base flags and DoNotIncludeSymbolChain internal mode. External trackers/verbosity/general emit excluded.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Actual shared-EmitContext type/symbol/signature/declaration serialization entrypoints with explicit source flags/internal flags/tracker and original baseline walker context. Configured verbosity/hover and output declaration execution remain external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Narrow diagnostic filename fallback uses explicit source filename byte role.",
+      "scope": "Required diagnostic and original fullwalker type serialization, JS/JSDoc/dynamic-name/accessor reuse, binding scopes, module naming, Node16/NodeNext mode retry and unsafe-import tracking. Same-reference symbol/alias predicate and constructor identity restore source recursive display behavior. Configured hover expansion/output execution remain external.",
       "upstreamSha256": "9517dcfcf60e87391d7d3a5cdc300915738cc212f92f9650d7594300b43b6302",
       "scalarCheckerCheckpointScope": "Selected intrinsic/scalar literal typeToTypeNode branches and string literal factories, plus symbolToNode/lookupSymbolChainWorker/createExpressionFromSymbolChain for selected unqualified scalar variable names. Default quote/NoAsciiEscaping diagnostic context; aliases/object/generic/enum/intersection/nonboolean union and general serialization excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/literal/internal-union/anonymous object diagnostic nodes and static data-property serialization; actual pseudochecker reuse, enclosing symbol types, text-range/original links, cache reads/writes, truncation and cycle/symbol-depth states. Fixed default flag projection retains varying fully-qualified/InObjectTypeLiteral keys and actual reportedDiagnostic. Named/generic/mapped/accessor/signature/index/general emit branches reject.",
@@ -1126,24 +1237,34 @@
       "resolutionCampaignExtension": "Narrow diagnostic filename fallback uses explicit source filename byte role.",
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Class/constructor/enum diagnostic display; computed/private names, accessor signatures and mapped member types; no declaration emit.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Source instantiation-expression type-node reuse/equivalence and recursion guards for semantic display; no emission claim.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Required diagnostic and original fullwalker type serialization, JS/JSDoc/dynamic-name/accessor reuse, binding scopes, module naming, Node16/NodeNext mode retry and unsafe-import tracking. Same-reference symbol/alias predicate and constructor identity restore source recursive display behavior. Configured hover expansion/output execution remain external.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Narrow diagnostic filename fallback uses explicit source filename byte role.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
       "destination": "src/TypeScript.Scanner/Checker/Printer.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Actual public/diagnostic type/symbol/signature/predicate display, SymbolToStringEx/enclosing/meaning/flags, raw-byte internal strings and Unicode public boundary. Source NoErrorTruncation and explicit NodeBuilder context propagation retained; output emission and service verbosity are external.",
       "upstreamSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5",
       "scalarCheckerCheckpointScope": "Default scalar TypeToString/typeToString byte helper and selected symbol naming wrappers for diagnostics; public strings decode once, internal diagnostic strings remain raw. Includes serialization-level guard and default byte cutoff; general signature/qualified naming/verbosity/print options excluded.",
       "objectCheckerCheckpointScope": "Selected scalar/anonymous-object TypeToString and symbol naming wrappers; genuine enclosing-declaration diagnostic serialization, default/fully-qualified variants, recursion bound/default byte cutoff. Public Unicode decoded once; internal strings/diagnostic args remain raw byte strings. Signature/qualified symbol/verbosity/general print options excluded.",
@@ -1156,20 +1277,30 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "scopeBeforeCallables": "Actual selected TypeToString and symbol naming wrappers with enclosing declaration, exact selected type/internal symbol flags, recursion/byte truncation and per-call unresolved-type comment retention. Public Unicode conversion occurs once; internal strings/diagnostic arguments stay byte-backed. General verbosity/options/emit excluded.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original construct-signature and binding-pattern parameter diagnostic rendering, recursive binding names/elements, rest/elisions/property names, source spacing/trailing-comma rules, and public SymbolToString wrapper. No independent text shortcut or emitter completion claim.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Actual public/diagnostic type/symbol/signature/predicate display, SymbolToStringEx/enclosing/meaning/flags, raw-byte internal strings and Unicode public boundary. Source NoErrorTruncation and explicit NodeBuilder context propagation retained; output emission and service verbosity are external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/printer.go",
       "destination": "src/TypeScript.Scanner/Printer/Printer.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original no-emit diagnostic/public-baseline node writing: signatures/accessors, import attributes, bindings/computed names/call/new/binary/private/entity syntax, precedence and optional-empty lists. Statement/source-map/output emission is not claimed; demanded display paths remain in scope despite source printer filenames.",
       "upstreamSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c",
       "scalarCheckerCheckpointScope": "Diagnostic-only synthesized scalar keyword/literal/unqualified identifier dispatch and required emitter branches; no public emit API, source maps, comments or general statements/declarations.",
       "objectCheckerCheckpointScope": "Diagnostic-only scalar/object/type-literal/property-signature/union/parenthesized/static-name output and selected source-context text reuse. Actual node-specific escape flags; no public emit API/source maps/comments/general statements/declarations.",
@@ -1189,19 +1320,29 @@
       "collectionsCampaignState": "accepted-collections-contract",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignScope": "Original recursive binding-name/element diagnostic printing, rest/elisions/property names/trailing commas; no emitter-completion claim.",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 dependency",
+      "declarationsCampaignState": "accepted selected D1–D6 dependency",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original no-emit diagnostic/public-baseline node writing: signatures/accessors, import attributes, bindings/computed names/call/new/binary/private/entity syntax, precedence and optional-empty lists. Statement/source-map/output emission is not claimed; demanded display paths remain in scope despite source printer filenames.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
       "destination": "src/TypeScript.Scanner/Printer/Textwriter.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Source writer operations required by diagnostic/baseline rendering, including raw UTF8 length/whitespace, line-start/trailing/literal state and comment/semicolon forwarding. General emitted-file/source-map positioning remains external.",
       "upstreamSha256": "a41ab6981ff7e604fd43f4f1b9cebc02af1aa4628f688629630b471156affa89",
       "scalarCheckerCheckpointScope": "Required default single-line writer construction/clear/string/write/keyword/string-literal/identifier branches; managed builder replaces byte builder. General position tracking/indent/newline/options excluded.",
       "objectCheckerCheckpointScope": "Required single-line diagnostic writer construction/clear/string/write and token/property-name/punctuation/space/semicolon/string/identifier forwarding. Managed byte-string builder adaptation; full writer position/indent/newline/emit options excluded.",
@@ -1217,16 +1358,26 @@
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsCampaignState": "accepted-collections-contract",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Source writer operations required by diagnostic/baseline rendering, including raw UTF8 length/whitespace, line-start/trailing/literal state and comment/semicolon forwarding. General emitted-file/source-map positioning remains external.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/utilities.go",
       "destination": "src/TypeScript.Scanner/Printer/Utilities.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original precedence/operator and writer/display utilities required by source diagnostic/public node rendering; source operator association/mixing rules retained. No general emitter completion claim.",
       "upstreamSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e",
       "scalarCheckerCheckpointScope": "Synthesized numeric/string literal getLiteralText and NeverAsciiEscape string-worker/UTF16-escape branches required for diagnostic types. Retains invalid-byte/lone-surrogate/control/line separator/null-before-digit behavior; original-source reuse, JSX/backtick and general literal modes excluded.",
       "objectCheckerCheckpointScope": "Selected scalar literal text/escape worker/UTF16 escapes and canUseOriginalText branches; node-specific NoAsciiEscaping distinguishes synthesized property names from scalar literals, preserving invalid bytes/lone surrogates/control/null-before-digit semantics. Selected source-text reuse retained; JSX/interpolated templates/general emit modes excluded.",
@@ -1241,7 +1392,17 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original precedence/operator and writer/display utilities required by source diagnostic/public node rendering; source operator association/mixing rules retained. No general emitter completion claim.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -1295,7 +1456,7 @@
       "upstream": "tsc/internal/checker/exports.go",
       "destination": "src/TypeScript.Scanner/Checker/Exports.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original public type/symbol/assignability/base/signature and JSX namespace/factory forwarding required by actual checking and full baseline walker. Other service/emit forwarding wrappers remain individually external; no whole-unit completeness claim.",
       "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
       "scalarCheckerCheckpointScope": "Only public IsTypeAssignableTo forwarding to actual isTypeAssignableTo; authored ownership guard rejects foreign checker types. All other checker exports excluded.",
       "objectCheckerCheckpointScope": "Selected public IsTypeAssignableTo and object/property/widening query forwarding over genuine selected checker helpers; authored type ownership guards. Unselected general checker exports excluded.",
@@ -1313,13 +1474,23 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original public type/symbol/assignability/base/signature and JSX namespace/factory forwarding required by actual checking and full baseline walker. Other service/emit forwarding wrappers remain individually external; no whole-unit completeness claim.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/pseudotypenodebuilder.go",
       "destination": "src/TypeScript.Scanner/Checker/PseudoTypeNodeBuilder.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original syntax-reuse/equivalence/serialization for annotations, accessors, assertions, const context, callable/tuple/signature and genuine semantic fallback. Pseudochecker payload/lookup and source comment metadata joins are implemented; configured service/output consumers remain external.",
       "upstreamSha256": "6388e508e9bdfc8a2f915c3d27ff15f2d756d9e38516c8bae58e37eb99fc2e7c",
       "objectCheckerCheckpointScope": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1329,13 +1500,23 @@
       "scopeBeforeCallables": "Diagnostic-only actual scalar/data-object pseudotype realization/equivalence/fallback; optional annotation/internal unions and property identity/count retained. Signatures/tuples/general declaration/generic branches reject.",
       "collectionsCampaignScope": "Selected generic and collection diagnostic reuse with the real pseudochecker; verification pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original syntax-reuse/equivalence/serialization for annotations, accessors, assertions, const context, callable/tuple/signature and genuine semantic fallback. Pseudochecker payload/lookup and source comment metadata joins are implemented; configured service/output consumers remain external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodecopy.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeCopy.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original JS/JSDoc/computed/import-type/unique-symbol annotation/signature reuse, error/fallback and context rules. JS exports/module.exports cannot reuse erroneous entity spelling; this-identifier accessibility follows actual container. Diagnostic maxExpansionDepth=-1 is explicit; configured hover/output remain external.",
       "upstreamSha256": "2c59724c3d8eaf7e96f19276274da04aefbe16670e47159e2368c1cffc2a3083",
       "objectCheckerCheckpointScope": "Diagnostic static data/scalar existing-node visitor, name/type reuse and actual recovery restoration/length/original/text-range paths. Entity/type-reference/signature/JS/dynamic branches reject before excluded wrapped tracker/deferred symbol reports; full recovery/emit support not claimed.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1351,15 +1532,25 @@
       "collectionsParameterTrackingRepair": "Restore actual nodecopy.go function-scoped parameter short-circuit before symbol accessibility/tracker work. Invalid predicate callback rich comparison exposed extra accessibility cache state; unchanged original expected output remains the reference. Runtime/native confirmation pending.",
       "collectionsCampaignState": "accepted-collections-contract",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Nonserializable-property diagnostic callback forwarding.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original JS/JSDoc/computed/import-type/unique-symbol annotation/signature reuse, error/fallback and context rules. JS exports/module.exports cannot reuse erroneous entity spelling; this-identifier accessibility follows actual container. Diagnostic maxExpansionDepth=-1 is explicit; configured hover/output remain external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderscopes.go",
       "destination": "src/TypeScript.Scanner/Checker/NodeBuilderScopes.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original diagnostic/baseline naming scopes including source fake-scope binding-pattern parameter traversal and upstream first-element return. Configured hover and emitted declaration workflows remain external.",
       "upstreamSha256": "aaa98985ce7968f096070b570023ad7f3ced7db58dbcb1ee670c42c4c9330ce6",
       "objectCheckerCheckpointScope": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1369,13 +1560,23 @@
       "scopeBeforeCallables": "Only actual addSymbolTypeToContext insertion/replacement/restoration; generic/signature/parameter/name scope creation excluded.",
       "collectionsCampaignScope": "Selected mapped/conditional/generic diagnostic scope support; source fidelity and runtime verification pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original diagnostic/baseline naming scopes including source fake-scope binding-pattern parameter traversal and upstream first-element return. Configured hover and emitted declaration workflows remain external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/symboltracker.go",
       "destination": "src/TypeScript.Scanner/Checker/SymbolTracker.cs",
       "status": "partial",
-      "scope": "Selected actual tracker construction, requested symbol tracking/cache replay, nested tracker stripping, inference fallback nil callback, cyclic/inaccessible-this reporting and reportedDiagnostic state. No external general emit tracker supplied; unselected reports excluded.",
+      "scope": "Actual no-emit diagnostic tracking, error publication, alias visibility and cache replay callbacks. Externally configured declaration/service trackers remain separate; no fabricated successful callbacks.",
       "upstreamSha256": "3cec9572fc8fcf98a06cf2ca527b0f73d3b9eb8da2c0fec612982837b0241acc",
       "objectCheckerCheckpointScope": "Selected nil-external-tracker construction, actual inference fallback nil behavior, cyclic report and reportedDiagnostic mutation. External tracker interfaces/tracked symbol/general diagnostic reports excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1386,15 +1587,25 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Nonserializable-property diagnostic callback/state.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Actual no-emit diagnostic tracking, error publication, alias visibility and cache replay callbacks. Externally configured declaration/service trackers remain separate; no fabricated successful callbacks.",
+      "languageCampaignBaselineScope": "Selected actual tracker construction, requested symbol tracking/cache replay, nested tracker stripping, inference fallback nil callback, cyclic/inaccessible-this reporting and reportedDiagnostic state. No external general emit tracker supplied; unselected reports excluded.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/emitsupport.go",
       "destination": "src/TypeScript.Scanner/Checker/EmitSupport.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Required no-emit source declaration/binding/alias visibility, accessor and JS/JSDoc implicit-undefined checking/display branches, with genuine cached alias marking. Executing output declarations/emission remains external.",
       "upstreamSha256": "486b68a3d05c9a7b36941ad246b7ce260646ea255f2b2d6c8a9c6d0c1fe1a6ae",
       "objectCheckerCheckpointScope": "Only requiresAddingImplicitUndefined property-signature branch required by diagnostic reuse; reverse-mapped/accessor/parameter/JS paths guard before unselected link-state behavior. General emit APIs excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1413,19 +1624,29 @@
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Declaration/entity-name visibility and parameter-property implicit-undefined rules for diagnostics; no emitter execution.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Actual optional PropertyDeclaration implicit-undefined diagnostic display condition, including source reverse-mapped predicate; emit remains external.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
+      "expressionsCampaignEvidence": "validation/results/expressions-verified.json",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Required no-emit source declaration/binding/alias visibility, accessor and JS/JSDoc implicit-undefined checking/display branches, with genuine cached alias marking. Executing output declarations/emission remains external.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitcontext.go",
       "destination": "src/TypeScript.Scanner/Printer/EmitContext.cs",
       "status": "partial",
-      "scope": "Selected actual original links, per-node diagnostic flags and SynthesizedComment/Add/Get leading-comment state. Original-node copies preserve selected flags and Go comment-slice prefix isolation through managed list copies. General transforms/helpers/generated names/source maps and source comments excluded.",
+      "scope": "Actual synthesized display context/hooks, flags, leading/trailing comments and same-enclosing-file comment-range metadata copy used by original baseline/diagnostic serialization. Full transforms/helper output/source-map execution remains external.",
       "upstreamSha256": "37a9323a77986ddc441007082c46d9271ed52321e1892e55a25af5f3b4e8f25c",
       "objectCheckerCheckpointScope": "Only actual Original/MostOriginal/SetOriginal/SetOriginalEx and per-node flag reads/writes; first original link copies selected flags, supporting cached/cloned diagnostic nodes. General transform/bookkeeping/auto-generated names/emit maps/helpers/source maps excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1433,16 +1654,26 @@
       "dataTypesManifestState": "accepted-bounded",
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Actual synthesized display context/hooks, flags, leading/trailing comments and same-enclosing-file comment-range metadata copy used by original baseline/diagnostic serialization. Full transforms/helper output/source-map execution remains external.",
+      "languageCampaignBaselineScope": "Selected actual original links, per-node diagnostic flags and SynthesizedComment/Add/Get leading-comment state. Original-node copies preserve selected flags and Go comment-slice prefix isolation through managed list copies. General transforms/helpers/generated names/source maps and source comments excluded.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitflags.go",
       "destination": "src/TypeScript.Scanner/Printer/EmitFlags.cs",
       "status": "partial",
-      "scope": "Selected actual None/SingleLine/NoAsciiEscaping/NoLeadingComments values needed by diagnostic output; general emitter flags excluded.",
+      "scope": "Source flag values demanded by diagnostic/baseline rendering, including NoTrailingComments bit8 and IndirectCall bit20; no blanket completion of emitter flags or output paths.",
       "upstreamSha256": "9381afd50eb7e56849400ad7bff6150a2d792b7d0dad3988a6a43c00feb6b02e",
       "objectCheckerCheckpointScope": "Only actual SingleLine and NoAsciiEscaping flag values plus None; remaining flags excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1454,10 +1685,20 @@
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignBaselineScope": "Selected actual None/SingleLine/NoAsciiEscaping/NoLeadingComments values needed by diagnostic output; general emitter flags excluded.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Source flag values demanded by diagnostic/baseline rendering, including NoTrailingComments bit8 and IndirectCall bit20; no blanket completion of emitter flags or output paths.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/pseudochecker/checker.go",
@@ -1472,7 +1713,7 @@
       "upstream": "tsc/internal/pseudochecker/type.go",
       "destination": "src/TypeScript.Scanner/Pseudochecker/Type.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original syntactic pseudo-type payloads required by no-emit reuse, including getter/setter signatures; managed models preserve source semantics. Not an alternate semantic solver or whole output-declaration claim.",
       "upstreamSha256": "7dfb2e16a131f4f37da033232b49e601de92c5a99c9908a88df3f045bc4e857f",
       "objectCheckerCheckpointScope": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1482,13 +1723,23 @@
       "scopeBeforeCallables": "Actual PseudoTypeKind/PseudoObjectElementKind plus scalar/direct/inferred/no-result/maybe-const/union/data-object payloads and constructors. Managed tagged wrappers preserve identity; signature/tuple/accessor models excluded.",
       "collectionsCampaignScope": "Selected generic signatures and array/tuple diagnostic-node reuse; not a substitute semantic checker.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original syntactic pseudo-type payloads required by no-emit reuse, including getter/setter signatures; managed models preserve source semantics. Not an alternate semantic solver or whole output-declaration claim.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/pseudochecker/lookup.go",
       "destination": "src/TypeScript.Scanner/Pseudochecker/Lookup.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original demanded syntactic inference/reuse: paired accessors, property initializers, assertions/const context, class/template/computed/signature fallback and explicit errors. Genuine semantic checker remains fallback; no successful placeholder or output-emitter claim.",
       "upstreamSha256": "bf75df1ab50ad5af5c416e7c42fbd4d0b46b7774e085be53b9fd40998bc485b8",
       "objectCheckerCheckpointScope": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -1498,7 +1749,17 @@
       "scopeBeforeCallables": "Selected actual property declaration/scalar/data-object expression inference, error-node fallback, primitive prefix and syntactic const-context lookup. Shorthand deliberately selects original inference fallback; callable/asserted/array/JS/dynamic branches reject.",
       "collectionsCampaignScope": "Selected generic type-parameter lookup/reuse for diagnostics; not a substitute semantic checker.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original demanded syntactic inference/reuse: paired accessors, property initializers, assertions/const context, class/template/computed/signature fallback and explicit errors. Genuine semantic checker remains fallback; no successful placeholder or output-emitter claim.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -1603,7 +1864,7 @@
       "upstream": "tsc/internal/checker/symbolaccessibility.go",
       "destination": "src/TypeScript.Scanner/Checker/SymbolAccessibility.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Original symbol/alias/module visibility and naming chains for no-emit display, including CommonJS class-assignment containers, candidate dedup and source ordering. Output-only accessibility workflows remain separate.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "912e06b46d9c27035938a7cce1e0124aacd2438eacd8b7505a1b320f8b8a6d5b",
       "dataTypesEvidence": "validation/results/data-types-verified.json",
@@ -1619,22 +1880,42 @@
       "collectionsCampaignState": "accepted-collections-contract",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Class type-parameter/self-name accessibility; broader serializers external.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Original symbol/alias/module visibility and naming chains for no-emit display, including CommonJS class-assignment containers, candidate dedup and source ordering. Output-only accessibility workflows remain separate.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/checker/emitresolver.go",
       "destination": "src/TypeScript.Scanner/Checker/EmitResolver.cs",
       "status": "partial",
-      "scope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "scope": "Existing source declaration visibility/cache links and const-enum classification used by no-emit alias/diagnostic tracking. Full NewEmitResolver/output execution remains external.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "43435b252bef7eab920ce208db2d60faf2c77a8d0509d7dd7e77eb8d10e8c669",
       "dataTypesEvidence": "validation/results/data-types-verified.json",
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignScope": "Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
-      "scopeBeforeCallables": "Only actual DeclarationLinks.isVisible and identity-preserving declaration visibility link Get storage for diagnostic accessibility; general EmitResolver API excluded."
+      "scopeBeforeCallables": "Only actual DeclarationLinks.isVisible and identity-preserving declaration visibility link Get storage for diagnostic accessibility; general EmitResolver API excluded.",
+      "languageCampaignBaselineScope": "Cumulative selected port; prior scope is retained in scopeBeforeCallables. Callable extension: Selected original dependencies of the fixed non-generic callable contract; see docs/CALLABLES-CONTRACT.md, docs/checker-functions.json and docs/CALLABLES-DEPARTURES.md. Historical checkpoint scope is retained; no whole-checker/library/emit claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Existing source declaration visibility/cache links and const-enum classification used by no-emit alias/diagnostic tracking. Full NewEmitResolver/output execution remains external.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitresolver.go",
@@ -1649,7 +1930,7 @@
       "upstream": "tsc/internal/nodebuilder/types.go",
       "destination": "src/TypeScript.Scanner/NodeBuilder/Types.cs",
       "status": "partial",
-      "scope": "Complete Flags/InternalFlags enum slices plus selected SymbolTracker contract callbacks for requested-symbol tracking, cyclic/inaccessible-this reporting and inference fallback. External tracker/report APIs excluded; enum prefix generated, selected interface handwritten.",
+      "scope": "Source diagnostic/baseline Flags/InternalFlags and tracker contracts with actual flags/context/report propagation. Configured declaration/service tracker execution remains external.",
       "dataTypesManifestState": "accepted-bounded",
       "upstreamSha256": "1cbbf774332b79f7747e71b20bffac1095f16a5cb4a8db87c6031cbd5707ea2e",
       "dataTypesEvidence": "validation/results/data-types-verified.json",
@@ -1657,9 +1938,19 @@
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "callablesCampaignScope": "Selected original unique-symbol diagnostic tracker/serialization support needed by the fixed callable contract. General emit/library/source-generic behavior remains excluded.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original nonserializable-property tracker method.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Source diagnostic/baseline Flags/InternalFlags and tracker contracts with actual flags/context/report propagation. Configured declaration/service tracker execution remains external.",
+      "languageCampaignBaselineScope": "Complete Flags/InternalFlags enum slices plus selected SymbolTracker contract callbacks for requested-symbol tracking, cyclic/inaccessible-this reporting and inference fallback. External tracker/report APIs excluded; enum prefix generated, selected interface handwritten.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -1909,15 +2200,25 @@
       "upstream": "tsc/internal/printer/semicolon_writer.go",
       "destination": "src/TypeScript.Scanner/Printer/SemicolonWriter.cs",
       "status": "partial",
-      "scope": "Original selected trailing-semicolon deferring writer methods for callable diagnostic rendering; general emit position/line/indent APIs excluded.",
+      "scope": "Original trailing-semicolon deferring writer and exact forwarding of demanded diagnostic/baseline trailing-state/comment/literal/line-start operations. General emitted-file/source-map APIs remain external; no independent output execution claim.",
       "callablesCampaignState": "accepted-callables",
       "upstreamSha256": "29cec6e7948aa747e99654c06533d5a0671a75c8df572a8ad78eddd89d02b53a",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
-      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignEvidence": "validation/results/typesystem-verified.json",
+      "languageCampaignBaselineScope": "Original selected trailing-semicolon deferring writer methods for callable diagnostic rendering; general emit position/line/indent APIs excluded.",
+      "languageCampaignScope": "Original trailing-semicolon deferring writer and exact forwarding of demanded diagnostic/baseline trailing-state/comment/literal/line-start operations. General emitted-file/source-map APIs remain external; no independent output execution claim.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -1936,11 +2237,11 @@
       "callablesCampaignState": "accepted-callables",
       "callablesCampaignEvidence": "validation/results/callables-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original enum entity-name element-access delegate arm.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "expressionsCampaignScope": "Original template-expression evaluator using actual head/span/expression values and source flags, not constant fixture evaluation.",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
@@ -2081,12 +2382,12 @@
       "upstreamSha256": "83f6bce6296df35258ba9886ea3bfda491e000e2439cd49cc66cc531ac55aff0",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignInventory": "docs/TYPESYSTEM-INVENTORY.md",
-      "typesystemCampaignScope": "T1\u2013T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
+      "typesystemCampaignScope": "T1–T5 shared TypeScript type-system reconciliation and required type model, inference, relation, public diagnostic display/options and small writer dependencies. Concrete function/branch repairs and external consumers recorded in current inventories; no whole checker/printer or emit claim.",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -2142,7 +2443,7 @@
       "upstream": "tsc/internal/compiler/program.go",
       "destination": "src/TypeScript.Scanner/Compiler/Program.cs",
       "status": "partial",
-      "scope": "Actual ProgramConfig, factories, NewProgram and local Update/Reuse, queries, option/reference/output diagnostics and selected diagnostic collection policies. 143 selected declarations; general checker computation and emit remain external. Real semantic acquisition admits only the existing unchanged supported environment; broader environments reject explicitly. External declarations: GetSemanticDiagnosticsForIncremental, GetDeclarationDiagnostics, getDeclarationDiagnosticsForFile, getSuggestionDiagnosticsWithChecker, Emit, CombineEmitResults, HandleNoEmitOptions, GetDiagnosticsOfAnyProgram.",
+      "scope": "Genuine NewProgram and semantic acquisition, globals/per-file/bulk/incremental diagnostic channels, actual roots/options/libs and typed naming-host metadata; prior accepted Program/declaration/protocol source inputs reused. Declaration output, Emit/build/watch and emitter-only diagnostic execution remain external.",
       "collectionsCampaignState": "accepted-collections-contract",
       "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
@@ -2168,9 +2469,19 @@
       ],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Genuine semantic acquisition over actual files/options/libraries and incremental semantic diagnostic collector; no emit/scheduler execution.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Genuine NewProgram and semantic acquisition, globals/per-file/bulk/incremental diagnostic channels, actual roots/options/libs and typed naming-host metadata; prior accepted Program/declaration/protocol source inputs reused. Declaration output, Emit/build/watch and emitter-only diagnostic execution remain external.",
+      "languageCampaignBaselineScope": "Actual ProgramConfig, factories, NewProgram and local Update/Reuse, queries, option/reference/output diagnostics and selected diagnostic collection policies. 143 selected declarations; general checker computation and emit remain external. Real semantic acquisition admits only the existing unchanged supported environment; broader environments reject explicitly. External declarations: GetSemanticDiagnosticsForIncremental, GetDeclarationDiagnostics, getDeclarationDiagnosticsForFile, getSuggestionDiagnosticsWithChecker, Emit, CombineEmitResults, HandleNoEmitOptions, GetDiagnosticsOfAnyProgram.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -2481,7 +2792,7 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Compiler/CheckerHost.cs",
       "status": "new",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
+      "scope": "Actual source-shaped semantic and typed module-name generation host services forwarded by genuine Program; named legacy construction remains explicit. No fixed library/profile restriction is imposed on genuine Program.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
@@ -2491,9 +2802,19 @@
       "resolutionCampaignExtension": "Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Actual Program semantic host surface; authored C# interface adapter.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Actual source-shaped semantic and typed module-name generation host services forwarded by genuine Program; named legacy construction remains explicit. No fixed library/profile restriction is imposed on genuine Program.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored host capability and filename-byte accessor separate supported package checking from legacy relative admission.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -2521,7 +2842,7 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Projects/Project.cs",
       "status": "new",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
+      "scope": "Authored ordinary configuration adapter uses genuine Program/options/Bundled libraries and actual diagnostics; named legacy Project retains explicit admission/ownership and scalar filename boundary. Typed naming host forwards real Program metadata; no fabricated services.",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
@@ -2534,9 +2855,19 @@
       "resolutionCampaignExtension": "Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Genuine Program configuration checking replaces hidden-library injection and obsolete admission gate. Named legacy fixture adapter separate; public Unicode filenames retain explicit internal Go-byte accessors.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Authored ordinary configuration adapter uses genuine Program/options/Bundled libraries and actual diagnostics; named legacy Project retains explicit admission/ownership and scalar filename boundary. Typed naming host forwards real Program metadata; no fabricated services.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Authored full graph composition and explicit checker admission; its privately owned graph preserves public Unicode SourceFile filenames through a local metadata adaptation while original algorithms use FileNameGoBytes. Independent graph inspection keeps raw names.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -2598,7 +2929,7 @@
       "upstream": "tsc/internal/modulespecifiers/types.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Types.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored byte/scalar filename role and original host case-sensitivity/package-redirect target inputs required by selected module-name generation. Does not complete broad reverse package/path generation.",
+      "scope": "Source typed RootedDirectoryPath/RootedFilePath/ModuleSpecifier host/results for required no-emit reverse naming, including actual Program symlinks/common directory/content mapper/global typings/reference metadata. Auto-import service/cache state is external.",
       "upstreamSha256": "130a2aa65926dbca2a2fe449e77844de979073252cc4de5620396e872c2e075d",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2607,13 +2938,23 @@
       "resolutionCampaignExtension": "Explicit authored byte/scalar filename role and original host case-sensitivity/package-redirect target inputs required by selected module-name generation. Does not complete broad reverse package/path generation.",
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Source typed RootedDirectoryPath/RootedFilePath/ModuleSpecifier host/results for required no-emit reverse naming, including actual Program symlinks/common directory/content mapper/global typings/reference metadata. Auto-import service/cache state is external.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Explicit authored byte/scalar filename role and original host case-sensitivity/package-redirect target inputs required by selected module-name generation. Does not complete broad reverse package/path generation.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/preferences.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected extension-preference filename consumer uses explicit host byte/scalar role; preserves Unicode public Project filenames while retaining original byte strings for graph-backed formatter algorithms.",
+      "scope": "Original resolution/extension preference and ending selection required by no-emit module naming across actual module modes. Auto-import-only regex/service preferences remain individually external.",
       "upstreamSha256": "2d4a84dba06a5daf58aae83a05ad65decae7a49bc4394cc3eeb7dc91cfbbb8fb",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2622,13 +2963,23 @@
       "resolutionCampaignExtension": "Selected extension-preference filename consumer uses explicit host byte/scalar role; preserves Unicode public Project filenames while retaining original byte strings for graph-backed formatter algorithms.",
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original resolution/extension preference and ending selection required by no-emit module naming across actual module modes. Auto-import-only regex/service preferences remain individually external.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Selected extension-preference filename consumer uses explicit host byte/scalar role; preserves Unicode public Project filenames while retaining original byte strings for graph-backed formatter algorithms.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/specifiers.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Finite selected original GetEachFileNameOfModule imported path/actual package-dedup redirect/ignored-target handling, GetAllModulePaths case ordering, canonical existing-import reuse and relative spelling producer. Broad package/path/rootDirs reverse generation, project-reference and Program symlink-cache branches remain explicit semanticUnsupported.",
+      "scope": "Original diagnostic/fullwalker reverse naming: package/exports/imports/paths/rootDirs, relative alternatives, existing imports, symlinks, redirects and references with genuine Program host metadata and forAutoImports=false. Unused GetModuleSpecifier/UpdateModuleSpecifier/getModuleSpecifierWithPreferences outer naming/service wrappers remain individually external to current no-emit callers; auto-import cache/search is a separate external operation.",
       "upstreamSha256": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2641,13 +2992,23 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Finite selected original GetEachFileNameOfModule imported path/actual package-dedup redirect/ignored-target handling, GetAllModulePaths case ordering, canonical existing-import reuse and relative spelling producer. Broad package/path/rootDirs reverse generation, project-reference and Program symlink-cache branches remain explicit semanticUnsupported.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original diagnostic/fullwalker reverse naming: package/exports/imports/paths/rootDirs, relative alternatives, existing imports, symlinks, redirects and references with genuine Program host metadata and forAutoImports=false. Unused GetModuleSpecifier/UpdateModuleSpecifier/getModuleSpecifierWithPreferences outer naming/service wrappers remain individually external to current no-emit callers; auto-import cache/search is a separate external operation.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Finite selected original GetEachFileNameOfModule imported path/actual package-dedup redirect/ignored-target handling, GetAllModulePaths case ordering, canonical existing-import reuse and relative spelling producer. Broad package/path/rootDirs reverse generation, project-reference and Program symlink-cache branches remain explicit semanticUnsupported.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/modulespecifiers/util.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
       "status": "partial",
-      "scope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: GetPackageNameFromDirectory. Broader source file remains within its previously documented scope.",
+      "scope": "Original typed path/package/symlink/reference/comparison helpers required by complete no-emit module naming; raw-byte roles, ordered iteration and missing/nil results preserved. Auto-import service-only consumers remain separately external.",
       "upstreamSha256": "a3a4cdda2a8c5ff60aa39098528c690e12743f69f864e1b9cf75128f5ac035d7",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
@@ -2664,7 +3025,17 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 1,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Original typed path/package/symlink/reference/comparison helpers required by complete no-emit module naming; raw-byte roles, ordered iteration and missing/nil results preserved. Auto-import service-only consumers remain separately external.",
+      "languageCampaignBaselineScope": "Retains the prior accepted scope recorded in programCampaignBaselineScope. Program extension: Selected original leaves: GetPackageNameFromDirectory. Broader source file remains within its previously documented scope.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/packagejson/packagejson.go",
@@ -2722,11 +3093,21 @@
       "upstream": "tsc/internal/modulespecifiers/compare.go",
       "destination": "src/TypeScript.Scanner/ModuleSpecifiers/Compare.cs",
       "status": "partial",
-      "scope": "CountPathComponents used by original diagnostic-specifier preference comparison; other comparison APIs outside selected dependency.",
+      "scope": "Original path-component/relative-specifier ordering used by no-emit module naming. No blanket completion of service-only comparison wrappers.",
       "upstreamSha256": "ade34c0d4cfd3dd13e62d2a20817080d7d3f785df35165e66e8f6873a32b789f",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "languageCampaignBaselineScope": "CountPathComponents used by original diagnostic-specifier preference comparison; other comparison APIs outside selected dependency.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Original path-component/relative-specifier ordering used by no-emit module naming. No blanket completion of service-only comparison wrappers.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/collections/ordered_map.go",
@@ -2833,11 +3214,21 @@
       "upstream": "tsc/internal/tspath/rooted_path.go",
       "destination": "src/TypeScript.Scanner/TsPath/RootedPath.cs",
       "status": "partial",
-      "scope": "Selected typed constructors, resolution, components/extensions, relative/containment/comparison and ancestors. GetCommonParentDirectories and global-cache-stopping traversal remain external; some fast-append operations use general resolution.",
+      "scope": "Prior typed path operations plus original ForEachAncestorDirectoryPathStoppingAtGlobalCache callback/stop behavior, including visiting the cache directory itself. Other previously documented external typed-path operations remain outside current additions.",
       "upstreamSha256": "03a97967ebe7bd5d44bcdb7d33243b331bb918752c7ca61f8e3ced124155c646",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignScope": "Prior typed path operations plus original ForEachAncestorDirectoryPathStoppingAtGlobalCache callback/stop behavior, including visiting the cache directory itself. Other previously documented external typed-path operations remain outside current additions.",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignBaselineScope": "Selected typed constructors, resolution, components/extensions, relative/containment/comparison and ancestors. GetCommonParentDirectories and global-cache-stopping traversal remain external; some fast-append operations use general resolution.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": "tsc/internal/tspath/source_map_location.go",
@@ -3901,7 +4292,7 @@
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Actual lazy acquisition/synchronization; enabled type tracing explicitly external.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
@@ -4089,8 +4480,12 @@
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted prior no-emit selection reused; no new output-emitter completion claim",
+      "languageCampaignScope": "Prior sourceFileMayBeEmitted/getSourceFilesToEmit support reused where diagnostic naming requires them; output Emit remains external.",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
     },
     {
       "upstream": null,
@@ -4137,7 +4532,7 @@
       "programCampaignContract": "docs/PROGRAM-CONTRACT.md",
       "programCampaignEvidence": "validation/results/program-verified.json",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Opt-in genuine Program semantic/public-query observation; default preexisting Program observations unchanged. Public SymbolToString property display removes observer dependence on incidental escaped allocation IDs; raw direct symbol queries unchanged.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
@@ -4175,7 +4570,7 @@
       "status": "new",
       "scope": "Authored shared dispatcher and external-consumer controls around original checker and restored mapper assertion ports; per-body provenance in docs/declarations-tests.json.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4184,7 +4579,7 @@
       "status": "new",
       "scope": "Authored xUnit adapters for shared assertion groups and the current genuine Program comparison corpus; original bodies, compiler input reuse and authored cases distinguished in docs/declarations-tests.json.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4193,7 +4588,7 @@
       "status": "new",
       "scope": "Authored AOT-safe executable dispatcher using real Program/checker and shared assertions; no alternate semantic implementation.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4202,11 +4597,11 @@
       "status": "new",
       "scope": "Opt-in authored public semantic observations for actual Program: complete diagnostics/lifecycle and selected symbol/type/member/base/constructor queries; public property display rather than internal allocation-ID spelling.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
       "typesystemCampaignScope": "Optional finite Relations queries use actual owned public types and public IsTypeAssignableTo; malformed selectors fail as harness errors. Existing absent-field outputs retained. Authored observer, not ported compiler code.",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4215,7 +4610,7 @@
       "status": "new",
       "scope": "Pinned Go diagnostic and public semantic outputs with request/source/provenance hashes. Compiler-input reuse is not full compiler-test success; explicit current CLI migration preserves historical records.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4224,7 +4619,7 @@
       "status": "new",
       "scope": "Authored actual-disk genuine ES2022 warehouse valid/invalid demonstrations; unchanged bundled declarations, actual parsed options, no hidden library injection.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4234,7 +4629,7 @@
       "scope": "Both original behavioral test bodies preserve their assertions, actual default libraries/options and type reference identity; original parallel scheduling is sequential in shared dispatcher. Benchmark is not a correctness assertion body. See docs/declarations-tests.json.",
       "upstreamSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
-      "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
+      "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
     },
     {
@@ -4243,7 +4638,7 @@
       "status": "new",
       "scope": "Authored shared dispatcher reusing the existing two original checker and three restored mapper assertion bodies plus an explicit external-consumer control; provenance in docs/expressions-tests.json. No new original test-body port.",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
     {
@@ -4252,7 +4647,7 @@
       "status": "new",
       "scope": "Authored AOT-safe executable dispatcher for real Program/checker records and shared assertions; no alternate semantic implementation.",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
     {
@@ -4261,7 +4656,7 @@
       "status": "new",
       "scope": "Authored xUnit adapters: 85 complete pinned-Go Program records and six shared groups; original assertions, compiler-input reuse and authored comparisons separately classified.",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
     {
@@ -4270,7 +4665,7 @@
       "status": "new",
       "scope": "Pinned Go complete diagnostics and selected public semantic outputs with unchanged input/options and provenance hashes: 59 authored families, two disk projects, 24 variants from 20 compiler inputs. Reuse is not full compiler-test success; four external whole fixtures remain documented.",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
     {
@@ -4279,7 +4674,7 @@
       "status": "new",
       "scope": "Authored actual-disk strict ES2022 order-fulfillment valid/invalid demonstrations using unchanged genuine libraries and parsed options; skipLibCheck remains false.",
       "expressionsCampaignContract": "docs/EXPRESSIONS-CONTRACT.md",
-      "expressionsCampaignState": "accepted selected E1\u2013E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
+      "expressionsCampaignState": "accepted selected E1–E6 synchronous responsibility closure or authored verification adapter; not whole-checker completion",
       "expressionsCampaignEvidence": "validation/results/expressions-verified.json"
     },
     {
@@ -4289,7 +4684,7 @@
       "scope": "Complete original eight casing functions: ASCII fast paths, raw JS rune/surrogate preservation, expansion mappings and Final_Sigma context; independently source-reviewed and verified under actual Linux x64 Native AOT.",
       "upstreamSha256": "07d6a3663c0aed68efd975cd39840a2139e56b36cde17104ce327cb1be5d82cf",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4299,7 +4694,7 @@
       "scope": "Exact pinned Unicode15.1 generated material:2927 mapping entries,147 Cased ranges,377 Case_Ignorable ranges. No host Unicode/culture substitution; original generator not rerun. Full data source-compared and actual Linux x64 native casing behavior verified.",
       "upstreamSha256": "c128df4cc0a8c4dd93679986a31bdf6087aa83e6fb0e9ced4ab8627072684b80",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4308,7 +4703,7 @@
       "status": "new",
       "scope": "Authored shared dispatcher reusing two checker and three restored mapper original bodies, adding one complete original casing body and one authored external-consumer control; provenance in docs/typesystem-tests.json.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4317,7 +4712,7 @@
       "status": "new",
       "scope": "Authored AOT-safe real Program/checker and shared-assertion executable; no alternative semantic implementation.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4326,7 +4721,7 @@
       "status": "new",
       "scope": "Authored xUnit adapters: 77 complete pinned-Go records and seven shared checks. Original assertions, compiler input reuse and authored comparisons remain separately classified.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4335,7 +4730,7 @@
       "status": "new",
       "scope": "Pinned Go complete diagnostic and selected public type/signature/assignability observations:43 authored families,2 genuine disk projects,32 unchanged compiler inputs;3 whole external inputs in selected35. Compiler input reuse is not full compiler-test success. Includes exact additive public observer provenance.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4344,7 +4739,7 @@
       "status": "new",
       "scope": "Authored strict ES2022 genuine-library disk event-client valid/invalid integration demonstrations. No hidden declarations/options; default skipLibCheck:false.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
     },
     {
@@ -4353,19 +4748,116 @@
       "status": "ported",
       "scope": "Complete original TestJSCasing table body and all26 assertions preserved. Upstream parallel subtests run sequentially in the shared native/xUnit dispatcher; raw UTF8/WTF8 test values preserve original bytes. Authored generator records provenance.",
       "typesystemCampaignContract": "docs/TYPESYSTEM-CONTRACT.md",
-      "typesystemCampaignState": "accepted T1\u2013T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
+      "typesystemCampaignState": "accepted T1–T6 shared TypeScript responsibility or authored verification adapter; broader file/external-consumer boundaries remain explicit",
       "upstreamSha256": "ec73aada4d90eab57f7e3056d3d26867be5e60e8f13da956ccc50e970a51a9f5",
       "typesystemCampaignEvidence": "validation/results/typesystem-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/jsx.go",
+      "destination": "src/TypeScript.Scanner/Checker/Jsx.cs",
+      "status": "partial",
+      "scope": "Complete original JSX semantic source unit and models in direct counterpart: intrinsic/class/function/children/spread/context/runtime namespace/attribute/error producers. Core caller/initializer joins and support whole-family review closed, compiled candidate8; no injected framework environment or alternate solver. Final whole gate remains pending.",
+      "upstreamSha256": "b53f7e6fcf810b75f2e46cee8eb560e9ca008d3b8991737a847a4e8e683a8db4",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignBaselineScope": "Whole original JSX semantic source unit staged in its direct counterpart; joins/review/compilation/runtime qualification in progress, not accepted. No alternate JSX solver or injected framework environment.",
+      "languageCampaignScope": "Complete original JSX semantic source unit and models in direct counterpart: intrinsic/class/function/children/spread/context/runtime namespace/attribute/error producers. Core caller/initializer joins and support whole-family review closed, compiled candidate8; no injected framework environment or alternate solver. Final whole gate remains pending.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/stringutil/compare.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/Compare.cs",
+      "status": "partial",
+      "upstreamSha256": "532e42f123dbc846b8ef35b36feef12b8a1dd5d807ea8ce40f94d78eea44814a",
+      "scope": "Required original HasPrefix, HasSuffix and HasPrefixAndSuffixWithoutOverlap for no-emit module-specifier naming. Byte lengths/slices and existing pinned UnicodeCase.EqualFold preserve Go semantics; ordinal case-sensitive path. Other source comparison functions not newly claimed.",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "accepted in-scope L1–L6 no-emit responsibility or supporting adaptation; independently source-reviewed and qualified by whole managed/native checking plus retained regressions; broader file exclusions remain explicit",
+      "languageCampaignScope": "Required original HasPrefix, HasSuffix and HasPrefixAndSuffixWithoutOverlap for no-emit module-specifier naming. Byte lengths/slices and existing pinned UnicodeCase.EqualFold preserve Go semantics; ordinal case-sensitive path. Other source comparison functions not newly claimed.",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/jsdoc.go",
+      "destination": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "status": "partial",
+      "scope": "Both original helpers are mapped to existing defining responsibility counterparts: checkUnmatchedJSDocParameters in Checker and getAllJSDocTags in Utilities. Folding this tiny source unit is an explicit file-mapping adaptation; complete JSDoc checking lives in checker.go, separately reviewed.",
+      "upstreamSha256": "2d0ef600a8a63a7dd4c21938ee03d50e8d4cd7cf81e7d799b1af9133edb0761c",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "implemented and independently source-reviewed; coherent candidate8 compiled; final whole managed/native/retained acceptance pending",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ],
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Checker/Utilities.cs"
+      ],
+      "mappingAdaptation": "Two-function upstream helper unit folded into existing Checker/Utilities counterparts; no new standalone fragment."
+    },
+    {
+      "upstream": "tsc/internal/checker/nodebuilder_hover.go",
+      "destination": null,
+      "status": "excluded",
+      "scope": "Configured hover/verbosity/class/enum expansion is a language-service operation outside original no-emit baseline walker and ordinary diagnostic checking. Ordinary demanded type serialization is mapped separately.",
+      "upstreamSha256": "2c71303baec8a2e8fe5fa3f78cb8a945dfcffd2762408694275cc75d112c8ff4",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "explicit external operation; not a successful no-emit checking disposition",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ]
+    },
+    {
+      "upstream": "tsc/internal/checker/tracer.go",
+      "destination": null,
+      "status": "excluded",
+      "scope": "Enabled checker tracing and record/file lifecycle are external. Genuine nil/disabled-tracer initialization remains implemented; nonnull tracing is explicitly rejected rather than successful no-op.",
+      "upstreamSha256": "50ef7980e8b92514824d81829e07b6c7623158a620341512e4fc4703debe28b2",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "explicit external operation; not a successful no-emit checking disposition",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ]
+    },
+    {
+      "upstream": "tsc/internal/checker/stringer_generated.go",
+      "destination": null,
+      "status": "excluded",
+      "scope": "Generated debug SignatureKind spelling has no identified checking-diagnostic or original baseline consumer. Represented enum values are retained; debug string runtime parity is not claimed.",
+      "upstreamSha256": "653900fcd5ce6316265687c4060cc3f52ef702af7dbd7c4dfb79b01f01e2d2f2",
+      "languageCampaignContract": "docs/LANGUAGE-CONTRACT.md",
+      "languageCampaignState": "explicit external operation; not a successful no-emit checking disposition",
+      "languageCampaignReview": [
+        "docs/progress/language-core.md",
+        "docs/progress/language-support.md"
+      ]
     }
   ],
   "activePhase": {
     "name": "whole-checker-no-emit-completion",
     "baselineCommit": "bb035b3",
-    "status": "P1\u2013P6 protocol contract accepted; L1\u2013L6 remaining language and whole-checker verification in progress, not whole-checker acceptance",
+    "status": "accepted whole-checker no-emit contract; implementation stopped at authorized gate; separate authorization required for large-project evaluation",
     "mandate": "docs/CHECKER-COMPLETION-PROMPT.md",
     "state": "docs/CHECKER-COMPLETION-STATUS.md",
     "checkerRoadmap": "docs/CHECKER-COMPLETION-ROADMAP.md",
-    "contract": "docs/LANGUAGE-CONTRACT.md"
+    "contract": "docs/LANGUAGE-CONTRACT.md",
+    "currentCampaignBaselineCommit": "c5e96e1",
+    "sourceReconciliation": [
+      "docs/progress/language-core.md",
+      "docs/progress/language-support.md"
+    ],
+    "assessment": "docs/CHECKER-NOEMIT-ASSESSMENT.md",
+    "evidence": "validation/results/checker-noemit-verified.json",
+    "reproduction": "docs/CHECKER-NOEMIT-REPRODUCTION.md"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -4456,7 +4948,7 @@
     "xUnitCases": 23411,
     "nativeCallableCases": 89,
     "platform": "Linux x64",
-    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1\u2013C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
+    "scope": "Fixed explicit Callable-profile non-generic single-file contract C1–C6; no libraries/modules/projects, full checker or additional platform parity. Delivery commit contains this manifest.",
     "commit": "cfa6d2f"
   },
   "acceptedCollectionsCheckpoint": {
@@ -4587,7 +5079,7 @@
     "upstreamCompilerInputsReused": 20,
     "upstreamCompilerInputRequestVariants": 21,
     "platform": "Linux x64",
-    "scope": "Actual Program initializer and D1\u2013D6 declaration/object/required library closure; unchanged upstream libraries, full diagnostics and selected public semantic observations. Named legacy adapters retained explicitly. No whole checker, all library API, emit or other-platform claim; delivery commit contains this manifest.",
+    "scope": "Actual Program initializer and D1–D6 declaration/object/required library closure; unchanged upstream libraries, full diagnostics and selected public semantic observations. Named legacy adapters retained explicitly. No whole checker, all library API, emit or other-platform claim; delivery commit contains this manifest.",
     "commit": "5efa4e5"
   },
   "acceptedExpressionsCheckpoint": {
@@ -4671,6 +5163,34 @@
     "protectedHistoricalFiles": 271,
     "platform": "Linux x64",
     "elapsedGateSeconds": 1518.981,
-    "scope": "P1\u2013P6 async/await, generator, iteration and disposal checking, demanded consumers and complete original mapper generator assertions; genuine options/libraries and full selected diagnostics/public types. Source closure distinct from finite coverage. Whole checker, emit, services and other platforms not accepted. Delivery commit contains this manifest."
+    "scope": "P1–P6 async/await, generator, iteration and disposal checking, demanded consumers and complete original mapper generator assertions; genuine options/libraries and full selected diagnostics/public types. Source closure distinct from finite coverage. Whole checker, emit, services and other platforms not accepted. Delivery commit contains this manifest.",
+    "commit": "c5e96e1"
+  },
+  "acceptedWholeCheckerCheckpoint": {
+    "status": "accepted-no-emit-contract",
+    "baselineCommit": "bb035b3",
+    "immediatePredecessor": "c5e96e1",
+    "contract": "docs/LANGUAGE-CONTRACT.md",
+    "mandate": "docs/CHECKER-COMPLETION-PROMPT.md",
+    "assessment": "docs/CHECKER-NOEMIT-ASSESSMENT.md",
+    "reproduction": "docs/CHECKER-NOEMIT-REPRODUCTION.md",
+    "evidence": "validation/results/checker-noemit-verified.json",
+    "sourceSha256": "7e893ae12cc3f6f57c79a016da8fd177cb954fafec802809d4150a90dee88f2c",
+    "verificationAssetsSha256": "3361a73567a8e54ba61f2da46f09c323bdc59924f6e39c83d305c1a8365fa269",
+    "originalFixtureFiles": 12824,
+    "checkingRecordsPerRuntime": 15304,
+    "preparationFailureCases": 33,
+    "authoredHarnessCases": 3,
+    "newXUnitCases": 15340,
+    "selectedXUnitCaseExecutions": 40291,
+    "platform": "Linux x64 Native AOT",
+    "nativeExecutablePaths": 24,
+    "protectedHistoricalFiles": 287,
+    "limitations": [
+      "Finite source review and runtime evidence, not exhaustive correctness.",
+      "Unavailable historical internal API declarations retain fresh missing-import observations; no historical built-environment success claimed.",
+      "Emit/output-induced diagnostics, language services, enabled tracing and incremental builder/cache scheduling are external.",
+      "Other native platforms and large-project correctness/performance comparisons remain unverified."
+    ]
   }
 }

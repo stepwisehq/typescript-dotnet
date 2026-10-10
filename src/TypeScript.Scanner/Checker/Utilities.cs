@@ -7,6 +7,35 @@ using TypeScript.Scanner;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    // utilities.go:127/133. Const assertion names do not resolve as ordinary names.
+    private static bool isConstTypeReference(Node node) => Ast.IsTypeReferenceNode(node) &&
+        GoRuntime.Len(node.TypeArguments()) == 0 && Ast.IsIdentifier(node.AsTypeReferenceNode().TypeName) &&
+        node.AsTypeReferenceNode().TypeName.Text() == "const";
+
+    private static bool isConstTypeReferenceName(Node node) => node != null && Ast.IsIdentifier(node) &&
+        node.Parent != null && isConstTypeReference(node.Parent) &&
+        node.Parent.Parent != null && Ast.IsAssertionExpression(node.Parent.Parent);
+
+    // utilities.go:240.
+    private static bool isRightSideOfAccessExpression(Node node) => node.Parent != null &&
+        (Ast.IsPropertyAccessExpression(node.Parent) && node.Parent.Name() == node ||
+         Ast.IsElementAccessExpression(node.Parent) && node.Parent.AsElementAccessExpression().ArgumentExpression == node);
+
+    // utilities.go:1174. Return the owning import type, retaining qualifier identity.
+    private static Node isImportTypeQualifierPart(Node node)
+    {
+        var parent = node.Parent;
+        while (Ast.IsQualifiedName(parent))
+        {
+            node = parent;
+            parent = parent.Parent;
+        }
+        return parent != null && parent.Kind == Kind.ImportType && parent.AsImportTypeNode().Qualifier == node ? parent : null;
+    }
+
+    // utilities.go:1708.
+    internal static bool IsExternalModuleSymbol(Symbol moduleSymbol) => moduleSymbol.IsExternalModule();
+
     // utilities.go:1203. The source caller supplies a valid parent pointer.
     private static bool expressionResultIsUnused(Node node)
     {
@@ -35,7 +64,6 @@ public sealed partial class Checker
     // utilities.go:59 and 1264. Yield traversal excludes nested function bodies,
     // while retaining computed names evaluated in the containing generator.
     private static bool hasAsyncModifier(Node node) => Ast.HasSyntacticModifier(node, ModifierFlags.Async);
-
     private static bool forEachYieldExpression(Node body, Func<Node, bool> visitor)
     {
         bool Traverse(Node node)
@@ -137,7 +165,6 @@ public sealed partial class Checker
     // utilities.go:55/1923.
     private static bool hasOverrideModifier(Node node) => Ast.HasSyntacticModifier(node, ModifierFlags.Override);
     private static string quotedAndCommaSeparated(List<string> items) => string.Join(", ", items.Select(item => "'" + item + "'"));
-
     // utilities.go:1906.
     private static Node walkUpOuterExpressions(Node node)
     {
@@ -149,7 +176,6 @@ public sealed partial class Checker
 
     // utilities.go:63.
     private static ModifierFlags getSelectedModifierFlags(Node node, ModifierFlags flags) => node.ModifierFlags() & flags;
-
     // utilities.go:1232. Computed names and decorators are evaluated outside their member body.
     private static Node getSuperContainer(Node node, bool stopOnFunctions)
     {
@@ -1780,7 +1806,6 @@ public sealed partial class Checker
     private static TextRange rangeOfTypeParameters(SourceFile sourceFile, NodeList typeParameters) =>
         new(typeParameters.Pos() - 1, Math.Min(sourceFile.Text().Length,
             TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), typeParameters.End()) + 1));
-
     // utilities.go:1633. Declaration identity, rather than equivalent filenames.
     private static bool allDeclarationsInSameSourceFile(Symbol symbol)
     {
@@ -1936,4 +1961,7 @@ public sealed partial class Checker
         }
         return false;
     }
+
+    // utilities.go:1159. Namespaced JSX names are intrinsic, irrespective of prefix case.
+    private static bool isJsxIntrinsicTagName(Node tagName) => Ast.IsIdentifier(tagName) && TypeScript.Scanner.Scanner.IsIntrinsicJsxName(tagName.Text()) || Ast.IsJsxNamespacedName(tagName);
 }

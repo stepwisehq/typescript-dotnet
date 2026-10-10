@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "classification": "fixed-attempt1-metadata-only-native-aot-harness-repair",
+  "originalEntry": "artifacts/checker-noemit-validation/gate-attempt1/frozen-inputs/validation/Checker.NoEmit.Validation/Program.cs",
+  "originalEntrySha256": "171f8b439e85916366697c811e030b3dbb4cae8a908d1070e391a7870cd09a54",
+  "currentEntry": "validation/Checker.NoEmit.Validation/Program.cs",
+  "currentEntrySha256": "8b5a3a06b9a0bb285d82bff7896aaecb4bcf90e2b4cd6db3f39fb0bb11a6e2c7",
+  "unchangedCheckingMainPrefixSha256": "0018c97421c1425137f54fea1da4f2e6310397a814e0a556016cb2338210a3bf",
+  "scope": "Only unreachable-by-xUnit configuration-reconciliation serialization changed; actual checking Main and every checking helper/test/production input remain unchanged. Old managed DLL is retained as actual old-version evidence, not rebuilt native evidence.",
+  "oldManagedConsumer": "artifacts/checker-noemit-validation/final/consumer/build-report.json",
+  "oldManagedConsumerReportSha256": "200d17bf6e9d21f6fa4dc1ee2d400a306edde614a0b4e3a7ed9a43b10d8abbf0",
+  "nativePublish": "artifacts/checker-noemit-validation/final/native-publish.json",
+  "nativePublishReportSha256": "d20c977a3907f94c048b4eb463fe212b5145ea64e91bd656e43a3023e5e12dcd",
+  "nativeMetadataReconciliation": "artifacts/checker-noemit-validation/continuation-attempt1/native-reconciliation-report.json",
+  "nativeMetadataReconciliationReportSha256": "c78a646268781b5b5765ab8504434d2c4d7a9dc163cf08467f476f62371e8d91",
+  "requirements": [
+    "Native full15304 checking records still required.",
+    "Native full12824 reconciliation equals old managed metadata bytes, including7original expansion failures.",
+    "No diagnostic/option/source/request/reference changes or warning suppressions.",
+    "All old managed consumer/row/TRX/input hashes and all other compiled-source hashes must match; this is not a general source-version fallback."
+  ]
+}

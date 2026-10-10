@@ -127,6 +127,19 @@ public readonly partial record struct RootedDirectoryPath
 
 public static partial class TsPath
 {
+    // rooted_path.go:829. Visit the cache directory itself before stopping.
+    public static T? ForEachAncestorDirectoryPathStoppingAtGlobalCache<T>(
+        RootedDirectoryPath globalCache, RootedDirectoryPath directory,
+        Func<RootedDirectoryPath, (T Result, bool Stop)> callback)
+    {
+        var (result, _) = directory.ForEachAncestorDirectory<T>(ancestor =>
+        {
+            var (value, stop) = callback(ancestor);
+            return (value, stop || ancestor == globalCache);
+        });
+        return result;
+    }
+
     public static RootedPath ToRootedPath(string bytes, RootedDirectoryPath currentDirectory)
     {
         if (bytes == "")

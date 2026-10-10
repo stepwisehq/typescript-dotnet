@@ -166,23 +166,33 @@ def main():
     parser.add_argument("--semantic-go", required=True, type=Path, help="Pinned genuine Program observer")
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--current-checking-boundaries", type=Path,
-                        help="Explicit current authored boundary replacements; historical default stays unchanged")
+                        help="Explicit authored boundary or current source-semantic promotion context; historical default stays unchanged")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     hashes = {"cli": digest(args.executable), "go": digest(args.go), "semanticGo": digest(args.semantic_go)}
     boundaries = None
+    promoted_semantics = None
     boundary_hash = None
     if args.current_checking_boundaries is not None:
         boundary_hash = digest(args.current_checking_boundaries)
         context = compare.parse(args.current_checking_boundaries.read_bytes())
-        if set(context) != {"classification", "cases"} or context["classification"] != "authored-current-semantic-boundaries":
+        if set(context) != {"classification", "cases"} or context["classification"] not in {
+            "authored-current-semantic-boundaries", "authored-controls-promoted-to-pinned-go-semantics"
+        }:
             raise ValueError("Unknown current checking boundary context")
-        boundaries = context["cases"]
-        if set(boundaries) != {"package-graph-check", "package-graph-invalid-check"}:
+        selected = context["cases"]
+        if set(selected) != {"package-graph-check", "package-graph-invalid-check"}:
             raise ValueError("Current boundary context must replace exactly the two authored mixed-graph controls")
-        for expected_boundary in boundaries.values():
-            if set(expected_boundary) != {"ExitCode", "Error", "Diagnostics"} or expected_boundary["ExitCode"] != 2 or expected_boundary["Diagnostics"] != [] or not isinstance(expected_boundary["Error"], str) or not expected_boundary["Error"]:
-                raise ValueError("Current unsupported boundary must retain explicit failure and empty diagnostic payload")
+        if context["classification"] == "authored-current-semantic-boundaries":
+            boundaries = selected
+            for expected_boundary in boundaries.values():
+                if set(expected_boundary) != {"ExitCode", "Error", "Diagnostics"} or expected_boundary["ExitCode"] != 2 or expected_boundary["Diagnostics"] != [] or not isinstance(expected_boundary["Error"], str) or not expected_boundary["Error"]:
+                    raise ValueError("Current unsupported boundary must retain explicit failure and empty diagnostic payload")
+        else:
+            promoted_semantics = selected
+            for promotion in promoted_semantics.values():
+                if promotion != {"reference": "pinned-go-semantics", "ExitCode": 1}:
+                    raise ValueError("Current promotion requires the exact source-semantic reference and error exit")
     failures, records, fixture_hashes = [], [], {}
     start = time.monotonic()
     cases = [("package-checking", "check", "semantic", 0), ("package-checking-invalid", "check", "semantic", 1),
@@ -194,6 +204,11 @@ def main():
     with tempfile.TemporaryDirectory(prefix="resolution-cli-") as directory:
         root = Path(directory)
         for case, action, reference, exit_code in cases:
+            row_name = case + "-" + action
+            if promoted_semantics is not None and row_name in promoted_semantics:
+                if reference != "unsupported":
+                    raise ValueError("Only the two historical authored capability controls may be promoted")
+                reference, exit_code = "semantic", promoted_semantics[row_name]["ExitCode"]
             source_case = "package-checking" if case.startswith("package-checking-") and case != "package-checking-invalid" else case
             source_dir = ROOT / "examples/resolution" / source_case
             files = {}
@@ -277,6 +292,7 @@ def main():
                   runnerSha256=digest(Path(__file__)), semanticObserverSha256=digest(ROOT / "tools/resolution-cli-oracle/main.go"),
                   currentCheckingBoundaries=None if args.current_checking_boundaries is None else str(args.current_checking_boundaries),
                   currentCheckingBoundariesSha256=boundary_hash,
+                  currentSemanticPromotions=[] if promoted_semantics is None else sorted(promoted_semantics),
                   projectionLimits="Public CLI diagnostics compared completely. Graph DTO fields/payloads compared, original static trace type names are not serialized; explicit package-directory descriptor separately asserted. Pointer topology and host operations remain covered by the full graph protocol, not the CLI.")
     (args.output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({key: report[key] for key in ("cases", "exact", "failures", "seconds")}))

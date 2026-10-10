@@ -8,6 +8,22 @@ using TypeScript.Scanner;
 namespace TypeScript.DiagnosticPrinting;
 internal sealed partial class Printer
 {
+    // utilities.go:625/631. Preserve source binary operation/mixing predicates.
+    private static bool isBinaryOperation(Node node, Kind token)
+    {
+        node = Ast.SkipPartiallyEmittedExpressions(node);
+        return node.Kind == Kind.BinaryExpression && node.AsBinaryExpression().OperatorToken.Kind == token;
+    }
+
+    private static bool mixingBinaryOperatorsRequiresParentheses(Kind a, Kind b)
+    {
+        if (a == Kind.QuestionQuestionToken)
+            return b is Kind.AmpersandAmpersandToken or Kind.BarBarToken;
+        if (b == Kind.QuestionQuestionToken)
+            return a is Kind.AmpersandAmpersandToken or Kind.BarBarToken;
+        return false;
+    }
+
     private string getLiteralText(Node node)
     {
         if (currentSourceFile != null && canUseOriginalText(node))
@@ -23,7 +39,7 @@ internal sealed partial class Printer
             if (rawText.Length > 0 || text.Length == 0)
                 result.Append(rawText);
             else
-                escapeStringWorker(text, '`', result, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
+                escapeStringWorker(text, '`', result, neverAsciiEscape || (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
             result.Append(node.Kind is Kind.NoSubstitutionTemplateLiteral or Kind.TemplateTail ? "`" : "${");
             return result.ToString();
         }
@@ -33,7 +49,7 @@ internal sealed partial class Printer
         char quote = (node.AsStringLiteral().TokenFlags & TokenFlags.SingleQuote) != 0 ? '\'' : '"';
         var b = new StringBuilder(node.Text().Length + 2);
         b.Append(quote);
-        escapeStringWorker(node.Text(), quote, b, (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
+        escapeStringWorker(node.Text(), quote, b, neverAsciiEscape || (emitContext.EmitFlags(node) & EmitFlags.NoAsciiEscaping) != 0);
         b.Append(quote);
         return b.ToString();
     }

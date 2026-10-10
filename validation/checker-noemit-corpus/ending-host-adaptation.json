@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "classification": "authored-test-access-and-source-qualified-capability-promotion",
+  "currentSource": "validation/Projects.Checks/ProjectSupportChecks.cs",
+  "currentSourceSha256": "fb338838724204ab832d2e215a637de2117de9996f7ab15d04ac0cdf1f3b48d2",
+  "originalSources": {
+    "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers_test.go": "57a883bb76e85d7daca35c4f4900f40270a60d8030b403dd0d101e0d2bd85356",
+    "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers.go": "9ad82849452f0a5155186599ea3f9a691f2edd7e97a08e6ec12f1185cb7589e5",
+    "tools/projects-oracle/main.go": "6b825aabe3dadd1e16c455b347bc4ce90b728ebc552ee71c0d75724b35fc245a",
+    "tools/projects-oracle/module_specifier_projection.go": "b77937cdea6c7c9cf4e9a39325d00ddb9ac41efc97e28df8fc2f6fc55110631c"
+  },
+  "evidence": {
+    "artifacts/checker-noemit-validation/ending-host-repair/ProjectSupportChecks.before.cs": "f28e88d31bfbc031d7daeab958a2d5e50a1bb41afe65450bd477d8d34b37b9d7",
+    "artifacts/checker-noemit-validation/ending-host-repair/requests.jsonl": "5971b8546995612853f9f61a0222606fc53c8a3b037df6a012393fa85e47e631",
+    "artifacts/checker-noemit-validation/ending-host-repair/original.jsonl": "fef6c33c3a86339c556751b6092693cb448ded1215990974865b7c21bff4b8c5",
+    "artifacts/checker-noemit-validation/ending-host-repair/original.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/checker-noemit-validation/ending-host-repair/original-report.json": "a2451e74756a557e9a4d7c7cd6bef15d8367985244ca3a4466cd6ec28639dccc"
+  },
+  "testAccess": {
+    "sourceFunction": "modulespecifiers.processEnding",
+    "originalTest": "TestProcessEndingChecksRootedFilePath",
+    "adapter": "Exact nonpublic static MethodInfo signature, named processEnding DynamicDependency, strict method/return/result checks; actual typed raw-byte input and output projection, no substitute source algorithm. NativeAOT execution remains required.",
+    "assertions": [
+      "result == ./lib/index",
+      "FileExists calls contain /project/src/lib.ts"
+    ],
+    "productionChange": false
+  },
+  "capabilityPromotion": {
+    "retired": "ModuleSpecifiers.SourceApi imports-map packageJsonSpecifierMapping authored rejection",
+    "unchangedInputs": "Complete three current a/b/main source strings and exact no/type/imports package variants captured in requests.jsonl. Existing named legacy environment retains three explicit upstream libraries.",
+    "newAssertions": "All three source results are Relative, specifiers [./a], ambient nil; complete same-input pinned-Go public source-API records captured before expectation edit.",
+    "rootShadow": "Existing absent/present ../index behavior, metadata exclusion and named outside-root/symlink boundaries unchanged."
+  },
+  "historicalPolicy": "Original corpus, provenance and proofs unchanged; prior authored restriction is retired only for this current capability control."
+}

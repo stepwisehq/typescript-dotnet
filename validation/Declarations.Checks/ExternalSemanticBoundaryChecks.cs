@@ -1,76 +1,43 @@
-// Authored external-consumer controls; no upstream semantic assertion claim.
+// Authored current-capability controls, promoted from the obsolete external
+// restrictions. Exact original inputs/options and complete pinned-Go public
+// observations are retained by authored-capability-migration.json.
+using System.IO.Compression;
+using System.Text.Json.Nodes;
 using Configuration.Checks;
-using TypeScript.Checking;
-using TypeScript.Compiler;
-using TypeScript.Scanner;
-using TypeScript.Vfs;
-using CompilerProgram = TypeScript.Compiler.Program;
+using Program.Checks;
 
 namespace Declarations.Checks;
 
 public static class ExternalSemanticBoundaryChecks
 {
+    // Historical dispatcher identity is retained; the provenance explicitly
+    // changes this authored assertion from an external ban to source agreement.
     public static IReadOnlyList<string> Cases { get; } = ["Authored.ExternalSemanticConsumers"];
 
     public static void Run(string name)
     {
         if (name != Cases[0]) throw new ArgumentOutOfRangeException(nameof(name));
-        const string js = "/** @type {number} */\nexport const value = \"invalid when checked\";\n";
-        var checkedJs = Create("main.js", js, "\"allowJs\":true,\"checkJs\":true");
-        var jsError = Unsupported(() => checkedJs.GetSemanticDiagnostics());
-        Check.Equal(jsError.Feature, "javascriptSemantics", "checked JS reaches explicit external semantic consumer");
-
-        // Program skipping and explicitly requested type queries are distinct.
-        // The three natural skip-policy records are independently Go-paired.
-        var skippedJs = Create("main.js", js, "\"allowJs\":true,\"checkJs\":false");
-        Check.Equal(skippedJs.GetSemanticDiagnostics()?.Count ?? 0, 0, "CheckJs false preserves actual skip policy");
-        var file = skippedJs.GetSourceFile(RootedFilePath.FromGoString("/main.js"))!;
-        var node = file.Statements.Nodes[0].AsVariableStatement().DeclarationList
-            .AsVariableDeclarationList().Declarations.Nodes[0].Name();
-        var (checker, done) = skippedJs.GetTypeChecker();
-        try
+        using var resource = typeof(ExternalSemanticBoundaryChecks).Assembly
+            .GetManifestResourceStream("Declarations.Checks.AuthoredCapabilityChecks")
+            ?? throw new InvalidOperationException("Qualified current-capability observations are missing.");
+        using var reader = new StreamReader(new GZipStream(resource, CompressionMode.Decompress));
+        string[] names = ["CurrentCapability.CheckedJS", "CurrentCapability.SkippedJSQuery",
+            "CurrentCapability.JSX", "CurrentCapability.LegacyDecorator"];
+        int index = 0;
+        while (reader.ReadLine() is { } line)
         {
-            var queryError = Unsupported(() => checker.GetTypeAtLocation(node));
-            Check.Equal(queryError.Feature, "javascriptSemantics", "explicit JS type query remains outside selected semantics");
-            Check.Equal(queryError.FileName, file.FileName(), "queried external diagnostic owner");
-            Check.Equal(queryError.Kind, node.Kind, "queried external node kind");
-            Check.Equal(queryError.Pos, node.Pos(), "queried external byte start");
-            Check.Equal(queryError.End, node.End(), "queried external byte end");
+            var row = JsonNode.Parse(line)!.AsObject();
+            Check.Equal(row.Count, 2, "current capability resource fields");
+            var request = row["request"]!.AsObject();
+            var expected = row["expected"]!.AsObject();
+            Check.True(index < names.Length, "current capability registry has no extra rows");
+            Check.Equal(request["Name"]!.GetValue<string>(), names[index], "current capability request order");
+            Check.Equal(expected["name"]!.GetValue<string>(), names[index], "current capability reference identity");
+            var actual = JsonNode.Parse(ProgramRunner.Run(request.ToJsonString()));
+            Check.True(JsonNode.DeepEquals(expected, actual),
+                "complete pinned-Go diagnostics/environment/public queries: " + names[index]);
+            index++;
         }
-        finally { done(); }
-
-        var jsx = Create("main.tsx", "export const view = <div />;\n", "\"jsx\":\"preserve\"");
-        Check.True(Unsupported(() => jsx.GetSemanticDiagnostics()).Feature.Contains("jsx", StringComparison.OrdinalIgnoreCase),
-            "checked JSX fails at an actual JSX consumer");
-        var decorated = Create("main.ts", "declare function decorate(target: any): void;\n@decorate class Model {}\nexport { Model };\n",
-            "\"experimentalDecorators\":true");
-        Check.True(Unsupported(() => decorated.GetSemanticDiagnostics()).Feature.Contains("decorator", StringComparison.OrdinalIgnoreCase),
-            "checked decorator fails at an actual decorator consumer");
-    }
-
-    private static CompilerProgram Create(string name, string text, string extra)
-    {
-        string config = "{\"compilerOptions\":{\"target\":\"ES2022\",\"module\":\"ESNext\",\"moduleResolution\":\"Bundler\",\"noEmit\":true,\"lib\":[\"ES5\"],\"types\":[],\"skipLibCheck\":true," + extra + "},\"files\":[\"" + name + "\"]}";
-        IFS fs = new ConfigurationFileSystem([
-            new ConfigurationFileSystem.Input("/tsconfig.json", config),
-            new ConfigurationFileSystem.Input("/" + name, text)], CaseSensitivity.CaseSensitive);
-        fs = TypeScript.Bundled.Bundled.WrapFS(fs);
-        var (parsed, errors) = TypeScript.TsOptions.TsOptions.GetParsedCommandLineOfConfigFile(
-            RootedFilePath.FromGoString("/tsconfig.json"), null, null, fs, null);
-        Check.Equal(errors?.Count ?? 0, 0, "external fixture configuration is valid");
-        var program = CompilerProgram.NewProgram(new()
-        {
-            Config = parsed!, SingleThreaded = Tristate.True,
-            Host = CompilerHosts.NewCompilerHost(fs, TypeScript.Bundled.Bundled.LibPath())
-        });
-        Check.Equal(program.GetGlobalDiagnostics()?.Count ?? 0, 0, "external fixture uses real library globals");
-        return program;
-    }
-
-    private static UnsupportedSemanticFeatureException Unsupported(Action operation)
-    {
-        try { operation(); }
-        catch (UnsupportedSemanticFeatureException error) { return error; }
-        throw new InvalidOperationException("Expected an explicit external semantic consumer failure.");
+        Check.Equal(index, names.Length, "all four original authored inputs are promoted");
     }
 }

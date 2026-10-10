@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "campaign": "complete-original-checker-noemit-language-integration",
+  "baseline": "c5e96e1",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "contract": "docs/LANGUAGE-CONTRACT.md",
+  "manifest": "validation/checker-noemit-corpus/manifest.json",
+  "manifestSha256": "1c72d4b060f0041ceadcc488afe9417f06a87d959a034b927ca077e12bba578b",
+  "inventory": {
+    "originalFixtures": 12824,
+    "rawAcceptedConfigurations": 15190,
+    "actualDecodedConfigurations": 15330,
+    "standardCheckingConfigurations": 15291,
+    "originalPreConfigurationSkippedFixtures": 42,
+    "originalPreConfigurationSkipReasons": {
+      "builtAPIEnvironment": 10,
+      "removedOptions": 32
+    },
+    "supplementalGenuineCheckingConfigurations": 13,
+    "actualCheckingConfigurations": 15304,
+    "originalExpansionFailureFixtures": 7,
+    "originalUnknownOptionFailureVariants": 26,
+    "preparationFailureDispositions": 33,
+    "rawProvenance": "validation/checker-noemit-inventory/provenance.json",
+    "decodedProvenance": "validation/checker-noemit-decoded-inventory/provenance.json",
+    "decodedProvenanceSha256": "c4769a2f35da08780ddec39b23aa537332c72e28897fd0468e87a9eee184be02",
+    "configurationEncodingDelta": {
+      "UTF8BOM": 820,
+      "UTF16LE": 6,
+      "UTF16BE": 1,
+      "changedSettingsConfigurations": 821,
+      "standardNetVariantIncrease": 101
+    }
+  },
+  "assertionChannels": {
+    "required": [
+      "complete actual pre-checking and checking config/Program/syntactic/semantic/global/suggestion diagnostics, original order/nil shape/owners/spans/chains/related information",
+      "original complete type and symbol baseline traversal, filters, flags, formatting, file order and source fixups when enabled",
+      "actual traceResolution capture after checking",
+      "original verifyUnionOrdering reverse plus ten shuffle/sort identity assertions, then original verifyParentPointers assertions"
+    ],
+    "adaptations": [
+      "no Emit operation; channels captured separately before original emit/declaration-output calls",
+      "C# complete semantic recomputation under unchanged Incremental options and buildinfo inputs, not incremental cache/builder parity",
+      "in-process original contentmapper fixture callbacks, not subprocess IPC",
+      "locked TypeScript6.0.3 public declarations for original nine built-API skipped fixtures; unchanged source/options and fresh pinned-Go checking/reference"
+    ],
+    "externalOperations": [
+      "JavaScript/declaration output and output baselines",
+      "declaration-output producer diagnostics",
+      "Emit-induced diagnostics and pre/post-Emit diagnostic count invariant",
+      "incremental cache/update/builder/emit scheduling assertions",
+      "enabled checker trace instrumentation and performance benchmarks"
+    ]
+  },
+  "directCheckerTests": {
+    "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+    "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+    "functions": [
+      {
+        "name": "TestGetSymbolAtLocation",
+        "classification": "retained-complete-original-assertions",
+        "provenance": "validation/Declarations.Checks/checker-test-provenance.json",
+        "assertions": [
+          "No parsed configuration diagnostics.",
+          "All three actual source node symbol queries are non-null."
+        ],
+        "adaptations": [
+          "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+          "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+        ]
+      },
+      {
+        "name": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+        "classification": "retained-complete-original-assertions",
+        "provenance": "validation/Declarations.Checks/checker-test-provenance.json",
+        "assertions": [
+          "No parsed configuration diagnostics.",
+          "Both type-only nondefault import clause types are non-null and reference-equal to the regular import clause type.",
+          "Default import clause type is reference-equal to the actual default interface reference type."
+        ],
+        "adaptations": [
+          "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+          "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+        ]
+      }
+    ],
+    "benchmark": {
+      "name": "BenchmarkNewChecker",
+      "classification": "external-performance-operation"
+    }
+  },
+  "checkerTracerTest": {
+    "source": "upstream/TypeScript/tsc/internal/checker/tracer_test.go",
+    "sourceSha256": "5c2563d7880be99e61aa112259211737c261f6ab4de93eff0523a4d9ab131825",
+    "function": "TestTracerPushPreservesEndArgMutations",
+    "classification": "external-enabled-tracing-instrumentation",
+    "assertions": "Enabled trace event/end-argument mutation and checker ID publication; no ordinary no-emit diagnostic/query obligation omitted."
+  },
+  "authoredCheckerOracleUtilities": {
+    "source": "upstream/TypeScript/tsc/internal/checker/oracle_semantic_utilities_test.go",
+    "classification": "historical-authored-observer-helper-not-a-pinned-original-test",
+    "retention": "Existing predecessor gate; no new private-state census."
+  },
+  "mapperOriginalFunctions": {
+    "classification": "retained-source-qualified-original-complete-assertions",
+    "functions": [
+      "TestCompositeProjectContentMapperSupplementalRoots",
+      "TestContentMapperInvalidMappings",
+      "TestContentMapperSourceFileState",
+      "TestContentMapperDirectivesPreserveIncrementalGlobals"
+    ],
+    "retainedManifest": "validation/protocols-corpus/manifest.json",
+    "note": "Both generator policies, bulk globals, incremental file/global diagnostics remain restored; no unsupported checker bypass."
+  },
+  "originalInvariantAdapters": {
+    "source": "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go",
+    "counterpart": "validation/Program.Checks/CompilerOriginalInvariantChecks.cs",
+    "functions": [
+      "verifyUnionOrdering",
+      "verifyParentPointers"
+    ],
+    "classification": "complete within-runtime original invariant assertions, not cross-runtime private representation equality"
+  },
+  "environmentLimitation": {
+    "fixture": "compiler/APILibCheck.ts",
+    "originalRoles": [
+      "/.ts/typescript.internal.d.ts",
+      "/.ts/tsserverlibrary.internal.d.ts"
+    ],
+    "classification": "original built internal declaration environment unavailable in pin and locked archive; historical environment assertions unverified",
+    "actualAdaptedChecking": "Same unchanged fixture/options executes complete fresh-Go/C# record, missing-import diagnostics and both original invariants. This is not successful historical built-environment baseline parity.",
+    "provenance": "validation/checker-noemit-environment/typescript-6.0.3/integration-provenance.json"
+  },
+  "authoredHarnessControls": {
+    "count": 3,
+    "source": "tests/Checker.NoEmit.Tests/CompilerHarnessTests.cs",
+    "domains": [
+      "BOM decoding precedes original option expansion",
+      "stored-case realpath and explicit canonical collision rejection",
+      "removed module value retains original exact preparation failure"
+    ]
+  },
+  "acceptanceExecutionPlan": {
+    "managed": "15304 in-process complete-record xUnit rows +33 original preparation-disposition rows +3 authored controls =15340 executions",
+    "native": "same15304 complete checking records; actual Linux x64 NativeAOT",
+    "retained": "one protocols cascade, including original checker2/mapper4 and all earlier accepted assertions/CLI controls",
+    "aggregation": "Aggregate selected TRX counts are executed cases, may repeat predecessor tests; not distinct original tests."
+  },
+  "execution": {
+    "status": "verified whole no-emit checking under explicit original harness/environment/output dispositions",
+    "candidateSnapshot": "artifacts/language-validation/build8/snapshot.json",
+    "fullManagedFeedback": "artifacts/checker-noemit-validation/whole-standard/candidate5/report.json",
+    "lastResidual": "artifacts/checker-noemit-validation/whole-standard/remaining-candidate8/report.json",
+    "proof": "validation/results/checker-noemit-verified.json",
+    "proofSha256": "1654872f04385a8df8471716c7f6213596a748a207cc4a000e4f081f3ef5c2cf",
+    "checkingRecords": 15304,
+    "preparationDispositionCases": 33,
+    "authoredHarnessCases": 3,
+    "newXUnit": {
+      "executed": 15340,
+      "passed": 15340,
+      "failed": 0,
+      "skipped": 0
+    },
+    "nativeChecking": {
+      "records": 15304,
+      "exact": 15304,
+      "chunks": 120
+    },
+    "nativeMetadataReconciliation": {
+      "fixtures": 12824,
+      "byteEqual": true
+    },
+    "selectedAggregateXUnitExecutions": 40291,
+    "nativeElfPaths": 24,
+    "historicalFilesUnchanged": 287,
+    "qualificationPhaseSeconds": 2428.19,
+    "timingDefinition": "Sum of qualified execution phase durations; native and retained continuation overlapped. This is not a single-process wall-clock measurement.",
+    "retainedSuffixSeconds": 1458.479,
+    "allFiveDriftChecksClear": true,
+    "fixedAttemptComposition": "artifacts/checker-noemit-validation/continuation-attempt1/fixed-composition.py"
+  },
+  "authoredCapabilityPromotion": {
+    "provenance": "validation/checker-noemit-corpus/authored-capability-migration.json",
+    "provenanceSha256": "a66b9e07699c34ba705ecb4e7a64671c5f6f8dbb0f8c42c7e4515dd485e92bd2",
+    "retainedSharedCheck": "Authored.ExternalSemanticConsumers",
+    "completeSameInputProgramRecords": 4,
+    "sameInputResolutionSemanticComparisons": 2
+  }
+}

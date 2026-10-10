@@ -5,6 +5,16 @@
 namespace TypeScript.Scanner;
 internal static partial class Core
 {
+    // core.go:714. The source caller supplies a valid byte offset.
+    public static int IndexAfter(string s, string pattern, int startIndex)
+    {
+        int matched = s[startIndex..].IndexOf(pattern, StringComparison.Ordinal);
+        return matched == -1 ? -1 : matched + startIndex;
+    }
+
+    // core.go:866. True sorts after false.
+    public static int CompareBooleans(bool a, bool b) => a == b ? 0 : a ? 1 : -1;
+
     // core.go:723.
     public static bool ShouldRewriteModuleSpecifier(string specifier, CompilerOptions compilerOptions) =>
         compilerOptions.RewriteRelativeImportExtensions == Tristate.True &&

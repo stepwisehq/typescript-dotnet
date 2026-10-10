@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/symbolaccessibility.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Selected data/callable/collection/project alias, scope and container algorithms.
-// Class-expression and CommonJS class-assignment producers remain excluded.
+// Source container selection includes class-expression and CommonJS class assignments.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.DiagnosticPrinting;
@@ -448,13 +448,23 @@ public sealed partial class Checker
                 }
             }
 
-            // symbolaccessibility.go:368. Only the CommonJS property-assignment
-            // producer is external; ordinary class expressions are in scope.
+            // symbolaccessibility.go:368. CommonJS exports are contained by the source
+            // module; other class assignments use the actual resolved left expression.
             if (Ast.IsClassExpression(declaration) && Ast.IsBinaryExpression(declaration.Parent) &&
                 declaration.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken &&
                 Ast.IsAccessExpression(declaration.Parent.AsBinaryExpression().Left) &&
                 Ast.IsEntityNameExpression(declaration.Parent.AsBinaryExpression().Left.Expression()))
-                throw unsupported("getContainersOfSymbol: CommonJS class-assignment producer");
+            {
+                var left = declaration.Parent.AsBinaryExpression().Left;
+                if (Ast.IsModuleExportsAccessExpression(left) || Ast.IsExportsIdentifier(left.Expression()))
+                {
+                    add(getSymbolOfDeclaration(Ast.GetSourceFileOfNode(declaration).AsNode()));
+                    continue;
+                }
+                checkExpressionCached(left.Expression());
+                add(symbolNodeLinks.Get(left.Expression()).resolvedSymbol);
+                continue;
+            }
         }
 
         if (candidates is not { Count: > 0 })

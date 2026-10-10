@@ -1,8 +1,8 @@
 # Remaining source-language checker contract
 
-**Prepared during protocol acceptance; live integration follows its clean checkpoint.**
-Isolated scratch implementation may proceed during the frozen gate without modifying
-the verified workspace or mixing unverified changes into its commit.
+**Active from accepted protocol checkpoint `c5e96e1`.**
+Isolated scratch preparation occurred during the preceding frozen gate; its code was not
+included in that checkpoint. Live integration and verification are now authorized.
 This is the next campaign under the [whole-checker mandate](CHECKER-COMPLETION-PROMPT.md),
 with unchanged upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 The [core responsibility index](progress/checker-remaining-core.md) and
@@ -53,6 +53,12 @@ Actual Program metadata already exists and needs forwarding. This no-emit displa
 uses forAutoImports=false and requires no auto-import cache or service state; unused
 service wrappers remain individually classified. Preserve original node/type printing
 and source-file mapping rather than substituting import spellings.
+
+The same original public-query path requires the existing Pseudochecker Type/Lookup
+models and producers used by NodeBuilder declaration/return syntax reuse. Accessor,
+assertion, class/template, computed-name and signature consumers cannot be excluded
+as emitter-only. Complete the demanded source algorithms and metadata in their direct
+counterparts; no output execution or service state is included.
 
 Broad project reimplementation, emitting JavaScript/declarations, language services,
 enabled checker tracing, optimization and large-project comparisons stay external.

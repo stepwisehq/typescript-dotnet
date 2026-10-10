@@ -225,7 +225,7 @@ public sealed class Type
             return AsTypeParameter().mapper;
         if ((flags & TypeFlags.Conditional) != 0)
             return AsConditionalType().mapper;
-        throw Checker.unsupported("Type.Mapper: conditional payload");
+        throw new InvalidOperationException("Unhandled case in Type.Mapper");
     }
 
     public InterfaceType TargetInterfaceType() => Target().AsInterfaceType();
@@ -240,14 +240,14 @@ public sealed class Type
         return [this];
     }
 
-    // Upstream checker/types.go:780; selected union and intersection payloads.
+    // Upstream checker/types.go:780; union/intersection and template payloads.
     public List<Type> Types()
     {
         if ((flags & TypeFlags.UnionOrIntersection) != 0)
             return AsUnionOrIntersectionType().types;
         if ((flags & TypeFlags.TemplateLiteral) != 0)
             return AsTemplateLiteralType().types;
-        throw new NotSupportedException("Type.Types requires an unsupported type payload");
+        throw new InvalidOperationException("Unhandled case in Type.Types");
     }
 
     // Authored AOT-safe payload identity for the independent semantic graph.
@@ -975,4 +975,17 @@ internal static class LanguageFeatureMinimumTarget
     internal const ScriptTarget UsingAndAwaitUsing = ScriptTarget.ESNext;
     internal const ScriptTarget ClassAndClassElementDecorators = ScriptTarget.ESNext;
     internal const ScriptTarget RegularExpressionFlagsUnicodeSets = ScriptTarget.ESNext;
+}
+
+// types.go:102. Original symbol serialization context flags.
+[Flags]
+public enum SymbolFormatFlags : uint
+{
+    None = 0,
+    WriteTypeParametersOrArguments = 1 << 0,
+    UseOnlyExternalAliasing = 1 << 1,
+    AllowAnyNodeKind = 1 << 2,
+    UseAliasDefinedOutsideCurrentScope = 1 << 3,
+    WriteComputedProps = 1 << 4,
+    DoNotIncludeSymbolChain = 1 << 5
 }

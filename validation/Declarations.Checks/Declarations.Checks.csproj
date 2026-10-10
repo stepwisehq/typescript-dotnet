@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Program.Checks/Program.Checks.csproj" />
+    <EmbeddedResource Include="../checker-noemit-corpus/authored-capability-checks.jsonl.gz" LogicalName="Declarations.Checks.AuthoredCapabilityChecks" />
     <Compile Include="../Configuration.Checks/Check.cs" Link="Retained/Check.cs" />
     <Compile Include="../Configuration.Checks/IntegrationChecks.cs" Link="Retained/IntegrationChecks.cs" />
   </ItemGroup>

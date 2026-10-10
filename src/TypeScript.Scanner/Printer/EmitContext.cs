@@ -10,8 +10,17 @@ namespace TypeScript.DiagnosticPrinting;
 internal readonly record struct SynthesizedComment(Kind Kind, TextRange Loc, bool HasLeadingNewLine, bool HasTrailingNewLine, string Text);
 internal sealed class EmitContext
 {
+    private NodeFactory factory;
+    // nodebuilderimpl.go:126/emitcontext.go factory join. Builders sharing this context share its actual factory.
+    internal NodeFactory Factory => factory ??= Ast.NewNodeFactory(new NodeFactoryHooks { OnCreate = node => node.Flags |= NodeFlags.Synthesized, OnClone = (node, original) => SetOriginal(node, original), OnUpdate = (node, original) => SetOriginal(node, original) });
+
     private readonly Dictionary<Node, Node> original = new();
     private readonly Dictionary<Node, EmitFlags> emitFlags = new();
+    private readonly Dictionary<Node, TextRange> commentRanges = new();
+    // emitcontext.go:580/588. Reused syntax carries its original comment range.
+    internal TextRange CommentRange(Node node) => commentRanges.TryGetValue(node, out var range) ? range : node.Loc;
+    internal void SetCommentRange(Node node, TextRange range) => commentRanges[node] = range;
+    internal void AssignCommentRange(Node node, Node source) => SetCommentRange(node, CommentRange(source));
     private readonly Dictionary<Node, List<SynthesizedComment>> leadingComments = new();
     private readonly Dictionary<Node, List<SynthesizedComment>> trailingComments = new();
     // emitcontext.go:997/1002. Managed prefix copies preserve Go slice lengths.
@@ -47,6 +56,8 @@ internal sealed class EmitContext
             original[node] = source;
             if (emitFlags.TryGetValue(source, out var flags))
                 emitFlags[node] = flags;
+            if (commentRanges.TryGetValue(source, out var range))
+                commentRanges[node] = range;
             if (leadingComments.TryGetValue(source, out var comments))
                 leadingComments[node] = new(comments);
             if (trailingComments.TryGetValue(source, out var trailing))

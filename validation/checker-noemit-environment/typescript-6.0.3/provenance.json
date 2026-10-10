@@ -1,0 +1,49 @@
+{
+  "classification": "authentic-upstream-locked-public-api-environment-adaptation",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "version": "6.0.3",
+  "lockSource": "upstream/TypeScript/package-lock.json",
+  "lockSourceSha256": "52b6c9bd0a26ef1b0fc27dfbfaa00df6a047cdddd587d07c4f6c1c3345faf5cf",
+  "generator": "tools/prepare-checker-api-environment.py",
+  "generatorSha256": "12274badd5b836eb6f4806f1746058b9a7a7f5b64949cf53f38c045abfa243e0",
+  "url": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
+  "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
+  "archiveSha256": "33cd0ee1beaa8c9e9d15a9da836c62ddea4c34a42d7c2d349dbc80d94165d22a",
+  "archiveBytes": 4515854,
+  "files": {
+    "lib/typescript.d.ts": {
+      "sha256": "c967e03c8dbb4770f7e2f0b71b5d13593de679a41cc2b60266c4b69f1342a263",
+      "bytes": 588452,
+      "originalMember": "package/lib/typescript.d.ts"
+    },
+    "lib/tsserverlibrary.d.ts": {
+      "sha256": "cee9e9bf9a8f67388ee878afd5e172189421bae6625076b774d68563d036fbfd",
+      "bytes": 866,
+      "originalMember": "package/lib/tsserverlibrary.d.ts"
+    },
+    "LICENSE.txt": {
+      "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+      "bytes": 9197,
+      "originalMember": "package/LICENSE.txt"
+    },
+    "ThirdPartyNoticeText.txt": {
+      "sha256": "1af3c68039c57e539422da82a4faada506ce6d0ea6f90e0b699d02dbcdb7a90c",
+      "bytes": 37824,
+      "originalMember": "package/ThirdPartyNoticeText.txt"
+    },
+    "package.json": {
+      "sha256": "9332e97c30d3e53ed54910b89207ed657fb444066484df6e5b6965bf130865e9",
+      "bytes": 3527,
+      "originalMember": "package/package.json"
+    }
+  },
+  "virtualRoles": {
+    "/.ts/typescript.d.ts": "lib/typescript.d.ts",
+    "/.ts/tsserverlibrary.d.ts": "lib/tsserverlibrary.d.ts"
+  },
+  "unavailableOriginalRoles": [
+    "/.ts/typescript.internal.d.ts",
+    "/.ts/tsserverlibrary.internal.d.ts"
+  ],
+  "observationBoundary": "Nine original public API fixtures have authentic locked declarations available for fresh pinned-Go no-emit references. Historical built-version baselines remain immutable and version differences explicit. APILibCheck internal inputs remain unavailable; no fabricated aliases or successful checking claim."
+}

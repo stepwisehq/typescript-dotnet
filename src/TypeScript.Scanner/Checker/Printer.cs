@@ -38,7 +38,7 @@ public sealed partial class Checker
             TypeScript.NodeBuilding.Flags.IgnoreErrors;
         if (noTruncation)
             combinedFlags |= TypeScript.NodeBuilding.Flags.NoTruncation;
-        var typeNode = nodeBuilder.TypeToTypeNode(t, enclosingDeclaration, fullyQualified, noTypeReduction, combinedFlags);
+        var typeNode = nodeBuilder.TypeToTypeNode(t, enclosingDeclaration, combinedFlags, TypeScript.NodeBuilding.InternalFlags.None, null);
         serializationLevel--;
         if (typeNode == null)
             throw new InvalidOperationException("should always get typenode");
@@ -51,17 +51,30 @@ public sealed partial class Checker
         return result.Length >= maxLength ? result[..(maxLength - 3)] + "..." : result;
     }
 
-    // printer.go:126/133. Default All meaning and AllowAnyNodeKind select SymbolToNode.
-    internal string symbolToString(Symbol symbol) => symbolToStringEx(symbol, null, SymbolFlags.All);
-    // checker.go:16300 selects All/AllowAnyNodeKind with DoNotIncludeSymbolChain.
-    private string symbolToStringWithoutSymbolChain(Symbol symbol, Node enclosingDeclaration) => symbolToStringEx(symbol, enclosingDeclaration, SymbolFlags.All, TypeScript.NodeBuilding.InternalFlags.DoNotIncludeSymbolChain);
-    private string symbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, TypeScript.NodeBuilding.InternalFlags internalFlags = TypeScript.NodeBuilding.InternalFlags.None)
+    // printer.go:120–177. Public display returns scalar strings; producer arguments and output retain Go bytes.
+    public string SymbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags) => ScannerString.ToJsString(symbolToStringEx(symbol, enclosingDeclaration, meaning, flags));
+    internal string symbolToString(Symbol symbol) => symbolToStringEx(symbol, null, SymbolFlags.All, SymbolFormatFlags.AllowAnyNodeKind);
+    private string symbolToStringWithoutSymbolChain(Symbol symbol, Node enclosingDeclaration) => symbolToStringEx(symbol, enclosingDeclaration, SymbolFlags.All, SymbolFormatFlags.AllowAnyNodeKind | SymbolFormatFlags.DoNotIncludeSymbolChain);
+    private string symbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags = SymbolFormatFlags.AllowAnyNodeKind)
     {
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+        var nodeFlags = TypeScript.NodeBuilding.Flags.IgnoreErrors;
+        var internalNodeFlags = TypeScript.NodeBuilding.InternalFlags.None;
+        if ((flags & SymbolFormatFlags.UseOnlyExternalAliasing) != 0)
+            nodeFlags |= TypeScript.NodeBuilding.Flags.UseOnlyExternalAliasing;
+        if ((flags & SymbolFormatFlags.WriteTypeParametersOrArguments) != 0)
+            nodeFlags |= TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName;
+        if ((flags & SymbolFormatFlags.UseAliasDefinedOutsideCurrentScope) != 0)
+            nodeFlags |= TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope;
+        if ((flags & SymbolFormatFlags.DoNotIncludeSymbolChain) != 0)
+            internalNodeFlags |= TypeScript.NodeBuilding.InternalFlags.DoNotIncludeSymbolChain;
+        if ((flags & SymbolFormatFlags.WriteComputedProps) != 0)
+            internalNodeFlags |= TypeScript.NodeBuilding.InternalFlags.WriteComputedProps;
         var nodeBuilder = getNodeBuilder();
-        var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext());
-        var entity = nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, internalFlags);
-        printer.Write(entity, writer, enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null);
+        var sourceFile = enclosingDeclaration == null ? null : Ast.GetSourceFileOfNode(enclosingDeclaration);
+        var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), true, true, enclosingDeclaration != null && enclosingDeclaration.Kind == Kind.SourceFile);
+        var entity = (flags & SymbolFormatFlags.AllowAnyNodeKind) != 0 ? nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null) : nodeBuilder.SymbolToEntityName(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null);
+        printer.Write(entity, writer, sourceFile);
         return writer.String();
     }
 
@@ -72,7 +85,7 @@ public sealed partial class Checker
         var builder = getNodeBuilder();
         var node = builder.SignatureToSignatureDeclaration(signature, isConstructor ? Kind.ConstructSignature : Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
-        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true).Write(node, writer, null);
+        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true, true).Write(node, writer, null);
         return writer.String();
     }
 

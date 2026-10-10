@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/pseudotypenodebuilder.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
+// Source syntactic reuse/equivalence and semantic fallback for diagnostic/public type-node serialization.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
+using NodeBuilderFlags = TypeScript.NodeBuilding.Flags;
 
 namespace TypeScript.Checking;
 internal sealed partial class NodeBuilderImpl
@@ -66,7 +67,7 @@ internal sealed partial class NodeBuilderImpl
                 {
                     var enclosing = Ast.GetContainingFunction(node);
                     if (Ast.IsAccessor(enclosing))
-                        throw Checker.unsupported("pseudoTypeToNode: accessor return");
+                        return serializeTypeForDeclaration(enclosing, null, null, false);
                     return serializeReturnTypeForSignature(ch.getSignatureFromDeclaration(enclosing), false);
                 }
 
@@ -85,7 +86,13 @@ internal sealed partial class NodeBuilderImpl
                 var d = t.AsPseudoTypeMaybeConstLocation();
                 var isConst = ch.isConstContext(d.Node);
                 if (!isConst && PseudoChecker.IsInConstContext(d.Node))
-                    throw Checker.unsupported("pseudoTypeToNode: assertion/const generic context");
+                {
+                    var contextualType = ch.getContextualType(d.Node, ContextFlags.None);
+                    var constType = pseudoTypeToType(d.ConstType);
+                    if (constType != null && ch.isLiteralOfContextualType(constType,
+                        ch.instantiateContextualType(contextualType, d.Node, ContextFlags.None)))
+                        isConst = true;
+                }
                 return pseudoTypeToNode(isConst ? d.ConstType : d.RegularType);
             case PseudoTypeKind.Union:
                 List<Node> res = new();
@@ -163,11 +170,15 @@ internal sealed partial class NodeBuilderImpl
             case PseudoTypeKind.ObjectLiteral:
                 var elements = t.AsPseudoTypeObjectLiteral().Elements;
                 if (elements is not { Count: > 0 })
-                    return f.NewTypeLiteralNode(f.NewNodeList(null));
+                {
+                    var emptyObject = f.NewTypeLiteralNode(f.NewNodeList(null));
+                    e.AddEmitFlags(emptyObject, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                    return emptyObject;
+                }
                 var isConstObject = ch.isConstContext(elements[0].Name.Parent.Parent);
                 List<Node> newElements = new(elements.Count);
-                var savedObjectFlag = inObjectTypeLiteral;
-                inObjectTypeLiteral = true;
+                var restoreObjectFlags = saveRestoreFlags();
+                ctx.flags |= NodeBuilderFlags.InObjectTypeLiteral;
                 foreach (var e in elements)
                 {
                     ModifierList modifiers = isConstObject || e.Kind == PseudoObjectElementKind.PropertyAssignment && e.AsPseudoPropertyAssignment().Readonly ? f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]) : null;
@@ -193,22 +204,37 @@ internal sealed partial class NodeBuilderImpl
                             var data = e.AsPseudoPropertyAssignment();
                             newProperty = f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, pseudoTypeToNode(data.Type), null);
                             break;
+                        case PseudoObjectElementKind.SetAccessor:
+                            var setter = e.AsPseudoSetAccessor();
+                            newProperty = f.NewSetAccessorDeclaration(null, reuseName(e.Name, false), null,
+                                f.NewNodeList([pseudoParameterToNode(setter.Parameter)]), null, null, null);
+                            break;
+                        case PseudoObjectElementKind.GetAccessor:
+                            var getter = e.AsPseudoGetAccessor();
+                            newProperty = f.NewGetAccessorDeclaration(null, reuseName(e.Name, false), null,
+                                null, pseudoTypeToNode(getter.Type), null, null);
+                            break;
                         default:
-                            throw Checker.unsupported("pseudoTypeToNode: accessor");
+                            throw new InvalidOperationException("Unknown pseudo object element kind");
                     }
 
+                    if (ctx.enclosingFile == Ast.GetSourceFileOfNode(e.Name))
+                        this.e.SetCommentRange(newProperty, e.Name.Parent.Loc);
                     newElements.Add(newProperty);
                     cleanup?.Invoke();
                 }
 
-                inObjectTypeLiteral = savedObjectFlag;
-                return f.NewTypeLiteralNode(f.NewNodeList(newElements));
+                restoreObjectFlags();
+                var objectResult = f.NewTypeLiteralNode(f.NewNodeList(newElements));
+                if ((ctx.flags & NodeBuilderFlags.MultilineObjectLiterals) == 0)
+                    e.AddEmitFlags(objectResult, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
+                return objectResult;
             case PseudoTypeKind.StringLiteral:
             case PseudoTypeKind.NumericLiteral:
             case PseudoTypeKind.BigIntLiteral:
                 return f.NewLiteralTypeNode(reuseNode(t.AsPseudoTypeLiteral().Node));
             default:
-                throw Checker.unsupported("pseudoTypeToNode: tuple/signature payload");
+                throw new InvalidOperationException("Unhandled pseudotype kind in pseudotype node construction");
         }
     }
 
@@ -312,8 +338,20 @@ internal sealed partial class NodeBuilderImpl
                         continue;
                     }
 
-                    if (e.Kind != PseudoObjectElementKind.PropertyAssignment)
-                        throw Checker.unsupported("pseudoTypeEquivalentToType: accessor");
+                    if (e.Kind is PseudoObjectElementKind.GetAccessor or PseudoObjectElementKind.SetAccessor)
+                    {
+                        var accessorType = e.Kind == PseudoObjectElementKind.GetAccessor
+                            ? e.AsPseudoGetAccessor().Type : e.AsPseudoSetAccessor().Parameter.Type;
+                        var targetType = e.Kind == PseudoObjectElementKind.GetAccessor
+                            ? propType : ch.getWriteTypeOfSymbol(targetProp);
+                        if (!pseudoTypeEquivalentToType(accessorType, targetType, false, false))
+                        {
+                            if (reportErrors)
+                                ctx.tracker.ReportInferenceFallback(e.Name.Parent);
+                            return false;
+                        }
+                        continue;
+                    }
                     var data = e.AsPseudoPropertyAssignment();
                     if (!pseudoTypeEquivalentToType(data.Type, propType, e.Optional, false))
                     {
@@ -451,7 +489,7 @@ internal sealed partial class NodeBuilderImpl
             case PseudoTypeKind.Tuple:
                 return null;
             default:
-                throw Checker.unsupported("pseudoTypeToType: tuple/signature");
+                throw new InvalidOperationException("Unhandled pseudotype kind in pseudotype to type conversion");
         }
     }
 
@@ -489,7 +527,7 @@ internal sealed partial class NodeBuilderImpl
             var original = p.Name.Parent;
             if (Ast.IsParameterDeclaration(original))
             {
-            // Default diagnostic printing removes comments; source node identity is retained by clone hooks.
+                setCommentRange(parameter, original);
             }
         }
 

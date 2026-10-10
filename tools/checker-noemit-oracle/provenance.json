@@ -1,0 +1,79 @@
+{
+  "classification": "additive-original-compiler-preparation-and-full-public-walker-noemit-adaptation",
+  "baseline": "c5e96e1",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/testrunner/compiler_runner.go": "1d0fe0e64d74bb1993de04851c86e108553ee4bbeb4dcde580e1c1820a89c3fa",
+    "upstream/TypeScript/tsc/internal/testrunner/test_case_parser.go": "bc9fc7a01f2685b199e87a649e90f419cc86a3178c338a8bb62cdd26c19ae184",
+    "upstream/TypeScript/tsc/internal/testutil/harnessutil/harnessutil.go": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+    "upstream/TypeScript/tsc/internal/testutil/tsbaseline/type_symbol_baseline.go": "3f9c61c9864973c09bf4da47ab17737f973a2627fcaf3f7cfa9de4f806800f45",
+    "upstream/TypeScript/tsc/internal/testutil/tsbaseline/util.go": "3513782760b937683ee8a9aef69b6049b4e0ff9b01ef0890ea2e9b372493b4da",
+    "upstream/TypeScript/tsc/internal/testutil/baseline/baseline.go": "3011176234618fdb0cc5aae1ee77f1a0a66264bb8211958f5f285e1bedce3de5",
+    "tools/program-oracle/main.go": "5a1ddd209d6eb9cc9364ff789b7c6f10b8d89dd7d5591b6cfa801795ab93bec3"
+  },
+  "counterpartFiles": {
+    "tools/build-checker-noemit-consumer.py": "e1554fc96752165f6a8ea8e4fb8a0f758a1fa0bd55514c7af9426dc14866f899",
+    "tools/checker-noemit-oracle/api_environment.go": "2c6fb2dbe522530f290a70738b552d2ce3aa9e65547ee8658e563d76003c3656",
+    "tools/checker-noemit-oracle/baseline_bridge.go": "be6b54d56bf0d4df28573b9ad3eaf0faf11713329137d0cee365daaef204cf3b",
+    "tools/checker-noemit-oracle/compiler_noemit_bridge.go": "9691a08e1cefae416d58734d23f8529c5ee229d920a05aabf2c4227967fbe753",
+    "tools/checker-noemit-oracle/decoded_inventory_test.go": "bb3f409a4b889617839bf8dd6f40d86a3cb033324d5a130cae9e96e348792c3b",
+    "tools/checker-noemit-oracle/diagnostics.go": "dba0ceccc95b8cf49a0b7103af9e7a40ec9187764221ecca80caad2bcc248549",
+    "tools/checker-noemit-oracle/harness_noemit_bridge.go": "899344213b4c6e0a17c93bd4e57002b39a5a41025b386a8f7052b7bdb5496231",
+    "tools/checker-noemit-oracle/runner_test.go": "f578b04a4c6929b074e216d56d941df198032b82b7e56c1a6eac32e037dcf5c9",
+    "tools/reconcile-checker-noemit-configurations.py": "53bbaef7f2366420de3850814179a3d24b5b497cd6eaf0fc566462c8bca34d1e",
+    "tools/run-checker-noemit-batch.py": "ecdffa992535366129e142a0bc8015e28241cbdb7662a4a3293a991efdac1e03",
+    "tools/run-checker-noemit-original.py": "53094b02498836a7d8cbef8cfaf15039cf4a9cc2ebc0da96d9a66a6d2ab4fa28",
+    "validation/Checker.NoEmit.Validation/Checker.NoEmit.Validation.csproj": "5d627f756b6595b8072b3b57765ff5b8f0f55a73aef11d9e908b1f791d51654c",
+    "validation/Checker.NoEmit.Validation/Program.cs": "171f8b439e85916366697c811e030b3dbb4cae8a908d1070e391a7870cd09a54",
+    "validation/Program.Checks/CompilerApiEnvironment.cs": "68d78434ec1ca9510ebded6579d88c69dbf123aaa6180baa0b26bac8ce09f8f2",
+    "validation/Program.Checks/CompilerBaselineFileSystem.cs": "a8befd39e74368a6532a9b5379f4ffab057f86afa46dc7d71e962edcfe1ae098",
+    "validation/Program.Checks/CompilerBaselineWalker.cs": "49c8394005b0db8a276339664dfc67d29b0cd3271753d56e30028791d7872029",
+    "validation/Program.Checks/CompilerFixtureConfigurations.cs": "3e7a93dce96fce0c713d238764b61e59667f923563be471f2af412521cb72ee7",
+    "validation/Program.Checks/CompilerFixtureMapperProject.cs": "ca7b5c3d5eb890763f7b4dcdf42dada341eddbb173d7dea382152f6788b03f45",
+    "validation/Program.Checks/CompilerFixtureParser.cs": "f2eb162cda9bd35f2c99fe9485769f06a6b61ffe57e17adc649e316e126c9031",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "3fd1b2e64eb1ad75182d2300d7a353e2a9fc98b7835bed31a7a798ed1002fb11",
+    "validation/Program.Checks/CompilerNoEmitHarness.cs": "dba78c54a71bf042fa1feaaf97271b9de4fbaf426d9e268c1a3e9147b0117d98",
+    "validation/Program.Checks/CompilerNoEmitRunner.cs": "b4e19a70d18d092f62e829057928c0e093e3683f34b65201c740ac1c1fd39f61",
+    "validation/Program.Checks/CompilerOriginalInvariantChecks.cs": "970d60ff0e8d2cf312fac5bc9bf4f12257f24499474535098ea8a2f5fad68576"
+  },
+  "copiedOriginalFunctions": {
+    "CompileFiles": "7c8e53ef6314f0c120162947342b239f11898f8f1d1f825c41e33cb3fa47f0ff",
+    "CompileFilesEx": "49c5f630ca0c67b3ce316c6ef6d646828e0999eb65990e0f67b8e311ee6c1fb8",
+    "newCompilerTest": "278a1623140ddd224272c54b282133c7fffb30fc0381e5007d4a2e21840130fe"
+  },
+  "operations": {
+    "configuration": "Original getCompilerFileBasedTest/GetFileBasedTestConfigurations, makeUnitsFromTest, copied exact newCompilerTest root/config and transformed-source preparation.",
+    "checking": "Original copied CompileFiles/CompileFilesEx option/library/FS/host producers, original createProgram including actual incremental wrapper, separate source pre-check TraceResolution=false clone and actual-options checking channels.",
+    "typesAndSymbols": "Original complete type-before-symbol shared walker and baseline renderer; managed direct traversal/renderer port with exact original filters, flags, declarations, headers, byte roles and NoContent sentinel.",
+    "diagnosticProjection": "Existing accepted Program diagnostic fields and correlated owner roles copied, no private type/storage graph.",
+    "originalOptionPolicy": "Exact first fatal/skip decision is source-qualified metadata; no-emit checking continues under unchanged options. Original configuration policy dispositions are distinct from the 42 original preconfig skips and target failures.",
+    "originalInvariants": "Original compiler_runner.go union ordering then parent-pointer assertions after fullwalker/trace. Go invokes original methods; managed source-port asserts within-runtime identity, reverse+deterministic shuffle/sort, genuine files/default-library applicability. Failure-only public type spellings/comparator directions aid concrete diagnosis, no cross-runtime graph or identity census.",
+    "decodedInput": "Actual source disk decoding precedes configuration/unit parsing. Supplemental decoded registry independently reconciles all 12824 original files while accepted raw inventory remains immutable.",
+    "mappedHost": "Seven actual original fixture transform/decode/identity callback algorithms run in process through genuine TransformAndParse; subprocess transport/runtime host implementation is not asserted.",
+    "apiEnvironment": "Exact locked TypeScript6.0.3 package members supply two actual public declaration roles; original unavailable internal declarations remain absent. No roots/options change or historical built-declaration baseline equivalence is claimed."
+  },
+  "externalOperations": [
+    "Emit and emitted-output/source-map assertions",
+    "Declaration-output diagnostics and Emit-induced pre/post diagnostic-count invariants",
+    "Incremental cache/affected-file/builder/emit scheduling parity; managed complete recomputation is explicitly adapted and must match actual original checking outcomes"
+  ],
+  "execution": {
+    "goBuild": "Additive original package and batch driver compiled; no pinned source replaced.",
+    "originalReference": {
+      "report": "artifacts/checker-noemit-validation/whole-standard/original/report.json",
+      "cases": 15291,
+      "observed": 15291,
+      "failed": 0,
+      "elapsedSeconds": 126.226,
+      "drift": false
+    },
+    "managed": "Whole candidate5 completed15291 configurations:15164 exact,127 failures (95 public-record differences,10 caught runtime exceptions,22 missing after one120s timeout),894.700s driftfalse. Targeted candidate6 resolves75/105 observed failures and21/22 isolated timeout-tail;30 observed differences plus one actual excessive-template timeout remain. Authentic API10 now all exact on candidate6. No final managed/native acceptance claim.",
+    "decodedReconciliation": {
+      "cases": 12824,
+      "successfulExpansionsExact": 12817,
+      "exactOriginalFailures": 7,
+      "failed": 0
+    },
+    "boundary": "No whole checker/native acceptance claim until all applicable managed, original, native and retained obligations qualify."
+  }
+}

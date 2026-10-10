@@ -1,0 +1,13 @@
+{
+  "classification": "authored-controls-promoted-to-pinned-go-semantics",
+  "cases": {
+    "package-graph-check": {
+      "reference": "pinned-go-semantics",
+      "ExitCode": 1
+    },
+    "package-graph-invalid-check": {
+      "reference": "pinned-go-semantics",
+      "ExitCode": 1
+    }
+  }
+}

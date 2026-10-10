@@ -1,0 +1,266 @@
+[
+  {
+    "Name": "compiler/alwaysStrictNoImplicitUseStrict.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/alwaysStrictNoImplicitUseStrict.ts",
+    "SourceSha256": "4d11139d66fad3a74922edc049f70dfa0f6409e06c356024b902886d65aa4a2d",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/excessPropertyErrorsSuppressed.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/excessPropertyErrorsSuppressed.ts",
+    "SourceSha256": "99ca5ece2d2b9c7d711b142e1d8290a9b15c48e8978fec57a24fbdff9d581621",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'suppressexcesspropertyerrors'."
+  },
+  {
+    "Name": "compiler/keyofDoesntContainSymbols.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/keyofDoesntContainSymbols.ts",
+    "SourceSha256": "6098c9bfc2b7607f4cefec919b921787073ed44fdee9b9a7c6f60b21d8a6218b",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'keyofstringsonly'."
+  },
+  {
+    "Name": "compiler/lateBoundConstraintTypeChecksCorrectly.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/lateBoundConstraintTypeChecksCorrectly.ts",
+    "SourceSha256": "b2d8dcea6178f277198d6c6235caa787e053fbf2692df54d299f0305ea477c7c",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'keyofstringsonly'."
+  },
+  {
+    "Name": "compiler/mappedTypeUnionConstraintInferences.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/mappedTypeUnionConstraintInferences.ts",
+    "SourceSha256": "ebf682aa35b16ed2f547fdddd77def63afa4b44e0c0d5e3b7d761e1742169360",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'keyofstringsonly'."
+  },
+  {
+    "Name": "compiler/noCrashWithVerbatimModuleSyntaxAndImportsNotUsedAsValues.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noCrashWithVerbatimModuleSyntaxAndImportsNotUsedAsValues.ts",
+    "SourceSha256": "2355a9cb1376ecbec933f9107e2d1b3929b746961742c7134198638daa678476",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'importsnotusedasvalues'."
+  },
+  {
+    "Name": "compiler/noImplicitAnyIndexingSuppressed.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitAnyIndexingSuppressed.ts",
+    "SourceSha256": "e9ab0d8d01c6a35955a479c1f38c2e8f35c421905204cd0efd1ceef9c95cafb8",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'suppressimplicitanyindexerrors'."
+  },
+  {
+    "Name": "compiler/noImplicitUseStrict_commonjs.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitUseStrict_commonjs.ts",
+    "SourceSha256": "582b5b3b6203a387f6b6df3631776cf93597955fbc502ccd610ebf585d834b8c",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/noImplicitUseStrict_es6.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitUseStrict_es6.ts",
+    "SourceSha256": "e30c2b72a2a6f0757375eeb5fc4d735cfb90cd1c1fab67623daf3ce4be9a5380",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/noImplicitUseStrict_system.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitUseStrict_system.ts",
+    "SourceSha256": "2b01e76370cd5bf79353a290b430e9621f4472807f2c7ee72aff630e2b61fed9",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/noImplicitUseStrict_umd.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noImplicitUseStrict_umd.ts",
+    "SourceSha256": "8a542b87ed55482ed51799455e860347db8b57431c149d1b7ce3796fb049670c",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/noStrictGenericChecks.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noStrictGenericChecks.ts",
+    "SourceSha256": "1e757da453ffa5ab4b57196c7ab22ed59c84ee3bbe8c0f5e326ec21f6c46003c",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'nostrictgenericchecks'."
+  },
+  {
+    "Name": "compiler/parameterInitializerBeforeDestructuringEmit.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/parameterInitializerBeforeDestructuringEmit.ts",
+    "SourceSha256": "35ad71636cfb16f0ece00dfb597b7d331309b4a436035a6fb0e98c5ef531deea",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'noimplicitusestrict'."
+  },
+  {
+    "Name": "compiler/preserveUnusedImports.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/preserveUnusedImports.ts",
+    "SourceSha256": "724557ade686bfbb7b954de6c4d138320acf1e2c4ef7fc137284df1621f72b6d",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'importsnotusedasvalues'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/importsNotUsedAsValues_error.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/importsNotUsedAsValues_error.ts",
+    "SourceSha256": "9939f9f00a3bf303f966d15fd603d2f07e2613ee7660b4a655fedba61f0136ff",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'importsnotusedasvalues'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports.ts(isolatedmodules=false)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports.ts",
+    "SourceSha256": "4841289f7228e6e66096f2a1e00d6847f6a90c7df5d717acae24ed9147ce64bb",
+    "Configuration": "isolatedmodules=false",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports.ts(isolatedmodules=true)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports.ts",
+    "SourceSha256": "4841289f7228e6e66096f2a1e00d6847f6a90c7df5d717acae24ed9147ce64bb",
+    "Configuration": "isolatedmodules=true",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_errors.ts(isolatedmodules=false)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_errors.ts",
+    "SourceSha256": "dd31c8ca2ef6fd4a121296803d17bf0d3c2479bd1c5dfb134bd1ed07fc8cd40c",
+    "Configuration": "isolatedmodules=false",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_errors.ts(isolatedmodules=true)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_errors.ts",
+    "SourceSha256": "dd31c8ca2ef6fd4a121296803d17bf0d3c2479bd1c5dfb134bd1ed07fc8cd40c",
+    "Configuration": "isolatedmodules=true",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_importsNotUsedAsValues.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_importsNotUsedAsValues.ts",
+    "SourceSha256": "3b2760cc8ea5bffb2917bdb73bc7884dfd4321d2f05e3674c837ba46530402cb",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_mixedImports.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_mixedImports.ts",
+    "SourceSha256": "8cf8b961000987cbadb0f4c4c49fc44717de2c48d7cc0f9e7350820d51c4fed3",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_module.ts(module=commonjs)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_module.ts",
+    "SourceSha256": "d422bd643d92efc764f1666b61938a1482e1b9c33ebdd3766dc1ad86440b5dd7",
+    "Configuration": "module=commonjs",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_module.ts(module=es2015)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_module.ts",
+    "SourceSha256": "d422bd643d92efc764f1666b61938a1482e1b9c33ebdd3766dc1ad86440b5dd7",
+    "Configuration": "module=es2015",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/typeOnly/preserveValueImports_module.ts(module=system)",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/typeOnly/preserveValueImports_module.ts",
+    "SourceSha256": "d422bd643d92efc764f1666b61938a1482e1b9c33ebdd3766dc1ad86440b5dd7",
+    "Configuration": "module=system",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/externalModules/verbatimModuleSyntaxCompat.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/externalModules/verbatimModuleSyntaxCompat.ts",
+    "SourceSha256": "212c6e7d4dc1c017e2ffb766efbc40372353f4b7f0a84e8b9f4766ab727db992",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'preservevalueimports'."
+  },
+  {
+    "Name": "conformance/types/nonPrimitive/nonPrimitiveIndexingWithForInSupressError.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/nonPrimitive/nonPrimitiveIndexingWithForInSupressError.ts",
+    "SourceSha256": "30a6552d0215a38c63973d2868f02333308b90fd18935b6d6047e832b8241ca4",
+    "Configuration": "",
+    "stage": "option-preparation",
+    "expectedMessage": "Unknown compiler option 'suppressimplicitanyindexerrors'."
+  },
+  {
+    "Name": "compiler/moduleNoneDynamicImport.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleNoneDynamicImport.ts",
+    "SourceSha256": "d3b030b5de5bda148dcd6470cc8c716922aa84fb5697246b1cf6af27435eb927",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/moduleNoneErrors.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/moduleNoneErrors.ts",
+    "SourceSha256": "eb32767bebdccab389e5dd3735402c9554277698abbb310404686368e0d5c6fa",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile1.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile1.ts",
+    "SourceSha256": "3d7404eef9e7adf06bb0eab9b2b1546d35af8eabe1b58f8635699b4e9d8704e1",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile2.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile2.ts",
+    "SourceSha256": "345f225117e28f99baa29f533d48640d1e9a68e61f31eae2537e121edd40d0fd",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile3.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/noErrorUsingImportExportModuleAugmentationInDeclarationFile3.ts",
+    "SourceSha256": "7d2bda3af86c8a3f05be96a56ad406728a73c97a84b0698bec36ca15a3846da8",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/requireOfJsonFileWithModuleEmitNone.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/requireOfJsonFileWithModuleEmitNone.ts",
+    "SourceSha256": "b6c25a72112bb3e0667f76378b9f64af6d31552901d17b11c66e4d3d5e66ae5b",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  },
+  {
+    "Name": "compiler/requireOfJsonFileWithModuleNodeResolutionEmitNone.ts",
+    "Source": "/home/greg/projects/typescript-dotnet/upstream/TypeScript/tsc/testdata/tests/cases/compiler/requireOfJsonFileWithModuleNodeResolutionEmitNone.ts",
+    "SourceSha256": "a3bb05041e01dde35e919ed6e48fe59104e16bd77f2ab4afec4c93c108e40c88",
+    "Configuration": "",
+    "stage": "configuration-expansion",
+    "expectedMessage": "Unknown value 'none' for option 'module'"
+  }
+]

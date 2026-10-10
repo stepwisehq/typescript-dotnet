@@ -1,13 +1,21 @@
 # Current project state
 
-**Active: autonomous whole-checker no-emit completion from `bb035b3`.** Read the
+**Accepted: whole-checker no-emit completion from `bb035b3`.** Read the
 [mandate](CHECKER-COMPLETION-PROMPT.md) and [live checkpoint](CHECKER-COMPLETION-STATUS.md).
-The P1–P6 protocol campaign is accepted with actual Linux x64 Native AOT and retained
-regressions. Continue directly with [L1–L6 remaining language checking](LANGUAGE-CONTRACT.md)
-and the whole original no-emit gate. Preserve historical evidence; do not restart accepted
-work or wait for another assignment. Emit/services and large-project comparisons remain external.
+The [L1–L6 contract](LANGUAGE-CONTRACT.md) and whole-checker gate pass actual Linux x64
+Native AOT and retained regressions. See the [assessment](CHECKER-NOEMIT-ASSESSMENT.md),
+[saved-reference commands](CHECKER-NOEMIT-REPRODUCTION.md) and
+[proof](../validation/results/checker-noemit-verified.json).
+All 15,304 complete managed/native records agree with Go; 15,340 new xUnit cases and
+40,291 selected aggregate executions pass, zero failures/skips. All five drift guards
+are clear; 287 historical files remain unchanged. The original 12,824-file inventory
+is accounted for by checking, preparation-failure and explicit environment dispositions.
+The historical internal API declaration gap is a verification limit, not suppressed.
+**Stop here as authorized.** Large-project no-emit correctness/performance comparisons
+need a separate assignment. Emit and services remain external. The sections below
+are historical checkpoints, not active instructions to restart completed work.
 
-## Accepted protocol checkpoint
+## Accepted protocol checkpoint `c5e96e1`
 
 [Assessment](PROTOCOLS-ASSESSMENT.md), [reproduction](PROTOCOLS-VERIFY.md),
 [contract](PROTOCOLS-CONTRACT.md) and [proof](../validation/results/protocols-verified.json).
@@ -17,9 +25,13 @@ bodies are complete, including the restored generator mapper assertions. Selecte
 aggregate: 24,951 passed case executions, zero failures/skips; not a unique-test count.
 Gate: 1,518.981 seconds, five drift guards clear, 271 historical files unchanged.
 
-The future whole-checker inventory records 12,824 original inputs, 15,190 configurations
-and 42 original skips; those are obligations, not completed semantic comparisons.
-Read the live checkpoint for isolated next-language work and integration ownership.
+The historical raw inventory records 12,824 original inputs and 42 original skips.
+The [decoded supplement](../validation/checker-noemit-decoded-inventory/) corrects
+configuration obligations using the original BOM-aware loader: 15,291 standard
+configurations, plus 39 supplemental configurations and seven original expansion
+failures. Those obligations are now reconciled in the accepted whole-checker proof;
+the 39 supplemental configurations comprise 13 checking records and 26 original
+preparation failures. Read the live checkpoint for current evidence.
 
 ## Accepted type-system baseline
 

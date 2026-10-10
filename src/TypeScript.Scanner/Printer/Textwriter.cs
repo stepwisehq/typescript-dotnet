@@ -36,6 +36,16 @@ internal class TextWriter
     internal virtual string String() => builder.ToString();
     // textwriter.go:84. Preserve the stored writer state for trailing comments.
     internal virtual bool IsAtStartOfLine() => lineStart;
+    // textwriter.go:65/69. Decode the last raw UTF8 rune, including the original
+    // invalid-rune rejection, rather than applying scalar .NET whitespace rules.
+    internal virtual bool HasTrailingComment() => hasTrailingCommentState;
+    internal virtual bool HasTrailingWhitespace()
+    {
+        if (builder.Length == 0) return false;
+        var status = Rune.DecodeLastFromUtf8(TypeScript.Scanner.GoString.Bytes(lastWritten), out var rune, out _);
+        return status == System.Buffers.OperationStatus.Done && rune.Value != 0xFFFD &&
+            TypeScript.Scanner.StringUtil.IsWhiteSpaceLike(rune.Value);
+    }
     private void writeText(string text)
     {
         if (text != "")
@@ -68,6 +78,7 @@ internal class TextWriter
     }
 
     internal virtual void WriteKeyword(string text) => Write(text);
+    internal virtual void WriteLiteral(string text) => Write(text);
     internal virtual void WriteOperator(string text) => Write(text);
     internal virtual void WriteStringLiteral(string text) => Write(text);
     // textwriter.go: token-category methods all forward to Write in this writer.

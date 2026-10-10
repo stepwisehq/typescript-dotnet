@@ -12,6 +12,32 @@ internal sealed class NodeBuilder
     private readonly Stack<NodeBuilderImpl.NodeBuilderContext> ctxStack = new();
     internal TypeScript.DiagnosticPrinting.EmitContext EmitContext() => impl.e;
     internal NodeBuilder(Checker checker) => impl = new(checker);
+    internal NodeBuilder(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context) => impl = new(checker, context);
+    // nodebuilder.go:228–270. Exact source flag/context entrypoints.
+    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.typeToTypeNode(type));
+    }
+
+    internal Node SymbolToEntityName(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.symbolToName(symbol, meaning, false));
+    }
+
+    internal Node SymbolToNode(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.symbolToNode(symbol, meaning));
+    }
+
+    private void enterContext(Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        ctxStack.Push(impl.ctx);
+        impl.enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+    }
+
     // TypeToTypeNode (267); selected enclosing declaration and fully-qualified flag; external trackers/verbosity excluded.
     internal Node TypeToTypeNode(Type type, Node enclosingDeclaration = null, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null)
     {
@@ -53,6 +79,8 @@ internal sealed class NodeBuilder
 
     private Node exitContext(Node result)
     {
+        if (impl.ctx.truncating && (impl.ctx.flags & TypeScript.NodeBuilding.Flags.NoTruncation) != 0)
+            impl.ctx.tracker.ReportTruncationError();
         bool error = impl.ctx.encounteredError;
         impl.ctx = ctxStack.Pop();
         return error ? null : result;
@@ -62,6 +90,8 @@ internal sealed class NodeBuilder
 public sealed partial class Checker
 {
     private NodeBuilder typeToStringNodebuilder;
+    // nodebuilder.go:279. Source shared printer context, managed arenas have no explicit release.
+    internal static NodeBuilder NewNodeBuilder(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context) => new(checker, context);
     // nodebuilder.go:289. Managed allocation replaces arena release; cache identity persists.
     private NodeBuilder getNodeBuilder() => typeToStringNodebuilder ??= new NodeBuilder(this);
 }

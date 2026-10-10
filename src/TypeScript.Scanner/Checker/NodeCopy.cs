@@ -10,14 +10,25 @@ namespace TypeScript.Checking;
 internal sealed partial class NodeBuilderImpl
 {
     private Node reuseNode(Node node) => node == null ? null : tryReuseExistingNodeHelper(node);
+    // nodecopy.go:20.
+    private Node tryJSTypeNodeToTypeNode(Node node) => reuseNode(node);
+    // nodecopy.go:280. Fake serialization scopes do not establish a unique-symbol owner.
+    private Node getEnclosingDeclarationIgnoringFakeScope()
+    {
+        var enclosing = ctx.enclosingDeclaration;
+        while (enclosing != null && getLinks(enclosing).fakeScopeForSignatureDeclaration != null)
+            enclosing = enclosing.Parent;
+        return enclosing;
+    }
+
     private Node reuseName(Node node, bool isMethod)
     {
         var res = reuseNode(node);
         if (res == null)
             return res;
-        if (res.Kind is not (Kind.Identifier or Kind.StringLiteral or Kind.NumericLiteral))
-            throw Checker.unsupported("reuseName: nonstatic name");
-        string text = res.Text();
+        var(text, hasText) = Ast.TryGetTextOfPropertyName(res);
+        if (!hasText)
+            return res;
         var kind = classifyPropertyName(text, Ast.IsStringLiteral(res), isMethod);
         if (Ast.IsIdentifier(res) && kind == propertyNameNodeKind.Identifier || Ast.IsStringLiteral(res) && kind == propertyNameNodeKind.StringLiteral)
             return res;
@@ -86,6 +97,8 @@ internal sealed partial class NodeBuilderImpl
         public void ReportInaccessibleThisError() => bound.markError(wrapped.ReportInaccessibleThisError);
         public void ReportInaccessibleUniqueSymbolError() => bound.markError(wrapped.ReportInaccessibleUniqueSymbolError);
         public void ReportInferenceFallback(Node node) => wrapped.ReportInferenceFallback(node);
+        public void ReportTruncationError() => wrapped.ReportTruncationError();
+        public void ReportLikelyUnsafeImportRequiredError(string specifier, string symbolName) => bound.markError(() => wrapped.ReportLikelyUnsafeImportRequiredError(specifier, symbolName));
     }
 
     private recoveryBoundary createRecoveryBoundary()
@@ -129,6 +142,54 @@ internal sealed partial class NodeBuilderImpl
         return transformed;
     }
 
+    // nodecopy.go:234–278. Reused import types are rewritten through real module naming.
+    private string getModuleSpecifierOverride(Node parent, Node literal)
+    {
+        if (ctx.enclosingFile != Ast.GetSourceFileOfNode(literal))
+        {
+            var import = parent.AsImportTypeNode();
+            var mode = ResolutionMode.None;
+            if (import.Attributes != null)
+                (mode, _) = import.Attributes.GetResolutionModeOverride(null);
+            var name = literal.Text();
+            var originalName = name;
+            var nodeSymbol = tryGetResolvedSymbolFromTypeNode(parent);
+            var meaning = import.IsTypeOf ? SymbolFlags.Value : SymbolFlags.Type;
+            Symbol parentSymbol = null;
+            if (nodeSymbol != null && ch.IsSymbolAccessible(nodeSymbol, ctx.enclosingDeclaration, meaning, false).Accessibility == TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible)
+                parentSymbol = lookupSymbolChain(nodeSymbol, meaning, true)[0];
+            if (parentSymbol != null && Checker.IsExternalModuleSymbol(parentSymbol))
+                name = getSpecifierForModuleSymbol(parentSymbol, mode).specifier;
+            else
+            {
+                var file = ch.getExternalModuleFileFromDeclaration(parent);
+                if (file != null)
+                    name = getSpecifierForModuleSymbol(file.Symbol, mode).specifier;
+            }
+
+            if (name.Length > 0 && name.Contains("/node_modules/", StringComparison.Ordinal))
+            {
+                ctx.encounteredError = true;
+                ctx.tracker.ReportLikelyUnsafeImportRequiredError(name, "");
+            }
+
+            if (name != originalName)
+                return name;
+        }
+
+        return "";
+    }
+
+    private Node rewriteModuleSpecifier(Node parent, Node literal)
+    {
+        var name = getModuleSpecifierOverride(parent, literal);
+        if (name.Length == 0)
+            return literal;
+        var result = f.NewStringLiteral(name, TokenFlags.None);
+        e.SetOriginal(result, literal);
+        return result;
+    }
+
     private NodeVisitor getExistingNodeTreeVisitor(recoveryBoundary bound)
     {
         NodeVisitor visitor = null;
@@ -166,7 +227,24 @@ internal sealed partial class NodeBuilderImpl
         (bool introducesError, Node newName, Symbol symbol) trackExistingEntityName(Node node)
         {
             var leftmost = Ast.GetFirstIdentifier(node);
+            // nodecopy.go:323. CommonJS exports names cannot be transplanted
+            // from a JSDoc annotation; use the genuine semantic serialization.
+            if (Ast.IsInJSFile(node) && (Ast.IsExportsIdentifier(leftmost) ||
+                Ast.IsModuleExportsAccessExpression(leftmost.Parent) ||
+                Ast.IsQualifiedName(leftmost.Parent) &&
+                Ast.IsModuleIdentifier(leftmost.Parent.AsQualifiedName().Left) &&
+                Ast.IsExportsIdentifier(leftmost.Parent.AsQualifiedName().Right)))
+                return (true, setTextRange(f.DeepCloneNode(node), node), null);
             var meaning = Checker.getMeaningOfEntityNameReference(node);
+            if (Ast.IsThisIdentifier(leftmost))
+            {
+                var thisSymbol = ch.getSymbolOfDeclaration(ch.getThisContainer(leftmost, false, false));
+                bool inaccessible = ch.IsSymbolAccessible(thisSymbol, leftmost, meaning, false).Accessibility !=
+                    TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible;
+                if (inaccessible)
+                    ctx.tracker.ReportInaccessibleThisError();
+                return (inaccessible, attachSymbolToLeftmostIdentifier(leftmost, node, thisSymbol), null);
+            }
             var symbol = ch.resolveEntityName(leftmost, meaning, true, true, null);
             if (ctx.enclosingDeclaration != null && !(symbol != null && (symbol.Flags & SymbolFlags.TypeParameter) != 0))
             {
@@ -257,6 +335,77 @@ internal sealed partial class NodeBuilderImpl
 
         Node worker(Node node)
         {
+            // nodecopy.go:467–536. Original JSDoc syntax is converted before ordinary traversal.
+            if (node.Kind == Kind.JSDocTypeExpression)
+                return visitor.VisitNode(node.AsJSDocTypeExpression().Type);
+            if (node.Kind == Kind.JSDocAllType)
+                return f.NewKeywordTypeNode(Kind.AnyKeyword);
+            if (node.Kind == Kind.JSDocNullableType)
+                return f.NewUnionTypeNode(f.NewNodeList(new List<Node> { visitor.VisitNode(node.AsJSDocNullableType().Type), f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.NullKeyword)) }));
+            if (node.Kind == Kind.JSDocOptionalType)
+                return f.NewUnionTypeNode(f.NewNodeList(new List<Node> { visitor.VisitNode(node.AsJSDocOptionalType().Type), f.NewKeywordTypeNode(Kind.UndefinedKeyword) }));
+            if (node.Kind == Kind.JSDocNonNullableType)
+                return visitor.VisitNode(node.AsJSDocNonNullableType().Type);
+            if (node.Kind == Kind.JSDocVariadicType)
+                return f.NewArrayTypeNode(visitor.VisitNode(node.AsJSDocVariadicType().Type));
+            if (node.Kind == Kind.JSDocTypeLiteral)
+            {
+                var members = new List<Node>();
+                foreach (var tag in node.AsJSDocTypeLiteral().JSDocPropertyTags ?? [])
+                {
+                    if (tag.Kind is not (Kind.JSDocPropertyTag or Kind.JSDocParameterTag))
+                        continue;
+                    var name = tag.Name();
+                    var targetName = Ast.IsIdentifier(name) ? name : name.AsQualifiedName().Right;
+                    var optional = tag.AsJSDocParameterOrPropertyTag().IsBracketed || tag.TypeExpression() != null && tag.TypeExpression().Kind == Kind.JSDocOptionalType;
+                    members.Add(f.NewPropertySignatureDeclaration(null, visitor.VisitNode(targetName), optional ? f.NewToken(Kind.QuestionToken) : null, visitor.VisitNode(tag.TypeExpression()), null));
+                }
+
+                return f.NewTypeLiteralNode(f.NewNodeList(members));
+            }
+
+            if (Ast.IsLiteralImportTypeNode(node))
+            {
+                var import = node.AsImportTypeNode();
+                if (import.Attributes != null && import.Attributes.AsImportAttributes().Token == Kind.AssertKeyword)
+                {
+                    bound.markError(null);
+                    return node;
+                }
+
+                if (getTypeFromTypeNode(node, true) == null)
+                {
+                    bound.markError(null);
+                    return node;
+                }
+
+                var originalSpecifier = import.Argument.AsLiteralTypeNode().Literal;
+                var specifier = rewriteModuleSpecifier(node, originalSpecifier);
+                if (specifier == originalSpecifier)
+                    specifier = visitor.VisitNode(specifier);
+                var argument = specifier == originalSpecifier ? import.Argument : f.NewLiteralTypeNode(specifier);
+                return f.UpdateImportTypeNode(import, import.IsTypeOf, argument, visitor.VisitNode(import.Attributes), visitor.VisitNode(import.Qualifier), visitor.VisitNodes(import.TypeArguments));
+            }
+
+            // nodecopy.go:649–661. Dynamic-name reuse keeps the exact AllowUnresolvedNames exception.
+            if (node.Name() != null && node.Name().Kind == Kind.ComputedPropertyName && !ch.hasLateBindableName(node))
+            {
+                if (!Ast.HasDynamicName(node))
+                    return visitor.VisitEachChild(node);
+                bool removeDeclaration = !((ctx.internalFlags & TypeScript.NodeBuilding.InternalFlags.AllowUnresolvedNames) != 0 && Ast.IsEntityNameExpression(node.Name().AsComputedPropertyName().Expression) && (ch.checkComputedPropertyName(node.Name()).flags & TypeFlags.Any) != 0);
+                if (removeDeclaration)
+                    return null;
+            }
+
+            if (Ast.IsComputedPropertyName(node) && Ast.IsEntityNameExpression(node.AsComputedPropertyName().Expression))
+            {
+                var(introducesError, result, _) = trackExistingEntityName(node.AsComputedPropertyName().Expression);
+                if (!introducesError)
+                    return f.UpdateComputedPropertyName(node.AsComputedPropertyName(), result);
+                bound.markError(null);
+                return visitor.VisitEachChild(node);
+            }
+
             if (Ast.IsKeywordTypeNode(node) || node.Kind is Kind.Identifier or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ReadonlyKeyword or Kind.QuestionToken or Kind.MinusToken or Kind.PlusToken or Kind.DotDotDotToken or Kind.InKeyword or Kind.OutKeyword or Kind.ConstKeyword or Kind.AbstractKeyword)
                 return visitor.VisitEachChild(node);
             if (node.Kind == Kind.PropertySignature)
@@ -274,7 +423,7 @@ internal sealed partial class NodeBuilderImpl
                 return visitor.VisitEachChild(node);
             }
 
-            if (Ast.IsFunctionLike(node) && node.Type() == null || Ast.IsParameterDeclaration(node) && node.Type() == null && node.Initializer() == null)
+            if (Ast.IsFunctionLike(node) && node.Type() == null || Ast.IsPropertyDeclaration(node) && node.Type() == null && node.Initializer() == null || Ast.IsParameterDeclaration(node) && node.Type() == null && node.Initializer() == null)
             {
                 var visited = visitor.VisitEachChild(node);
                 if (visited == node)
@@ -282,6 +431,11 @@ internal sealed partial class NodeBuilderImpl
                 var anyType = f.NewKeywordTypeNode(Kind.AnyKeyword);
                 switch (visited.Kind)
                 {
+                    case Kind.PropertyDeclaration:
+                        return f.UpdatePropertyDeclaration(visited.AsPropertyDeclaration(), visited.Modifiers(), visited.Name(), visited.PostfixToken(), anyType, null);
+                    case Kind.JSDocSignature:
+                        var jsdoc = visited.AsJSDocSignature();
+                        return f.UpdateJSDocSignature(jsdoc, jsdoc.TypeParameters, jsdoc.Parameters, anyType);
                     case Kind.Parameter:
                         var parameter = visited.AsParameterDeclaration();
                         return f.UpdateParameterDeclaration(parameter, null, parameter.DotDotDotToken, visited.Name(), parameter.QuestionToken, anyType, null);
@@ -303,8 +457,6 @@ internal sealed partial class NodeBuilderImpl
                     case Kind.FunctionType:
                         var function = visited.AsFunctionTypeNode();
                         return f.UpdateFunctionTypeNode(function, function.TypeParameters, function.Parameters, anyType);
-                    default:
-                        throw Checker.unsupported("getExistingNodeTreeVisitor: unselected missing-return signature");
                 }
             }
 
@@ -361,13 +513,26 @@ internal sealed partial class NodeBuilderImpl
                 return node;
             }
 
-            if (Ast.IsTypeOperatorNode(node) && node.AsTypeOperatorNode().Operator == Kind.KeyOfKeyword)
+            if (Ast.IsTypeOperatorNode(node))
             {
-                var key = tryVisitKeyOf(node);
-                if (key != null)
-                    return key;
-                bound.markError(null);
-                return node;
+                var typeOperator = node.AsTypeOperatorNode();
+                if (typeOperator.Operator == Kind.UniqueKeyword && typeOperator.Type.Kind == Kind.SymbolKeyword)
+                {
+                    var enclosing = getEnclosingDeclarationIgnoringFakeScope();
+                    if (Ast.FindAncestor(node, ancestor => ancestor == enclosing) == null)
+                    {
+                        bound.markError(null);
+                        return node;
+                    }
+                }
+                else if (typeOperator.Operator == Kind.KeyOfKeyword)
+                {
+                    var key = tryVisitKeyOf(node);
+                    if (key != null)
+                        return key;
+                    bound.markError(null);
+                    return node;
+                }
             }
 
             if (Ast.IsTupleTypeNode(node) || (ctx.flags & TypeScript.NodeBuilding.Flags.MultilineObjectLiterals) == 0 && Ast.IsTypeLiteralNode(node) || Ast.IsMappedTypeNode(node))
@@ -406,7 +571,7 @@ internal sealed partial class NodeBuilderImpl
 
             if (node.Kind is Kind.LiteralType or Kind.ParenthesizedType or Kind.PrefixUnaryExpression or Kind.UnionType or Kind.IntersectionType or Kind.FunctionType or Kind.CallSignature or Kind.MethodSignature or Kind.Parameter or Kind.ArrayType or Kind.TupleType or Kind.OptionalType or Kind.RestType or Kind.NamedTupleMember or Kind.ConditionalType or Kind.InferType or Kind.IndexedAccessType or Kind.TypeOperator or Kind.TypeParameter or Kind.MappedType or Kind.ConstructSignature or Kind.ConstructorType or Kind.TemplateLiteralType or Kind.TemplateLiteralTypeSpan or Kind.IndexSignature)
                 return visitor.VisitEachChild(node);
-            throw Checker.unsupported("getExistingNodeTreeVisitor: references/signatures/indexes/JS/dynamic syntax");
+            return visitor.VisitEachChild(node);
         }
 
         visitor = new NodeVisitor(node =>

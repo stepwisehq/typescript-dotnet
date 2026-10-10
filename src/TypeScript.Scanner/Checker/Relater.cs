@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of shared TypeScript relationships in tsc/internal/checker/relater.go,
 // upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// JSX-specific elaboration and enabled tracing remain external consumers.
+// Includes JSX elaboration and attribute comparisons; enabled tracing remains external.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -289,7 +289,6 @@ public sealed partial class Checker
     private static bool declarationConstantValuesEqual(object left, object right) =>
         left is JsNum.Number a && right is JsNum.Number b ? a.Value == b.Value :
         left is double x && right is double y ? x == y : Equals(left, right);
-
     // relater.go:205: primitive and enum relationships.
     private bool isSimpleTypeRelatedTo(Type source, Type target, Relation relation, ErrorReporter errorReporter = null)
     {
@@ -484,16 +483,12 @@ public sealed partial class Checker
         freeRelater = r;
     }
 
-    private static void guardJsxAttributes(Type t, string branch)
-    {
-        if ((t.objectFlags & ObjectFlags.JsxAttributes) != 0)
-            throw unsupported(branch);
-    }
-
+    // relater.go:745/2859. JSX hyphenated names are permitted and excluded from index checks.
+    private static bool isHyphenatedJsxName(string name) => name.Contains('-');
+    private static bool isIgnoredJsxProperty(Type source, Symbol property) => (source.objectFlags & ObjectFlags.JsxAttributes) != 0 && isHyphenatedJsxName(property.Name);
     // relater.go:679. Substitutions retain their base type's weak-type status.
     private bool isWeakType(Type t)
     {
-        guardJsxAttributes(t, "isWeakType: unselected type payload");
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var resolved = resolveStructuredTypeMembers(t);
@@ -512,7 +507,6 @@ public sealed partial class Checker
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
             return t.Types().All(isObjectTypeWithInferableIndex);
-        guardJsxAttributes(t, "isObjectTypeWithInferableIndex: JS/reverse-mapped");
         return t.symbol != null && (t.symbol.Flags & (SymbolFlags.ObjectLiteral | SymbolFlags.TypeLiteral | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0 && (t.symbol.Flags & SymbolFlags.Class) == 0 && !typeHasCallOrConstructSignatures(t) || (t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.ObjectRestType)) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0 && isObjectTypeWithInferableIndex(t.AsReverseMappedType().source);
     }
 
@@ -526,12 +520,9 @@ public sealed partial class Checker
 
     private bool isKnownProperty(Type targetType, string name, bool isComparingJsxAttributes)
     {
-        guardJsxAttributes(targetType, "isKnownProperty: substitution/intersection");
-        if (isComparingJsxAttributes)
-            throw unsupported("isKnownProperty: JSX attributes");
         if ((targetType.flags & TypeFlags.Object) != 0)
         {
-            if (getPropertyOfObjectType(targetType, name) != null || getApplicableIndexInfoForName(targetType, name) != null || isLateBoundName(name) && getIndexInfoOfType(targetType, stringType) != null)
+            if (getPropertyOfObjectType(targetType, name) != null || getApplicableIndexInfoForName(targetType, name) != null || isLateBoundName(name) && getIndexInfoOfType(targetType, stringType) != null || isComparingJsxAttributes && isHyphenatedJsxName(name))
                 return true;
         }
 
@@ -546,7 +537,6 @@ public sealed partial class Checker
 
     private static bool isExcessPropertyCheckTarget(Type type)
     {
-        guardJsxAttributes(type, "isExcessPropertyCheckTarget: substitution/intersection");
         return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Substitution) != 0 && isExcessPropertyCheckTarget(type.AsSubstitutionType().baseType) || (type.flags & TypeFlags.Union) != 0 && type.Types().Any(isExcessPropertyCheckTarget) || (type.flags & TypeFlags.Intersection) != 0 && type.Types().All(isExcessPropertyCheckTarget);
     }
 
@@ -596,7 +586,6 @@ public sealed partial class Checker
 
     private static RecursionId getRecursionIdentityFromTarget(Type t)
     {
-        guardJsxAttributes(t, "getRecursionIdentityFromTarget: reference/tuple/type parameter/conditional");
         if ((t.flags & TypeFlags.Object) != 0 && (t.objectFlags & (ObjectFlags.ObjectLiteral | ObjectFlags.ArrayLiteral)) == 0)
         {
             if ((t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null)
@@ -2025,8 +2014,6 @@ public sealed partial class Checker
         {
             if (originalSource == originalTarget)
                 return Ternary.True;
-            guardJsxAttributes(originalSource, "isRelatedToEx: source generic/named/intersection");
-            guardJsxAttributes(originalTarget, "isRelatedToEx: target generic/named/intersection");
             if ((originalSource.flags & TypeFlags.Object) != 0 && (originalTarget.flags & TypeFlags.Primitive) != 0)
             {
                 if (relation == c.comparableRelation && (originalTarget.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(originalTarget, originalSource, relation) || c.isSimpleTypeRelatedTo(originalSource, originalTarget, relation, reportErrors ? reportError : null))
@@ -2126,7 +2113,7 @@ public sealed partial class Checker
 
             foreach (var prop in c.getPropertiesOfType(source) ?? [])
             {
-                if (shouldCheckAsExcessProperty(prop, source.symbol))
+                if (shouldCheckAsExcessProperty(prop, source.symbol) && !isIgnoredJsxProperty(source, prop))
                 {
                     if (!c.isKnownProperty(reducedTarget, prop.Name, isComparingJsxAttributes))
                     {
@@ -2135,22 +2122,34 @@ public sealed partial class Checker
                             var errorTarget = c.filterType(reducedTarget, isExcessPropertyCheckTarget);
                             if (errorNode == null)
                                 throw new InvalidOperationException("No errorNode in hasExcessProperties");
-                            if (isComparingJsxAttributes)
-                                throw unsupported("hasExcessProperties: JSX");
-                            var objectLiteralDeclaration = source.symbol?.Declarations?.FirstOrDefault();
-                            string suggestion = "";
-                            if (prop.ValueDeclaration != null && Ast.IsObjectLiteralElement(prop.ValueDeclaration) && Ast.FindAncestor(prop.ValueDeclaration, d => d == objectLiteralDeclaration) != null && Ast.GetSourceFileOfNode(objectLiteralDeclaration) == Ast.GetSourceFileOfNode(errorNode))
+                            if (Ast.IsJsxAttributes(errorNode) || Ast.IsJsxOpeningLikeElement(errorNode) || Ast.IsJsxOpeningLikeElement(errorNode.Parent))
                             {
-                                var name = prop.ValueDeclaration.Name();
-                                errorNode = name;
-                                if (Ast.IsIdentifier(name))
-                                    suggestion = c.getSuggestionForNonexistentProperty(name.Text(), errorTarget);
+                                if (prop.ValueDeclaration != null && Ast.IsJsxAttribute(prop.ValueDeclaration) && Ast.GetSourceFileOfNode(errorNode) == Ast.GetSourceFileOfNode(prop.ValueDeclaration.Name()))
+                                    errorNode = prop.ValueDeclaration.Name();
+                                var propName = c.symbolToString(prop);
+                                var suggestionSymbol = c.getSuggestedSymbolForNonexistentJSXAttribute(propName, errorTarget);
+                                if (suggestionSymbol != null)
+                                    reportError(Diagnostics.Property_0_does_not_exist_on_type_1_Did_you_mean_2, propName, c.typeToStringByteString(errorTarget), c.symbolToString(suggestionSymbol));
+                                else
+                                    reportError(Diagnostics.Property_0_does_not_exist_on_type_1, propName, c.typeToStringByteString(errorTarget));
                             }
-
-                            if (suggestion != "")
-                                reportError(Diagnostics.Object_literal_may_only_specify_known_properties_but_0_does_not_exist_in_type_1_Did_you_mean_to_write_2, c.symbolToString(prop), c.typeToStringByteString(errorTarget), suggestion);
                             else
-                                reportError(Diagnostics.Object_literal_may_only_specify_known_properties_and_0_does_not_exist_in_type_1, c.symbolToString(prop), c.typeToStringByteString(errorTarget));
+                            {
+                                var objectLiteralDeclaration = source.symbol?.Declarations?.FirstOrDefault();
+                                string suggestion = "";
+                                if (prop.ValueDeclaration != null && Ast.IsObjectLiteralElement(prop.ValueDeclaration) && Ast.FindAncestor(prop.ValueDeclaration, d => d == objectLiteralDeclaration) != null && Ast.GetSourceFileOfNode(objectLiteralDeclaration) == Ast.GetSourceFileOfNode(errorNode))
+                                {
+                                    var name = prop.ValueDeclaration.Name();
+                                    errorNode = name;
+                                    if (Ast.IsIdentifier(name))
+                                        suggestion = c.getSuggestionForNonexistentProperty(name.Text(), errorTarget);
+                                }
+
+                                if (suggestion != "")
+                                    reportError(Diagnostics.Object_literal_may_only_specify_known_properties_but_0_does_not_exist_in_type_1_Did_you_mean_to_write_2, c.symbolToString(prop), c.typeToStringByteString(errorTarget), suggestion);
+                                else
+                                    reportError(Diagnostics.Object_literal_may_only_specify_known_properties_and_0_does_not_exist_in_type_1, c.symbolToString(prop), c.typeToStringByteString(errorTarget));
+                            }
                         }
 
                         return true;
@@ -3504,7 +3503,10 @@ public sealed partial class Checker
                     if (result != Ternary.False)
                     {
                         result &= signaturesRelatedTo(source, type, SignatureKind.Construct, false, IntersectionState.None);
-                        if (result != Ternary.False)
+                        // relater.go:4132. Tuple properties already cover their
+                        // elements after excluding discriminants; numeric index
+                        // types still include those excluded discriminants.
+                        if (result != Ternary.False && !(isTupleType(source) && isTupleType(type)))
                             result &= indexSignaturesRelatedTo(source, type, false, false, IntersectionState.None);
                     }
                 }
@@ -3670,6 +3672,8 @@ public sealed partial class Checker
             var properties = (source.flags & TypeFlags.Intersection) != 0 ? c.getPropertiesOfUnionOrIntersectionType(source) : c.getPropertiesOfObjectType(source);
             foreach (var property in properties ?? [])
             {
+                if (isIgnoredJsxProperty(source, property))
+                    continue;
                 if (!c.isApplicableIndexType(c.getLiteralTypeFromProperty(property, TypeFlags.StringOrNumberLiteralOrUnique, false), keyType))
                     continue;
                 var propertyType = c.getNonMissingTypeOfSymbol(property);
@@ -4167,8 +4171,6 @@ public sealed partial class Checker
 
         private void reportErrorResults(Type originalSource, Type originalTarget, Type source, Type target, Message headMessage)
         {
-            guardJsxAttributes(originalSource, "reportErrorResults: unsupported source");
-            guardJsxAttributes(originalTarget, "reportErrorResults: unsupported target");
             bool sourceHasBase = c.getSingleBaseForNonAugmentingSubtype(originalSource) != null;
             bool targetHasBase = c.getSingleBaseForNonAugmentingSubtype(originalTarget) != null;
             if (originalSource.alias != null || sourceHasBase)
@@ -4181,9 +4183,15 @@ public sealed partial class Checker
                 tryElaborateErrorsForPrimitivesAndObjects(source, target);
             else if (source.symbol != null && (source.flags & TypeFlags.Object) != 0 && c.globalObjectType == source)
                 reportError(Diagnostics.The_Object_type_is_assignable_to_very_few_other_types_Did_you_mean_to_use_the_any_type_instead);
-            if ((source.objectFlags & ObjectFlags.JsxAttributes) != 0)
-                throw unsupported("reportErrorResults: JSX");
-            if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
+            else if ((source.objectFlags & ObjectFlags.JsxAttributes) != 0 && (target.flags & TypeFlags.Intersection) != 0)
+            {
+                var targetTypes = target.Types();
+                var intrinsicAttributes = c.getJsxType(JsxNames.IntrinsicAttributes, errorNode);
+                var intrinsicClassAttributes = c.getJsxType(JsxNames.IntrinsicClassAttributes, errorNode);
+                if (!c.isErrorType(intrinsicAttributes) && !c.isErrorType(intrinsicClassAttributes) && (targetTypes.Contains(intrinsicAttributes) || targetTypes.Contains(intrinsicClassAttributes)))
+                    return;
+            }
+            else if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
             {
                 var message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents;
                 var property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), c.isDiscriminantWithNeverType);
@@ -4192,6 +4200,7 @@ public sealed partial class Checker
                     message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_exists_in_multiple_constituents_and_is_private_in_some;
                     property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), isConflictingPrivateProperty);
                 }
+
                 if (property != null)
                     reportError(message, c.typeToStringNoTypeReduction(originalTarget), c.symbolToString(property));
             }
@@ -4431,6 +4440,7 @@ public sealed partial class Checker
                 if (!Ast.IsConstAssertion(node))
                     break;
                 return elaborateError(node.Expression(), source, target, relation, headMessage, diagnosticOutput);
+            case Kind.JsxExpression:
             case Kind.ParenthesizedExpression:
                 return elaborateError(node.Expression(), source, target, relation, headMessage, diagnosticOutput);
             case Kind.ObjectLiteralExpression:
@@ -4443,9 +4453,8 @@ public sealed partial class Checker
                 return elaborateArrowFunction(node, source, target, relation, diagnosticOutput);
             case Kind.ArrayLiteralExpression:
                 return elaborateArrayLiteral(node, source, target, relation, diagnosticOutput);
-            case Kind.JsxExpression:
             case Kind.JsxAttributes:
-                throw unsupported("elaborateError: JSX");
+                return elaborateJsxComponents(node, source, target, relation, diagnosticOutput);
         }
 
         return false;
@@ -5375,7 +5384,6 @@ public sealed partial class Checker
             (source, inner) = applyTargetStringMappingToSource(source, inner);
         return (getStringMappingType(target.symbol, source), inner);
     }
-
 }
 
 public sealed partial class Checker

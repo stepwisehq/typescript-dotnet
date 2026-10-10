@@ -75,6 +75,20 @@ internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
         inner?.ReportNonSerializableProperty(propertyName);
     }
 
+    // symboltracker.go:82. The source callback observes NoTruncation serializer exhaustion.
+    public void ReportTruncationError()
+    {
+        onDiagnosticReported();
+        inner?.ReportTruncationError();
+    }
+
+    // symboltracker.go:74. Source unsafe import naming diagnostic callback.
+    public void ReportLikelyUnsafeImportRequiredError(string specifier, string symbolName)
+    {
+        onDiagnosticReported();
+        inner?.ReportLikelyUnsafeImportRequiredError(specifier, symbolName);
+    }
+
     private void onDiagnosticReported() => context.reportedDiagnostic = true;
     public void ReportInferenceFallback(Node node)
     {

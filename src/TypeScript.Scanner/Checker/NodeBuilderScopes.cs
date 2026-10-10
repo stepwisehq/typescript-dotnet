@@ -129,9 +129,49 @@ internal sealed partial class NodeBuilderImpl
                         }
                         else
                         {
-                            if (Core.Some(parameter.Declarations, d => Ast.IsParameterDeclaration(d) && d.Name() != null && Ast.IsBindingPattern(d.Name())))
-                                throw Checker.unsupported("enterNewScope: binding-pattern parameters");
-                            add(parameter.Name, parameter);
+                            bool BindDeclaration(Node declaration)
+                            {
+                                void BindPattern(Node pattern)
+                                {
+                                    foreach (var element in pattern.AsBindingPattern().Elements.Nodes ?? [])
+                                    {
+                                        switch (element.Kind)
+                                        {
+                                            case Kind.OmittedExpression:
+                                                return;
+                                            case Kind.BindingElement:
+                                                BindElement(element);
+                                                return;
+                                            default:
+                                                throw new InvalidOperationException("Unhandled binding element kind");
+                                        }
+                                    }
+                                }
+
+                                void BindElement(Node element)
+                                {
+                                    if (element.Name() != null && Ast.IsBindingPattern(element.Name()))
+                                    {
+                                        BindPattern(element.Name());
+                                        return;
+                                    }
+
+                                    var symbol = ch.getSymbolOfDeclaration(element);
+                                    if (symbol != null)
+                                        add(symbol.Name, symbol);
+                                }
+
+                                if (Ast.IsParameterDeclaration(declaration) && declaration.Name() != null && Ast.IsBindingPattern(declaration.Name()))
+                                {
+                                    BindPattern(declaration.Name());
+                                    return true;
+                                }
+
+                                return false;
+                            }
+
+                            if (!Core.Some(parameter.Declarations, BindDeclaration))
+                                add(parameter.Name, parameter);
                         }
                     }
                 });

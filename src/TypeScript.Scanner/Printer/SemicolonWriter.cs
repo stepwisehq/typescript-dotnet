@@ -63,4 +63,11 @@ internal sealed class trailingSemicolonDeferringWriter : TextWriter
 
     internal override string String() => inner.String();
     internal override bool IsAtStartOfLine() => inner.IsAtStartOfLine();
+    internal override bool HasTrailingComment() => inner.HasTrailingComment();
+    internal override bool HasTrailingWhitespace() => inner.HasTrailingWhitespace();
+    internal override void WriteLiteral(string text)
+    {
+        commitSemicolon();
+        inner.WriteLiteral(text);
+    }
 }

@@ -10,11 +10,13 @@ internal sealed partial class Printer
     private readonly EmitContext emitContext;
     private readonly bool removeComments;
     private readonly bool omitTrailingSemicolon;
-    internal Printer(EmitContext context, bool removeComments = true, bool omitTrailingSemicolon = false)
+    private readonly bool neverAsciiEscape;
+    internal Printer(EmitContext context, bool removeComments = true, bool omitTrailingSemicolon = false, bool neverAsciiEscape = false)
     {
         emitContext = context;
         this.removeComments = removeComments;
         this.omitTrailingSemicolon = omitTrailingSemicolon;
+        this.neverAsciiEscape = neverAsciiEscape;
     }
 
     private TextWriter writer;
@@ -28,12 +30,48 @@ internal sealed partial class Printer
         currentSourceFile = sourceFile;
         writer = omitTrailingSemicolon ? trailingSemicolonDeferringWriter.getTrailingSemicolonDeferringWriter(output) : output;
         writer.Clear();
-        if (node != null && Ast.IsEntityName(node))
-            emitEntityName(node);
-        else if (node != null && Ast.IsExpression(node))
-            emitExpression(node);
-        else
-            emitTypeNode(node);
+        // printer.go:5076. Signature elements and type members are direct
+        // printer entries, not TypeNodes subject to type precedence.
+        if (node != null)
+        {
+            switch (node.Kind)
+            {
+                case Kind.ComputedPropertyName:
+                    emitComputedPropertyName(node.AsComputedPropertyName());
+                    break;
+                case Kind.TypeParameter:
+                    emitTypeParameter(node.AsTypeParameterDeclaration());
+                    break;
+                case Kind.Parameter:
+                    emitParameter(node.AsParameterDeclaration());
+                    break;
+                case Kind.PropertySignature:
+                case Kind.MethodSignature:
+                case Kind.CallSignature:
+                case Kind.ConstructSignature:
+                case Kind.IndexSignature:
+                case Kind.GetAccessor:
+                case Kind.SetAccessor:
+                case Kind.NotEmittedTypeElement:
+                    emitTypeElement(node);
+                    break;
+                case Kind.ObjectBindingPattern:
+                case Kind.ArrayBindingPattern:
+                    emitBindingName(node);
+                    break;
+                case Kind.BindingElement:
+                    emitBindingElement(node.AsBindingElement());
+                    break;
+                default:
+                    if (Ast.IsEntityName(node))
+                        emitEntityName(node);
+                    else if (Ast.IsExpression(node))
+                        emitExpression(node);
+                    else
+                        emitTypeNode(node);
+                    break;
+            }
+        }
         writer = savedWriter;
         currentSourceFile = savedSourceFile;
     }
@@ -55,7 +93,19 @@ internal sealed partial class Printer
     private bool shouldEmitComments(Node node) => !removeComments && currentSourceFile != null && !Ast.IsSourceFile(node);
     private void writeTokenText(Kind token) => writer.WriteKeyword(TypeScript.Scanner.Scanner.TokenToString(token));
     private void emitLiteralType(Node node) => emitExpression(node.AsLiteralTypeNode().Literal);
-    private void emitExpression(Node node)
+    private void emitExpression(Node node) => emitExpression(node, OperatorPrecedence.Comma);
+
+    // printer.go:3222. Preserve expression precedence in diagnostic computed
+    // names and cloned binding signatures as well as literal type operands.
+    private void emitExpression(Node node, OperatorPrecedence precedence)
+    {
+        bool parens = Ast.GetExpressionPrecedence(Ast.SkipPartiallyEmittedExpressions(node)) < precedence;
+        if (parens) writePunctuation("(");
+        emitExpressionWorker(node);
+        if (parens) writePunctuation(")");
+    }
+
+    private void emitExpressionWorker(Node node)
     {
         switch (node.Kind)
         {
@@ -73,25 +123,47 @@ internal sealed partial class Printer
             case Kind.Identifier:
                 emitIdentifierReference(node.AsIdentifier());
                 return;
+            case Kind.PrivateIdentifier:
+                emitPrivateIdentifier(node.AsPrivateIdentifier());
+                return;
+            case Kind.ThisKeyword:
+            case Kind.SuperKeyword:
+            case Kind.ImportKeyword:
+                emitKeywordNode(node);
+                return;
             case Kind.PropertyAccessExpression:
                 var property = node.AsPropertyAccessExpression();
-                if (property.QuestionDotToken != null)
-                    throw TypeScript.Checking.Checker.unsupported("Printer.emitPropertyAccessExpression: optional chain");
-                emitExpression(property.Expression);
-                writePunctuation(".");
-                emitIdentifierReference(property.Name().AsIdentifier());
+                emitExpression(property.Expression, Ast.IsOptionalChain(node) ? OperatorPrecedence.OptionalChain : OperatorPrecedence.Member);
+                if (property.QuestionDotToken == null && mayNeedDotDotForPropertyAccess(property.Expression) &&
+                    !writer.HasTrailingComment() && !writer.HasTrailingWhitespace())
+                    writePunctuation(".");
+                writePunctuation(property.QuestionDotToken != null ? "?." : ".");
+                emitMemberName(property.Name());
                 return;
             case Kind.ElementAccessExpression:
                 var element = node.AsElementAccessExpression();
-                if (element.QuestionDotToken != null)
-                    throw TypeScript.Checking.Checker.unsupported("Printer.emitElementAccessExpression: optional chain");
-                emitExpression(element.Expression);
+                emitExpression(element.Expression, Ast.IsOptionalChain(node) ? OperatorPrecedence.OptionalChain : OperatorPrecedence.Member);
+                if (element.QuestionDotToken != null) writePunctuation("?.");
                 writePunctuation("[");
                 emitExpression(element.ArgumentExpression);
                 writePunctuation("]");
                 return;
-            case Kind.ExpressionWithTypeArguments:
+            case Kind.CallExpression:
+                emitCallExpression(node.AsCallExpression());
+                return;
+            case Kind.NewExpression:
+                emitNewExpression(node.AsNewExpression());
+                return;
+            case Kind.BinaryExpression:
+                emitBinaryExpression(node.AsBinaryExpression());
+                return;
+            case Kind.ParenthesizedExpression:
+                writePunctuation("(");
                 emitExpression(node.Expression());
+                writePunctuation(")");
+                return;
+            case Kind.ExpressionWithTypeArguments:
+                emitExpression(node.Expression(), OperatorPrecedence.Member);
                 emitTypeArguments(node, node.AsExpressionWithTypeArguments().TypeArguments);
                 return;
             case Kind.PrefixUnaryExpression:
@@ -99,11 +171,164 @@ internal sealed partial class Printer
                 if (unary.Operator is not (Kind.MinusToken or Kind.PlusToken))
                     throw TypeScript.Checking.Checker.unsupported("Printer.emitExpression: unary operator");
                 writer.Write(unary.Operator == Kind.MinusToken ? "-" : "+");
-                emitExpression(unary.Operand);
+                emitExpression(unary.Operand, OperatorPrecedence.Unary);
                 return;
             default:
                 throw TypeScript.Checking.Checker.unsupported("Printer.emitExpression: unsupported synthesized node");
         }
+    }
+
+    // printer.go:2777. Homogeneous literal addition is associative for printing.
+    private Kind getLiteralKindOfBinaryPlusOperand(Node node)
+    {
+        node = Ast.SkipPartiallyEmittedExpressions(node);
+        if (Ast.IsLiteralKind(node.Kind))
+            return node.Kind;
+        if (node.Kind == Kind.BinaryExpression)
+        {
+            var binary = node.AsBinaryExpression();
+            if (binary.OperatorToken.Kind == Kind.PlusToken)
+            {
+                var leftKind = getLiteralKindOfBinaryPlusOperand(binary.Left);
+                return Ast.IsLiteralKind(leftKind) && leftKind == getLiteralKindOfBinaryPlusOperand(binary.Right)
+                    ? leftKind : Kind.Unknown;
+            }
+        }
+        return Kind.Unknown;
+    }
+
+    // printer.go:2804. Source associativity determines each operand's parentheses.
+    private (OperatorPrecedence left, OperatorPrecedence right) getBinaryExpressionPrecedence(BinaryExpression node)
+    {
+        var precedence = Ast.GetExpressionPrecedence(node.AsNode());
+        var left = precedence;
+        var right = precedence;
+        switch (precedence)
+        {
+            case OperatorPrecedence.Comma:
+            case OperatorPrecedence.BitwiseOR:
+            case OperatorPrecedence.BitwiseXOR:
+            case OperatorPrecedence.BitwiseAND:
+                break;
+            case OperatorPrecedence.Assignment:
+                left = OperatorPrecedence.Conditional;
+                right = OperatorPrecedence.Yield;
+                break;
+            case OperatorPrecedence.LogicalOR:
+                right = OperatorPrecedence.LogicalAND;
+                break;
+            case OperatorPrecedence.LogicalAND:
+                right = OperatorPrecedence.BitwiseOR;
+                break;
+            case OperatorPrecedence.Equality:
+                right = OperatorPrecedence.Relational;
+                break;
+            case OperatorPrecedence.Relational:
+                right = OperatorPrecedence.Shift;
+                break;
+            case OperatorPrecedence.Shift:
+                right = OperatorPrecedence.Additive;
+                break;
+            case OperatorPrecedence.Additive:
+                if (node.OperatorToken.Kind == Kind.PlusToken && isBinaryOperation(node.Right, Kind.PlusToken))
+                {
+                    var leftKind = getLiteralKindOfBinaryPlusOperand(node.Left);
+                    if (Ast.IsLiteralKind(leftKind) && leftKind == getLiteralKindOfBinaryPlusOperand(node.Right))
+                        break;
+                }
+                right = OperatorPrecedence.Multiplicative;
+                break;
+            case OperatorPrecedence.Multiplicative:
+                if (node.OperatorToken.Kind == Kind.AsteriskToken && isBinaryOperation(node.Right, Kind.AsteriskToken))
+                    break;
+                right = OperatorPrecedence.Exponentiation;
+                break;
+            case OperatorPrecedence.Exponentiation:
+                left = OperatorPrecedence.Update;
+                break;
+            default:
+                throw new InvalidOperationException("Unhandled binary expression precedence: " + precedence);
+        }
+        return (left, right);
+    }
+
+    // printer.go:2872. Diagnostic display is single-line; emit/source-map hooks
+    // are external, while source operand precedence and token spacing are retained.
+    private void emitBinaryExpression(BinaryExpression node)
+    {
+        var (left, right) = getBinaryExpressionPrecedence(node);
+        var emittedLeft = Ast.SkipPartiallyEmittedExpressions(node.Left);
+        if (Ast.NodeIsSynthesized(emittedLeft) && emittedLeft.Kind == Kind.BinaryExpression &&
+            mixingBinaryOperatorsRequiresParentheses(node.OperatorToken.Kind, emittedLeft.AsBinaryExpression().OperatorToken.Kind))
+            left = OperatorPrecedence.Highest;
+        var emittedRight = Ast.SkipPartiallyEmittedExpressions(node.Right);
+        if (Ast.NodeIsSynthesized(emittedRight) && emittedRight.Kind == Kind.BinaryExpression &&
+            mixingBinaryOperatorsRequiresParentheses(node.OperatorToken.Kind, emittedRight.AsBinaryExpression().OperatorToken.Kind))
+            right = OperatorPrecedence.Highest;
+        emitExpression(node.Left, left);
+        if (node.OperatorToken.Kind != Kind.CommaToken)
+            writeSpace();
+        writer.WriteOperator(TypeScript.Scanner.Scanner.TokenToString(node.OperatorToken.Kind));
+        writeSpace();
+        emitExpression(node.Right, right);
+    }
+
+    // printer.go:2504. Numeric member access requires the additional dot only
+    // when the actual literal text has neither a dot nor an exponent/specifier.
+    private bool mayNeedDotDotForPropertyAccess(Node expression)
+    {
+        expression = Ast.SkipPartiallyEmittedExpressions(expression);
+        if (!Ast.IsNumericLiteral(expression)) return false;
+        string text = getLiteralText(expression);
+        return (expression.AsNumericLiteral().TokenFlags & TokenFlags.WithSpecifier) == 0 &&
+            !text.Contains('.') && !text.Contains('E') && !text.Contains('e');
+    }
+
+    // printer.go:2567; utilities.go:621.
+    private void emitCallee(Node callee, Node parentNode)
+    {
+        if ((emitContext.EmitFlags(parentNode) & EmitFlags.IndirectCall) != 0)
+        {
+            writePunctuation("(");
+            writer.WriteLiteral("0");
+            writePunctuation(",");
+            writeSpace();
+            emitExpression(callee);
+            writePunctuation(")");
+        }
+        else if (parentNode.Kind == Kind.CallExpression &&
+            Ast.SkipPartiallyEmittedExpressions(callee) is { Kind: Kind.NewExpression } expression && expression.ArgumentList() == null)
+            emitExpression(callee, OperatorPrecedence.Parentheses);
+        else
+            emitExpression(callee, Ast.IsOptionalChain(parentNode) ? OperatorPrecedence.OptionalChain : OperatorPrecedence.Member);
+    }
+
+    // printer.go:2583/6284. The existing single-line list emitter supplies the
+    // comma/space policy; these explicit parentheses represent LFParenthesis.
+    private void emitCallExpression(CallExpression node)
+    {
+        emitCallee(node.Expression, node.AsNode());
+        if (node.QuestionDotToken != null) writePunctuation("?.");
+        emitTypeArguments(node.AsNode(), node.TypeArguments);
+        emitArgumentList(node.AsNode(), node.Arguments);
+    }
+
+    // printer.go:2592/6285. New-expression parentheses are optional only for nil.
+    private void emitNewExpression(NewExpression node)
+    {
+        writer.WriteKeyword("new");
+        writeSpace();
+        emitExpression(node.Expression, Ast.SkipPartiallyEmittedExpressions(node.Expression).Kind == Kind.CallExpression ?
+            OperatorPrecedence.Parentheses : OperatorPrecedence.Member);
+        emitTypeArguments(node.AsNode(), node.TypeArguments);
+        if (node.Arguments != null) emitArgumentList(node.AsNode(), node.Arguments);
+    }
+
+    private void emitArgumentList(Node parent, NodeList arguments)
+    {
+        writePunctuation("(");
+        emitList(argument => emitExpression(argument, OperatorPrecedence.Spread), parent, arguments, ListFormat.Parameters);
+        writePunctuation(")");
     }
 
     private void emitLiteral(Node node) => writer.WriteStringLiteral(getLiteralText(node));
@@ -114,7 +339,7 @@ internal sealed partial class Printer
     private string getTextOfNode(Node node, bool includeTrivia)
     {
         bool canUseSourceFile = currentSourceFile != null && node.Parent != null && !Ast.NodeIsSynthesized(node);
-        if (node.Kind == Kind.Identifier)
+        if (node.Kind is Kind.Identifier or Kind.PrivateIdentifier)
         {
             if (!canUseSourceFile || Ast.GetSourceFileOfNode(node) != currentSourceFile)
                 return node.Text();
@@ -306,7 +531,11 @@ internal sealed partial class Printer
         writePunctuation("(");
         emitTypeNodeOutsideExtends(node.Argument);
         if (node.Attributes != null)
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitImportTypeNode: attributes");
+        {
+            writePunctuation(",");
+            writeSpace();
+            emitImportTypeNodeAttributes(node.Attributes.AsImportAttributes());
+        }
         writePunctuation(")");
         if (node.Qualifier != null)
         {
@@ -315,6 +544,32 @@ internal sealed partial class Printer
         }
 
         emitTypeArguments(node.AsNode(), node.TypeArguments);
+    }
+
+    // printer.go:2234/4057. Preserve actual generated resolution-mode and
+    // package attributes in diagnostic import types.
+    private void emitImportTypeNodeAttributes(ImportAttributes node)
+    {
+        writePunctuation("{");
+        writeSpace();
+        writeTokenText(node.Token == Kind.AssertKeyword ? Kind.AssertKeyword : Kind.WithKeyword);
+        writePunctuation(":");
+        writeSpace();
+        writePunctuation("{");
+        emitList(n => emitImportAttribute(n.AsImportAttribute()), node.AsNode(), node.Attributes,
+            ListFormat.CommaDelimited | ListFormat.SpaceBetweenSiblings |
+            ListFormat.SpaceBetweenBraces | ListFormat.NoSpaceIfEmpty);
+        writePunctuation("}");
+        writeSpace();
+        writePunctuation("}");
+    }
+
+    private void emitImportAttribute(ImportAttribute node)
+    {
+        emitPropertyName(node.Name());
+        writePunctuation(":");
+        writeSpace();
+        emitExpression(node.Value);
     }
 
     // printer.go:1970. Internal globalThis formatting uses no type arguments.
@@ -359,24 +614,52 @@ internal sealed partial class Printer
         }
     }
 
+    // printer.go:1260. Preserve every source property-name kind in type display.
     private void emitPropertyName(Node node)
     {
-        if (node.Kind == Kind.Identifier)
-            emitIdentifierReference(node.AsIdentifier());
-        else if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral)
-            emitLiteral(node);
-        else if (node.Kind == Kind.ComputedPropertyName)
-            emitComputedPropertyName(node.AsComputedPropertyName());
-        else
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitPropertyName: private name");
+        if (node == null)
+            return;
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+                emitIdentifierReference(node.AsIdentifier());
+                break;
+            case Kind.PrivateIdentifier:
+                emitPrivateIdentifier(node.AsPrivateIdentifier());
+                break;
+            case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.NumericLiteral:
+            case Kind.BigIntLiteral:
+                emitLiteral(node);
+                break;
+            case Kind.ComputedPropertyName:
+                emitComputedPropertyName(node.AsComputedPropertyName());
+                break;
+            default:
+                throw new InvalidOperationException("Unexpected PropertyName: " + node.Kind);
+        }
     }
 
     // printer.go:1218. Required internal mapped literal/unique-symbol names.
     private void emitComputedPropertyName(ComputedPropertyName node)
     {
         writePunctuation("[");
-        emitExpression(node.Expression);
+        emitExpression(node.Expression, OperatorPrecedence.DisallowComma);
         writePunctuation("]");
+    }
+
+    // printer.go:1204/1288. Private members are member names, not identifiers.
+    private void emitPrivateIdentifier(PrivateIdentifier node) => writer.Write(getTextOfNode(node.AsNode(), false));
+    private void emitMemberName(Node node)
+    {
+        if (node == null) return;
+        switch (node.Kind)
+        {
+            case Kind.Identifier: emitIdentifierText(node.AsIdentifier()); break;
+            case Kind.PrivateIdentifier: emitPrivateIdentifier(node.AsPrivateIdentifier()); break;
+            default: throw new InvalidOperationException("Unexpected MemberName: " + node.Kind);
+        }
     }
 
     private void emitTokenNode(Node node)
@@ -415,6 +698,10 @@ internal sealed partial class Printer
             emitConstructSignature(node.AsConstructSignatureDeclaration());
         else if (node.Kind == Kind.IndexSignature)
             emitIndexSignature(node.AsIndexSignatureDeclaration());
+        else if (node.Kind == Kind.GetAccessor)
+            emitAccessorDeclaration(Kind.GetKeyword, node);
+        else if (node.Kind == Kind.SetAccessor)
+            emitAccessorDeclaration(Kind.SetKeyword, node);
         else if (node.Kind == Kind.NotEmittedTypeElement)
             emitNotEmittedTypeElement(node);
         else
@@ -440,8 +727,7 @@ internal sealed partial class Printer
             }
     }
 
-    // printer.go:2053/2057. Selected constituents have scalar/primary precedence;
-    // named references and nested composite types retain actual type precedence.
+    // printer.go:1226. Type queries can also contain member-access expressions.
     private void emitEntityName(Node node)
     {
         if (node.Kind == Kind.Identifier)
@@ -450,10 +736,12 @@ internal sealed partial class Printer
         {
             emitEntityName(node.AsQualifiedName().Left);
             writePunctuation(".");
-            emitIdentifierReference(node.AsQualifiedName().Right.AsIdentifier());
+            emitMemberName(node.AsQualifiedName().Right);
         }
+        else if (node.Kind == Kind.PropertyAccessExpression)
+            emitExpression(node, OperatorPrecedence.DisallowComma);
         else
-            throw TypeScript.Checking.Checker.unsupported("Printer.emitEntityName: entity name");
+            throw new InvalidOperationException("Unexpected EntityName: " + node.Kind);
     }
 
     // printer.go:1782. Diagnostic synthetic index parameter has no modifiers,
@@ -673,6 +961,20 @@ internal sealed partial class Printer
         writeTrailingSemicolon();
     }
 
+    // printer.go:1730. Diagnostic accessor nodes have no function body;
+    // source body emission remains outside this no-emit printer consumer.
+    private void emitAccessorDeclaration(Kind token, Node node)
+    {
+        emitModifierList(node.Modifiers());
+        writeTokenText(token);
+        writeSpace();
+        emitPropertyName(node.Name());
+        emitSignature(node);
+        if (node.Body() != null)
+            throw TypeScript.Checking.Checker.unsupported("Printer.emitAccessorDeclaration: source function body emit");
+        writeTrailingSemicolon();
+    }
+
     private void emitCallSignature(CallSignatureDeclaration node)
     {
         emitSignature(node.AsNode());
@@ -776,7 +1078,8 @@ internal sealed partial class Printer
 
     private void emitTypeParameters(Node parent, NodeList nodes)
     {
-        if (nodes == null)
+        // printer.go:1517/4755. LFTypeParameters includes LFOptionalIfEmpty.
+        if (nodes == null || (nodes.Nodes?.Count ?? 0) == 0)
             return;
         writePunctuation("<");
         emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);
@@ -788,7 +1091,8 @@ internal sealed partial class Printer
 
     private void emitTypeArguments(Node parent, NodeList nodes)
     {
-        if (nodes == null)
+        // printer.go:1908/4755. LFTypeArguments includes LFOptionalIfEmpty.
+        if (nodes == null || (nodes.Nodes?.Count ?? 0) == 0)
             return;
         writePunctuation("<");
         emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);

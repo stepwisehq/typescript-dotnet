@@ -1,0 +1,33 @@
+{
+  "classification": "authentic-locked-public-api-harness-integration-with-explicit-unavailable-internal-artifacts",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "packageProvenance": "validation/checker-noemit-environment/typescript-6.0.3/provenance.json",
+  "packageProvenanceSha256": "40bbcab7c57fe82f9e7767dc806b3e6f760cfe652c9ea80a2c5fc19277c76994",
+  "sourceFiles": [
+    {
+      "path": "validation/Program.Checks/CompilerApiEnvironment.cs",
+      "sha256": "68d78434ec1ca9510ebded6579d88c69dbf123aaa6180baa0b26bac8ce09f8f2"
+    },
+    {
+      "path": "tools/checker-noemit-oracle/api_environment.go",
+      "sha256": "2c6fb2dbe522530f290a70738b552d2ce3aa9e65547ee8658e563d76003c3656"
+    }
+  ],
+  "activation": "Only existing fixture content naming the actual public /.ts declaration roles; no compiler option or root changes.",
+  "virtualRoles": {
+    "/.ts/typescript.d.ts": "lib/typescript.d.ts",
+    "/.ts/tsserverlibrary.d.ts": "lib/tsserverlibrary.d.ts"
+  },
+  "byteChecks": "All five persisted members equal their actual archived locked package members; archive SHA256 and lock SHA512 integrity verified.",
+  "unavailableOriginalRoles": [
+    "/.ts/typescript.internal.d.ts",
+    "/.ts/tsserverlibrary.internal.d.ts"
+  ],
+  "unavailableFixture": {
+    "path": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/APILibCheck.ts",
+    "sha256": "cbe1c026710dd6c10eb8ed7085dafa4311105e5565886f886a8cc54715c4893a",
+    "disposition": "Whole original built internal API environment unavailable; preserve complete fixture and genuine missing-import diagnostics. No fabricated internal declarations or successful historical assertion claim."
+  },
+  "checkingExecution": "pending verifier original and managed harness execution",
+  "includeBuiltFile": "Original harness includeBuiltFile root addition is commented out; no extra root injected by this adapter."
+}

@@ -8,7 +8,6 @@ namespace TypeScript.Checking;
 public sealed partial class Checker
 {
     private TypeScript.Scanner.Scanner regExpScanner;
-
     // grammarchecks.go:69. Reuse the source scanner and retain byte-span diagnostics.
     private bool checkGrammarRegularExpressionLiteral(RegularExpressionLiteral node)
     {
@@ -499,6 +498,13 @@ public sealed partial class Checker
 
                         case Kind.ExportKeyword:
                         {
+                            // grammarchecks.go:403. Top-level CommonJS value exports
+                            // retain the original verbatimModuleSyntax diagnostic.
+                            if (compilerOptions.VerbatimModuleSyntax == Tristate.True && (node.Flags & NodeFlags.Ambient) == 0 &&
+                                node.Kind is not (Kind.TypeAliasDeclaration or Kind.InterfaceDeclaration or Kind.ModuleDeclaration) &&
+                                node.Parent.Kind == Kind.SourceFile &&
+                                (program?.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) ?? moduleKind) == ModuleKind.CommonJS)
+                                return grammarErrorOnNode(modifier, Diagnostics.A_top_level_export_modifier_cannot_be_used_on_value_declarations_in_a_CommonJS_module_when_verbatimModuleSyntax_is_enabled);
                             if (((flags & ModifierFlags.Export) != 0))
                             {
                                 return this.grammarErrorOnNode(modifier, Diagnostics.X_0_modifier_already_seen, "export");
@@ -1161,7 +1167,15 @@ public sealed partial class Checker
         return false;
     }
 
-    private static bool containerAllowsBlockScopedVariable(Node parent) => parent.Kind is not (Kind.IfStatement or Kind.DoStatement or Kind.WhileStatement or Kind.WithStatement or Kind.ForStatement or Kind.ForInStatement or Kind.ForOfStatement or Kind.LabeledStatement);
+    // grammarchecks.go:1796. Labels inherit their containing statement's
+    // block-scoped declaration policy instead of always rejecting declarations.
+    private static bool containerAllowsBlockScopedVariable(Node parent) => parent.Kind switch
+    {
+        Kind.IfStatement or Kind.DoStatement or Kind.WhileStatement or Kind.WithStatement or
+            Kind.ForStatement or Kind.ForInStatement or Kind.ForOfStatement => false,
+        Kind.LabeledStatement => containerAllowsBlockScopedVariable(parent.Parent),
+        _ => true
+    };
     private void checkGrammarNumericLiteral(Node node)
     {
         var nodeText = TypeScript.Scanner.Scanner.GetTextOfNodeByteString(node);
@@ -1528,14 +1542,22 @@ public sealed partial class Checker
         return checkGrammarTypeArguments(node, node.TypeArgumentList());
     }
 
-    private bool checkGrammarTypeArguments(Node node, NodeList arguments)
+    // grammarchecks.go:845. Highlight the actual empty <...> delimiters.
+    private bool checkGrammarForAtLeastOneTypeArgument(Node node, NodeList arguments)
     {
-        if (checkGrammarForDisallowedTrailingComma(arguments, Diagnostics.Trailing_comma_not_allowed))
-            return true;
         if (arguments != null && (arguments.Nodes?.Count ?? 0) == 0)
-            return grammarErrorOnNode(node, Diagnostics.Type_argument_list_cannot_be_empty);
+        {
+            var sourceFile = Ast.GetSourceFileOfNode(node);
+            int start = arguments.Pos() - 1;
+            int end = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), arguments.End()) + 1;
+            return grammarErrorAtPos(sourceFile.AsNode(), start, end - start, Diagnostics.Type_argument_list_cannot_be_empty);
+        }
         return false;
     }
+
+    private bool checkGrammarTypeArguments(Node node, NodeList arguments) =>
+        checkGrammarForDisallowedTrailingComma(arguments, Diagnostics.Trailing_comma_not_allowed) ||
+        checkGrammarForAtLeastOneTypeArgument(node, arguments);
 }
 
 public sealed partial class Checker
@@ -2411,7 +2433,7 @@ public sealed partial class Checker
         return false;
     }
 
-    // grammarchecks.go:1351 selected type operators. Written unique symbol is outside profile.
+    // grammarchecks.go:1351. Unique-symbol placement and declaration modifier checks.
     private bool checkGrammarTypeOperatorNode(TypeOperatorNode node)
     {
         if ((node.Operator == Kind.UniqueKeyword))
@@ -2507,64 +2529,10 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool checkGrammarImportClause(ImportClause node)
-    {
-        switch (node.PhaseModifier)
-        {
-            case Kind.TypeKeyword:
-            {
-                if (((((node.Flags & NodeFlags.JSDoc) == 0) && (node.Name() != null)) && (node.NamedBindings != null)))
-                {
-                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.A_type_only_import_can_specify_a_default_import_or_named_bindings_but_not_both);
-                }
-
-                if (((node.NamedBindings != null) && (node.NamedBindings.Kind == Kind.NamedImports)))
-                {
-                    return this.checkGrammarTypeOnlyNamedImportsOrExports(node.NamedBindings);
-                }
-
-                break;
-            }
-
-            case Kind.DeferKeyword:
-            case Kind.SourceKeyword:
-                throw unsupported("checkGrammarImportClause: defer/source-phase import");
-        }
-
-        return false;
-    }
 }
 
 public sealed partial class Checker
 {
-    private bool checkGrammarTypeOnlyNamedImportsOrExports(Node namedBindings)
-    {
-        var nodeList = namedBindings.ElementList();
-        {
-            foreach (var specifier in GoRuntime.RangeValues(nodeList.Nodes))
-            {
-                bool specifierIsTypeOnly = default;
-                Message message = default;
-                if ((specifier.Kind == Kind.ImportSpecifier))
-                {
-                    specifierIsTypeOnly = specifier.IsTypeOnly();
-                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_import_when_import_type_is_used_on_its_import_statement;
-                }
-                else
-                {
-                    specifierIsTypeOnly = specifier.IsTypeOnly();
-                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_export_when_export_type_is_used_on_its_export_statement;
-                }
-
-                if (specifierIsTypeOnly)
-                {
-                    return this.grammarErrorOnFirstToken(specifier, message);
-                }
-            }
-        }
-
-        return false;
-    }
 }
 
 public sealed partial class Checker
@@ -2860,4 +2828,321 @@ public sealed partial class Checker
         }
         return false;
     }
+
+    // grammarchecks.go:1138–1179. JSX name, attribute and expression grammar.
+    private bool checkGrammarJsxElement(Node node)
+    {
+        checkGrammarJsxName(node.TagName());
+        checkGrammarTypeArguments(node, node.TypeArgumentList());
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var attrNode in node.Attributes().Properties() ?? [])
+        {
+            if (attrNode.Kind == Kind.JsxSpreadAttribute)
+                continue;
+            var attr = attrNode.AsJsxAttribute();
+            var name = attr.Name();
+            var initializer = attr.Initializer;
+            if (!seen.Add(name.Text()))
+                return grammarErrorOnNode(name, Diagnostics.JSX_elements_cannot_have_multiple_attributes_with_the_same_name);
+            if (initializer != null && initializer.Kind == Kind.JsxExpression && initializer.Expression() == null)
+                return grammarErrorOnNode(initializer, Diagnostics.JSX_attributes_must_only_be_assigned_a_non_empty_expression);
+        }
+
+        return false;
+    }
+
+    private bool checkGrammarJsxName(Node node)
+    {
+        if (Ast.IsPropertyAccessExpression(node) && Ast.IsJsxNamespacedName(node.Expression()))
+            return grammarErrorOnNode(node.Expression(), Diagnostics.JSX_property_access_expressions_cannot_include_JSX_namespace_names);
+        if (Ast.IsJsxNamespacedName(node) && compilerOptions.GetJSXTransformEnabled() && !TypeScript.Scanner.Scanner.IsIntrinsicJsxName(node.AsJsxNamespacedName().Namespace.Text()))
+            return grammarErrorOnNode(node, Diagnostics.React_components_cannot_include_JSX_namespace_names);
+        return false;
+    }
+
+    private bool checkGrammarJsxExpression(JsxExpression node)
+    {
+        if (node.Expression != null && Ast.IsCommaSequence(node.Expression))
+            return grammarErrorOnNode(node.Expression, Diagnostics.JSX_expressions_may_not_use_the_comma_operator_Did_you_mean_to_write_an_array);
+        return false;
+    }
+
+    // Upstream tsc/internal/checker/grammarchecks.go:127:1.
+    private bool checkGrammarDecorator(Decorator decorator)
+    {
+        var sourceFile = Ast.GetSourceFileOfNode(decorator.AsNode());
+        if (!this.hasParseDiagnostics(sourceFile))
+        {
+            var node = decorator.Expression;
+            if (Ast.IsParenthesizedExpression(node))
+            {
+                return false;
+            }
+
+            var canHaveCallExpression = true;
+            Node errorNode = default;
+            while (true)
+            {
+                if ((Ast.IsExpressionWithTypeArguments(node) || Ast.IsNonNullExpression(node)))
+                {
+                    node = node.Expression();
+                    continue;
+                }
+
+                if (Ast.IsCallExpression(node))
+                {
+                    var callExpr = node.AsCallExpression();
+                    if (!canHaveCallExpression)
+                    {
+                        errorNode = node;
+                    }
+
+                    if ((callExpr.QuestionDotToken != null))
+                    {
+                        errorNode = callExpr.QuestionDotToken;
+                    }
+
+                    node = callExpr.Expression;
+                    canHaveCallExpression = false;
+                    continue;
+                }
+
+                if (Ast.IsPropertyAccessExpression(node))
+                {
+                    var propertyAccessExpr = node.AsPropertyAccessExpression();
+                    if ((propertyAccessExpr.QuestionDotToken != null))
+                    {
+                        errorNode = propertyAccessExpr.QuestionDotToken;
+                    }
+
+                    node = propertyAccessExpr.Expression;
+                    canHaveCallExpression = false;
+                    continue;
+                }
+
+                if (!Ast.IsIdentifier(node))
+                {
+                    errorNode = node;
+                }
+
+                break;
+            }
+
+            if ((errorNode != null))
+            {
+                var err = this.error(decorator.Expression, Diagnostics.Expression_must_be_enclosed_in_parentheses_to_be_used_as_a_decorator);
+                err.AddRelatedInfo(createDiagnosticForNode(errorNode, Diagnostics.Invalid_syntax_in_decorator));
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream tsc/internal/checker/grammarchecks.go:2100:1.
+    private bool checkGrammarImportClause(ImportClause node)
+    {
+        switch (node.PhaseModifier)
+        {
+            case Kind.TypeKeyword:
+            {
+                if (((((node.Flags & NodeFlags.JSDoc) == 0) && (node.Name() != null)) && (node.NamedBindings != null)))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.A_type_only_import_can_specify_a_default_import_or_named_bindings_but_not_both);
+                }
+
+                if (((node.NamedBindings != null) && (node.NamedBindings.Kind == Kind.NamedImports)))
+                {
+                    return this.checkGrammarTypeOnlyNamedImportsOrExports(node.NamedBindings);
+                }
+
+                break;
+            }
+
+            case Kind.DeferKeyword:
+            {
+                if ((node.Name() != null))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Default_imports_are_not_allowed_in_a_deferred_import);
+                }
+
+                if ((node.NamedBindings == null))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.A_deferred_import_must_specify_a_namespace_binding);
+                }
+
+                if ((node.NamedBindings.Kind == Kind.NamedImports))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Named_imports_are_not_allowed_in_a_deferred_import);
+                }
+
+                if (this.moduleKind.SupportsDeferredImports())
+                {
+                    break;
+                }
+
+                return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Deferred_imports_are_only_supported_when_the_module_flag_is_set_to_esnext_or_preserve);
+            }
+
+            case Kind.SourceKeyword:
+            {
+                if ((node.NamedBindings != null))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Named_and_namespace_imports_are_not_allowed_in_a_source_phase_import);
+                }
+
+                if ((node.Name() == null))
+                {
+                    return this.grammarErrorOnNode(node.AsNode(), Diagnostics.A_source_phase_import_must_specify_a_local_binding);
+                }
+
+                if (this.moduleKind.SupportsSourcePhaseImports())
+                {
+                    var moduleSpecifier = getModuleSpecifierFromNode(node.Parent);
+                    if ((this.getEmitSyntaxForModuleSpecifierExpression(moduleSpecifier) == ResolutionMode.CommonJS))
+                    {
+                        return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Source_phase_imports_are_not_allowed_on_statements_that_compile_to_CommonJS_require_calls);
+                    }
+
+                    break;
+                }
+
+                return this.grammarErrorOnNode(node.AsNode(), Diagnostics.Source_phase_imports_are_only_supported_when_the_module_option_is_set_to_esnext_nodenext_or_preserve);
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream tsc/internal/checker/grammarchecks.go:2142:1.
+    private bool checkGrammarImportAttributeValues(ImportAttributes node)
+    {
+        var hasError = false;
+        {
+            foreach (var attribute in GoRuntime.RangeValues(node.Attributes.Nodes))
+            {
+                var value = attribute.AsImportAttribute().Value;
+                if (Ast.IsStringLiteral(value))
+                {
+                    continue;
+                }
+
+                hasError = true;
+                this.error(value, Diagnostics.Import_attribute_values_must_be_string_literal_expressions);
+            }
+        }
+
+        return hasError;
+    }
+
+    // Upstream tsc/internal/checker/grammarchecks.go:2155:1.
+    private bool checkGrammarTypeOnlyNamedImportsOrExports(Node namedBindings)
+    {
+        var nodeList = namedBindings.ElementList();
+        {
+            foreach (var specifier in GoRuntime.RangeValues(nodeList.Nodes))
+            {
+                bool specifierIsTypeOnly = default;
+                Message message = default;
+                if ((specifier.Kind == Kind.ImportSpecifier))
+                {
+                    specifierIsTypeOnly = specifier.IsTypeOnly();
+                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_import_when_import_type_is_used_on_its_import_statement;
+                }
+                else
+                {
+                    specifierIsTypeOnly = specifier.IsTypeOnly();
+                    message = Diagnostics.The_type_modifier_cannot_be_used_on_a_named_export_when_export_type_is_used_on_its_export_statement;
+                }
+
+                if (specifierIsTypeOnly)
+                {
+                    return this.grammarErrorOnFirstToken(specifier, message);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Upstream tsc/internal/checker/grammarchecks.go:2176:1.
+    private bool checkGrammarImportCallExpression(Node node)
+    {
+        if (((this.compilerOptions.VerbatimModuleSyntax == Tristate.True) && (this.moduleKind == ModuleKind.CommonJS)))
+        {
+            return this.grammarErrorOnNode(node, getVerbatimModuleSyntaxErrorMessage(node));
+        }
+
+        switch (true)
+        {
+            case true when Ast.IsImportSourceMetaProperty(node.Expression()):
+            {
+                if (this.moduleKind.SupportsSourcePhaseImports())
+                {
+                    break;
+                }
+
+                return this.grammarErrorOnNode(node, Diagnostics.Source_phase_imports_are_only_supported_when_the_module_option_is_set_to_esnext_nodenext_or_preserve);
+            }
+
+            case true when Ast.IsImportDeferMetaProperty(node.Expression()):
+            {
+                if (this.moduleKind.SupportsDeferredImports())
+                {
+                    break;
+                }
+
+                return this.grammarErrorOnNode(node, Diagnostics.Deferred_imports_are_only_supported_when_the_module_flag_is_set_to_esnext_or_preserve);
+            }
+
+            case true when (this.moduleKind == ModuleKind.ES2015):
+            {
+                return this.grammarErrorOnNode(node, Diagnostics.Dynamic_imports_are_only_supported_when_the_module_flag_is_set_to_es2020_es2022_esnext_commonjs_amd_system_umd_node16_node18_node20_or_nodenext);
+            }
+        }
+
+        var nodeAsCall = node.AsCallExpression();
+        if ((Ast.IsSourcePhaseImportCall(node) && (nodeAsCall.QuestionDotToken != null)))
+        {
+            return this.grammarErrorOnNode(nodeAsCall.QuestionDotToken, Diagnostics.Optional_chaining_cannot_be_used_with_import_source);
+        }
+
+        if ((nodeAsCall.TypeArguments != null))
+        {
+            return this.grammarErrorOnNode(node, Diagnostics.This_use_of_import_is_invalid_import_calls_can_be_written_but_they_must_have_parentheses_and_cannot_have_type_arguments);
+        }
+
+        var nodeArguments = nodeAsCall.Arguments;
+        var argumentNodes = nodeArguments.Nodes;
+        if (((!(((ModuleKind.Node16 <= this.moduleKind) && (this.moduleKind <= ModuleKind.NodeNext))) && (this.moduleKind != ModuleKind.ESNext)) && (this.moduleKind != ModuleKind.Preserve)))
+        {
+            this.checkGrammarForDisallowedTrailingComma(nodeArguments, Diagnostics.Trailing_comma_not_allowed);
+            if ((GoRuntime.Len(argumentNodes) > 1))
+            {
+                var importAttributesArgument = argumentNodes[1];
+                return this.grammarErrorOnNode(importAttributesArgument, Diagnostics.Dynamic_imports_only_support_a_second_argument_when_the_module_option_is_set_to_esnext_node16_node18_node20_nodenext_or_preserve);
+            }
+        }
+
+        if (((GoRuntime.Len(argumentNodes) == 0) || (GoRuntime.Len(argumentNodes) > 2)))
+        {
+            return this.grammarErrorOnNode(node, Diagnostics.Dynamic_imports_can_only_accept_a_module_specifier_and_an_optional_set_of_attributes_as_arguments);
+        }
+
+        var spreadElement = Core.Find(argumentNodes, Ast.IsSpreadElement);
+        if ((spreadElement != null))
+        {
+            return this.grammarErrorOnNode(spreadElement, Diagnostics.Argument_of_dynamic_import_cannot_be_spread_element);
+        }
+
+        return false;
+    }
+
+    // grammarchecks.go:58. The final identifier of a source entity-name expression.
+    private static Node getIdentifierFromEntityNameExpression(Node node) => node.Kind switch
+    {
+        Kind.Identifier => node,
+        Kind.PropertyAccessExpression => node.AsPropertyAccessExpression().Name(),
+        _ => null
+    };
 }

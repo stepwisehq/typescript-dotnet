@@ -13,6 +13,7 @@ public sealed class Project : ICheckerProgramHost
     private readonly ProjectDiskHost? disk;
     private readonly Program? genuineProgram;
     private ICheckerProgramHost ActualHost => genuineProgram ?? throw MissingProgramService("genuine Program");
+
     private readonly DefaultResolver resolver = null!;
     private readonly Dictionary<string, SourceFile> filesByPath = new(StringComparer.Ordinal);
     private readonly List<SourceFile> sourceFiles = [], roots = [], users = [];
@@ -28,6 +29,7 @@ public sealed class Project : ICheckerProgramHost
     internal CompilerOptions Options => genuineProgram?.Options() ?? configuration.Options;
 
     CompilerOptions ICheckerProgramHost.Options => Options;
+
     bool ICheckerProgramHost.AllowsNonRelativeModuleSpecifiers => genuineProgram is not null;
     public IReadOnlyList<SourceFile> SourceFiles => sourceFiles.AsReadOnly();
     public IReadOnlyList<SourceFile> RootFiles => roots.AsReadOnly();
@@ -48,8 +50,7 @@ public sealed class Project : ICheckerProgramHost
             foreach (var file in sourceFiles)
                 Binder.BindSourceFile(file);
     }
-    bool ICheckerProgramHost.FileExists(RootedFilePath fileName) => genuineProgram is not null
-        ? ActualHost.FileExists(fileName) : disk!.FileExists(fileName.ToUnicode());
+
     Dictionary<string, ModeAwareCache<ResolvedModule?>> ICheckerProgramHost.GetResolvedModules() => ActualHost.GetResolvedModules();
     Dictionary<string, bool> ICheckerProgramHost.GetPackagesMap() => ActualHost.GetPackagesMap();
     SourceFileMetaData ICheckerProgramHost.GetSourceFileMetaData(PathKey path) => ActualHost.GetSourceFileMetaData(path);
@@ -58,11 +59,8 @@ public sealed class Project : ICheckerProgramHost
     bool ICheckerProgramHost.SourceFileMayBeEmitted(SourceFile file, bool forceDtsEmit) => ActualHost.SourceFileMayBeEmitted(file, forceDtsEmit);
     SourceOutputAndProjectReference? ICheckerProgramHost.GetProjectReferenceFromOutputDts(PathKey path) => ActualHost.GetProjectReferenceFromOutputDts(path);
     ParsedCommandLine? ICheckerProgramHost.GetRedirectForResolution(SourceFile file) => ActualHost.GetRedirectForResolution(file);
-    SourceOutputAndProjectReference? ICheckerProgramHost.GetProjectReferenceFromSource(PathKey path) => ActualHost.GetProjectReferenceFromSource(path);
-    RootedDirectoryPath ICheckerProgramHost.CommonSourceDirectory() => ActualHost.CommonSourceDirectory();
     private ProjectException MissingProgramService(string operation) =>
         new("semanticUnsupported", operation + " requires the genuine Program environment.", ConfigurationPath);
-
     public Checker Checker
     {
         get
@@ -71,10 +69,17 @@ public sealed class Project : ICheckerProgramHost
                 return checker;
             if (genuineProgram is not null)
             {
-                var (actual, done) = genuineProgram.GetTypeChecker();
-                try { return checker = actual; }
-                finally { done(); }
+                var(actual, done) = genuineProgram.GetTypeChecker();
+                try
+                {
+                    return checker = actual;
+                }
+                finally
+                {
+                    done();
+                }
             }
+
             if (parseDiagnostics.Count != 0 || users.Count == 0)
                 throw new ProjectException("semanticEntry", "The project must have valid existing source files before semantic entry.", ConfigurationPath);
             return checker = TypeScript.Checking.Checker.CreateForProgram(this);
@@ -249,62 +254,74 @@ public sealed class Project : ICheckerProgramHost
         ValidateOwned(file);
         return genuineProgram?.GetEmitModuleFormatOfFile(file) ?? Options.GetEmitModuleKind();
     }
+
     ModuleKind ICheckerProgramHost.GetImpliedNodeFormatForEmit(SourceFile file) => (ModuleKind)(int)GetImpliedNodeFormatForEmit(file);
     public ResolutionMode GetImpliedNodeFormatForEmit(SourceFile file)
     {
         ValidateOwned(file);
         return genuineProgram?.GetImpliedNodeFormatForEmit(file) ?? ResolutionMode.None;
     }
+
     public ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile file, Node location)
     {
         ValidateOwned(file);
         return genuineProgram?.GetEmitSyntaxForUsageLocation(file, location) ?? ResolutionMode.ESNext;
     }
+
     public ResolutionMode GetModeForUsageLocation(SourceFile file, Node location)
     {
         ValidateOwned(file);
         return genuineProgram?.GetModeForUsageLocation(file, location) ?? ResolutionMode.ESNext;
     }
+
     public bool IsSourceFileDefaultLibrary(SourceFile file)
     {
         ValidateOwned(file);
         return genuineProgram?.IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey())) ?? false;
     }
+
     public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file)
     {
         ValidateOwned(file);
         return genuineProgram?.GetDefaultResolutionModeForFile(file) ?? ResolutionMode.None;
     }
+
     private TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost ActualSpecifierHost => ActualHost;
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.BaseDirectory() => genuineProgram is null ? RootDirectory : ActualSpecifierHost.BaseDirectory();
-    bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileNamesAreGoBytes => genuineProgram is not null;
-    CaseSensitivity TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.CaseSensitivity() => genuineProgram?.CaseSensitivity() ?? CaseSensitivity.CaseSensitive;
-    IReadOnlyList<string> TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => genuineProgram is null ? [] : ActualSpecifierHost.GetRedirectTargets(path);
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file)
+
+    private readonly TypeScript.Symlinks.KnownSymlinks legacySpecifierSymlinks = TypeScript.Symlinks.KnownSymlinks.NewKnownSymlinks(CaseSensitivity.CaseSensitive);
+    RootedDirectoryPath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.BaseDirectory() => genuineProgram is null ? RootedDirectoryPath.FromUnicode(RootDirectory) : ActualSpecifierHost.BaseDirectory();
+    TypeScript.Symlinks.KnownSymlinks TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSymlinkCache() => genuineProgram?.GetSymlinkCache() ?? legacySpecifierSymlinks;
+    RootedDirectoryPath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetGlobalTypingsCacheLocation() => genuineProgram?.GetGlobalTypingsCacheLocation() ?? default;
+    RootedDirectoryPath TypeScript.OutputPaths.IOutputPathsHost.CommonSourceDirectory() => genuineProgram?.CommonSourceDirectory() ?? RootedDirectoryPath.FromUnicode(RootDirectory);
+    List<string>? TypeScript.OutputPaths.IOutputPathsHost.ContentMapperExtensions() => genuineProgram?.ContentMapperExtensions() ?? configuration.Parsed?.ContentMapperExtensions();
+    CaseSensitivity TypeScript.OutputPaths.IOutputPathsHost.CaseSensitivity() => genuineProgram?.CaseSensitivity() ?? CaseSensitivity.CaseSensitive;
+    SourceOutputAndProjectReference? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetProjectReferenceFromSource(PathKey path) => genuineProgram?.GetProjectReferenceFromSource(path);
+    List<RootedFilePath>? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => genuineProgram?.GetRedirectTargets(path);
+    RootedFilePath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file)
     {
         ValidateOwned(file);
-        return genuineProgram is null ? file.FileName() : ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
+        return genuineProgram is null ? RootedFilePath.FromGoString(file.FileNameGoBytes()) : ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
     }
-    bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileExists(string path) => genuineProgram is null ? disk!.ModuleSpecifierFileExists(path) : ActualSpecifierHost.FileExists(path);
-    string TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetNearestAncestorDirectoryWithPackageJson(string directory)
+
+    bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileExists(RootedFilePath path) => genuineProgram is null ? disk!.ModuleSpecifierFileExists(path.ToUnicode()) : ActualSpecifierHost.FileExists(path);
+    RootedDirectoryPath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory)
     {
         if (genuineProgram is not null)
             return ActualSpecifierHost.GetNearestAncestorDirectoryWithPackageJson(directory);
-        var scoped = resolver.GetPackageScopeForPath(RootedDirectoryPath.FromUnicode(directory));
-        return scoped?.Exists() == true ? scoped.PackageDirectory.AsDirectoryPath().ToUnicode() : "";
+        var scoped = resolver.GetPackageScopeForPath(directory);
+        return scoped.Exists() ? scoped!.PackageDirectory.AsDirectoryPath() : default;
     }
-    InfoCacheEntry? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetPackageJsonInfo(string path)
+
+    InfoCacheEntry? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetPackageJsonInfo(RootedFilePath path)
     {
         if (genuineProgram is not null)
             return ActualSpecifierHost.GetPackageJsonInfo(path);
-        string directory = TsPath.GetDirectoryPath(path);
-        var scoped = resolver.GetPackageScopeForPath(RootedDirectoryPath.FromUnicode(directory));
-        return scoped?.Exists() == true && scoped.PackageDirectory.AsDirectoryPath().ToUnicode() == directory ? scoped : null;
+        var directory = path.Directory();
+        var scoped = resolver.GetPackageScopeForPath(directory);
+        return scoped.Exists() && scoped!.PackageDirectory.AsDirectoryPath() == directory ? scoped : null;
     }
-    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) =>
-        genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) :
-        GetResolvedModule(file, ProjectDiskHost.DecodeModuleReference(specifier.Text()), GetModeForUsageLocation(file, specifier));
 
+    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) : GetResolvedModule(file, ProjectDiskHost.DecodeModuleReference(specifier.Text()), GetModeForUsageLocation(file, specifier));
     private void ValidateOwned(SourceFile sourceFile)
     {
         if (!filesByPath.TryGetValue(sourceFile.PathKey(), out SourceFile? owned) || !ReferenceEquals(owned, sourceFile))

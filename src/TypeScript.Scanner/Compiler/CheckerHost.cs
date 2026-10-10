@@ -11,17 +11,14 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
 
     CompilerOptions Options { get; }
     void BindSourceFiles();
-    bool FileExists(RootedFilePath fileName);
     Dictionary<string, ModeAwareCache<ResolvedModule?>> GetResolvedModules();
     Dictionary<string, bool> GetPackagesMap();
     SourceFileMetaData GetSourceFileMetaData(PathKey path);
     (string ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifier(PathKey path);
     Node? GetImportHelpersImportSpecifier(PathKey path);
     bool SourceFileMayBeEmitted(SourceFile sourceFile, bool forceDtsEmit);
-    SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path);
     SourceOutputAndProjectReference? GetProjectReferenceFromOutputDts(PathKey path);
     ParsedCommandLine? GetRedirectForResolution(SourceFile sourceFile);
-    RootedDirectoryPath CommonSourceDirectory();
 
     // Authored semantic admission: full graph resolution versus named legacy policy.
     bool AllowsNonRelativeModuleSpecifiers { get; }

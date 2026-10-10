@@ -393,8 +393,9 @@ public static partial class ProjectSupportChecks
     }
 
     // Supplemental original source-API observation, not an upstream named test.
-    // Original no/type/imports variants all return Relative ['./a']; imports-map
-    // lookup is explicitly unsupported here under the fixed package boundary.
+    // Original no/type/imports variants all return Relative ['./a']. The former
+    // authored imports-map rejection is retired by the same-input pinned-Go
+    // qualification in checker-noemit-validation/ending-host-repair.
     private static void ModuleSpecifierSourceApi()
     {
         RootIndexShadowProbe();
@@ -419,15 +420,9 @@ public static partial class ProjectSupportChecks
             var context = project.UserFiles.Single(file => file.FileName().EndsWith("/main.ts", StringComparison.Ordinal));
             var checker = project.Checker;
             TypeScript.ModuleSpecifiers.ModuleSpecifiersResult Run() => TypeScript.ModuleSpecifiers.ModuleSpecifiers.GetModuleSpecifiers(target.AsNode().Symbol(), checker, project.Options, context, project, new TypeScript.ModuleSpecifiers.UserPreferences { ImportModuleSpecifierPreference = TypeScript.ModuleSpecifiers.ImportModuleSpecifierPreference.ProjectRelative }, new TypeScript.ModuleSpecifiers.ModuleSpecifierOptions(), false);
-            if (package?.Contains("imports", StringComparison.Ordinal) == true)
-            {
-                Reject(() => Run(), "packageJsonSpecifierMapping");
-                continue;
-            }
-
             var result = Run();
             Equal(result.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-            Sequence(result.Specifiers!, new[] { "./a" });
+            Sequence(result.Specifiers!.Select(specifier => specifier.AsString()), new[] { "./a" });
             Require(result.AmbientModuleSymbol == null, "Original source API returns no ambient symbol.");
         }
     }
@@ -452,11 +447,23 @@ public static partial class ProjectSupportChecks
     }
 
     // specifiers_test.go:407. Preserve both original rooted-probe assertions.
+    // The source same-package helper is private in the immutable C# library;
+    // preserve only its named metadata for this authored test-access adapter.
+    [System.Diagnostics.CodeAnalysis.DynamicDependency("processEnding", typeof(TypeScript.ModuleSpecifiers.ModuleSpecifiers))]
     private static void ProcessEndingChecksRootedFilePath()
     {
         var host = new EndingProbeHost();
-        string result = TypeScript.ModuleSpecifiers.ModuleSpecifiers.processEnding("./lib/index.ts", "/project/src/lib/index.ts", [TypeScript.ModuleSpecifiers.ModuleSpecifierEnding.Minimal], new CompilerOptions(), host);
-        Equal(result, "./lib/index");
+        var method = typeof(TypeScript.ModuleSpecifiers.ModuleSpecifiers).GetMethod("processEnding",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
+            binder: null,
+            types: [typeof(ModuleSpecifier), typeof(RootedFilePath), typeof(List<TypeScript.ModuleSpecifiers.ModuleSpecifierEnding>), typeof(CompilerOptions), typeof(TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost)],
+            modifiers: null) ?? throw new InvalidOperationException("Exact original processEnding helper is unavailable.");
+        if (method.ReturnType != typeof(ModuleSpecifier))
+            throw new InvalidOperationException("Exact original processEnding return type differs.");
+        var value = method.Invoke(null, [ModuleSpecifier.FromGoString("./lib/index.ts"), RootedFilePath.FromGoString("/project/src/lib/index.ts"), new List<TypeScript.ModuleSpecifiers.ModuleSpecifierEnding> { TypeScript.ModuleSpecifiers.ModuleSpecifierEnding.Minimal }, new CompilerOptions(), host]);
+        if (value is not ModuleSpecifier result)
+            throw new InvalidOperationException("Exact original processEnding result is unavailable.");
+        Equal(result.AsString(), "./lib/index");
         Require(host.FileExistsCalls.Contains("/project/src/lib.ts"), "Original FileExists rooted candidate was not probed.");
     }
 
@@ -465,16 +472,25 @@ public static partial class ProjectSupportChecks
     private sealed class EndingProbeHost : TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost
     {
         internal readonly List<string> FileExistsCalls = [];
-        public bool FileExists(string path)
+        public bool FileExists(RootedFilePath path)
         {
-            FileExistsCalls.Add(path);
-            return path == "/project/src/lib.ts";
+            FileExistsCalls.Add(path.AsString());
+            return path.AsString() == "/project/src/lib.ts";
         }
 
-        public string BaseDirectory() => "/wrong";
-        public string GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
-        public string GetNearestAncestorDirectoryWithPackageJson(string directory) => throw new InvalidOperationException("Unused original mock service");
-        public TypeScript.PackageJson.InfoCacheEntry? GetPackageJsonInfo(string path) => throw new InvalidOperationException("Unused original mock service");
+        // specifiers_test.go:98–172. Preserve this fixture's rooted directory
+        // and case policy; services outside the rooted FileExists probe fail.
+        public RootedDirectoryPath BaseDirectory() => RootedDirectoryPath.FromGoString("/wrong");
+        public RootedDirectoryPath CommonSourceDirectory() => BaseDirectory();
+        public CaseSensitivity CaseSensitivity() => TypeScript.Scanner.CaseSensitivity.CaseSensitive;
+        public List<string>? ContentMapperExtensions() => throw new InvalidOperationException("Unused original mock service");
+        public TypeScript.Symlinks.KnownSymlinks GetSymlinkCache() => throw new InvalidOperationException("Unused original mock service");
+        public RootedDirectoryPath GetGlobalTypingsCacheLocation() => throw new InvalidOperationException("Unused original mock service");
+        public TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => throw new InvalidOperationException("Unused original mock service");
+        public List<RootedFilePath>? GetRedirectTargets(PathKey path) => throw new InvalidOperationException("Unused original mock service");
+        public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
+        public RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory) => throw new InvalidOperationException("Unused original mock service");
+        public TypeScript.PackageJson.InfoCacheEntry? GetPackageJsonInfo(RootedFilePath path) => throw new InvalidOperationException("Unused original mock service");
         public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
         public ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
         public ResolutionMode GetModeForUsageLocation(SourceFile file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
@@ -498,14 +514,14 @@ public static partial class ProjectSupportChecks
         Require(!File.Exists(shadow), "Fresh shadow probe must not overwrite another file.");
         var absent = Run();
         Equal(absent.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-        Sequence(absent.Specifiers!, new[] { ".." });
+        Sequence(absent.Specifiers!.Select(specifier => specifier.AsString()), new[] { ".." });
         Require(absent.AmbientModuleSymbol == null, "Original absent-shadow ambient symbol is nil.");
         try
         {
             File.WriteAllText(shadow, "class OutsideSourceMustNotBeParsed {};");
             var present = Run();
             Equal(present.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-            Sequence(present.Specifiers!, new[] { "../index" });
+            Sequence(present.Specifiers!.Select(specifier => specifier.AsString()), new[] { "../index" });
             Require(present.AmbientModuleSymbol == null, "Original present-shadow ambient symbol is nil.");
             Require(project.UserFiles.All(file => file.FileName() != shadow), "Shadow metadata must not enter source set.");
             Reject(() => new ProjectDiskHost(disk.Root).FileExists(shadow), "outsideRoot");

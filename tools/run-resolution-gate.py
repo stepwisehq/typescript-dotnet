@@ -23,6 +23,11 @@ if CURRENT_CHECKING not in (None, "1"):
     raise RuntimeError("DECLARATIONS_CURRENT_CHECKING must be the explicit current-control value 1")
 HISTORICAL_MANIFEST = "validation/resolution-corpus/manifest.json"
 MANIFEST = "validation/declarations-corpus/resolution-current-manifest.json" if CURRENT_CHECKING else HISTORICAL_MANIFEST
+LANGUAGE_CURRENT = os.environ.get("CHECKER_LANGUAGE_CURRENT")
+if LANGUAGE_CURRENT not in (None, "1") or LANGUAGE_CURRENT and not CURRENT_CHECKING:
+    raise RuntimeError("CHECKER_LANGUAGE_CURRENT requires the explicit reviewed current checking context")
+if LANGUAGE_CURRENT:
+    MANIFEST = "validation/checker-noemit-corpus/resolution-current-manifest.json"
 GO = ROOT / "tools/.cache/resolution-oracle"
 GO_TOOL = ROOT / "tools/.cache/go/bin/go"
 SEMANTIC_GO = ROOT / "tools/.cache/resolution-cli-oracle"
@@ -175,7 +180,8 @@ def validate_cli(manifest):
     if cli["sourceFiles"] != shipped:
         raise RuntimeError("CLI fixture registry omits/changes shipped source/config files")
     if CURRENT_CHECKING:
-        expected = "validation/declarations-corpus/resolution-current-boundaries.json"
+        expected = ("validation/checker-noemit-corpus/resolution-current-boundaries.json" if LANGUAGE_CURRENT
+                    else "validation/declarations-corpus/resolution-current-boundaries.json")
         if cli.get("currentCheckingBoundaries") != expected:
             raise RuntimeError("Current resolution checking boundary context missing")
         checked_path(expected, cli["currentCheckingBoundariesSha256"])
@@ -286,10 +292,28 @@ def check_pristine(manifest):
 
 def manifest_groups():
     manifest = read(MANIFEST)
+    if LANGUAGE_CURRENT:
+        promotion = manifest.get("currentSemanticCapabilities", {})
+        original = "validation/declarations-corpus/resolution-current-manifest.json"
+        provenance = "validation/checker-noemit-corpus/authored-capability-migration.json"
+        digest = "a66b9e07699c34ba705ecb4e7a64671c5f6f8dbb0f8c42c7e4515dd485e92bd2"
+        if promotion != {"provenance": provenance, "provenanceSha256": digest,
+                         "originalCurrentManifest": original, "originalCurrentManifestSha256": sha(original)}:
+            raise RuntimeError("Unreviewed source semantic capability promotion")
+        checked_path(provenance, digest)
+        expected = read(original)
+        expected["cliControls"].update(
+            runnerSha256="19602d5f874809deb440c9195a6079ae42a3beda393540c6dd6f21171d2c3e47",
+            originalCases=11, authoredBoundaryCases=0,
+            currentCheckingBoundaries="validation/checker-noemit-corpus/resolution-current-boundaries.json",
+            currentCheckingBoundariesSha256="98009f97ec8c4f91c5fbe78380fface915dbfa479c8fc78d1f6c8222409ec457")
+        if {k: v for k, v in manifest.items() if k != "currentSemanticCapabilities"} != expected:
+            raise RuntimeError("Capability promotion changed unrelated resolution obligations")
     if CURRENT_CHECKING:
         historical = read(HISTORICAL_MANIFEST)
         replacement = manifest.get("currentCheckingReplacement", {})
-        unchanged = {key: value for key, value in manifest.items() if key != "currentCheckingReplacement"}
+        unchanged = {key: value for key, value in manifest.items()
+                     if key not in ("currentCheckingReplacement", "currentSemanticCapabilities")}
         unchanged["cliControls"] = historical["cliControls"]
         if unchanged != historical or replacement.get("historicalManifest") != HISTORICAL_MANIFEST or replacement.get("historicalManifestSha256") != sha(HISTORICAL_MANIFEST):
             raise RuntimeError("Current checking context altered historical resolution obligations/corpus")

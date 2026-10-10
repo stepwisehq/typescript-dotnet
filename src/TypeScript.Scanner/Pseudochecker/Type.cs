@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/pseudochecker/type.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only data-property/scalar reuse; callable/tuple/emit paths excluded.
+// Syntactic type skeletons shared by diagnostic and public type-node serialization.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -134,7 +134,26 @@ internal class PseudoObjectElement
     internal bool Optional;
     internal PseudoObjectElementKind Kind;
     internal PseudoObjectMethod AsPseudoObjectMethod() => (PseudoObjectMethod)this;
-    internal Node Signature() => Kind == PseudoObjectElementKind.Method ? AsPseudoObjectMethod().SignatureNode : null;
+    internal PseudoSetAccessor AsPseudoSetAccessor() => (PseudoSetAccessor)this;
+    internal PseudoGetAccessor AsPseudoGetAccessor() => (PseudoGetAccessor)this;
+    internal Node Signature() => Kind switch
+    {
+        PseudoObjectElementKind.Method => AsPseudoObjectMethod().SignatureNode,
+        PseudoObjectElementKind.SetAccessor => AsPseudoSetAccessor().SignatureNode,
+        PseudoObjectElementKind.GetAccessor => AsPseudoGetAccessor().SignatureNode,
+        _ => null
+    };
+    // pseudochecker/type.go:306/323. Accessor skeletons retain the source signature.
+    internal static PseudoObjectElement NewPseudoSetAccessor(Node signature, Node name, bool optional, PseudoParameter parameter) => new PseudoSetAccessor
+    {
+        Kind = PseudoObjectElementKind.SetAccessor, SignatureNode = signature,
+        Name = name, Optional = optional, Parameter = parameter
+    };
+    internal static PseudoObjectElement NewPseudoGetAccessor(Node signature, Node name, bool optional, PseudoType type) => new PseudoGetAccessor
+    {
+        Kind = PseudoObjectElementKind.GetAccessor, SignatureNode = signature,
+        Name = name, Optional = optional, Type = type
+    };
     internal static PseudoObjectElement NewPseudoObjectMethod(Node signature, Node name, bool optional, List<TypeParameterDeclaration> typeParameters, List<PseudoParameter> parameters, PseudoType returnType) => new PseudoObjectMethod
     {
         Kind = PseudoObjectElementKind.Method,
@@ -196,4 +215,16 @@ internal sealed class PseudoObjectMethod : PseudoObjectElement
 internal sealed class PseudoTypeTuple : PseudoTypeBase
 {
     internal List<PseudoType> Elements;
+}
+
+internal sealed class PseudoSetAccessor : PseudoObjectElement
+{
+    internal Node SignatureNode;
+    internal PseudoParameter Parameter;
+}
+
+internal sealed class PseudoGetAccessor : PseudoObjectElement
+{
+    internal Node SignatureNode;
+    internal PseudoType Type;
 }

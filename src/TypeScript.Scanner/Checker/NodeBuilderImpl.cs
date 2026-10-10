@@ -17,8 +17,8 @@ internal sealed partial class NodeBuilderImpl
     private readonly Checker ch;
     private readonly NodeFactory f;
     private readonly NodeVisitor cloneBindingNameVisitor;
-    internal readonly TypeScript.DiagnosticPrinting.EmitContext e = new();
-    private readonly Dictionary<Node, Symbol> idToSymbol = new();
+    internal readonly TypeScript.DiagnosticPrinting.EmitContext e;
+    private readonly Dictionary<Node, Symbol> idToSymbol;
     // NodeBuilderContext selected fields (nodebuilderimpl.go:61). Cache cells
     // are builder-owned; context state is stacked and replaced for nested diagnostics.
     internal sealed record TrackedSymbolArgs(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning);
@@ -122,10 +122,33 @@ internal sealed partial class NodeBuilderImpl
         ctx.tracker = SymbolTrackerImpl.NewSymbolTrackerImpl(ctx, null);
     }
 
-    internal NodeBuilderImpl(Checker checker)
+    // nodebuilder.go:34. Non-hover source context with explicit flags and optional tracker.
+    internal void enterContext(Node enclosingDeclaration, NodeBuilderFlags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    {
+        ctx = new()
+        {
+            host = ch.program,
+            enclosingDeclaration = enclosingDeclaration,
+            enclosingFile = Ast.GetSourceFileOfNode(enclosingDeclaration),
+            flags = flags,
+            internalFlags = internalFlags,
+            inferTypeParameters = new(),
+            trackedSymbols = new(),
+            reverseMappedStack = new()
+        };
+        ctx.tracker = SymbolTrackerImpl.NewSymbolTrackerImpl(ctx, tracker);
+    }
+
+    internal NodeBuilderImpl(Checker checker) : this(checker, new TypeScript.DiagnosticPrinting.EmitContext())
+    {
+    }
+
+    internal NodeBuilderImpl(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context, Dictionary<Node, Symbol> symbols = null)
     {
         ch = checker;
-        f = Ast.NewNodeFactory(new NodeFactoryHooks { OnClone = (node, original) => e.SetOriginal(node, original), OnUpdate = (node, original) => e.SetOriginal(node, original) });
+        e = context;
+        idToSymbol = symbols ?? new();
+        f = e.Factory;
         cloneBindingNameVisitor = new NodeVisitor(cloneBindingName, f, new NodeVisitorHooks());
         pc = PseudoChecker.NewPseudoChecker(checker.strictNullChecks, checker.exactOptionalPropertyTypes);
     }
@@ -455,7 +478,7 @@ internal sealed partial class NodeBuilderImpl
     }
 
     // nodebuilderimpl.go:650. Real accessible/qualified chains and generated
-    // diagnostic import types; source import-type syntax remains excluded.
+    // diagnostic import types, including portable Node16/NodeNext mode overrides.
     private Node symbolToTypeNode(Symbol symbol, SymbolFlags meaning, NodeList typeArguments)
     {
         var chain = lookupSymbolChain(symbol, meaning, (ctx.flags & NodeBuilderFlags.UseAliasDefinedOutsideCurrentScope) == 0);
@@ -466,11 +489,42 @@ internal sealed partial class NodeBuilderImpl
         {
             var nonRootParts = chain.Count > 1 ? createAccessFromSymbolChain(chain, chain.Count - 1, 1, typeArguments) : null;
             var typeParameterNodes = typeArguments ?? lookupTypeParameterNodes(chain, 0);
-            // Fixed Bundler mode has no Node16/NodeNext resolution-mode override.
-            var result = getSpecifierForModuleSymbol(chain[0], ResolutionMode.None);
+            var contextFile = Ast.GetSourceFileOfNode(e.MostOriginal(ctx.enclosingDeclaration));
+            var targetFile = Ast.GetSourceFileOfModule(chain[0]);
+            moduleSpecifierResult result = default;
+            var importModeOverride = ResolutionMode.None;
+            if (ch.compilerOptions.GetModuleResolutionKind() is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
+            {
+                if (targetFile != null && contextFile != null &&
+                    ch.program.GetEmitModuleFormatOfFile(targetFile) == ModuleKind.ESNext &&
+                    ch.program.GetEmitModuleFormatOfFile(targetFile) != ch.program.GetEmitModuleFormatOfFile(contextFile))
+                {
+                    result = getSpecifierForModuleSymbol(chain[0], ResolutionMode.ESNext);
+                    importModeOverride = ResolutionMode.ESNext;
+                }
+            }
+            if (string.IsNullOrEmpty(result.specifier))
+                result = getSpecifierForModuleSymbol(chain[0], ResolutionMode.None);
             if ((ctx.flags & NodeBuilderFlags.AllowNodeModulesRelativePaths) == 0 && result.specifier.Contains("/node_modules/", StringComparison.Ordinal))
-                throw Checker.unsupported("symbolToTypeNode: package diagnostic import");
-            var attributes = createImportAttributesForModuleSpecifier(result, ResolutionMode.None);
+            {
+                var oldResult = result;
+                if (ch.compilerOptions.GetModuleResolutionKind() is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
+                {
+                    var swappedMode = ch.program.GetEmitModuleFormatOfFile(contextFile) == ModuleKind.ESNext
+                        ? ResolutionMode.CommonJS : ResolutionMode.ESNext;
+                    result = getSpecifierForModuleSymbol(chain[0], swappedMode);
+                    if (result.specifier.Contains("/node_modules/", StringComparison.Ordinal))
+                        result = oldResult;
+                    else
+                        importModeOverride = swappedMode;
+                }
+                if (importModeOverride == ResolutionMode.None)
+                {
+                    ctx.encounteredError = true;
+                    ctx.tracker.ReportLikelyUnsafeImportRequiredError(oldResult.specifier, symbol.Name);
+                }
+            }
+            var attributes = createImportAttributesForModuleSpecifier(result, importModeOverride);
             var literal = f.NewLiteralTypeNode(newStringLiteral(result.specifier));
             approximateLength += result.specifier.Length + 10;
             if (nonRootParts == null || Ast.IsEntityName(nonRootParts))
@@ -1027,7 +1081,7 @@ internal sealed partial class NodeBuilderImpl
             bool saved = useFullyQualifiedType;
             useFullyQualifiedType = true;
             foreach (var entries in seenNames.Values)
-                if (entries.Any(e => !ReferenceEquals(e.type, entries[0].type)))
+                if (entries.Any(e => !typesAreSameReference(e.type, entries[0].type)))
                     foreach (var entry in entries)
                         result[entry.index] = typeToTypeNode(entry.type);
             useFullyQualifiedType = saved;
@@ -1035,6 +1089,11 @@ internal sealed partial class NodeBuilderImpl
 
         return f.NewNodeList(result);
     }
+
+    // nodebuilderimpl.go:482. Instantiations of the same named type do not
+    // require qualification solely because their type objects differ.
+    private static bool typesAreSameReference(Type a, Type b) =>
+        a == b || a.symbol != null && a.symbol == b.symbol || a.alias != null && a.alias == b.alias;
 
     // nodebuilderimpl.go:2469, static property-name branch.
     private enum propertyNameNodeKind
@@ -1183,10 +1242,12 @@ internal sealed partial class NodeBuilderImpl
             ctx.flags |= NodeBuilderFlags.AllowUniqueESSymbolType;
         Node result = null;
         bool reportedInferenceFallback = false;
-        if (!isActivelyExpanding() && tryReuse && ctx.enclosingDeclaration != null && declaration != null && Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) && (t.objectFlags & ObjectFlags.RequiresWidening) == 0)
+        if (!isActivelyExpanding() && tryReuse && ctx.enclosingDeclaration != null && declaration != null &&
+            (Ast.IsAccessor(declaration) || Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) &&
+                (t.objectFlags & ObjectFlags.RequiresWidening) == 0))
         {
             var remove = symbol != null ? addSymbolTypeToContext(symbol, t) : null;
-            var pt = pc.GetTypeOfDeclaration(declaration);
+            var pt = Ast.IsAccessor(declaration) ? pc.GetTypeOfAccessor(declaration) : pc.GetTypeOfDeclaration(declaration);
             if ((pt == null || pt.Kind == PseudoTypeKind.NoResult) && Ast.IsBinaryExpression(declaration) && symbol != null)
             {
                 var annotated = symbol.Declarations?.FirstOrDefault(hasTypeAnnotation);
@@ -1348,8 +1409,9 @@ internal sealed partial class NodeBuilderImpl
         }
 
         typeElements ??= new();
-        typeElements.Add(f.NewPropertySignatureDeclaration(modifiers, propertyName, optionalToken, typeNode, null));
-        // SetCommentRange is omitted: diagnostic printer removes comments.
+        var propertySignature = f.NewPropertySignatureDeclaration(modifiers, propertyName, optionalToken, typeNode, null);
+        typeElements.Add(propertySignature);
+        setCommentRange(propertySignature, propertySymbol.ValueDeclaration);
         return typeElements;
     }
 
@@ -1659,7 +1721,14 @@ internal sealed partial class NodeBuilderImpl
             return f.DeepCloneNode(cachedResult.node);
         }
 
-        CompositeSymbolIdentity? symbolId = isArrayOrTuple ? null : (t.flags & TypeFlags.Conditional) != 0 ? new(false, 0, Ast.GetNodeId(t.AsConditionalType().root.node.AsNode())) : (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ? new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) : t.symbol != null ? new(false, Ast.GetSymbolId(t.symbol), 0) : null;
+        bool isConstructorObject = (t.objectFlags & ObjectFlags.Anonymous) != 0 && t.symbol != null &&
+            (t.symbol.Flags & SymbolFlags.Class) != 0;
+        CompositeSymbolIdentity? symbolId = isArrayOrTuple ? null :
+            (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ?
+                new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) :
+            (t.flags & TypeFlags.Conditional) != 0 ?
+                new(false, 0, Ast.GetNodeId(t.AsConditionalType().root.node.AsNode())) :
+            t.symbol != null ? new(isConstructorObject, Ast.GetSymbolId(t.symbol), 0) : null;
         CompositeSymbolIdentity? reverseOrigin = null;
         int reverseDepth = 0;
         if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
@@ -1715,15 +1784,8 @@ internal sealed partial class NodeBuilderImpl
         }
     }
 
-    // nodebuilderimpl.go:508/526. TS reference reuse retains resolved-target
-    // identity; the JSDoc-intended-type branch is unreachable by admission.
-    private bool canReuseExistingJSTypeNode(Node existing, Type t)
-    {
-        if (Ast.IsInJSFile(existing))
-            throw Checker.unsupported("canReuseExistingJSTypeNode: JSDoc type reference");
-        return existingTypeNodeIsNotReferenceOrIsReferenceWithCompatibleTypeArgumentCount(existing, t);
-    }
-
+    // nodebuilderimpl.go:508. JSDoc intended types cannot reuse their original syntax.
+    private bool canReuseExistingJSTypeNode(Node existing, Type t) => ch.getIntendedTypeFromJSDocTypeReference(existing) == null && existingTypeNodeIsNotReferenceOrIsReferenceWithCompatibleTypeArgumentCount(existing, t);
     // nodebuilderimpl.go:493/549. Preserve optional annotation equivalence and
     // the ordinary recovery-boundary visitor when reusing an existing type node.
     private bool typeNodeIsEquivalentToType(Node annotatedDeclaration, Type t, Type typeFromTypeNode)
@@ -1762,6 +1824,13 @@ internal sealed partial class NodeBuilderImpl
             return true;
         var parameters = t.AsTypeReference().target.AsInterfaceType().TypeParameters();
         return (existing.TypeArguments()?.Count ?? 0) >= ch.getMinTypeArgumentCount(parameters);
+    }
+
+    // nodebuilderimpl.go:486. Original syntax comments are reusable only within the enclosing file.
+    private void setCommentRange(Node node, Node range)
+    {
+        if (range != null && ctx.enclosingFile != null && ctx.enclosingFile == Ast.GetSourceFileOfNode(range))
+            e.AssignCommentRange(node, range);
     }
 
     private Node mostOriginal(Node node) => e.MostOriginal(node);
@@ -2178,8 +2247,8 @@ internal sealed partial class NodeBuilderImpl
             return this.symbolToParameterDeclaration(signature.thisParameter, false);
         }
 
-        if (signature.declaration != null && Ast.IsInJSFile(signature.declaration))
-            throw Checker.unsupported("tryGetThisParameterDeclaration: JS");
+        // nodebuilderimpl.go:2073: the pinned JS/JSDoc this-tag fallback is a TODO,
+        // so a signature without an actual thisParameter returns nil in all files.
         return null;
     }
 
@@ -2838,7 +2907,7 @@ internal sealed partial class NodeBuilderImpl
 
 internal sealed partial class NodeBuilderImpl
 {
-    private Node symbolToName(Symbol symbol, SymbolFlags meaning, bool expectsIdentifier)
+    internal Node symbolToName(Symbol symbol, SymbolFlags meaning, bool expectsIdentifier)
     {
         var chain = this.lookupSymbolChain(symbol, meaning, false);
         if ((((expectsIdentifier && (GoRuntime.Len(chain) != 1)) && !this.ctx.encounteredError) && (((this.ctx.flags & NodeBuilderFlags.AllowQualifiedNameInPlaceOfIdentifier) != 0))))
@@ -3182,7 +3251,7 @@ internal sealed partial class NodeBuilderImpl
     // nodebuilderimpl.go:1175/1194. Original specifier-source dispatch; source
     // require/import-call/import-equals forms remain outside the project gate.
     private static bool canHaveModuleSpecifier(Node node) => node != null && node.Kind is Kind.VariableDeclaration or Kind.BindingElement or Kind.ImportDeclaration or Kind.ExportDeclaration or Kind.ImportEqualsDeclaration or Kind.ImportClause or Kind.NamespaceExport or Kind.NamespaceImport or Kind.ExportSpecifier or Kind.ImportSpecifier or Kind.ImportType;
-    private static Node TryGetModuleSpecifierFromDeclaration(Node node)
+    internal static Node TryGetModuleSpecifierFromDeclaration(Node node)
     {
         var result = tryGetModuleSpecifierFromDeclarationWorker(node);
         return result != null && Ast.IsStringLiteral(result) ? result : null;
@@ -3266,7 +3335,8 @@ internal sealed partial class NodeBuilderImpl
         if (links.specifierCache.TryGetValue(cacheKey, out var existing))
             return moduleSpecifierResultForSymbol(existing, originalAttributes, symbol);
         var generated = ModuleSpecifierFunctions.GetModuleSpecifiers(symbol, ch, ch.compilerOptions, contextFile, ctx.host, new UserPreferences { ImportModuleSpecifierPreference = ImportModuleSpecifierPreference.ProjectRelative, ImportModuleSpecifierEnding = resolutionMode == ResolutionMode.ESNext ? ImportModuleSpecifierEndingPreference.Js : ImportModuleSpecifierEndingPreference.None }, new ModuleSpecifierOptions { OverrideImportMode = overrideImportMode }, false);
-        var result = new moduleSpecifierResult(generated.Specifiers[0]);
+        System.Diagnostics.Debug.Assert(GoRuntime.Len(generated.Specifiers) > 0);
+        var result = new moduleSpecifierResult(generated.Specifiers[0].AsString());
         if (generated.AmbientModuleSymbol != null)
             result = result with
             {
@@ -3291,13 +3361,45 @@ internal sealed partial class NodeBuilderImpl
         return resolved != null && ch.getMergedSymbol(resolved) == ch.getMergedSymbol(symbol);
     }
 
+    // nodebuilderimpl.go:1359–1399. Stable attribute ordering and source resolution-mode metadata.
     private Node createImportAttributesForModuleSpecifier(moduleSpecifierResult result, ResolutionMode mode)
     {
-        // The selected source/host rejects attributes and Node16/NodeNext modes.
-        // Keep the original no-attributes arm; do not fabricate empty attributes.
-        if ((result.importAttributesType == null || ch.isEmptyObjectType(result.importAttributesType)) && mode == ResolutionMode.None)
+        bool empty = result.importAttributesType == null || ch.isEmptyObjectType(result.importAttributesType);
+        if (empty && mode == ResolutionMode.None)
             return null;
-        throw Checker.unsupported("createImportAttributesForModuleSpecifier: import attributes or mode override");
+        var properties = empty ? null : GoSlices.Clone(ch.getPropertiesOfType(result.importAttributesType));
+        properties?.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
+        var attributes = new List<Node>();
+        if (mode != ResolutionMode.None)
+        {
+            var text = mode == ResolutionMode.ESNext ? "import" : "require";
+            attributes.Add(f.NewImportAttribute(newStringLiteral("resolution-mode"), newStringLiteral(text)));
+            approximateLength += "resolution-mode".Length + text.Length + 6;
+        }
+
+        foreach (var property in properties ?? [])
+        {
+            var type = ch.getTypeOfSymbol(property);
+            if ((type.flags & TypeFlags.StringLiteral) == 0)
+                continue;
+            var value = Checker.getStringLiteralValue(type);
+            Node name;
+            if (TypeScript.Scanner.Scanner.IsIdentifierText(property.Name, LanguageVariant.Standard))
+                name = f.NewIdentifier(property.Name);
+            else
+            {
+                name = newStringLiteral(property.Name);
+                approximateLength += 2;
+            }
+
+            attributes.Add(f.NewImportAttribute(name, newStringLiteral(value)));
+            approximateLength += property.Name.Length + value.Length + 4;
+        }
+
+        if (attributes.Count == 0)
+            return null;
+        approximateLength += 16 + 2 * (attributes.Count - 1);
+        return f.NewImportAttributes(Kind.WithKeyword, f.NewNodeList(attributes), false);
     }
 }
 
