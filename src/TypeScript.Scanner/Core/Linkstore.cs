@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/core/linkstore.go; managed objects replace arenas and slot addresses.
+// Port of tsc/internal/core/linkstore.go; managed objects replace arenas, fixed arrays retain page slots.
 namespace TypeScript.Scanner;
 internal sealed class LinkStore<K, V>
     where K : notnull where V : class, new()
@@ -26,8 +26,8 @@ internal sealed class LinkStore<K, V>
     internal List<K>? VerificationKeys() => entries?.Keys.ToList();
 }
 
-// One managed cell represents the stable address of one Go page slot. Value may
-// itself be a nil pointer (symbolArenaLinkStore) or a lazily materialized zero struct.
+// Managed optional-pointer metadata cell, retained for containing-symbol links.
+// PagedLinkStore uses fixed array slots directly rather than allocating cells.
 internal sealed class LinkCell<V>
     where V : class
 {
@@ -39,15 +39,15 @@ internal sealed class PagedLinkStore<V>
 {
     private const int pageShift = 8, pageSize = 1 << pageShift, pageMask = pageSize - 1;
     private const ulong maxPageCount = 65536;
-    private Dictionary<ulong, LinkCell<V>[]>? pageMap;
-    private readonly List<LinkCell<V>[]?> pageList = [];
-    // Go exposes inline zero slots in an allocated page. Managed address cells
-    // are needed only when a caller requests a slot, and remain stable afterward.
-    private static LinkCell<V>[] NewPage() => new LinkCell<V>[pageSize];
+    private Dictionary<ulong, V?[]>? pageMap;
+    private readonly List<V?[]?> pageList = [];
+    // core/linkstore.go:49/72: fixed pages keep slot addresses stable even when
+    // the page table grows. Managed ref returns retain the array owner safely.
+    private static V?[] NewPage() => new V?[pageSize];
 
-    public LinkCell<V> Get(ulong key)
+    public ref V? Get(ulong key)
     {
-        LinkCell<V>[]? page;
+        V?[]? page;
         var pageIndex = key >> pageShift;
         if (pageIndex < maxPageCount)
         {
@@ -64,20 +64,23 @@ internal sealed class PagedLinkStore<V>
                 pageMap[pageIndex] = page = NewPage();
         }
 
-        return page[(int)(key & pageMask)] ??= new();
+        return ref page[(int)(key & pageMask)];
     }
 
     // Every slot exists once its page exists, including unexposed zero slots.
     public bool Has(ulong key) => FindPage(key) is not null;
-    public LinkCell<V>? TryGet(ulong key)
+    // core/linkstore.go:79: distinguish absent pages from present nil slots
+    // without returning an unsafe null reference. No slot is initialized here.
+    public bool TryGet(ulong key, out V? value)
     {
         var page = FindPage(key);
-        return page is not null ? page[(int)(key & pageMask)] ??= new() : null;
+        value = page is not null ? page[(int)(key & pageMask)] : null;
+        return page is not null;
     }
 
-    private LinkCell<V>[]? FindPage(ulong key)
+    private V?[]? FindPage(ulong key)
     {
-        LinkCell<V>[]? page = null;
+        V?[]? page = null;
         var pageIndex = key >> pageShift;
         if (pageIndex < maxPageCount)
         {

@@ -1,7 +1,7 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest qualified checkpoint is `e9ff790` (cached assignment
-visitor / union-tail-copy removal), preceded by `14ccfc9` signature sharing.
+**Resume here:** latest qualified checkpoint is `3ee0dc5` (cached checker callbacks
+and private JSDoc rewind reuse), following `e9ff790` and `14ccfc9`.
 Do not stop automatically at a commit: user challenged that premature stopping;
 continued allocation work is authorized and no blocker existed.
 Latest Native AOT VS Code23.73s /98.32CPU /10.691GiB peak, all ten diagnostics exact;
@@ -24,11 +24,38 @@ missing-page distinctions and existing node zero-value materialization rules.
 Separate SymbolAccessibility optional metadata cells remain unchanged. No unsafe
 or escaping custom byrefs. Sol support owns Core/Linkstore.cs and Checker/Links.cs
 and minimal existing raw-page test adapters; scanner reviews, verifier owns one
-native-VSCode-first build and existing focused page/node/symbol controls. Hold edits
-until current batch checkpoint. After this next batch, profile cumulative allocation
+native-VSCode-first build and existing focused page/node/symbol controls. Ref-slot code is qualified: DLL `c385e71b`, native VSCode24.94s /101.57CPU
+/10,842,564KiB, ten diagnostics exact;45managed+20same native Utilities observations
+pass. Cumulative frozen profile complete:20.4359845→19.3213894GiB sampled intervals
+(−5.4541%), no lost/truncated events, all diagnostics exact. Includes visitor/union,
+callback/JSDoc and refslots, not per-packet causal attribution or Native AOT bytes.
+Saved under `artifacts/vscode-link-slots/allocation-comparison.json`. Six alternating
+frozen native runs AB/BA/AB are now running, no profiler, for throughput evidence.
+Root staged the two Linkslot production files and Utilities adapter for a separate
+checkpoint; token files MUST remain unstaged until separately qualified.
+Existing CoreCLR trace heap history actually reports1→3→9→15 heaps; do not infer
+16 heaps from ProcessorCount16. Native actual heap count remains unqualified. After this next batch, profile cumulative allocation
 against the frozen signature baseline: use exact `cd2b47bb`20.436GiB candidate from
 `artifacts/vscode-signature-slices/candidate-allocation`, not unprofiled02c54a09.
 Full regression gate remains deferred. Inference candidate migration stays deferred.
+
+Latest user question: explicit-state + cached-static callback APIs. Existing hot
+mapTypeEx and applyToParameterTypes/applyToReturnTypes already use generic state and
+static callbacks; rollout is incomplete. Receiver-only callbacks were cached once
+per checker following upstream initialization. Prefer state/static for measured
+per-operation captures; keep changing-state semantics exact and avoid a wholesale
+API rewrite. This question steers continuing work, not a stop request.
+
+Next investigation in parallel: instantiateSymbolTable matches upstream core reuse,
+but authoredOwnedSymbols HashSet incurs profile-visible growth. Scanner proposed an
+opaque owner-token reference per Symbol plus one token/checker, preserving existing
+public foreign-symbol guards without retaining checker via token. Support approved exact one-insertion/three-membership token equivalence. Scanner
+now implements only Ast/Symbol.cs+Checker.cs+Exports.cs, support reviews. Stamp ONLY
+newSymbolEx; bound/direct-new Symbols retain null tokens and unchanged declaration
+fallback; preserve foreign-transient rejection. No checker backreference. One field
+on every Symbol has a cost; do not claim net savings until measured. This is authored
+compatibility bookkeeping, not an upstream algorithm replacement. Implementation
+runs while the prior frozen binary is profiled; no competing build/workload.
 
 **Latest authorization: continue allocation and UTF8 work regardless of GC results.**
 User explicitly directed ongoing allocation/string-copy reduction and byte-backed

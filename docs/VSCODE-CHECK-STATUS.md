@@ -1136,6 +1136,30 @@ assertions, plus TypeSystem77 public and 21 existing JSDoc source/restoration ch
 passing with zero failures/skips. No new profile was collected for this batch; the native
 run is one observation with no speedup or broad acceptance claim.
 
+## Fixed link-store reference slots
+
+The [ref-slot snapshot](../artifacts/vscode-link-slots/build/snapshot-1/snapshot.json)
+replaces exposed page-cell wrappers with ordinary managed references into fixed
+256-entry V reference arrays. Page presence remains distinct from a nil value.
+Node lookups materialize zero-value records only when their page exists; symbol
+lookups retain nil pointer values. Checker callers receive the same stable V objects.
+The separate optional container-metadata cells are unchanged. [Source packet](../artifacts/vscode-link-slots/build/source-ready.json)
+records the bounded Core/Checker change and existing raw-page validation adapter;
+raw observations keep their names/order/expected booleans, and retained refs write
+through after page-table growth. Existing node/symbol identity assertions are unchanged.
+
+The [first native VS Code run](../artifacts/vscode-link-slots/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly
+in 24.94s wall /101.57s CPU /10,842,564 KiB peak. The [focused report](../artifacts/vscode-link-slots/focused/report.json)
+records Collections44 and one original Utilities comparison passing managed with
+zero failures/skips; actual Native AOT Utilities matches all 20 unchanged observations.
+This is focused qualification, not a broad gate. The [cumulative allocation comparison](../artifacts/vscode-link-slots/allocation-comparison.json)
+reports sampled CoreCLR interval weight of 20.43598 to 19.32139 GiB (-5.4541%)
+since the signature baseline, including visitor/union/callback/JSDoc headers and
+direct page slots. Each variant has one matched Server GC trace with zero lost
+events or truncation. These estimates do not isolate this packet or measure exact
+allocated bytes; the single native observation establishes no speedup.
+
 ## Reproduction and records
 
 ```bash

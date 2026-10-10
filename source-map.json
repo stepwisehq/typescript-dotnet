@@ -1122,12 +1122,21 @@
       "upstream": "tsc/internal/checker/links.go",
       "destination": "src/TypeScript.Scanner/Checker/Links.cs",
       "status": "ported",
-      "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Managed cells/classes replace Go struct slot addresses and arena pointers, preserving page presence, nil indirect slots and object identity; no general Go arena runtime.",
+      "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Managed V classes retain Go payload identity; fixed ref-return page slots replace wrapper cells. Node TryGet materializes zero V only on an existing page; symbol TryGet retains nil indirect slots. No general Go arena runtime.",
       "upstreamSha256": "afa761a66e450720a7193ab885047e0cc0c480c4abe59deaa9ad0e5223254841",
       "dataTypesUse": "Original paged node/symbol stores remain ported. Checker nodeLinks/typeNodeLinks fields are now correctly core.LinkStore identity dictionaries; symbol stores retain original arena/page addressing. No change to foundation paged utility acceptance.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
       "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "refSlotAdaptation": {
+        "adaptation": "Node/symbol APIs still return existing V object identities. Each lookup obtains the same entity ID once; node page-present zero values materialize once, symbols preserve nil. Only direct store wrappers use local managed ref slots; checker callers and named graph schemas unchanged.",
+        "snapshot": "artifacts/vscode-link-slots/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; clean Release build and native VS Code ten complete diagnostic records/pinned available chains exact. Existing Collections44 plus original Utilities pass managed (45 tests); actual Native AOT Utilities matches all 20 unchanged observations. One cumulative matched CoreCLR sampled trace per variant reports 20.43598 to 19.32139 GiB (-5.4541%) after visitor/union/callback/JSDoc headers/direct page slots, with zero event loss/truncation. This is not per-packet causal attribution, an exact allocation census or a native speedup claim.",
+        "nativeEvidence": "artifacts/vscode-link-slots/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-link-slots/focused/report.json",
+        "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
+        "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/relater.go",
@@ -1361,7 +1370,7 @@
       "upstream": "tsc/internal/core/linkstore.go",
       "destination": "src/TypeScript.Scanner/Core/Linkstore.cs",
       "status": "ported",
-      "scope": "All LinkStore/PagedLinkStore methods and constants; managed stable cells/classes replace Go addresses/arenas for selected payloads, retaining 256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Generic payloads are class representations of upstream structs/pointers, not a full arbitrary Go-value runtime.",
+      "scope": "All LinkStore/PagedLinkStore methods and constants. Managed V class objects replace Go struct/arena payloads; fixed V?[] page slots retain stable managed references, 256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Generic payloads are selected class representations, not a full arbitrary Go-value runtime.",
       "upstreamSha256": "e63a7687c7145979ad689546f3f4b07f22e2a85791222fc190814fb64016ae33",
       "collectionsCampaignScope": "Existing logical-store semantics retained. Authored read-only VerificationKeys snapshot exposes actual logical owner keys and nil/empty state without allocating entity IDs; full backing allocator topology is not claimed.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
@@ -1371,6 +1380,17 @@
         "adaptation": "Keep 256-entry reference pages; create stable address cells only on Get/TryGet. Has tests page presence without exposing a slot. Node TryGet materializes zero V; symbol TryGet retains nil pointer payload. Missing-page and low-list/high-map behavior unchanged; no concurrency redesign.",
         "review": "Complete functions/direct wrappers independently source-reviewed; existing genuine-Go Utilities observations cover neighbor/zero/nil/stability/boundaries.",
         "snapshot": "artifacts/vscode-lazy-link-cells/build/snapshot-1/snapshot.json"
+      },
+      "refSlotAdaptation": {
+        "sourceResponsibilities": "core/linkstore.go:49/75/79 Get/Has/TryGet, checker/links.go:15/22/33/45 node/symbol wrappers.",
+        "adaptation": "Fixed V?[] pages replace per-slot LinkCell wrappers. Ordinary managed ref Get returns a stable array slot; bool/out TryGet separates page existence from nil V without unsafe null refs. Page arrays and V objects remain necessary; separate containing-symbol optional metadata cells are retained. Existing ownership/synchronization unchanged.",
+        "validationAdapter": "validation/Checker.Validation/Utilities.cs: existing raw page observation names/order/expected booleans unchanged; retained ref write-through after low page-table and high map growth replaces wrapper-object identity assertions. Existing node/symbol V identity assertions unchanged.",
+        "snapshot": "artifacts/vscode-link-slots/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; clean Release build and native VS Code ten complete diagnostic records/pinned available chains exact. Existing Collections44 plus original Utilities pass managed (45 tests); actual Native AOT Utilities matches all 20 unchanged observations. One cumulative matched CoreCLR sampled trace per variant reports 20.43598 to 19.32139 GiB (-5.4541%) after visitor/union/callback/JSDoc headers/direct page slots, with zero event loss/truncation. This is not per-packet causal attribution, an exact allocation census or a native speedup claim.",
+        "nativeEvidence": "artifacts/vscode-link-slots/first-vscode/result.json",
+        "focusedEvidence": "artifacts/vscode-link-slots/focused/report.json",
+        "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
+        "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
       }
     },
     {

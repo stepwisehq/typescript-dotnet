@@ -30,21 +30,33 @@ public static class Utilities
         void Flag(string name, bool value) => observations.Add(new() { Name = name, BoolValue = value });
         void Count(string name, int value) => observations.Add(new() { Name = name, IntValue = value });
         var store = new PagedLinkStore<ProbeValue>();
-        Flag("paged.unallocated", store.TryGet(1)is null && !store.Has(1));
-        var first = store.Get(0);
-        first.Value = new()
-        {
-            Value = 7
-        };
-        Flag("paged.same-page-zero", store.Has(1) && store.TryGet(1)is { } neighbor && (neighbor.Value?.Value ?? 0) == 0);
-        Flag("paged.stable-distinct-slots", ReferenceEquals(store.Get(0), first) && !ReferenceEquals(store.TryGet(1), first));
-        Flag("paged.other-page-unallocated", store.TryGet(256)is null);
+        Flag("paged.unallocated", !store.TryGet(1, out _) && !store.Has(1));
+        ref var first = ref store.Get(0);
+        first = new() { Value = 7 };
+        Flag("paged.same-page-zero", store.Has(1) && store.TryGet(1, out var neighbor) && neighbor is null);
+        ref var neighborSlot = ref store.Get(1);
+        neighborSlot = new() { Value = 8 };
+        Flag("paged.stable-distinct-slots", ReferenceEquals(store.Get(0), first) &&
+            store.TryGet(1, out neighbor) && ReferenceEquals(neighbor, neighborSlot) &&
+            !ReferenceEquals(neighborSlot, first) && store.Get(0)?.Value == 7);
+        Flag("paged.other-page-unallocated", !store.TryGet(256, out _));
         ulong low = (65535UL << 8) + 255, high = 65536UL << 8;
-        var lowSlot = store.Get(low);
-        var highSlot = store.Get(high);
-        Flag("paged.last-list-first-map-stable", ReferenceEquals(store.Get(low), lowSlot) && ReferenceEquals(store.Get(high), highSlot) && !ReferenceEquals(lowSlot, highSlot));
-        Flag("paged.high-map-neighbor-zero", store.Has(high + 1) && (store.TryGet(high + 1)?.Value?.Value ?? 0) == 0);
-        Flag("paged.high-other-page-unallocated", store.TryGet(high + 256)is null);
+        ref var lowSlot = ref store.Get(low);
+        lowSlot = new() { Value = 11 };
+        ref var highSlot = ref store.Get(high);
+        highSlot = new() { Value = 12 };
+        // Retained refs must still write through after the page table grows.
+        first = new() { Value = 9 };
+        store.Get(high + 512) = new() { Value = 13 };
+        lowSlot = new() { Value = 14 };
+        highSlot = new() { Value = 15 };
+        Flag("paged.last-list-first-map-stable", ReferenceEquals(store.Get(low), lowSlot) &&
+            ReferenceEquals(store.Get(high), highSlot) && !ReferenceEquals(lowSlot, highSlot) &&
+            ReferenceEquals(store.Get(0), first) && store.Get(0)?.Value == 9 &&
+            store.Get(low)?.Value == 14 && store.Get(high)?.Value == 15);
+        Flag("paged.high-map-neighbor-zero", store.Has(high + 1) &&
+            store.TryGet(high + 1, out var highNeighbor) && highNeighbor is null);
+        Flag("paged.high-other-page-unallocated", !store.TryGet(high + 256, out _));
         var factory = new NodeFactory();
         Node left, right;
         do
