@@ -206,8 +206,8 @@ public sealed partial class Checker
     internal bool isTypeIdenticalTo(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation);
     internal Ternary compareTypesIdentical(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation) ? Ternary.True : Ternary.False;
     private Ternary compareTypesAssignableSimple(Type source, Type target) => isTypeRelatedTo(source, target, assignableRelation) ? Ternary.True : Ternary.False;
-    private Ternary compareTypesAssignableWorker(Type source, Type target, bool reportErrors) => compareTypesAssignable(source, target, reportErrors);
-    private Ternary compareTypesAssignable(Type source, Type target, bool reportErrors) => compareTypesAssignableSimple(source, target);
+    // relater.go:135: the cached worker uses the assignable relation and ignores reportErrors.
+    private Ternary compareTypesAssignableWorker(Type source, Type target, bool reportErrors) => compareTypesAssignableSimple(source, target);
     // Authored explicit representation of relater.go:4587's captured function.
     // The original callback captures this relater and intersection state only.
     private sealed class SignatureRelatedComparer(Relater relater, IntersectionState state)

@@ -393,7 +393,8 @@ public partial class Parser
         this.contextFlags = state.contextFlags;
         this.diagnostics = GoRuntime.Slice(this.diagnostics, 0, state.diagnosticsLen);
         this.jsDiagnostics = GoRuntime.Slice(this.jsDiagnostics, 0, state.jsDiagnosticsLen);
-        this.jsdocInfos = GoRuntime.Slice(this.jsdocInfos, 0, state.jsdocInfosLen);
+        // parser.go:370: rewind the private slice header, retaining its backing storage.
+        this.jsdocInfos = this.jsdocInfos.Slice2(0, state.jsdocInfosLen);
         this.reparsedClones = GoRuntime.Slice(this.reparsedClones, 0, state.reparsedClonesLen);
         this.statementHasAwaitIdentifier = state.statementHasAwaitIdentifier;
         this.hasParseError = state.hasParseError;
@@ -9491,7 +9492,8 @@ public partial class Parser
     private HashSet<int> notParenthesizedArrow = new();
     private GoArena<Node> nodeSliceArena = new();
     private GoArena<ByteStringView> stringSliceArena = new();
-    private List<JSDocInfo> jsdocInfos;
+    // parser.go:90: private append/reslice storage; only the final JSDoc cache escapes.
+    private Slice<JSDocInfo> jsdocInfos;
     private List<int> possibleAwaitSpans;
     private Slice<ByteStringView> jsdocCommentsSpace, jsdocTagCommentsSpace;
     private List<CommentRange> jsdocCommentRangesSpace;

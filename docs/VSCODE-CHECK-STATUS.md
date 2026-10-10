@@ -1111,6 +1111,31 @@ record comparison and original assertions, plus TypeSystem77 public checks passi
 with zero failures/skips. Expected records are unchanged; this is focused qualification,
 not a new broad acceptance gate.
 
+## Cached checker callbacks and private JSDoc records
+
+The [callback/JSDoc snapshot](../artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json)
+restores original callback reuse for assignability, symbol ordering and three existing
+primitive/missing/string-index predicates. Setup follows the pinned checker initialization
+points. The assignability worker calls the existing simple relation directly and retains
+the original ignored reportErrors parameter. Symbol ordering needs one cached Func and
+one cached Comparison because the managed spelling and sort APIs require distinct delegate
+types; both invoke the unchanged worker. Existing stored-comparer observations are unchanged.
+
+The private parser JSDocInfo collection now uses a slice header for ordered append and
+speculative rewind, matching Go reslicing instead of copying a List prefix. Existing
+reparser append sites use the same descriptor helpers. The final JSDoc cache retains
+parent/document references independently; public AST storage and parser lifetime are
+unchanged. This removes known callback construction and prefix-copy sites structurally,
+without claiming a measured allocation total for the batch.
+
+The [native VS Code run](../artifacts/vscode-cached-assignable-comparer/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly in
+24.74s wall /105.34s CPU /11,188,996 KiB peak. The [focused report](../artifacts/vscode-cached-assignable-comparer/focused/report.json)
+records four unchanged original inference inputs passing complete records and original
+assertions, plus TypeSystem77 public and 21 existing JSDoc source/restoration checks
+passing with zero failures/skips. No new profile was collected for this batch; the native
+run is one observation with no speedup or broad acceptance claim.
+
 ## Reproduction and records
 
 ```bash

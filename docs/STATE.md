@@ -1,27 +1,34 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** signature rollout is committed as `14ccfc9`; it reduced matched
-sampled allocation20.946→20.436GiB (2.435%), Native AOT and focused checks passed.
-The next cached-assignment-visitor / union-tail-copy batch is qualified for an
-intermediate commit: library `bc0e8cdd`, native CLI `6085e839`, native VS Code23.73s
-/98.32 CPU seconds /11,210,476KiB peak, all ten diagnostic DTOs and pinned available
-chains exact. One build3.992s, publish9.487s. Eight existing full Go flow records and
-77 TypeSystem public rows pass0skip; unchanged expectations. Evidence:
-`artifacts/vscode-flow-union-allocation/{first-vscode/result.json,focused/report.json}`.
-No new allocation capture or speedup claim for this small batch. Full regressions
-remain deferred. No heavy job is active.
-The finite initializeClosures review is complete. Next measured candidate is restoring
-upstream cached compareTypesAssignable: two disjoint TypeComparer caller groups total
-95,050,240 sampled bytes. Read-only assessment saved at
-`artifacts/vscode-flow-union-allocation/initialize-closures-assessment.json`.
-No implementation yet. Scope is Checker cached field + Relater worker adjustment;
-worker must call compareTypesAssignableSimple directly to avoid recursion through
-its new cached field. Other predicates lacked quantified callback evidence; don't
-infer all Func<Type,bool> allocations are removable. Sol scanner implements, support
-reviews, verifier owns native-first validation when this next packet starts.
-Inference candidate migration remains deferred: exact visible candidate-attributed
-pair is only59,585,336bytes and wider static-action attribution is ambiguous; a
-four-file alias/reducer change would be disproportionate without stronger evidence.
+**Resume here:** latest qualified checkpoint is `e9ff790` (cached assignment
+visitor / union-tail-copy removal), preceded by `14ccfc9` signature sharing.
+Do not stop automatically at a commit: user challenged that premature stopping;
+continued allocation work is authorized and no blocker existed.
+Latest Native AOT VS Code23.73s /98.32CPU /10.691GiB peak, all ten diagnostics exact;
+pinned Go9.61s /46.86CPU /7.374GiB (single observations, not paired benchmark).
+Latest sampled CoreCLR allocations20.436GiB after signatures vs baseline20.946GiB;
+visitor/union changes have NOT been allocation-profiled. Go sampled5.176GiB uses a
+different profiler/runtime and is not an exact Native AOT allocation comparison.
+
+Callback and private JSDoc rewind reuse batch qualified: library `02c54a09`, Native
+VS Code24.74s /105.34 CPU seconds /11,188,996KiB peak, all ten diagnostics/chains
+exact;102 focused checks pass (4 genuine Go inference records,77 TypeSystem,
+21 existing JSDoc/source/restoration checks). One clean build9.484s. Evidence:
+`artifacts/vscode-cached-assignable-comparer/{first-vscode/result.json,focused/report.json}`.
+No new allocation capture; no speedup established by these single observations.
+
+Next selected: replace only PagedLinkStore internal LinkCell wrappers with standard
+ref-return slots in fixed V?[] pages. Actual checker V objects and their identities
+remain unchanged. Has tests page presence; TryGet retains page-present versus
+missing-page distinctions and existing node zero-value materialization rules.
+Separate SymbolAccessibility optional metadata cells remain unchanged. No unsafe
+or escaping custom byrefs. Sol support owns Core/Linkstore.cs and Checker/Links.cs
+and minimal existing raw-page test adapters; scanner reviews, verifier owns one
+native-VSCode-first build and existing focused page/node/symbol controls. Hold edits
+until current batch checkpoint. After this next batch, profile cumulative allocation
+against the frozen signature baseline: use exact `cd2b47bb`20.436GiB candidate from
+`artifacts/vscode-signature-slices/candidate-allocation`, not unprofiled02c54a09.
+Full regression gate remains deferred. Inference candidate migration stays deferred.
 
 **Latest authorization: continue allocation and UTF8 work regardless of GC results.**
 User explicitly directed ongoing allocation/string-copy reduction and byte-backed

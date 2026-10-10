@@ -397,7 +397,15 @@
           "adaptation": "Private Slice<Node> scratch retains source capacity16, nested/speculative/context/error flow unchanged; final CloneAsList makes detached mutable public List, empty returns null.",
           "snapshot": "artifacts/vscode-parser-slices/build/snapshot-1/snapshot.json"
         }
-      ]
+      ],
+      "privateJSDocInfoSliceAdaptation": {
+        "sourceResponsibilities": "parser.go:90/350/364/370/488; jsdoc.go:101; existing reparser.go:100/119/292 scalar append consumers bind Slice overload without source edits.",
+        "adaptation": "Private JSDocInfo Slice captures mark length, rewinds only header retaining backing, and appends in source order. Final cache stores existing parent/jsDocs references in independent dictionary; no descriptor/public storage escape, parser pooling or JSDocInfo class representation change.",
+        "snapshot": "artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json",
+        "review": "artifacts/vscode-cached-assignable-comparer/build/verification-source-review.json",
+        "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
+        "state": "Independent source review clear; native ten records exact, original inference4/TypeSystem77/JSDoc21 managed checks pass. Selected copies removed structurally; no new measured savings/speedup claim."
+      }
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -407,7 +415,15 @@
       "upstreamSha256": "02d23ecd8435148c3b69634739a75a1a5d9a1fcd5c683dcac131efe97699f51c",
       "textViewAdaptation": "Internal source text uses an immutable shared byte-string view, preserving upstream slicing/bounds and byte positions; explicit string materialization remains at output boundaries. JSDoc save/slice/restore ordering unchanged. See docs/VSCODE-CHECK-STATUS.md.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "privateJSDocInfoSliceAdaptation": {
+        "sourceResponsibilities": "parser.go:90/350/364/370/488; jsdoc.go:101; existing reparser.go:100/119/292 scalar append consumers bind Slice overload without source edits.",
+        "adaptation": "Private JSDocInfo Slice captures mark length, rewinds only header retaining backing, and appends in source order. Final cache stores existing parent/jsDocs references in independent dictionary; no descriptor/public storage escape, parser pooling or JSDocInfo class representation change.",
+        "snapshot": "artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json",
+        "review": "artifacts/vscode-cached-assignable-comparer/build/verification-source-review.json",
+        "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
+        "state": "Independent source review clear; native ten records exact, original inference4/TypeSystem77/JSDoc21 managed checks pass. Selected copies removed structurally; no new measured savings/speedup claim."
+      }
     },
     {
       "upstream": "tsc/internal/parser/reparser.go",
@@ -1031,6 +1047,14 @@
         "review": "artifacts/vscode-flow-union-allocation/build/independent-review.json",
         "state": "Independent whole-function/direct-helper review clear, single build clean, native VS Code ten complete records exact; focused eight existing assignment-sensitive compiler full records/original assertions and TypeSystem77 public records pass without expected changes. No new allocation profile or speedup claim.",
         "focusedEvidence": "artifacts/vscode-flow-union-allocation/focused/report.json"
+      },
+      "cachedClosureReuseAdaptation": {
+        "sourceResponsibilities": "checker.go:591/922 cached symbol comparator and 887-892/1125/1259-1269 shared closure initialization.",
+        "adaptation": "Cache assignability comparer, symbol comparator and primitive/missing/string-index predicates at original setup points. Symbol comparator binds identical Worker once in each required .NET Func/Comparison type. Other predicate bodies/order remain unchanged; string-index recursion uses cached callback, duplicate forwarding body removed.",
+        "snapshot": "artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json",
+        "review": "artifacts/vscode-cached-assignable-comparer/build/independent-review.json",
+        "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
+        "state": "Native ten complete diagnostic records exact; four unchanged original inference full records, TypeSystem77 public and 21 existing JSDoc source/restoration checks pass. No new allocation profile or speedup claim."
       }
     },
     {
@@ -1156,6 +1180,12 @@
         "evidence": "docs/VSCODE-CHECK-STATUS.md",
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      },
+      "cachedAssignabilityComparerAdaptation": {
+        "sourceResponsibilities": "relater.go:128/135 and checker.go:1269.",
+        "adaptation": "Original cached Worker uses the unchanged Simple assignable relation directly, ignoring reportErrors as upstream does; avoids recursive forwarding through the new field. Caller syntax and existing named stored-comparer family/owner/equality observations unchanged.",
+        "snapshot": "artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json",
+        "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json"
       }
     },
     {
@@ -1264,7 +1294,8 @@
         "evidence": "docs/VSCODE-CHECK-STATUS.md",
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
-      }
+      },
+      "cachedSymbolSortAdaptation": "utilities.go:361 sortSymbols binds the cached .NET Comparison to unchanged symbol Worker; paired Func callback supports existing spelling APIs. Original symbol ordering/mutation unchanged. Snapshot artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json."
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",

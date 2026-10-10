@@ -33,6 +33,13 @@ public sealed partial class Checker
     private ModuleResolutionKind moduleResolutionKind;
     // checker.go:891/1268: cache this worker once instead of allocating a Visitor per node.
     private Visitor markNodeAssignments;
+    // checker.go:892/1269: retain the original once-per-checker assignability callback.
+    private TypeComparer compareTypesAssignable;
+    // checker.go:591/922. .NET requires separate Func and Comparison delegate types.
+    internal Func<Symbol, Symbol, int> compareSymbols;
+    private Comparison<Symbol> compareSymbolsForSort;
+    // checker.go:887-890/1259: retain the original shared predicate callbacks.
+    private Func<Type, bool> isPrimitiveOrObjectOrEmptyType, containsMissingType, isStringIndexSignatureOnlyType;
 
     internal List<SourceFile> files;
     internal Dictionary<SourceFile, int> fileIndexMap;
@@ -200,6 +207,8 @@ public sealed partial class Checker
             compilerOptions = options,
             program = host
         };
+        c.compareSymbols = c.compareSymbolsWorker;
+        c.compareSymbolsForSort = c.compareSymbolsWorker;
         c.languageVersion = options.GetEmitScriptTarget();
         c.moduleKind = options.GetEmitModuleKind();
         c.moduleResolutionKind = options.GetModuleResolutionKind();
@@ -355,7 +364,11 @@ public sealed partial class Checker
         c.getGlobalClassAccessorDecoratorResultType = c.getGlobalTypeResolver("ClassAccessorDecoratorResult", 2, true);
         c.getGlobalClassFieldDecoratorContextType = c.getGlobalTypeResolver("ClassFieldDecoratorContext", 2, true);
         // checker.go:1125/1268 initializeClosures, before iteration and checker initialization.
+        c.isPrimitiveOrObjectOrEmptyType = c.isPrimitiveOrObjectOrEmptyTypeWorker;
+        c.containsMissingType = c.containsMissingTypeWorker;
+        c.isStringIndexSignatureOnlyType = c.isStringIndexSignatureOnlyTypeWorker;
         c.markNodeAssignments = c.markNodeAssignmentsWorker;
+        c.compareTypesAssignable = c.compareTypesAssignableWorker;
         c.initializeIterationResolvers();
         c.initializeChecker();
         return c;
@@ -1960,7 +1973,7 @@ public sealed partial class Checker
         }
 
         return "";
-    }, compareSymbolsWorker);
+    }, compareSymbols);
     private void onSuccessfullyResolvedSymbol(Node errorLocation, Symbol result, SymbolFlags meaning, Node lastLocation, Node associatedDeclarationForContainingInitializerOrBindingName, bool withinDeferredContext)
     {
         var name = result.Name;
@@ -4527,8 +4540,8 @@ public sealed partial class Checker
         // checker.go:22530. Sort the two borrowed source slices in place;
         // the local result list is not published or resized during comparison.
         var symbols = CollectionsMarshal.AsSpan(result);
-        symbols.Slice(0, containedCount).Sort(compareSymbolsWorker);
-        symbols.Slice(containedCount).Sort(compareSymbolsWorker);
+        symbols.Slice(0, containedCount).Sort(compareSymbolsForSort);
+        symbols.Slice(containedCount).Sort(compareSymbolsForSort);
         return result;
     }
 
@@ -9924,7 +9937,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     private Diagnostic addDiagnostic(Diagnostic diagnostic) => serializationLevel < 2 ? diagnostics.Add(diagnostic) : diagnostic;
-    private bool containsMissingType(Type t) => t == missingType || (t.flags & TypeFlags.Union) != 0 && t.Types()[0] == missingType;
+    private bool containsMissingTypeWorker(Type t) => t == missingType || (t.flags & TypeFlags.Union) != 0 && t.Types()[0] == missingType;
     private Type addOptionality(Type t) => addOptionalityEx(t, false, true);
     private Type addOptionalityEx(Type t, bool isProperty, bool isOptional) => strictNullChecks && isOptional ? getOptionalType(t, isProperty) : t;
     private bool isTypeAssignableToKind(Type source, TypeFlags kind) => isTypeAssignableToKindEx(source, kind, false);
@@ -12293,7 +12306,6 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     internal readonly HashSet<Type> markerTypes = new();
-    internal int compareSymbols(Symbol left, Symbol right) => compareSymbolsWorker(left, right);
     internal Type globalArrayType, globalReadonlyArrayType;
     private Type anyArrayType, autoArrayType, anyReadonlyArrayType;
     private Type globalIterableType, globalIterableIteratorType, globalAsyncIterableType, globalAsyncIterableIteratorType;
@@ -12932,7 +12944,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // checker.go:initializeClosures and27057. Shared reduction and generic string-like predicates.
-    private bool isPrimitiveOrObjectOrEmptyType(Type t) => (t.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 || IsEmptyAnonymousObjectType(t);
+    private bool isPrimitiveOrObjectOrEmptyTypeWorker(Type t) => (t.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0 || IsEmptyAnonymousObjectType(t);
     private bool isGenericStringLikeType(Type t)
     {
         return (((t.flags & ((TypeFlags.TemplateLiteral | TypeFlags.StringMapping))) != 0) && !this.isPatternLiteralType(t));
@@ -27489,14 +27501,6 @@ public sealed partial class Checker
         }
 
         return this.mapType(t, f);
-    }
-}
-
-public sealed partial class Checker
-{
-    private bool isStringIndexSignatureOnlyType(Type t)
-    {
-        return (((((((t.flags & TypeFlags.Object) != 0) && !this.isGenericMappedType(t)) && (GoRuntime.Len(this.getPropertiesOfType(t)) == 0)) && (GoRuntime.Len(this.getIndexInfosOfType(t)) == 1)) && (this.getIndexInfoOfType(t, this.stringType) != null)) || (((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(t.Types(), this.isStringIndexSignatureOnlyType)));
     }
 }
 

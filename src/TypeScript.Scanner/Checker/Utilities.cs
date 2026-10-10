@@ -818,7 +818,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    internal void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsWorker);
+    internal void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsForSort);
     internal static bool isReservedMemberName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] != '@' && name[1] != '#';
 }
 

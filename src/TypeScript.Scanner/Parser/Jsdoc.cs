@@ -99,7 +99,8 @@ public partial class Parser
                 this.reparseTags(node, jsdoc);
             }
 
-            this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = node, jsDocs = jsdoc });
+            // jsdoc.go:101: append into the private parser slice.
+            this.jsdocInfos = this.jsdocInfos.Append(new JSDocInfo { parent = node, jsDocs = jsdoc });
             return jsdoc;
         }
 
