@@ -1,0 +1,8 @@
+{
+  "kind": "authored-original-source-API-behavioral-inputs",
+  "group": "vertical",
+  "cases": 2,
+  "requestsSha256": "b74ad09ca246a6fe36940bcf812e1782a7fb37f2370ae6ac935a4df919d2639d",
+  "historicalGeneration": "artifacts/program-validation/original-vertical",
+  "expectedSource": "fresh pristine pinned original Program; no target expectations"
+}

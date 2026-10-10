@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" />
+    <Compile Include="../Configuration.Checks/ConfigurationFileSystem.cs" Link="Retained/ConfigurationFileSystem.cs" />
+    <Compile Include="../Configuration.Checks/Check.cs" Link="Retained/Check.cs" />
+  </ItemGroup>
+</Project>

@@ -262,7 +262,7 @@ public sealed class DiagnosticsCollection
 
 public static partial class Ast
 {
-    private static string getDiagnosticPath(Diagnostic d) => d.File()is not null ? GoString.ToUtf8(d.File().FileName() ?? "") : "";
+    private static string getDiagnosticPath(Diagnostic d) => d.File()?.FileNameGoBytes() ?? "";
     public static bool EqualDiagnostics(Diagnostic d1, Diagnostic d2) => ReferenceEquals(d1, d2) || EqualDiagnosticsNoRelatedInfo(d1, d2) && equalDiagnosticSlices(d1.RelatedInformation(), d2.RelatedInformation(), EqualDiagnostics);
     public static bool EqualDiagnosticsNoRelatedInfo(Diagnostic d1, Diagnostic d2)
     {

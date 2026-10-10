@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "composite": true, "declaration": true, "outDir": "./dist", "target": "es2022" },
+  "files": ["helper.ts"]
+}

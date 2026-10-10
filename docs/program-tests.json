@@ -1,0 +1,3497 @@
+{
+  "schema": 1,
+  "baseline": "1d6bd61",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "final-gate-passed-runtime-qualified",
+  "scope": "PROGRAM-CONTRACT P1-P6; original assertions and operation-level dependency applicability, not an implementation completion claim.",
+  "counts": {
+    "compilerBodies": 20,
+    "dependencyBodiesInventoried": 86,
+    "totalBodiesInventoried": 106,
+    "assertionPreservingComposition": {
+      "requiredFullOriginal": 69,
+      "assertionPreservingPort": 2,
+      "completeAssertionsWithTestingPathHostAdaptation": 1,
+      "total": 72
+    },
+    "adaptedOriginalComposition": {
+      "diagnosticChannel": 3,
+      "constructionSubset": 1,
+      "total": 4
+    }
+  },
+  "execution": {
+    "original": {
+      "status": "passed",
+      "bodies": 76,
+      "assertionPreservingManagedCounterparts": 72,
+      "adaptedManagedCounterparts": 4,
+      "commands": 9,
+      "passed": 76,
+      "skips": 0,
+      "exitCode": 0,
+      "report": "artifacts/program-validation/original-tests.json",
+      "proof": "validation/results/program-verified.json",
+      "initialBaseline": {
+        "initialBodies": 73,
+        "passed": 73,
+        "skips": 0,
+        "exitCode": 0,
+        "report": "artifacts/program-validation/original-baseline/report.json"
+      }
+    },
+    "managed": {
+      "status": "passed",
+      "groups": 78,
+      "assertionPreservingOriginalGroups": 72,
+      "adaptedOriginalGroups": 4,
+      "authoredGroups": 2,
+      "passed": 78,
+      "exitCode": 0,
+      "report": "artifacts/program-validation/managed-controls-report.json",
+      "scope": "Final current-source selected original assertion domains and explicitly adapted/authored groups.",
+      "proof": "validation/results/program-verified.json"
+    },
+    "native": {
+      "status": "passed",
+      "runtime": "actual Linux x64 Native AOT",
+      "groups": 78,
+      "assertionPreservingOriginalGroups": 72,
+      "adaptedOriginalGroups": 4,
+      "authoredGroups": 2,
+      "passed": 78,
+      "exitCode": 0,
+      "report": "artifacts/program-validation/native-controls-report.json",
+      "proof": "validation/results/program-verified.json"
+    },
+    "xUnit": {
+      "status": "passed",
+      "programCases": 264,
+      "sharedCases": 78,
+      "corpusCases": 186,
+      "aggregateCases": 24598,
+      "failed": 0,
+      "skipped": 0,
+      "report": "artifacts/program-validation/program.trx",
+      "proof": "validation/results/program-verified.json"
+    },
+    "corpus": {
+      "originalExact": 186,
+      "managedExact": 186,
+      "nativeExact": 186,
+      "orderExecutionsPerRuntime": 76,
+      "ordinaryCliCasesPerRuntime": 2,
+      "proof": "validation/results/program-verified.json"
+    },
+    "gate": {
+      "exitCode": 0,
+      "elapsedSeconds": 982.578,
+      "allFiveDriftChecksClear": true,
+      "report": "artifacts/program-validation/final-gate.json"
+    },
+    "proof": "validation/results/program-verified.json"
+  },
+  "functions": [
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestProgramSharedData",
+      "line": 29,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestIncludeReasonDiagnosticsAreProgramLocal",
+      "line": 80,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestProgramHostsAndFactories",
+      "line": 95,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestClonedProgramProjectReferenceResolution",
+      "line": 195,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestProgram",
+      "line": 445,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestImportSourceProgram",
+      "line": 482,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/program_test.go",
+      "sourceSha256": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+      "name": "TestIncludeProcessorDiagnosticsWithMissingFileCasing",
+      "line": 539,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/ProgramChecks.cs",
+        "class": "Program.Checks.ProgramChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetSourceFileForResolvedModuleUsesResolvedPath",
+      "line": 12,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetCheckerAssociationBaseWeight",
+      "line": 31,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestShouldPrioritizeSourceFiles",
+      "line": 38,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetCheckerAssociationPolicy",
+      "line": 51,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetCheckerAssociationOrder",
+      "line": 113,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetCheckerAssociationWeights",
+      "line": 123,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go",
+      "sourceSha256": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+      "name": "TestGetCheckerAssociations",
+      "line": 157,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CheckerPoolChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestContentMapperVirtualExtensionSetsImpliedNodeFormat",
+      "line": 69,
+      "disposition": "assertion-preserving-port",
+      "reason": "Preserve original direct assertions.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "semanticAssertionsExcluded": [],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestContentMapperDirectivesPreserveIncrementalGlobals",
+      "line": 90,
+      "disposition": "adapted-construction-subset",
+      "reason": "Exact original generator fixture retained; bulk global and incremental semantic assertions explicitly blocked by the selected checker boundary.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Only the explicitly recorded adapted channel/construction assertion domain passed; excluded original semantic operations are not claimed."
+      },
+      "semanticAssertionsExcluded": [
+        "pre-incremental GetGlobalDiagnostics count=0: bulk query creates actual checker outside construction scope",
+        "incremental fileless Cannot_find_global_type/IterableIterator diagnostic count=1",
+        "incremental policy-dependent unused expect diagnostic count/code/source/file identity"
+      ],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestCompositeProjectContentMapperSupplementalRoots",
+      "line": 149,
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "reason": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Only the explicitly recorded adapted channel/construction assertion domain passed; excluded original semantic operations are not claimed."
+      },
+      "semanticAssertionsExcluded": [],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestContentMapperInvalidMappings",
+      "line": 221,
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "reason": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Only the explicitly recorded adapted channel/construction assertion domain passed; excluded original semantic operations are not claimed."
+      },
+      "semanticAssertionsExcluded": [],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestContentMapperSourceFileState",
+      "line": 247,
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "reason": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Only the explicitly recorded adapted channel/construction assertion domain passed; excluded original semantic operations are not claimed."
+      },
+      "semanticAssertionsExcluded": [],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "source": "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go",
+      "sourceSha256": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+      "name": "TestContentMapperProjectErrorDiagnostics",
+      "line": 298,
+      "disposition": "assertion-preserving-port",
+      "reason": "Preserve original direct assertions.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "semanticAssertionsExcluded": [],
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/CompilerMapperChecks.cs",
+        "class": "Program.Checks.CompilerMapperChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanVerbatim",
+      "line": 11,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanAtom",
+      "line": 25,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualAlias",
+      "line": 40,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanSynthesizedGap",
+      "line": 63,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualIntersectingSpansAllowsUncoveredEndpoints",
+      "line": 79,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanEmptyIsSynthesized",
+      "line": 95,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanCrossingSegments",
+      "line": 106,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalSpanNilIdentity",
+      "line": 120,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalPosition",
+      "line": 130,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalPositionExact",
+      "line": 163,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestVirtualToOriginalPositionExactRejectsDiscontinuousBoundary",
+      "line": 189,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestZeroLengthSpansAtSegmentEnds",
+      "line": 202,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestMapPositionNilIdentity",
+      "line": 236,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualSpanVerbatim",
+      "line": 245,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualSpanAtom",
+      "line": 260,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualSpanGap",
+      "line": 276,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualSpanNilIdentity",
+      "line": 288,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualPositions",
+      "line": 299,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualPositionsAtEndpoint",
+      "line": 338,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualDuplicateGroup",
+      "line": 368,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualOverlappingSpans",
+      "line": 397,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualPositionFindsEarlyCoveringSegment",
+      "line": 423,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualOverlapFallsBackFromDisabledContainer",
+      "line": 473,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualCrossGroupProjections",
+      "line": 487,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualExplicitZeroFeatures",
+      "line": 506,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestFeatureParticipationOriginalAndVirtual",
+      "line": 531,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestOriginalToVirtualSpanRoundTrip",
+      "line": 553,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestMarshalRoundTrip",
+      "line": 573,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestValidate",
+      "line": 594,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestValidateOriginalOverlapAndFeatures",
+      "line": 661,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "source": "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go",
+      "sourceSha256": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac",
+      "name": "TestValidateNilIsValid",
+      "line": 740,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/SpanMapChecks.Generated.cs",
+        "manualShared": "validation/Program.Checks/SpanMapChecks.cs",
+        "class": "Program.Checks.SpanMapChecks"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestNewKnownSymlink",
+      "line": 12,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestSetDirectory",
+      "line": 23,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestKnownDirectoryLinkPreservesChildSpelling",
+      "line": 59,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestSetFile",
+      "line": 86,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestProcessResolution",
+      "line": 104,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestGuessDirectorySymlink",
+      "line": 129,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestIsNodeModulesOrScopedPackageDirectory",
+      "line": 195,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestSetSymlinksFromResolutions",
+      "line": 223,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "source": "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go",
+      "sourceSha256": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f",
+      "name": "TestKnownSymlinksThreadSafety",
+      "line": 282,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/KnownSymlinkChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestDirectoryExists",
+      "line": 19,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestFileExists",
+      "line": 53,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestGetAccessibleEntries",
+      "line": 87,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestRealpath",
+      "line": 121,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestStat",
+      "line": 155,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestReadFile",
+      "line": 189,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestCaseSensitivity",
+      "line": 220,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/CachedVfsChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestRemove",
+      "line": 251,
+      "disposition": "excluded-write-side-api",
+      "reason": "Cached write forwarding is outside the selected read-only IFS and Program environment boundary.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "source": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go",
+      "sourceSha256": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+      "name": "TestWriteFile",
+      "line": 282,
+      "disposition": "excluded-write-side-api",
+      "reason": "Cached write forwarding is outside the selected read-only IFS and Program environment boundary.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/bundled",
+      "source": "upstream/TypeScript/tsc/internal/bundled/bundled_test.go",
+      "sourceSha256": "fdd835c095e945f968b770d2882aac245a91c595ffad47c2d9d4e86c577734fa",
+      "name": "TestTestingLibPath",
+      "line": 14,
+      "disposition": "adapted-testing-path-host",
+      "reason": "Go runtime.Caller source-directory helper is a test host dependency; preserve rooted path and original lib.d.ts presence at the pinned source location, separately from genuine embedded resource wrapper.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/BundledChecks.cs",
+        "class": "Program.Checks.BundledChecks"
+      }
+    },
+    {
+      "package": "./internal/bundled",
+      "source": "upstream/TypeScript/tsc/internal/bundled/bundled_test.go",
+      "sourceSha256": "fdd835c095e945f968b770d2882aac245a91c595ffad47c2d9d4e86c577734fa",
+      "name": "TestEmbeddedLibs",
+      "line": 28,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-staged-managed-passed",
+        "shared": "validation/Program.Checks/BundledChecks.cs",
+        "class": "Program.Checks.BundledChecks"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/transform_test.go",
+      "sourceSha256": "8282cecfd52408f3207ce3638a06dff9aa3f45081cf29ada4376aa8cde7ad6b8",
+      "name": "TestParseResultSupplementalFileExtensions",
+      "line": 14,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/ParseResultChecks.cs",
+        "class": "Program.Checks.ParseResultChecks"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/transform_test.go",
+      "sourceSha256": "8282cecfd52408f3207ce3638a06dff9aa3f45081cf29ada4376aa8cde7ad6b8",
+      "name": "TestParseResultAllowsSupplementalModules",
+      "line": 65,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/ParseResultChecks.cs",
+        "class": "Program.Checks.ParseResultChecks"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/transform_test.go",
+      "sourceSha256": "8282cecfd52408f3207ce3638a06dff9aa3f45081cf29ada4376aa8cde7ad6b8",
+      "name": "TestParseResultDoesNotLeakCanonicalModuleForcingToSupplementals",
+      "line": 88,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "translation": {
+        "status": "source-reviewed-managed-passed",
+        "shared": "validation/Program.Checks/ParseResultChecks.cs",
+        "class": "Program.Checks.ParseResultChecks"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerTransform",
+      "line": 236,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostLogging",
+      "line": 252,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostDiscardsStderrWithoutLogging",
+      "line": 282,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestMapperDiagnosticName",
+      "line": 298,
+      "disposition": "retained-full-original",
+      "reason": "Existing Configuration DependencyMetadataChecks preserve this complete body; retain its provenance and execution through the regression cascade.",
+      "execution": {
+        "status": "passed-retained-configuration-cascade",
+        "originalReport": "artifacts/configuration-validation/original-tests-8.jsonl",
+        "nativeScope": "Selected retained Configuration DependencyMetadata shared body; no new Program group.",
+        "xUnitReport": "artifacts/configuration-validation/configuration.trx",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerTransformResponseValidation",
+      "line": 313,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostClosesProcessWhenReadLoopFails",
+      "line": 329,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostReportsInitializationTimeoutBeforeClosingProcess",
+      "line": 364,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostReportsProcessExitBeforeInitialization",
+      "line": 384,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerTransformDiagnosticDirectives",
+      "line": 436,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestMappedDiagnosticDirectiveJSON",
+      "line": 579,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "This direct body marshals/unmarshals protocol DiagnosticDirectives/MappedDiagnosticDirective tuples defined in hostimpl.go138-196, not the selected typed AST/result callback models in host.go. Protocol encoder/decoder execution is external under P5.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerTransformSupplementalOutputs",
+      "line": 646,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerTransformInvalidSupplementalDiagnosticDirective",
+      "line": 677,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerRejectsInvalidVirtualExtension",
+      "line": 703,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerPositionEncodings",
+      "line": 730,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerRejectsUnsupportedPositionEncoding",
+      "line": 765,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerRejectsInvalidDiagnosticSource",
+      "line": 774,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerRejectsPositionsInsideUnicodeCharacters",
+      "line": 793,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerConsolidatesByIdentity",
+      "line": 813,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerLeaseLifecycle",
+      "line": 833,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestProjectLifecycle",
+      "line": 971,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestProjectMethodsAfterHostClose",
+      "line": 1076,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestProjectRejectsRelativeWatchedFiles",
+      "line": 1114,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestDynamicProjectRequiresConfigIdentity",
+      "line": 1137,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestStaticMapperRejectsDynamicProjectResponseFields",
+      "line": 1161,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestProjectRejectsInvalidOptionDiagnosticPath",
+      "line": 1193,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestRunnerForwardsProjectOptions",
+      "line": 1217,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostSetLocaleRestartsMapper",
+      "line": 1249,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "name": "TestHostSetLocaleWaitsForTransform",
+      "line": 1277,
+      "disposition": "excluded-process-protocol-api",
+      "reason": "Original body constructs NewHost/fakeSpawner and exercises hostimpl.go process/JSON-RPC validation or lifecycle; this consumer is outside P5. Program callbacks use genuine typed Result and preserve their selected transform/error behavior separately.",
+      "execution": {
+        "managed": "not-selected-contract-external",
+        "native": "not-selected-contract-external",
+        "xUnit": "not-selected-contract-external",
+        "original": "not-selected-contract-external",
+        "proof": "validation/results/program-verified.json"
+      }
+    },
+    {
+      "package": "./internal/collections",
+      "source": "upstream/TypeScript/tsc/internal/collections/syncmap_test.go",
+      "sourceSha256": "29bf01083b2b3159c6e40504dd92773e0c61ee19ca6e28919e15fd503cdd130a",
+      "name": "TestSyncMapWithNil",
+      "line": 10,
+      "disposition": "required-full-original",
+      "reason": "Preserve all original assertions and input domains at the selected API.",
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      },
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/SyncMapChecks.cs",
+        "state": "translated-runtime-pending"
+      }
+    },
+    {
+      "package": "./internal/tspath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/ignoredpaths_test.go",
+      "sourceSha256": "8e356b9bab0df34887800b10f27d592b420337b80fe266399ed3c86e012b35bf",
+      "name": "TestContainsIgnoredPath",
+      "line": 7,
+      "disposition": "required-full-original",
+      "reason": "Complete selected ignoredpaths.go raw string helper; all literal rows including relative and empty inputs retained.",
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/IgnoredPathChecks.cs",
+        "state": "translated-runtime-pending"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      }
+    },
+    {
+      "package": "./internal/tspath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/ignoredpaths_test.go",
+      "sourceSha256": "8e356b9bab0df34887800b10f27d592b420337b80fe266399ed3c86e012b35bf",
+      "name": "TestIgnoredPathsPatterns",
+      "line": 77,
+      "disposition": "required-full-original",
+      "reason": "Complete selected ignoredpaths.go raw string helper; all literal rows including relative and empty inputs retained.",
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/IgnoredPathChecks.cs",
+        "state": "translated-runtime-pending"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      }
+    },
+    {
+      "package": "./internal/tspath",
+      "source": "upstream/TypeScript/tsc/internal/tspath/ignoredpaths_test.go",
+      "sourceSha256": "8e356b9bab0df34887800b10f27d592b420337b80fe266399ed3c86e012b35bf",
+      "name": "TestIgnoredPathsEdgeCases",
+      "line": 90,
+      "disposition": "required-full-original",
+      "reason": "Complete selected ignoredpaths.go raw string helper; all literal rows including relative and empty inputs retained.",
+      "implementation": {
+        "sharedBody": "validation/Program.Checks/IgnoredPathChecks.cs",
+        "state": "translated-runtime-pending"
+      },
+      "execution": {
+        "original": {
+          "status": "passed",
+          "report": "artifacts/program-validation/original-tests.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "managed": {
+          "status": "passed",
+          "report": "artifacts/program-validation/managed-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "native": {
+          "status": "passed",
+          "runtime": "actual Linux x64 Native AOT",
+          "report": "artifacts/program-validation/native-controls-report.json",
+          "proof": "validation/results/program-verified.json"
+        },
+        "xUnit": {
+          "status": "passed",
+          "report": "artifacts/program-validation/program.trx",
+          "proof": "validation/results/program-verified.json"
+        },
+        "scope": "Complete original assertion domain; test-host/scheduling/representation adaptations are recorded in static provenance."
+      }
+    }
+  ],
+  "authoredControls": {
+    "classification": "authored-behavior-not-original-bodies",
+    "shared": "validation/Program.Checks/ConstructionBoundaryChecks.cs",
+    "groups": [
+      "WorkGroupScheduling",
+      "LazySemanticAdmission"
+    ],
+    "managedReport": "artifacts/program-validation/managed-controls-report.json",
+    "native": {
+      "status": "passed",
+      "report": "artifacts/program-validation/native-controls-report.json",
+      "proof": "validation/results/program-verified.json"
+    },
+    "xUnit": {
+      "status": "passed",
+      "report": "artifacts/program-validation/program.trx",
+      "proof": "validation/results/program-verified.json"
+    }
+  }
+}

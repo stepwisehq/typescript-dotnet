@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 1,
+  "campaign": "Program-construction-environment",
+  "baseline": "1d6bd61",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 186,
+  "groups": [
+    {
+      "name": "vertical",
+      "requests": "validation/program-corpus/requests-vertical.jsonl",
+      "expected": "validation/program-corpus/expected-vertical.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "b74ad09ca246a6fe36940bcf812e1782a7fb37f2370ae6ac935a4df919d2639d",
+      "expectedSha256": "5cf2a05622c7210324d00adc53b26c4266c1b71166851beed453686bd9d95315"
+    },
+    {
+      "name": "generation",
+      "requests": "validation/program-corpus/requests-generation.jsonl",
+      "expected": "validation/program-corpus/expected-generation.jsonl.gz",
+      "cases": 8,
+      "requestsSha256": "71d0e2e16556bfa23620f4b305dab2bf0759b588e9e759533887a9597ea15afd",
+      "expectedSha256": "0e2299ed70e45bd7fc9b4b72bedd0c7555a21c3103e1fe6c0547151fa99a165a"
+    },
+    {
+      "name": "core",
+      "requests": "validation/program-corpus/requests-core.jsonl",
+      "expected": "validation/program-corpus/expected-core.jsonl.gz",
+      "cases": 60,
+      "requestsSha256": "e7e9c2d9326db78d85af71cfaaf2880c298679c3aa03f93137e6818c899375cc",
+      "expectedSha256": "d062414eadf198dba39e5d921b75b191d6e031bd47e3d89ea7e5c1233618bed7"
+    },
+    {
+      "name": "environment",
+      "requests": "validation/program-corpus/requests-environment.jsonl",
+      "expected": "validation/program-corpus/expected-environment.jsonl.gz",
+      "cases": 29,
+      "requestsSha256": "d10508a224d3e8affdc216b8fac6d18c958cb557316dd6ace2405c1f181c5e34",
+      "expectedSha256": "196b34662b8171722de3a55c1bb8b72cee2aecac706c4485a353fc254656467e"
+    },
+    {
+      "name": "factory",
+      "requests": "validation/program-corpus/requests-factory.jsonl",
+      "expected": "validation/program-corpus/expected-factory.jsonl.gz",
+      "cases": 8,
+      "requestsSha256": "191af4d46f251544413d47057157a26124021c10797a0b6407065bd9fcef3b9a",
+      "expectedSha256": "5a322788e11f4d34150dc49d56a9c393a0c34bf0ae938f3ae9af3ab11f072609"
+    },
+    {
+      "name": "mapper",
+      "requests": "validation/program-corpus/requests-mapper.jsonl",
+      "expected": "validation/program-corpus/expected-mapper.jsonl.gz",
+      "cases": 21,
+      "requestsSha256": "289fb8a747cd076bf144ef16ea700a2caef96af1d7ee5036e6efdbdebaffa5e3",
+      "expectedSha256": "2d8c0dc9fe115af86488c8ac41aca563f0505bb58c1f47eea4010be1228fe5bc"
+    },
+    {
+      "name": "dependencies",
+      "requests": "validation/program-corpus/requests-dependencies.jsonl",
+      "expected": "validation/program-corpus/expected-dependencies.jsonl.gz",
+      "cases": 56,
+      "requestsSha256": "d468df6fc86d6dbcc0acf031668f77e2c67324ae735eef9cc1710e425a33f663",
+      "expectedSha256": "de503ce5b90eeeeaa604c86af3cb286759bcf13f2c06fed721bb9b98c85d510e"
+    },
+    {
+      "name": "examples-api",
+      "requests": "validation/program-corpus/requests-examples-api.jsonl",
+      "expected": "validation/program-corpus/expected-examples-api.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "1bc6e5281b07171763ca5c345a2811c7f9c126e13b6526256c459f6c68a4b1c9",
+      "expectedSha256": "0c91d9ed1b883176ce4f2b61ba82ff7728ff4df722a2d20e723e339b02ccc7c4"
+    }
+  ],
+  "sharedChecks": {
+    "count": 78,
+    "groups": [
+      {
+        "flag": "--program-checks",
+        "count": 7,
+        "classNames": [
+          "Program.Tests.ProgramTests"
+        ],
+        "names": [
+          "TestProgramSharedData",
+          "TestIncludeReasonDiagnosticsAreProgramLocal",
+          "TestProgramHostsAndFactories",
+          "TestClonedProgramProjectReferenceResolution",
+          "TestProgram",
+          "TestImportSourceProgram",
+          "TestIncludeProcessorDiagnosticsWithMissingFileCasing"
+        ]
+      },
+      {
+        "flag": "--checker-pool-checks",
+        "count": 7,
+        "classNames": [
+          "Program.Tests.CheckerPoolTests"
+        ],
+        "names": [
+          "TestGetSourceFileForResolvedModuleUsesResolvedPath",
+          "TestGetCheckerAssociationBaseWeight",
+          "TestShouldPrioritizeSourceFiles",
+          "TestGetCheckerAssociationPolicy",
+          "TestGetCheckerAssociationOrder",
+          "TestGetCheckerAssociationWeights",
+          "TestGetCheckerAssociations"
+        ]
+      },
+      {
+        "flag": "--cached-vfs-checks",
+        "count": 7,
+        "classNames": [
+          "Program.Tests.CachedVfsTests"
+        ],
+        "names": [
+          "TestDirectoryExists",
+          "TestFileExists",
+          "TestGetAccessibleEntries",
+          "TestRealpath",
+          "TestStat",
+          "TestReadFile",
+          "TestCaseSensitivity"
+        ]
+      },
+      {
+        "flag": "--known-symlink-checks",
+        "count": 9,
+        "classNames": [
+          "Program.Tests.KnownSymlinkTests"
+        ],
+        "names": [
+          "TestNewKnownSymlink",
+          "TestSetDirectory",
+          "TestKnownDirectoryLinkPreservesChildSpelling",
+          "TestSetFile",
+          "TestProcessResolution",
+          "TestGuessDirectorySymlink",
+          "TestIsNodeModulesOrScopedPackageDirectory",
+          "TestSetSymlinksFromResolutions",
+          "TestKnownSymlinksThreadSafety"
+        ]
+      },
+      {
+        "flag": "--sync-map-checks",
+        "count": 1,
+        "classNames": [
+          "Program.Tests.SyncMapTests"
+        ],
+        "names": [
+          "TestSyncMapWithNil"
+        ]
+      },
+      {
+        "flag": "--ignored-path-checks",
+        "count": 3,
+        "classNames": [
+          "Program.Tests.IgnoredPathTests"
+        ],
+        "names": [
+          "TestContainsIgnoredPath",
+          "TestIgnoredPathsPatterns",
+          "TestIgnoredPathsEdgeCases"
+        ]
+      },
+      {
+        "flag": "--bundled-checks",
+        "count": 2,
+        "classNames": [
+          "Program.Tests.BundledTests"
+        ],
+        "names": [
+          "TestTestingLibPath",
+          "TestEmbeddedLibs"
+        ]
+      },
+      {
+        "flag": "--span-map-checks",
+        "count": 31,
+        "classNames": [
+          "Program.Tests.SpanMapTests"
+        ],
+        "names": [
+          "TestVirtualToOriginalSpanVerbatim",
+          "TestVirtualToOriginalSpanAtom",
+          "TestVirtualAlias",
+          "TestVirtualToOriginalSpanSynthesizedGap",
+          "TestOriginalToVirtualIntersectingSpansAllowsUncoveredEndpoints",
+          "TestVirtualToOriginalSpanEmptyIsSynthesized",
+          "TestVirtualToOriginalSpanCrossingSegments",
+          "TestVirtualToOriginalSpanNilIdentity",
+          "TestVirtualToOriginalPosition",
+          "TestVirtualToOriginalPositionExact",
+          "TestVirtualToOriginalPositionExactRejectsDiscontinuousBoundary",
+          "TestZeroLengthSpansAtSegmentEnds",
+          "TestMapPositionNilIdentity",
+          "TestOriginalToVirtualSpanVerbatim",
+          "TestOriginalToVirtualSpanAtom",
+          "TestOriginalToVirtualSpanGap",
+          "TestOriginalToVirtualSpanNilIdentity",
+          "TestOriginalToVirtualPositions",
+          "TestOriginalToVirtualPositionsAtEndpoint",
+          "TestOriginalToVirtualDuplicateGroup",
+          "TestOriginalToVirtualOverlappingSpans",
+          "TestOriginalToVirtualPositionFindsEarlyCoveringSegment",
+          "TestOriginalToVirtualOverlapFallsBackFromDisabledContainer",
+          "TestOriginalToVirtualCrossGroupProjections",
+          "TestOriginalToVirtualExplicitZeroFeatures",
+          "TestFeatureParticipationOriginalAndVirtual",
+          "TestOriginalToVirtualSpanRoundTrip",
+          "TestMarshalRoundTrip",
+          "TestValidate",
+          "TestValidateOriginalOverlapAndFeatures",
+          "TestValidateNilIsValid"
+        ]
+      },
+      {
+        "flag": "--parse-result-checks",
+        "count": 3,
+        "classNames": [
+          "Program.Tests.ParseResultTests"
+        ],
+        "names": [
+          "TestParseResultSupplementalFileExtensions",
+          "TestParseResultAllowsSupplementalModules",
+          "TestParseResultDoesNotLeakCanonicalModuleForcingToSupplementals"
+        ]
+      },
+      {
+        "flag": "--compiler-mapper-checks",
+        "count": 6,
+        "classNames": [
+          "Program.Tests.CompilerMapperTests"
+        ],
+        "names": [
+          "TestContentMapperVirtualExtensionSetsImpliedNodeFormat",
+          "TestContentMapperDirectivesPreserveIncrementalGlobals",
+          "TestCompositeProjectContentMapperSupplementalRoots",
+          "TestContentMapperInvalidMappings",
+          "TestContentMapperSourceFileState",
+          "TestContentMapperProjectErrorDiagnostics"
+        ]
+      },
+      {
+        "flag": "--construction-boundary-checks",
+        "count": 2,
+        "classNames": [
+          "Program.Tests.ConstructionBoundaryTests"
+        ],
+        "names": [
+          "WorkGroupScheduling",
+          "LazySemanticAdmission"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "Program.Tests.ProgramTests": 7,
+      "Program.Tests.CheckerPoolTests": 7,
+      "Program.Tests.CachedVfsTests": 7,
+      "Program.Tests.KnownSymlinkTests": 9,
+      "Program.Tests.SyncMapTests": 1,
+      "Program.Tests.IgnoredPathTests": 3,
+      "Program.Tests.BundledTests": 2,
+      "Program.Tests.SpanMapTests": 31,
+      "Program.Tests.ParseResultTests": 3,
+      "Program.Tests.CompilerMapperTests": 6,
+      "Program.Tests.ConstructionBoundaryTests": 2
+    }
+  },
+  "corpusXUnitClass": "Program.Tests.ProgramOracleTests",
+  "originalTests": [
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestProgramSharedData",
+        "TestIncludeReasonDiagnosticsAreProgramLocal",
+        "TestProgramHostsAndFactories",
+        "TestClonedProgramProjectReferenceResolution",
+        "TestProgram",
+        "TestImportSourceProgram",
+        "TestIncludeProcessorDiagnosticsWithMissingFileCasing",
+        "TestGetSourceFileForResolvedModuleUsesResolvedPath",
+        "TestGetCheckerAssociationBaseWeight",
+        "TestShouldPrioritizeSourceFiles",
+        "TestGetCheckerAssociationPolicy",
+        "TestGetCheckerAssociationOrder",
+        "TestGetCheckerAssociationWeights",
+        "TestGetCheckerAssociations",
+        "TestContentMapperVirtualExtensionSetsImpliedNodeFormat",
+        "TestContentMapperProjectErrorDiagnostics"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/program_test.go": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+        "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    },
+    {
+      "package": "./internal/spanmap",
+      "functions": [
+        "TestVirtualToOriginalSpanVerbatim",
+        "TestVirtualToOriginalSpanAtom",
+        "TestVirtualAlias",
+        "TestVirtualToOriginalSpanSynthesizedGap",
+        "TestOriginalToVirtualIntersectingSpansAllowsUncoveredEndpoints",
+        "TestVirtualToOriginalSpanEmptyIsSynthesized",
+        "TestVirtualToOriginalSpanCrossingSegments",
+        "TestVirtualToOriginalSpanNilIdentity",
+        "TestVirtualToOriginalPosition",
+        "TestVirtualToOriginalPositionExact",
+        "TestVirtualToOriginalPositionExactRejectsDiscontinuousBoundary",
+        "TestZeroLengthSpansAtSegmentEnds",
+        "TestMapPositionNilIdentity",
+        "TestOriginalToVirtualSpanVerbatim",
+        "TestOriginalToVirtualSpanAtom",
+        "TestOriginalToVirtualSpanGap",
+        "TestOriginalToVirtualSpanNilIdentity",
+        "TestOriginalToVirtualPositions",
+        "TestOriginalToVirtualPositionsAtEndpoint",
+        "TestOriginalToVirtualDuplicateGroup",
+        "TestOriginalToVirtualOverlappingSpans",
+        "TestOriginalToVirtualPositionFindsEarlyCoveringSegment",
+        "TestOriginalToVirtualOverlapFallsBackFromDisabledContainer",
+        "TestOriginalToVirtualCrossGroupProjections",
+        "TestOriginalToVirtualExplicitZeroFeatures",
+        "TestFeatureParticipationOriginalAndVirtual",
+        "TestOriginalToVirtualSpanRoundTrip",
+        "TestMarshalRoundTrip",
+        "TestValidate",
+        "TestValidateOriginalOverlapAndFeatures",
+        "TestValidateNilIsValid"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/spanmap/spanmap_test.go": "a864ccc12608a2895dd6380a04bfe8ac474a9d4048536282bde26966e3970aac"
+      }
+    },
+    {
+      "package": "./internal/symlinks",
+      "functions": [
+        "TestNewKnownSymlink",
+        "TestSetDirectory",
+        "TestKnownDirectoryLinkPreservesChildSpelling",
+        "TestSetFile",
+        "TestProcessResolution",
+        "TestGuessDirectorySymlink",
+        "TestIsNodeModulesOrScopedPackageDirectory",
+        "TestSetSymlinksFromResolutions",
+        "TestKnownSymlinksThreadSafety"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/symlinks/knownsymlinks_test.go": "a7c67ed24f83a97ffa0a6882eb97759ed91d3d9f002321ed15f0ffbdea190a0f"
+      }
+    },
+    {
+      "package": "./internal/vfs/cachedvfs",
+      "functions": [
+        "TestDirectoryExists",
+        "TestFileExists",
+        "TestGetAccessibleEntries",
+        "TestRealpath",
+        "TestStat",
+        "TestReadFile",
+        "TestCaseSensitivity"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040"
+      }
+    },
+    {
+      "package": "./internal/bundled",
+      "functions": [
+        "TestTestingLibPath",
+        "TestEmbeddedLibs"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/bundled/bundled_test.go": "fdd835c095e945f968b770d2882aac245a91c595ffad47c2d9d4e86c577734fa"
+      }
+    },
+    {
+      "package": "./internal/contentmapper",
+      "functions": [
+        "TestParseResultSupplementalFileExtensions",
+        "TestParseResultAllowsSupplementalModules",
+        "TestParseResultDoesNotLeakCanonicalModuleForcingToSupplementals"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/contentmapper/transform_test.go": "8282cecfd52408f3207ce3638a06dff9aa3f45081cf29ada4376aa8cde7ad6b8"
+      }
+    },
+    {
+      "package": "./internal/collections",
+      "functions": [
+        "TestSyncMapWithNil"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/collections/syncmap_test.go": "29bf01083b2b3159c6e40504dd92773e0c61ee19ca6e28919e15fd503cdd130a"
+      }
+    },
+    {
+      "package": "./internal/tspath",
+      "functions": [
+        "TestContainsIgnoredPath",
+        "TestIgnoredPathsPatterns",
+        "TestIgnoredPathsEdgeCases"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/tspath/ignoredpaths_test.go": "8e356b9bab0df34887800b10f27d592b420337b80fe266399ed3c86e012b35bf"
+      }
+    }
+  ],
+  "adaptedOriginalTests": [
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestContentMapperDirectivesPreserveIncrementalGlobals",
+        "TestCompositeProjectContentMapperSupplementalRoots",
+        "TestContentMapperInvalidMappings",
+        "TestContentMapperSourceFileState"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    }
+  ],
+  "orderControls": {
+    "requests": "validation/program-corpus/order-requests.jsonl",
+    "requestsSha256": "fb3ea90032e1474e143d817304e864eea40ad5de9602e7f6a039927c5f9bb3b3",
+    "cases": 37,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 76
+  },
+  "jsonErrorProjection": {
+    "controls": 6,
+    "expected": "validation/program-corpus/json-error-controls-expected.json",
+    "expectedSha256": "31115caa8aa1ff8b5bc1190d9b29aaaa581e403ec6f11fa984ad4a047937d8db",
+    "provenance": "validation/program-corpus/json-error-controls-provenance.json",
+    "provenanceSha256": "7ac1c7310473382b06251d3911f66d28ffe3724c4a3f9e5a8fd78ab4f7564625"
+  },
+  "cliControls": {
+    "requests": "validation/program-corpus/requests-examples-api.jsonl",
+    "requestsSha256": "1bc6e5281b07171763ca5c345a2811c7f9c126e13b6526256c459f6c68a4b1c9",
+    "cases": 2,
+    "runner": "tools/check-program-cli.py",
+    "runnerSha256": "a5e24120d201000d84522d37828292b513fcd6c4a704aee44f1d303e0e3e9f89",
+    "sourceFiles": {
+      "examples/program/helper/helper.ts": "b54c3645a712f74f73e15054b02db5bbf28e174ff0f2e64856f3c629b2eb03d3",
+      "examples/program/helper/tsconfig.json": "9807218c4cc174def4dea9b3b6465ce92759e3795af2d96624bd154f868df90a",
+      "examples/program/main.ts": "b9670cf35bdcd26abd50da323cc710fa2cc16453b3f189f0ba2898fa4777c241",
+      "examples/program/missing-reference.ts": "687a05b1fd1164d7a1e686c2d4eded83f8b7000cabc830c3c5bffecb50439215",
+      "examples/program/models.ts": "cce0fc29b78889de9c74474acadecc10b2e36bd50f0414dcb8d27b7fb3ad7e0d",
+      "examples/program/tsconfig-invalid.json": "581ef31451069b503e567bcaf41aa75ddfe5323eba1baa835f1e0f331cee2f4c",
+      "examples/program/tsconfig.json": "e75646087fb1c75d1bd960088803c8ff514c423bc256f3c23304e57a11c58a4b",
+      "examples/program/types/program-demo/index.d.ts": "55da5678ba718df501833f03cecd6ade4785881c4f84a9f7fd2ccf1fc048f66c"
+    },
+    "hostSourceFiles": {},
+    "provenance": "validation/program-corpus/cli-provenance.json",
+    "provenanceSha256": "7fbe0dfb4d82380151ecfce0eac0f28a9bae2493f9561c6894b6c0788c1d4bd4"
+  }
+}

@@ -31,3 +31,11 @@ case-folding behavior. That separate source pin and archive checksum are recorde
 in the lock file, with per-file hashes in the mapping. The
 [Go BSD license](./licenses/Go-LICENSE.txt) is preserved. The narrow table extraction
 is reproducible with [generate-unicode-case.py](./tools/generate-unicode-case.py).
+
+Program's selected `[][]int32` JSON compatibility behavior in
+[JsonCodec](./src/TypeScript.Scanner/Json/JsonCodec.cs) also adapts Go 1.27.1
+`src/encoding/json/v2/arshal_default.go` (`makeIntArshaler` and `makeSliceArshaler`).
+Copyright 2020 The Go Authors. All rights reserved. These portions retain the
+[Go BSD license](./licenses/Go-LICENSE.txt); their precise scope and source hash are
+recorded in [the Program dependency inventory](./docs/program-functions.json).
+The surrounding TypeScript adapter retains its separate Apache 2.0 attribution.

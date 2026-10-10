@@ -1,9 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Selected port of tsc/internal/compiler/fileloader.go at
-// fed0bf24149fb1ed36039212648bafdafc1ea10e: roots/references, metadata, modes,
-// synthetic/import/augmentation dependencies. Full Program environments are external.
+// Port of the selected Program/graph loading responsibilities in
+// tsc/internal/compiler/fileloader.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Original Program root/library/type/reference/mapper stages share the actual
+// scheduler; the named graph and legacy adapters retain their prior boundaries.
 using TypeScript.Checking;
+using TypeScript.ContentMapper;
+using TypeScript.SpanMap;
+using Kind = TypeScript.Scanner.Kind;
 using TypeScript.Modules;
 using TypeScript.PackageJson;
 using TypeScript.Scanner;
@@ -11,12 +15,328 @@ using TypeScript.Vfs;
 using ConfigParser = TypeScript.TsOptions.TsOptions;
 
 namespace TypeScript.Compiler;
+internal sealed class LibResolution
+{
+    internal string libraryName = "";
+    internal ResolvedModule? resolution;
+    internal List<DiagAndArgs>? trace;
+}
 internal sealed class FileLoader
 {
+    private readonly object contentMapperGate = new();
+    private readonly Dictionary<Mapper, int> contentMapperFailures = new(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<Mapper> contentMapperInitFailed = new(ReferenceEqualityComparer.Instance);
+    private List<Diagnostic>? contentMapperDiagnostics;
+    internal List<Diagnostic>? ContentMapperDiagnostics() => contentMapperDiagnostics;
+    private SourceFile? ParseContentMappedFile(SourceFileParseOptions parseOptions)
+    {
+        var mapper = opts.Config.GetContentMapperForFileName(TypedFile(parseOptions.FileName))!;
+        string label = mapper.DiagnosticName(), transformIdentity = GetContentMapperTransformIdentity(mapper);
+        if (ContentMapperUnavailable(mapper)) return EmptyContentMappedFile(parseOptions, mapper.Identity(), transformIdentity);
+        var (files, error) = compilerHost!.GetContentMappedSourceFiles(parseOptions, mapper);
+        if (error is null) return files.Canonical;
+        var source = EmptyContentMappedFile(parseOptions, mapper.Identity(), transformIdentity);
+        var transformError = FindError<TransformError>(error);
+        if (transformError?.Kind == TransformErrorKind.Initialize)
+        {
+            RecordContentMapperInitializationFailure(mapper, label, transformError);
+            return source;
+        }
+        if (RecordContentMapperFailure(mapper, label))
+        {
+            var problem = FindError<MappingError>(error);
+            var diagnostic = problem is not null ? ContentMapperMappingDiagnostic(source, label, problem) : ContentMapperTransformDiagnostic(source, label, error);
+            var diagnostics = source.Diagnostics();
+            (diagnostics ??= []).Add(diagnostic);
+            source.SetDiagnostics(diagnostics);
+        }
+        return source;
+    }
+    private static T? FindError<T>(Exception? error) where T : Exception
+    {
+        for (; error is not null; error = error.InnerException) if (error is T match) return match;
+        return null;
+    }
+    private string GetContentMapperTransformIdentity(Mapper mapper)
+    {
+        if (compilerHost!.ContentMapperProject() is { } project)
+        {
+            var (identity, error) = project.Identity(mapper);
+            if (error is null) return identity;
+        }
+        return mapper.TransformIdentityHex(options);
+    }
+    private SourceFile EmptyContentMappedFile(SourceFileParseOptions parseOptions, string mapperIdentity, string transformIdentity)
+    {
+        var (content, _) = compilerHost!.FS().ReadFile(TypedFile(parseOptions.FileName));
+        var source = Parser.ParseSourceFile(parseOptions, Array.Empty<byte>(), ScriptKind.TS);
+        source.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = parseOptions, VirtualFileName = TypedFile(parseOptions.FileName).AppendSuffix(TsPath.ExtensionTs), OriginalText = content });
+        return source;
+    }
+    internal static Message ContentMapperProjectErrorDiagnostic(Exception error) => FindError<ProjectError>(error)?.Kind switch
+    {
+        ProjectErrorKind.MalformedResponse => Diagnostics.The_content_mapper_returned_a_project_response_that_could_not_be_decoded,
+        ProjectErrorKind.MissingConfigIdentity => Diagnostics.The_content_mapper_did_not_return_configIdentity_which_is_required_when_the_content_mapper_has_dynamicConfig_Colon_true_in_its_package_json,
+        ProjectErrorKind.NonAbsoluteWatchedFile => Diagnostics.The_content_mapper_returned_a_non_absolute_path_in_watchedFiles,
+        ProjectErrorKind.UnexpectedConfigIdentity => Diagnostics.The_content_mapper_returned_configIdentity_which_is_only_allowed_when_it_declares_dynamicConfig_Colon_true_in_its_package_json,
+        ProjectErrorKind.UnexpectedWatchedFiles => Diagnostics.The_content_mapper_returned_watchedFiles_which_is_only_allowed_when_it_declares_dynamicConfig_Colon_true_in_its_package_json,
+        _ => Diagnostics.The_content_mapper_process_failed_while_handling_the_project_request
+    };
+    private static Diagnostic ContentMapperTransformDiagnosticChain(SourceFile file, string label, Message message, params object[] args) => ContentMapperTransformDiagnosticWithDetail(file, label, Ast.NewCompilerDiagnostic(message, args));
+    private static Diagnostic ContentMapperTransformDiagnosticWithDetail(SourceFile file, string label, Diagnostic detail) => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_failed_to_transform_this_file, label).AddMessageChain(detail);
+    private static Diagnostic ContentMapperTransformDiagnostic(SourceFile file, string label, Exception error)
+    {
+        if (FindError<SupplementalFileCollisionError>(error) is { } collision)
+            return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.Content_mapper_supplemental_output_file_0_conflicts_with_an_existing_file, collision.FileName.AsString());
+        if (FindError<TransformError>(error) is { } transform)
+        {
+            switch (transform.Kind)
+            {
+                case TransformErrorKind.Initialize:
+                    if (FindError<InitializeError>(transform) is { } initialize)
+                    {
+                        switch (initialize.Kind)
+                        {
+                            case InitializeErrorKind.PositionEncoding: return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_selected_unsupported_position_encoding_0, initialize.PositionEncoding.AsString());
+                            case InitializeErrorKind.EmptyDiagnosticSource: return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_diagnostic_source_must_not_be_empty);
+                            case InitializeErrorKind.ReservedDiagnosticSource: return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_diagnostic_source_0_is_reserved_by_TypeScript, initialize.DiagnosticSource);
+                        }
+                    }
+                    return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_process_could_not_be_started_or_initialized);
+                case TransformErrorKind.Project: return ContentMapperTransformDiagnosticChain(file, label, ContentMapperProjectErrorDiagnostic(transform));
+                case TransformErrorKind.Request: return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_process_failed_while_handling_the_transform_request);
+                case TransformErrorKind.Response:
+                    if (FindError<InvalidVirtualExtensionError>(transform) is { } extension)
+                        return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_returned_an_output_with_unsupported_virtual_extension_0, extension.Extension);
+                    if (FindError<DiagnosticDirectiveError>(transform) is { } directive)
+                    {
+                        Diagnostic? detail = directive.Kind switch
+                        {
+                            DiagnosticDirectiveErrorKind.InvalidRange => Ast.NewCompilerDiagnostic(Diagnostics.Diagnostic_directive_0_returned_by_the_content_mapper_has_an_invalid_range, directive.Index),
+                            DiagnosticDirectiveErrorKind.InvalidPolicy => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_returned_a_diagnostic_directive_with_invalid_policy_0, (int)directive.Policy),
+                            DiagnosticDirectiveErrorKind.ExpectMissingUnusedDiagnostic => Ast.NewCompilerDiagnostic(Diagnostics.Diagnostic_directive_0_returned_by_the_content_mapper_must_specify_unusedExpectDirectiveIndex_when_there_is_not_exactly_one_unusedExpectDirectiveDiagnostics_entry, directive.Index),
+                            DiagnosticDirectiveErrorKind.InvalidUnusedDiagnosticIndex => Ast.NewCompilerDiagnostic(Diagnostics.Diagnostic_directive_0_returned_by_the_content_mapper_has_an_invalid_unusedExpectDirectiveIndex, directive.Index),
+                            DiagnosticDirectiveErrorKind.Overlap => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_returned_diagnostic_directives_with_overlapping_virtual_ranges),
+                            _ => null
+                        };
+                        if (detail is not null)
+                        {
+                            if (directive.SupplementalIndex >= 0) detail = Ast.NewDiagnosticChain(detail, Diagnostics.The_invalid_diagnostic_directive_is_in_supplemental_output_0_returned_by_the_content_mapper, directive.SupplementalIndex);
+                            return ContentMapperTransformDiagnosticWithDetail(file, label, detail);
+                        }
+                    }
+                    return ContentMapperTransformDiagnosticChain(file, label, Diagnostics.The_content_mapper_returned_an_invalid_transform_response);
+                case TransformErrorKind.Mappings: return Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_did_not_provide_the_required_position_mappings, label);
+            }
+        }
+        return Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_failed_to_transform_this_file, label);
+    }
+    private static Diagnostic ContentMapperMappingDiagnostic(SourceFile file, string label, MappingError problem) => problem.Kind switch
+    {
+        MappingErrorKind.Overlap => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_produced_overlapping_or_out_of_order_position_mappings_near_virtual_offset_1, label, problem.VirtualPos),
+        MappingErrorKind.OutOfBounds => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_produced_a_position_mapping_that_points_outside_the_original_content_original_offset_1, label, problem.OriginalPos),
+        MappingErrorKind.VerbatimMismatch => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_produced_a_verbatim_mapping_that_does_not_match_the_original_content_virtual_offset_1_original_offset_2, label, problem.VirtualPos, problem.OriginalPos),
+        MappingErrorKind.Kind => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_produced_a_position_mapping_with_an_invalid_kind_near_virtual_offset_1, label, problem.VirtualPos),
+        MappingErrorKind.Feature => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_produced_invalid_mapping_features_near_original_offset_1, label, problem.OriginalPos),
+        _ => Ast.NewDiagnostic(file, new(0, 0), Diagnostics.The_content_mapper_0_did_not_provide_the_required_position_mappings, label)
+    };
+    internal static Diagnostic ContentMapperInitializationDiagnostic(string label, Exception error)
+    {
+        var initialize = FindError<InitializeError>(error);
+        if (initialize is not null && label == "") label = initialize.MapperName;
+        var diagnostic = Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_0_could_not_be_initialized, label);
+        Diagnostic detail = initialize?.Kind switch
+        {
+            InitializeErrorKind.ProcessStart => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_command_0_could_not_be_started_Colon_1, initialize.Command, initialize.Detail),
+            InitializeErrorKind.ProcessExit => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_process_exited_before_responding_to_the_initialize_request_exit_code_0, initialize.ExitCode),
+            InitializeErrorKind.NoResponse => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_did_not_respond_to_the_initialize_request_within_0_seconds, initialize.TimeoutSeconds),
+            InitializeErrorKind.InvalidResponse => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_returned_an_initialize_response_that_could_not_be_decoded_Colon_0, initialize.Detail),
+            InitializeErrorKind.Request => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_s_initialize_request_failed_Colon_0, initialize.Detail),
+            InitializeErrorKind.PositionEncoding => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_selected_unsupported_position_encoding_0, initialize.PositionEncoding.AsString()),
+            InitializeErrorKind.EmptyDiagnosticSource => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_diagnostic_source_must_not_be_empty),
+            InitializeErrorKind.ReservedDiagnosticSource => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_diagnostic_source_0_is_reserved_by_TypeScript, initialize.DiagnosticSource),
+            _ => Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_process_could_not_be_started_or_initialized)
+        };
+        return diagnostic.AddMessageChain(detail);
+    }
+    internal static Diagnostic ContentMapperProjectDiagnostic(Exception error) => FindError<InitializeError>(error) is not null ? ContentMapperInitializationDiagnostic("", error) : Ast.NewCompilerDiagnostic(ContentMapperProjectErrorDiagnostic(error));
+    private bool ContentMapperUnavailable(Mapper? mapper)
+    {
+        if (mapper is null) return false;
+        lock (contentMapperGate) return contentMapperInitFailed.Contains(mapper) || contentMapperFailures.GetValueOrDefault(mapper) >= 5;
+    }
+    private void RecordContentMapperInitializationFailure(Mapper mapper, string label, Exception error)
+    {
+        lock (contentMapperGate)
+        {
+            if (!contentMapperInitFailed.Add(mapper)) return;
+            (contentMapperDiagnostics ??= []).Add(ContentMapperInitializationDiagnostic(label, error));
+        }
+    }
+    private bool RecordContentMapperFailure(Mapper mapper, string label)
+    {
+        lock (contentMapperGate)
+        {
+            int failures = contentMapperFailures.GetValueOrDefault(mapper);
+            if (failures >= 5) return false;
+            contentMapperFailures[mapper] = ++failures;
+            if (failures >= 5) (contentMapperDiagnostics ??= []).Add(Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_0_failed_1_times_and_will_not_be_used, label, 5));
+            return true;
+        }
+    }
+    internal readonly bool program;
+    internal ProgramConfig opts;
+    internal ICompilerHost? compilerHost;
+    internal TypeScript.Tracing.Tracing? tracing;
+    internal ProjectReferenceFileMapperBuilder? projectReferences;
+    internal RootedDirectoryPath defaultLibraryPath;
+    private List<string>? contentMapperExtensions;
+    internal readonly TypeScript.Collections.SyncMap<string, LibFile> pathForLibFileCache = new();
+    internal readonly TypeScript.Collections.SyncMap<PathKey, LibResolution> pathForLibFileResolutions = new();
+    private readonly object resolutionErrorGate = new();
+    internal Exception? moduleResolutionError;
+    internal PathKey ToPath(RootedPath file) => host.FS().CaseSensitivity().PathKey(file);
+    private FileLoader(ProgramOptions options, bool singleThreaded)
+    {
+        program = graph = true;
+        opts = options.ProgramConfig;
+        compilerHost = options.Host;
+        tracing = options.Tracing;
+        this.options = options.Config.CompilerOptions();
+        defaultLibraryPath = compilerHost.DefaultLibraryPath();
+        host = new CompilerResolutionHost(compilerHost, options.Config.BaseDirectory());
+        includeProcessor = new(new ProjectConfiguration(options.Config), true);
+        embeddedFiles = new Dictionary<string, SourceFile>(StringComparer.Ordinal);
+        contentMapperExtensions = options.Config.ContentMapperExtensions();
+        supportedExtensions = ConfigParser.GetSupportedExtensions(this.options, contentMapperExtensions);
+        supportedExtensionsWithJson = ConfigParser.GetSupportedExtensionsWithJsonIfResolveJsonModule(this.options, supportedExtensions);
+        filesParser = new(singleThreaded);
+        filesParser.maxDepth = this.options.MaxNodeModuleJsDepth?.Value ?? 0;
+        AddProjectReferenceTasks(singleThreaded);
+        host = projectReferences!.host;
+        var resolverOptions = new ResolverOptions { Host = host, CompilerOptions = this.options, TypingsLocation = options.TypingsLocation, ProjectName = options.ProjectName, ExtraExtensions = contentMapperExtensions };
+        resolver = options.CreateModuleResolver is not null ? options.CreateModuleResolver(resolverOptions) : DefaultResolver.NewResolver(resolverOptions);
+    }
+    internal static (ProcessedFiles Files, ResolutionData ResolutionData, Exception? Error) ProcessAllProgramFiles(ProgramOptions options, bool singleThreaded)
+    {
+        var loader = new FileLoader(options, singleThreaded);
+        var roots = options.Config.FileNames();
+        Action? done = options.Tracing?.Push(TypeScript.Tracing.Phase.Program, "processRootFiles", new() { ["count"] = roots?.Count ?? 0 }, false);
+        try
+        {
+            for (int i = 0; i < (roots?.Count ?? 0); i++) loader.AddRootFileTask(roots![i].AsString(), options.Config.RootFileNameForDiagnostic(i), new() { rootIndex = i });
+            if (roots is { Count: > 0 } && loader.options.NoLib != Tristate.True)
+            {
+                if (loader.options.Lib is null)
+                {
+                    var lib = loader.PathForLibFile(ConfigParser.GetDefaultLibFileName(loader.options));
+                    loader.AddRootTask(lib.path, lib, new() { isLibFile = true, isDefaultLib = true });
+                }
+                else for (int i = 0; i < loader.options.Lib.Count; i++)
+                {
+                    var (name, ok) = ConfigParser.GetLibFileName(loader.options.Lib[i]);
+                    if (ok)
+                    {
+                        var lib = loader.PathForLibFile(name);
+                        loader.AddRootTask(lib.path, lib, new() { isLibFile = true, libIndex = i });
+                    }
+                    // Unknown library names are diagnosed by configuration parsing,
+                    // matching the original loader's TODO/no additional diagnostic.
+                }
+            }
+            if (roots is { Count: > 0 } && !options.SkipModuleResolution) loader.AddAutomaticTypeDirectiveTasks();
+            loader.filesParser.Parse(loader, loader.rootTasks);
+            return (loader.filesParser.GetProcessedFiles(loader), loader.resolver.GetResolutionData(), loader.moduleResolutionError);
+        }
+        finally { done?.Invoke(); }
+    }
+    private void AddRootTask(RootedFilePath file, LibFile lib, FileIncludeReason reason)
+    {
+        if (options.AllowNonTsExtensions == Tristate.True || file.HasExtension())
+            rootTasks.Add(new() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), libFile = lib, includeReason = reason });
+    }
+    private void AddAutomaticTypeDirectiveTasks()
+    {
+        var file = opts.Config.BaseDirectory().ResolveFile(ModuleUtilities.InferredTypesContainingFile);
+        rootTasks.Add(new() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), isForAutomaticTypeDirective = true });
+    }
+    internal void ResolveAutomaticTypeDirectives(ParseTask task)
+    {
+        var names = DefaultResolver.GetAutomaticTypeDirectiveNames(options, opts.Config.BaseDirectory(), compilerHost!.FS());
+        if (names is null || names.Count == 0) return;
+        task.typeResolutionsInFile = new();
+        foreach (var name in names)
+        {
+            var (resolved, trace) = resolver.ResolveTypeReferenceDirective(name, TypedFile(task.normalizedFilePath), ResolutionMode.None);
+            task.typeResolutionsInFile![new(name, ResolutionMode.None)] = resolved;
+            if (trace is not null) (task.typeResolutionsTrace ??= []).AddRange(trace);
+            var reason = new FileIncludeReason { automaticTypeDirective = name, packageId = resolved?.PackageId ?? default };
+            if (resolved!.IsResolved()) task.AddSubTask(resolved.ResolvedFileName.AsString(), resolved.ResolvedPath.AsString(), reason, resolved.IsExternalLibraryImport, false, resolved!.PackageId);
+            else (task.processingDiagnostics ??= []).Add(new() { diagnosticReason = reason, message = Diagnostics.Cannot_find_type_definition_file_for_0, args = [name] });
+        }
+    }
+    private void AddProjectReferenceTasks(bool singleThreaded)
+    {
+        projectReferences = new() { config = opts.Config, useSourceOfProjectReference = opts.canUseProjectReferenceSource(), host = host };
+        var references = opts.Config.ResolvedProjectReferencePaths();
+        if (references is { Count: > 0 }) new ProjectReferenceParser(this, singleThreaded).Parse(ProjectReferenceParser.CreateProjectReferenceParseTasks(references));
+    }
+    internal void SortLibs(List<SourceFile> files) => GoSlices.SortFunc(files, (a, b) => GetDefaultLibFilePriority(a).CompareTo(GetDefaultLibFilePriority(b)));
+    private int GetDefaultLibFilePriority(SourceFile file)
+    {
+        var (relative, ok) = TypedFile(file.FileNameGoBytes()).RelativeTo(defaultLibraryPath);
+        if (ok && relative != default)
+        {
+            string basename = relative.BaseName();
+            if (basename is "lib.d.ts" or "lib.es6.d.ts") return 0;
+            string name = basename.StartsWith("lib.", StringComparison.Ordinal) ? basename[4..] : basename;
+            if (name.EndsWith(".d.ts", StringComparison.Ordinal)) name = name[..^5];
+            int index = ConfigParser.Libs.IndexOf(name);
+            if (index != -1) return index + 1;
+        }
+        return ConfigParser.Libs.Count + 2;
+    }
+    internal LibFile PathForLibFile(string name)
+    {
+        var (cached, ok) = pathForLibFileCache.Load(name);
+        if (ok) return cached;
+        var path = defaultLibraryPath.ResolveFile(name);
+        var key = ToPath(path.AsPath());
+        bool replaced = false;
+        if (!opts.SkipModuleResolution && options.LibReplacement == Tristate.True && name != "lib.d.ts")
+        {
+            string libraryName = GetLibraryNameFromLibFileName(name);
+            var resolveFrom = GetInferredLibraryNameResolveFrom(opts.Config.BaseDirectory(), name);
+            var (resolved, trace) = ResolveLibrary(libraryName, resolveFrom);
+            if (resolved.IsResolved()) (path, key, replaced) = (resolved!.ResolvedFileName, resolved.ResolvedPath, true);
+            pathForLibFileResolutions.LoadOrStore(ToPath(resolveFrom.AsPath()), new() { libraryName = libraryName, resolution = resolved, trace = trace });
+        }
+        return pathForLibFileCache.LoadOrStore(name, new() { Name = name, path = path, pathKey = key, Replaced = replaced }).Actual;
+    }
+    private (ResolvedModule? Resolution, List<DiagAndArgs>? Trace) ResolveLibrary(string libraryName, RootedFilePath resolveFrom)
+    {
+        var (resolved, trace, error) = resolver.ResolveModuleName(libraryName, resolveFrom, ResolutionMode.CommonJS);
+        RecordModuleResolutionError(error);
+        return (resolved, trace);
+    }
+    private void RecordModuleResolutionError(Exception? error)
+    {
+        if (error is not null) lock (resolutionErrorGate) moduleResolutionError ??= error;
+    }
+    internal static string GetLibraryNameFromLibFileName(string libFileName)
+    {
+        var components = libFileName.Split('.');
+        var path = new System.Text.StringBuilder("@typescript/lib-");
+        if (components.Length > 1) path.Append(components[1]);
+        for (int i = 2; i < components.Length && components[i] != "" && components[i] != "d"; i++)
+            path.Append(i == 2 ? '/' : '-').Append(components[i]);
+        return path.ToString();
+    }
+    internal static RootedFilePath GetInferredLibraryNameResolveFrom(RootedDirectoryPath baseDirectory, string fileName) => baseDirectory.ResolveFile("__lib_node_modules_lookup_" + fileName + "__.ts");
     internal readonly List<ParseTask> rootTasks = [];
     internal readonly ProjectDiskHost? legacyHost;
-    internal readonly IResolutionHost host;
-    internal readonly IResolver resolver;
+    internal IResolutionHost host;
+    internal IResolver resolver;
     internal readonly CompilerOptions options;
     internal readonly bool graph;
     private readonly IReadOnlyDictionary<string, SourceFile> embeddedFiles;
@@ -102,17 +422,17 @@ internal sealed class FileLoader
             PathKey key = host.FS().CaseSensitivity().PathKey(fileName.AsPath());
             if (!allowNonTs && !IsSupportedExtension(KeyText(key)))
                 return (default, default, UnsupportedExtensionDiagnostic(diagnosticName, fileName));
-            if (!host.FS().FileExists(fileName))
+            if (!(program ? compilerHost!.FS() : host.FS()).FileExists(fileName))
                 return (default, default, Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, diagnosticName));
             return (fileName, key, null);
         }
         if (allowNonTs)
-            return host.FS().FileExists(fileName) ? (fileName, host.FS().CaseSensitivity().PathKey(fileName.AsPath()), null) :
+            return (program ? compilerHost!.FS() : host.FS()).FileExists(fileName) ? (fileName, host.FS().CaseSensitivity().PathKey(fileName.AsPath()), null) :
                 (default, default, Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, diagnosticName));
         foreach (string extension in supportedExtensions[0])
         {
             RootedFilePath candidate = fileName.AppendSuffix(extension);
-            if (host.FS().FileExists(candidate))
+            if ((program ? compilerHost!.FS() : host.FS()).FileExists(candidate))
                 return (candidate, host.FS().CaseSensitivity().PathKey(candidate.AsPath()), null);
         }
         return (default, default, Ast.NewCompilerDiagnostic(Diagnostics.Could_not_resolve_the_path_0_with_the_extensions_Colon_1,
@@ -129,7 +449,8 @@ internal sealed class FileLoader
     internal SourceFileMetaData LoadSourceFileMetaData(string text)
     {
         RootedFilePath file = TypedFile(text);
-        var scope = resolver.GetResolutionData().NewResolver(host).GetPackageScopeForPath(file.Directory());
+        if (program && opts.SkipModuleResolution) return new("", default, (ResolutionMode)Ast.GetImpliedNodeFormatForFile(file, ""));
+        var scope = resolver.GetResolutionData().NewResolver(program ? projectReferences!.host : host).GetPackageScopeForPath(file.Directory());
         string packageType = "";
         RootedDirectoryPath packageDirectory = default;
         if (scope?.Exists() == true)
@@ -148,6 +469,12 @@ internal sealed class FileLoader
     // is essential here, avoiding the Unicode overload's additional UTF8 encoding.
     internal SourceFile? ParseSourceFile(ParseTask task)
     {
+        if (program)
+        {
+            var effectiveOptions = projectReferences!.GetCompilerOptionsForFile(TypedFile(task.normalizedFilePath), PathKey.FromGoString(task.path));
+            var programParseOptions = new SourceFileParseOptions(task.normalizedFilePath, task.path, Ast.GetExternalModuleIndicatorOptions(TypedFile(task.normalizedFilePath), effectiveOptions, task.metadata), FileNameIsGoBytes: true);
+            return TypedFile(task.normalizedFilePath).ExtensionIsOneOf(contentMapperExtensions ?? []) ? ParseContentMappedFile(programParseOptions) : compilerHost!.GetSourceFile(programParseOptions);
+        }
         if (!graph) Project.RequireImplementationFile(task.normalizedFilePath);
         var(text, ok) = host.FS().ReadFile(TypedFile(task.normalizedFilePath));
         if (!ok) return null;
@@ -203,8 +530,15 @@ internal sealed class FileLoader
                 (task.typeDirectives ??= []).Add(new() { ImportingFile = file, Reference = reference, Scheduling = DependencyScheduling.NoResolve });
                 continue;
             }
-            ResolutionMode mode = reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(TypedFile(file.FileName()), task.metadata, options);
-            var(result, trace) = resolver.ResolveTypeReferenceDirective(reference.FileName, TypedFile(file.FileName()), mode);
+            var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
+            var effectiveOptions = DefaultResolver.GetCompilerOptionsWithRedirect(options, redirect);
+            ResolutionMode mode = reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(TypedFile(file.FileName()), task.metadata, effectiveOptions);
+            var(result, trace) = resolver.ResolveTypeReferenceDirective(reference.FileName, containingName, mode, redirect);
+            if (program)
+            {
+                (task.typeResolutionsInFile ??= new())[new(reference.FileName, mode)] = result;
+                if (trace is not null) (task.typeResolutionsTrace ??= []).AddRange(trace);
+            }
             var edge = new ResolvedProjectTypeDirective { ImportingFile = file, Reference = reference, Mode = mode,
                 Resolution = result, Traces = trace, Scheduling = result?.IsResolved() == true ? DependencyScheduling.Scheduled : DependencyScheduling.Unresolved };
             (task.typeDirectives ??= []).Add(edge);
@@ -223,6 +557,8 @@ internal sealed class FileLoader
     internal void ResolveImportsAndModuleAugmentations(ParseTask task)
     {
         SourceFile file = task.file!;
+        var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
+        CompilerOptions options = DefaultResolver.GetCompilerOptionsWithRedirect(this.options, redirect);
         var names = new List<Node>();
         bool js = Ast.IsSourceFileJS(file);
         if (graph && (js || (!file.IsDeclarationFile && (options.GetIsolatedModules() || Ast.IsExternalModule(file)))) && options.ImportHelpers == Tristate.True)
@@ -235,7 +571,7 @@ internal sealed class FileLoader
         int importsStart = names.Count;
         names.AddRange(file.Imports() ?? []);
         if (graph) names.AddRange((file.ModuleAugmentations ?? []).Where(node => node.Kind == Kind.StringLiteral));
-        if (names.Count == 0) return;
+        if (names.Count == 0 || program && opts.SkipModuleResolution) return;
         task.resolutionsInFile = new();
         for (int index = 0; index < names.Count; index++)
         {
@@ -260,8 +596,10 @@ internal sealed class FileLoader
             }
             else
             {
-                (value, trace, error) = resolver.ResolveModuleName(name, TypedFile(file.FileName()), mode);
+                (value, trace, error) = resolver.ResolveModuleName(name, containingName, mode, redirect);
             }
+            if (program) RecordModuleResolutionError(error);
+            if (program && trace is not null) (task.resolutionsTrace ??= []).AddRange(trace);
             ResolvedModule resolved = value ?? new();
             task.resolutionsInFile[new(name, mode)] = resolved;
             int importIndex = index - importsStart;
@@ -272,7 +610,7 @@ internal sealed class FileLoader
             if (!graph)
                 (task.resolutionEdges ??= []).Add(new(file, entry, ProjectDiskHost.DecodeModuleReference(name), mode, resolved, null));
             if (!resolved.IsResolved()) continue;
-            bool jsFile = !resolved.ResolvedUsingExtraExtensions && !resolved.ResolvedFileName.ExtensionIsOneOf(TsPath.SupportedTSExtensionsWithJsonFlat);
+            bool jsFile = !resolved.ResolvedUsingExtraExtensions && !resolved.ResolvedFileName.ExtensionIsOneOf(TsPath.SupportedTSExtensionsWithJsonFlat) && (!program || projectReferences!.GetRedirectForResolution(resolved.ResolvedFileName, resolved.ResolvedPath).Config is null);
             bool jsFromNodeModules = resolved.IsExternalLibraryImport && jsFile && resolved.ResolvedFileName.ContainsLowercaseDirectorySequence("/node_modules/");
             Message? diagnostic = ModuleUtilities.GetResolutionDiagnostic(options, resolved, file);
             edge.Scheduling = diagnostic is not null ? DependencyScheduling.ResolutionDiagnostic :
@@ -290,11 +628,14 @@ internal sealed class FileLoader
     // fileloader.go:942. The actual AST parent chain supplies synthetic usage mode.
     private Node CreateSyntheticImport(string text, SourceFile file)
     {
+        lock (factory)
+        {
         Node specifier = factory.NewStringLiteral(text, TokenFlags.None);
         Node declaration = factory.NewImportDeclaration(null!, null!, specifier, null!);
         specifier.Parent = declaration;
         declaration.Parent = file.AsNode();
         return specifier;
+        }
     }
 
     // fileloader.go:1029–1112.

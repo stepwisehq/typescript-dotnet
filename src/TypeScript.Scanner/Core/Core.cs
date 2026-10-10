@@ -175,6 +175,29 @@ internal static partial class Core
         return result;
     }
 
+    // core.go:525/561. Typed Go-byte paths use the pinned path extension rule;
+    // the legacy Unicode overload below retains its established public role.
+    public static ScriptKind GetScriptKindFromFileName(RootedFilePath fileName)
+    {
+        var lowered = new GoBuilder();
+        foreach (int rune in GoString.Runes(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive))) lowered.WriteRune(UnicodeCase.ToLower(rune));
+        string extension = lowered.String();
+        return extension switch
+        {
+            TsPath.ExtensionJs or TsPath.ExtensionCjs or TsPath.ExtensionMjs => ScriptKind.JS,
+            TsPath.ExtensionJsx => ScriptKind.JSX,
+            TsPath.ExtensionTs or TsPath.ExtensionCts or TsPath.ExtensionMts => ScriptKind.TS,
+            TsPath.ExtensionTsx => ScriptKind.TSX,
+            TsPath.ExtensionJson => ScriptKind.JSON,
+            _ => ScriptKind.Unknown
+        };
+    }
+    public static ScriptKind EnsureScriptKindFromFileName(RootedFilePath fileName)
+    {
+        var kind = GetScriptKindFromFileName(fileName);
+        return kind == ScriptKind.Unknown ? ScriptKind.TS : kind;
+    }
+
     public static ScriptKind GetScriptKindFromFileName(string name) => Path.GetExtension(name).ToLowerInvariant() switch
     {
         ".js" or ".mjs" or ".cjs" => ScriptKind.JS,

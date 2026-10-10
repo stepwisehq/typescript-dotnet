@@ -1,0 +1,8 @@
+{
+  "kind": "authored-original-source-API-behavioral-inputs",
+  "group": "examples-api",
+  "cases": 2,
+  "requestsSha256": "1bc6e5281b07171763ca5c345a2811c7f9c126e13b6526256c459f6c68a4b1c9",
+  "historicalGeneration": "artifacts/program-validation/ordinary-example-original",
+  "expectedSource": "fresh pristine pinned original Program; no target expectations"
+}

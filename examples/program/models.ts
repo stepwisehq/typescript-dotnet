@@ -1,0 +1,1 @@
+interface Model { value: number; }

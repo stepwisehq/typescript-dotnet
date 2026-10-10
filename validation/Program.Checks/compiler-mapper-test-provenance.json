@@ -1,0 +1,64 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+  },
+  "managedFiles": {
+    "validation/Program.Checks/CompilerMapperChecks.cs": "8c898f0c79c19ea286ea49c0aec26dbab16228315c26a0dae8b4d22dcc31e032",
+    "tests/Program.Tests/CompilerMapperTests.cs": "bc889c5f387a25f77d1ea93c21857850ea35b0f6a73419d73071ce30929771a0"
+  },
+  "functions": [
+    {
+      "name": "TestContentMapperVirtualExtensionSetsImpliedNodeFormat",
+      "disposition": "assertion-preserving-port",
+      "semanticAssertionsExcluded": []
+    },
+    {
+      "name": "TestContentMapperDirectivesPreserveIncrementalGlobals",
+      "disposition": "adapted-construction-subset",
+      "semanticAssertionsExcluded": [
+        "pre-incremental GetGlobalDiagnostics count=0: bulk query creates actual checker outside construction scope",
+        "incremental fileless Cannot_find_global_type/IterableIterator diagnostic count=1",
+        "incremental policy-dependent unused expect diagnostic count/code/source/file identity"
+      ]
+    },
+    {
+      "name": "TestCompositeProjectContentMapperSupplementalRoots",
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "semanticAssertionsExcluded": [],
+      "channelAdaptation": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution."
+    },
+    {
+      "name": "TestContentMapperInvalidMappings",
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "semanticAssertionsExcluded": [],
+      "channelAdaptation": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution."
+    },
+    {
+      "name": "TestContentMapperSourceFileState",
+      "disposition": "adapted-diagnostic-channel-original-assertions",
+      "semanticAssertionsExcluded": [],
+      "channelAdaptation": "Original collectContentMapperDiagnostics invokes semantic publication. Managed direct construction/file-inclusion APIs retain its asserted environment/error values but do not prove original semantic call execution."
+    },
+    {
+      "name": "TestContentMapperProjectErrorDiagnostics",
+      "disposition": "assertion-preserving-port",
+      "semanticAssertionsExcluded": []
+    }
+  ],
+  "adaptations": [
+    "Original vfstest seed WriteFile calls become identical read-only case-insensitive ConfigurationFileSystem construction; actual bundled library FS is wrapped.",
+    "Original t.Parallel/subtest callbacks execute serially with original SingleThreaded=true Program options.",
+    "Five environment/error assertion domains retain original inputs and expected literals/counts/identities. The original collection helper also acquired semantic diagnostics; managed helper collects syntax, Program and actual per-source inclusion diagnostics that publish the asserted environment/error values without acquiring an unsupported checker. This is a helper invocation adaptation, not full semantic output equivalence.",
+    "Generator test retains both Ignore/Expect exact transform/source/directive options without invoking bulk Global or incremental semantic queries, with additional labeled construction/directive/actual-ES5-library checks. Whole incremental semantic body is blocked by generator checker capability; no fake diagnostics or stand-in IterableIterator declaration.",
+    "Original public compiler error diagnostic selector is accessed through its exact existing internal FileLoader counterpart via Program.Checks friend visibility. Default-locale no-argument Message.Localize retains original English expected text."
+  ],
+  "execution": {
+    "managed": "all6 passed within copied build5 shared78; no individual-function runtime inference",
+    "report": "artifacts/program-validation/build5/shared/report.json",
+    "reportSha256": "afb5ff39f6269fd78f40f117da9bc5d1343698f1adb18fc9f3c312ffca1ee8be",
+    "independentAssertionReview": "verifier source comparison complete: all5 environment/error asserted domains retained with explicit invocation adaptations; generator full semantic body blocked",
+    "native": "pending",
+    "xUnit": "pending"
+  }
+}

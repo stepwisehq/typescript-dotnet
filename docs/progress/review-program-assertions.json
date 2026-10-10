@@ -1,0 +1,39 @@
+{
+  "reviewer": "GPT-6.1 Sol core; independent of verifier test authorship",
+  "sourcePin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scopes": {
+    "Program7": "All actual seven original assertion bodies compared: zero-instance Program-local reason identity, factory counts/lifetime and generation sharing, source-output/symlink clone scenarios, static/dynamic source-phase update, missing-case safety, complete library/order tables, positive/negative data-only types and factory member kinds.",
+    "CheckerPool7": "All policy rows and weight/order/partition/association assertions, nil input and source-sized arithmetic compared; bounded managed indices are declared representation adaptation.",
+    "CachedVfs7": "Full operation sequences and read counters, enabled/disabled/clear and negative cache paths preserved.",
+    "SyncMap1": "Actual absent versus present-null operations and nil value publication assertions preserved.",
+    "AuthoredConstruction2": "Recursive work queue completion/serial LIFO/late enqueue failure/exception propagation plus unrestricted actual bundled construction and explicit unsupported acquisition; supported genuine three-library profile acquired through real checker. No upstream original-body attribution."
+  },
+  "adaptations": [
+    "Go parallel subtest scheduling is sequential in shared body dispatcher; concurrency-critical production APIs retain their own behavioral control.",
+    "Go runtime type-kind predicate is represented by finite reflection over actual managed fields with rooted metadata, explicit storage/lock adapters and unknown-type failure. Native execution is still required.",
+    "Read-only filesystem fixtures replace upstream test seeding writes."
+  ],
+  "findings": [],
+  "runtimeQualification": {
+    "snapshot": "4b",
+    "sharedOriginals": 70,
+    "authoredControls": 2,
+    "report": "artifacts/program-validation/build4b/shared/report.json",
+    "limits": "Aggregate actual execution, no per-function production coverage/native acceptance implied."
+  },
+  "hashes": {
+    "validation/Program.Checks/ProgramChecks.cs": "3c92b651efd809525d72cf7cf97046bf453349b836eb769f613d82c3e2e85876",
+    "validation/Program.Checks/ProgramOrderChecks.cs": "cbe86fb59d9f8dd63824ba7de0f338de86e686e8a8b73d173d736211a13da526",
+    "validation/Program.Checks/ProgramOrderTables.Generated.cs": "3e9f97bf399ebbb9a7324da4b8a13671099ca05f466067c5fdf3659855d5c180",
+    "validation/Program.Checks/ProgramDataChecks.cs": "9f65408ee80eb0f2e7bc9a8a75bd1b1fa980aecf08fef3ee28b958b3ce123c73",
+    "validation/Program.Checks/CheckerPoolChecks.cs": "3fc6169eec1cb6cd71150c17cb163059cbbde5ab2da48ad0fceb17e78f105960",
+    "validation/Program.Checks/CachedVfsChecks.cs": "5455090d57a160ace62710fb5195c54c374299998d30642e26c10881160b1148",
+    "validation/Program.Checks/SyncMapChecks.cs": "21fc5a7395cc8d92c8de437065973021e0a8af25ed82bd2805298a2d3daf5a2a",
+    "validation/Program.Checks/ConstructionBoundaryChecks.cs": "69bfce6b5377b1f200469a601beb08d0796734749de7bce0568639737b1b3e0b",
+    "upstream/TypeScript/tsc/internal/compiler/program_test.go": "83d1b2f4e1fb143b966936528a5f37046d882373dd6250e4251f8344d95d521d",
+    "upstream/TypeScript/tsc/internal/compiler/checkerpool_test.go": "a0184aaff7e511c476cee144d1a7512ebb413676a62a3f9a5dcef0c1d07b962d",
+    "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs_test.go": "709c9e50e0e80b34b2588542e6854acdc11d882ba2dc11ca994e41a7a8cae040",
+    "upstream/TypeScript/tsc/internal/collections/syncmap_test.go": "29bf01083b2b3159c6e40504dd92773e0c61ee19ca6e28919e15fd503cdd130a"
+  },
+  "followupReview": "Six additional actually reached AST/location types are rooted through constant GetFields; actual base/member traversal and original positive/negative domain remain. Only the exact newly demanded compilerOptionsSyntaxGate source Once mutex slot is exempted; unknown type/interface/delegate/object remains rejected. Native metadata execution pending."
+}

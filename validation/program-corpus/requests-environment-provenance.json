@@ -1,0 +1,129 @@
+{
+  "kind": "authored-source-derived-environment-inputs",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "requests": 29,
+  "requestsSha256": "d10508a224d3e8affdc216b8fac6d18c958cb557316dd6ace2405c1f181c5e34",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/fileloader.go": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+    "upstream/TypeScript/tsc/internal/compiler/filesparser.go": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8"
+  },
+  "obligations": [
+    {
+      "name": "environment-default-es2022",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-default-esnext",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-nolib",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-allocated-empty-lib",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-explicit-es2022-dom",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-triple-lib",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-triple-lib-unknown",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-no-default-lib-directive",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-library-replacement",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-disabled",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-explicit",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-missing",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-ancestor",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-custom-root",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-automatic-types-typings-null",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-explicit-type",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-explicit-type-missing",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-path-reference-chain",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-noresolve-references",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-skip-module-resolution",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-javascript-depth-0",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-javascript-depth-1",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-javascript-depth-2",
+      "producer": "library/type environment"
+    },
+    {
+      "name": "environment-serial-shared-dependency",
+      "producer": "WorkGroup/collectFiles shared dependency"
+    },
+    {
+      "name": "environment-parallel-shared-dependency",
+      "producer": "WorkGroup/collectFiles shared dependency"
+    },
+    {
+      "name": "environment-reference-redirect-children",
+      "producer": "redirected task child traversal/include reasons"
+    },
+    {
+      "name": "environment-repeated-casing-acquisition",
+      "producer": "duplicate acquired casing/public DuplicateSourceFiles"
+    },
+    {
+      "name": "environment-parse-bind-diagnostics",
+      "producer": "library/type environment"
+    }
+  ],
+  "expectedSource": "pristine original NewProgram only"
+}

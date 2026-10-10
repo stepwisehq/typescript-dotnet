@@ -210,6 +210,16 @@ Later user directions, in chronological order:
     observation-only overhead before performance comparisons. Let any ongoing final
     acceptance run finish. This applies to the remaining current and future work.
 
+24. **Program construction and environment assembly.** Baseline `1d6bd61`; read
+    [the mandate](./docs/PROGRAM-PROMPT.md), [contract](./docs/PROGRAM-CONTRACT.md)
+    and [checkpoint](./docs/PROGRAM-STATUS.md). Complete genuine upstream environments,
+    references and Program diagnostics independently of unsupported checker semantics.
+    Produce a source-grounded remaining-checker roadmap with a checker-wide gate;
+    planning supplements implementation. Finish checker and required infrastructure
+    before large-project Go/JavaScript-tsc comparisons with emit disabled. Continue
+    through independent review, actual Native AOT, retained regressions and clean
+    committed delivery. Prior efficiency/fidelity requirements remain in force.
+
 ## Recovery sequence
 
 1. Read [docs/STATE.md](./docs/STATE.md) for overall scope and acceptance status.
@@ -221,7 +231,8 @@ Later user directions, in chronological order:
 4. Follow the next unresolved action in the checkpoints. Reuse active agents if
    available; after session loss, delegate using those checkpoint files instead
    of reconstructing the old chat.
-5. Use the [resolution guide](./docs/RESOLUTION.md),
+5. Use the [Program guide](./docs/PROGRAM.md),
+   [resolution guide](./docs/RESOLUTION.md),
    [configuration guide](./docs/CONFIGURATION.md),
    [project guide](./docs/PROJECTS.md) and [README.md](./README.md) for
    reproducible invocation and verification. Required acceptance
@@ -238,3 +249,11 @@ The subsequent source-import resolution contract is accepted in the delivery com
 containing this entry; see its [assessment](./docs/RESOLUTION-ASSESSMENT.md) and
 [proof](./validation/results/resolution-verified.json). Follow [STATE.md](./docs/STATE.md)
 for delivery recovery or a new mandate. Do not restart accepted work or optimization.
+
+The Program construction/environment contract is accepted in the commit containing
+this entry, with actual Linux x64 Native AOT and retained regression evidence. Read its
+[assessment](./docs/PROGRAM-ASSESSMENT.md), [checkpoint](./docs/PROGRAM-STATUS.md) and
+[proof](./validation/results/program-verified.json). The reviewed
+[checker completion roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md) recommends the next
+campaign; it does not authorize starting it without a new mandate. Large-project
+correctness/performance comparisons remain after checker/infrastructure completion.

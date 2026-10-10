@@ -538,7 +538,7 @@ public static partial class TsOptions
         var factory = new NodeFactory();
         var source = new TsConfigSourceFile
         {
-            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString()), "", factory.NewNodeList(new()), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
+            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), "", factory.NewNodeList(new()), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
         };
         source.SourceFile.SetDiagnostics(errors!);
         return (source, errors);
@@ -1065,7 +1065,7 @@ public static partial class TsOptions
     internal static SourceFile? tsconfigToSourceFile(TsConfigSourceFile? source) => source?.SourceFile;
     public static TsConfigSourceFile NewTsconfigSourceFileFromFilePath(RootedFilePath fileName, PathKey path, string text) => new()
     {
-        SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString()), GoString.Bytes(text), ScriptKind.JSON),
+        SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), GoString.Bytes(text), ScriptKind.JSON),
     };
     public static (object? Value, List<Diagnostic>? Errors) ParseConfigFileTextToJson(RootedFilePath fileName, PathKey path, string text)
     {

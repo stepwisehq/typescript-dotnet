@@ -42,7 +42,7 @@ public sealed class SourceOutputAndProjectReference
     public ParsedCommandLine Resolved = null!;
 }
 
-public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost
+public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost, TypeScript.Modules.IResolvedProjectReference
 {
     public ParsedOptions ParsedConfig = null!;
     public TsConfigSourceFile? ConfigFile;

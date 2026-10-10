@@ -1,0 +1,16 @@
+{
+  "kind": "authored-public-resolver-factory-callback-values",
+  "cases": 8,
+  "requestsSha256": "191af4d46f251544413d47057157a26124021c10797a0b6407065bd9fcef3b9a",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/compiler/program.go": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+    "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54"
+  },
+  "limits": [
+    "Default resolver performs all lookups. The callback supplies actual AST diagnostics.",
+    "Nonempty type slot tests its real Program consumer; no default resolver producer claim.",
+    "Captured source pointers are actual host GetSourceFile results; automatic inferred owner is absent.",
+    "These constructors are separate from disk configuration equivalence."
+  ],
+  "expectedSource": "pristine original Program with identical public factory callbacks"
+}

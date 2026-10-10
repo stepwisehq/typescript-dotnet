@@ -6,7 +6,7 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] | --project <tscheck.json> [--json]";
+const string usage = "Usage: tscheck --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] | --project <tscheck.json> [--json]";
 if (args.Length == 1 && args[0] is "--help" or "-h")
 {
     Console.WriteLine(usage);
@@ -14,18 +14,37 @@ if (args.Length == 1 && args[0] is "--help" or "-h")
 }
 
 bool json = args.Length == 3 && args[2] == "--json";
-if (args.Length is not (2 or 3) || args[0] is not ("--project" or "--config" or "--inspect-config" or "--inspect-project") || (args.Length == 3 && !json))
+if (args.Length is not (2 or 3) || args[0] is not ("--project" or "--config" or "--inspect-config" or "--inspect-project" or "--inspect-program") || (args.Length == 3 && !json))
 {
     Console.Error.WriteLine(usage);
     return 2;
 }
 
+bool inspectProgram = args[0] == "--inspect-program";
 bool inspectGraph = args[0] == "--inspect-project";
 bool inspect = args[0] == "--inspect-config";
 bool fullConfiguration = args[0] != "--project";
-json |= inspect || inspectGraph;
+json |= inspect || inspectGraph || inspectProgram;
 try
 {
+    if (inspectProgram)
+    {
+        var inspection = new ProgramInspection(args[1]);
+        var program = inspection.Program;
+        var failure = program.ModuleResolutionError();
+        var output = new CliResult
+        {
+            ExitCode = failure is not null ? 2 : inspection.Diagnostics.Count != 0 ? 1 : 0,
+            Error = failure?.Message,
+            Files = program.SourceFiles().Select(file => DisplayBytes(file.FileNameGoBytes())).ToArray(),
+            FileNamesBase64 = program.SourceFiles().Select(file => Base64(file.FileNameGoBytes())).ToArray(),
+            Program = DescribeProgram(inspection),
+            Diagnostics = inspection.Diagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray()
+        };
+        Console.WriteLine(JsonSerializer.Serialize(output, CliJsonContext.Default.CliResult));
+        return output.ExitCode;
+    }
+
     if (inspectGraph)
     {
         ResolvedProjectGraph graph = Project.InspectResolvedGraph(args[1]);
@@ -221,6 +240,65 @@ static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
     }).ToArray()
 };
 
+static CliProgram DescribeProgram(ProgramInspection inspection)
+{
+    var program = inspection.Program;
+    var modules = new List<CliProgramModule>();
+    program.ForEachResolvedModule((result, name, mode, path) => modules.Add(new()
+    {
+        ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(),
+        Module = result is null ? null : DescribeResolution(result)
+    }));
+    var types = new List<CliProgramModule>();
+    program.ForEachResolvedTypeReferenceDirective((result, name, mode, path) => types.Add(new()
+    {
+        ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(),
+        Type = result is null ? null : new()
+        {
+            FileBase64 = Base64(result.ResolvedFileName.AsString()), PathBase64 = Base64(result.ResolvedPath.AsString()),
+            OriginalPathBase64 = Base64(result.OriginalPath.AsString()), Primary = result.Primary,
+            ExternalLibraryImport = result.IsExternalLibraryImport,
+            Package = new() { NameBase64 = Base64(result.PackageId.Name), SubModuleNameBase64 = Base64(result.PackageId.SubModuleName), VersionBase64 = Base64(result.PackageId.Version), PeerDependenciesBase64 = Base64(result.PackageId.PeerDependencies) },
+            Diagnostics = result.ResolutionDiagnostics?.Select(diagnostic => Describe(diagnostic, true)).ToArray()
+        }
+    }));
+    var references = new List<CliProgramReference>();
+    program.RangeResolvedProjectReference((path, config, parent, index) =>
+    {
+        references.Add(new() { PathBase64 = Base64(path.AsString()), ConfigBase64 = config is null ? null : Base64(config.ConfigName().AsString()), ParentConfigBase64 = Base64(parent.ConfigName().AsString()), Index = index });
+        return true;
+    });
+    return new()
+    {
+        Boundary = "Program source/library/type/reference construction, syntax/bind and construction diagnostics; semantic checking, emit, build/watch and content-mapper subprocess execution are not requested.",
+        SemanticCheckingRequested = false,
+        RootsBase64 = (inspection.Configuration.Parsed!.FileNames() ?? []).Select(path => Base64(path.AsString())).ToArray(),
+        Sources = program.SourceFiles().Select(file =>
+        {
+            var key = PathKey.FromGoString(file.PathKey());
+            var metadata = program.GetSourceFileMetaData(key);
+            return new CliProgramSource
+            {
+                FileBase64 = Base64(file.FileNameGoBytes()), PathBase64 = Base64(file.PathKey()), ScriptKind = file.ScriptKind.ToString(), Declaration = file.IsDeclarationFile,
+                DefaultLibrary = program.IsSourceFileDefaultLibrary(key), ExternalLibrary = program.IsSourceFileFromExternalLibrary(file),
+                ExternalModule = Ast.IsExternalModule(file), PackageType = metadata.PackageJsonType,
+                PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()), ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
+                LibraryReferencesBase64 = file.LibReferenceDirectives?.Select(reference => Base64(reference.FileName)).ToArray()
+            };
+        }).ToArray(),
+        // Resolution tables have map ownership; deterministic presentation does
+        // not reorder the actual Program sources or per-request trace streams.
+        Modules = modules.OrderBy(row => row.ImporterPathBase64, StringComparer.Ordinal).ThenBy(row => row.NameBase64, StringComparer.Ordinal).ThenBy(row => row.Mode, StringComparer.Ordinal).ToArray(),
+        Types = types.OrderBy(row => row.ImporterPathBase64, StringComparer.Ordinal).ThenBy(row => row.NameBase64, StringComparer.Ordinal).ThenBy(row => row.Mode, StringComparer.Ordinal).ToArray(),
+        References = references.ToArray(), Traces = DescribeTraces(inspection.Traces),
+        ConfigurationDiagnostics = inspection.ConfigurationDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
+        SyntacticDiagnostics = inspection.SyntacticDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
+        BindDiagnostics = inspection.BindDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
+        ConstructionDiagnostics = inspection.ProgramDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
+        InclusionDiagnostics = inspection.InclusionDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray()
+    };
+}
+
 static void Print(CliDiagnostic diagnostic)
 {
     string location = diagnostic.File is null ? "" : diagnostic.File + (diagnostic.Line > 0 ? $"({diagnostic.Line},{diagnostic.Column})" : "") + ": ";
@@ -237,6 +315,8 @@ internal sealed class CliResult
     public string? Error { get; set; }
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CliGraph? Graph { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public CliProgram? Program { get; set; }
     public CliDiagnostic[] Diagnostics { get; set; } = [];
 
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
@@ -263,6 +343,51 @@ internal sealed class CliDiagnostic
     public CliDiagnostic[]? Related { get; set; }
 }
 
+internal sealed class CliProgram
+{
+    public string Boundary { get; set; } = "";
+    public bool SemanticCheckingRequested { get; set; }
+    public string[] RootsBase64 { get; set; } = [];
+    public CliProgramSource[] Sources { get; set; } = [];
+    public CliProgramModule[] Modules { get; set; } = [];
+    public CliProgramModule[] Types { get; set; } = [];
+    public CliProgramReference[] References { get; set; } = [];
+    public CliTrace[]? Traces { get; set; }
+    public CliDiagnostic[] ConfigurationDiagnostics { get; set; } = [];
+    public CliDiagnostic[] SyntacticDiagnostics { get; set; } = [];
+    public CliDiagnostic[] BindDiagnostics { get; set; } = [];
+    public CliDiagnostic[] ConstructionDiagnostics { get; set; } = [];
+    public CliDiagnostic[] InclusionDiagnostics { get; set; } = [];
+}
+internal sealed class CliProgramSource
+{
+    public string FileBase64 { get; set; } = "";
+    public string PathBase64 { get; set; } = "";
+    public string ScriptKind { get; set; } = "";
+    public bool Declaration { get; set; }
+    public bool DefaultLibrary { get; set; }
+    public bool ExternalLibrary { get; set; }
+    public bool ExternalModule { get; set; }
+    public string PackageType { get; set; } = "";
+    public string PackageDirectoryBase64 { get; set; } = "";
+    public string ImpliedNodeFormat { get; set; } = "";
+    public string[]? LibraryReferencesBase64 { get; set; }
+}
+internal sealed class CliProgramModule
+{
+    public string ImporterPathBase64 { get; set; } = "";
+    public string NameBase64 { get; set; } = "";
+    public string Mode { get; set; } = "";
+    public CliResolvedModule? Module { get; set; }
+    public CliResolvedTypeDirective? Type { get; set; }
+}
+internal sealed class CliProgramReference
+{
+    public string PathBase64 { get; set; } = "";
+    public string? ConfigBase64 { get; set; }
+    public string ParentConfigBase64 { get; set; } = "";
+    public int Index { get; set; }
+}
 internal sealed class CliGraph
 {
     public string Boundary { get; set; } = "";

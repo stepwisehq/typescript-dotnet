@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmit": true,
+    "singleThreaded": true,
+    "lib": ["es2022"],
+    "typeRoots": ["./types"],
+    "types": ["program-demo"]
+  },
+  "files": ["main.ts"],
+  "references": [{ "path": "./helper" }]
+}

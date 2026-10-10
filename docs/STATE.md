@@ -1,5 +1,50 @@
 # Current project state
 
+**Accepted: Program construction and environment assembly, P1–P6.** Baseline
+`1d6bd61`; pin `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.
+See the [guide](PROGRAM.md), [assessment](PROGRAM-ASSESSMENT.md),
+[concise checkpoint](PROGRAM-STATUS.md), [source mapping](../source-map.json)
+and [durable proof](../validation/results/program-verified.json).
+
+Actual Linux x64 Native AOT passes 186 paired comparisons, 78 shared groups,
+76 repeated-order executions per runtime and both ordinary disk inspections.
+All 24,598 xUnit cases pass with zero failures/skips; all prior native gates pass.
+The single frozen gate took 982.578 seconds; five drift checks clear, 187 historical
+fixture/proof files unchanged. A later one-line recorder bookkeeping correction is
+explicitly bound in the proof; no compiler/tests/runtime evidence changed.
+
+Use `tscheck --inspect-program <tsconfig>` for real source/library/type/reference
+construction and its diagnostics. It does not imply successful semantic checking.
+All 115 genuine pinned libraries are embedded; current checker profile restrictions
+remain explicit. Local Program reuse and in-process mapper/SpanMap are included;
+emit/build/watch/services, mapper processes and broader checker computations remain
+separate. Native platforms other than Linux x64 are unverified.
+
+No active implementation task remains. If interrupted before delivery, finish the
+authorized commit and confirm a clean tree; otherwise await another campaign mandate.
+Next recommendation: genuine checker initialization and declaration/object-model
+completion, following the [checker roadmap](CHECKER-COMPLETION-ROADMAP.md).
+Finish checker/required infrastructure before large-project Go/JavaScript-tsc no-emit
+correctness or performance comparisons. The .NET 11/optimization investigation stays
+deferred. Reuse accepted evidence; do not reconstruct or rerun completed campaigns.
+
+**Prospective efficiency guidance (current and future campaigns):** prioritize
+implementation and efficient verification. Private cache/identity/closure/storage
+observations are diagnostic aids, added only for concrete correctness risks, required
+upstream invariants or meaningful resource concerns. Distinguish observer limitations
+and incidental representation from consequential defects. Retain existing machinery,
+useful regressions, applicable upstream tests, meaningful Go comparisons, independent
+review and actual Native AOT acceptance. No restart, accepted-work audit, broad cleanup
+or new process framework; simplify only an active bottleneck. Make substantive changes
+to observations explicit, never change expectations to conceal defects, and disable
+observation-only overhead before future performance comparisons. Let an underway final
+acceptance run finish.
+
+## Historical accepted campaigns
+
+These records retain their original scopes and superseded next-step recommendations.
+The current Program checkpoint above controls resumption.
+
 **Accepted: source-import module-resolution completion, R1–R6.**
 Baseline `37bd57d`; upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 All five Module files /149 functions are translated and independently reviewed.
@@ -18,23 +63,6 @@ support and emit remain separate. No next campaign is authorized. If delivery wa
 interrupted, finish the authorized commit without altering proven source/assets;
 otherwise await a new mandate. Recommended next assessment: Program construction
 and environment assembly. The .NET 11/optimization investigation remains deferred.
-
-**Prospective efficiency guidance (current and future campaigns):** prioritize
-implementation and efficient verification. Private cache/identity/closure/storage
-observations are diagnostic aids, added only for concrete correctness risks, required
-upstream invariants or meaningful resource concerns. Distinguish observer limitations
-and incidental representation from consequential defects. Retain existing machinery,
-useful regressions, applicable upstream tests, meaningful Go comparisons, independent
-review and actual Native AOT acceptance. No restart, accepted-work audit, broad cleanup
-or new process framework; simplify only an active bottleneck. Make substantive changes
-to observations explicit, never change expectations to conceal defects, and disable
-observation-only overhead before future performance comparisons. Let an underway final
-acceptance run finish.
-
-## Historical accepted campaigns
-
-The records below retain their original scopes and superseded next-step recommendations.
-The current resolution checkpoint above controls resumption.
 
 **Accepted: configuration interpretation and file discovery, S1–S6.**
 Baseline `2c850db`; upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` unchanged.

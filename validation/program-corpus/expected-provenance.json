@@ -1,0 +1,110 @@
+{
+  "kind": "pristine-original-NewProgram-generation",
+  "oracleSha256": "034313affe1552cf859392007e6b7a885f03710075365449414d10d282596ae6",
+  "toolchainSha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFiles": {
+    "tools/program-oracle/factory.go": "1ab6a68635e9576121649f5a7c80017b8f3f5fce3ce5d7bf1843ad0652c7da67",
+    "tools/program-oracle/main.go": "656cf3ac5eecd87229c76040c2060b3e8b7bbcadbf7ed153036dc193b5a55fab",
+    "tools/program-oracle/mapper.go": "cc142e99150b37d27832fbea7e2e4f3ffb834c7b47f0b1fcab2b656fdfbaff5a",
+    "tools/program-oracle/json_error_observe.go": "bb84a440409186e1a01e7471be59fa0492819d77be6635ac7d59573c4a8ae2ae",
+    "tools/program-oracle/dependencies.go": "d77614d3a0724d42b25055b51dc2e87a59a3b6f8060aab3d464f5ef54b9b8145"
+  },
+  "groups": [
+    {
+      "name": "vertical",
+      "requests": "validation/program-corpus/requests-vertical.jsonl",
+      "expected": "validation/program-corpus/expected-vertical.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "b74ad09ca246a6fe36940bcf812e1782a7fb37f2370ae6ac935a4df919d2639d",
+      "expectedSha256": "5cf2a05622c7210324d00adc53b26c4266c1b71166851beed453686bd9d95315",
+      "rawOutputSha256": "2365c587626fe10e93f760595bc0252ecbce63bd8bfa46c76e86aa1c9a786b80",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.052
+    },
+    {
+      "name": "generation",
+      "requests": "validation/program-corpus/requests-generation.jsonl",
+      "expected": "validation/program-corpus/expected-generation.jsonl.gz",
+      "cases": 8,
+      "requestsSha256": "71d0e2e16556bfa23620f4b305dab2bf0759b588e9e759533887a9597ea15afd",
+      "expectedSha256": "0e2299ed70e45bd7fc9b4b72bedd0c7555a21c3103e1fe6c0547151fa99a165a",
+      "rawOutputSha256": "d166da9e0db7066f2238927bcc367505819c779c8b13d1f831701b63c68da8f0",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.008
+    },
+    {
+      "name": "core",
+      "requests": "validation/program-corpus/requests-core.jsonl",
+      "expected": "validation/program-corpus/expected-core.jsonl.gz",
+      "cases": 60,
+      "requestsSha256": "e7e9c2d9326db78d85af71cfaaf2880c298679c3aa03f93137e6818c899375cc",
+      "expectedSha256": "d062414eadf198dba39e5d921b75b191d6e031bd47e3d89ea7e5c1233618bed7",
+      "rawOutputSha256": "a6f52075d7c70de59768a6bcb66dc4a00c01442f8cef716c447f52825dbf78a5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.019
+    },
+    {
+      "name": "environment",
+      "requests": "validation/program-corpus/requests-environment.jsonl",
+      "expected": "validation/program-corpus/expected-environment.jsonl.gz",
+      "cases": 29,
+      "requestsSha256": "d10508a224d3e8affdc216b8fac6d18c958cb557316dd6ace2405c1f181c5e34",
+      "expectedSha256": "196b34662b8171722de3a55c1bb8b72cee2aecac706c4485a353fc254656467e",
+      "rawOutputSha256": "9c4c88e83934ec4cec06654923b2bd204f02eb394f04672dec8de35204c98d6f",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.127
+    },
+    {
+      "name": "factory",
+      "requests": "validation/program-corpus/requests-factory.jsonl",
+      "expected": "validation/program-corpus/expected-factory.jsonl.gz",
+      "cases": 8,
+      "requestsSha256": "191af4d46f251544413d47057157a26124021c10797a0b6407065bd9fcef3b9a",
+      "expectedSha256": "5a322788e11f4d34150dc49d56a9c393a0c34bf0ae938f3ae9af3ab11f072609",
+      "rawOutputSha256": "df5e3a3783ccccd2a885a4b4c59cdb240882885ee2d130d7411703f6d007b702",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.006
+    },
+    {
+      "name": "mapper",
+      "requests": "validation/program-corpus/requests-mapper.jsonl",
+      "expected": "validation/program-corpus/expected-mapper.jsonl.gz",
+      "cases": 21,
+      "requestsSha256": "289fb8a747cd076bf144ef16ea700a2caef96af1d7ee5036e6efdbdebaffa5e3",
+      "expectedSha256": "2d8c0dc9fe115af86488c8ac41aca563f0505bb58c1f47eea4010be1228fe5bc",
+      "rawOutputSha256": "e5b68f66f62a3e388ad389fb98f9032d5360f1103041d3e53bced8ae9c64a9d2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.008
+    },
+    {
+      "name": "dependencies",
+      "requests": "validation/program-corpus/requests-dependencies.jsonl",
+      "expected": "validation/program-corpus/expected-dependencies.jsonl.gz",
+      "cases": 56,
+      "requestsSha256": "d468df6fc86d6dbcc0acf031668f77e2c67324ae735eef9cc1710e425a33f663",
+      "expectedSha256": "de503ce5b90eeeeaa604c86af3cb286759bcf13f2c06fed721bb9b98c85d510e",
+      "rawOutputSha256": "09a33d0b3d0332508b96c238f71683bd8ece587424e9013e597ecd7f9327e6c9",
+      "stderrSha256": "78be522721cb44f4d88736a3a0a9768039795ece83298cfd065dc01b74a2c72c",
+      "seconds": 0.007
+    },
+    {
+      "name": "examples-api",
+      "requests": "validation/program-corpus/requests-examples-api.jsonl",
+      "expected": "validation/program-corpus/expected-examples-api.jsonl.gz",
+      "cases": 2,
+      "requestsSha256": "1bc6e5281b07171763ca5c345a2811c7f9c126e13b6526256c459f6c68a4b1c9",
+      "expectedSha256": "0c91d9ed1b883176ce4f2b61ba82ff7728ff4df722a2d20e723e339b02ccc7c4",
+      "rawOutputSha256": "20434242feec84dfcca0ecff81837f897b81253188d11a36a63316aea66e89c3",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.022
+    }
+  ],
+  "limits": [
+    "No compiler/loader source overlays.",
+    "Go-only typed dependency error metadata retained stderr; portable values/error text are compared.",
+    "Only actual SemanticError own modal prefix is canonicalized; raw original variants retained stderr.",
+    "Explicit factory/mapped Project callback constructors are authored source-API fixtures, not default-process equivalence.",
+    "The newly added mappedSource record observes public text/mapping/canonical/supplemental/identity APIs; prior local generation artifacts remain historical and unchanged."
+  ]
+}

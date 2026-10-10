@@ -8,6 +8,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="10.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Bundled/Libs/*.d.ts" LogicalName="TypeScript.Bundled.Libs.%(Filename)%(Extension)" />
     <EmbeddedResource Include="Checker/Libraries/lib.es5.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.es5.d.ts" />
     <EmbeddedResource Include="Checker/Libraries/lib.decorators.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.decorators.d.ts" />
     <EmbeddedResource Include="Checker/Libraries/lib.decorators.legacy.d.ts" LogicalName="TypeScript.Checking.Libraries.lib.decorators.legacy.d.ts" />

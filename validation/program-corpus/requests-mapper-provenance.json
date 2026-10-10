@@ -1,0 +1,22 @@
+{
+  "kind": "authored-public-in-process-mapper-callback-values",
+  "cases": 21,
+  "requestsSha256": "289fb8a747cd076bf144ef16ea700a2caef96af1d7ee5036e6efdbdebaffa5e3",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/contentmapper/transform.go": "86dbc2bbcaa273da551483e371b1f9f986802c4f2cb34ba0d3e9aecc55b2db99",
+    "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334",
+    "upstream/TypeScript/tsc/internal/compiler/fileInclude.go": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b"
+  },
+  "limits": [
+    "ParsedConfig.ContentMappers is explicitly supplied through the original public source API.",
+    "Callback values pass through actual CompilerHost TransformAndParse and Program consumers.",
+    "No mapper process or unsupported semantic/global checker acquisition is performed."
+  ],
+  "obligations": [
+    "Canonical/supplemental public associations and original text/mapping/identity",
+    "Failure stub transform identity and real typed failure diagnostics",
+    "Virtual extension formats, actual parse/bind diagnostics, option diagnostics",
+    "Supplemental include reasons and exact ExplainFiles bytes"
+  ],
+  "expectedSource": "pristine original Program with identical public Project callbacks"
+}

@@ -225,6 +225,88 @@ public static class JsonCodec
         }
     }
 
+    // Selected json/v2 makeSliceArshaler + makeIntArshaler default decoding.
+    // This fixed typed destination supports SpanMap.Unmarshal; it introduces no
+    // reflection, configurable decoder or general typed-marshaling framework.
+    public static (List<List<int>?>? Value, Exception? Error) UnmarshalInt32Matrix(byte[] bytes)
+    {
+        string input = GoString.FromBytes(bytes);
+        List<List<int>?>? result = null;
+        var reader = new Utf8JsonReader(bytes, new JsonReaderOptions { MaxDepth = 10000 });
+        Exception? Semantic(ref Utf8JsonReader token, string type, string pointer, bool integer)
+        {
+            int start = checked((int)token.TokenStartIndex);
+            int end;
+            try { using var document = JsonDocument.ParseValue(ref token); end = checked((int)token.BytesConsumed); }
+            catch (JsonException) { return JsonDiagnosticReader.AnalyzeRawValue(input[start..], sourcePointer: pointer, sourceOffset: start); }
+            string raw = input[start..end];
+            var lexical = JsonDiagnosticReader.AnalyzeRawValue(raw, sourcePointer: pointer, sourceOffset: start);
+            if (lexical is not null) return lexical;
+            string kind = raw[0] == '"' ? "string" : raw[0] == '[' ? "array" : raw[0] == '{' ? "object" : raw[0] is 'f' or 't' ? "boolean" : raw[0] == 'n' ? "null" : "number";
+            string? error = null;
+            string value = "";
+            if (integer && kind == "number")
+            {
+                value = raw;
+                bool negative = raw[0] == '-';
+                string digits = negative ? raw[1..] : raw;
+                bool allDigits = digits.All(ch => ch is >= '0' and <= '9');
+                bool parsed = ulong.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out ulong number);
+                error = !allDigits ? "invalid syntax" : !parsed || number > (negative ? 2147483648UL : 2147483647UL) ? "value out of range" : null;
+                if (error is null) return null;
+            }
+            return JsonTextErrors.AsException(JsonTextErrors.SemanticError("unmarshal", kind, value, type, pointer, start, error));
+        }
+        bool Read(ref Utf8JsonReader token) => token.Read();
+        try
+        {
+            if (!Read(ref reader)) return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                if (Read(ref reader)) return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+                return (null, null);
+            }
+            if (reader.TokenType != JsonTokenType.StartArray) return (null, Semantic(ref reader, "[][]int32", "", false));
+            result = [];
+            while (true)
+            {
+                bool read;
+                try { read = Read(ref reader); }
+                catch (JsonException) { result.Add(null); throw; }
+                if (!read) { result.Add(null); break; }
+                if (reader.TokenType == JsonTokenType.EndArray) break;
+                int rowIndex = result.Count;
+                string pointer = "/" + rowIndex.ToString(CultureInfo.InvariantCulture);
+                result.Add(null);
+                if (reader.TokenType == JsonTokenType.Null) continue;
+                if (reader.TokenType != JsonTokenType.StartArray) return (result, Semantic(ref reader, "[]int32", pointer, false));
+                var row = new List<int>(); result[rowIndex] = row;
+                while (true)
+                {
+                    try { read = Read(ref reader); }
+                    catch (JsonException) { row.Add(0); throw; }
+                    if (!read) { row.Add(0); return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false)); }
+                    if (reader.TokenType == JsonTokenType.EndArray) break;
+                    int column = row.Count; row.Add(0);
+                    string elementPointer = pointer + "/" + column.ToString(CultureInfo.InvariantCulture);
+                    if (reader.TokenType == JsonTokenType.Null) continue;
+                    bool number = reader.TokenType == JsonTokenType.Number;
+                    int start = checked((int)reader.TokenStartIndex);
+                    string raw = number ? input[start..checked((int)reader.BytesConsumed)] : "";
+                    var error = Semantic(ref reader, "int32", elementPointer, true);
+                    if (error is not null) return (result, error);
+                    if (number) row[column] = int.Parse(raw, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                }
+            }
+            if (Read(ref reader)) return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+            return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+        }
+        catch (Exception error) when (error is JsonException or DecoderFallbackException or InvalidOperationException or FormatException or OverflowException)
+        {
+            return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false) ?? error);
+        }
+    }
+
     public static Exception? ValidateValue(JsonValue value, bool allowDuplicateNames = false) => JsonDiagnosticReader.AnalyzeRawValue(GoString.FromBytes(value.Bytes), allowDuplicateNames, sourcePointer: value.Pointer, sourceOffset: value.SourceOffset);
     // Stream adapter used by RawCompilerOptions.UnmarshalJSONFrom. Completed fields
     // remain published if a later token fails, matching the original decoder loop.
@@ -420,7 +502,7 @@ public static class JsonCodec
                 }
             }
 
-            bool container = value is TypeScript.TsOptions.TSConfig or OrderedMap<string, object?> or OrderedMap<string, List<string>?> or Dictionary<string, object?> or CompilerOptions or TypeAcquisition or BuildOptions or TypeScript.ContentMapper.Definition or PluginImport or ProjectReference || value is System.Collections.IEnumerable && value is not (string or byte[]);
+            bool container = value is TypeScript.TsOptions.TSConfig or OrderedMap<string, object?> or OrderedMap<string, List<string>?> or OrderedMap<string, JsonValue> or Dictionary<string, object?> or CompilerOptions or TypeAcquisition or BuildOptions or TypeScript.ContentMapper.Definition or PluginImport or ProjectReference || value is System.Collections.IEnumerable && value is not (string or byte[]);
             if (!container && value is not JsonValue)
                 WritePrefix();
             void PushValue(object? item) => pending.Push(new WriteJob(item, job.Depth, job.Pointer));
@@ -581,6 +663,9 @@ public static class JsonCodec
                 case Dictionary<string, object?> fields:
                     PushObject(fields.Select(entry => (entry.Key, entry.Value)));
                     continue;
+                case OrderedMap<string, JsonValue> fields:
+                    PushObject(fields.Entries().Select(entry => (entry.Key, (object?)entry.Value)));
+                    continue;
                 case OrderedMap<string, List<string>?> fields:
                     PushObject(fields.Entries().Select(entry => (entry.Key, (object? )entry.Value)));
                     continue;
@@ -660,6 +745,7 @@ public static class JsonCodec
         return fields.Entries();
     }
 
+    internal static bool IsZeroValue(object? value) => isZero(value);
     private static bool isZero(object? value) => value switch
     {
         null => true,

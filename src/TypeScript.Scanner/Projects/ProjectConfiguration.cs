@@ -127,13 +127,14 @@ internal sealed class ProjectConfiguration
         Parsed = parsed;
         FileName = parsed.ConfigName().AsString();
         Root = parsed.BaseDirectory().AsString();
-        SourceFile = parsed.ConfigFile!.SourceFile;
+        SourceFile = parsed.ConfigFile?.SourceFile!;
         Options = parsed.CompilerOptions();
         Files = (parsed.FileNames() ?? []).Select(path => path.AsString()).ToArray();
     }
 
     internal Node? GetFileLiteral(int index)
     {
+        if (SourceFile is null) return null;
         Node? result = null;
         void Visit(Node node)
         {

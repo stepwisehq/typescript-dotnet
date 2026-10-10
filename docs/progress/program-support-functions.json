@@ -1,0 +1,1237 @@
+{
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "Implemented compiler-support handoff; source compiled6; aggregate shared78/generation8/CLI-smoke2 observed at prior copied snapshots; not acceptance or per-function execution proof",
+  "functions": [
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "r *redirectsFile",
+      "name": "FileName",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "r *redirectsFile",
+      "name": "PathKey",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "h *compilerResolutionHost",
+      "name": "FS",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "h *compilerResolutionHost",
+      "name": "GetCurrentDirectory",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "processAllProgramFiles",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "toPath",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "addRootTask",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "addRootFileTask",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "addAutomaticTypeDirectiveTasks",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "resolveAutomaticTypeDirectives",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "addProjectReferenceTasks",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "sortLibs",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "getDefaultLibFilePriority",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "loadSourceFileMetaData",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "parseSourceFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "parseContentMappedFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "contentMapperTransformDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "ContentMapperProjectErrorDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "contentMapperTransformDiagnosticChain",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "contentMapperTransformDiagnosticWithDetail",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "contentMapperMappingDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "getContentMapperTransformIdentity",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "emptyContentMappedFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "ContentMapperInitializationDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "ContentMapperProjectDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "contentMapperUnavailable",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "recordContentMapperInitializationFailure",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "recordContentMapperFailure",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "isSupportedExtension",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "getSourceFileFromReference",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "resolveTripleslashPathReference",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "resolveTypeReferenceDirectives",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "resolveImportsAndModuleAugmentations",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "createSyntheticImport",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "pathForLibFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "p *fileLoader",
+      "name": "resolveLibrary",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getLibraryNameFromLibFileName",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getInferredLibraryNameResolveFrom",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getModeForTypeReferenceDirectiveInFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getDefaultResolutionModeForFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getModeForUsageLocation",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "importSyntaxAffectsModuleResolution",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileloader.go",
+      "sourceSha256": "b9fa76f949b3104095fcd4e29755e787c47618c163ab2fb69d6ae6f2c3ae97ae",
+      "receiver": "",
+      "name": "getEmitSyntaxForUsageLocationWorker",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileLoader.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "FileName",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "PathKey",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "load",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "redirect",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "loadAutomaticTypeDirectives",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "t *parseTask",
+      "name": "addSubTask",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "",
+      "name": "getParseTaskData",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "managed-allocation-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Fresh per-load task data replaces Go sync.Pool reuse; no allocation/resource equivalence claim."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "",
+      "name": "putParseTaskData",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "managed-allocation-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Fresh per-load task data replaces Go sync.Pool reuse; no allocation/resource equivalence claim."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "w *filesParser",
+      "name": "parse",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "w *filesParser",
+      "name": "start",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "w *filesParser",
+      "name": "getProcessedFiles",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/filesparser.go",
+      "sourceSha256": "7681612b49874a03399dc522758c48d24a0ac5b303bc0568f015edc05815c0c8",
+      "receiver": "w *filesParser",
+      "name": "addIncludeReason",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FilesParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *includeProcessor",
+      "name": "getDiagnostics",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *fileIncludeData",
+      "name": "addProcessingDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *fileIncludeData",
+      "name": "addProcessingDiagnosticsForFileCasing",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *includeProcessor",
+      "name": "getReferenceLocation",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *includeProcessor",
+      "name": "getCompilerOptionsObjectLiteralSyntax",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *includeProcessor",
+      "name": "getRelatedInfo",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/includeprocessor.go",
+      "sourceSha256": "4f72605641a26c0e46e04ec6606e722d4b42679015da920bded1fd8b6e584c54",
+      "receiver": "i *includeProcessor",
+      "name": "explainRedirectAndImpliedFormat",
+      "counterpart": "src/TypeScript.Scanner/Compiler/IncludeProcessor.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *referenceFileLocation",
+      "name": "text",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *referenceFileLocation",
+      "name": "diagnosticAt",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "asIndex",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "asLibFileIndex",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "isReferencedFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "asReferencedFileData",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "asAutomaticTypeDirectiveFileData",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "getReferencedLocation",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "toDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "computeDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "computeReferenceFileDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "toRelatedInfo",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/fileInclude.go",
+      "sourceSha256": "caac552b66e71777ee0a7f2efec58c0aa916fbe5909fd2215b94b3864706677b",
+      "receiver": "r *FileIncludeReason",
+      "name": "computeReferenceFileRelatedInfo",
+      "counterpart": "src/TypeScript.Scanner/Compiler/FileInclude.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Program resolves path/index against its own generation and caches actual location; legacy pointer role retained separately."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go",
+      "sourceSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+      "receiver": "d *processingDiagnostic",
+      "name": "asFileIncludeReason",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go",
+      "sourceSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+      "receiver": "d *processingDiagnostic",
+      "name": "asIncludeExplainingDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "disposition": "represented-field-adaptation",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Kind-tagged stored values exposed by source-shaped fields; accessor boundary may be inline."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go",
+      "sourceSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+      "receiver": "d *processingDiagnostic",
+      "name": "toDiagnostic",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/processingDiagnostic.go",
+      "sourceSha256": "dbbe9552835eecb6e288c98e8095feee61a3c2d32c4d34729a46c10247581ed1",
+      "receiver": "d *processingDiagnostic",
+      "name": "createDiagnosticExplainingFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProcessingDiagnostic.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "",
+      "name": "NewCachedFSCompilerHost",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "",
+      "name": "NewCompilerHost",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "FS",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "DefaultLibraryPath",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "Trace",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "GetSourceFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "GetContentMappedSourceFiles",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "ContentMapperProject",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/host.go",
+      "sourceSha256": "57d432fd238273dc40da5e68206d89682a732be1ab0c17c34ee4fc395336ddfa",
+      "receiver": "h *compilerHost",
+      "name": "GetResolvedProjectReference",
+      "counterpart": "src/TypeScript.Scanner/Compiler/Host.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "t *projectReferenceParseTask",
+      "name": "parse",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "",
+      "name": "createProjectReferenceParseTasks",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "p *projectReferenceParser",
+      "name": "parse",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "p *projectReferenceParser",
+      "name": "start",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "p *projectReferenceParser",
+      "name": "initMapper",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferenceparser.go",
+      "sourceSha256": "31d0280dfb90c3a72f6623e756b6ee797e8dc1a937962b914bde9b160356c0fb",
+      "receiver": "p *projectReferenceParser",
+      "name": "initMapperWorker",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceParser.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "resolutionHost",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "rootConfigPath",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getParseFileRedirect",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getResolvedProjectReferences",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getProjectReferenceFromSource",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getProjectReferenceFromOutputDts",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "isSourceFromProjectReference",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getCompilerOptionsForFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getRedirectParsedCommandLineForResolution",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getRedirectForResolution",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "getResolvedReferenceFor",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "rangeResolvedProjectReference",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "rangeResolvedReferenceWorker",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "mapper *projectReferenceFileMapper",
+      "name": "rangeResolvedProjectReferenceInChildConfig",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "builder *projectReferenceFileMapperBuilder",
+      "name": "getParseFileRedirect",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "builder *projectReferenceFileMapperBuilder",
+      "name": "getRedirectForResolution",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "builder *projectReferenceFileMapperBuilder",
+      "name": "getCompilerOptionsForFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "builder *projectReferenceFileMapperBuilder",
+      "name": "getRedirectParsedCommandLineForResolution",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencefilemapper.go",
+      "sourceSha256": "2c4a8ea2d2e3dc6887f0a86329b41bb2a2b19b88e4cfdfa6a8efd3496abb6096",
+      "receiver": "builder *projectReferenceFileMapperBuilder",
+      "name": "resolveSymlink",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceFileMapper.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "",
+      "name": "newProjectReferenceDtsFakingHost",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "h *projectReferenceDtsFakingHost",
+      "name": "FS",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "h *projectReferenceDtsFakingHost",
+      "name": "GetCurrentDirectory",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "CaseSensitivity",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "FileExists",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "ReadFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "WriteFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "excluded-write-api",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Read-only IFS contract; original panic-only adapter members are not callable."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "AppendFile",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "excluded-write-api",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Read-only IFS contract; original panic-only adapter members are not callable."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "Remove",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "excluded-write-api",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Read-only IFS contract; original panic-only adapter members are not callable."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "Chtimes",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "excluded-write-api",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution",
+      "reason": "Read-only IFS contract; original panic-only adapter members are not callable."
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "DirectoryExists",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "GetAccessibleEntries",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "Stat",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "Realpath",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "pathKey",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "handleDirectoryCouldBeSymlink",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "fileExistsUsingSource",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "directoryExistsUsingSource",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "fileOrDirectoryExistsUsingSource",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "fileExistsIfProjectReferenceDts",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    },
+    {
+      "sourceFile": "upstream/TypeScript/tsc/internal/compiler/projectreferencedtsfakinghost.go",
+      "sourceSha256": "cd285644c8eed56acd79f680c01cdc962e56fedc6e836d722c2f1fedd11ac087",
+      "receiver": "fs *projectReferenceDtsFakingVfs",
+      "name": "directoryExistsIfProjectReferenceDeclDir",
+      "counterpart": "src/TypeScript.Scanner/Compiler/ProjectReferenceDtsFakingHost.cs",
+      "disposition": "implemented-source-responsibility",
+      "runtime": "source compiled in copied build6; relevant shared/behavioral evidence is aggregate, not individual function execution"
+    }
+  ],
+  "notes": [
+    "Core is sole merger/writer of docs/program-functions.json; this finite source assessment preserves receiver/source qualification.",
+    "FileLoader responsibilities moved across named helper boundaries retain actual scheduling/options/producers. Existing graph/legacy entrypoints remain authored compositions.",
+    "ProjectReferenceFileMapper PublishData is explicit managed pointer-embedding adaptation retaining stores and dropping construction host dispatch.",
+    "All selected read functions remain subject to peer source review and actual Program/original assertions, not output-only completeness claims."
+  ]
+}

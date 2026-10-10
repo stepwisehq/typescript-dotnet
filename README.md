@@ -1,20 +1,24 @@
 # TypeScript port feasibility study
 
-The upstream **source-import module-resolution contract is complete**, with actual
-**Linux x64 Native AOT** verification. Use `tscheck --inspect-project <tsconfig>` to
-inspect genuine config-driven dependency graphs, and `tscheck --config <tsconfig>`
-to check supported TS package projects. Resolution supports Node16, NodeNext and
-Bundler beyond the current checker's semantic capabilities; unsupported checking
-remains explicit. See the [guide](./docs/RESOLUTION.md),
-[assessment](./docs/RESOLUTION-ASSESSMENT.md),
-[source mapping](./source-map.json) and [proof](./validation/results/resolution-verified.json).
+The **Program construction and environment assembly contract is complete**, verified
+under actual **Linux x64 Native AOT**. Use `tscheck --inspect-program <tsconfig>` to
+construct genuine source/library/type/reference environments and inspect their diagnostics.
+The port embeds all 115 unchanged pinned standard-library files. Environment construction
+is independent of the current checker's supported semantic profiles; inspection does not
+imply successful semantic checking.
 
-All five upstream Module files /149 functions are translated and independently
-reviewed. The final gate passes 24,334 xUnit cases and all retained native regressions;
-new evidence includes 38 original test bodies and 216 compound Go comparisons.
-This is not full Program construction, arbitrary library/checker support or emit.
-Configuration interpretation/discovery remains available independently through
-`--inspect-config`; see its [guide](./docs/CONFIGURATION.md).
+The final gate passes **24,598 xUnit cases** with zero failures/skips and all retained
+native regressions. New evidence includes 186 paired comparisons, 78 shared groups,
+76 repeated-order executions per runtime and two ordinary disk examples. See the
+[guide](./docs/PROGRAM.md), [contract assessment](./docs/PROGRAM-ASSESSMENT.md),
+[proof](./validation/results/program-verified.json), [source mapping](./source-map.json)
+and [checker completion roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
+
+Accepted configuration/discovery and source-import resolution remain available through
+`--inspect-config` and `--inspect-project`; `--config` checks the supported semantic
+project profile. See their [configuration](./docs/CONFIGURATION.md) and
+[resolution](./docs/RESOLUTION.md) guides. Broad checker/library semantics, emit,
+build/watch and language services remain separate work.
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained

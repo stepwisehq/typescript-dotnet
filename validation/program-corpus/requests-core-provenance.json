@@ -1,0 +1,378 @@
+{
+  "schema": 1,
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "kind": "authored source-grounded Program construction differential inputs, not original test bodies",
+  "cases": 60,
+  "requestsSha256": "e7e9c2d9326db78d85af71cfaaf2880c298679c3aa03f93137e6818c899375cc",
+  "generator": "tools/program-generate-core-requests.py",
+  "source": "upstream/TypeScript/tsc/internal/compiler/program.go",
+  "sourceSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+  "obligations": [
+    {
+      "name": "core-baseline-options",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "7e79e339306c8f976a3b7c2b1dcee2386cd24b433fef9dcd99a89b2355ff4dcd"
+    },
+    {
+      "name": "core-removed-baseurl",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "e7c75f2791bb44673ba7c79721c849f699eac73e0dc06e2aff9b1d94290f1d4a"
+    },
+    {
+      "name": "core-removed-outfile",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "46bbb5074820a36993489c407b524c2478364afd40db4a325f40185b390bd663"
+    },
+    {
+      "name": "core-removed-target-es5",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "225eb9b517a35896d26fa2260969db69a73644f67b279233b34affd59886e15d"
+    },
+    {
+      "name": "core-removed-module-amd",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d2a3fd72c5900e03ec51854544313352ac47622afef7673e9799b79bced6a6c2"
+    },
+    {
+      "name": "core-removed-module-system",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d51e55a9f144df9eec1dfc5ddb001983c40a96cb1573a453aa467ec757a88128"
+    },
+    {
+      "name": "core-removed-module-umd",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "a29a5448852752dba3e0bc999c2f418c912986288b1c781288e14484d8bb1a86"
+    },
+    {
+      "name": "core-removed-resolution-classic",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "4157c4f893eb712eb9a6863120f0eab101ea604be4d7b0fb69430fcf86f3bc6f"
+    },
+    {
+      "name": "core-removed-resolution-node10",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "62d8fb40e76b9d8d8804c36560a85ea8f97f082b99ae97c7fe3ad5160c9f427f"
+    },
+    {
+      "name": "core-removed-false-options",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "8112657034580740a68a17db28ea3af937f69f5d36ccf961ea1230b32b14ed5e"
+    },
+    {
+      "name": "core-strict-required",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "0d841cd23bb85793c3d4a29f15031d5399dc95e31eb7be0a46e4c65b0d4bbe83"
+    },
+    {
+      "name": "core-strict-inherited",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "68f39cbc9aaa60aef0e2e52d5c13b9939cdbf4c1d4443d295043194f02872d0c"
+    },
+    {
+      "name": "core-isolated-declarations-invalid",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "efbd90ce03aab00eb308988c6c18d3657b15842abcc0699c8d5ae9de1e7bfb4c"
+    },
+    {
+      "name": "core-isolated-declarations-valid",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "ee989a5d949c09c483333a3df1a03b5be248a32f5811cc7641662c8adb401d9f"
+    },
+    {
+      "name": "core-inline-map-conflicts",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d4e2520589181cbf33343bdae4dd06507736caffeec517cb7af892b48992f460"
+    },
+    {
+      "name": "core-composite-flags-disabled",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "c5abbc91dfee82e7db4240689731eb2c35cfe7fea2f8c855637525259295da0b"
+    },
+    {
+      "name": "core-incremental-known-config",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "de52642edf8bb75afc14c08a6002e4aa372bac1a63582a11c231a94f23185bee"
+    },
+    {
+      "name": "core-paths-key-and-substitution",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "7a6150609d275c0aacf8d4bffe78e85fc00c1f53029ebc36b4da615b1df6b4fc"
+    },
+    {
+      "name": "core-paths-valid-relative-absolute",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "4cb40e7bc7c41471734f9c10ec085eebb6118c84b54797abd70ae6c8bbf368ed"
+    },
+    {
+      "name": "core-sources-and-maproots-without-maps",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "20d2b3ec7753e56bd384bf48696a0ef9751ddde580f7a36185dc15b8b34f0aec"
+    },
+    {
+      "name": "core-sources-and-maproots-with-maps",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "2d81e0b1b80d5bc206c1150d4f4b6c0a9399f1e1c1f5d3b9592c742ef9ac1110"
+    },
+    {
+      "name": "core-declaration-paths-without-declarations",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "4367c8aac9556d7ba381dae426260d9544d73f750986f57fccf8f5b16a8ae7dd"
+    },
+    {
+      "name": "core-declaration-paths-with-declarations",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "72967ac9b3387a6a2ee06aa7b6aa7ef0eee8a66e62a1244310fb16d94b2fb0da"
+    },
+    {
+      "name": "core-nolib-with-lib",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d4af6cf8db87ee2df08732e6582fe41fcb3f69919cbb49d95126fb495492aba4"
+    },
+    {
+      "name": "core-preserve-const-enums-isolated",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "5ad23058b531fd6204e3835d16cb37cad60985d7670168fe629f1b53b9b4c66a"
+    },
+    {
+      "name": "core-preserve-const-enums-verbatim",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "b084a199ba2f64d10b5e000b54583c7951f2565b395efbba34913eaf1e170d9a"
+    },
+    {
+      "name": "core-checkjs-disabled-allowjs",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "8afcd37c48ec6aef5f81225832903b4a5722bb19d962ffb98398dbd3099432e7"
+    },
+    {
+      "name": "core-declaration-only-without-declaration",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "640fe2bbb3900a94d252aede232fd2f17cd1f4f162facfe64bb4682b8d4eee14"
+    },
+    {
+      "name": "core-decorator-metadata-without-experimental",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "be9f4ee218ba25b2a9646240ab0061fc8a1c36e46e91edfb0e45cc683460fe4b"
+    },
+    {
+      "name": "core-jsx-factory-invalid-qualified",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "f1d11b0f92939043d77e7abba6f801962c0489e8ecf49c456f9e260c8ea3b800"
+    },
+    {
+      "name": "core-jsx-fragment-without-factory",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "737af2fd89bcaca9600e0a831cf1e484184bf3a3903cd308f726159b609cf07f"
+    },
+    {
+      "name": "core-jsx-automatic-conflicts",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d6285666f457c0b4b68baaac0261271f775ce21083b4920ea01ddef9ca02762e"
+    },
+    {
+      "name": "core-jsx-classic-source-conflict",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "2db3764387cddd0645d1e5551f3cbd2d6875c134d99262ec07b3e8dada5a2795"
+    },
+    {
+      "name": "core-jsx-factory-and-namespace",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "6ee06b38da42b0ba7bca8ea38a2ea87a3c519daf69cdbffd51081b96bef998e4"
+    },
+    {
+      "name": "core-import-ts-extension-with-emission",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "2eee942fffdd6831cd98cabb5f58d33aa0b610a6ebccdf6bb8decc30caf7e0d5"
+    },
+    {
+      "name": "core-import-ts-extension-noemit",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "e3867371cc5fb2aea3bec491e3b227346b00875ef86f35cf80906e46404300b2"
+    },
+    {
+      "name": "core-import-ts-extension-rewrite",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "9d8781b54a958f2d2466bd7809d14818f516ced1bd21e9692f48bb4746d127f5"
+    },
+    {
+      "name": "core-package-conditions-wrong-resolution",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "ece4a88c2ca52eff124ffc124f1eb0a24f695bf073eba326e6461e7d1837a196"
+    },
+    {
+      "name": "core-bundler-wrong-module",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d0be66cda08b5b6f72961894f1846df23623355531838991db7c5dbf7090c14f"
+    },
+    {
+      "name": "core-node-module-wrong-resolution",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "0c91f52d383644b92528e889ca11f3ab26012914f140b83b37567502161c5536"
+    },
+    {
+      "name": "core-node-resolution-wrong-module",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "a0086664e7088ac5c57e2bc3388a25f364ace535838438b0214302a0d375986a"
+    },
+    {
+      "name": "core-node-compatible-mode",
+      "producer": "verifyCompilerOptions",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "db3a61f188960e59b3c9e06f4a8b88c1354c157f4f007cfb66c820bd7baa6276"
+    },
+    {
+      "name": "core-js-overwrites-input",
+      "producer": "verifyCompilerOptions/output-path collision",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d19d472081710b5f424d40c5a28727b2be030995479ac9ba191504de8f665ae3"
+    },
+    {
+      "name": "core-noemit-does-not-block-output",
+      "producer": "verifyCompilerOptions/output-path noEmit guard",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "72c3535d5873108b1e597ec065b5e83801fb2a04ab8ade00c94f0bf52e786853"
+    },
+    {
+      "name": "core-tsx-ts-duplicate-js-output",
+      "producer": "verifyCompilerOptions/output-path multiple inputs",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "bd928621aaa47c85af36f2847fe9b06ff69d8bc88a175e2fcd32fd20d2c1fb17"
+    },
+    {
+      "name": "core-declarations-overwrite-input",
+      "producer": "verifyCompilerOptions/declaration output-path collision",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "58c4d03182eaf9cb78e887fa1e773be3367b745e74d3c4d5a2a80d6f25e71e50"
+    },
+    {
+      "name": "core-buildinfo-overwrites-input",
+      "producer": "verifyCompilerOptions/build-info collision",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "1047552a133d6f94031ba606515e824913e0b58280a4038ba088b7f06041acd4"
+    },
+    {
+      "name": "core-outdir-migration-layout",
+      "producer": "verifyCompilerOptions/common directory migration",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "7bffc5f072cc8a64b69f01ac45f99db3f07ad5b689c712a6bee64082a0ae5b7b"
+    },
+    {
+      "name": "core-explicit-rootdir-layout",
+      "producer": "verifyCompilerOptions/common directory explicit root",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "723f696c7c2fdee4f2f438a276623df3ea16c2bdf56e24385c0bc16bab49ee19"
+    },
+    {
+      "name": "core-outside-rootdir",
+      "producer": "checkSourceFilesBelongToPath",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "9606ed91a357e3d8d38a20b60de66346f71bb4522aa1de002f7de4ae4e308b77"
+    },
+    {
+      "name": "core-composite-import-not-listed",
+      "producer": "verifyCompilerOptions/composite file-list inclusion",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "abe3059974da10a4141cddcffe51eaca1cced4bd54d1e8224928df04757d5e59"
+    },
+    {
+      "name": "core-composite-import-listed",
+      "producer": "verifyCompilerOptions/composite file-list inclusion",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "c85d821b0e2b6bc1f0ae001ed2ce8b2be119f79550a866fb9cdd504f175c2cef"
+    },
+    {
+      "name": "core-reference-missing",
+      "producer": "verifyProjectReferences/missing config",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "3532e004069858b0606087932e75f5679bbe2f61dabea25cd66d393d28e36243"
+    },
+    {
+      "name": "core-reference-not-composite",
+      "producer": "verifyProjectReferences/composite requirement",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "4152245267886dae84766484ca0fbbe5b33fb4d636d1cbcdf1891d46687dab79"
+    },
+    {
+      "name": "core-reference-noemit",
+      "producer": "verifyProjectReferences/noEmit prohibition",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "89c217ebc3fd4db687505cf0b9a7260d156dd166ecb197259a900d19c1b5fb51"
+    },
+    {
+      "name": "core-reference-buildinfo-collision",
+      "producer": "verifyProjectReferences/shared build-info output",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "db2285b6226c75fdf203133a4ee11d4a44bbfa412f5166e29b04169dede4d0b5"
+    },
+    {
+      "name": "core-reference-empty-parent",
+      "producer": "verifyProjectReferences/empty parent suppresses option requirement",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "8dd12e873992e60ea50d3d4e4f1fc2e787f06a0aec569b6cf44a7592d01ca7e7"
+    },
+    {
+      "name": "core-reference-source-output",
+      "producer": "project-reference source/output construction and verification",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "d9ca14b3571fd9eff31d1e46812154819dc07260bc4b6aa1cc0a006808afc35a"
+    },
+    {
+      "name": "core-reference-output-missing",
+      "producer": "project-reference missing declaration output diagnostics",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "c263f3a2de0fe86aff1b276f25193463d1f76be6df297909bb589b9a7bbc9068"
+    },
+    {
+      "name": "core-unicode-option-and-output-owner",
+      "producer": "verifyCompilerOptions/Unicode config and source diagnostic ownership",
+      "kind": "authored-source-branch-input",
+      "requestSha256": "e2be98d5a820f8371282b2387754d0b40182ce503658de8592038ed73c327fb6"
+    }
+  ],
+  "limits": [
+    "Expected outputs are produced exclusively by the unmodified pinned Go NewProgram observer.",
+    "All cases use genuine parsed config and Bundled host; options and file content are not overridden by observation.",
+    "Semantic execution and output writing are not requested.",
+    "Incremental-without-config and internal SuppressOutputPathCheck factory values are not expressible in this config-based protocol; no unsupported input field or observer override is invented."
+  ]
+}

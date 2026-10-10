@@ -11,8 +11,55 @@ public interface IOutputPathsHost
     CaseSensitivity CaseSensitivity();
 }
 
+public sealed class OutputFilePaths
+{
+    internal RootedFilePath jsFilePath, sourceMapFilePath, declarationFilePath, declarationMapPath;
+    public RootedFilePath JsFilePath() => jsFilePath;
+    public RootedFilePath SourceMapFilePath() => sourceMapFilePath;
+    public RootedFilePath DeclarationFilePath() => declarationFilePath;
+    public RootedFilePath DeclarationMapPath() => declarationMapPath;
+}
+
+public struct ForceEmitPaths
+{
+    public bool Dts, Js, DeclarationMap;
+}
+
 public static partial class OutputPaths
 {
+    // outputpaths.go:43–76. Enumeration computes names only; it never emits.
+    public static OutputFilePaths GetOutputPathsFor(SourceFile sourceFile, CompilerOptions options, IOutputPathsHost host, ForceEmitPaths force)
+    {
+        var fileName = RootedFilePath.FromGoString(sourceFile.FileNameGoBytes());
+        var ownOutputFilePath = getOwnEmitOutputFilePathForFileName(fileName, options, host, GetOutputExtensionForFileName(fileName, options.Jsx));
+        bool isJson = Ast.IsJsonSourceFile(sourceFile);
+        bool sameLocation = isJson && host.CaseSensitivity().CompareFilePaths(fileName, ownOutputFilePath) == 0;
+        var paths = new OutputFilePaths();
+        if (sourceFile.ContentMapper() == "" && (force.Js || options.EmitDeclarationOnly != Tristate.True) && !sameLocation)
+        {
+            paths.jsFilePath = ownOutputFilePath;
+            if (!isJson)
+                paths.sourceMapFilePath = GetSourceMapFilePath(paths.jsFilePath, options);
+        }
+
+        if (force.Dts || options.GetEmitDeclarations() && !isJson)
+        {
+            paths.declarationFilePath = getDeclarationEmitOutputFilePathForFileName(fileName, options, host);
+            if (options.GetAreDeclarationMapsEnabled() || force.DeclarationMap && options.DeclarationMap == Tristate.True)
+                paths.declarationMapPath = paths.declarationFilePath.AppendSuffix(".map");
+        }
+
+        return paths;
+    }
+
+    public static bool ForEachEmittedFile(IOutputPathsHost host, CompilerOptions options, Func<OutputFilePaths, SourceFile, bool> action, List<SourceFile>? sourceFiles, bool forceDtsEmit)
+    {
+        foreach (var file in sourceFiles ?? [])
+            if (action(GetOutputPathsFor(file, options, host, new() { Dts = forceDtsEmit }), file))
+                return true;
+        return false;
+    }
+
     public static RootedFilePath GetOutputJSFileName(RootedFilePath inputFileName, CompilerOptions options, IOutputPathsHost host)
     {
         if (options.EmitDeclarationOnly == Tristate.True || isContentMappedFileName(inputFileName, host))

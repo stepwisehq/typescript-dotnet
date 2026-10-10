@@ -1,0 +1,8 @@
+{
+  "kind": "authored-original-source-API-behavioral-inputs",
+  "group": "generation",
+  "cases": 8,
+  "requestsSha256": "71d0e2e16556bfa23620f4b305dab2bf0759b588e9e759533887a9597ea15afd",
+  "historicalGeneration": "artifacts/program-validation/generation-locations-expanded",
+  "expectedSource": "fresh pristine pinned original Program; no target expectations"
+}

@@ -1,0 +1,13 @@
+{
+  "kind": "typed-actual-SemanticError-own-modal-observer-adaptation",
+  "controls": 6,
+  "sourceFiles": {
+    "tools/program-oracle/json_error_observe.go": "bb84a440409186e1a01e7471be59fa0492819d77be6635ac7d59573c4a8ae2ae",
+    "tools/program-oracle/main.go": "656cf3ac5eecd87229c76040c2060b3e8b7bbcadbf7ed153036dc193b5a55fab"
+  },
+  "limits": [
+    "Only directly actual SemanticError nodes, immutable source copies, own modal prefix.",
+    "Plain/wrapped/user cause text unchanged; raw original stderr retained.",
+    "No compiler/user diagnostic normalization."
+  ]
+}

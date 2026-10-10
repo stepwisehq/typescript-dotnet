@@ -1,0 +1,18 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFile": "upstream/TypeScript/tsc/internal/contentmapper/transform_test.go",
+  "sourceSha256": "8282cecfd52408f3207ce3638a06dff9aa3f45081cf29ada4376aa8cde7ad6b8",
+  "functions": [
+    "TestParseResultSupplementalFileExtensions",
+    "TestParseResultAllowsSupplementalModules",
+    "TestParseResultDoesNotLeakCanonicalModuleForcingToSupplementals"
+  ],
+  "managedSource": "validation/Program.Checks/ParseResultChecks.cs",
+  "managedSourceSha256": "fc9abede58024a909dc1f16c328b41666119dae81a3f3f54658ab0585eae2083",
+  "disposition": "assertion-preserving-port",
+  "adaptations": [
+    "Source typed filename/PathKey .AsString roles use explicit Go-byte SourceFileParseOptions.FileNameIsGoBytes=true; original ASCII values unchanged.",
+    "Source pointer equality uses ReferenceEquals on actual canonical and supplemental ASTs.",
+    "Source t.Parallel scheduling supplied by shared/xUnit dispatcher; no subprocess/IPC execution claimed."
+  ]
+}

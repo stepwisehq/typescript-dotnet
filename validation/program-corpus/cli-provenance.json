@@ -1,0 +1,21 @@
+{
+  "kind": "actual-disk-Program-examples-original-CLI-comparison",
+  "cases": 2,
+  "sourceFiles": {
+    "examples/program/helper/helper.ts": "b54c3645a712f74f73e15054b02db5bbf28e174ff0f2e64856f3c629b2eb03d3",
+    "examples/program/helper/tsconfig.json": "9807218c4cc174def4dea9b3b6465ce92759e3795af2d96624bd154f868df90a",
+    "examples/program/main.ts": "b9670cf35bdcd26abd50da323cc710fa2cc16453b3f189f0ba2898fa4777c241",
+    "examples/program/missing-reference.ts": "687a05b1fd1164d7a1e686c2d4eded83f8b7000cabc830c3c5bffecb50439215",
+    "examples/program/models.ts": "cce0fc29b78889de9c74474acadecc10b2e36bd50f0414dcb8d27b7fb3ad7e0d",
+    "examples/program/tsconfig-invalid.json": "581ef31451069b503e567bcaf41aa75ddfe5323eba1baa835f1e0f331cee2f4c",
+    "examples/program/tsconfig.json": "e75646087fb1c75d1bd960088803c8ff514c423bc256f3c23304e57a11c58a4b",
+    "examples/program/types/program-demo/index.d.ts": "55da5678ba718df501833f03cecd6ade4785881c4f84a9f7fd2ccf1fc048f66c"
+  },
+  "hostSourceFiles": {},
+  "requestsSha256": "1bc6e5281b07171763ca5c345a2811c7f9c126e13b6526256c459f6c68a4b1c9",
+  "limits": [
+    "Disk paths/input bytes identical on source and target; no message/path normalization.",
+    "Public inclusion SkipTypeChecking policy, no semantic acquisition.",
+    "Original ordinary source has only exact primary-key ties; richer diagnostic merge ties fail closed."
+  ]
+}

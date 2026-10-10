@@ -1,0 +1,12 @@
+{
+  "kind": "authored-original-source-API-behavioral-inputs",
+  "group": "dependencies",
+  "cases": 56,
+  "requestsSha256": "d468df6fc86d6dbcc0acf031668f77e2c67324ae735eef9cc1710e425a33f663",
+  "historicalGeneration": "artifacts/program-validation/build4b/dependencies-portable",
+  "expectedSource": "fresh pristine pinned original Program; no target expectations",
+  "observationLimits": [
+    "Exact portable error text and partial values; original-only typed pointer/offset/cause metadata remains retained in stderr.",
+    "Actual typed SemanticError own-modal canonicalization only; raw original variants retained."
+  ]
+}

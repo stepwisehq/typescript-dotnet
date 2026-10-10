@@ -388,6 +388,31 @@ public readonly record struct SourceFileMetaData
         (this.packageJsonType, PackageJsonDirectory, ImpliedNodeFormat) = (packageJsonType, packageJsonDirectory, impliedNodeFormat);
 }
 
+// ast.go:2611–2674. Metadata is set once before mapped source publication.
+public enum MappedDiagnosticDirectivePolicy : byte { Ignore, Expect }
+public struct MappedDiagnosticDirective
+{
+    public TextRange OriginalRange, VirtualRange;
+    public MappedDiagnosticDirectivePolicy Policy;
+    public int UnusedCode;
+    private string unusedMessageText, source;
+    public string UnusedMessageText { readonly get => unusedMessageText ?? ""; set => unusedMessageText = value; }
+    public string Source { readonly get => source ?? ""; set => source = value; }
+}
+public struct ContentMapperSourceFileInfo
+{
+    private string contentMapper, transformIdentity, originalText;
+    public string ContentMapper { readonly get => contentMapper ?? ""; set => contentMapper = value; }
+    public string TransformIdentity { readonly get => transformIdentity ?? ""; set => transformIdentity = value; }
+    public string OriginalText { readonly get => originalText ?? ""; set => originalText = value; }
+    public SourceFileParseOptions ParseOptions;
+    public RootedFilePath VirtualFileName;
+    public TypeScript.SpanMap.SpanMap SpanMap;
+    public List<MappedDiagnosticDirective> DiagnosticDirectives;
+    public List<SourceFile> SupplementalSourceFiles;
+    public SourceFile CanonicalSourceFile;
+}
+
 public sealed partial class SourceFile : NodeData, SourceFileLike
 {
     internal SourceFileParseOptions parseOptions;
@@ -419,6 +444,27 @@ public sealed partial class SourceFile : NodeData, SourceFileLike
             once = positionMap ??= new(() => Ast.ComputePositionMapByteString(text), LazyThreadSafetyMode.ExecutionAndPublication);
         return once.Value;
     }
+
+    public UInt128 Hash;
+    private ContentMapperSourceFileInfo? contentMapperInfo;
+    public string OriginalText() => ContentMapper() != "" ? contentMapperInfo.Value.OriginalText : text;
+    public RootedFilePath OriginalFileName() => RootedFilePath.FromGoString((CanonicalSourceFile() ?? this).FileNameGoBytes());
+    public TypeScript.SpanMap.SpanMap SpanMap() => contentMapperInfo?.SpanMap;
+    public bool IsContentMapped() => contentMapperInfo.HasValue;
+    public string ContentMapper() => contentMapperInfo?.ContentMapper ?? "";
+    public bool IsContentMapperFailureStub() => ContentMapper() != "" && SpanMap() is null;
+    public string ContentMapperTransformIdentity() => contentMapperInfo?.TransformIdentity ?? "";
+    public RootedFilePath VirtualFileName() => contentMapperInfo?.VirtualFileName ?? default;
+    public SourceFileParseOptions ContentMapperParseOptions() => contentMapperInfo?.ParseOptions ?? default;
+    public void SetContentMapperInfo(ContentMapperSourceFileInfo info)
+    {
+        if (contentMapperInfo.HasValue) throw new InvalidOperationException("content mapper source file info already set");
+        contentMapperInfo = info;
+    }
+    public List<MappedDiagnosticDirective> DiagnosticDirectives() => contentMapperInfo?.DiagnosticDirectives;
+    public List<SourceFile> SupplementalSourceFiles() => contentMapperInfo?.SupplementalSourceFiles;
+    public SourceFile CanonicalSourceFile() => contentMapperInfo?.CanonicalSourceFile;
+    public bool IsContentMapperSupplemental() => CanonicalSourceFile() is not null;
 
     public SourceFileParseOptions ParseOptions() => parseOptions;
     public string FileName() => parseOptions.FileName;
@@ -5000,4 +5046,11 @@ public partial class SourceFile
             return created;
         }
     }
+}
+
+// utilities.go:2962. Per-file directive takes precedence over the option.
+public static partial class Ast
+{
+    public static bool IsCheckJSEnabledForFile(SourceFile sourceFile, CompilerOptions options) =>
+        sourceFile.CheckJsDirective is { } directive ? directive.Enabled : options.CheckJs == Tristate.True;
 }

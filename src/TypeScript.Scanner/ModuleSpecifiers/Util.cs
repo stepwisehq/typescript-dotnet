@@ -7,6 +7,21 @@ using TypeScript.Scanner;
 namespace TypeScript.ModuleSpecifiers;
 internal static partial class ModuleSpecifiers
 {
+    // util.go:380. Package-name query used by Program auto-acquisition metadata.
+    internal static string GetPackageNameFromDirectory(RootedPath path)
+    {
+        string value = path.AsString();
+        int cut = value.LastIndexOf("/node_modules/", StringComparison.Ordinal);
+        if (cut < 0) return "";
+        string basename = value[(cut + "/node_modules/".Length)..];
+        if (basename[0] == '.') return "";
+        int slash = basename.IndexOf('/');
+        if (slash < 0) return basename;
+        if (basename[0] != '@' || slash == basename.Length - 1) return basename[..slash];
+        int second = basename.IndexOf('/', slash + 1);
+        return second < 0 ? basename : basename[..second];
+    }
+
     private static int comparePathsByRedirect(ModulePath first, ModulePath second, IModuleSpecifierGenerationHost host)
     {
         int redirect = second.IsRedirect.CompareTo(first.IsRedirect);

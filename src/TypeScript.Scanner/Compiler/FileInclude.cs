@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Partial port of tsc/internal/compiler/fileInclude.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Root-file and ordinary import reasons; other reference families are excluded.
+// All Program reason families; named legacy pointer observations remain separate.
 using TypeScript.Scanner;
 using TypeScript.Modules;
 using ConfigParser = TypeScript.TsOptions.TsOptions;
@@ -10,7 +10,22 @@ using TsScanner = TypeScript.Scanner.Scanner;
 namespace TypeScript.Compiler;
 internal enum IncludeReferenceKind { Import, Path, Type, Lib }
 
-internal sealed class FileIncludeReason
+internal sealed class ReferenceFileLocation
+{
+    internal SourceFile file = null!;
+    internal Node? node;
+    internal FileReference? reference;
+    internal PackageId packageId;
+    internal bool isSynthetic;
+    internal string Text() => node is not null
+        ? isSynthetic ? "\"" + node.Text() + "\"" : file.Text()[TsScanner.SkipTriviaByteString(file.Text(), node.Pos())..node.End()]
+        : file.Text()[reference!.Pos()..reference.End()];
+    internal Diagnostic DiagnosticAt(Message message, params object[] args) => node is not null
+        ? ConfigParser.CreateDiagnosticForNodeInSourceFile(file, node, message, args)
+        : Ast.NewDiagnostic(file, reference!.TextRange, message, args);
+}
+
+public sealed class FileIncludeReason
 {
     internal SourceFile? importingFile;
     internal Node? specifier;
@@ -18,49 +33,113 @@ internal sealed class FileIncludeReason
     internal IncludeReferenceKind kind;
     internal PackageId packageId;
     internal string syntheticKind = "";
-    internal int rootIndex = -1;
+    internal int rootIndex = -1, libIndex;
+    internal bool isLibFile, isDefaultLib;
+    internal string? automaticTypeDirective;
+    internal string canonicalSourceFile = "";
     internal bool IsReferencedFile() => importingFile is not null;
+    // Program locates the referenced AST in its own generation. The legacy
+    // direct pointer representation supplies only the original path and index.
+    internal ReferenceFileLocation GetReferencedLocation(Program program)
+    {
+        var original = importingFile!;
+        var file = program.GetSourceFileByPath(PathKey.FromGoString(original.PathKey()))!;
+        if (kind == IncludeReferenceKind.Import)
+        {
+            Node node;
+            if (syntheticKind != "") node = specifier!;
+            else
+            {
+                int index = original.Imports()?.IndexOf(specifier!) ?? -1;
+                if (index >= 0) node = file.Imports()![index];
+                else
+                {
+                    var originals = (original.ModuleAugmentations ?? []).Where(item => item.Kind == TypeScript.Scanner.Kind.StringLiteral).ToList();
+                    int augmentation = originals.IndexOf(specifier!);
+                    node = (file.ModuleAugmentations ?? []).Where(item => item.Kind == TypeScript.Scanner.Kind.StringLiteral).ElementAt(augmentation);
+                }
+            }
+            return new() { file = file, node = node, packageId = program.GetResolvedModuleFromModuleSpecifier(file, node)!.PackageId, isSynthetic = syntheticKind != "" };
+        }
+        var originalRefs = kind switch { IncludeReferenceKind.Path => original.ReferencedFiles, IncludeReferenceKind.Type => original.TypeReferenceDirectives, _ => original.LibReferenceDirectives };
+        var currentRefs = kind switch { IncludeReferenceKind.Path => file.ReferencedFiles, IncludeReferenceKind.Type => file.TypeReferenceDirectives, _ => file.LibReferenceDirectives };
+        return new() { file = file, reference = currentRefs![originalRefs!.IndexOf(reference!)] };
+    }
+    internal ReferenceFileLocation LegacyReferencedLocation() => new() { file = importingFile!, node = specifier, reference = reference, packageId = packageId, isSynthetic = syntheticKind != "" };
+    internal Diagnostic ToDiagnostic(Program program, bool relativeFileName, RootedDirectoryPath relativeTo) => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo.AsString());
+    internal Diagnostic ToDiagnostic(Program program, bool relativeFileName = false, string relativeTo = "") => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo);
     internal Diagnostic ToDiagnostic(IncludeProcessor processor, bool relativeFileName = false, string relativeTo = "")
     {
-        if (processor.reasonDiagnostics.TryGetValue((this, relativeFileName, relativeTo), out Diagnostic? value))
-            return value;
-        value = ComputeDiagnostic(processor, relativeFileName, relativeTo);
-        processor.reasonDiagnostics.Add((this, relativeFileName, relativeTo), value);
-        return value;
+        var key = (this, relativeFileName, relativeTo);
+        var (value, found) = processor.reasonDiagnostics.Load(key);
+        if (found) return value;
+        return processor.reasonDiagnostics.LoadOrStore(key, ComputeDiagnostic(processor, relativeFileName, relativeTo)).Actual;
     }
 
     private Diagnostic ComputeDiagnostic(IncludeProcessor processor, bool relativeFileName, string relativeTo)
     {
+        if (!IsReferencedFile() && automaticTypeDirective is null && !isLibFile && canonicalSourceFile == "" && processor.program is { } program && program.CommandLine().ConfigFile is null)
+            return Ast.NewCompilerDiagnostic(Diagnostics.Root_file_specified_for_compilation);
         if (IsReferencedFile())
         {
+
+            var location = processor.GetReferenceLocation(this);
+            SourceFile file = location.file;
+            var referencePackageId = location.packageId;
+            string name = file.FileNameGoBytes();
             if (relativeFileName)
-                throw new ProjectException("relativeIncludeExplanation", "Relative diagnostic path formatting is outside the selected Program query.");
-            SourceFile file = importingFile!;
-            string name = processor.pathValuesAreRaw ? file.FileName() : GoString.ToUtf8(file.FileName());
-            string text = reference is not null ? file.Text()[reference.Pos()..reference.End()] :
-                syntheticKind != "" ? "\"" + specifier!.Text() + "\"" :
-                file.Text()[TsScanner.SkipTriviaByteString(file.Text(), specifier!.Pos())..specifier.End()];
+            {
+                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo);
+                var (relative, ok) = (processor.program?.CaseSensitivity() ?? processor.configuration.Parsed?.CaseSensitivity())?.RelativePathFromDirectory(directory, RootedFilePath.FromGoString(name)) ?? (default, false);
+                if (ok) name = relative.AsString();
+            }
+            string text = location.Text();
             Message message = kind switch
             {
                 IncludeReferenceKind.Path => Diagnostics.Referenced_via_0_from_file_1,
-                IncludeReferenceKind.Type => packageId.Name != "" ? Diagnostics.Type_library_referenced_via_0_from_file_1_with_packageId_2 : Diagnostics.Type_library_referenced_via_0_from_file_1,
+                IncludeReferenceKind.Type => referencePackageId.Name != "" ? Diagnostics.Type_library_referenced_via_0_from_file_1_with_packageId_2 : Diagnostics.Type_library_referenced_via_0_from_file_1,
                 IncludeReferenceKind.Lib => Diagnostics.Library_referenced_via_0_from_file_1,
-                _ when syntheticKind == "importHelpers" => packageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2_to_import_importHelpers_as_specified_in_compilerOptions : Diagnostics.Imported_via_0_from_file_1_to_import_importHelpers_as_specified_in_compilerOptions,
-                _ when syntheticKind == "jsxRuntime" => packageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2_to_import_jsx_and_jsxs_factory_functions : Diagnostics.Imported_via_0_from_file_1_to_import_jsx_and_jsxs_factory_functions,
-                _ => packageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2 : Diagnostics.Imported_via_0_from_file_1
+                _ when syntheticKind == "importHelpers" => referencePackageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2_to_import_importHelpers_as_specified_in_compilerOptions : Diagnostics.Imported_via_0_from_file_1_to_import_importHelpers_as_specified_in_compilerOptions,
+                _ when syntheticKind == "jsxRuntime" => referencePackageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2_to_import_jsx_and_jsxs_factory_functions : Diagnostics.Imported_via_0_from_file_1_to_import_jsx_and_jsxs_factory_functions,
+                _ => referencePackageId.Name != "" ? Diagnostics.Imported_via_0_from_file_1_with_packageId_2 : Diagnostics.Imported_via_0_from_file_1
             };
-            return packageId.Name != "" && kind is IncludeReferenceKind.Import or IncludeReferenceKind.Type ?
-                Ast.NewCompilerDiagnostic(message, text, name, packageId.ToString()) : Ast.NewCompilerDiagnostic(message, text, name);
+            return referencePackageId.Name != "" && kind is IncludeReferenceKind.Import or IncludeReferenceKind.Type ?
+                Ast.NewCompilerDiagnostic(message, text, name, referencePackageId.ToString()) : Ast.NewCompilerDiagnostic(message, text, name);
         }
 
+        if (automaticTypeDirective is not null)
+        {
+            bool wildcard = processor.configuration.Options.UsesWildcardTypes();
+            Message message = wildcard ? packageId.Name != "" ? Diagnostics.Entry_point_for_implicit_type_library_0_with_packageId_1 : Diagnostics.Entry_point_for_implicit_type_library_0 :
+                packageId.Name != "" ? Diagnostics.Entry_point_of_type_library_0_specified_in_compilerOptions_with_packageId_1 : Diagnostics.Entry_point_of_type_library_0_specified_in_compilerOptions;
+            return packageId.Name != "" ? Ast.NewCompilerDiagnostic(message, automaticTypeDirective, packageId.ToString()) : Ast.NewCompilerDiagnostic(message, automaticTypeDirective);
+        }
+        if (isLibFile)
+        {
+            if (!isDefaultLib) return Ast.NewCompilerDiagnostic(Diagnostics.Library_0_specified_in_compilerOptions, processor.configuration.Options.Lib![libIndex]);
+            string target = ScriptTargetName(processor.configuration.Options.GetEmitScriptTarget());
+            return target != "" ? Ast.NewCompilerDiagnostic(Diagnostics.Default_library_for_target_0, target) : Ast.NewCompilerDiagnostic(Diagnostics.Default_library);
+        }
+        if (canonicalSourceFile != "")
+        {
+            var canonical = processor.program!.GetSourceFileByPath(PathKey.FromGoString(canonicalSourceFile))!;
+            string name = canonical.FileNameGoBytes();
+            if (relativeFileName)
+            {
+                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo);
+                var (relative, ok) = processor.program!.CaseSensitivity().RelativePathFromDirectory(directory, RootedFilePath.FromGoString(name));
+                if (ok) name = relative.AsString();
+            }
+            return Ast.NewCompilerDiagnostic(Diagnostics.Supplemental_virtual_file_produced_by_the_content_mapper_for_file_0, name);
+        }
         if (rootIndex >= 0)
         {
-            if (processor.configuration.Parsed is { } config)
+            if (processor.configuration.Parsed is { ConfigFile: not null } config)
             {
                 var file = config.FileNames()![rootIndex];
                 string Name(RootedFilePath path)
                 {
-                    if (relativeFileName && config.CaseSensitivity().RelativePathFromDirectory(RootedDirectoryPath.FromUnicode(relativeTo), path)is var pair && pair.Ok)
+                    if (relativeFileName && (processor.program?.CaseSensitivity() ?? config.CaseSensitivity()).RelativePathFromDirectory((processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo)), path)is var pair && pair.Ok)
                         return pair.Path.AsString();
                     return path.AsString();
                 }
@@ -88,10 +167,15 @@ internal sealed class FileIncludeReason
 
     internal Diagnostic? ToRelatedInfo(IncludeProcessor processor)
     {
+        var (value, found) = processor.includeReasonToRelatedInfo.Load(this);
+        return found ? value : processor.includeReasonToRelatedInfo.LoadOrStore(this, ComputeRelatedInfo(processor)).Actual;
+    }
+    private Diagnostic? ComputeRelatedInfo(IncludeProcessor processor)
+    {
         if (importingFile is not null)
         {
             if (syntheticKind != "") return null;
-            return DiagnosticAt(kind switch
+            return processor.GetReferenceLocation(this).DiagnosticAt(kind switch
             {
                 IncludeReferenceKind.Path => Diagnostics.File_is_included_via_reference_here,
                 IncludeReferenceKind.Type => Diagnostics.File_is_included_via_type_library_reference_here,
@@ -99,9 +183,35 @@ internal sealed class FileIncludeReason
                 _ => Diagnostics.File_is_included_via_import_here
             });
         }
-        if (rootIndex < 0)
-            return null;
-        if (processor.configuration.Parsed is { } config)
+        if (processor.program is { } program && program.CommandLine().ConfigFile is { } configFile && (automaticTypeDirective is not null || isLibFile))
+        {
+            var syntax = processor.GetCompilerOptionsObjectLiteralSyntax();
+            Node? node = null;
+            Message? message = null;
+            if (automaticTypeDirective is not null && !program.Options().UsesWildcardTypes())
+            {
+                node = ConfigParser.GetOptionsSyntaxByArrayElementValue(syntax, "types", automaticTypeDirective);
+                message = Diagnostics.File_is_entry_point_of_type_library_specified_here;
+            }
+            if (isLibFile)
+            {
+                if (!isDefaultLib)
+                {
+                    node = ConfigParser.GetOptionsSyntaxByArrayElementValue(syntax, "lib", program.Options().Lib![libIndex]);
+                    message = Diagnostics.File_is_library_specified_here;
+                }
+                else
+                {
+                    string target = ScriptTargetName(program.Options().GetEmitScriptTarget());
+                    if (target != "") node = ConfigParser.ForEachPropertyAssignment(syntax, "target", ConfigParser.GetCallbackForFindingPropertyAssignmentByValue(target));
+                    message = Diagnostics.File_is_default_library_for_target_specified_here;
+                }
+            }
+            return node is not null && message is not null ? ConfigParser.CreateDiagnosticForNodeInSourceFile(configFile.SourceFile, node, message) : null;
+        }
+        if (processor.program is { } current && current.CommandLine().ConfigFile is null) return null;
+        if (rootIndex < 0) return null;
+        if (processor.configuration.Parsed is { ConfigFile: not null } config)
         {
             var file = config.FileNames()![rootIndex];
             string spec = config.GetMatchedFileSpec(file);
@@ -125,6 +235,12 @@ internal sealed class FileIncludeReason
         return literal is null ? null : Ast.NewDiagnostic(processor.configuration.SourceFile, TsScanner.GetErrorRangeForNode(processor.configuration.SourceFile, literal), Diagnostics.File_is_matched_by_files_list_specified_here);
     }
 
+    private static string ScriptTargetName(ScriptTarget target) => (int)target switch
+    {
+        0 => "None", 1 => "ES5", >= 2 and <= 13 => "ES" + ((int)target + 2013),
+        99 => "ESNext", 100 => "JSON", _ => "ScriptTarget(" + (int)target + ")"
+    };
+    internal Diagnostic DiagnosticAt(IncludeProcessor processor, Message message, params object[] args) => processor.GetReferenceLocation(this).DiagnosticAt(message, args);
     internal Diagnostic DiagnosticAt(Message message, params object[] args) => Ast.NewDiagnostic(importingFile!,
         reference is not null ? reference.TextRange : TsScanner.GetErrorRangeForNode(importingFile!, specifier!), message, args);
 }
