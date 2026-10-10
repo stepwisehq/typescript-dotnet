@@ -1,10 +1,36 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `146839d` commits borrowed scanner tokens, flow slices and conditional targets;
+**Resume here:** HEAD `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
+borrowed scanner tokens, flow slices and conditional targets;
 `08d2294` preserves the preceding path/ASCII/singleton reductions.
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
 or committing a checkpoint does not finish the work. Native AOT VS Code first,
 focused checks next; comprehensive regressions remain deferred until finalization.
+
+**Qualified checkpoint being committed:** `c8962c20` library, `ac486c4d` native at
+`artifacts/vscode-ast-text-values/`. Exact17 production files + generator and three
+qualified authored AST test/runner files are staged. Index holds the executed
+versions; newer checker/runtime/source-test changes remain unstaged.
+First clean build9.10s/publish10.28s. Native VS Code exact10:24.73 wall/102.16 CPU,
+10,290,800 KiB peak, no swaps/major faults. Focused managed4143/native723 records
+and controls passed, including authored AST5 both modes. Sampled CoreCLR allocation
+15.453668 ->15.300418 GiB (-0.992%), one trace each, no loss/truncation, one no-stack
+tick explicit. String allocation increased78.09MB; no speedup or isolated causality
+claim. See qualification.json. Comprehensive final regressions remain deferred.
+
+**Next execution:** verifier owns combined eight-file checker descriptor/runtime
+freeze/build, actual Native AOT VS Code first, focused unchanged semantics + AST5
+including all256-key extension. No new profile for this small receiver followthrough.
+Scanner/support begin breaking NodeList/getter migration only AFTER freeze notice.
+Root approved public Slice<Node> child-list headers, clipped arena allocation and
+Go Clone header/slot sharing; provisional C# List APIs may change, but actual Go
+behavior/expected outputs remain. User informed. Scanner owns AST/runtime/parser/
+binder/generator, support owns Checker/NodeBuilder consumers, verifier owns harness
+bindings/independent review and sole heavy window. Keep List input factory adapters
+explicit; no per-node wrapper or hot list snapshots. Replace incidental List
+ReferenceEquals observer with Go Core.Same storage test only where original intended
+assertion is the Go shared-first-slot rule; preserve results.
+Do not interpret any checkpoint/agent final message as authorization to stop work.
 
 **Qualified path packet, committed `08d2294`:** Path/PathByteText/DiskHost/ParserCompat plus
 existing ProjectSupport controls and a nil-aware signature-slice observer adapter.
@@ -65,14 +91,14 @@ capture vs b81a:16.404452 ->15.453668GiB (-5.7959%), zero loss/truncation; all14
 candidate ticks typed with named stacks. No native throughput win established. Evidence:
 `artifacts/vscode-scanner-token-views/`. Source-only next work has resumed.
 
-**Next frozen checkpoint, STAGED but not yet committed:** library `4bc27d0c`,
+**Callback/rune checkpoint, committed `d6a3cb5`:** library `4bc27d0c`,
 native build at `artifacts/vscode-instantiation-state/`; ten exact production files
-and the reviewed existing token-lifetime assertions are in the index. Native VS
+and the reviewed existing token-lifetime assertions are committed. Native VS
 Code passes exact10:23.33 wall /97.59 CPU seconds /10,030,632 KiB peak. Clean build
 8.85s, publish10.85s. Focused checks passed:19 original whole compiler records, TypeSystem77, Scanner3842,
 shared lifetime17/token5 managed;539 complete scanner records and17 shared lifetime
-cases under Native AOT. No new allocation capture for this callback/rune batch. Preserve the index when committing;
-new AST, private stacks and JsNum edits are UNSTAGED and unqualified.
+cases under Native AOT. No new allocation capture for this callback/rune batch. New AST, private stacks/inference candidates and JsNum edits are UNSTAGED and
+unqualified. Root has not staged any of these next changes.
 
 **Next source ownership:** support continues remaining checker/relater/inference
 callback state; rune enumeration/count and exact owned rune output plus range/count consumers are
@@ -87,6 +113,14 @@ lookup. No dictionary replacement/interner. Extra per-node header footprint must
 measured. CLR ReferenceEquals between separately materialized borrowed text is not
 Go string behavior; supplied owned-string/null/set semantics remain. Inserted string
 keys are an explicit intermediate boundary, not comprehensive rollout completion.
+
+Current followthrough decisions: continue checker TextValue consumers after the
+AST ingress stage; inserted symbol-table string keys remain explicitly intermediate.
+Next assess NodeList/GoArena shared-slice storage using the existing arena findings,
+not another broad audit. The provisional C# List field types are not an explicit
+user API-freeze requirement, but any migration must state API/harness implications
+and preserve pinned Go element/header/clone/append behavior. Do not introduce
+per-node wrappers that erase the allocation benefit or silently lose mutations.
 
 **Current timing context:** callback packet 7c0f reduced sampled allocations
 17.107677 -> 16.497538 GiB (-3.57%), but its three-each native comparison against

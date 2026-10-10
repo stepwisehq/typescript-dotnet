@@ -119,7 +119,8 @@
       "programCampaignEvidence": "validation/results/program-verified.json",
       "filenameSharingAdaptation": "Authored .NET filename-role compatibility seam retains a coherent per-SourceFile Unicode/raw-byte filename pair; raw-role reads still return source value. Current source string identity governs reuse; direct filename replacement recomputes. Upstream ast.SourceFile and compiler/program.go reuse the original filename. See docs/VSCODE-CHECK-STATUS.md.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "astCandidateStackCheckpoint": "AST raw-text snapshots retain byte/string headers; public text projection remains canonical. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -318,7 +319,8 @@
         "workloadEvidence": "artifacts/vscode-scanner-token-views/first-vscode/result.json",
         "profileEvidence": "artifacts/vscode-scanner-token-views/allocation-comparison.json",
         "profileQualification": "One matched CoreCLR trace per role: sampled interval weight b81a16.404452→9315 15.453668GiB (−5.7959%), zero event loss/truncation, all147193 allocations typed/stack-resolved. Combined packet estimate, not per-site/native exact allocation or throughput claim."
-      }
+      },
+      "astCandidateStackCheckpoint": "Borrowed numeric input spans and pinned signed-64 fast path use standard decimal/binary/hex parsers plus bounded octal handling; overflow retains BigInteger rounding path. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/jsnum/pseudobigint.go",
@@ -455,7 +457,8 @@
         "adaptation": "InlineArray16 local references plus Slice spill preserve list index, reparse and recovery ordering. GoArena span clone publishes the same detached mutable List; public AST storage unchanged.",
         "evidence": "artifacts/vscode-parser-inline-scratch/",
         "qualification": "Frozen075799: native VSCode exact10; two shared scratch controls and nine complete parser comparison records pass in managed/native runs. Sampled4089 17.572668 to075799 17.107677GiB (-2.6461%), zero lost/truncated events, one missing candidate stack. Recursion/frame cost remains a tradeoff; no causal speedup claim."
-      }
+      },
+      "astCandidateStackCheckpoint": "Parser factories publish borrowed token headers without changing byte positions or clone/hooks. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -473,7 +476,8 @@
         "review": "artifacts/vscode-cached-assignable-comparer/build/verification-source-review.json",
         "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
         "state": "Independent source review clear; native ten records exact, original inference4/TypeSystem77/JSDoc21 managed checks pass. Selected copies removed structurally; no new measured savings/speedup claim."
-      }
+      },
+      "astCandidateStackCheckpoint": "Identifier/literal construction uses borrowed text factory boundaries; original JSDoc algorithms retained. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/parser/reparser.go",
@@ -518,7 +522,8 @@
       "foundationEvidence": "validation/results/foundation-verified.json",
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
       "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
-      "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md."
+      "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
+      "astCandidateStackCheckpoint": "Eleven text payload families/factories/clones retain borrowed raw headers with explicit public string getters/setters. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -766,7 +771,8 @@
       "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Class-like symbol declaration lookup and effective-external-module predicate.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "astCandidateStackCheckpoint": "Selected AST raw-text helper reads retain descriptors and original guards. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -892,7 +898,8 @@
       "upstreamSha256": "8e1f41019362d886e74599b9bf4dae5486d85c41d2d6f7634024c674f0fbbee2",
       "binderCheckpointScope": "Not called by source-file BindSourceFile; checker-hooked name/reference resolution excluded from this bounded phase.",
       "binderCheckpointStatus": "excluded",
-      "generator": "tools/checker-support-port/main.go + patch.py; LF formatting; scratch reproduction matched reviewed source."
+      "generator": "tools/checker-support-port/main.go + patch.py; LF formatting; scratch reproduction matched reviewed source.",
+      "astCandidateStackCheckpoint": "One descriptor resolution algorithm retains public string/hook compatibility; errors and public callbacks materialize explicitly. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/binder/referenceresolver.go",
@@ -915,7 +922,8 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Narrow external-module symbol filename producer uses explicit source filename byte role; binder algorithms otherwise unchanged.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "astCandidateStackCheckpoint": "Declaration lookup borrows AST raw-text headers and reuses actual stored keys; insertion remains a string boundary. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -936,7 +944,8 @@
         "adaptation": "Internal opaque owner reference defaults null; only the prior newSymbolEx ownership insertion path stamps it. Public fields and semantic graph unchanged.",
         "allocationEvidence": "artifacts/vscode-symbol-ownership-token/allocation-comparison.json",
         "allocationQualification": "One matched ServerGC CoreCLR trace per variant: total sampled interval19.321389→18.701305GiB (−3.2093%); zero events lost/truncation, one candidate missing stack. Net ownership+reporter batch, not per-change attribution or exact allocations/native speed."
-      }
+      },
+      "astCandidateStackCheckpoint": "Internal raw-text ordinal lookup borrows keys; persistent/public dictionary keys remain strings. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -1194,7 +1203,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "astCandidateStackCheckpoint": "Private call/await/contextual/reverse-map stacks and inference candidate headers use Go slices; recursive intersection inputs borrow spans with independent normalized output ownership. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -1372,7 +1382,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "astCandidateStackCheckpoint": "Variance stack uses saved/restored Go slice headers with unchanged recursive comparison order. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1442,7 +1453,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "astCandidateStackCheckpoint": "Flow reduce-label push/pop and pooled resets preserve Go header capacity/sharing rather than cloning Lists. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -2897,7 +2909,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "astCandidateStackCheckpoint": "Candidate/contra-candidate storage, clone/filter/map/reducers preserve Go nil/header/priority/order and borrowed recursive input semantics. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
     },
     {
       "upstream": null,
@@ -5731,6 +5744,24 @@
       "destination": "validation/signature-slice-corpus/slice-witness-provenance.json",
       "status": "new",
       "scope": "Actual Go witness command/tool/source/output digests and successful execution provenance."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/ByteStringValue.cs",
+      "status": "new",
+      "scope": "Authored compact immutable raw-text snapshot over existing string or source byte owner; public AST projection is canonical/atomic, raw-byte ordinal lookup uses bounded stack/pool widening with explicit persistent string-key insertion. c896 qualification: artifacts/vscode-ast-text-values/qualification.json. Later standard Latin1 widening is a separate source adaptation."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Foundation.Checks/AstTextValueChecks.cs",
+      "status": "new",
+      "scope": "Five authored shared public AST text controls: all eleven payload families, owned/null/set/clone/hooks, raw malformed/WTF8 source ownership, later-parse lifetime, canonical concurrent projection and raw/long/empty dictionary lookup. Not upstream test ports. Qualified c896 managed/native evidence: artifacts/vscode-ast-text-values/focused/ast-public/attempt-2/report.json; later all-256-byte extension is separate."
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Parser.Tests/AstTextValueTests.cs",
+      "status": "new",
+      "scope": "Authored thin xUnit registration for the five shared AST public ownership/lifetime controls; expected original compiler records remain unchanged. Native shared mode is --ast-text-values in existing Foundation.Validation."
     }
   ],
   "activePhase": {

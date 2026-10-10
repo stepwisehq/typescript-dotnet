@@ -32,6 +32,21 @@ public sealed class SymbolTable : Dictionary<string, Symbol>
     }
 
     public new Symbol this[string key] { get => TryGetValue(key, out var symbol) ? symbol : null; set => base[key] = value; }
+
+    // symbol.go map lookup borrows a Go string key. Retain the public Dictionary
+    // contract; widen raw bytes for its ordinal alternate lookup without owning
+    // a string. Inserted keys remain persistent raw strings at this intermediate
+    // boundary. Large temporary char buffers are returned immediately.
+    internal Symbol this[ByteStringValue key]
+    {
+        get => TryGetValue(key, out var symbol) ? symbol : null;
+        set => base[key.Materialize()] = value;
+    }
+    internal bool TryGetValue(ByteStringValue key, out Symbol symbol) => TryGetValue(key, out _, out symbol);
+    internal bool TryGetValue(ByteStringValue key, out string actualKey, out Symbol symbol) =>
+        key.TryGetValue(this, out actualKey, out symbol);
+    internal bool ContainsKey(ByteStringValue key) => TryGetValue(key, out _);
+
 }
 
 public static partial class Ast

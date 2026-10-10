@@ -287,7 +287,8 @@ public sealed partial class Checker
         internal Type declaredType, initialType;
         internal int depth, sharedFlowStart;
         internal CacheHashKey refKey;
-        internal List<FlowReduceLabelData> reduceLabels;
+        // flow.go:48/63. Pool reset preserves the zero-length backing header.
+        internal Slice<FlowReduceLabelData> reduceLabels;
         internal FlowState next;
     }
 
@@ -440,9 +441,9 @@ public sealed partial class Checker
             }
             else if ((flags & FlowFlags.ReduceLabel) != 0)
             {
-                f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
+                f.reduceLabels = f.reduceLabels.Append(flow.Node.AsFlowReduceLabelData());
                 t = getTypeAtFlowNode(f, flow.Antecedent);
-                f.reduceLabels.RemoveAt(f.reduceLabels.Count - 1);
+                f.reduceLabels = f.reduceLabels.Slice2(0, f.reduceLabels.Length - 1);
             }
             else if ((flags & FlowFlags.LoopLabel) != 0)
             {
@@ -1007,9 +1008,9 @@ public sealed partial class Checker
                 case true when ((flags & FlowFlags.ReduceLabel) != 0):
                     {
                         this.lastFlowNode = null;
-                        f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
+                        f.reduceLabels = f.reduceLabels.Append(flow.Node.AsFlowReduceLabelData());
                         var result = this.isReachableFlowNodeWorker(f, flow.Antecedent, false);
-                        f.reduceLabels = GoRuntime.Slice(f.reduceLabels, 0, (GoRuntime.Len(f.reduceLabels) - 1));
+                        f.reduceLabels = f.reduceLabels.Slice2(0, f.reduceLabels.Length - 1);
                         return result;
                     }
 
@@ -1152,7 +1153,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static FlowList getBranchLabelAntecedents(FlowNode flow, List<FlowReduceLabelData> reduceLabels)
+    private static FlowList getBranchLabelAntecedents(FlowNode flow, Slice<FlowReduceLabelData> reduceLabels)
     {
         var i = GoRuntime.Len(reduceLabels);
         while ((i != 0))
@@ -3041,9 +3042,8 @@ public sealed partial class Checker
 {
     private void putFlowState(FlowState f)
     {
-        var labels = f.reduceLabels;
-        if (labels != null)
-            labels.Clear();
+        // flow.go:63. Reset length without clearing shared slots or discarding capacity.
+        var labels = f.reduceLabels.Slice2(0, 0);
         f.reference = f.flowContainer = null;
         f.declaredType = f.initialType = null;
         f.depth = f.sharedFlowStart = 0;
@@ -3943,9 +3943,9 @@ public sealed partial class Checker
                     }
                 case true when ((flags & FlowFlags.ReduceLabel) != 0):
                     {
-                        f.reduceLabels = GoRuntime.Append(f.reduceLabels, flow.Node.AsFlowReduceLabelData());
+                        f.reduceLabels = f.reduceLabels.Append(flow.Node.AsFlowReduceLabelData());
                         var result = this.isPostSuperFlowNodeWorker(f, flow.Antecedent, false);
-                        f.reduceLabels = GoRuntime.Slice(f.reduceLabels, 0, (GoRuntime.Len(f.reduceLabels) - 1));
+                        f.reduceLabels = f.reduceLabels.Slice2(0, f.reduceLabels.Length - 1);
                         return result;
                     }
                 default:

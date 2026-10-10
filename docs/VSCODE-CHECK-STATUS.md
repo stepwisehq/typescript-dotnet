@@ -1397,6 +1397,38 @@ passed 539 original scanner records and 17 shared lifetime checks. No expected
 records changed. No new allocation capture or speedup claim accompanies this
 snapshot; later private-stack/candidate and AST source work is separate.
 
+## AST text, inference candidates and private stacks
+
+The [qualified c896 checkpoint](../artifacts/vscode-ast-text-values/qualification.json)
+retains borrowed AST text through parser/Binder lookup, with canonical public string
+projection and explicit persistent string keys. Private checker/flow stacks and
+inference candidate headers preserve Go sharing, clone/reset and recursive borrowed
+input lifetimes. Numeric parsing borrows spans and restores the pinned signed-64
+fast path using standard .NET parsers where available; overflow retains the original
+BigInteger fallback. These are managed storage adaptations, not changed algorithms.
+
+[Native VS Code](../artifacts/vscode-ast-text-values/first-vscode/result.json)
+kept all ten complete diagnostics exact at 24.73s wall /102.16s CPU /
+10,290,800 KiB peak. [Managed checks](../artifacts/vscode-ast-text-values/focused/report.json)
+passed 34 unchanged original Program records, 3,842 scanner cases, 163 Binder cases,
+77 TypeSystem cases, 17 lifetime checks and five token checks. The
+[five authored AST controls](../artifacts/vscode-ast-text-values/focused/ast-public/attempt-2/report.json)
+passed in both managed and actual Native AOT runs; these are public ownership,
+null/set/clone/hook, lookup and concurrent projection controls, not upstream test
+ports. [Native comparisons](../artifacts/vscode-ast-text-values/focused/native-report.json)
+also retained 539 scanner and 162 parser complete records plus 17 lifetime checks.
+Original expectations are unchanged; the preserved first AST-control compile
+failure was repaired only in its test binding.
+
+The [cumulative sampled CoreCLR estimate](../artifacts/vscode-ast-text-values/allocation-comparison.json)
+fell 15.453668→15.300418GiB (−0.992%), including the preceding unprofiled callback/rune
+followthrough. String weight increased 865.8→943.9MB; stored string keys and later
+public AST projections remain intermediate boundaries, and the next checker lookup
+join is outside this snapshot. One matched trace per role has zero event loss or
+truncation, with one candidate allocation lacking a stack. These interval weights
+are not exact native bytes or isolated savings; the single native run establishes
+no speedup or comprehensive final acceptance.
+
 ## Reproduction and records
 
 ```bash

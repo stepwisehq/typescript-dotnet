@@ -6,7 +6,12 @@ namespace TypeScript.Scanner;
 public partial class NameResolver
 {
     // Upstream upstream/TypeScript/tsc/internal/binder/nameresolver.go:25:1.
-    public Symbol Resolve(Node location, string name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals)
+    public Symbol Resolve(Node location, string name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals) =>
+        Resolve(location, ByteStringValue.FromString(name), meaning, nameNotFoundMessage, isUse, excludeGlobals);
+
+    // nameresolver.go:25. Internal names retain their Go string header through
+    // lookup; only diagnostic and public callback boundaries project a string.
+    internal Symbol Resolve(Node location, ByteStringValue name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals)
     {
         Symbol result = default;
         Node lastLocation = default;
@@ -16,7 +21,7 @@ public partial class NameResolver
         bool withinDeferredContext = default;
         Node grandparent = default;
         var originalLocation = location;
-        var nameIsConst = (name == "const");
+        var nameIsConst = (name.EqualsBytes("const"u8));
         while ((location != null))
         {
             if ((nameIsConst && Ast.IsConstAssertion(location)))
@@ -117,7 +122,7 @@ public partial class NameResolver
                         if ((result != null))
                         {
                             var localSymbol = GetLocalSymbolForExportDefault(result);
-                            if ((((localSymbol != null) && ((result.Flags & meaning) != 0)) && (localSymbol.Name == name)))
+                            if ((((localSymbol != null) && ((result.Flags & meaning) != 0)) && (name.EqualsString(localSymbol.Name))))
                             {
                                 goto loopEnd;
                             }
@@ -132,7 +137,7 @@ public partial class NameResolver
                         }
                     }
 
-                    if ((name != Ast.InternalSymbolNameDefault))
+                    if ((!name.EqualsString(Ast.InternalSymbolNameDefault)))
                     {
                         {
                             result = this.lookup(moduleExports, name, (meaning & SymbolFlags.ModuleMember));
@@ -167,7 +172,7 @@ public partial class NameResolver
                         if (((((nameNotFoundMessage != null) && this.CompilerOptions.GetIsolatedModules()) && ((location.Flags & NodeFlags.Ambient) == 0)) && (Ast.GetSourceFileOfNode(location) != Ast.GetSourceFileOfNode(result.ValueDeclaration))))
                         {
                             var isolatedModulesLikeFlagName = Core.IfElse((this.CompilerOptions.VerbatimModuleSyntax == Tristate.True), "verbatimModuleSyntax", "isolatedModules");
-                            this.error(originalLocation, Diagnostics.Cannot_access_0_from_another_file_without_qualification_when_1_is_enabled_Use_2_instead, name, isolatedModulesLikeFlagName, ((enumSymbol.Name + ".") + name));
+                            this.error(originalLocation, Diagnostics.Cannot_access_0_from_another_file_without_qualification_when_1_is_enabled_Use_2_instead, name.Materialize(), isolatedModulesLikeFlagName, ((enumSymbol.Name + ".") + name.Materialize()));
                         }
 
                         goto loopEnd;
@@ -222,7 +227,7 @@ public partial class NameResolver
                     if ((Ast.IsClassExpression(location) && ((meaning & SymbolFlags.Class) != 0)))
                     {
                         var className = location.Name();
-                        if (((className != null) && (name == className.Text())))
+                        if (((className != null) && (name.EqualsValue(className.TextValue()))))
                         {
                             result = location.Symbol();
                             goto loopEnd;
@@ -281,7 +286,7 @@ public partial class NameResolver
                 case Kind.SetAccessor:
                 case Kind.FunctionDeclaration:
                 {
-                    if ((((meaning & SymbolFlags.Variable) != 0) && (name == "arguments")))
+                    if ((((meaning & SymbolFlags.Variable) != 0) && (name.EqualsBytes("arguments"u8))))
                     {
                         result = this.argumentsSymbol();
                         goto loopEnd;
@@ -292,7 +297,7 @@ public partial class NameResolver
 
                 case Kind.FunctionExpression:
                 {
-                    if ((((meaning & SymbolFlags.Variable) != 0) && (name == "arguments")))
+                    if ((((meaning & SymbolFlags.Variable) != 0) && (name.EqualsBytes("arguments"u8))))
                     {
                         result = this.argumentsSymbol();
                         goto loopEnd;
@@ -301,7 +306,7 @@ public partial class NameResolver
                     if (((meaning & SymbolFlags.Function) != 0))
                     {
                         var functionName = location.AsFunctionExpression().Name();
-                        if (((functionName != null) && (name == functionName.Text())))
+                        if (((functionName != null) && (name.EqualsValue(functionName.TextValue()))))
                         {
                             result = location.Symbol();
                             goto loopEnd;
@@ -359,7 +364,7 @@ public partial class NameResolver
                     if (((meaning & SymbolFlags.TypeParameter) != 0))
                     {
                         var parameterName = location.AsInferTypeNode().TypeParameter.AsTypeParameterDeclaration().Name();
-                        if (((parameterName != null) && (name == parameterName.Text())))
+                        if (((parameterName != null) && (name.EqualsValue(parameterName.TextValue()))))
                         {
                             result = location.AsInferTypeNode().TypeParameter.Symbol();
                             goto loopEnd;
@@ -418,7 +423,7 @@ public partial class NameResolver
 
         if ((nameNotFoundMessage != null))
         {
-            if ((((propertyWithInvalidInitializer != null) && (this.OnPropertyWithInvalidInitializer != null)) && this.OnPropertyWithInvalidInitializer(originalLocation, name, propertyWithInvalidInitializer, result)))
+            if ((((propertyWithInvalidInitializer != null) && (this.OnPropertyWithInvalidInitializer != null)) && this.OnPropertyWithInvalidInitializer(originalLocation, name.Materialize(), propertyWithInvalidInitializer, result)))
             {
                 return null;
             }
@@ -427,7 +432,7 @@ public partial class NameResolver
             {
                 if ((this.OnFailedToResolveSymbol != null))
                 {
-                    this.OnFailedToResolveSymbol(originalLocation, name, meaning, nameNotFoundMessage);
+                    this.OnFailedToResolveSymbol(originalLocation, name.Materialize(), meaning, nameNotFoundMessage);
                 }
             }
             else
@@ -554,11 +559,13 @@ public partial class NameResolver
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/nameresolver.go:426:1.
-    private Symbol lookup(SymbolTable symbols, string name, SymbolFlags meaning)
+    private Symbol lookup(SymbolTable symbols, ByteStringValue name, SymbolFlags meaning)
     {
+        if (this.LookupTextValue != null)
+            return this.LookupTextValue(symbols, name, meaning);
         if ((this.Lookup != null))
         {
-            return this.Lookup(symbols, name, meaning);
+            return this.Lookup(symbols, name.Materialize(), meaning);
         }
 
         if ((meaning != 0))
@@ -696,6 +703,9 @@ public partial class NameResolver
     public SymbolTable Globals;
     public Symbol ArgumentsSymbol, RequireSymbol;
     public Func<SymbolTable, string, SymbolFlags, Symbol> Lookup;
+    // Private checker hook for borrowed text; public resolver hooks keep their
+    // existing string contract when this internal counterpart is not supplied.
+    internal Func<SymbolTable, ByteStringValue, SymbolFlags, Symbol> LookupTextValue;
     public Action<Symbol, SymbolFlags> SymbolReferenced;
     public Action<Node, Tristate> SetRequiresScopeChangeCache;
     public Func<Node, Tristate> GetRequiresScopeChangeCache;

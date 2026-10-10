@@ -58,38 +58,43 @@ public partial class Binder
     {
         Debug.Assert((isComputedName || !Ast.HasDynamicName(node)));
         var isDefaultExport = (Ast.HasSyntacticModifier(node, ModifierFlags.Default) || (Ast.IsExportSpecifier(node) && Ast.ModuleExportNameIsDefault(node.AsExportSpecifier().Name())));
-        string name = "";
+        ByteStringValue nameValue = default;
         switch (true)
         {
             case true when isComputedName:
             {
-                name = Ast.InternalSymbolNameComputed;
+                nameValue = ByteStringValue.FromString(Ast.InternalSymbolNameComputed);
                 break;
             }
 
             case true when (isDefaultExport && (parent != null)):
             {
-                name = Ast.InternalSymbolNameDefault;
+                nameValue = ByteStringValue.FromString(Ast.InternalSymbolNameDefault);
                 break;
             }
 
             default:
             {
-                name = this.getDeclarationName(node);
+                nameValue = this.getDeclarationNameValue(node);
                 break;
             }
         }
 
         Symbol symbol = default;
-        if ((name == Ast.InternalSymbolNameMissing))
+        string name;
+        if (nameValue.EqualsString(Ast.InternalSymbolNameMissing))
         {
+            name = Ast.InternalSymbolNameMissing;
             symbol = this.newSymbol(SymbolFlags.None, Ast.InternalSymbolNameMissing);
         }
         else
         {
-            symbol = symbolTable[name];
+            // Reuse the actual immutable dictionary key on a hit; Symbol.Name
+            // itself is public and mutable, so it cannot substitute for the key.
+            symbolTable.TryGetValue(nameValue, out name, out symbol);
             if ((symbol == null))
             {
+                name = nameValue.Materialize();
                 symbol = this.newSymbol(SymbolFlags.None, name);
                 symbolTable[name] = symbol;
                 if (isReplaceableByMethod)
@@ -241,11 +246,15 @@ public partial class Binder
     // Should not be called on a declaration with a computed property name,
     // unless it is a well known Symbol.
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:300:1.
-    private string getDeclarationName(Node node)
+    private string getDeclarationName(Node node) => getDeclarationNameValue(node).Materialize();
+
+    // binder.go:300. Borrow ordinary declaration names; only constructed names
+    // and inserted persistent symbol keys require owned raw strings.
+    private ByteStringValue getDeclarationNameValue(Node node)
     {
         if (Ast.IsExportAssignment(node))
         {
-            return Core.IfElse(node.AsExportAssignment().IsExportEquals, Ast.InternalSymbolNameExportEquals, Ast.InternalSymbolNameDefault);
+            return ByteStringValue.FromString(Core.IfElse(node.AsExportAssignment().IsExportEquals, Ast.InternalSymbolNameExportEquals, Ast.InternalSymbolNameDefault));
         }
 
         var name = Ast.GetNameOfDeclaration(node);
@@ -256,7 +265,7 @@ public partial class Binder
                 var moduleName = name.Text();
                 if (Ast.IsGlobalScopeAugmentation(node))
                 {
-                    return Ast.InternalSymbolNameGlobal;
+                    return ByteStringValue.FromString(Ast.InternalSymbolNameGlobal);
                 }
 
                 {
@@ -267,13 +276,13 @@ public partial class Binder
                             var attributes = node.AsModuleDeclaration().Attributes;
                             if ((attributes != null))
                             {
-                                return ((((Ast.InternalSymbolNamePrefix + "\"") + moduleName) + "\"pattern@") + Strconv.FormatUint((ulong)(Ast.GetNodeId(attributes)), 10));
+                                return ByteStringValue.FromString(((((Ast.InternalSymbolNamePrefix + "\"") + moduleName) + "\"pattern@") + Strconv.FormatUint((ulong)(Ast.GetNodeId(attributes)), 10)));
                             }
                         }
                     }
                 }
 
-                return (("\"" + moduleName) + "\"");
+                return ByteStringValue.FromString((("\"" + moduleName) + "\""));
             }
 
             if (Ast.IsPrivateIdentifier(name))
@@ -281,15 +290,15 @@ public partial class Binder
                 var containingClass = Ast.GetContainingClass(node);
                 if ((containingClass == null))
                 {
-                    return Ast.InternalSymbolNameMissing;
+                    return ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
                 }
 
-                return GetSymbolNameForPrivateIdentifier(containingClass.Symbol(), name.Text());
+                return ByteStringValue.FromString(GetSymbolNameForPrivateIdentifier(containingClass.Symbol(), name.Text()));
             }
 
             if ((Ast.IsPropertyNameLiteral(name) || Ast.IsJsxNamespacedName(name)))
             {
-                return name.Text();
+                return name.TextValue();
             }
 
             if (Ast.IsComputedPropertyName(name))
@@ -297,58 +306,58 @@ public partial class Binder
                 var nameExpression = name.Expression();
                 if (Ast.IsStringOrNumericLiteralLike(nameExpression))
                 {
-                    return nameExpression.Text();
+                    return nameExpression.TextValue();
                 }
 
                 if (Ast.IsSignedNumericLiteral(nameExpression))
                 {
                     var unaryExpression = nameExpression.AsPrefixUnaryExpression();
-                    return (Scanner.TokenToString(unaryExpression.Operator) + unaryExpression.Operand.Text());
+                    return ByteStringValue.FromString((Scanner.TokenToString(unaryExpression.Operator) + unaryExpression.Operand.Text()));
                 }
 
                 throw new InvalidOperationException("Only computed properties with literal names have declaration names");
             }
 
-            return Ast.InternalSymbolNameMissing;
+            return ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
         }
 
         switch (node.Kind)
         {
             case Kind.Constructor:
             {
-                return Ast.InternalSymbolNameConstructor;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameConstructor);
             }
 
             case Kind.FunctionType:
             case Kind.CallSignature:
             {
-                return Ast.InternalSymbolNameCall;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameCall);
             }
 
             case Kind.ConstructorType:
             case Kind.ConstructSignature:
             {
-                return Ast.InternalSymbolNameNew;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameNew);
             }
 
             case Kind.IndexSignature:
             {
-                return Ast.InternalSymbolNameIndex;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameIndex);
             }
 
             case Kind.ExportDeclaration:
             {
-                return Ast.InternalSymbolNameExportStar;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameExportStar);
             }
 
             case Kind.SourceFile:
             case Kind.BinaryExpression:
             {
-                return Ast.InternalSymbolNameExportEquals;
+                return ByteStringValue.FromString(Ast.InternalSymbolNameExportEquals);
             }
         }
 
-        return Ast.InternalSymbolNameMissing;
+        return ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:361:1.
@@ -1878,7 +1887,7 @@ public partial class Binder
     {
         if (Ast.IsIdentifier(node))
         {
-            return this.lookupName(node.Text(), container);
+            return this.lookupName(node.TextValue(), container);
         }
 
         if ((node.Expression().Kind == Kind.ThisKeyword))
@@ -1892,7 +1901,7 @@ public partial class Binder
                         var name = Ast.GetElementOrPropertyAccessName(node);
                         if ((name != null))
                         {
-                            return symbolTable[name.Text()];
+                            return symbolTable[name.TextValue()];
                         }
                     }
                 }
@@ -1909,7 +1918,7 @@ public partial class Binder
                     var name2 = Ast.GetElementOrPropertyAccessName(node);
                     if ((name2 != null))
                     {
-                        return symbol.Exports[name2.Text()];
+                        return symbol.Exports[name2.TextValue()];
                     }
                 }
             }
@@ -1919,7 +1928,7 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1293:1.
-    private Symbol lookupName(string name, Node container)
+    private Symbol lookupName(ByteStringValue name, Node container)
     {
         {
             var localsContainer = container.LocalsContainerData();
@@ -1954,7 +1963,7 @@ public partial class Binder
     {
         if (((((GoRuntime.Len(this.file.Diagnostics()) == 0) && ((node.Flags & NodeFlags.Ambient) == 0)) && ((node.Flags & NodeFlags.JSDoc) == 0)) && !Ast.IsIdentifierName(node)))
         {
-            var originalKeywordKind = Scanner.GetIdentifierToken(node.Text());
+            var originalKeywordKind = Scanner.GetIdentifierToken(node.TextValue());
             if ((originalKeywordKind == Kind.Identifier))
             {
                 return;
@@ -1994,7 +2003,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1330:1.
     private void checkPrivateIdentifier(Node node)
     {
-        if ((node.Text() == "#constructor"))
+        if (node.TextEquals("#constructor"u8))
         {
             if ((GoRuntime.Len(this.file.Diagnostics()) == 0))
             {
@@ -2142,8 +2151,8 @@ public partial class Binder
     {
         if (Ast.IsIdentifier(node))
         {
-            var text = node.Text();
-            return ((text == "eval") || (text == "arguments"));
+            var text = node.TextValue();
+            return text.EqualsBytes("eval"u8) || text.EqualsBytes("arguments"u8);
         }
 
         return false;

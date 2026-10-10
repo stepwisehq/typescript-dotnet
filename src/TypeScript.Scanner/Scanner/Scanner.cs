@@ -3815,11 +3815,12 @@ public partial class Scanner
     // scanner.go getIdentifierToken: the keyword table uses raw byte strings.
     // Its bounded keys can use .NET's ordinal alternate lookup without owning
     // a temporary token string or encoding non-ASCII source bytes again.
-    private Kind getIdentifierToken()
+    private Kind getIdentifierToken() => GetIdentifierToken(TokenValueTextValue());
+    internal static Kind GetIdentifierToken(ByteStringValue text)
     {
-        if (!tokenValueIsView)
-            return GetIdentifierToken(tokenValue);
-        var bytes = tokenValueView.AsSpan();
+        if (!text.IsBytes)
+            return GetIdentifierToken(text.Materialize()!);
+        var bytes = text.ByteSpan;
         if (bytes.Length < 2 || bytes.Length > 12 || bytes[0] < 'a' || bytes[0] > 'z')
             return Kind.Identifier;
         Span<char> chars = stackalloc char[12];

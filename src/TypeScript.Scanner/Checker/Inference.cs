@@ -224,8 +224,8 @@ public sealed partial class Checker
 
                     if ((n.priority < inference.priority))
                     {
-                        inference.candidates = null;
-                        inference.contraCandidates = null;
+                        inference.candidates = default;
+                        inference.contraCandidates = default;
                         inference.topLevel = true;
                         inference.priority = n.priority;
                     }
@@ -236,7 +236,7 @@ public sealed partial class Checker
                         {
                             if (!GoSlices.Contains(inference.contraCandidates, candidate))
                             {
-                                inference.contraCandidates = GoRuntime.Append(inference.contraCandidates, candidate);
+                                inference.contraCandidates = inference.contraCandidates.Append(candidate);
                                 clearCachedInferences(n.inferences);
                             }
                         }
@@ -244,7 +244,7 @@ public sealed partial class Checker
                         {
                             if (!GoSlices.Contains(inference.candidates, candidate))
                             {
-                                inference.candidates = GoRuntime.Append(inference.candidates, candidate);
+                                inference.candidates = inference.candidates.Append(candidate);
                                 clearCachedInferences(n.inferences);
                             }
                         }
@@ -1440,8 +1440,8 @@ public sealed partial class Checker
             }
         }
 
-        this.reverseMappedSourceStack = GoRuntime.Append(this.reverseMappedSourceStack, source);
-        this.reverseMappedTargetStack = GoRuntime.Append(this.reverseMappedTargetStack, target);
+        this.reverseMappedSourceStack = this.reverseMappedSourceStack.Append(source);
+        this.reverseMappedTargetStack = this.reverseMappedTargetStack.Append(target);
         var saveExpandingFlags = this.reverseExpandingFlags;
         if (this.isDeeplyNestedType(source, this.reverseMappedSourceStack, 2))
         {
@@ -1459,8 +1459,8 @@ public sealed partial class Checker
             t = this.inferReverseMappedTypeWorker(source, target, constraint);
         }
 
-        this.reverseMappedSourceStack = GoRuntime.Slice(this.reverseMappedSourceStack, 0, (GoRuntime.Len(this.reverseMappedSourceStack) - 1));
-        this.reverseMappedTargetStack = GoRuntime.Slice(this.reverseMappedTargetStack, 0, (GoRuntime.Len(this.reverseMappedTargetStack) - 1));
+        this.reverseMappedSourceStack = this.reverseMappedSourceStack.Slice2(0, this.reverseMappedSourceStack.Length - 1);
+        this.reverseMappedTargetStack = this.reverseMappedTargetStack.Slice2(0, this.reverseMappedTargetStack.Length - 1);
         this.reverseExpandingFlags = saveExpandingFlags;
         this.reverseMappedCache[key] = t;
         return t;
@@ -1944,18 +1944,18 @@ public sealed partial class Checker
         var candidates = this.unionObjectAndArrayLiteralCandidates(inference.candidates);
         var primitiveConstraint = (this.hasPrimitiveConstraint(inference.typeParameter) || this.isConstTypeVariable(inference.typeParameter, 0));
         var widenLiteralTypes = ((!primitiveConstraint && inference.topLevel) && ((inference.isFixed || !this.isTypeParameterAtTopLevelInReturnType(signature, inference.typeParameter))));
-        List<Type> baseCandidates = default;
+        Slice<Type> baseCandidates = default;
         switch (true)
         {
             case true when primitiveConstraint:
             {
-                baseCandidates = Core.SameMap(candidates, this.getRegularTypeOfLiteralType);
+                baseCandidates = Core.SameMap(candidates, this, static (t, checker) => checker.getRegularTypeOfLiteralType(t));
                 break;
             }
 
             case true when widenLiteralTypes:
             {
-                baseCandidates = Core.SameMap(candidates, this.getWidenedLiteralType);
+                baseCandidates = Core.SameMap(candidates, this, static (t, checker) => checker.getWidenedLiteralType(t));
                 break;
             }
 
@@ -1991,7 +1991,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1482:1.
-    private List<Type> unionObjectAndArrayLiteralCandidates(List<Type> candidates)
+    private Slice<Type> unionObjectAndArrayLiteralCandidates(Slice<Type> candidates)
     {
         if ((GoRuntime.Len(candidates) > 1))
         {
@@ -1999,11 +1999,11 @@ public sealed partial class Checker
             if ((GoRuntime.Len(objectLiterals) != 0))
             {
                 var literalsType = this.getUnionTypeEx(objectLiterals, UnionReduction.Subtype, null, null);
-                var nonLiteralTypes = Core.Filter(candidates, (t) =>
+                var nonLiteralTypes = Core.Filter(candidates, static (t) =>
                 {
                     return !isObjectOrArrayLiteralType(t);
                 });
-                return Core.Concatenate(nonLiteralTypes, new List<Type> { literalsType });
+                return Core.Concatenate(nonLiteralTypes, Slice<Type>.FromArray([literalsType]));
             }
         }
 
@@ -2088,7 +2088,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1543:1.
-    private Type getCommonSupertype(List<Type> types)
+    private Type getCommonSupertype(Slice<Type> types)
     {
         if ((GoRuntime.Len(types) == 1))
         {
@@ -2098,9 +2098,9 @@ public sealed partial class Checker
         var primaryTypes = types;
         if (this.strictNullChecks)
         {
-            primaryTypes = Core.SameMap(types, (t) =>
+            primaryTypes = Core.SameMap(types, this, static (t, checker) =>
             {
-                return this.filterType(t, (u) =>
+                return checker.filterType(t, static (u) =>
                 {
                     return ((u.flags & TypeFlags.Nullable) == 0);
                 });
@@ -2126,22 +2126,28 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1570:1.
-    private Type getSingleCommonSupertype(List<Type> types)
+    private Type getSingleCommonSupertype(Slice<Type> types)
     {
-        var candidate = this.findLeftmostType(types, (c, s, t) => c.isTypeStrictSubtypeOf(s, t));
-        if (Core.Every(types, (t) =>
+        var candidate = this.findLeftmostType(types, static (c, s, t) => c.isTypeStrictSubtypeOf(s, t));
+        // inference.go:1574/core.Every: ordered first-false traversal, including empty true.
+        bool allSubtypes = true;
+        foreach (var t in types)
         {
-            return ((t == candidate) || this.isTypeStrictSubtypeOf(t, candidate));
-        }))
+            if ((t == candidate) || this.isTypeStrictSubtypeOf(t, candidate))
+                continue;
+            allSubtypes = false;
+            break;
+        }
+        if (allSubtypes)
         {
             return candidate;
         }
 
-        return this.findLeftmostType(types, (c, s, t) => c.isTypeSubtypeOf(s, t));
+        return this.findLeftmostType(types, static (c, s, t) => c.isTypeSubtypeOf(s, t));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1581:1.
-    private Type findLeftmostType(List<Type> types, Func<Checker, Type, Type, bool> f)
+    private Type findLeftmostType(Slice<Type> types, Func<Checker, Type, Type, bool> f)
     {
         Type candidate = default;
         {
@@ -2159,7 +2165,7 @@ public sealed partial class Checker
 
     // Return the leftmost type for which no type to the right is a subtype.
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1592:1.
-    private Type getCommonSubtype(List<Type> types)
+    private Type getCommonSubtype(Slice<Type> types)
     {
         Type subtype = default;
         {
@@ -2176,11 +2182,15 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1602:1.
-    private TypeFlags getCombinedTypeFlags(List<Type> types)
+    private TypeFlags getCombinedTypeFlags(Slice<Type> types) => getCombinedTypeFlags(types.AsSpan());
+    private TypeFlags getCombinedTypeFlags(List<Type> types) =>
+        getCombinedTypeFlags(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(types));
+
+    private TypeFlags getCombinedTypeFlags(ReadOnlySpan<Type> types)
     {
         var flags = TypeFlags.None;
         {
-            foreach (var t in GoRuntime.RangeValues(types))
+            foreach (var t in types)
             {
                 if (((t.flags & TypeFlags.Union) != 0))
                 {
@@ -2197,7 +2207,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1614:1.
-    private bool literalTypesWithSameBaseType(List<Type> types)
+    private bool literalTypesWithSameBaseType(Slice<Type> types)
     {
         Type commonBaseType = default;
         {

@@ -3255,7 +3255,7 @@ public partial class Parser
         }
 
         var phaseModifier = Kind.Unknown;
-        if (((((identifier != null) && (identifier.Text() == "type")) && (((this.token != Kind.FromKeyword) || (this.isIdentifier() && this.lookAhead((parserCallback) => parserCallback.nextTokenIsFromKeywordOrEqualsToken()))))) && ((this.isIdentifier() || this.tokenAfterImportDefinitelyProducesImportDeclaration()))))
+        if (((((identifier != null) && (identifier.TextEquals("type"u8))) && (((this.token != Kind.FromKeyword) || (this.isIdentifier() && this.lookAhead((parserCallback) => parserCallback.nextTokenIsFromKeywordOrEqualsToken()))))) && ((this.isIdentifier() || this.tokenAfterImportDefinitelyProducesImportDeclaration()))))
         {
             phaseModifier = Kind.TypeKeyword;
             identifier = null;
@@ -3509,7 +3509,7 @@ public partial class Parser
         var disallowKeywords = (kind == Kind.ImportSpecifier);
         bool nameOk = default;
         (name, nameOk) = this.parseModuleExportName(disallowKeywords);
-        if (((name.Kind == Kind.Identifier) && (name.Text() == "type")))
+        if (((name.Kind == Kind.Identifier) && (name.TextEquals("type"u8))))
         {
             if ((this.token == Kind.AsKeyword))
             {
@@ -4279,15 +4279,15 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3041:1.
-    private Node newIdentifier(string text)
+    private Node newIdentifier(string text) => newIdentifier(ByteStringValue.FromString(text));
+
+    // parser.go:3041: keep a Go text header through AST publication.
+    private Node newIdentifier(ByteStringValue text)
     {
         this.identifierCount++;
-        var id = this.factory.NewIdentifier(text);
-        if ((text == "await"))
-        {
+        var id = this.factory.NewIdentifierWithTextValue(text);
+        if (text.EqualsBytes("await"u8))
             this.statementHasAwaitIdentifier = true;
-        }
-
         return id;
     }
 
@@ -4301,9 +4301,9 @@ public partial class Parser
     private Node parsePrivateIdentifier()
     {
         var pos = this.nodePos();
-        var text = this.scanner.TokenValueByteString();
+        var text = this.scanner.TokenValueTextValue();
         this.nextToken();
-        return this.finishNode(this.factory.NewPrivateIdentifier(text), pos);
+        return this.finishNode(this.factory.NewPrivateIdentifierWithTextValue(text), pos);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3061:1.
@@ -5170,22 +5170,22 @@ public partial class Parser
         }
 
         var pos = this.nodePos();
-        var result = this.factory.NewTemplateHead(this.scanner.TokenValueByteString(), this.getTemplateLiteralRawText(2), this.scanner.TokenFlags());
+        var result = this.factory.NewTemplateHeadWithTextValue(this.scanner.TokenValueTextValue(), this.getTemplateLiteralRawText(2), this.scanner.TokenFlags());
         this.nextToken();
         return this.finishNode(result, pos);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3774:1.
-    private string getTemplateLiteralRawText(int endLength)
+    private ByteStringValue getTemplateLiteralRawText(int endLength)
     {
-        // parser.go:3774. Slice the borrowed token before the required AST raw-string projection.
+        // parser.go:3774. Retain the borrowed raw template header in its AST payload.
         var tokenText = this.scanner.TokenTextView();
         if (((this.scanner.TokenFlags() & TokenFlags.Unterminated) != 0))
         {
             endLength = 0;
         }
 
-        return GoRuntime.Slice(tokenText, 1, (GoRuntime.Len(tokenText) - endLength)).Materialize();
+        return ByteStringValue.FromView(GoRuntime.Slice(tokenText, 1, (GoRuntime.Len(tokenText) - endLength)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:3782:1.
@@ -5233,11 +5233,11 @@ public partial class Parser
         Node result = default;
         if ((this.token == Kind.TemplateMiddle))
         {
-            result = this.factory.NewTemplateMiddle(this.scanner.TokenValueByteString(), this.getTemplateLiteralRawText(2), this.scanner.TokenFlags());
+            result = this.factory.NewTemplateMiddleWithTextValue(this.scanner.TokenValueTextValue(), this.getTemplateLiteralRawText(2), this.scanner.TokenFlags());
         }
         else
         {
-            result = this.factory.NewTemplateTail(this.scanner.TokenValueByteString(), this.getTemplateLiteralRawText(1), this.scanner.TokenFlags());
+            result = this.factory.NewTemplateTailWithTextValue(this.scanner.TokenValueTextValue(), this.getTemplateLiteralRawText(1), this.scanner.TokenFlags());
         }
 
         this.nextToken();
@@ -6576,7 +6576,7 @@ public partial class Parser
     private Node parseJsxText()
     {
         var pos = this.nodePos();
-        var result = this.factory.NewJsxText(this.scanner.TokenValueByteString(), (this.token == Kind.JsxTextAllWhiteSpaces));
+        var result = this.factory.NewJsxTextWithTextValue(this.scanner.TokenValueTextValue(), (this.token == Kind.JsxTextAllWhiteSpaces));
         this.scanJsxText();
         return this.finishNode(result, pos);
     }
@@ -7774,38 +7774,38 @@ public partial class Parser
     private Node parseLiteralExpression()
     {
         var pos = this.nodePos();
-        var text = this.scanner.TokenValueByteString();
+        var text = this.scanner.TokenValueTextValue();
         var tokenFlags = this.scanner.TokenFlags();
         Node result = default;
         switch (this.token)
         {
             case Kind.StringLiteral:
             {
-                result = this.factory.NewStringLiteral(text, tokenFlags);
+                result = this.factory.NewStringLiteralWithTextValue(text, tokenFlags);
                 break;
             }
 
             case Kind.NumericLiteral:
             {
-                result = this.factory.NewNumericLiteral(text, tokenFlags);
+                result = this.factory.NewNumericLiteralWithTextValue(text, tokenFlags);
                 break;
             }
 
             case Kind.BigIntLiteral:
             {
-                result = this.factory.NewBigIntLiteral(text, tokenFlags);
+                result = this.factory.NewBigIntLiteralWithTextValue(text, tokenFlags);
                 break;
             }
 
             case Kind.RegularExpressionLiteral:
             {
-                result = this.factory.NewRegularExpressionLiteral(text, tokenFlags);
+                result = this.factory.NewRegularExpressionLiteralWithTextValue(text, tokenFlags);
                 break;
             }
 
             case Kind.NoSubstitutionTemplateLiteral:
             {
-                result = this.factory.NewNoSubstitutionTemplateLiteral(text, tokenFlags);
+                result = this.factory.NewNoSubstitutionTemplateLiteralWithTextValue(text, tokenFlags);
                 break;
             }
 
@@ -7890,7 +7890,7 @@ public partial class Parser
                 pos = this.nodePos();
             }
 
-            var text = this.scanner.TokenValueByteString();
+            var text = this.scanner.TokenValueTextValue();
             this.nextTokenWithoutCheck();
             return this.finishNode(this.newIdentifier(text), pos);
         }

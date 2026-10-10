@@ -584,7 +584,7 @@ public static partial class Ast
     {
         if ((node.Kind == Kind.MetaProperty))
         {
-            return ((node.AsMetaProperty().KeywordToken == Kind.ImportKeyword) && (node.AsMetaProperty().Name().Text() == "meta"));
+            return ((node.AsMetaProperty().KeywordToken == Kind.ImportKeyword) && (node.AsMetaProperty().Name().TextEquals("meta"u8)));
         }
 
         return false;
@@ -605,19 +605,19 @@ public static partial class Ast
     // Upstream function: IsExportsIdentifier
     public static bool IsExportsIdentifier(Node node)
     {
-        return (IsIdentifier(node) && (node.Text() == "exports"));
+        return (IsIdentifier(node) && (node.TextEquals("exports"u8)));
     }
 
     // Upstream function: IsModuleIdentifier
     public static bool IsModuleIdentifier(Node node)
     {
-        return (IsIdentifier(node) && (node.Text() == "module"));
+        return (IsIdentifier(node) && (node.TextEquals("module"u8)));
     }
 
     // Upstream function: IsThisIdentifier
     public static bool IsThisIdentifier(Node node)
     {
-        return (IsIdentifier(node) && (node.Text() == "this"));
+        return (IsIdentifier(node) && (node.TextEquals("this"u8)));
     }
 
     // Upstream function: IsBindableStaticAccessExpression
@@ -742,7 +742,7 @@ public static partial class Ast
             {
                 {
                     var expr = node.Expression();
-                    if ((((((IsPropertyAccessExpression(expr) && IsIdentifier(expr.Expression())) && (expr.Expression().Text() == "Object")) && (expr.Name().Text() == "defineProperty")) && IsStringOrNumericLiteralLike(args[1])) && IsBindableStaticNameExpression(args[0], true)))
+                    if ((((((IsPropertyAccessExpression(expr) && IsIdentifier(expr.Expression())) && (expr.Expression().TextEquals("Object"u8))) && (expr.Name().TextEquals("defineProperty"u8))) && IsStringOrNumericLiteralLike(args[1])) && IsBindableStaticNameExpression(args[0], true)))
                     {
                         return true;
                     }
@@ -782,13 +782,13 @@ public static partial class Ast
     {
         if (((node1.Kind == Kind.Identifier) && (node2.Kind == Kind.Identifier)))
         {
-            return (node1.Text() == node2.Text());
+            return (node1.TextValue().EqualsValue(node2.TextValue()));
         }
         else
         {
             if (((node1.Kind == Kind.PropertyAccessExpression) && (node2.Kind == Kind.PropertyAccessExpression)))
             {
-                return ((node1.AsPropertyAccessExpression().Name().Text() == node2.AsPropertyAccessExpression().Name().Text()) && HasSamePropertyAccessName(node1.Expression(), node2.Expression()));
+                return ((node1.AsPropertyAccessExpression().Name().TextValue().EqualsValue(node2.AsPropertyAccessExpression().Name().TextValue())) && HasSamePropertyAccessName(node1.Expression(), node2.Expression()));
             }
         }
 
@@ -1078,7 +1078,7 @@ public static partial class Ast
         }
 
         var call = node.AsCallExpression();
-        if ((!IsIdentifier(call.Expression) || (call.Expression.Text() != "require")))
+        if ((!IsIdentifier(call.Expression) || (!call.Expression.TextEquals("require"u8))))
         {
             return false;
         }
@@ -1100,7 +1100,7 @@ public static partial class Ast
                 var name = GetElementOrPropertyAccessName(node);
                 if ((name != null))
                 {
-                    return (name.Text() == "exports");
+                    return (name.TextEquals("exports"u8));
                 }
             }
         }
@@ -1150,7 +1150,7 @@ public static partial class Ast
         {
             case Kind.Identifier:
             {
-                return (lhs.Text() == rhs.Text());
+                return (lhs.TextValue().EqualsValue(rhs.TextValue()));
             }
 
             case Kind.ThisKeyword:
@@ -1160,12 +1160,12 @@ public static partial class Ast
 
             case Kind.JsxNamespacedName:
             {
-                return ((lhs.AsJsxNamespacedName().Namespace.Text() == rhs.AsJsxNamespacedName().Namespace.Text()) && (lhs.AsJsxNamespacedName().Name().Text() == rhs.AsJsxNamespacedName().Name().Text()));
+                return ((lhs.AsJsxNamespacedName().Namespace.TextValue().EqualsValue(rhs.AsJsxNamespacedName().Namespace.TextValue())) && (lhs.AsJsxNamespacedName().Name().TextValue().EqualsValue(rhs.AsJsxNamespacedName().Name().TextValue())));
             }
 
             case Kind.PropertyAccessExpression:
             {
-                return ((lhs.AsPropertyAccessExpression().Name().Text() == rhs.AsPropertyAccessExpression().Name().Text()) && TagNamesAreEquivalent(lhs.Expression(), rhs.Expression()));
+                return ((lhs.AsPropertyAccessExpression().Name().TextValue().EqualsValue(rhs.AsPropertyAccessExpression().Name().TextValue())) && TagNamesAreEquivalent(lhs.Expression(), rhs.Expression()));
             }
         }
 
@@ -1346,7 +1346,7 @@ public static partial class Ast
     }
 
     // Upstream utilities.go:2553.
-    public static bool IsConstTypeReference(Node node) => IsTypeReferenceNode(node) && GoRuntime.Len(node.TypeArguments()) == 0 && IsIdentifier(node.AsTypeReferenceNode().TypeName) && node.AsTypeReferenceNode().TypeName.Text() == "const";
+    public static bool IsConstTypeReference(Node node) => IsTypeReferenceNode(node) && GoRuntime.Len(node.TypeArguments()) == 0 && IsIdentifier(node.AsTypeReferenceNode().TypeName) && node.AsTypeReferenceNode().TypeName.TextEquals("const"u8);
     // Upstream utilities.go:2557.
     public static bool IsGlobalSourceFile(Node node) => node.Kind == Kind.SourceFile && !IsExternalOrCommonJSModule(node.AsSourceFile());
     // Upstream utilities.go:2569.
@@ -3020,7 +3020,7 @@ public static partial class Ast
         var name = statement.Name();
         if ((name != null))
         {
-            return (IsIdentifier(name) && (name.Text() == id.Text()));
+            return (IsIdentifier(name) && (name.TextValue().EqualsValue(id.TextValue())));
         }
 
         if (IsVariableStatement(statement))
@@ -3038,7 +3038,7 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2619:1.
     public static bool ModuleExportNameIsDefault(Node node)
     {
-        return (node.Text() == InternalSymbolNameDefault);
+        return (node.TextValue().EqualsString(InternalSymbolNameDefault));
     }
 
     // Of the form: `const x = require("x")` or `const { x } = require("x")` or with `var` or `let`
@@ -3878,7 +3878,7 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1355:1.
     public static bool IsVoidZero(Node node)
     {
-        return ((IsVoidExpression(node) && IsNumericLiteral(node.Expression())) && (node.Expression().Text() == "0"));
+        return ((IsVoidExpression(node) && IsNumericLiteral(node.Expression())) && (node.Expression().TextEquals("0"u8)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1371:1.
@@ -3896,7 +3896,7 @@ public static partial class Ast
                 var name = GetElementOrPropertyAccessName(node);
                 if ((name != null))
                 {
-                    return (name.Text() == "prototype");
+                    return (name.TextEquals("prototype"u8));
                 }
             }
         }
@@ -4212,7 +4212,7 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2958:1.
     public static bool IsModuleExportsQualifiedName(Node node)
     {
-        return ((IsQualifiedName(node) && IsModuleIdentifier(node.AsQualifiedName().Left)) && (node.AsQualifiedName().Right.Text() == "exports"));
+        return ((IsQualifiedName(node) && IsModuleIdentifier(node.AsQualifiedName().Left)) && (node.AsQualifiedName().Right.TextEquals("exports"u8)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2969:1.
@@ -5160,7 +5160,7 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4655:1.
     public static bool IsProtoSetter(Node node)
     {
-        return (((IsIdentifier(node) || IsStringLiteral(node))) && (node.Text() == "__proto__"));
+        return (((IsIdentifier(node) || IsStringLiteral(node))) && (node.TextEquals("__proto__"u8)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4659:1.

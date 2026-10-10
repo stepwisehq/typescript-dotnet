@@ -72,7 +72,7 @@ public sealed partial class Checker
 
             case InferenceInfo value:
             {
-                return ("InferenceInfo", new List<(string Name, string Kind, object Value)> { ("typeParameter", "reference", value.typeParameter), ("inferredType", "reference", value.inferredType), ("candidates", "list", value.candidates), ("contraCandidates", "list", value.contraCandidates), ("priority", "number", value.priority), ("topLevel", "bool", value.topLevel), ("isFixed", "bool", value.isFixed), ("impliedArity", "number", value.impliedArity), });
+                return ("InferenceInfo", new List<(string Name, string Kind, object Value)> { ("typeParameter", "reference", value.typeParameter), ("inferredType", "reference", value.inferredType), ("candidates", "list", GoSlices.ToListOrNull(value.candidates)), ("contraCandidates", "list", GoSlices.ToListOrNull(value.contraCandidates)), ("priority", "number", value.priority), ("topLevel", "bool", value.topLevel), ("isFixed", "bool", value.isFixed), ("impliedArity", "number", value.impliedArity), });
             }
 
             case IntraExpressionInferenceSite value:

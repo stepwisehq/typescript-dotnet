@@ -136,6 +136,24 @@ public sealed partial class Node
         Kind.JSDocLinkPlain => AsJSDocLinkPlain().TextFragments?.Join() ?? "",
         _ => throw new InvalidOperationException("Unhandled Node.Text kind " + Kind),
     };
+    // ast.go:273. Internal Go text reads retain a source/owned-text header.
+    internal ByteStringValue TextValue() => Kind switch
+    {
+        Kind.BigIntLiteral => AsBigIntLiteral().TextValue,
+        Kind.Identifier => AsIdentifier().TextValue,
+        Kind.JsxText => AsJsxText().TextValue,
+        Kind.NoSubstitutionTemplateLiteral => AsNoSubstitutionTemplateLiteral().TextValue,
+        Kind.NumericLiteral => AsNumericLiteral().TextValue,
+        Kind.PrivateIdentifier => AsPrivateIdentifier().TextValue,
+        Kind.RegularExpressionLiteral => AsRegularExpressionLiteral().TextValue,
+        Kind.StringLiteral => AsStringLiteral().TextValue,
+        Kind.TemplateHead => AsTemplateHead().TextValue,
+        Kind.TemplateMiddle => AsTemplateMiddle().TextValue,
+        Kind.TemplateTail => AsTemplateTail().TextValue,
+        Kind.MetaProperty => AsMetaProperty().Name().TextValue(),
+        _ => ByteStringValue.FromString(Text()),
+    };
+    internal bool TextEquals(ReadOnlySpan<byte> text) => TextValue().EqualsBytes(text);
     public byte[] TextBytes() => GoString.Bytes(Text());
     public string DecodedText() => ScannerString.ToJsString(Text());
     public bool IsJSDoc() => Kind == Kind.JSDoc;

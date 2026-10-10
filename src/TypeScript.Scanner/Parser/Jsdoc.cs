@@ -1990,7 +1990,7 @@ public partial class Parser
 
         var pos = this.scanner.TokenStart();
         var end = this.scanner.TokenEnd();
-        var text = this.scanner.TokenValueByteString();
+        var text = this.scanner.TokenValueTextValue();
         this.nextTokenJSDoc();
         return this.finishNodeWithEnd(this.newIdentifier(text), pos, end);
     }

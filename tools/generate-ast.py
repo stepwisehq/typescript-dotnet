@@ -63,6 +63,9 @@ def fields(n):
 # Managed compatibility for Go JSDoc []string text descriptors. Keep only these
 # four payloads borrowed internally; public mutable List<string> APIs stay intact.
 jsdoc_fragment_models = {'JSDocText', 'JSDocLink', 'JSDocLinkPlain', 'JSDocLinkCode'}
+# Go Text/RawText strings can borrow source storage; the public raw string API
+# remains a projection/setter, and generated clones preserve the value header.
+borrowed_text_models = {'StringLiteral', 'TemplateMiddle', 'Identifier', 'RegularExpressionLiteral', 'TemplateTail', 'NoSubstitutionTemplateLiteral', 'BigIntLiteral', 'JsxText', 'PrivateIdentifier', 'NumericLiteral', 'TemplateHead'}
 def composite(n):
     return n=='CompositeBase' or any(composite(e) for e in structs.get(n,([],[]))[0])
 def typ(t):
@@ -121,6 +124,10 @@ for n in concrete:
         set => TextFragments = JSDocTextFragments.FromStrings(value);
     }
     internal void SetTextFragments(JSDocTextFragments value) => TextFragments = value;""")
+        elif n in borrowed_text_models and f in {'Text', 'RawText'}:
+            assert ct == 'string', (n, f, ct)
+            storage = 'textValue' if f == 'Text' else 'rawTextValue'
+            parts.append('    private ByteStringValue '+storage+';\n    internal ByteStringValue '+f+'Value { get => '+storage+'.Snapshot(); set => '+storage+' = value; }\n    public string '+f+' { get => '+storage+'.Project(); set => '+storage+' = ByteStringValue.FromString(value); }')
         else:
             parts.append('    public '+ct+' '+cname(f)+' { get; set; }'+initial)
     if any(f=='name' for f,t in ff):parts.append('    public override Node Name() => name;')
@@ -137,6 +144,8 @@ for n in concrete:
         parts.append('    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().New'+n+'WithFragments('+args+'), this.AsNode(), f.AsNodeFactory().hooks);')
     elif clone:
         ce=expr(clone.replace('f.', 'cloneFactory.')).replace('cloneFactory.', 'f.').replace('cloneNode(', 'Ast.CloneNode(')
+        if n in borrowed_text_models:
+            ce = ce.replace('New'+n+'(', 'New'+n+'WithTextValue(').replace('this.Text', 'this.TextValue').replace('this.RawText', 'this.RawTextValue')
         if ce.startswith('return '):parts.append('    public override Node Clone(NodeFactoryCoercible f) => '+ce[7:]+';')
         else:
             ce=ce.replace('this.Kind.String()', 'this.Kind.ToString()')
@@ -204,6 +213,10 @@ for (recv,rtype,fn,ps,rt),body in fs:
         else:raise ValueError((fn,line))
     parts.append('    public Node '+fn+'('+', '.join(args)+')\n    {\n'+''.join('        '+l+'\n' for l in lines)+'    }')
     count+=1
+    if fn[3:] in borrowed_text_models:
+        borrowed_args = [arg.replace('string ', 'ByteStringValue ', 1) if arg.startswith('string ') else arg for arg in args]
+        borrowed_lines = [line.replace('data.Text =', 'data.TextValue =').replace('data.RawText =', 'data.RawTextValue =') for line in lines]
+        parts.append('    // Go string-header bridge; initialize before OnCreate publication.\n    internal Node '+fn+'WithTextValue('+', '.join(borrowed_args)+')\n    {\n'+''.join('        '+line+'\n' for line in borrowed_lines)+'    }')
     if fn[3:] in jsdoc_fragment_models:
         model = fn[3:]
         borrowed_args = 'JSDocTextFragments text' if model == 'JSDocText' else 'Node name, JSDocTextFragments text'

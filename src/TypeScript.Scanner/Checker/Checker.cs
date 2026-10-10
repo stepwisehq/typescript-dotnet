@@ -74,7 +74,8 @@ public sealed partial class Checker
     private readonly Dictionary<CacheHashKey, Type> indexedAccessTypes = new();
     private readonly Dictionary<ReverseMappedTypeKey, Type> reverseHomomorphicMappedCache = new();
     private HashSet<Node> skipDirectInferenceNodes = null;
-    private List<Type> reverseMappedSourceStack, reverseMappedTargetStack;
+    // checker.go:823/824; inference.go:1082. Recursive stacks copy headers and reslice on pop.
+    private Slice<Type> reverseMappedSourceStack, reverseMappedTargetStack;
     private ExpandingFlags reverseExpandingFlags;
     private Type blockedStringType, numericStringType;
     private int conditionalConstraintDepth;
@@ -577,7 +578,8 @@ public sealed partial class Checker
     private CancellationToken? ctx;
     private bool wasCanceled;
     private List<Node> renamedBindingElementsInTypes;
-    private List<Node> contextualBindingPatterns = null;
+    // checker.go:792/18309. Preserve shared stack backing across push/pop.
+    private Slice<Node> contextualBindingPatterns;
 
     public List<Diagnostic> GetDiagnostics() => GetDiagnostics(default, sourceFile);
     public List<Diagnostic> GetDiagnostics(SourceFile file) => GetDiagnostics(default, file);
@@ -1378,7 +1380,11 @@ public sealed partial class Checker
     }
 
     private Type newUnionType(ObjectFlags objectFlags, List<Type> types) => newType(TypeFlags.Union, objectFlags, new UnionType { types = types });
-    private ObjectFlags getPropagatingFlagsOfTypes(List<Type> types, TypeFlags excludeKinds)
+    private ObjectFlags getPropagatingFlagsOfTypes(List<Type> types, TypeFlags excludeKinds) =>
+        getPropagatingFlagsOfTypes(CollectionsMarshal.AsSpan(types), excludeKinds);
+
+    // checker.go:25712. Inputs are read-only ranges; no borrowed storage is published.
+    private ObjectFlags getPropagatingFlagsOfTypes(ReadOnlySpan<Type> types, TypeFlags excludeKinds)
     {
         ObjectFlags result = 0;
         foreach (var t in types)
@@ -5991,7 +5997,8 @@ public sealed partial class Checker
     internal sealed class InferenceInfo
     {
         internal Type typeParameter, inferredType;
-        internal List<Type> candidates, contraCandidates;
+        // checker.go:290; inference.go:185/195/199. Candidate sets are appendable Go slice headers.
+        internal Slice<Type> candidates, contraCandidates;
         internal InferencePriority priority;
         internal bool topLevel, isFixed;
         internal int impliedArity;
@@ -9181,9 +9188,14 @@ public sealed partial class Checker
     // checker.go:26590. Cache keys retain constituent order, flags and aliases.
     private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
     internal Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
-    private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias)
+    private Type getIntersectionType(Slice<Type> types) => getIntersectionTypeEx(types.AsSpan(), IntersectionFlags.None, null);
+    private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias) =>
+        getIntersectionTypeEx(CollectionsMarshal.AsSpan(types), flags, alias);
+
+    // checker.go:26590. Borrow input headers; normalization and published constituents stay owned.
+    private Type getIntersectionTypeEx(ReadOnlySpan<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
-        var orderedTypes = new List<Type>(GoRuntime.Len(types));
+        var orderedTypes = new List<Type>(types.Length);
         var includes = addTypesToIntersection(orderedTypes, 0, types);
         var typeSet = orderedTypes;
         ObjectFlags objectFlags = ObjectFlags.None;
@@ -9252,10 +9264,10 @@ public sealed partial class Checker
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Null) == 0);
                 result = getUnionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, alias, null);
             }
-            else if (typeSet.Count >= 3 && types.Count > 2)
+            else if (typeSet.Count >= 3 && types.Length > 2)
             {
                 int middle = typeSet.Count / 2;
-                result = getIntersectionTypeEx([getIntersectionTypeEx(typeSet.GetRange(0, middle), flags, null), getIntersectionTypeEx(typeSet.GetRange(middle, typeSet.Count - middle), flags, null)], flags, alias);
+                result = getIntersectionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(CollectionsMarshal.AsSpan(typeSet).Slice(0, middle), flags, null), getIntersectionTypeEx(CollectionsMarshal.AsSpan(typeSet).Slice(middle), flags, null)], flags, alias);
             }
             else
             {
@@ -9278,9 +9290,9 @@ public sealed partial class Checker
         return result;
     }
 
-    private TypeFlags addTypesToIntersection(List<Type> typeSet, TypeFlags includes, List<Type> types)
+    private TypeFlags addTypesToIntersection(List<Type> typeSet, TypeFlags includes, ReadOnlySpan<Type> types)
     {
-        foreach (var t in types ?? [])
+        foreach (var t in types)
             includes = addTypeToIntersection(typeSet, includes, getRegularTypeOfLiteralType(t));
         return includes;
     }
@@ -9289,7 +9301,7 @@ public sealed partial class Checker
     {
         var flags = t.flags;
         if ((flags & TypeFlags.Intersection) != 0)
-            return addTypesToIntersection(typeSet, includes, t.Types());
+            return addTypesToIntersection(typeSet, includes, CollectionsMarshal.AsSpan(t.Types()));
         if (IsEmptyAnonymousObjectType(t))
         {
             if ((includes & TypeFlags.IncludesEmptyObject) == 0)
@@ -16147,8 +16159,8 @@ public sealed partial class Checker
 
         s.signatureHelpTrailingComma = ((((checkMode & CheckMode.IsForSignatureHelp) != 0) && Ast.IsCallExpression(node)) && node.ArgumentList().HasTrailingComma());
         Signature result = default;
-        s.recursiveResolution = (this.callResolutionStack?.Contains(s.node) == true);
-        this.callResolutionStack = GoRuntime.Append(this.callResolutionStack, s.node);
+        s.recursiveResolution = GoSlices.Contains(this.callResolutionStack, s.node);
+        this.callResolutionStack = this.callResolutionStack.Append(s.node);
         if ((GoRuntime.Len(s.candidates) > 1))
         {
             result = this.chooseOverload(s, this.subtypeRelation);
@@ -16159,7 +16171,7 @@ public sealed partial class Checker
             result = this.chooseOverload(s, this.assignableRelation);
         }
 
-        this.callResolutionStack = GoRuntime.Slice(this.callResolutionStack, 0, (GoRuntime.Len(this.callResolutionStack) - 1));
+        this.callResolutionStack = this.callResolutionStack.Slice2(0, this.callResolutionStack.Length - 1);
         if ((result != null))
         {
             return result;
@@ -17613,7 +17625,8 @@ public sealed partial class Checker
         internal CallState Copy() => (CallState)MemberwiseClone();
     }
 
-    private List<Node> callResolutionStack;
+    // checker.go:800/9141. Recursive resolution keeps a Go slice header.
+    private Slice<Node> callResolutionStack;
     private bool isInferencePartiallyBlocked = false;
     private int? apparentArgumentCount = null;
     private Func<Type> getGlobalPromiseTypeChecked;
@@ -19128,7 +19141,7 @@ public sealed partial class Checker
 
         if (((t.flags & TypeFlags.Union) != 0))
         {
-            if ((this.awaitedTypeStack?.Contains(t) == true))
+            if (GoSlices.Contains(this.awaitedTypeStack, t))
             {
                 if ((errorNode != null))
                 {
@@ -19138,12 +19151,12 @@ public sealed partial class Checker
                 return null;
             }
 
-            this.awaitedTypeStack = GoRuntime.Append(this.awaitedTypeStack, t);
+            this.awaitedTypeStack = this.awaitedTypeStack.Append(t);
             var mapped = this.mapType(t, (t2) =>
             {
                 return this.getAwaitedTypeNoAliasEx(t2, errorNode, diagnosticMessage, args);
             });
-            this.awaitedTypeStack = GoRuntime.Slice(this.awaitedTypeStack, 0, (GoRuntime.Len(this.awaitedTypeStack) - 1));
+            this.awaitedTypeStack = this.awaitedTypeStack.Slice2(0, this.awaitedTypeStack.Length - 1);
             this.cachedTypes[key] = mapped;
             return mapped;
         }
@@ -19158,7 +19171,7 @@ public sealed partial class Checker
         var promisedType = this.getPromisedTypeOfPromiseEx(t, null, new GoRef<Type>(() => thisTypeForError, v => thisTypeForError = v));
         if ((promisedType != null))
         {
-            if (((t == promisedType) || (this.awaitedTypeStack?.Contains(promisedType) == true)))
+            if (((t == promisedType) || GoSlices.Contains(this.awaitedTypeStack, promisedType)))
             {
                 if ((errorNode != null))
                 {
@@ -19168,9 +19181,9 @@ public sealed partial class Checker
                 return null;
             }
 
-            this.awaitedTypeStack = GoRuntime.Append(this.awaitedTypeStack, t);
+            this.awaitedTypeStack = this.awaitedTypeStack.Append(t);
             var awaitedType2 = this.getAwaitedTypeNoAliasEx(promisedType, errorNode, diagnosticMessage, args);
-            this.awaitedTypeStack = GoRuntime.Slice(this.awaitedTypeStack, 0, (GoRuntime.Len(this.awaitedTypeStack) - 1));
+            this.awaitedTypeStack = this.awaitedTypeStack.Slice2(0, this.awaitedTypeStack.Length - 1);
             if ((awaitedType2 == null))
             {
                 return null;
@@ -19317,7 +19330,8 @@ public sealed partial class Checker
 {
     // checker.go:842/843/31976. Awaited alias factories and recursion state.
     private Func<Symbol> getGlobalAwaitedSymbol, getGlobalAwaitedSymbolOrNil;
-    private List<Type> awaitedTypeStack;
+    // checker.go:822/31834. Await recursion appends and restores the header.
+    private Slice<Type> awaitedTypeStack;
     private Type tryCreateAwaitedType(Type t)
     {
         var awaitedSymbol = getGlobalAwaitedSymbol();
@@ -39349,7 +39363,7 @@ public sealed partial class Checker
     {
         if (includePatternInType)
         {
-            this.contextualBindingPatterns = GoRuntime.Append(this.contextualBindingPatterns, pattern);
+            this.contextualBindingPatterns = this.contextualBindingPatterns.Append(pattern);
         }
         Type result = default;
         if (Ast.IsObjectBindingPattern(pattern))
@@ -39362,7 +39376,7 @@ public sealed partial class Checker
         }
         if (includePatternInType)
         {
-            this.contextualBindingPatterns = GoRuntime.Slice(this.contextualBindingPatterns, 0, (GoRuntime.Len(this.contextualBindingPatterns) - 1));
+            this.contextualBindingPatterns = this.contextualBindingPatterns.Slice2(0, this.contextualBindingPatterns.Length - 1);
         }
         return result;
     }

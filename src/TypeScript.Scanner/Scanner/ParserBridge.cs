@@ -22,6 +22,8 @@ public partial class Scanner
             if (current[i] != value[i]) return false;
         return true;
     }
+    internal ByteStringValue TokenValueTextValue() => tokenValueIsView
+        ? ByteStringValue.FromView(tokenValueView) : ByteStringValue.FromString(tokenValueString);
     internal string TokenValueByteString() => tokenValue;
     internal string TokenTextByteString() => text.Substring(tokenStart, pos - tokenStart);
     internal string TextByteString() => text.Materialize();

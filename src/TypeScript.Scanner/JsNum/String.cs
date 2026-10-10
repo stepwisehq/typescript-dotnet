@@ -80,94 +80,97 @@ internal static partial class JsNum
             end -= size;
         }
 
-        s = s[start..end];
-        switch (s)
-        {
-            case "":
-                return new(0);
-            case "Infinity":
-            case "+Infinity":
-                return new(double.PositiveInfinity);
-            case "-Infinity":
-                return new(double.NegativeInfinity);
-        }
+        ReadOnlySpan<char> text = s.AsSpan(start, end - start);
+        if (text.IsEmpty) return new(0);
+        if (text.SequenceEqual("Infinity") || text.SequenceEqual("+Infinity")) return new(double.PositiveInfinity);
+        if (text.SequenceEqual("-Infinity")) return new(double.NegativeInfinity);
 
-        // jsnum/string.go:66: range decodes the existing raw UTF-8 string.
-        // Validation does not need an owned array of all decoded runes.
-        for (int offset = 0; offset < s.Length;)
+        // jsnum/string.go:66. Range validates borrowed raw UTF-8, consuming
+        // malformed bytes exactly as the standard Go decoder.
+        for (int offset = 0; offset < text.Length;)
         {
-            var (r, size) = Utf8.DecodeRuneInString(s.AsSpan(offset));
-            if (!isNumberRune(r))
-                return new(double.NaN);
+            var (r, size) = Utf8.DecodeRuneInString(text[offset..]);
+            if (!isNumberRune(r)) return new(double.NaN);
             offset += size;
         }
-        var(n, ok) = tryParseInt(s);
-        if (ok)
-            return n;
-        bool negative = s.StartsWith('-');
-        if (negative || s.StartsWith('+'))
-            s = s[1..];
-        var(first, _) = Utf8.DecodeRuneInString(s);
-        if (!StringUtil.IsDigit(first) && first != '.')
-            return new(double.NaN);
-        double f = parseFloatString(s);
-        if (double.IsNaN(f))
-            return new(double.NaN);
+        var (n, ok) = tryParseInt(text);
+        if (ok) return n;
+        bool negative = text[0] == '-';
+        if (negative || text[0] == '+') text = text[1..];
+        var (first, _) = Utf8.DecodeRuneInString(text);
+        if (!StringUtil.IsDigit(first) && first != '.') return new(double.NaN);
+        double f = parseFloatString(text);
+        if (double.IsNaN(f)) return new(double.NaN);
         return new(Math.CopySign(f, negative ? -1 : 1));
     }
 
     private static bool isStrWhiteSpace(int r) => r is '\n' or '\r' or 0x2028 or 0x2029 or '\t' or '\v' or '\f' or 0xFEFF or 0x20 or 0xA0 or 0x1680 or >= 0x2000 and <= 0x200A or 0x202F or 0x205F or 0x3000;
-    private static (Number Number, bool Ok) tryParseInt(string s)
+    // jsnum/string.go:117. Validate the selected base before attempting the
+    // signed 64-bit source fast path; only overflow needs the big.Int adapter.
+    private static (Number Number, bool Ok) tryParseInt(ReadOnlySpan<char> s)
     {
         int radix = 10;
-        bool hasIntResult = false;
-        string digits = s;
-        if (s.Length > 2)
+        bool prefixed = false;
+        ReadOnlySpan<char> digits = s;
+        if (s.Length > 2 && s[0] == '0')
         {
-            switch (s[..2])
+            switch (s[1])
             {
-                case "0b":
-                case "0B":
-                    radix = 2;
-                    hasIntResult = true;
-                    break;
-                case "0o":
-                case "0O":
-                    radix = 8;
-                    hasIntResult = true;
-                    break;
-                case "0x":
-                case "0X":
-                    radix = 16;
-                    hasIntResult = true;
-                    break;
+                case 'b': case 'B': radix = 2; prefixed = true; break;
+                case 'o': case 'O': radix = 8; prefixed = true; break;
+                case 'x': case 'X': radix = 16; prefixed = true; break;
             }
-
-            if (hasIntResult)
-                digits = s[2..];
+            if (prefixed) digits = s[2..];
+        }
+        if (!prefixed)
+        {
+            digits = trimLeadingZeros(s);
+            if (!isAllDigits(digits)) return (new(0), false);
         }
 
-        if (!hasIntResult)
+        foreach (char ch in digits)
         {
-            s = trimLeadingZeros(s);
-            digits = s;
-            if (!isAllDigits(s))
-                return (new(0), false);
+            int digit = integerDigit(ch);
+            if (digit < 0 || digit >= radix) return (new(double.NaN), true);
+        }
+
+        // Decimal uses the signed source bound directly. Hex/binary library
+        // parsing is unsigned so bit63 is never reinterpreted as a negative;
+        // values above signed64 take the original big.Int overflow branch.
+        if (radix == 10)
+        {
+            if (long.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out long narrow))
+                return (new((double)narrow), true);
+        }
+        else if (radix is 2 or 16)
+        {
+            var style = radix == 2 ? NumberStyles.AllowBinarySpecifier : NumberStyles.AllowHexSpecifier;
+            if (ulong.TryParse(digits, style, CultureInfo.InvariantCulture, out ulong narrow) && narrow <= long.MaxValue)
+                return (new((double)(long)narrow), true);
+        }
+        else
+        {
+            // .NET has no octal span parser; this adapter preserves ParseInt's
+            // positive signed64 bound without creating another input spelling.
+            long narrow = 0;
+            bool overflow = false;
+            foreach (char ch in digits)
+            {
+                int digit = ch - '0';
+                if (narrow > (long.MaxValue - digit) / 8) { overflow = true; break; }
+                narrow = narrow * 8 + digit;
+            }
+            if (!overflow) return (new((double)narrow), true);
         }
 
         BigInteger value = 0;
-        foreach (char ch in digits)
-        {
-            int digit = ch is >= '0' and <= '9' ? ch - '0' : ch is >= 'a' and <= 'f' ? ch - 'a' + 10 : ch is >= 'A' and <= 'F' ? ch - 'A' + 10 : -1;
-            if (digit < 0 || digit >= radix)
-                return (new(double.NaN), true);
-            value = value * radix + digit;
-        }
-
-        // Go's big.Int.Float64 uses round-to-nearest-even. BigInteger's explicit
-        // double conversion truncates, so perform the rounding before conversion.
+        foreach (char ch in digits) value = value * radix + integerDigit(ch);
+        // Keep the existing big.Int.Float64 round-to-nearest-even adapter.
         return (new(ToDouble(value)), true);
     }
+
+    private static int integerDigit(char ch) => ch is >= '0' and <= '9' ? ch - '0' :
+        ch is >= 'a' and <= 'f' ? ch - 'a' + 10 : ch is >= 'A' and <= 'F' ? ch - 'A' + 10 : -1;
 
     private static double ToDouble(BigInteger value)
     {
@@ -186,105 +189,81 @@ internal static partial class JsNum
         return Math.ScaleB((double)significant, shift);
     }
 
-    private static double parseFloatString(string s)
+    private static double parseFloatString(ReadOnlySpan<char> s)
     {
-        string a, b = "", c = "";
-        bool hasDot, hasExp;
-        string rest;
-        (a, rest, hasDot) = cut(s, '.');
-        if (hasDot)
-            (b, c, hasExp) = cutAny(rest, "eE");
-        else
-            (a, c, hasExp) = cutAny(s, "eE");
-        var sb = new StringBuilder(s.Length + 3);
-        if (a == "")
+        int dot = s.IndexOf('.');
+        bool hasDot = dot >= 0;
+        ReadOnlySpan<char> a = hasDot ? s[..dot] : s;
+        ReadOnlySpan<char> rest = hasDot ? s[(dot + 1)..] : s;
+        int exponent = rest.IndexOfAny('e', 'E');
+        bool hasExp = exponent >= 0;
+        ReadOnlySpan<char> b = default;
+        ReadOnlySpan<char> c = hasExp ? rest[(exponent + 1)..] : default;
+        if (hasDot) b = hasExp ? rest[..exponent] : rest;
+        else if (hasExp) a = rest[..exponent];
+
+        // Source's normalized floating spelling is the final owned parse input;
+        // trimmed and split substrings above remain borrowed headers.
+        var sb = new StringBuilder(a.Length + b.Length + c.Length + 3);
+        if (a.IsEmpty)
         {
-            if (hasDot && b == "" || hasExp && c == "")
-                return double.NaN;
+            if (hasDot && b.IsEmpty || hasExp && c.IsEmpty) return double.NaN;
             sb.Append('0');
         }
         else
         {
             a = trimLeadingZeros(a);
-            if (!isAllDigits(a))
-                return double.NaN;
+            if (!isAllDigits(a)) return double.NaN;
             sb.Append(a);
         }
-
         if (hasDot)
         {
             sb.Append('.');
-            if (b == "")
-                sb.Append('0');
+            if (b.IsEmpty) sb.Append('0');
             else
             {
                 b = trimTrailingZeros(b);
-                if (!isAllDigits(b))
-                    return double.NaN;
+                if (!isAllDigits(b)) return double.NaN;
                 sb.Append(b);
             }
         }
-
         if (hasExp)
         {
             sb.Append('e');
-            if (c.StartsWith('-'))
-            {
-                sb.Append('-');
-                c = c[1..];
-            }
-            else if (c.StartsWith('+'))
-                c = c[1..];
+            if (!c.IsEmpty && c[0] == '-') { sb.Append('-'); c = c[1..]; }
+            else if (!c.IsEmpty && c[0] == '+') c = c[1..];
             c = trimLeadingZeros(c);
-            if (!isAllDigits(c))
-                return double.NaN;
+            if (!isAllDigits(c)) return double.NaN;
             sb.Append(c);
         }
-
         return double.TryParse(sb.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out double f) ? f : double.NaN;
     }
 
-    private static (string Before, string After, bool Found) cut(string s, char separator)
+    private static ReadOnlySpan<char> trimLeadingZeros(ReadOnlySpan<char> s)
     {
-        int i = s.IndexOf(separator);
-        return i >= 0 ? (s[..i], s[(i + 1)..], true) : (s, "", false);
-    }
-
-    private static (string Before, string After, bool Found) cutAny(string s, string separators)
-    {
-        int i = s.IndexOfAny(separators.ToCharArray());
-        return i >= 0 ? (s[..i], s[(i + 1)..], true) : (s, "", false);
-    }
-
-    private static string trimLeadingZeros(string s)
-    {
-        if (s.StartsWith('0'))
+        if (!s.IsEmpty && s[0] == '0')
         {
-            s = s.TrimStart('0');
-            if (s == "")
-                return "0";
+            int start = 0;
+            while (start < s.Length && s[start] == '0') start++;
+            return start == s.Length ? "0" : s[start..];
         }
-
         return s;
     }
 
-    private static string trimTrailingZeros(string s)
+    private static ReadOnlySpan<char> trimTrailingZeros(ReadOnlySpan<char> s)
     {
-        if (s.EndsWith('0'))
+        if (!s.IsEmpty && s[^1] == '0')
         {
-            s = s.TrimEnd('0');
-            if (s == "")
-                return "0";
+            int end = s.Length;
+            while (end > 0 && s[end - 1] == '0') end--;
+            return end == 0 ? "0" : s[..end];
         }
-
         return s;
     }
 
-    private static bool isAllDigits(string s)
+    private static bool isAllDigits(ReadOnlySpan<char> s)
     {
-        foreach (char r in s)
-            if (!StringUtil.IsDigit(r))
-                return false;
+        foreach (char r in s) if (!StringUtil.IsDigit(r)) return false;
         return true;
     }
 

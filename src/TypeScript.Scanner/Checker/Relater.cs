@@ -105,7 +105,8 @@ public sealed partial class Checker
     }
 
     private readonly LinkStore<Symbol, VarianceLinks> varianceLinks = new();
-    private List<(Symbol symbol, List<Type> typeParameters)> varianceStack;
+    // checker.go:799; relater.go:1356/1406. Borrow stack headers, including save/nil/restore.
+    private Slice<(Symbol symbol, List<Type> typeParameters)> varianceStack;
     // relater.go:1317/1334. Arrays/tuples use their known variances; other
     // generic declarations retain the recursive marker measurement and cache.
     private List<VarianceFlags> getVariances(Type t)
@@ -127,7 +128,7 @@ public sealed partial class Checker
                 int saveResolutionStart = resolutionStart;
                 if (GoRuntime.Len(varianceStack) == 0)
                     resolutionStart = typeResolutions.Count;
-                varianceStack = GoRuntime.Append(varianceStack, (symbol, typeParameters));
+                varianceStack = varianceStack.Append((symbol, typeParameters));
                 var variances = GoRuntime.MakeSlice<VarianceFlags>(GoRuntime.Len(typeParameters));
                 int count = GoRuntime.Len(typeParameters);
                 for (int i = 0; i < count; i++)
@@ -162,7 +163,7 @@ public sealed partial class Checker
 
                 if (GoRuntime.Len(links.variances) == 0)
                     links.variances = variances;
-                varianceStack = GoRuntime.Slice(varianceStack, 0, GoRuntime.Len(varianceStack) - 1);
+                varianceStack = varianceStack.Slice2(0, varianceStack.Length - 1);
                 if (GoRuntime.Len(varianceStack) == 0)
                     resolutionStart = saveResolutionStart;
             }
@@ -175,7 +176,7 @@ public sealed partial class Checker
                 if (minIndex > stackIndex)
                 {
                     var saveVarianceStack = varianceStack;
-                    varianceStack = null;
+                    varianceStack = default;
                     getVariancesWorker(saveVarianceStack[minIndex].symbol, saveVarianceStack[minIndex].typeParameters);
                     varianceStack = saveVarianceStack;
                 }

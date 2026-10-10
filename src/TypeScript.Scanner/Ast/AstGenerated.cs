@@ -287,9 +287,11 @@ public sealed partial class Token : NodeData
 public sealed partial class Identifier : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
 {
     public FlowNode FlowNode { get; set; }
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewIdentifier(this.Text), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewIdentifierWithTextValue(this.TextValue), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "Identifier";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -304,9 +306,11 @@ public sealed partial class Identifier : NodeData, PrimaryExpressionBase, Member
 
 public sealed partial class PrivateIdentifier : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewPrivateIdentifier(this.Text), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewPrivateIdentifierWithTextValue(this.TextValue), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "PrivateIdentifier";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -2075,10 +2079,12 @@ public sealed partial class KeywordExpression : NodeData, ExpressionBase, FlowNo
 
 public sealed partial class StringLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewStringLiteral(this.Text, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewStringLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "StringLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -2094,10 +2100,12 @@ public sealed partial class StringLiteral : NodeData, LiteralExpressionBase, Pri
 
 public sealed partial class NumericLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNumericLiteral(this.Text, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNumericLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "NumericLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -2113,10 +2121,12 @@ public sealed partial class NumericLiteral : NodeData, LiteralExpressionBase, Pr
 
 public sealed partial class BigIntLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewBigIntLiteral(this.Text, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewBigIntLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "BigIntLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -2132,10 +2142,12 @@ public sealed partial class BigIntLiteral : NodeData, LiteralExpressionBase, Pri
 
 public sealed partial class RegularExpressionLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewRegularExpressionLiteral(this.Text, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewRegularExpressionLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "RegularExpressionLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -2151,13 +2163,17 @@ public sealed partial class RegularExpressionLiteral : NodeData, LiteralExpressi
 
 public sealed partial class NoSubstitutionTemplateLiteral : NodeData, ExpressionBase, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase, DeclarationBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
-    public string RawText { get; set; } = "";
+    private ByteStringValue rawTextValue;
+    internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
+    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
     public Symbol Symbol { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNoSubstitutionTemplateLiteral(this.Text, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNoSubstitutionTemplateLiteralWithTextValue(this.TextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "NoSubstitutionTemplateLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -3466,12 +3482,16 @@ public sealed partial class ConstructorTypeNode : NodeData, FunctionOrConstructo
 
 public sealed partial class TemplateHead : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
-    public string RawText { get; set; } = "";
+    private ByteStringValue rawTextValue;
+    internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
+    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateHead(this.Text, this.RawText, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateHeadWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "TemplateHead";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -3489,12 +3509,16 @@ public sealed partial class TemplateHead : NodeData, TemplateLiteralLikeNodeBase
 
 public sealed partial class TemplateMiddle : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
-    public string RawText { get; set; } = "";
+    private ByteStringValue rawTextValue;
+    internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
+    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateMiddle(this.Text, this.RawText, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateMiddleWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "TemplateMiddle";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -3512,12 +3536,16 @@ public sealed partial class TemplateMiddle : NodeData, TemplateLiteralLikeNodeBa
 
 public sealed partial class TemplateTail : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
-    public string RawText { get; set; } = "";
+    private ByteStringValue rawTextValue;
+    internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
+    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateTail(this.Text, this.RawText, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateTailWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "TemplateTail";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -3850,11 +3878,13 @@ public sealed partial class JsxExpression : NodeData, ExpressionBase
 
 public sealed partial class JsxText : NodeData, ExpressionBase, LiteralLikeNodeBase
 {
-    public string Text { get; set; } = "";
+    private ByteStringValue textValue;
+    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     public bool ContainsOnlyTriviaWhiteSpaces { get; set; }
 
-    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxText(this.Text, this.ContainsOnlyTriviaWhiteSpaces), this.AsNode(), f.AsNodeFactory().hooks);
+    public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxTextWithTextValue(this.TextValue, this.ContainsOnlyTriviaWhiteSpaces), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "JsxText";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -4956,10 +4986,28 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.Identifier, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewIdentifierWithTextValue(ByteStringValue text)
+    {
+        var data = new Identifier();
+        data.TextValue = text;
+        textCount++;
+        return this.newNode(Kind.Identifier, data);
+    }
+
     public Node NewPrivateIdentifier(string text)
     {
         var data = new PrivateIdentifier();
         data.Text = text;
+        textCount++;
+        return this.newNode(Kind.PrivateIdentifier, data);
+    }
+
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewPrivateIdentifierWithTextValue(ByteStringValue text)
+    {
+        var data = new PrivateIdentifier();
+        data.TextValue = text;
         textCount++;
         return this.newNode(Kind.PrivateIdentifier, data);
     }
@@ -5547,10 +5595,30 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.StringLiteral, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewStringLiteralWithTextValue(ByteStringValue text, TokenFlags tokenFlags)
+    {
+        var data = new StringLiteral();
+        data.TextValue = text;
+        data.TokenFlags = tokenFlags & TokenFlags.StringLiteralFlags;
+        textCount++;
+        return this.newNode(Kind.StringLiteral, data);
+    }
+
     public Node NewNumericLiteral(string text, TokenFlags tokenFlags)
     {
         var data = new NumericLiteral();
         data.Text = text;
+        data.TokenFlags = tokenFlags & TokenFlags.NumericLiteralFlags;
+        textCount++;
+        return this.newNode(Kind.NumericLiteral, data);
+    }
+
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewNumericLiteralWithTextValue(ByteStringValue text, TokenFlags tokenFlags)
+    {
+        var data = new NumericLiteral();
+        data.TextValue = text;
         data.TokenFlags = tokenFlags & TokenFlags.NumericLiteralFlags;
         textCount++;
         return this.newNode(Kind.NumericLiteral, data);
@@ -5565,6 +5633,16 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.BigIntLiteral, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewBigIntLiteralWithTextValue(ByteStringValue text, TokenFlags tokenFlags)
+    {
+        var data = new BigIntLiteral();
+        data.TextValue = text;
+        data.TokenFlags = tokenFlags & TokenFlags.NumericLiteralFlags;
+        textCount++;
+        return this.newNode(Kind.BigIntLiteral, data);
+    }
+
     public Node NewRegularExpressionLiteral(string text, TokenFlags tokenFlags)
     {
         var data = new RegularExpressionLiteral();
@@ -5574,10 +5652,30 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.RegularExpressionLiteral, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewRegularExpressionLiteralWithTextValue(ByteStringValue text, TokenFlags tokenFlags)
+    {
+        var data = new RegularExpressionLiteral();
+        data.TextValue = text;
+        data.TokenFlags = tokenFlags & TokenFlags.RegularExpressionLiteralFlags;
+        textCount++;
+        return this.newNode(Kind.RegularExpressionLiteral, data);
+    }
+
     public Node NewNoSubstitutionTemplateLiteral(string text, TokenFlags templateFlags)
     {
         var data = new NoSubstitutionTemplateLiteral();
         data.Text = text;
+        data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
+        textCount++;
+        return this.newNode(Kind.NoSubstitutionTemplateLiteral, data);
+    }
+
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewNoSubstitutionTemplateLiteralWithTextValue(ByteStringValue text, TokenFlags templateFlags)
+    {
+        var data = new NoSubstitutionTemplateLiteral();
+        data.TextValue = text;
         data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
         textCount++;
         return this.newNode(Kind.NoSubstitutionTemplateLiteral, data);
@@ -6065,6 +6163,17 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.TemplateHead, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewTemplateHeadWithTextValue(ByteStringValue text, ByteStringValue rawText, TokenFlags templateFlags)
+    {
+        var data = new TemplateHead();
+        data.TextValue = text;
+        data.RawTextValue = rawText;
+        data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
+        textCount++;
+        return this.newNode(Kind.TemplateHead, data);
+    }
+
     public Node NewTemplateMiddle(string text, string rawText, TokenFlags templateFlags)
     {
         var data = new TemplateMiddle();
@@ -6075,11 +6184,33 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.TemplateMiddle, data);
     }
 
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewTemplateMiddleWithTextValue(ByteStringValue text, ByteStringValue rawText, TokenFlags templateFlags)
+    {
+        var data = new TemplateMiddle();
+        data.TextValue = text;
+        data.RawTextValue = rawText;
+        data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
+        textCount++;
+        return this.newNode(Kind.TemplateMiddle, data);
+    }
+
     public Node NewTemplateTail(string text, string rawText, TokenFlags templateFlags)
     {
         var data = new TemplateTail();
         data.Text = text;
         data.RawText = rawText;
+        data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
+        textCount++;
+        return this.newNode(Kind.TemplateTail, data);
+    }
+
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewTemplateTailWithTextValue(ByteStringValue text, ByteStringValue rawText, TokenFlags templateFlags)
+    {
+        var data = new TemplateTail();
+        data.TextValue = text;
+        data.RawTextValue = rawText;
         data.TemplateFlags = templateFlags & TokenFlags.TemplateLiteralLikeFlags;
         textCount++;
         return this.newNode(Kind.TemplateTail, data);
@@ -6205,6 +6336,16 @@ public sealed partial class NodeFactory
     {
         var data = new JsxText();
         data.Text = text;
+        data.ContainsOnlyTriviaWhiteSpaces = containsOnlyTriviaWhiteSpaces;
+        textCount++;
+        return this.newNode(Kind.JsxText, data);
+    }
+
+    // Go string-header bridge; initialize before OnCreate publication.
+    internal Node NewJsxTextWithTextValue(ByteStringValue text, bool containsOnlyTriviaWhiteSpaces)
+    {
+        var data = new JsxText();
+        data.TextValue = text;
         data.ContainsOnlyTriviaWhiteSpaces = containsOnlyTriviaWhiteSpaces;
         textCount++;
         return this.newNode(Kind.JsxText, data);
