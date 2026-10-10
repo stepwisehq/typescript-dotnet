@@ -1,47 +1,61 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** current HEAD `6eebf68` preserves contextual callbacks; mapper and
-parser scratch below are qualified for one combined checkpoint. Continue
-Go-faithful allocation work autonomously; no blocker. Native AOT VS Code first,
-focused checks next; comprehensive final regressions remain deferred.
+**Resume here:** current HEAD `d1df996` commits qualified mapper/parser scratch,
+following `6eebf68` contextual callbacks. Continue Go-faithful allocation work;
+no blocker. Native AOT VS Code first, focused checks next; full final regressions
+remain deferred. Do not stop just because a checkpoint was committed.
 
-**Qualified scratch checkpoint:** staged Checker2dd175ae / library4089b764 restores
-Go mapTypeEx cap16 local scratch+Slice spill+changed-result detached publication;
-unaliased contextual scratch uses Add. Native23.23wall/94.05CPU/exact10;
-10existing Program records+1authored15/16/17xUnit/nativeProgram case pass.
-Parser/ParserCompat2productionfiles and existing scratch test leaf also qualified:
-library07579924/native1a293ae1, Native23.63wall/98.38CPU/exact10;2shared checks and
-9complete parser records pass managed/native (8upstream compiler inputs reused for
-parser-only comparisons+1authoredUnicode). Source reviews retain clone/recovery/
-reentry boundaries. Evidence: `artifacts/vscode-map-scratch/` and
-`artifacts/vscode-parser-inline-scratch/`. Current Checker index holds2dd175ae;
-newer callback code in samefile is UNSTAGED. Do not indiscriminately stage it.
-
-**Allocation evidence:** cumulative8fcc18.122111→4089 17.572668GiB(-3.0319%, includes
-preceding contextual callbacks), then075799 17.107677GiB(-2.6461%). Both zero lost/
-truncated events; parsercandidate1missingstack. These are sampled CoreCLR intervals,
-not exact nativebytes or per-site/isolated speedup. Public AST List storage and
-persistent allocations remain; broad arena/Slice migration deferred given scope.
-
-**Current frozen callback packet:** Checker45a1b98b+Flow48683c65, reciprocal Sol
+**Qualified callback packet, STAGED:** Checker45a1b98b+Flow48683c65, reciprocal
 whole-function reviews pass. Shared generic mapper/filter/state adapters retain
-ONE original traversal, lazy predicate.t/property reads, clone-on-change/order.
-Frozen7c0f3e3e/native df488877: native22.93wall/96.33CPU/exact10;10unchanged Program
-comparisons pass. Verifier owns sole heavywindow running predefined A,B,B,A,A,B
-three-each native timing vs282c ownership baseline, then one reused nativeCPU
-capture and cumulative allocation capture. Evidence:
-`artifacts/vscode-checker-state-filters/`; no source changes to this packet.
+one original traversal, deferred property/predicate reads, first-change cloning.
+Frozenlibrary7c0f3e3e/native df488877: native22.93wall/96.33CPU/exact10,10existing
+Program records pass. Current Checker index holds this source; subsequent union
+worker experiment must remain UNSTAGED. Evidence:`artifacts/vscode-checker-state-filters/`.
 
-**Next source-only path packet:** scanner restored pinned simpleNormalizePath and
-NormalizePath entry fastpath, reconciled existing matching relative-segment helper,
-and borrowed fallback prefix span. Path.cs9db06294 pending peerreview. Support
-owns ASCII guards in PathByteText/DecodeModuleReference with identical null/empty/
-strict nonASCII/WTF8 fallbacks. Reciprocal review, onecombinedbuild only after
-current heavywindow. No global interner or ByteStringView name-storage migration.
+**Current performance evidence:** sampled CoreCLR07579917.107677→7c0f16.497538GiB
+(-3.5665%),0lost/truncated/missingstack/type events. Three-each predefined native
+ABBAAB versus282c gave mean20.0933→21.1367wall(+5.19%),88.2233→86.9233CPU(-1.47%),
+peakRSS-1.63%. No net speedup established despite fewer allocations. Current native
+CPU capture:52.373%exclusiveSVR-runtime helpers, not exhaustiveGCcensus; worker
+callerchains unavailable. ExistingCoreCLR traces show same1→3→9→15heapprogression,
+so no support for a different heappolicy hypothesis; nativeheapcount unverified.
+See current paired-native/,native-cpu/,allocation-comparison.json,gc-metadata-comparison.json.
 
-**Process:** batch related qualification docs/checkpoints, reuse existing evidence;
-no elaborate per-change acceptance reports. Source-only next work may proceed
-against frozen binary evidence without invalidating it. Coordinator owns STATE.
+**Scratch isolation evidence:** frozenaffe(before) vs075799(aftermapper/parser),
+exact3productionfile delta,3runs eachABBAAB:19.8667→20.2567wall(+1.96%),CPU-2.77%,
+peak+2.80%; elapsedranges overlap. No causal128Bframe attribution. Actualnative
+mapper disassembly DOES show extra entry GC-reference zeroing before Never/nonunion
+checks and+128/144Bstackreservation across4instantiations. Evidence:
+`artifacts/vscode-parser-inline-scratch/paired-scratch-native/` and
+`artifacts/vscode-map-scratch/native-frame-inspection/`.
+
+**Active path packet:** four production files Path/PathByteText/DiskHost/ParserCompat,
+plus existingProjectSupport assertions. Restores genuineGo normalizationfastpath,
+ASCIIno-conversion guards and exactsingletoncapacity. Reciprocalsource reviewspass;
+firstbuild had3nullablebindingerrors, annotation-onlyrepair independentlyreviewed,
+soleretryclean9.024s. Frozenlibraryb81a0750;235sourcecopies. Verifier owns soleheavy
+window nativepublish/VSCodefirst, then5existingpathcases+ProjectSupportmanaged/native
+controls and one allocationcapture versus7c0f ifpass. Evidence:
+`artifacts/vscode-path-normalization-fastpath/`, scalar-path-ascii/, arena-singleton-capacity/.
+
+**Next approved reversible experiment:** scanner now splits ONLY mapTypeEx's
+union scratch body into private mapTypeExUnionWorker<TState>, after original
+Never/nonunionguards. NoInlining documents managedframe-isolation adaptation;
+actualGo algorithm/callback/reduction/cloneorder unchanged. Supportpeerreview.
+Source-only after b81afreeze, no competingbuild. Need actualnativeprologue check,
+workload and existingfocusedmapper/flow tests, then timing before acceptance.
+Do not claim source split proves speed improvement. Preserve exactpatch to compare.
+
+**Goallocation caveat:** savedGo5.176GiB is sampled alloc_space, no exactTotalAlloc/
+HeapAlloc/NumGC saved. ProfileStop does notforceGC; source allows2GCcycleslag,
+unknownmissingtail.7.374GiBpeak belongs separateunprofiledrun; profiledRSS7.567GiB.
+No exactcross-runtimeallocationratio or inferredmissingamount. No newinstrumentation.
+
+**Process:** batch related notes/checkpoints, reuse existing evidence. Source-only
+next work may proceed against frozen binaries. Coordinator owns STATE; support
+writes concise qualifiedcallbackmapping/status. No broadASTarena oridentifier
+ByteStringView migration now; remainingpersistentstoragecost would need coherent
+ownership/APIchanges. No globalinterner, GCpolicyexperiment or generalcleanup.
 
 **Timing context:** six alternating frozen native runs compare signature baseline
 `cd2b47bb` to direct-slot candidate `c385e71b`: mean 23.17→21.36s wall (−7.81%),

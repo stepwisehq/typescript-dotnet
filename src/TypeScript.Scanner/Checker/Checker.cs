@@ -4238,8 +4238,25 @@ public sealed partial class Checker
     {
         if (isNoInferType(t))
             t = t.AsSubstitutionType().baseType;
-        bool substituteConstraints = (checkMode & CheckMode.Inferential) == 0 && (t.Distributed()?.Any(isGenericTypeWithUnionConstraint) ?? false) && (isConstraintPosition(t, reference) || hasContextualTypeWithNoGenericTypes(reference, checkMode));
-        return substituteConstraints ? mapType(t, getBaseConstraintOrType) : t;
+        // checker.go:32040/32051. Ordered someType search and explicit receiver avoid bound delegates.
+        bool substituteConstraints = false;
+        if ((checkMode & CheckMode.Inferential) == 0)
+        {
+            bool hasUnionConstraint = false;
+            if ((t.flags & TypeFlags.Union) != 0)
+            {
+                foreach (var constituent in GoRuntime.RangeValues(t.Types()))
+                    if (isGenericTypeWithUnionConstraint(constituent))
+                    {
+                        hasUnionConstraint = true;
+                        break;
+                    }
+            }
+            else
+                hasUnionConstraint = isGenericTypeWithUnionConstraint(t);
+            substituteConstraints = hasUnionConstraint && (isConstraintPosition(t, reference) || hasContextualTypeWithNoGenericTypes(reference, checkMode));
+        }
+        return substituteConstraints ? mapTypeEx(t, this, static (s, checker) => checker.getBaseConstraintOrType(s), false) : t;
     }
 
     private bool isConstraintPosition(Type t, Node node)
@@ -4255,14 +4272,24 @@ public sealed partial class Checker
     private bool isGenericTypeWithUnionConstraint(Type t)
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return t.AsIntersectionType().types.Any(isGenericTypeWithUnionConstraint);
+        {
+            foreach (var constituent in GoRuntime.RangeValues(t.AsIntersectionType().types))
+                if (isGenericTypeWithUnionConstraint(constituent))
+                    return true;
+            return false;
+        }
         return (t.flags & TypeFlags.Instantiable) != 0 && (getBaseConstraintOrType(t).flags & (TypeFlags.Nullable | TypeFlags.Union)) != 0;
     }
 
     private bool isGenericTypeWithoutNullableConstraint(Type t)
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return t.AsIntersectionType().types.Any(isGenericTypeWithoutNullableConstraint);
+        {
+            foreach (var constituent in GoRuntime.RangeValues(t.AsIntersectionType().types))
+                if (isGenericTypeWithoutNullableConstraint(constituent))
+                    return true;
+            return false;
+        }
         return (t.flags & TypeFlags.Instantiable) != 0 && !maybeTypeOfKind(getBaseConstraintOrType(t), TypeFlags.Nullable);
     }
 
@@ -4611,20 +4638,25 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    internal Type filterType(Type t, Func<Type, bool> predicate)
+    internal Type filterType(Type t, Func<Type, bool> predicate) =>
+        filterType(t, predicate, static (s, callback) => callback(s));
+
+    // checker.go:27092 and core.go:36. Both callback forms share the ordered filter;
+    // explicit state avoids managed capture frames and preserves deferred predicate invocation.
+    internal Type filterType<TState>(Type t, TState state, Func<Type, TState, bool> predicate)
     {
         if ((t.flags & TypeFlags.Union) != 0)
         {
             var types = t.Types();
-            var filtered = types.Where(predicate).ToList();
-            if (filtered.Count == types.Count)
+            var filtered = filterConstituents(types, state, predicate, false);
+            if (ReferenceEquals(filtered, types))
                 return t;
             var origin = t.AsUnionType().origin;
             Type newOrigin = null;
             if (origin != null && (origin.flags & TypeFlags.Union) != 0)
             {
                 var originTypes = origin.Types();
-                var originFiltered = originTypes.Where(u => (u.flags & TypeFlags.Union) != 0 || predicate(u)).ToList();
+                var originFiltered = filterConstituents(originTypes, state, predicate, true);
                 if (originTypes.Count - originFiltered.Count == types.Count - filtered.Count)
                 {
                     if (originFiltered.Count == 1)
@@ -4636,7 +4668,30 @@ public sealed partial class Checker
             return getUnionTypeFromSortedList(filtered, t.objectFlags & (ObjectFlags.PrimitiveUnion | ObjectFlags.ContainsIntersections), null, newOrigin);
         }
 
-        return (t.flags & TypeFlags.Never) != 0 || predicate(t) ? t : neverType;
+        return (t.flags & TypeFlags.Never) != 0 || predicate(t, state) ? t : neverType;
+    }
+
+    // core.Filter clones only the retained prefix at the first rejection. Origin unions bypass
+    // the predicate at precisely the same point as checker.go:27108's short-circuit callback.
+    private static List<Type> filterConstituents<TState>(List<Type> types, TState state, Func<Type, TState, bool> predicate, bool keepUnions)
+    {
+        int count = GoRuntime.Len(types);
+        for (int i = 0; i < count; i++)
+        {
+            var value = types[i];
+            if (!((keepUnions && (value.flags & TypeFlags.Union) != 0) || predicate(value, state)))
+            {
+                var filtered = types.GetRange(0, i);
+                for (i++; i < count; i++)
+                {
+                    value = types[i];
+                    if ((keepUnions && (value.flags & TypeFlags.Union) != 0) || predicate(value, state))
+                        filtered.Add(value);
+                }
+                return filtered;
+            }
+        }
+        return types;
     }
 }
 
@@ -4728,7 +4783,8 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Intersection) != 0 && shouldNormalizeIntersection(t))
         {
             var types = t.Types();
-            var normalized = instantiateList(types, null, (u, _) => getNormalizedType(u, writing));
+            // checker.go:28574 core.SameMap. Explicit state retains clone-on-first-change.
+            var normalized = instantiateList(types, (checker: this, writing), static (u, state) => state.checker.getNormalizedType(u, state.writing));
             if (!ReferenceEquals(normalized, types))
                 return getIntersectionType(normalized);
         }
@@ -7511,7 +7567,9 @@ public sealed partial class Checker
     }
 
     private Type globalFunctionType;
-    internal Type getTypeWithFacts(Type t, TypeFacts include) => filterType(t, s => hasTypeFacts(s, include));
+    // checker.go:31699. Carry per-operation facts without allocating a bound capture.
+    internal Type getTypeWithFacts(Type t, TypeFacts include) =>
+        filterType(t, (checker: this, include), static (s, state) => state.checker.hasTypeFacts(s, state.include));
     private Type GetNonNullableType(Type t) => strictNullChecks ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
     private Type getAdjustedTypeWithFacts(Type t, TypeFacts facts)
     {
@@ -7526,7 +7584,8 @@ public sealed partial class Checker
                     return removeNullableByIntersection(reduced, TypeFacts.EQNull, TypeFacts.EQUndefined, TypeFacts.IsUndefined, undefinedType);
                 case TypeFacts.NEUndefinedOrNull:
                 case TypeFacts.Truthy:
-                    return mapType(reduced, s => hasTypeFacts(s, TypeFacts.EQUndefinedOrNull) ? getGlobalNonNullableTypeInstantiation(s) : s);
+                    // checker.go:31717. The receiver is explicit; mapping/reduction stays shared.
+                    return mapTypeEx(reduced, this, static (s, checker) => checker.hasTypeFacts(s, TypeFacts.EQUndefinedOrNull) ? checker.getGlobalNonNullableTypeInstantiation(s) : s, false);
             }
         }
 
@@ -10876,8 +10935,10 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Intersection) != 0)
         {
             var types = t.Types();
-            var mapped = types.Select(x => getTypeWithThisArgument(x, thisArgument, needApparentType)).ToList();
-            if (mapped.SequenceEqual(types))
+            // checker.go:19990 core.SameMap. Unchanged mapping borrows the original list;
+            // explicit state and first-change copy avoid LINQ captures and eager snapshots.
+            var mapped = instantiateList(types, (checker: this, thisArgument, needApparentType), static (s, state) => state.checker.getTypeWithThisArgument(s, state.thisArgument, state.needApparentType));
+            if (ReferenceEquals(mapped, types))
                 return t;
             return getIntersectionType(mapped);
         }
@@ -11837,17 +11898,24 @@ public sealed partial class Checker
     }
 
     private List<T> instantiateList<T>(List<T> values, TypeMapper mapper, Func<T, TypeMapper, T> instantiate)
+        where T : class =>
+        instantiateList(values, (mapper, instantiate), static (value, state) => state.instantiate(value, state.mapper));
+
+    // checker.go:23270/core.SameMap. Both forms retain one ordered, first-change clone algorithm.
+    // A static callback with explicit operation state avoids managed closure/delegate instances.
+    private List<T> instantiateList<T, TState>(List<T> values, TState state, Func<T, TState, T> instantiate)
         where T : class
     {
         for (int i = 0; i < (values?.Count ?? 0); i++)
         {
-            var mapped = instantiate(values[i], mapper);
-            if (mapped != values[i])
+            var value = values[i];
+            var mapped = instantiate(value, state);
+            if (mapped != value)
             {
                 var result = new List<T>(values);
                 result[i] = mapped;
                 for (int j = i + 1; j < values.Count; j++)
-                    result[j] = instantiate(values[j], mapper);
+                    result[j] = instantiate(values[j], state);
                 return result;
             }
         }

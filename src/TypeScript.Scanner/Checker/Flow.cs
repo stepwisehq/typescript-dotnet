@@ -1251,9 +1251,10 @@ public sealed partial class Checker
                 var access = this.getDiscriminantPropertyAccess(f, predicateArgument, t);
                 if ((access != null))
                 {
-                    return this.narrowTypeByDiscriminant(t, access, (t2) =>
+                    // flow.go:331. Retain the predicate object and read its type only when narrowing runs.
+                    return this.narrowTypeByDiscriminant(t, access, (checker: this, predicate, assumeTrue), static (t2, state) =>
                     {
-                        return this.getNarrowedType(t2, predicate.t, assumeTrue, false);
+                        return state.checker.getNarrowedType(t2, state.predicate.t, state.assumeTrue, false);
                     });
                 }
             }
@@ -1396,9 +1397,10 @@ public sealed partial class Checker
         var access = this.getDiscriminantPropertyAccess(f, expr, t);
         if ((access != null))
         {
-            return this.narrowTypeByDiscriminant(t, access, (t2) =>
+            // flow.go:421. Preserve deferred facts selection with explicit operation state.
+            return this.narrowTypeByDiscriminant(t, access, (checker: this, assumePresent), static (t2, state) =>
             {
-                return this.getTypeWithFacts(t2, Core.IfElse(assumePresent, TypeFacts.NEUndefinedOrNull, TypeFacts.EQUndefinedOrNull));
+                return state.checker.getTypeWithFacts(t2, Core.IfElse(state.assumePresent, TypeFacts.NEUndefinedOrNull, TypeFacts.EQUndefinedOrNull));
             });
         }
 
@@ -1423,9 +1425,10 @@ public sealed partial class Checker
         var access = this.getDiscriminantPropertyAccess(f, expr, t);
         if ((access != null))
         {
-            return this.narrowTypeByDiscriminant(t, access, (t2) =>
+            // flow.go:437. The original reference/optional-chain checks run before the callback.
+            return this.narrowTypeByDiscriminant(t, access, (checker: this, assumeTrue), static (t2, state) =>
             {
-                return this.getTypeWithFacts(t2, Core.IfElse(assumeTrue, TypeFacts.Truthy, TypeFacts.Falsy));
+                return state.checker.getTypeWithFacts(t2, Core.IfElse(state.assumeTrue, TypeFacts.Truthy, TypeFacts.Falsy));
             });
         }
 
@@ -1922,7 +1925,11 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type narrowTypeByDiscriminant(Type t, Node access, Func<Type, Type> narrowType)
+    private Type narrowTypeByDiscriminant(Type t, Node access, Func<Type, Type> narrowType) =>
+        narrowTypeByDiscriminant(t, access, narrowType, static (type, callback) => callback(type));
+
+    // flow.go:725. Both callback forms share the original guarded narrowing/filter order.
+    private Type narrowTypeByDiscriminant<TState>(Type t, Node access, TState state, Func<Type, TState, Type> narrowType)
     {
         var tuple1 = this.getAccessedPropertyName(access);
         var propName = tuple1.Item1;
@@ -1951,11 +1958,11 @@ public sealed partial class Checker
             propType = this.getOptionalType(propType, false);
         }
 
-        var narrowedPropType = narrowType(propType);
-        return this.filterType(t, (t3) =>
+        var narrowedPropType = narrowType(propType, state);
+        return this.filterType(t, (checker: this, propName, narrowedPropType), static (t3, filterState) =>
         {
-            var discriminantType = Core.OrElse(this.getTypeOfPropertyOrIndexSignatureOfType(t3, propName), this.unknownType);
-            return ((((discriminantType.flags & TypeFlags.Never) == 0) && ((narrowedPropType.flags & TypeFlags.Never) == 0)) && this.areTypesComparable(narrowedPropType, discriminantType));
+            var discriminantType = Core.OrElse(filterState.checker.getTypeOfPropertyOrIndexSignatureOfType(t3, filterState.propName), filterState.checker.unknownType);
+            return ((((discriminantType.flags & TypeFlags.Never) == 0) && ((filterState.narrowedPropType.flags & TypeFlags.Never) == 0)) && filterState.checker.areTypesComparable(filterState.narrowedPropType, discriminantType));
         });
     }
 }

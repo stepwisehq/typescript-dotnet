@@ -1106,6 +1106,12 @@
         "adaptation": "InlineArray16 reference scratch spills to Slice at17; changed nonempty results publish a detached List clone. Unchanged/empty/null/origin/recursive callback order and reduction retained. Proven unaliased contextual scratch uses local Add instead of repeated copying.",
         "evidence": "artifacts/vscode-map-scratch/",
         "qualification": "Frozen4089: native VSCode exact10; ten existing full Program comparisons and one authored15/16/17 case pass; same authored case passes actual NativeAOT. Sampled cumulative8fcc18.122111 to4089 17.572668GiB (-3.0319%), includes preceding contextual callback changes; not exact allocations or isolated speedup."
+      },
+      "callbackStateFilterAdaptation": {
+        "sourceResponsibilities": "checker.go19977/19990,23270,27092,28574,31699/31717,32040/32068/32075; flow.go316/414/428/725.",
+        "adaptation": "One ordered filterType<TState> and instantiateList<T,TState> algorithm with static legacy adapters; first-rejection/first-change copying and origin/Never guards preserved. Static explicit-state callbacks retain contextual/constraint/facts order. Flow discriminant state keeps predicate.t reads delayed until original property guards and preserves final comparability short-circuit.",
+        "evidence": "artifacts/vscode-checker-state-filters/",
+        "qualification": "Frozen7c0f native22.93wall/96.33CPU complete10 exact; ten unchanged original full records pass. Matched sampled CoreCLR allocation07579917.107677 to7c0f16.497538GiB (-3.5665%), zero loss/truncation/overflow; one baseline missing stack. Six cumulative282c-vs7c0f native observations: wall+5.19%, CPU-1.47%, peak-1.63%; no speedup or isolated callback savings claim."
       }
     },
     {
@@ -1324,6 +1330,12 @@
         "review": "artifacts/vscode-flow-union-allocation/build/independent-review.json",
         "state": "Source-reviewed and native ten diagnostic records exact; focused eight existing assignment-sensitive compiler full records/original assertions and TypeSystem77 public records pass without expected changes. No profile or speedup claim.",
         "focusedEvidence": "artifacts/vscode-flow-union-allocation/focused/report.json"
+      },
+      "callbackStateFilterAdaptation": {
+        "sourceResponsibilities": "flow.go316/414/428/725 narrowTypeByTypePredicate/Optionality/Truthiness/Discriminant.",
+        "adaptation": "Synchronous generic discriminant state and static filter callbacks retain lazy predicate.t/property/nonnullable/optional/Never/comparability checks; legacy callback wrapper remains deferred. Shared Checker filter adaptation qualified with same7c0f snapshot.",
+        "evidence": "artifacts/vscode-flow-callback-state/build/independent-review.json",
+        "qualification": "See checker.go callbackStateFilterAdaptation; no separate per-site allocation or timing attribution."
       }
     },
     {

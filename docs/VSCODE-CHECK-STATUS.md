@@ -1307,6 +1307,30 @@ has one event without a stack. These are sampled estimates, not exact Native AOT
 bytes or isolated timing effects. Persistent public lists and their array
 allocations remain; upstream arena slabs require a broader storage-boundary change.
 
+## Checker and flow callback state
+
+The [qualified snapshot](../artifacts/vscode-checker-state-filters/build/snapshot-1/snapshot.json)
+uses explicit synchronous state and static callbacks across contextual inference,
+constraint/facts filtering and flow discriminant narrowing. Shared ordered filter
+and mapping algorithms preserve origin/Never bypasses, first-change copying and
+lazy property/predicate work; [Checker](../artifacts/vscode-checker-state-filters/build/independent-review.json)
+and [Flow](../artifacts/vscode-flow-callback-state/build/independent-review.json)
+received complete affected-path reviews. Native VS Code took 22.93s wall/96.33s CPU
+with all ten complete diagnostics and pinned available chains exact; the
+[focused gate](../artifacts/vscode-checker-state-filters/focused/report.json)
+passed ten unchanged original full records.
+
+The [matched CoreCLR allocation comparison](../artifacts/vscode-checker-state-filters/allocation-comparison.json)
+reports sampled interval weight17.107677→16.497538GiB (−3.5665%), one trace per
+variant, zero lost/truncated events or aggregation overflow, and one baseline event
+without a stack. This estimates the combined packet, not isolated callback savings
+or Native AOT allocation bytes. Six
+[cumulative native observations](../artifacts/vscode-checker-state-filters/paired-native/report.json)
+comparing ownership/reporter282c to7c0f report wall+5.19%, CPU−1.47% and peakRSS−1.63%.
+They include intervening changes and support no speedup claim. Allocation profiling
+and flat native CPU samples remain separate measurements; unresolved worker callers
+cannot establish a causal allocation-to-GC timing relationship.
+
 ## Reproduction and records
 
 ```bash
