@@ -10,6 +10,46 @@ internal sealed class GoRef<T>(Func<T> get, Action<T> set)
 
 internal sealed class GoArena<T>
 {
+    private Slice<T> data;
+
+    // core/arena.go:25–44. Allocate clipped regions from the current arena.
+    // Advancing the arena leaves old regions valid through their array owner.
+    // CLR allocation does not reproduce Go allocator size-class rounding; each
+    // published region still has exactly len == cap == requested size.
+    public Slice<T> NewSliceHeader(int size)
+    {
+        if (size < 0) throw new ArgumentOutOfRangeException(nameof(size));
+        if (size == 0) return default;
+        if (size > data.Capacity - data.Length)
+        {
+            int nextSize = (int)Math.Min(Math.Max((long)data.Length, 1) * 2, 256);
+            if (size > nextSize) return Slice<T>.Make(size);
+            data = Slice<T>.Make(0, nextSize);
+        }
+        int end = data.Length + size;
+        var result = data.Slice3(data.Length, end, end);
+        data = data.Slice2(0, end);
+        return result;
+    }
+
+    public Slice<T> NewSlice1Header(T value)
+    {
+        var result = NewSliceHeader(1);
+        result[0] = value;
+        return result;
+    }
+
+    // core/arena.go:52. Copy elements into a fresh clipped region; zero length
+    // returns nil. Only the header escapes, with no per-publication List object.
+    public Slice<T> CloneHeader(ReadOnlySpan<T> source)
+    {
+        var result = NewSliceHeader(source.Length);
+        source.CopyTo(result.AsSpan());
+        return result;
+    }
+    public Slice<T> CloneHeader(Slice<T> source) => CloneHeader(source.AsSpan());
+    public Slice<T> CloneHeader(List<T> source) => CloneHeader(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(source));
+
     // core/arena.go:46. The single published slot has no spare logical capacity.
     public List<T> NewSlice1(T value) => new(1)
     {

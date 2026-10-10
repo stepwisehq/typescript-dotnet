@@ -30,6 +30,8 @@ public sealed partial class Checker
     // Go stores the resolver callback; this forwarding method retains the same initialized resolver.
     internal Symbol resolveName(Node location, string name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals) =>
         nameResolver.Resolve(location, name, meaning, nameNotFoundMessage, isUse, excludeGlobals);
+    internal Symbol resolveName(Node location, ByteStringValue name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals) =>
+        nameResolver.Resolve(location, name, meaning, nameNotFoundMessage, isUse, excludeGlobals);
     private ModuleResolutionKind moduleResolutionKind;
     // checker.go:891/1268: cache this worker once instead of allocating a Visitor per node.
     private Visitor markNodeAssignments;
@@ -1313,7 +1315,11 @@ public sealed partial class Checker
     }
 
     private readonly Dictionary<Symbol, Symbol> mergedSymbols = new();
-    internal Symbol getSymbol(SymbolTable symbols, string name, SymbolFlags meaning)
+    internal Symbol getSymbol(SymbolTable symbols, string name, SymbolFlags meaning) =>
+        getSymbol(symbols, ByteStringValue.FromString(name), meaning);
+
+    // checker.go getSymbol: lookup borrows the same raw name; stored keys stay strings.
+    internal Symbol getSymbol(SymbolTable symbols, ByteStringValue name, SymbolFlags meaning)
     {
         if ((meaning & SymbolFlags.All) != 0)
         {
@@ -1426,11 +1432,25 @@ public sealed partial class Checker
     }
 
     internal static bool isFreshLiteralType(Type t) => (t.flags & TypeFlags.Freshable) != 0 && t.AsLiteralType().freshType == t;
-    private Type getStringLiteralType(string value)
+    private Type getStringLiteralType(string value) => getStringLiteralType(ByteStringValue.FromString(value));
+
+    // checker.go getStringLiteralType: borrow cache hits; an owned raw string is
+    // needed only for a new persistent literal value/key at this managed boundary.
+    private Type getStringLiteralType(ByteStringValue value)
     {
-        if (!stringLiteralTypes.TryGetValue(value, out var t))
-            stringLiteralTypes[value] = t = newLiteralType(TypeFlags.StringLiteral, value, null);
+        if (!value.TryGetValue(stringLiteralTypes, out var t))
+        {
+            var key = value.Materialize();
+            stringLiteralTypes[key] = t = newLiteralType(TypeFlags.StringLiteral, key, null);
+        }
         return t;
+    }
+
+    private Type getStringLiteralType(Node node)
+    {
+        if (node.TextValue().TryGetValue(stringLiteralTypes, out var t))
+            return t;
+        return getStringLiteralType(node.Text());
     }
 
     private Type getNumberLiteralType(JsNum.Number value)
@@ -1847,6 +1867,7 @@ public sealed partial class Checker
         ArgumentsSymbol = argumentsSymbol,
         RequireSymbol = requireSymbol,
         Lookup = getSymbol,
+        LookupTextValue = getSymbol,
         SymbolReferenced = symbolReferenced,
         SetRequiresScopeChangeCache = setRequiresScopeChangeCache,
         GetRequiresScopeChangeCache = getRequiresScopeChangeCache,
@@ -1878,7 +1899,7 @@ public sealed partial class Checker
         {
             Symbol symbol = null;
             if (!Ast.NodeIsMissing(node))
-                symbol = nameResolver.Resolve(node, node.Text(), SymbolFlags.Value | SymbolFlags.ExportValue, getCannotFindNameDiagnosticForName(node), !Ast.IsWriteOnlyAccess(node), false);
+                symbol = nameResolver.Resolve(node, node.TextValue(), SymbolFlags.Value | SymbolFlags.ExportValue, getCannotFindNameDiagnosticForName(node), !Ast.IsWriteOnlyAccess(node), false);
             links.resolvedSymbol = symbol ?? unknownSymbol;
         }
 
@@ -1888,55 +1909,56 @@ public sealed partial class Checker
     // getCannotFindNameDiagnosticForName (14186): source-admitted identifier uses.
     private Message getCannotFindNameDiagnosticForName(Node node)
     {
-        switch (node.Text())
+        var text = node.TextValue();
+        switch (true)
         {
-            case "document":
-            case "console":
+            case true when text.EqualsBytes("document"u8):
+            case true when text.EqualsBytes("console"u8):
                 return Diagnostics.Cannot_find_name_0_Do_you_need_to_change_your_target_library_Try_changing_the_lib_compiler_option_to_include_dom;
-            case "$":
+            case true when text.EqualsBytes("$"u8):
                 return compilerOptions.UsesWildcardTypes() ?
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_jQuery_Try_npm_i_save_dev_types_Slashjquery :
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_jQuery_Try_npm_i_save_dev_types_Slashjquery_and_then_add_jquery_to_the_types_field_in_your_tsconfig;
-            case "beforeEach":
-            case "describe":
-            case "suite":
-            case "it":
-            case "test":
+            case true when text.EqualsBytes("beforeEach"u8):
+            case true when text.EqualsBytes("describe"u8):
+            case true when text.EqualsBytes("suite"u8):
+            case true when text.EqualsBytes("it"u8):
+            case true when text.EqualsBytes("test"u8):
                 return compilerOptions.UsesWildcardTypes() ?
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_a_test_runner_Try_npm_i_save_dev_types_Slashjest_or_npm_i_save_dev_types_Slashmocha :
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_a_test_runner_Try_npm_i_save_dev_types_Slashjest_or_npm_i_save_dev_types_Slashmocha_and_then_add_jest_or_mocha_to_the_types_field_in_your_tsconfig;
-            case "process":
-            case "require":
-            case "Buffer":
-            case "module":
-            case "NodeJS":
+            case true when text.EqualsBytes("process"u8):
+            case true when text.EqualsBytes("require"u8):
+            case true when text.EqualsBytes("Buffer"u8):
+            case true when text.EqualsBytes("module"u8):
+            case true when text.EqualsBytes("NodeJS"u8):
                 return compilerOptions.UsesWildcardTypes() ?
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_node_Try_npm_i_save_dev_types_Slashnode :
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_node_Try_npm_i_save_dev_types_Slashnode_and_then_add_node_to_the_types_field_in_your_tsconfig;
-            case "Bun":
+            case true when text.EqualsBytes("Bun"u8):
                 return compilerOptions.UsesWildcardTypes() ?
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_Bun_Try_npm_i_save_dev_types_Slashbun :
                     Diagnostics.Cannot_find_name_0_Do_you_need_to_install_type_definitions_for_Bun_Try_npm_i_save_dev_types_Slashbun_and_then_add_bun_to_the_types_field_in_your_tsconfig;
-            case "Map":
-            case "Set":
-            case "Promise":
-            case "ast.Symbol":
-            case "WeakMap":
-            case "WeakSet":
-            case "Iterator":
-            case "AsyncIterator":
-            case "SharedArrayBuffer":
-            case "Atomics":
-            case "AsyncIterable":
-            case "AsyncIterableIterator":
-            case "AsyncGenerator":
-            case "AsyncGeneratorFunction":
-            case "BigInt":
-            case "Reflect":
-            case "BigInt64Array":
-            case "BigUint64Array":
+            case true when text.EqualsBytes("Map"u8):
+            case true when text.EqualsBytes("Set"u8):
+            case true when text.EqualsBytes("Promise"u8):
+            case true when text.EqualsBytes("ast.Symbol"u8):
+            case true when text.EqualsBytes("WeakMap"u8):
+            case true when text.EqualsBytes("WeakSet"u8):
+            case true when text.EqualsBytes("Iterator"u8):
+            case true when text.EqualsBytes("AsyncIterator"u8):
+            case true when text.EqualsBytes("SharedArrayBuffer"u8):
+            case true when text.EqualsBytes("Atomics"u8):
+            case true when text.EqualsBytes("AsyncIterable"u8):
+            case true when text.EqualsBytes("AsyncIterableIterator"u8):
+            case true when text.EqualsBytes("AsyncGenerator"u8):
+            case true when text.EqualsBytes("AsyncGeneratorFunction"u8):
+            case true when text.EqualsBytes("BigInt"u8):
+            case true when text.EqualsBytes("Reflect"u8):
+            case true when text.EqualsBytes("BigInt64Array"u8):
+            case true when text.EqualsBytes("BigUint64Array"u8):
                 return Diagnostics.Cannot_find_name_0_Do_you_need_to_change_your_target_library_Try_changing_the_lib_compiler_option_to_1_or_later;
-            case "await":
+            case true when text.EqualsBytes("await"u8):
                 if (Ast.IsCallExpression(node.Parent))
                     return Diagnostics.Cannot_find_name_0_Did_you_mean_to_write_this_in_an_async_function;
                 goto default;
@@ -1959,7 +1981,7 @@ public sealed partial class Checker
             return ;
         }
         var declarationName = name;
-        if ((((errorLocation != null) && Ast.IsIdentifier(errorLocation)) && (errorLocation.Text() == name)))
+        if ((((errorLocation != null) && Ast.IsIdentifier(errorLocation)) && (errorLocation.TextValue().EqualsString(name))))
         {
             declarationName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(errorLocation);
         }
@@ -2932,7 +2954,7 @@ public sealed partial class Checker
                 {
                     return this.blockedStringType;
                 }
-                return this.getFreshTypeOfLiteralType(this.getStringLiteralType(node.Text()));
+                return this.getFreshTypeOfLiteralType(this.getStringLiteralType(node));
             }
             case Kind.NumericLiteral:
             {
@@ -3467,7 +3489,7 @@ public sealed partial class Checker
                 {
                     var typeOfPattern = this.getTypeOfNode(grandParent);
                     {
-                        var propertyDeclaration = this.getPropertyOfType(typeOfPattern, node.Text());
+                        var propertyDeclaration = this.getPropertyOfType(typeOfPattern, node.TextValue());
                         if ((propertyDeclaration != null))
                         {
                             return propertyDeclaration;
@@ -3479,11 +3501,11 @@ public sealed partial class Checker
                     if ((Ast.IsMetaProperty(parent) && (parent.Name() == node)))
                     {
                         var metaProp = parent.AsMetaProperty();
-                        if (((metaProp.KeywordToken == Kind.NewKeyword) && (node.Text() == "target")))
+                        if (((metaProp.KeywordToken == Kind.NewKeyword) && (node.TextEquals("target"u8))))
                         {
                             return this.checkNewTargetMetaProperty(parent).symbol;
                         }
-                        if (((metaProp.KeywordToken == Kind.ImportKeyword) && (node.Text() == "meta")))
+                        if (((metaProp.KeywordToken == Kind.ImportKeyword) && (node.TextEquals("meta"u8))))
                         {
                             return this.getGlobalImportMetaExpressionType().AsObjectType().members["meta"];
                         }
@@ -3500,7 +3522,7 @@ public sealed partial class Checker
                                     {
                                         foreach (var param in GoRuntime.RangeValues(fn.Parameters()))
                                         {
-                                            if ((Ast.IsIdentifier(param.Name()) && (param.Name().Text() == node.Text())))
+                                            if ((Ast.IsIdentifier(param.Name()) && (param.Name().TextValue().EqualsValue(node.TextValue()))))
                                             {
                                                 return this.getSymbolOfNode(param);
                                             }
@@ -3592,7 +3614,7 @@ public sealed partial class Checker
                 }
                 if ((objectType != null))
                 {
-                    return this.getPropertyOfType(objectType, node.Text());
+                    return this.getPropertyOfType(objectType, node.TextValue());
                 }
                 return null;
             }
@@ -3753,9 +3775,9 @@ public sealed partial class Checker
                     if (container != null)
                     {
                         var symbol = getSymbolOfDeclaration(container);
-                        result = getMergedSymbol(getSymbol(getExportsOfSymbol(symbol), name.Text(), meaning));
+                        result = getMergedSymbol(getSymbol(getExportsOfSymbol(symbol), name.TextValue(), meaning));
                         if (result == null)
-                            result = getPropertyOfType(getDeclaredTypeOfSymbol(symbol), name.Text());
+                            result = getPropertyOfType(getDeclaredTypeOfSymbol(symbol), name.TextValue());
                     }
                 }
                 return result;
@@ -3812,19 +3834,19 @@ public sealed partial class Checker
                 var resolveLocation = location ?? name;
                 if (meaning == SymbolFlags.Namespace)
                 {
-                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), meaning, null, true, false));
+                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.TextValue(), meaning, null, true, false));
                     if (symbol == null)
                     {
-                        var alias = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), SymbolFlags.Alias, null, true, false));
+                        var alias = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.TextValue(), SymbolFlags.Alias, null, true, false));
                         if (alias != null && alias.Name == Ast.InternalSymbolNameExportEquals)
                             symbol = alias.Parent;
                     }
 
                     if (symbol == null && message != null)
-                        nameResolver.Resolve(resolveLocation, name.Text(), meaning, message, true, false);
+                        nameResolver.Resolve(resolveLocation, name.TextValue(), meaning, message, true, false);
                 }
                 else
-                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.Text(), meaning, message, true, false));
+                    symbol = getMergedSymbol(nameResolver.Resolve(resolveLocation, name.TextValue(), meaning, message, true, false));
                 break;
             case Kind.QualifiedName:
                 var qualified = name.AsQualifiedName();
@@ -3873,7 +3895,7 @@ public sealed partial class Checker
                 }
             }
         }
-        var text = right.Text();
+        var text = right.TextValue();
         var symbol = this.getMergedSymbol(this.getSymbol(this.getExportsOfSymbol(@namespace), text, meaning));
         if (((symbol == null) && ((@namespace.Flags & SymbolFlags.Alias) != 0)))
         {
@@ -3924,13 +3946,13 @@ public sealed partial class Checker
     private Symbol tryGetQualifiedNameAsValue(Node node)
     {
         var id = Ast.GetFirstIdentifier(node);
-        var symbol = nameResolver.Resolve(id, id.Text(), SymbolFlags.Value, null, true, false);
+        var symbol = nameResolver.Resolve(id, id.TextValue(), SymbolFlags.Value, null, true, false);
         if (symbol == null)
             return null;
         var n = id;
         while (Ast.IsQualifiedName(n.Parent))
         {
-            symbol = getPropertyOfType(getTypeOfSymbol(symbol), n.Parent.AsQualifiedName().Right.Text());
+            symbol = getPropertyOfType(getTypeOfSymbol(symbol), n.Parent.AsQualifiedName().Right.TextValue());
             if (symbol == null)
                 return null;
             n = n.Parent;
@@ -4421,7 +4443,7 @@ public sealed partial class Checker
         var name = node.Name();
         if ((symbol.Flags & SymbolFlags.FunctionScopedVariable) != 0)
         {
-            var local = nameResolver.Resolve(node, name.Text(), SymbolFlags.Variable, null, false, false);
+            var local = nameResolver.Resolve(node, name.TextValue(), SymbolFlags.Variable, null, false, false);
             if (local != null && local != symbol && (local.Flags & SymbolFlags.BlockScopedVariable) != 0 && (getCombinedNodeFlagsCached(local.ValueDeclaration) & NodeFlags.BlockScoped) != 0)
             {
                 var list = Ast.FindAncestorKind(local.ValueDeclaration, Kind.VariableDeclarationList);
@@ -5409,7 +5431,10 @@ public sealed partial class Checker
         return getPropertiesOfObjectType(t);
     }
 
-    private Symbol getPropertyOfObjectType(Type t, string name)
+    private Symbol getPropertyOfObjectType(Type t, string name) =>
+        getPropertyOfObjectType(t, ByteStringValue.FromString(name));
+
+    private Symbol getPropertyOfObjectType(Type t, ByteStringValue name)
     {
         if ((t.flags & TypeFlags.Object) != 0)
         {
@@ -5422,7 +5447,11 @@ public sealed partial class Checker
     }
 
     internal Symbol getPropertyOfType(Type t, string name) => getPropertyOfTypeEx(t, name, false, false);
-    private Symbol getPropertyOfTypeEx(Type t, string name, bool skipObjectFunctionPropertyAugment, bool includeTypeOnlyMembers)
+    internal Symbol getPropertyOfType(Type t, ByteStringValue name) => getPropertyOfTypeEx(t, name, false, false);
+    private Symbol getPropertyOfTypeEx(Type t, string name, bool skipObjectFunctionPropertyAugment, bool includeTypeOnlyMembers) =>
+        getPropertyOfTypeEx(t, ByteStringValue.FromString(name), skipObjectFunctionPropertyAugment, includeTypeOnlyMembers);
+
+    private Symbol getPropertyOfTypeEx(Type t, ByteStringValue name, bool skipObjectFunctionPropertyAugment, bool includeTypeOnlyMembers)
     {
         t = this.getReducedApparentType(t);
         switch (true)
@@ -5430,10 +5459,12 @@ public sealed partial class Checker
             case true when ((t.flags & TypeFlags.Object) != 0):
                 {
                     var resolved = this.resolveStructuredTypeMembers(t);
-                    var symbol = resolved.members?[name];
+                    Symbol symbol = null;
+                    string actualName = null;
+                    resolved.members?.TryGetValue(name, out actualName, out symbol);
                     if ((symbol != null))
                     {
-                        if ((((!includeTypeOnlyMembers && (t.symbol != null)) && ((t.symbol.Flags & SymbolFlags.ValueModule) != 0)) && (this.moduleSymbolLinks.Get(t.symbol).typeOnlyExportStarMap?.GetValueOrDefault(name) != null)))
+                        if ((((!includeTypeOnlyMembers && (t.symbol != null)) && ((t.symbol.Flags & SymbolFlags.ValueModule) != 0)) && (this.moduleSymbolLinks.Get(t.symbol).typeOnlyExportStarMap?.GetValueOrDefault(actualName) != null)))
                         {
                             return null;
                         }
@@ -5508,7 +5539,10 @@ public sealed partial class Checker
         return null;
     }
 
-    private Type getTypeOfPropertyOfType(Type t, string name)
+    private Type getTypeOfPropertyOfType(Type t, string name) =>
+        getTypeOfPropertyOfType(t, ByteStringValue.FromString(name));
+
+    private Type getTypeOfPropertyOfType(Type t, ByteStringValue name)
     {
         var property = getPropertyOfType(t, name);
         return property != null ? getTypeOfSymbol(property) : null;
@@ -5816,6 +5850,9 @@ public sealed partial class Checker
     // checker.go:31104. Value callback state retains the source closure's references
     // without allocating a managed display class or an instance delegate per call.
     private Type getTypeOfPropertyOfContextualTypeEx(Type t, string name, Type nameType) =>
+        getTypeOfPropertyOfContextualTypeEx(t, ByteStringValue.FromString(name), nameType);
+
+    private Type getTypeOfPropertyOfContextualTypeEx(Type t, ByteStringValue name, Type nameType) =>
         mapTypeEx(t, (checker: this, name, nameType), static (constituent, state) =>
     {
         var checker = state.checker;
@@ -5864,7 +5901,10 @@ public sealed partial class Checker
             return checker.getIndexedMappedTypeSubstitutedTypeOfContextualType(constituent, propertyName, propertyNameType);
         return checker.getTypeOfConcretePropertyOfContextualType(constituent, propertyName) ?? checker.getTypeFromIndexInfosOfContextualType(constituent, propertyName, propertyNameType);
     }, true);
-    private Type getTypeOfConcretePropertyOfContextualType(Type t, string name)
+    private Type getTypeOfConcretePropertyOfContextualType(Type t, string name) =>
+        getTypeOfConcretePropertyOfContextualType(t, ByteStringValue.FromString(name));
+
+    private Type getTypeOfConcretePropertyOfContextualType(Type t, ByteStringValue name)
     {
         var property = getPropertyOfType(t, name);
         if (property == null || isCircularMappedProperty(property))
@@ -5879,9 +5919,12 @@ public sealed partial class Checker
         return false;
     }
 
-    private Type getTypeFromIndexInfosOfContextualType(Type t, string name, Type nameType)
+    private Type getTypeFromIndexInfosOfContextualType(Type t, string name, Type nameType) =>
+        getTypeFromIndexInfosOfContextualType(t, ByteStringValue.FromString(name), nameType);
+
+    private Type getTypeFromIndexInfosOfContextualType(Type t, ByteStringValue name, Type nameType)
     {
-        if (((isTupleType(t) && isNumericLiteralName(name)) && (JsNum.FromString(name) >= 0)))
+        if (((isTupleType(t) && isNumericLiteralName(name.Project())) && (JsNum.FromString(name.Materialize()) >= 0)))
         {
             var restType = this.getElementTypeOfSliceOfTupleType(t, t.TargetTupleType().fixedLength, 0, false, true);
             if ((restType != null))
@@ -6541,7 +6584,7 @@ public sealed partial class Checker
         {
             return ;
         }
-        var prop = this.getPropertyOfType(contextualType, name.Text());
+        var prop = this.getPropertyOfType(contextualType, name.TextValue());
         if (((prop == null) || (GoRuntime.Len(prop.Declarations) == 0)))
         {
             return ;
@@ -7832,7 +7875,7 @@ public sealed partial class Checker
                 return apparentType;
             }
 
-            prop = this.getPropertyOfTypeEx(apparentType, right.Text(), isConstEnumObjectType(apparentType), (node.Kind == Kind.QualifiedName));
+            prop = this.getPropertyOfTypeEx(apparentType, right.TextValue(), isConstEnumObjectType(apparentType), (node.Kind == Kind.QualifiedName));
         }
 
         this.markPropertyAliasReferenced(node, prop, leftType);
@@ -7842,7 +7885,7 @@ public sealed partial class Checker
             IndexInfo indexInfo = default;
             if ((!Ast.IsPrivateIdentifier(right) && ((((assignmentKind == AssignmentKind.None) || !this.isGenericObjectType(leftType)) || isThisTypeParameter(leftType)))))
             {
-                indexInfo = this.getApplicableIndexInfoForName(apparentType, right.Text());
+                indexInfo = this.getApplicableIndexInfoForName(apparentType, right.TextValue());
             }
 
             if ((indexInfo == null))
@@ -7855,7 +7898,7 @@ public sealed partial class Checker
 
                 if (leftType.symbol == globalThisSymbol)
                 {
-                    var globalSymbol = globalThisSymbol.Exports[right.Text()];
+                    var globalSymbol = globalThisSymbol.Exports[right.TextValue()];
                     if (globalSymbol != null && (globalSymbol.Flags & SymbolFlags.BlockScoped) != 0)
                         error(right, Diagnostics.Property_0_does_not_exist_on_type_1, right.Text(), typeToStringByteString(leftType));
                     else if (noImplicitAny)
@@ -7863,7 +7906,7 @@ public sealed partial class Checker
                     return anyType;
                 }
 
-                if (((right.Text() != "") && !this.checkAndReportErrorForExtendingInterface(node)))
+                if (((!right.TextEquals(""u8)) && !this.checkAndReportErrorForExtendingInterface(node)))
                 {
                     this.deferNonexistentPropertyDiagnostic(right, leftType, apparentType, isUncheckedJS);
                 }
@@ -8313,7 +8356,7 @@ public sealed partial class Checker
             {
                 foreach (var subtype in GoRuntime.RangeValues(containingType.Types()))
                 {
-                    if (((this.getPropertyOfType(subtype, propNode.Text()) == null) && (this.getApplicableIndexInfoForName(subtype, propNode.Text()) == null)))
+                    if (((this.getPropertyOfType(subtype, propNode.TextValue()) == null) && (this.getApplicableIndexInfoForName(subtype, propNode.TextValue()) == null)))
                     {
                         diagnostic = NewDiagnosticChainForNode(diagnostic, propNode, Diagnostics.Property_0_does_not_exist_on_type_1, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(propNode), this.typeToStringByteString(subtype));
                         break;
@@ -8321,7 +8364,7 @@ public sealed partial class Checker
                 }
             }
         }
-        if (this.typeHasStaticProperty(propNode.Text(), containingType))
+        if (this.typeHasStaticProperty(propNode.TextValue(), containingType))
         {
             var propName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(propNode);
             var typeName = this.typeToStringByteString(containingType);
@@ -8330,7 +8373,7 @@ public sealed partial class Checker
         else
         {
             var promisedType = this.GetPromisedTypeOfPromise(containingType);
-            if (((promisedType != null) && (this.getPropertyOfType(promisedType, propNode.Text()) != null)))
+            if (((promisedType != null) && (this.getPropertyOfType(promisedType, propNode.TextValue()) != null)))
             {
                 diagnostic = NewDiagnosticChainForNode(diagnostic, propNode, Diagnostics.Property_0_does_not_exist_on_type_1, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(propNode), this.typeToStringByteString(containingType));
                 diagnostic.AddRelatedInfo(NewDiagnosticForNode(propNode, Diagnostics.Did_you_forget_to_use_await));
@@ -8408,7 +8451,10 @@ public sealed partial class Checker
         return checkPropertyAccessibilityAtLocation(node, isSuper, isWrite, containingType, property, null);
     }
 
-    private bool typeHasStaticProperty(string name, Type containingType)
+    private bool typeHasStaticProperty(string name, Type containingType) =>
+        typeHasStaticProperty(ByteStringValue.FromString(name), containingType);
+
+    private bool typeHasStaticProperty(ByteStringValue name, Type containingType)
     {
         if (containingType.symbol != null)
         {
@@ -8425,6 +8471,7 @@ public sealed partial class Checker
     }
 
     private IndexInfo getApplicableIndexInfoForName(Type t, string name) => getApplicableIndexInfo(t, isLateBoundName(name) ? esSymbolType : getStringLiteralType(name));
+    private IndexInfo getApplicableIndexInfoForName(Type t, ByteStringValue name) => getApplicableIndexInfo(t, isLateBoundName(name) ? esSymbolType : getStringLiteralType(name));
     private Type globalPromiseType;
     private Type getGlobalPromiseType() => globalPromiseType ??= getGlobalType("Promise", 1, false);
     public Type GetPromisedTypeOfPromise(Type t) => getPromisedTypeOfPromiseEx(t, null, null);
@@ -8762,27 +8809,35 @@ public sealed partial class Checker
         return d.resolvedProperties;
     }
 
-    private Symbol getPropertyOfUnionOrIntersectionType(Type t, string name, bool skipObjectFunctionPropertyAugment)
+    private Symbol getPropertyOfUnionOrIntersectionType(Type t, string name, bool skipObjectFunctionPropertyAugment) =>
+        getPropertyOfUnionOrIntersectionType(t, ByteStringValue.FromString(name), skipObjectFunctionPropertyAugment);
+
+    private Symbol getPropertyOfUnionOrIntersectionType(Type t, ByteStringValue name, bool skipObjectFunctionPropertyAugment)
     {
         var prop = getUnionOrIntersectionProperty(t, name, skipObjectFunctionPropertyAugment);
         return prop != null && (prop.CheckFlags & CheckFlags.ReadPartial) == 0 ? prop : null;
     }
 
-    private Symbol getUnionOrIntersectionProperty(Type t, string name, bool skipObjectFunctionPropertyAugment)
+    private Symbol getUnionOrIntersectionProperty(Type t, string name, bool skipObjectFunctionPropertyAugment) =>
+        getUnionOrIntersectionProperty(t, ByteStringValue.FromString(name), skipObjectFunctionPropertyAugment);
+
+    private Symbol getUnionOrIntersectionProperty(Type t, ByteStringValue name, bool skipObjectFunctionPropertyAugment)
     {
         var d = t.AsUnionOrIntersectionType();
         var cache = skipObjectFunctionPropertyAugment ? d.propertyCacheWithoutFunctionPropertyAugment ??= new SymbolTable() : d.propertyCache ??= new SymbolTable();
-        if (cache[name] != null)
-            return cache[name];
-        var prop = createUnionOrIntersectionProperty(t, name, skipObjectFunctionPropertyAugment);
+        var cached = cache[name];
+        if (cached != null)
+            return cached;
+        var prop = createUnionOrIntersectionProperty(t, ref name, skipObjectFunctionPropertyAugment);
         if (prop != null)
         {
-            cache[name] = prop;
+            var key = name.Materialize();
+            cache[key] = prop;
             if (skipObjectFunctionPropertyAugment && (prop.CheckFlags & CheckFlags.Partial) == 0)
             {
                 var augmented = d.propertyCache ??= new SymbolTable();
                 if (augmented[name] == null)
-                    augmented[name] = prop;
+                    augmented[key] = prop;
             }
         }
 
@@ -8810,7 +8865,9 @@ public sealed partial class Checker
         return commonDeclarations.Count != 0;
     }
 
-    private Symbol createUnionOrIntersectionProperty(Type containingType, string name, bool skipObjectFunctionPropertyAugment)
+    // The caller's private header may adopt the persistent key at symbol creation,
+    // so both caches reuse that one string. No AST or source header is modified.
+    private Symbol createUnionOrIntersectionProperty(Type containingType, ref ByteStringValue name, bool skipObjectFunctionPropertyAugment)
     {
         bool isUnion = (containingType.flags & TypeFlags.Union) != 0;
         bool mergedInstantiations = false;
@@ -8981,7 +9038,7 @@ public sealed partial class Checker
 
         if (indexTypes != null)
             propTypes.AddRange(indexTypes);
-        var result = newSymbolEx(propFlags | optionalFlag, name, checkFlags | syntheticFlag);
+        var result = newSymbolEx(propFlags | optionalFlag, name.Project(), checkFlags | syntheticFlag);
         result.Declarations = declarations;
         if (!hasNonUniformValueDeclaration && firstValueDeclaration != null)
         {
@@ -9008,7 +9065,10 @@ public sealed partial class Checker
         return result;
     }
 
-    private Type getTypeOfPropertyOrIndexSignatureOfType(Type t, string name)
+    private Type getTypeOfPropertyOrIndexSignatureOfType(Type t, string name) =>
+        getTypeOfPropertyOrIndexSignatureOfType(t, ByteStringValue.FromString(name));
+
+    private Type getTypeOfPropertyOrIndexSignatureOfType(Type t, ByteStringValue name)
     {
         var propertyType = getTypeOfPropertyOfType(t, name);
         if (propertyType != null)
@@ -10180,7 +10240,7 @@ public sealed partial class Checker
             return false;
         }
         var property = node.Parent;
-        if ((((!Ast.IsIdentifier(property.Name()) && !Ast.IsStringLiteralLike(property.Name()))) || (property.Name().Text() != "with")))
+        if ((((!Ast.IsIdentifier(property.Name()) && !Ast.IsStringLiteralLike(property.Name()))) || (!property.Name().TextEquals("with"u8))))
         {
             return false;
         }
@@ -10653,8 +10713,8 @@ public sealed partial class Checker
         if (node.Type()?.Kind == Kind.IntrinsicKeyword)
         {
             var parameterCount = node.TypeParameters()?.Count ?? 0;
-            if (!(parameterCount == 0 && node.Name().Text() == "BuiltinIteratorReturn" ||
-                parameterCount == 1 && intrinsicTypeKinds.GetValueOrDefault(node.Name().Text()) != IntrinsicTypeKind.Unknown))
+            if (!(parameterCount == 0 && node.Name().TextEquals("BuiltinIteratorReturn"u8) ||
+                parameterCount == 1 && node.Name().TextValue().TryGetValue(intrinsicTypeKinds, out var intrinsicKind) && intrinsicKind != IntrinsicTypeKind.Unknown))
                 error(node.Type(), Diagnostics.The_intrinsic_keyword_can_only_be_used_to_declare_compiler_provided_intrinsic_types);
             // Source intrinsic leaf declarations have no children and do not register unused checks.
             return;
@@ -10665,7 +10725,11 @@ public sealed partial class Checker
 
     private void checkTypeNameIsReserved(Node name, Message message)
     {
-        if (name.Text() is "any" or "unknown" or "never" or "number" or "bigint" or "boolean" or "string" or "symbol" or "void" or "object" or "undefined")
+        var text = name.TextValue();
+        if (text.EqualsBytes("any"u8) || text.EqualsBytes("unknown"u8) || text.EqualsBytes("never"u8) ||
+            text.EqualsBytes("number"u8) || text.EqualsBytes("bigint"u8) || text.EqualsBytes("boolean"u8) ||
+            text.EqualsBytes("string"u8) || text.EqualsBytes("symbol"u8) || text.EqualsBytes("void"u8) ||
+            text.EqualsBytes("object"u8) || text.EqualsBytes("undefined"u8))
             error(name, message, name.Text());
     }
 
@@ -11244,7 +11308,7 @@ public sealed partial class Checker
                         var i = range3.Key;
                         var source = range3.Value;
                         var target = targetParameters[i];
-                        if ((source.Name().Text() != target.symbol.Name))
+                        if ((!source.Name().TextValue().EqualsString(target.symbol.Name)))
                         {
                             return false;
                         }
@@ -15038,7 +15102,7 @@ public sealed partial class Checker
                 {
                     var subsequentName = subsequentNode.Name();
                     var errorNode = Core.OrElse(subsequentName, subsequentNode);
-                    if ((((name != null) && (subsequentName != null)) && (((((Ast.IsPrivateIdentifier(name) && Ast.IsPrivateIdentifier(subsequentName)) && (name.Text() == subsequentName.Text())) || ((Ast.IsComputedPropertyName(name) && Ast.IsComputedPropertyName(subsequentName)) && this.isTypeIdenticalTo(this.checkComputedPropertyName(name), this.checkComputedPropertyName(subsequentName)))) || ((Ast.IsPropertyNameLiteral(name) && Ast.IsPropertyNameLiteral(subsequentName)) && (name.Text() == subsequentName.Text()))))))
+                    if ((((name != null) && (subsequentName != null)) && (((((Ast.IsPrivateIdentifier(name) && Ast.IsPrivateIdentifier(subsequentName)) && (name.TextValue().EqualsValue(subsequentName.TextValue()))) || ((Ast.IsComputedPropertyName(name) && Ast.IsComputedPropertyName(subsequentName)) && this.isTypeIdenticalTo(this.checkComputedPropertyName(name), this.checkComputedPropertyName(subsequentName)))) || ((Ast.IsPropertyNameLiteral(name) && Ast.IsPropertyNameLiteral(subsequentName)) && (name.TextValue().EqualsValue(subsequentName.TextValue())))))))
                     {
                         var reportError = (((Ast.IsMethodDeclaration(node) || Ast.IsMethodSignatureDeclaration(node))) && (Ast.IsStatic(node) != Ast.IsStatic(subsequentNode)));
                         if (reportError)
@@ -17644,7 +17708,7 @@ public sealed partial class Checker
         if (!this.checkGrammarMethod(node))
         {
             this.checkGrammarComputedPropertyName(node.Name());
-            if ((((Ast.IsMethodDeclaration(node) && (node.AsMethodDeclaration().AsteriskToken != null)) && Ast.IsIdentifier(node.Name())) && (node.Name().Text() == "constructor")))
+            if ((((Ast.IsMethodDeclaration(node) && (node.AsMethodDeclaration().AsteriskToken != null)) && Ast.IsIdentifier(node.Name())) && (node.Name().TextEquals("constructor"u8))))
             {
                 this.error(node.Name(), Diagnostics.Class_constructor_may_not_be_a_generator);
             }
@@ -18146,7 +18210,7 @@ public sealed partial class Checker
         {
             case Kind.NumericLiteral:
                 {
-                    if (((node.Text() == "0") || (node.Text() == "1")))
+                    if (((node.TextEquals("0"u8)) || (node.TextEquals("1"u8))))
                     {
                         return PredicateSemantics.Sometimes;
                     }
@@ -18176,7 +18240,7 @@ public sealed partial class Checker
             case Kind.NoSubstitutionTemplateLiteral:
             case Kind.StringLiteral:
                 {
-                    if ((node.Text() != ""))
+                    if ((!node.TextEquals(""u8)))
                     {
                         return PredicateSemantics.Always;
                     }
@@ -18340,7 +18404,7 @@ public sealed partial class Checker
             return false;
         }
 
-        var symbol = this.nameResolver.Resolve(node.Expression(), node.Expression().Text(), SymbolFlags.Value, null, false, false);
+        var symbol = this.nameResolver.Resolve(node.Expression(), node.Expression().TextValue(), SymbolFlags.Value, null, false, false);
         if ((symbol == null))
         {
             return false;
@@ -19572,7 +19636,7 @@ public sealed partial class Checker
                                     {
                                         if (Ast.IsPropertyAccessExpression(left))
                                         {
-                                            return this.getTypeOfPropertyOfContextualType(this.getTypeFromTypeNode(typeNode), left.Name().Text());
+                                            return this.getTypeOfPropertyOfContextualType(this.getTypeFromTypeNode(typeNode), left.Name().TextValue());
                                         }
 
                                         var nameType = this.checkExpressionCached(left.AsElementAccessExpression().ArgumentExpression);
@@ -19617,7 +19681,7 @@ public sealed partial class Checker
                             }
                             else
                             {
-                                symbol2 = this.getPropertyOfType(thisType, name.Text());
+                                symbol2 = this.getPropertyOfType(thisType, name.TextValue());
                             }
                         }
                         else
@@ -19923,6 +19987,7 @@ public sealed partial class Checker
     }
 
     private Type getTypeOfPropertyOfContextualType(Type t, string name) => getTypeOfPropertyOfContextualTypeEx(t, name, null);
+    private Type getTypeOfPropertyOfContextualType(Type t, ByteStringValue name) => getTypeOfPropertyOfContextualTypeEx(t, name, null);
 }
 
 public sealed partial class Checker
@@ -20575,7 +20640,7 @@ public sealed partial class Checker
                 Message headMessage = default;
                 if (((this.exactOptionalPropertyTypes && Ast.IsPropertyAccessExpression(left)) && this.maybeTypeOfKind(rightType, TypeFlags.Undefined)))
                 {
-                    var target = getTypeOfPropertyOfType(getTypeOfExpression(left.Expression()), left.Name().Text());
+                    var target = getTypeOfPropertyOfType(getTypeOfExpression(left.Expression()), left.Name().TextValue());
                     if (isExactOptionalPropertyMismatch(rightType, target))
                         headMessage = Diagnostics.Type_0_is_not_assignable_to_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_type_of_the_target;
                 }
@@ -20716,7 +20781,7 @@ public sealed partial class Checker
 {
     private bool isGlobalNaN(Node expr)
     {
-        if ((Ast.IsIdentifier(expr) && (expr.Text() == "NaN")))
+        if ((Ast.IsIdentifier(expr) && (expr.TextEquals("NaN"u8))))
         {
             var globalNaNSymbol = this.getGlobalNaNSymbolOrNil();
             return ((globalNaNSymbol != null) && (globalNaNSymbol == this.getResolvedSymbol(expr)));
@@ -21292,7 +21357,7 @@ public sealed partial class Checker
             }
             else
             {
-                prop = this.getPropertyOfType(apparentType, right.Text());
+                prop = this.getPropertyOfType(apparentType, right.TextValue());
             }
         }
 
@@ -22018,12 +22083,12 @@ public sealed partial class Checker
         }
 
         var left = node.Expression();
-        if ((Ast.IsPropertyAccessExpression(left) && (left.Name().Text() == "for")))
+        if ((Ast.IsPropertyAccessExpression(left) && (left.Name().TextEquals("for"u8))))
         {
             left = left.Expression();
         }
 
-        if ((!Ast.IsIdentifier(left) || (left.Text() != "Symbol")))
+        if ((!Ast.IsIdentifier(left) || (!left.TextEquals("Symbol"u8))))
         {
             return false;
         }
@@ -29548,7 +29613,10 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getIndexedMappedTypeSubstitutedTypeOfContextualType(Type t, string name, Type nameType)
+    private Type getIndexedMappedTypeSubstitutedTypeOfContextualType(Type t, string name, Type nameType) =>
+        getIndexedMappedTypeSubstitutedTypeOfContextualType(t, ByteStringValue.FromString(name), nameType);
+
+    private Type getIndexedMappedTypeSubstitutedTypeOfContextualType(Type t, ByteStringValue name, Type nameType)
     {
         var propertyNameType = nameType;
         if ((propertyNameType == null))
@@ -30009,7 +30077,7 @@ public sealed partial class Checker
                     continue;
                 }
 
-                if ((Ast.IsIdentifier(name) && (name.Text() == predicateVariableName)))
+                if ((Ast.IsIdentifier(name) && (name.TextValue().EqualsString(predicateVariableName))))
                 {
                     this.error(predicateVariableNode, Diagnostics.A_type_predicate_cannot_reference_element_0_in_a_binding_pattern, predicateVariableName);
                     return true;
@@ -30967,7 +31035,7 @@ public sealed partial class Checker
             var locals = moduleSymbol.ValueDeclaration.Locals();
             if ((locals != null))
             {
-                localSymbol = locals[name.Text()];
+                localSymbol = locals[name.TextValue()];
             }
         }
         var exports = moduleSymbol.Exports;
@@ -31809,7 +31877,7 @@ public sealed partial class Checker
             {
                 return;
             }
-            var symbol = this.resolveName(exportedName, exportedName.Text(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
+            var symbol = this.resolveName(exportedName, exportedName.TextValue(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
             if (((symbol != null) && ((((symbol == this.undefinedSymbol) || (symbol == this.globalThisSymbol)) || ((symbol.Declarations != null) && Ast.IsGlobalSourceFile(Ast.GetDeclarationContainer(symbol.Declarations[0])))))))
             {
                 this.error(exportedName, Diagnostics.Cannot_export_0_Only_local_declarations_can_be_exported_from_a_module, exportedName.Text());
@@ -32045,7 +32113,7 @@ public sealed partial class Checker
                     if ((sourceSymbol != null))
                     {
                         {
-                            var alreadyExportedSymbol = sourceSymbol.Exports?[node.PropertyNameOrName().Text()];
+                            var alreadyExportedSymbol = sourceSymbol.Exports?[node.PropertyNameOrName().TextValue()];
                             if ((alreadyExportedSymbol == target))
                             {
                                 {
@@ -32329,7 +32397,7 @@ public sealed partial class Checker
                 return;
             }
 
-            var symbol = this.nameResolver.Resolve(exportedName, exportedName.Text(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
+            var symbol = this.nameResolver.Resolve(exportedName, exportedName.TextValue(), (((SymbolFlags.Value | SymbolFlags.Type) | SymbolFlags.Namespace) | SymbolFlags.Alias), null, true, false);
             if (((symbol != null) && ((((symbol == this.undefinedSymbol) || (symbol == this.globalThisSymbol)) || ((symbol.Declarations != null) && Ast.IsGlobalSourceFile(Ast.GetDeclarationContainer(symbol.Declarations[0])))))))
             {
             }
@@ -32431,7 +32499,7 @@ public sealed partial class Checker
         var attributes = node.AsImportDeclaration().Attributes;
         return ((attributes != null) && Core.Some(attributes.AsImportAttributes().Attributes.Nodes, (attr) =>
 {
-    return (((attr.Name().Text() == "type") && Ast.IsStringLiteralLike(attr.AsImportAttribute().Value)) && (attr.AsImportAttribute().Value.Text() == "json"));
+    return (((attr.Name().TextEquals("type"u8)) && Ast.IsStringLiteralLike(attr.AsImportAttribute().Value)) && (attr.AsImportAttribute().Value.TextEquals("json"u8)));
 }));
     }
 }
@@ -33184,7 +33252,7 @@ public sealed partial class Checker
 {
     private bool needCollisionCheckForIdentifier(Node node, Node identifier, string name)
     {
-        if (((identifier != null) && (identifier.Text() != name)))
+        if (((identifier != null) && (!identifier.TextValue().EqualsString(name))))
         {
             return false;
         }
@@ -33724,7 +33792,11 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:7469:1.
     private static bool isIdentifierThatStartsWithUnderscore(Node node)
     {
-        return ((Ast.IsIdentifier(node) && (node.Text() != "")) && (node.Text()[0] == '_'));
+        if (!Ast.IsIdentifier(node)) return false;
+        var text = node.TextValue();
+        if (text.EqualsBytes(""u8)) return false;
+        if (text.IsNull) throw new NullReferenceException();
+        return text.IsBytes ? text.ByteSpan[0] == (byte)'_' : text.CharSpan[0] == '_';
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:7473:1.
@@ -35932,7 +36004,7 @@ public sealed partial class Checker
             this.checkGrammarComputedPropertyName(node.Name());
         }
         var name = node.Name();
-        if (((Ast.IsIdentifier(name) && (name.Text() == "constructor")) && Ast.IsClassLike(node.Parent)))
+        if (((Ast.IsIdentifier(name) && (name.TextEquals("constructor"u8))) && Ast.IsClassLike(node.Parent)))
         {
             this.error(node.Name(), Diagnostics.Class_constructor_may_not_be_an_accessor);
         }
@@ -37293,7 +37365,7 @@ public sealed partial class Checker
             foreach (var symbol in GoRuntime.RangeValues(properties))
             {
                 var decl = symbol.ValueDeclaration;
-                if (((((decl != null) && (decl.Name() != null)) && Ast.IsPrivateIdentifier(decl.Name())) && (decl.Name().Text() == right.Text())))
+                if (((((decl != null) && (decl.Name() != null)) && Ast.IsPrivateIdentifier(decl.Name())) && (decl.Name().TextValue().EqualsValue(right.TextValue()))))
                 {
                     propertyOnType = symbol;
                     break;
@@ -37554,7 +37626,7 @@ public sealed partial class Checker
     {
         case Kind.Identifier:
             {
-                return ((node3.Text() == this.argumentsSymbol.Name) && this.IsArgumentsSymbol(this.getResolvedSymbol(node3)));
+                return ((node3.TextValue().EqualsString(this.argumentsSymbol.Name)) && this.IsArgumentsSymbol(this.getResolvedSymbol(node3)));
             }
         case Kind.PropertyDeclaration:
         case Kind.MethodDeclaration:
@@ -37748,7 +37820,7 @@ public sealed partial class Checker
 {
     private void checkClassNameCollisionWithObject(Node name)
     {
-        if (((name.Text() == "Object") && (this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(name)) < ModuleKind.ES2015)))
+        if (((name.TextEquals("Object"u8)) && (this.program.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(name)) < ModuleKind.ES2015)))
         {
             this.error(name, Diagnostics.Class_name_cannot_be_Object_when_targeting_ES5_and_above_with_module_0, this.moduleKind.String());
         }
@@ -37759,7 +37831,7 @@ public sealed partial class Checker
 {
     private bool checkAndReportErrorForMissingPrefix(Node errorLocation, string name)
     {
-        if ((((!Ast.IsIdentifier(errorLocation) || (errorLocation.Text() != name)) || isTypeReferenceIdentifier(errorLocation)) || IsInTypeQuery(errorLocation)))
+        if ((((!Ast.IsIdentifier(errorLocation) || (!errorLocation.TextValue().EqualsString(name))) || isTypeReferenceIdentifier(errorLocation)) || IsInTypeQuery(errorLocation)))
         {
             return false;
         }
@@ -40221,7 +40293,7 @@ public sealed partial class Checker
         }
         var file = Ast.GetSourceFileOfNode(node);
         Debug.Assert(((file.Flags & NodeFlags.PossiblyContainsImportMeta) != 0), "Containing file is missing import meta node flag.");
-        if ((node.Name().Text() == "meta"))
+        if ((node.Name().TextEquals("meta"u8)))
         {
             return this.getGlobalImportMetaType();
         }
@@ -40721,7 +40793,7 @@ public sealed partial class Checker
     {
         var left = node.AsBinaryExpression().Left;
         var right = node.AsBinaryExpression().Right;
-        return ((((Ast.IsParenthesizedExpression(node.Parent) && Ast.IsNumericLiteral(left)) && (left.Text() == "0")) && (((Ast.IsCallExpression(node.Parent.Parent) && (node.Parent.Parent.Expression() == node.Parent)) || Ast.IsTaggedTemplateExpression(node.Parent.Parent)))) && ((Ast.IsAccessExpression(right) || (Ast.IsIdentifier(right) && (right.Text() == "eval")))));
+        return ((((Ast.IsParenthesizedExpression(node.Parent) && Ast.IsNumericLiteral(left)) && (left.TextEquals("0"u8))) && (((Ast.IsCallExpression(node.Parent.Parent) && (node.Parent.Parent.Expression() == node.Parent)) || Ast.IsTaggedTemplateExpression(node.Parent.Parent)))) && ((Ast.IsAccessExpression(right) || (Ast.IsIdentifier(right) && (right.TextEquals("eval"u8))))));
     }
 }
 
@@ -41336,7 +41408,7 @@ public sealed partial class Checker
                         {
                             t = this.getDeclaredTypeOfSymbol(symbol2);
                         }
-                        return this.getPropertyOfType(t, name.AsQualifiedName().Right.Text());
+                        return this.getPropertyOfType(t, name.AsQualifiedName().Right.TextValue());
                     }
                 }
             }
@@ -41603,7 +41675,7 @@ public sealed partial class Checker
         {
             throw new InvalidOperationException("Expected identifier for require call");
         }
-        var resolvedRequire = this.resolveName(node.Expression(), node.Expression().Text(), SymbolFlags.Value, null, true, false);
+        var resolvedRequire = this.resolveName(node.Expression(), node.Expression().TextValue(), SymbolFlags.Value, null, true, false);
         if ((resolvedRequire == this.requireSymbol))
         {
             return true;
@@ -41767,7 +41839,7 @@ public sealed partial class Checker
         {
             this.error(node, Diagnostics.X_const_enums_can_only_be_used_in_property_or_index_access_expressions_or_the_right_hand_side_of_an_import_declaration_or_export_assignment_or_type_query);
         }
-        if (((this.compilerOptions.IsolatedModules == Tristate.True) || (((this.compilerOptions.VerbatimModuleSyntax == Tristate.True) && ok) && (this.resolveName(node, Ast.GetFirstIdentifier(node).Text(), SymbolFlags.Alias, null, false, true) == null))))
+        if (((this.compilerOptions.IsolatedModules == Tristate.True) || (((this.compilerOptions.VerbatimModuleSyntax == Tristate.True) && ok) && (this.resolveName(node, Ast.GetFirstIdentifier(node).TextValue(), SymbolFlags.Alias, null, false, true) == null))))
         {
             Debug.Assert(((t.symbol.Flags & SymbolFlags.ConstEnum) != 0));
             var constEnumDeclaration = t.symbol.ValueDeclaration;
@@ -41821,7 +41893,7 @@ public sealed partial class Checker
                 {
                     foreach (var prop in GoRuntime.RangeValues(args[1].AsObjectLiteralExpression().Properties.Nodes))
                     {
-                        if (((Ast.IsPropertyAssignment(prop) && Ast.IsIdentifier(prop.Name())) && (prop.Name().Text() == "assert")))
+                        if (((Ast.IsPropertyAssignment(prop) && Ast.IsIdentifier(prop.Name())) && (prop.Name().TextEquals("assert"u8))))
                         {
                             this.error(prop.Name(), Diagnostics.Import_assertions_have_been_replaced_by_import_attributes_Use_with_instead_of_assert);
                             break;
@@ -41896,11 +41968,11 @@ public sealed partial class Checker
                         Symbol symbolFromModule = default;
                         if (n.IsTypeOf)
                         {
-                            symbolFromVariable = this.getPropertyOfTypeEx(this.getTypeOfSymbol(mergedResolvedSymbol), current.Text(), false, true);
+                            symbolFromVariable = this.getPropertyOfTypeEx(this.getTypeOfSymbol(mergedResolvedSymbol), current.TextValue(), false, true);
                         }
                         else
                         {
-                            symbolFromModule = this.getSymbol(this.getExportsOfSymbol(mergedResolvedSymbol), current.Text(), meaning);
+                            symbolFromModule = this.getSymbol(this.getExportsOfSymbol(mergedResolvedSymbol), current.TextValue(), meaning);
                             if ((symbolFromModule == null))
                             {
                                 var immediateModuleSymbol = this.resolveExternalModuleSymbol(innerModuleSymbol, true);
@@ -41909,7 +41981,7 @@ public sealed partial class Checker
     return (Ast.GetAssignmentDeclarationKind(d) == JSDeclarationKind.ModuleExports);
 })))
                                 {
-                                    symbolFromModule = this.getSymbol(this.getExportsOfSymbol(immediateModuleSymbol.Parent), current.Text(), meaning);
+                                    symbolFromModule = this.getSymbol(this.getExportsOfSymbol(immediateModuleSymbol.Parent), current.TextValue(), meaning);
                                 }
                             }
                         }
@@ -41976,7 +42048,7 @@ public sealed partial class Checker
 {
     internal Type getContextualImportAttributeType(Node node)
     {
-        return this.getTypeOfPropertyOfContextualType(this.getGlobalImportAttributesType(), node.Name().Text());
+        return this.getTypeOfPropertyOfContextualType(this.getGlobalImportAttributesType(), node.Name().TextValue());
     }
 }
 
@@ -42525,7 +42597,7 @@ public sealed partial class Checker
         Type nameType = default;
         if (isPrivate)
         {
-            nameType = this.getStringLiteralType(node.Name().Text());
+            nameType = this.getStringLiteralType(node.Name());
         }
         else
         {
@@ -42673,7 +42745,7 @@ public sealed partial class Checker
             case Kind.NumericLiteral:
             case Kind.StringLiteral:
             {
-                return this.getStringLiteralType(name.Text());
+                return this.getStringLiteralType(name);
             }
             case Kind.ComputedPropertyName:
             {
@@ -42913,7 +42985,7 @@ public sealed partial class Checker
         }
         var rootName = Ast.GetFirstIdentifier(typeName);
         var meaning = (Core.IfElse((typeName.Kind == Kind.Identifier), SymbolFlags.Type, SymbolFlags.Namespace) | SymbolFlags.Alias);
-        var rootSymbol = this.resolveName(rootName, rootName.Text(), meaning, null, true, false);
+        var rootSymbol = this.resolveName(rootName, rootName.TextValue(), meaning, null, true, false);
         if (((rootSymbol != null) && ((rootSymbol.Flags & SymbolFlags.Alias) != 0)))
         {
             if ((((this.canCollectSymbolAliasAccessibilityData && this.symbolIsValue(rootSymbol)) && !isConstEnumOrConstEnumOnlyModule(this.resolveAlias(rootSymbol))) && (this.getTypeOnlyAliasDeclaration(rootSymbol) == null)))

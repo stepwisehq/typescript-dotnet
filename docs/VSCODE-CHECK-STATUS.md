@@ -1429,6 +1429,24 @@ truncation, with one candidate allocation lacking a stack. These interval weight
 are not exact native bytes or isolated savings; the single native run establishes
 no speedup or comprehensive final acceptance.
 
+## Checker borrowed-text consumers
+
+The [e793 receiver qualification](../artifacts/vscode-checker-text-values/qualification.json)
+extends borrowed names into checker property, literal and fixed-text lookups.
+Dictionary hits reuse the actual stored key; required persistent strings are
+materialized on misses and shared with the resulting cache entries. The standard
+Latin1 span conversion widens raw bytes for existing ordinal string dictionaries;
+this is an intermediate key-storage boundary, not a fully byte-keyed implementation.
+
+Native AOT VS Code matched the ten complete diagnostics at **23.74s wall**, 103.97s
+CPU and 9,956,328 KiB peak. Focused checks passed 42 unchanged complete compiler
+records, Binder163, TypeSystem77 and five authored AST controls; the same five
+controls passed in Native AOT, including lookup across all256 byte values. This
+single run establishes no speedup, and no extra allocation trace was collected.
+Reviewed public slice/arena header helpers compile in this checkpoint; their
+end-to-end use and behavioral qualification belong to the next AST list migration.
+Full final regressions remain deferred while allocation work continues.
+
 ## Reproduction and records
 
 ```bash

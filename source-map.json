@@ -1204,7 +1204,8 @@
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
-      "astCandidateStackCheckpoint": "Private call/await/contextual/reverse-map stacks and inference candidate headers use Go slices; recursive intersection inputs borrow spans with independent normalized output ownership. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Private call/await/contextual/reverse-map stacks and inference candidate headers use Go slices; recursive intersection inputs borrow spans with independent normalized output ownership. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -1383,7 +1384,8 @@
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
-      "astCandidateStackCheckpoint": "Variance stack uses saved/restored Go slice headers with unchanged recursive comparison order. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Variance stack uses saved/restored Go slice headers with unchanged recursive comparison order. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1454,7 +1456,8 @@
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
-      "astCandidateStackCheckpoint": "Flow reduce-label push/pop and pooled resets preserve Go header capacity/sharing rather than cloning Lists. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Flow reduce-label push/pop and pooled resets preserve Go header capacity/sharing rather than cloning Lists. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -1516,7 +1519,8 @@
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       },
-      "cachedSymbolSortAdaptation": "utilities.go:361 sortSymbols binds the cached .NET Comparison to unchanged symbol Worker; paired Func callback supports existing spelling APIs. Original symbol ordering/mutation unchanged. Snapshot artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json."
+      "cachedSymbolSortAdaptation": "utilities.go:361 sortSymbols binds the cached .NET Comparison to unchanged symbol Worker; paired Func callback supports existing spelling APIs. Original symbol ordering/mutation unchanged. Snapshot artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -5342,7 +5346,8 @@
         "evidence": "docs/VSCODE-CHECK-STATUS.md",
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
-      }
+      },
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/stringutil/compare.go",
@@ -5376,7 +5381,8 @@
         "src/TypeScript.Scanner/Checker/Utilities.cs"
       ],
       "mappingAdaptation": "Two-function upstream helper unit folded into existing Checker/Utilities counterparts; no new standalone fragment.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilder_hover.go",
@@ -5749,7 +5755,8 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/ByteStringValue.cs",
       "status": "new",
-      "scope": "Authored compact immutable raw-text snapshot over existing string or source byte owner; public AST projection is canonical/atomic, raw-byte ordinal lookup uses bounded stack/pool widening with explicit persistent string-key insertion. c896 qualification: artifacts/vscode-ast-text-values/qualification.json. Later standard Latin1 widening is a separate source adaptation."
+      "scope": "Authored compact immutable raw-text snapshot over existing string or source byte owner; public AST projection is canonical/atomic, raw-byte ordinal lookup uses bounded stack/pool widening with explicit persistent string-key insertion. c896 qualification: artifacts/vscode-ast-text-values/qualification.json. Later standard Latin1 widening is a separate source adaptation.",
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
     },
     {
       "upstream": null,

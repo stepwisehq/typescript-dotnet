@@ -1,16 +1,16 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
+**Resume here:** HEAD `5e960cd` commits AST/binder borrowed text, private stacks,
+inference candidates and numeric span parsing; `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
 borrowed scanner tokens, flow slices and conditional targets;
 `08d2294` preserves the preceding path/ASCII/singleton reductions.
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
 or committing a checkpoint does not finish the work. Native AOT VS Code first,
 focused checks next; comprehensive regressions remain deferred until finalization.
 
-**Qualified checkpoint being committed:** `c8962c20` library, `ac486c4d` native at
+**Qualified checkpoint committed `5e960cd`:** `c8962c20` library, `ac486c4d` native at
 `artifacts/vscode-ast-text-values/`. Exact17 production files + generator and three
-qualified authored AST test/runner files are staged. Index holds the executed
-versions; newer checker/runtime/source-test changes remain unstaged.
+qualified authored AST test/runner files were committed at executed versions.
 First clean build9.10s/publish10.28s. Native VS Code exact10:24.73 wall/102.16 CPU,
 10,290,800 KiB peak, no swaps/major faults. Focused managed4143/native723 records
 and controls passed, including authored AST5 both modes. Sampled CoreCLR allocation
@@ -18,10 +18,13 @@ and controls passed, including authored AST5 both modes. Sampled CoreCLR allocat
 tick explicit. String allocation increased78.09MB; no speedup or isolated causality
 claim. See qualification.json. Comprehensive final regressions remain deferred.
 
-**Next execution:** verifier owns combined eight-file checker descriptor/runtime
-freeze/build, actual Native AOT VS Code first, focused unchanged semantics + AST5
-including all256-key extension. No new profile for this small receiver followthrough.
-Scanner/support begin breaking NodeList/getter migration only AFTER freeze notice.
+**Qualified next checkpoint:** combined eight-file checker descriptor/runtime snapshot
+`e79300ff` frozen and STAGED from saved source, build9.29s/publish10.94s. Actual
+Native AOT VS Code exact10:23.74wall/103.97CPU/9,956,328KiB. Focused287managed
+(42 original records+Binder163+TypeSystem77+AST5) and actual nativeAST5 all256-key
+extension passed. Index plus saved qualified AST5 source ready to commit. No new
+profile or speedup claim for this small followthrough. Scanner/support now implement breaking NodeList/getter
+migration in UNSTAGED source; do not accidentally include it in e793 commit.
 Root approved public Slice<Node> child-list headers, clipped arena allocation and
 Go Clone header/slot sharing; provisional C# List APIs may change, but actual Go
 behavior/expected outputs remain. User informed. Scanner owns AST/runtime/parser/

@@ -170,7 +170,7 @@ public static class AstTextValueChecks
     private static void Lookup()
     {
         var table = new SymbolTable();
-        foreach (byte[] bytes in new byte[][] { [0x61, 0xc3, 0xa9, 0xff, 0xed, 0xa0, 0x80], Enumerable.Repeat((byte)'x', 513).ToArray(), [] })
+        foreach (byte[] bytes in new byte[][] { Enumerable.Range(0, 256).Select(i => (byte)i).ToArray(), [0x61, 0xc3, 0xa9, 0xff, 0xed, 0xa0, 0x80], Enumerable.Repeat((byte)'x', 513).ToArray(), [] })
         {
             var key = GoString.FromBytes(bytes);
             var symbol = new Symbol { Name = "mutated public name" };

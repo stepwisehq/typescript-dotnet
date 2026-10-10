@@ -1464,7 +1464,7 @@ public sealed partial class Checker
         if (((this.containsMissingType(t) && Ast.IsAccessExpression(f.reference)) && Ast.IsPropertyAccessExpression(callExpression.Expression())))
         {
             var callAccess = callExpression.Expression();
-            if ((((this.isMatchingReference(f.reference.Expression(), this.getReferenceCandidate(callAccess.Expression())) && Ast.IsIdentifier(callAccess.Name())) && (callAccess.Name().Text() == "hasOwnProperty")) && (GoRuntime.Len(callExpression.Arguments()) == 1)))
+            if ((((this.isMatchingReference(f.reference.Expression(), this.getReferenceCandidate(callAccess.Expression())) && Ast.IsIdentifier(callAccess.Name())) && (callAccess.Name().TextEquals("hasOwnProperty"u8))) && (GoRuntime.Len(callExpression.Arguments()) == 1)))
             {
                 var argument = callExpression.Arguments()[0];
                 {
@@ -1746,7 +1746,7 @@ public sealed partial class Checker
         var target = this.getReferenceCandidate(typeOfExpr.Expression);
         if (!this.isMatchingReference(f.reference, target))
         {
-            if (((this.strictNullChecks && this.optionalChainContainsReference(target, f.reference)) && (assumeTrue == ((literal.Text() != "undefined")))))
+            if (((this.strictNullChecks && this.optionalChainContainsReference(target, f.reference)) && (assumeTrue == ((!literal.TextEquals("undefined"u8))))))
             {
                 t = this.getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull);
             }
@@ -1773,10 +1773,10 @@ public sealed partial class Checker
     {
         if (assumeTrue)
         {
-            return this.narrowTypeByTypeName(t, literal.Text());
+            return this.narrowTypeByTypeName(t, literal.TextValue());
         }
 
-        var ok = typeofNEFacts.TryGetValue(literal.Text(), out var facts);
+        var ok = literal.TextValue().TryGetValue(typeofNEFacts, out var facts);
         if (!ok)
         {
             facts = TypeFacts.TypeofNEHostObject;
@@ -1788,36 +1788,39 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type narrowTypeByTypeName(Type t, string typeName)
+    private Type narrowTypeByTypeName(Type t, string typeName) =>
+        narrowTypeByTypeName(t, ByteStringValue.FromString(typeName));
+
+    private Type narrowTypeByTypeName(Type t, ByteStringValue typeName)
     {
-        switch (typeName)
+        switch (true)
         {
-            case "string":
+            case true when typeName.EqualsBytes("string"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.stringType, TypeFacts.TypeofEQString);
                 }
 
-            case "number":
+            case true when typeName.EqualsBytes("number"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.numberType, TypeFacts.TypeofEQNumber);
                 }
 
-            case "bigint":
+            case true when typeName.EqualsBytes("bigint"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.bigintType, TypeFacts.TypeofEQBigInt);
                 }
 
-            case "boolean":
+            case true when typeName.EqualsBytes("boolean"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.booleanType, TypeFacts.TypeofEQBoolean);
                 }
 
-            case "symbol":
+            case true when typeName.EqualsBytes("symbol"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.esSymbolType, TypeFacts.TypeofEQSymbol);
                 }
 
-            case "object":
+            case true when typeName.EqualsBytes("object"u8):
                 {
                     if (((t.flags & TypeFlags.Any) != 0))
                     {
@@ -1827,7 +1830,7 @@ public sealed partial class Checker
                     return this.getUnionType(new List<Type> { this.narrowTypeByTypeFacts(t, this.nonPrimitiveType, TypeFacts.TypeofEQObject), this.narrowTypeByTypeFacts(t, this.nullType, TypeFacts.EQNull) });
                 }
 
-            case "function":
+            case true when typeName.EqualsBytes("function"u8):
                 {
                     if (((t.flags & TypeFlags.Any) != 0))
                     {
@@ -1837,7 +1840,7 @@ public sealed partial class Checker
                     return this.narrowTypeByTypeFacts(t, this.globalFunctionType, TypeFacts.TypeofEQFunction);
                 }
 
-            case "undefined":
+            case true when typeName.EqualsBytes("undefined"u8):
                 {
                     return this.narrowTypeByTypeFacts(t, this.undefinedType, TypeFacts.EQUndefined);
                 }
@@ -2817,7 +2820,7 @@ public sealed partial class Checker
                             }
                             else
                             {
-                                prop = this.getPropertyOfType(t, name.Text());
+                                prop = this.getPropertyOfType(t, name.TextValue());
                             }
 
                             if ((prop != null))
@@ -3060,7 +3063,7 @@ public sealed partial class Checker
     {
         var root = this.getReferenceRoot(node);
         var parent = root.Parent;
-        var isLengthPushOrUnshift = (Ast.IsPropertyAccessExpression(parent) && (((parent.Name().Text() == "length") || ((Ast.IsCallExpression(parent.Parent) && Ast.IsIdentifier(parent.Name())) && Ast.IsPushOrUnshiftIdentifier(parent.Name())))));
+        var isLengthPushOrUnshift = (Ast.IsPropertyAccessExpression(parent) && (((parent.Name().TextEquals("length"u8)) || ((Ast.IsCallExpression(parent.Parent) && Ast.IsIdentifier(parent.Name())) && Ast.IsPushOrUnshiftIdentifier(parent.Name())))));
         var isElementAssignment = ((((((Ast.IsElementAccessExpression(parent) && (parent.Expression() == root)) && Ast.IsBinaryExpression(parent.Parent)) && (parent.Parent.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)) && (parent.Parent.AsBinaryExpression().Left == parent)) && !Ast.IsAssignmentTarget(parent.Parent)) && this.isTypeAssignableToKind(this.getTypeOfExpression(parent.AsElementAccessExpression().ArgumentExpression), TypeFlags.NumberLike));
         return (isLengthPushOrUnshift || isElementAssignment);
     }
@@ -3206,7 +3209,7 @@ public sealed partial class Checker
             }
         }
 
-        return (((name != null) && (name.Text() == "constructor")) && this.isMatchingReference(f.reference, expr.Expression()));
+        return (((name != null) && (name.TextEquals("constructor"u8))) && this.isMatchingReference(f.reference, expr.Expression()));
     }
 }
 

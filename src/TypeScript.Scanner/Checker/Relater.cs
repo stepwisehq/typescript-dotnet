@@ -486,6 +486,11 @@ public sealed partial class Checker
 
     // relater.go:745/2859. JSX hyphenated names are permitted and excluded from index checks.
     private static bool isHyphenatedJsxName(string name) => name.Contains('-');
+    private static bool isHyphenatedJsxName(ByteStringValue name)
+    {
+        if (name.IsNull) throw new NullReferenceException();
+        return name.IsBytes ? name.ByteSpan.Contains((byte)'-') : name.CharSpan.Contains('-');
+    }
     private static bool isIgnoredJsxProperty(Type source, Symbol property) => (source.objectFlags & ObjectFlags.JsxAttributes) != 0 && isHyphenatedJsxName(property.Name);
     // relater.go:679. Substitutions retain their base type's weak-type status.
     private bool isWeakType(Type t)

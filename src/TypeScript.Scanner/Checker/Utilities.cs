@@ -941,6 +941,14 @@ public sealed partial class Checker
     // checker/utilities.go:1018/1029.
     private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.Name);
     internal static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
+    // utilities.go:1029. Internal symbol names are raw bytes, including 0xFE.
+    internal static bool isLateBoundName(ByteStringValue name)
+    {
+        if (name.IsNull) throw new NullReferenceException();
+        return name.Length >= 2 && (name.IsBytes
+            ? name.ByteSpan[0] == 0xFE && name.ByteSpan[1] == (byte)'@'
+            : name.CharSpan[0] == '\u00FE' && name.CharSpan[1] == '@');
+    }
 }
 
 public sealed partial class Checker
@@ -1982,5 +1990,17 @@ public sealed partial class Checker
     }
 
     // utilities.go:1159. Namespaced JSX names are intrinsic, irrespective of prefix case.
-    private static bool isJsxIntrinsicTagName(Node tagName) => Ast.IsIdentifier(tagName) && TypeScript.Scanner.Scanner.IsIntrinsicJsxName(tagName.Text()) || Ast.IsJsxNamespacedName(tagName);
+    private static bool isJsxIntrinsicTagName(Node tagName)
+    {
+        if (Ast.IsIdentifier(tagName))
+        {
+            var text = tagName.TextValue();
+            if (text.IsNull) throw new NullReferenceException();
+            if (text.Length != 0 && (text.IsBytes
+                ? text.ByteSpan[0] is >= (byte)'a' and <= (byte)'z' || text.ByteSpan.Contains((byte)'-')
+                : text.CharSpan[0] is >= 'a' and <= 'z' || text.CharSpan.Contains('-')))
+                return true;
+        }
+        return Ast.IsJsxNamespacedName(tagName);
+    }
 }

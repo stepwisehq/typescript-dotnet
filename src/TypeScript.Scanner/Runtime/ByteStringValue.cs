@@ -87,7 +87,7 @@ internal struct ByteStringValue
         try
         {
             var bytes = ByteSpan;
-            for (int i = 0; i < bytes.Length; i++) chars[i] = (char)bytes[i];
+            System.Text.Encoding.Latin1.GetChars(bytes, chars);
             return lookup.TryGetValue(chars, out actualKey, out value);
         }
         finally

@@ -8,11 +8,13 @@ namespace TypeScript.Scanner;
 
 // A copied header shares array storage, while its offset/length/capacity remain
 // independent. No Span is stored, so slices can be fields of ordinary objects.
-internal readonly struct Slice<T>
+public readonly struct Slice<T>
 {
     private readonly T[]? storage;
     private readonly int offset;
     public int Length { get; }
+    // Managed read-only spelling compatibility; the stored Go header length is authoritative.
+    public int Count => Length;
     public int Capacity { get; }
     public bool IsNil => storage is null;
 

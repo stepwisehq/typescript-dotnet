@@ -151,7 +151,7 @@ public sealed partial class Checker
                 Type tagType = default;
                 if (isJsxIntrinsicTagName(tagName))
                 {
-                    tagType = this.getStringLiteralType(tagName.Text());
+                    tagType = this.getStringLiteralType(tagName);
                 }
                 else
                 {
@@ -273,7 +273,7 @@ public sealed partial class Checker
                 return null;
             }
 
-            return this.getTypeOfPropertyOfContextualType(attributesType, attribute.Name().Text());
+            return this.getTypeOfPropertyOfContextualType(attributesType, attribute.Name().TextValue());
         }
 
         return this.getContextualType(attribute.Parent, contextFlags);
@@ -384,9 +384,9 @@ public sealed partial class Checker
         {
             foreach (var prop in GoRuntime.RangeValues(node.Properties()))
             {
-                if ((!Ast.IsJsxSpreadAttribute(prop) && !isHyphenatedJsxName(prop.Name().Text())))
+                if ((!Ast.IsJsxSpreadAttribute(prop) && !isHyphenatedJsxName(prop.Name().TextValue())))
                 {
-                    var nameType = this.getStringLiteralType(prop.Name().Text());
+                    var nameType = this.getStringLiteralType(prop.Name());
                     if (((nameType != null) && ((nameType.flags & TypeFlags.Never) == 0)))
                     {
                         reportedError = (this.elaborateElement(source, target, relation, prop.Name(), prop.Initializer(), nameType, null, null, diagnosticOutput) || reportedError);
@@ -1057,7 +1057,7 @@ public sealed partial class Checker
                             allAttributesTable[attributeSymbol.Name] = attributeSymbol;
                         }
 
-                        if ((attributeDecl.Name().Text() == jsxChildrenPropertyName))
+                        if ((attributeDecl.Name().TextValue().EqualsString(jsxChildrenPropertyName)))
                         {
                             explicitlySpecifyChildrenAttribute = true;
                         }
@@ -1695,7 +1695,7 @@ public sealed partial class Checker
 
         if (((links.jsxFlags & JsxFlags.IntrinsicIndexedElement) != 0))
         {
-            var indexInfo = this.getApplicableIndexInfoForName(this.getJsxType(JsxNames.IntrinsicElements, node), node.TagName().Text());
+            var indexInfo = this.getApplicableIndexInfoForName(this.getJsxType(JsxNames.IntrinsicElements, node), node.TagName().TextValue());
             if ((indexInfo != null))
             {
                 links.resolvedJsxElementAttributesType = indexInfo.valueType;
@@ -1729,7 +1729,7 @@ public sealed partial class Checker
                 throw new InvalidOperationException("Invalid tag name");
             }
 
-            var propName = tagName.Text();
+            var propName = tagName.TextValue();
             var intrinsicProp = this.getPropertyOfType(intrinsicElementsType, propName);
             if ((intrinsicProp != null))
             {
