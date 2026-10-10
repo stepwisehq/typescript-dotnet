@@ -1383,7 +1383,7 @@ internal sealed partial class NodeBuilderImpl
         if ((propertySymbol.Flags & (SymbolFlags.Function | SymbolFlags.Method)) != 0 && GoRuntime.Len(ch.getPropertiesOfObjectType(propertyType)) == 0 && !ch.isReadonlySymbol(propertySymbol))
         {
             var signatures = ch.getSignaturesOfType(ch.filterType(propertyType, t => (t.flags & TypeFlags.Undefined) == 0), SignatureKind.Call);
-            foreach (var signature in signatures ?? [])
+            foreach (var signature in signatures)
                 (typeElements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken }));
             if (GoRuntime.Len(signatures) != 0 || optionalToken == null)
                 return typeElements;
@@ -1490,9 +1490,9 @@ internal sealed partial class NodeBuilderImpl
             return f.NewNodeList([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]);
         }
         List<Node> elements = null;
-        foreach (var signature in resolved.CallSignatures() ?? [])
+        foreach (var signature in resolved.CallSignaturesSlice())
             (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
-        foreach (var signature in resolved.ConstructSignatures() ?? [])
+        foreach (var signature in resolved.ConstructSignaturesSlice())
             if ((signature.flags & SignatureFlags.Abstract) == 0)
                 (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.ConstructSignature, null));
         foreach (var info in resolved.indexInfos ?? [])
@@ -1532,8 +1532,8 @@ internal sealed partial class NodeBuilderImpl
         if (ch.isGenericMappedType(t) || ((t.objectFlags & ObjectFlags.Mapped) != 0 && t.AsMappedType().containsError))
             return createMappedTypeNodeFromType(t);
         var resolved = ch.resolveStructuredTypeMembers(t);
-        var callSigs = resolved.CallSignatures();
-        var ctorSigs = resolved.ConstructSignatures();
+        var callSigs = resolved.CallSignaturesSlice();
+        var ctorSigs = resolved.ConstructSignaturesSlice();
         if (GoRuntime.Len(resolved.properties) == 0 && GoRuntime.Len(resolved.indexInfos) == 0)
         {
             if (GoRuntime.Len(callSigs) == 0 && GoRuntime.Len(ctorSigs) == 0)
@@ -1554,7 +1554,7 @@ internal sealed partial class NodeBuilderImpl
         if (GoRuntime.Len(abstractSignatures) > 0)
         {
             var types = Core.Map(abstractSignatures, ch.getOrCreateTypeFromSignature);
-            int count = GoRuntime.Len(callSigs) + GoRuntime.Len(ctorSigs) - abstractSignatures.Count + GoRuntime.Len(resolved.indexInfos) + ((ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0 ? Core.CountWhere(resolved.properties, property => (property.Flags & SymbolFlags.Prototype) == 0) : GoRuntime.Len(resolved.properties));
+            int count = GoRuntime.Len(callSigs) + GoRuntime.Len(ctorSigs) - abstractSignatures.Length + GoRuntime.Len(resolved.indexInfos) + ((ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0 ? Core.CountWhere(resolved.properties, property => (property.Flags & SymbolFlags.Prototype) == 0) : GoRuntime.Len(resolved.properties));
             if (count != 0)
                 types.Add(getResolvedTypeWithoutAbstractConstructSignatures(resolved));
             return typeToTypeNode(ch.getIntersectionType(types));
@@ -3101,18 +3101,18 @@ internal sealed partial class NodeBuilderImpl
     // constructor signatures are factored out of a diagnostic intersection.
     private Type getResolvedTypeWithoutAbstractConstructSignatures(StructuredType t)
     {
-        if (GoRuntime.Len(t.ConstructSignatures()) == 0)
+        if (GoRuntime.Len(t.ConstructSignaturesSlice()) == 0)
             return t.AsType();
         if (t.objectTypeWithoutAbstractConstructSignatures != null)
             return t.objectTypeWithoutAbstractConstructSignatures;
-        var constructors = Core.Filter(t.ConstructSignatures(), signature => (signature.flags & SignatureFlags.Abstract) == 0);
-        if (GoRuntime.Len(constructors) == GoRuntime.Len(t.ConstructSignatures()))
+        var constructors = Core.Filter(t.ConstructSignaturesSlice(), signature => (signature.flags & SignatureFlags.Abstract) == 0);
+        if (GoRuntime.Len(constructors) == GoRuntime.Len(t.ConstructSignaturesSlice()))
         {
             t.objectTypeWithoutAbstractConstructSignatures = t.AsType();
             return t.AsType();
         }
 
-        var copy = ch.newAnonymousType(t.AsType().symbol, t.members, t.CallSignatures(), GoRuntime.Len(constructors) > 0 ? constructors : new List<Signature>(), t.indexInfos);
+        var copy = ch.newAnonymousType(t.AsType().symbol, t.members, t.CallSignaturesSlice(), GoRuntime.Len(constructors) > 0 ? constructors : Slice<Signature>.Make(0), t.indexInfos);
         t.objectTypeWithoutAbstractConstructSignatures = copy;
         copy.AsStructuredType().objectTypeWithoutAbstractConstructSignatures = copy;
         return copy;

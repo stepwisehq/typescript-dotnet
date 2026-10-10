@@ -94,6 +94,21 @@ internal readonly struct Slice<T>
     }
 
     public int CopyFrom(Slice<T> source) => CopyFrom(source.AsSpan());
+
+    // core.go:183 Same compares length and first storage address, ignoring cap.
+    public bool SameStorageRange(Slice<T> other) => Length == other.Length &&
+        (Length == 0 || ReferenceEquals(storage, other.storage) && offset == other.offset);
+
+    // slices.Insert: grow the owned header if necessary, then move the tail.
+    public Slice<T> Insert(int index, T value)
+    {
+        if ((uint)index > (uint)Length)
+            throw new ArgumentOutOfRangeException(nameof(index));
+        var result = Append(default(T)!);
+        result.AsSpan().Slice(index, Length - index).CopyTo(result.AsSpan().Slice(index + 1));
+        result[index] = value;
+        return result;
+    }
     public int CopyFrom(ReadOnlySpan<T> source)
     {
         int count = Math.Min(Length, source.Length);

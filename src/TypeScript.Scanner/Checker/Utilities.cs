@@ -215,9 +215,9 @@ public sealed partial class Checker
     }
 
     // checker.go:8927. Same-package predicate dependency, placed beside other checker utility leaves.
-    private static bool someSignature(List<Signature> signatures, Func<Signature, bool> predicate)
+    private static bool someSignature(Slice<Signature> signatures, Func<Signature, bool> predicate)
     {
-        foreach (var signature in signatures ?? [])
+        foreach (var signature in signatures)
             if (signature.composite != null && signature.composite.isUnion && Core.Some(signature.composite.signatures, predicate) ||
                 signature.composite == null && predicate(signature))
                 return true;
@@ -1322,6 +1322,25 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
+    // utilities.go:1316: range captures each value before invoking getValue.
+    private static (int, int) minAndMax<T>(Slice<T> slice, Func<T, int> getValue)
+    {
+        int minValue = default;
+        int maxValue = default;
+        foreach (var (i, element) in GoRuntime.Range(slice))
+        {
+            var value = getValue(element);
+            if (i == 0)
+                minValue = maxValue = value;
+            else
+            {
+                minValue = Math.Min(minValue, value);
+                maxValue = Math.Max(maxValue, value);
+            }
+        }
+        return (minValue, maxValue);
+    }
+
     private static (int, int) minAndMax<T>(List<T> slice, Func<T, int> getValue)
     {
         int minValue = default;

@@ -85,7 +85,7 @@ public sealed partial class Graph
         callableComposites.Add(composite, id);
         var record = new DataRecord(id, "CompositeSignature", []);
         callables.Composites.Add(record);
-        record.Fields.AddRange([F("isUnion", "bool", composite.isUnion), F("signatures", "signatures", composite.signatures)]);
+        record.Fields.AddRange([F("isUnion", "bool", composite.isUnion), F("signatures", "signatures", GoSlices.ToListOrNull(composite.signatures))]);
         return id;
     }
 
@@ -114,7 +114,7 @@ public sealed partial class Graph
         var sourceLinks = checker.VerificationCallableSourceFileLinks();
         callables.SourceFileLinksPresent = sourceLinks is not null;
         if (sourceLinks is not null)
-            callables.SourceFileLinks = new(0, "SourceFileLinks", [F("typeChecked", "bool", sourceLinks.typeChecked), F("unusedChecked", "bool", sourceLinks.unusedChecked), F("externalHelpersModule", "symbol", sourceLinks.externalHelpersModule), F("requestedExternalEmitHelpers", "number", sourceLinks.requestedExternalEmitHelpers), F("deferredNodes", "nodes", sourceLinks.deferredNodes.Values().ToList()), F("identifierCheckNodes", "nodes", sourceLinks.identifierCheckNodes), F("localJsxNamespace", "bytes", sourceLinks.localJsxNamespace), F("localJsxFragmentNamespace", "bytes", sourceLinks.localJsxFragmentNamespace), F("localJsxFactory", "node", sourceLinks.localJsxFactory), F("localJsxFragmentFactory", "node", sourceLinks.localJsxFragmentFactory), F("jsxFragmentType", "type", sourceLinks.jsxFragmentType)]);
+            callables.SourceFileLinks = new(0, "SourceFileLinks", [F("typeChecked", "bool", sourceLinks.typeChecked), F("unusedChecked", "bool", sourceLinks.unusedChecked), F("externalHelpersModule", "symbol", sourceLinks.externalHelpersModule), F("requestedExternalEmitHelpers", "number", sourceLinks.requestedExternalEmitHelpers), F("deferredNodes", "nodes", sourceLinks.deferredNodes.Values().ToList()), F("identifierCheckNodes", "nodes", GoSlices.ToListOrNull(sourceLinks.identifierCheckNodes)), F("localJsxNamespace", "bytes", sourceLinks.localJsxNamespace), F("localJsxFragmentNamespace", "bytes", sourceLinks.localJsxFragmentNamespace), F("localJsxFactory", "node", sourceLinks.localJsxFactory), F("localJsxFragmentFactory", "node", sourceLinks.localJsxFragmentFactory), F("jsxFragmentType", "type", sourceLinks.jsxFragmentType)]);
         callables.NoPredicateSentinel = Predicate(checker.VerificationCallableNoTypePredicate());
     }
 

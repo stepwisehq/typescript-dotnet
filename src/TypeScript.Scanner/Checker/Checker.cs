@@ -1352,7 +1352,7 @@ public sealed partial class Checker
     }
 
     // newObjectType/newAnonymousType/setStructuredTypeMembers: initialization markers only.
-    internal Type newAnonymousType(Symbol symbol, SymbolTable members, List<Signature> callSignatures = null, List<Signature> constructSignatures = null, List<IndexInfo> indexInfos = null)
+    internal Type newAnonymousType(Symbol symbol, SymbolTable members, Slice<Signature> callSignatures = default, Slice<Signature> constructSignatures = default, List<IndexInfo> indexInfos = null)
     {
         var t = newObjectType(ObjectFlags.Anonymous, symbol);
         setStructuredTypeMembers(t, members, callSignatures, constructSignatures, indexInfos);
@@ -2330,7 +2330,7 @@ public sealed partial class Checker
             {
                 return this.getTypeOfSymbol(this.resolveExternalModuleSymbol(symbol.ValueDeclaration.Symbol(), false));
             }
-            return this.newAnonymousType(symbol, symbol.Members, null, null, null);
+            return this.newAnonymousType(symbol, symbol.Members, default, default, null);
         }
         Type result = default;
         switch (declaration.Kind)
@@ -4475,14 +4475,25 @@ public sealed partial class Checker
         return t;
     }
 
-    private void setStructuredTypeMembers(Type t, SymbolTable members, List<Signature> callSignatures = null, List<Signature> constructSignatures = null, List<IndexInfo> indexInfos = null)
+    private void setStructuredTypeMembers(Type t, SymbolTable members, Slice<Signature> callSignatures = default, Slice<Signature> constructSignatures = default, List<IndexInfo> indexInfos = null)
     {
         t.objectFlags |= ObjectFlags.MembersResolved;
         var data = t.AsStructuredType();
         data.members = members;
         data.properties = getNamedMembers(members, t.symbol);
-        data.signatures = GoRuntime.Append(callSignatures, constructSignatures ?? []);
-        data.callSignatureCount = callSignatures?.Count ?? 0;
+        // checker.go:25679: normalize absent signatures and preserve Clip/Concatenate ownership.
+        if (callSignatures.Length != 0)
+        {
+            data.signatures = constructSignatures.Length != 0
+                ? Core.Concatenate(callSignatures, constructSignatures)
+                : GoSlices.Clip(callSignatures);
+            data.callSignatureCount = callSignatures.Length;
+        }
+        else
+        {
+            data.signatures = constructSignatures.Length != 0 ? GoSlices.Clip(constructSignatures) : default;
+            data.callSignatureCount = 0;
+        }
         data.indexInfos = indexInfos;
     }
 
@@ -4868,7 +4879,7 @@ public sealed partial class Checker
         var d = t.AsObjectType();
         if ((d.target != null))
         {
-            this.setStructuredTypeMembers(t, null, null, null, null);
+            this.setStructuredTypeMembers(t, null, default, default, null);
             var members = this.createInstantiatedSymbolTable(this.getPropertiesOfObjectType(d.target), d.mapper);
             var callSignatures = this.instantiateSignatures(this.getSignaturesOfType(d.target, SignatureKind.Call), d.mapper);
             var constructSignatures = this.instantiateSignatures(this.getSignaturesOfType(d.target, SignatureKind.Construct), d.mapper);
@@ -4879,7 +4890,7 @@ public sealed partial class Checker
         var symbol = this.getMergedSymbol(t.symbol);
         if (((symbol.Flags & SymbolFlags.TypeLiteral) != 0))
         {
-            this.setStructuredTypeMembers(t, null, null, null, null);
+            this.setStructuredTypeMembers(t, null, default, default, null);
             var members2 = this.getMembersOfSymbol(symbol);
             var callSignatures2 = this.getSignaturesOfSymbol(members2?[Ast.InternalSymbolNameCall]);
             var constructSignatures2 = this.getSignaturesOfSymbol(members2?[Ast.InternalSymbolNameNew]);
@@ -4904,7 +4915,7 @@ public sealed partial class Checker
             members3 = varsOnly;
         }
         IndexInfo baseConstructorIndexInfo = default;
-        this.setStructuredTypeMembers(t, members3, null, null, null);
+        this.setStructuredTypeMembers(t, members3, default, default, null);
         if (((symbol.Flags & SymbolFlags.Class) != 0))
         {
             var classType = this.getDeclaredTypeOfClassOrInterface(symbol);
@@ -4918,7 +4929,7 @@ public sealed partial class Checker
                     members3 = clonedMembers;
                 }
                 this.addInheritedMembers(members3, this.getPropertiesOfType(baseConstructorType));
-                this.setStructuredTypeMembers(t, members3, null, null, null);
+                this.setStructuredTypeMembers(t, members3, default, default, null);
             }
             else
             {
@@ -5328,13 +5339,13 @@ public sealed partial class Checker
                                 break;
                             }
 
-                        case true when (GoRuntime.Len(resolved.CallSignatures()) != 0):
+                        case true when (GoRuntime.Len(resolved.CallSignaturesSlice()) != 0):
                             {
                                 functionType = this.globalCallableFunctionType;
                                 break;
                             }
 
-                        case true when (GoRuntime.Len(resolved.ConstructSignatures()) != 0):
+                        case true when (GoRuntime.Len(resolved.ConstructSignaturesSlice()) != 0):
                             {
                                 functionType = this.globalNewableFunctionType;
                                 break;
@@ -5412,7 +5423,7 @@ public sealed partial class Checker
             return cached;
         var resolved = resolveStructuredTypeMembers(t);
         var members = transformTypeOfMembers(t, getRegularTypeOfObjectLiteral);
-        var regular = newAnonymousType(t.symbol, members, resolved.CallSignatures(), resolved.ConstructSignatures(), resolved.indexInfos);
+        var regular = newAnonymousType(t.symbol, members, resolved.CallSignaturesSlice(), resolved.ConstructSignaturesSlice(), resolved.indexInfos);
         regular.flags = resolved.AsType().flags;
         regular.objectFlags |= resolved.AsType().objectFlags & ~ObjectFlags.FreshLiteral;
         cachedTypes[key] = regular;
@@ -6001,7 +6012,7 @@ public sealed partial class Checker
     {
         if ((((GoRuntime.Len(node.Properties()) == 0) && (node.Symbol() != null)) && (GoRuntime.Len(node.Symbol().Exports) != 0)))
         {
-            var result = this.newAnonymousType(node.Symbol(), node.Symbol().Exports, null, null, null);
+            var result = this.newAnonymousType(node.Symbol(), node.Symbol().Exports, default, default, null);
             if ((Ast.IsInJSFile(node) && !Ast.IsInJsonFile(node)))
             {
                 result.objectFlags |= ObjectFlags.JSLiteral;
@@ -6069,7 +6080,7 @@ public sealed partial class Checker
     {
         indexInfos = GoRuntime.Append(indexInfos, this.getObjectLiteralIndexInfo(isReadonly, GoRuntime.Slice(propertiesArray, offset), this.esSymbolType));
     }
-    var result2 = this.newAnonymousType(node.Symbol(), propertiesTable, null, null, indexInfos);
+    var result2 = this.newAnonymousType(node.Symbol(), propertiesTable, default, default, indexInfos);
     result2.objectFlags |= ((objectFlags | ObjectFlags.ObjectLiteral) | ObjectFlags.ContainsObjectOrArrayLiteral);
     if ((((contextualType == null) && Ast.IsInJSFile(node)) && !Ast.IsInJsonFile(node)))
     {
@@ -6759,7 +6770,7 @@ public sealed partial class Checker
             }
         }
 
-        var result = this.newAnonymousType(t.symbol, members, null, null, Core.SameMap(this.getIndexInfosOfType(t), (info) =>
+        var result = this.newAnonymousType(t.symbol, members, default, default, Core.SameMap(this.getIndexInfosOfType(t), (info) =>
         {
             return this.newIndexInfo(info.keyType, this.getWidenedType(info.valueType), info.isReadonly, info.declaration, info.components);
         }));
@@ -6833,7 +6844,7 @@ public sealed partial class Checker
         return result;
     }
 
-    private bool isEmptyResolvedType(StructuredType t) => (t.properties?.Count ?? 0) == 0 && (t.signatures?.Count ?? 0) == 0 && (t.indexInfos?.Count ?? 0) == 0;
+    private bool isEmptyResolvedType(StructuredType t) => (t.properties?.Count ?? 0) == 0 && (t.signatures.Length) == 0 && (t.indexInfos?.Count ?? 0) == 0;
     internal bool isEmptyObjectType(Type t)
     {
         switch (true)
@@ -7415,7 +7426,7 @@ public sealed partial class Checker
         if ((t.objectFlags & ObjectFlags.EvolvingArray) != 0)
             return false;
         var resolved = resolveStructuredTypeMembers(t);
-        return (resolved.signatures?.Count ?? 0) != 0 || resolved.members?["bind"] != null && isTypeSubtypeOf(t, globalFunctionType);
+        return (resolved.signatures.Length) != 0 || resolved.members?["bind"] != null && isTypeSubtypeOf(t, globalFunctionType);
     }
 
     private Type globalFunctionType;
@@ -8107,15 +8118,15 @@ public sealed partial class Checker
 
     // checker.go:19366/19370. Resolving the structured union itself is observable
     // even when the retained signature slices are nil.
-    internal List<Signature> getSignaturesOfType(Type t, SignatureKind kind) => getSignaturesOfStructuredType(getReducedApparentType(t), kind);
-    private List<Signature> getSignaturesOfStructuredType(Type t, SignatureKind kind)
+    internal Slice<Signature> getSignaturesOfType(Type t, SignatureKind kind) => getSignaturesOfStructuredType(getReducedApparentType(t), kind);
+    private Slice<Signature> getSignaturesOfStructuredType(Type t, SignatureKind kind)
     {
         if ((t.flags & TypeFlags.StructuredType) == 0)
-            return null;
+            return default;
         var resolved = resolveStructuredTypeMembers(t);
         int start = kind == SignatureKind.Call ? 0 : resolved.callSignatureCount;
-        int end = kind == SignatureKind.Call ? resolved.callSignatureCount : resolved.signatures?.Count ?? 0;
-        return GoRuntime.Slice(resolved.signatures, start, end);
+        int end = kind == SignatureKind.Call ? resolved.callSignatureCount : resolved.signatures.Length;
+        return resolved.signatures.Slice2(start, end);
     }
 
     private List<IndexInfo> getIndexInfosOfType(Type t) => getIndexInfosOfStructuredType(getReducedApparentType(t));
@@ -8295,7 +8306,7 @@ public sealed partial class Checker
             return null;
         }
 
-        List<Signature> thenSignatures = default;
+        Slice<Signature> thenSignatures = default;
         if ((thenFunction != null))
         {
             thenSignatures = this.getSignaturesOfType(thenFunction, SignatureKind.Call);
@@ -8312,7 +8323,7 @@ public sealed partial class Checker
         }
 
         Type thisTypeForError = default;
-        List<Signature> candidates = default;
+        Slice<Signature> candidates = default;
         {
             foreach (var thenSignature in GoRuntime.RangeValues(thenSignatures))
             {
@@ -8397,16 +8408,16 @@ public sealed partial class Checker
 
     private void resolveUnionTypeMembers(Type t)
     {
-        var calls = getUnionSignatures(t.Types().Select(u => u == globalFunctionType ? new List<Signature> { unknownSignature } : getSignaturesOfType(u, SignatureKind.Call)).ToList());
-        if ((calls?.Count ?? 0) == 0)
+        var calls = getUnionSignatures(t.Types().Select(u => u == globalFunctionType ? Slice<Signature>.FromArray(new Signature[] { unknownSignature }) : getSignaturesOfType(u, SignatureKind.Call)).ToList());
+        if (calls.Length == 0)
             calls = getArrayMemberCallSignatures(t);
         var constructs = getUnionSignatures(t.Types().Select(u => getSignaturesOfType(u, SignatureKind.Construct)).ToList());
         setStructuredTypeMembers(t, null, calls, constructs, getUnionIndexInfos(t.Types()));
     }
 
-    private List<Signature> getUnionSignatures(List<List<Signature>> signatureLists)
+    private Slice<Signature> getUnionSignatures(List<Slice<Signature>> signatureLists)
     {
-        List<Signature> result = default;
+        Slice<Signature> result = default;
         int indexWithLengthOverOne = default;
         int countLengthOverOne = default;
         {
@@ -8414,7 +8425,7 @@ public sealed partial class Checker
             {
                 if ((GoRuntime.Len(signatureLists[i]) == 0))
                 {
-                    return null;
+                    return default;
                 }
 
                 if ((GoRuntime.Len(signatureLists[i]) > 1))
@@ -8426,10 +8437,10 @@ public sealed partial class Checker
                 {
                     foreach (var signature in GoRuntime.RangeValues(signatureLists[i]))
                     {
-                        if (((result == null) || (this.findMatchingSignature(result, signature, false, false, true) == null)))
+                        if ((result.IsNil || (this.findMatchingSignature(result, signature, false, false, true) == null)))
                         {
                             var unionSignatures = this.findMatchingSignatures(signatureLists, signature, i);
-                            if ((unionSignatures != null))
+                            if ((!unionSignatures.IsNil))
                             {
                                 var s = signature;
                                 if ((GoRuntime.Len(unionSignatures) > 1))
@@ -8468,13 +8479,13 @@ public sealed partial class Checker
         if (((GoRuntime.Len(result) == 0) && (countLengthOverOne <= 1)))
         {
             var masterList = signatureLists[indexWithLengthOverOne];
-            List<Signature> results = GoSlices.Clone(masterList);
+            Slice<Signature> results = GoSlices.Clone(masterList);
             {
                 foreach (var range3 in GoRuntime.Range(signatureLists))
                 {
                     var _2 = range3.Key;
                     var signatures = range3.Value;
-                    if (!ReferenceEquals(signatures, masterList))
+                    if (!signatures.SameStorageRange(masterList))
                     {
                         var signature2 = signatures[0];
                         Debug.Assert((signature2 != null), "getUnionSignatures bails early on empty signature lists and should not have empty lists on second pass");
@@ -8483,17 +8494,17 @@ public sealed partial class Checker
                             return ((GoRuntime.Len(s2.typeParameters) != 0) && !this.compareTypeParametersIdentical(signature2.typeParameters, s2.typeParameters));
                         })))
                         {
-                            results = null;
+                            results = default;
                         }
                         else
                         {
-                            results = Core.Map(results, (sig3) =>
+                            results = Core.MapSlice(results, (sig3) =>
                             {
                                 return this.combineUnionOrIntersectionMemberSignatures(sig3, signature2, true);
                             });
                         }
 
-                        if ((results == null))
+                        if (results.IsNil)
                         {
                             break;
                         }
@@ -8507,7 +8518,7 @@ public sealed partial class Checker
         return result;
     }
 
-    private List<Signature> getArrayMemberCallSignatures(Type t)
+    private Slice<Signature> getArrayMemberCallSignatures(Type t)
     {
         string memberName = "";
         {
@@ -8517,7 +8528,7 @@ public sealed partial class Checker
                 var t2 = range3.Value;
                 if ((((((t2.objectFlags & ObjectFlags.Instantiated) == 0) || (t2.symbol == null)) || (t2.symbol.Parent == null)) || !this.isArrayOrTupleSymbol(t2.symbol.Parent)))
                 {
-                    return null;
+                    return default;
                 }
 
                 if ((i == 0))
@@ -8528,7 +8539,7 @@ public sealed partial class Checker
                 {
                     if ((memberName != t2.symbol.Name))
                     {
-                        return null;
+                        return default;
                     }
                 }
             }
@@ -8567,7 +8578,7 @@ public sealed partial class Checker
     }
 
     private Type getIndexTypeOfType(Type t, Type keyType) => getIndexInfoOfType(t, keyType)?.valueType;
-    private bool typeHasCallOrConstructSignatures(Type t) => (t.flags & TypeFlags.StructuredType) != 0 && (resolveStructuredTypeMembers(t).signatures?.Count ?? 0) != 0;
+    private bool typeHasCallOrConstructSignatures(Type t) => (t.flags & TypeFlags.StructuredType) != 0 && (resolveStructuredTypeMembers(t).signatures.Length) != 0;
     private List<Symbol> getPropertiesOfUnionOrIntersectionType(Type t)
     {
         var d = t.AsUnionOrIntersectionType();
@@ -10914,7 +10925,7 @@ public sealed partial class Checker
     {
         TypeMapper mapper = null;
         SymbolTable members;
-        List<Signature> call, construct;
+        Slice<Signature> call, construct;
         List<IndexInfo> indexes;
         bool instantiated = false;
         var d = resolveDeclaredMembers(source);
@@ -10945,8 +10956,8 @@ public sealed partial class Checker
             {
                 var inherited = thisArgument != null ? getTypeWithThisArgument(instantiateType(@base, mapper), thisArgument, false) : @base;
                 members = addInheritedMembers(members, getPropertiesOfType(inherited));
-                call = GoRuntime.Append(call, getSignaturesOfType(inherited, SignatureKind.Call) ?? []);
-                construct = GoRuntime.Append(construct, getSignaturesOfType(inherited, SignatureKind.Construct) ?? []);
+                call = Core.Concatenate(call, getSignaturesOfType(inherited, SignatureKind.Call));
+                construct = Core.Concatenate(construct, getSignaturesOfType(inherited, SignatureKind.Construct));
                 foreach (var info in inherited != anyType ? getIndexInfosOfType(inherited) ?? [] : new List<IndexInfo>
                 {
                     anyBaseTypeIndexInfo
@@ -11763,7 +11774,27 @@ public sealed partial class Checker
     }
 
     private List<Type> instantiateTypes(List<Type> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateType);
-    private List<Signature> instantiateSignatures(List<Signature> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateSignature);
+    // checker.go:23270: first changed element detaches; unchanged mapping retains the header.
+    private Slice<T> instantiateList<T>(Slice<T> values, TypeMapper mapper, Func<T, TypeMapper, T> instantiate)
+        where T : class
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            var value = values[i];
+            var mapped = instantiate(value, mapper);
+            if (mapped != value)
+            {
+                var result = Slice<T>.Make(values.Length);
+                values.AsSpan().Slice(0, i).CopyTo(result.AsSpan());
+                result[i] = mapped;
+                for (int j = i + 1; j < values.Length; j++)
+                    result[j] = instantiate(values[j], mapper);
+                return result;
+            }
+        }
+        return values;
+    }
+    private Slice<Signature> instantiateSignatures(Slice<Signature> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateSignature);
     private List<IndexInfo> instantiateIndexInfos(List<IndexInfo> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateIndexInfo);
     private SymbolTable instantiateSymbolTable(SymbolTable symbols, TypeMapper mapper)
     {
@@ -12520,8 +12551,8 @@ public sealed partial class Checker
     // checker.go:21706. Constructor/mixin behavior is guarded before selected data-only combination.
     private void resolveIntersectionTypeMembers(Type t)
     {
-        List<Signature> callSignatures = default;
-        List<Signature> constructSignatures = default;
+        Slice<Signature> callSignatures = default;
+        Slice<Signature> constructSignatures = default;
         List<IndexInfo> indexInfos = default;
         var types = t.Types();
         var tuple5 = this.findMixins(types); var mixinFlags = tuple5.Item1; var mixinCount = tuple5.Item2;
@@ -12535,7 +12566,7 @@ public sealed partial class Checker
                     var signatures = this.getSignaturesOfType(t2, SignatureKind.Construct);
                     if (((GoRuntime.Len(signatures) != 0) && (mixinCount > 0)))
                     {
-                        signatures = Core.Map(signatures, (s) =>
+                        signatures = Core.MapSlice(signatures, (s) =>
 {
     var clone = this.cloneSignature(s);
     clone.resolvedReturnType = this.includeMixinType(this.getReturnTypeOfSignature(s), types, mixinFlags, i);
@@ -12562,7 +12593,7 @@ public sealed partial class Checker
         int constructorTypeCount = 0, mixinCount = 0, firstMixinIndex = -1;
         for (int i = 0; i < types.Count; i++)
         {
-            if ((getSignaturesOfType(types[i], SignatureKind.Construct)?.Count ?? 0) > 0)
+            if ((getSignaturesOfType(types[i], SignatureKind.Construct).Length) > 0)
                 constructorTypeCount++;
             if (flags[i])
             {
@@ -12584,7 +12615,7 @@ public sealed partial class Checker
     private bool isMixinConstructorType(Type t)
     {
         var signatures = getSignaturesOfType(t, SignatureKind.Construct);
-        if ((signatures?.Count ?? 0) != 1)
+        if ((signatures.Length) != 1)
             return false;
         var signature = signatures[0];
         if (GoRuntime.Len(signature.typeParameters) == 0 && GoRuntime.Len(signature.parameters) == 1 && signatureHasRestParameter(signature))
@@ -12596,7 +12627,7 @@ public sealed partial class Checker
         return false;
     }
 
-    private List<Signature> appendSignatures(List<Signature> signatures, List<Signature> newSignatures)
+    private Slice<Signature> appendSignatures(Slice<Signature> signatures, Slice<Signature> newSignatures)
     {
         {
             foreach (var sig in GoRuntime.RangeValues(newSignatures))
@@ -12923,14 +12954,14 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:20210:1.
-    private List<Signature> getSignaturesOfSymbol(Symbol symbol)
+    private Slice<Signature> getSignaturesOfSymbol(Symbol symbol)
     {
         if ((symbol == null))
         {
-            return null;
+            return default;
         }
 
-        List<Signature> result = default;
+        Slice<Signature> result = default;
         {
             foreach (var range1 in GoRuntime.Range(symbol.Declarations))
             {
@@ -13711,7 +13742,7 @@ public sealed partial class Checker
             return this.getContextualCallSignature(t, node);
         }
 
-        List<Signature> signatureList = default;
+        Slice<Signature> signatureList = default;
         var types = t.Types();
         {
             foreach (var current in GoRuntime.RangeValues(types))
@@ -13748,7 +13779,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature createUnionSignature(Signature sig, List<Signature> unionSignatures)
+    private Signature createUnionSignature(Signature sig, Slice<Signature> unionSignatures)
     {
         var result = this.cloneSignature(sig);
         result.composite = new CompositeSignature
@@ -13782,7 +13813,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature getIntersectedSignatures(List<Signature> signatures)
+    private Signature getIntersectedSignatures(Slice<Signature> signatures)
     {
         if (!this.noImplicitAny)
         {
@@ -14419,10 +14450,10 @@ public sealed partial class Checker
             var resolved = resolveStructuredTypeMembers(t);
             if (allowMembers || (resolved.properties?.Count ?? 0) == 0 && (resolved.indexInfos?.Count ?? 0) == 0)
             {
-                if (kind == SignatureKind.Call && (resolved.CallSignatures()?.Count ?? 0) == 1 && (resolved.ConstructSignatures()?.Count ?? 0) == 0)
-                    return resolved.CallSignatures()[0];
-                if (kind == SignatureKind.Construct && (resolved.ConstructSignatures()?.Count ?? 0) == 1 && (resolved.CallSignatures()?.Count ?? 0) == 0)
-                    return resolved.ConstructSignatures()[0];
+                if (kind == SignatureKind.Call && (resolved.CallSignaturesSlice().Length) == 1 && (resolved.ConstructSignaturesSlice().Length) == 0)
+                    return resolved.CallSignaturesSlice()[0];
+                if (kind == SignatureKind.Construct && (resolved.ConstructSignaturesSlice().Length) == 1 && (resolved.CallSignaturesSlice().Length) == 0)
+                    return resolved.ConstructSignaturesSlice()[0];
             }
         }
 
@@ -15724,7 +15755,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature getResolvedSignature(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature getResolvedSignature(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         var links = this.signatureLinks.Get(node);
         var cached = links.resolvedSignature;
@@ -15758,7 +15789,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveSignature(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveSignature(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         switch (node.Kind)
         {
@@ -15795,7 +15826,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveCallExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveCallExpression(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         if ((node.Expression().Kind == Kind.SuperKeyword))
         {
@@ -15907,7 +15938,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveCall(Node node, List<Signature> signatures, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode, SignatureFlags callChainFlags, Message headMessage)
+    private Signature resolveCall(Node node, Slice<Signature> signatures, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode, SignatureFlags callChainFlags, Message headMessage)
     {
         var isTaggedTemplate = (node.Kind == Kind.TaggedTemplateExpression);
         var isDecorator = (node.Kind == Kind.Decorator);
@@ -15985,7 +16016,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Signature> reorderCandidates(List<Signature> signatures, SignatureFlags callChainFlags)
+    private Slice<Signature> reorderCandidates(Slice<Signature> signatures, SignatureFlags callChainFlags)
     {
         Node lastParent = default;
         Symbol lastSymbol = default;
@@ -15993,8 +16024,8 @@ public sealed partial class Checker
         int cutoffIndex = default;
         int spliceIndex = default;
         var specializedIndex = -1;
-        // checker.go:9186/9224: owned output capacity and slices.Insert.
-        var result = new List<Signature>(GoRuntime.Len(signatures));
+        // checker.go:9186/9224: owned slice output capacity and slices.Insert.
+        var result = Slice<Signature>.Make(0, GoRuntime.Len(signatures));
         {
             foreach (var sourceSignature in GoRuntime.RangeValues(signatures))
             {
@@ -16043,7 +16074,7 @@ public sealed partial class Checker
                     signature = this.getOptionalCallSignature(signature, callChainFlags);
                 }
 
-                result.Insert(spliceIndex, signature);
+                result = result.Insert(spliceIndex, signature);
             }
         }
 
@@ -16056,7 +16087,7 @@ public sealed partial class Checker
     private Signature chooseOverload(CallState s, Relation relation)
     {
         using var collectionsOverloadScope = verificationCollectionsOverloadScope(s.node, relation, s.argCheckMode);
-        s.candidatesForArgumentError = null;
+        s.candidatesForArgumentError = default;
         s.candidateForArgumentArityError = null;
         s.candidateForTypeArgumentError = null;
         if (s.isSingleNonGenericCandidate)
@@ -16069,10 +16100,9 @@ public sealed partial class Checker
 
             if (!this.isSignatureApplicable(s.node, s.args, candidate, relation, CheckMode.Normal, false, null))
             {
-                s.candidatesForArgumentError = new List<Signature>
-                {
+                s.candidatesForArgumentError = Slice<Signature>.FromArray(new Signature[] {
                     candidate
-                };
+                });
                 return null;
             }
 
@@ -16370,7 +16400,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature getCandidateForOverloadFailure(Node node, List<Signature> candidates, List<Node> args, bool hasCandidatesOutArray, CheckMode checkMode)
+    private Signature getCandidateForOverloadFailure(Node node, Slice<Signature> candidates, List<Node> args, bool hasCandidatesOutArray, CheckMode checkMode)
     {
         this.checkNodeDeferred(node);
         if (((hasCandidatesOutArray || (GoRuntime.Len(candidates) == 1)) || Core.Some(candidates, (s) =>
@@ -16387,7 +16417,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature pickLongestCandidateSignature(Node node, List<Signature> candidates, List<Node> args, CheckMode checkMode)
+    private Signature pickLongestCandidateSignature(Node node, Slice<Signature> candidates, List<Node> args, CheckMode checkMode)
     {
         var argCount = GoRuntime.Len(args);
         if ((this.apparentArgumentCount != null))
@@ -16426,7 +16456,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature createUnionOfSignaturesForOverloadFailure(List<Signature> candidates)
+    private Signature createUnionOfSignaturesForOverloadFailure(Slice<Signature> candidates)
     {
         var thisParameters = Core.MapNonNil(candidates, (c) =>
         {
@@ -16922,7 +16952,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private int getLongestCandidateIndex(List<Signature> candidates, int argsCount)
+    private int getLongestCandidateIndex(Slice<Signature> candidates, int argsCount)
     {
         var maxParamsIndex = -1;
         var maxParams = -1;
@@ -16967,7 +16997,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void reportCallResolutionErrors(Node node, CallState s, List<Signature> signatures, Message headMessage)
+    private void reportCallResolutionErrors(Node node, CallState s, Slice<Signature> signatures, Message headMessage)
     {
         switch (true)
         {
@@ -17006,7 +17036,7 @@ public sealed partial class Checker
 
             case true when (s.candidateForArgumentArityError != null):
                 {
-                    this.addDiagnostic(this.getArgumentArityError(s.node, new List<Signature> { s.candidateForArgumentArityError }, s.args, headMessage));
+                    this.addDiagnostic(this.getArgumentArityError(s.node, Slice<Signature>.FromArray(new Signature[] { s.candidateForArgumentArityError }), s.args, headMessage));
                     break;
                 }
 
@@ -17039,7 +17069,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Diagnostic getArgumentArityError(Node node, List<Signature> signatures, List<Node> args, Message headMessage)
+    private Diagnostic getArgumentArityError(Node node, Slice<Signature> signatures, List<Node> args, Message headMessage)
     {
         var spreadIndex = this.getSpreadArgumentIndex(args);
         if ((spreadIndex > -1))
@@ -17409,7 +17439,7 @@ public sealed partial class Checker
     {
         internal Node node;
         internal List<Node> typeArguments, args;
-        internal List<Signature> candidates, candidatesForArgumentError;
+        internal Slice<Signature> candidates, candidatesForArgumentError;
         internal CheckMode argCheckMode;
         internal bool isSingleNonGenericCandidate, signatureHelpTrailingComma, recursiveResolution;
         internal Signature candidateForArgumentArityError, candidateForTypeArgumentError;
@@ -17484,7 +17514,7 @@ public sealed partial class Checker
 
                     var returnType = this.getReturnTypeFromBody(node, checkMode);
                     var returnOnlySignature = this.newSignature(SignatureFlags.IsNonInferrable, null, null, null, null, returnType, null, 0);
-                    var returnOnlyType = this.newAnonymousType(node.Symbol(), null, new List<Signature> { returnOnlySignature }, null, null);
+                    var returnOnlyType = this.newAnonymousType(node.Symbol(), null, Slice<Signature>.FromArray(new Signature[] { returnOnlySignature }), default, null);
                     returnOnlyType.objectFlags |= ObjectFlags.NonInferrableType;
                     this.contextFreeTypes[node] = returnOnlyType;
                     return returnOnlyType;
@@ -18107,10 +18137,9 @@ public sealed partial class Checker
                 {
                     var candidate = this.getSignatureFromDeclaration(implementation);
                     var localState = s.Copy();
-                    localState.candidates = new List<Signature>
-                    {
+                    localState.candidates = Slice<Signature>.FromArray(new Signature[] {
                         candidate
-                    };
+                    });
                     localState.isSingleNonGenericCandidate = (GoRuntime.Len(candidate.typeParameters) == 0);
                     if ((this.chooseOverload(localState, this.assignableRelation) != null))
                     {
@@ -18675,17 +18704,16 @@ public sealed partial class Checker
         var thisParam = this.combineUnionOrIntersectionThisParam(left.thisParameter, right.thisParameter, paramMapper, isUnion);
         var minArgCount = (int)(Math.Max(left.minArgumentCount, right.minArgumentCount));
         var result = this.newSignature(flags, declaration, typeParams, thisParam, @params, null, null, minArgCount);
-        List<Signature> leftSignatures = default;
+        Slice<Signature> leftSignatures = default;
         if (((left.composite != null) && left.composite.isUnion))
         {
             leftSignatures = left.composite.signatures;
         }
         else
         {
-            leftSignatures = new List<Signature>
-            {
+            leftSignatures = Slice<Signature>.FromArray(new Signature[] {
                 left
-            };
+            });
         }
 
         result.composite = new CompositeSignature
@@ -25551,7 +25579,7 @@ public sealed partial class Checker
     {
         var members = new SymbolTable();
         List<IndexInfo> indexInfos = default;
-        this.setStructuredTypeMembers(t, null, null, null, null);
+        this.setStructuredTypeMembers(t, null, default, default, null);
         var typeParameter = this.getTypeParameterFromMappedType(t);
         var constraintType = this.getConstraintTypeFromMappedType(t);
         var mappedType = Core.OrElse(t.AsMappedType().target, t);
@@ -25662,7 +25690,7 @@ public sealed partial class Checker
             forEachType(this.getLowerBoundOfKeyType(constraintType), addMemberForKeyType);
         }
 
-        this.setStructuredTypeMembers(t, members, null, null, indexInfos);
+        this.setStructuredTypeMembers(t, members, default, default, indexInfos);
     }
 }
 
@@ -26772,11 +26800,11 @@ public sealed partial class Checker
             var t = this.newObjectType((ObjectFlags.Anonymous | ObjectFlags.SingleSignatureType), symbol);
             if (isConstructor)
             {
-                this.setStructuredTypeMembers(t, null, null, new List<Signature> { sig }, null);
+                this.setStructuredTypeMembers(t, null, default, Slice<Signature>.FromArray(new Signature[] { sig }), null);
             }
             else
             {
-                this.setStructuredTypeMembers(t, null, new List<Signature> { sig }, null, null);
+                this.setStructuredTypeMembers(t, null, Slice<Signature>.FromArray(new Signature[] { sig }), default, null);
             }
 
             sig.isolatedSignatureType = t;
@@ -28813,7 +28841,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Diagnostic getTypeArgumentArityError(Node node, List<Signature> signatures, List<Node> typeArguments, Message headMessage)
+    private Diagnostic getTypeArgumentArityError(Node node, Slice<Signature> signatures, List<Node> typeArguments, Message headMessage)
     {
         Diagnostic diagnostic = default;
         var argCount = GoRuntime.Len(typeArguments);
@@ -31107,7 +31135,7 @@ public sealed partial class Checker
             anonymousSymbol.Declarations = originalSymbol.Declarations;
         }
 
-        return this.newAnonymousType(anonymousSymbol, memberTable, null, null, null);
+        return this.newAnonymousType(anonymousSymbol, memberTable, default, default, null);
     }
 }
 
@@ -31125,7 +31153,7 @@ public sealed partial class Checker
         links.target = symbol;
         links.originatingImport = referenceParent;
         var resolvedModuleType = this.resolveStructuredTypeMembers(moduleType);
-        this.valueSymbolLinks.Get(result).resolvedType = this.newAnonymousType(result, resolvedModuleType.members, null, null, resolvedModuleType.indexInfos);
+        this.valueSymbolLinks.Get(result).resolvedType = this.newAnonymousType(result, resolvedModuleType.members, default, default, resolvedModuleType.indexInfos);
         return result;
     }
 }
@@ -33858,7 +33886,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Signature> getInstantiatedConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
+    private Slice<Signature> getInstantiatedConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
     {
         var signatures = this.getConstructorsForTypeArguments(t, typeArgumentNodes, location);
         var typeArguments = Core.Map(typeArgumentNodes, this.getTypeFromTypeNode);
@@ -33875,7 +33903,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Signature> getConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
+    private Slice<Signature> getConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
     {
         var typeArgCount = GoRuntime.Len(typeArgumentNodes);
         return Core.Filter(this.getSignaturesOfType(t, SignatureKind.Construct), (sig) =>
@@ -33899,7 +33927,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Signature> getDefaultConstructSignatures(Type classType)
+    private Slice<Signature> getDefaultConstructSignatures(Type classType)
     {
         var baseConstructorType = getBaseConstructorTypeOfClass(classType);
         var baseSignatures = getSignaturesOfType(baseConstructorType, SignatureKind.Construct);
@@ -33908,13 +33936,13 @@ public sealed partial class Checker
         if (GoRuntime.Len(baseSignatures) == 0)
         {
             var flags = isAbstract ? SignatureFlags.Construct | SignatureFlags.Abstract : SignatureFlags.Construct;
-            return [newSignature(flags, null, classType.AsInterfaceType().LocalTypeParameters(), null, null, classType, null, 0)];
+            return Slice<Signature>.FromArray([newSignature(flags, null, classType.AsInterfaceType().LocalTypeParameters(), null, null, classType, null, 0)]);
         }
         var baseTypeNode = getBaseTypeNodeOfClass(classType);
         var isJavaScript = declaration != null && Ast.IsInJSFile(declaration);
         var typeArguments = getTypeArgumentsFromNode(baseTypeNode);
         var typeArgCount = GoRuntime.Len(typeArguments);
-        List<Signature> result = null;
+        Slice<Signature> result = default;
         foreach (var baseSig in GoRuntime.RangeValues(baseSignatures))
         {
             var minTypeArgumentCount = getMinTypeArgumentCount(baseSig.typeParameters);
@@ -35109,7 +35137,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveNewExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveNewExpression(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         var expressionType = this.checkNonNullExpression(node.Expression());
         if ((expressionType == this.silentNeverType))
@@ -35188,7 +35216,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private constructorAccessibilityError getConstructorAccessibilityError(Node node, List<Signature> signatures, ModifierFlags modifiersMask)
+    private constructorAccessibilityError getConstructorAccessibilityError(Node node, Slice<Signature> signatures, ModifierFlags modifiersMask)
     {
         {
             foreach (var signature in GoRuntime.RangeValues(signatures))
@@ -37649,7 +37677,7 @@ public sealed partial class Checker
         }
         var hasSomeApplicableSignature = false;
         Type nonApplicableType = default;
-        Func<List<Signature>, List<Signature>> getInstantiatedSignatures = (signatures) =>
+        Func<Slice<Signature>, Slice<Signature>> getInstantiatedSignatures = (signatures) =>
 {
     var applicableSignatures = Core.Filter(signatures, (sig) =>
 {
@@ -37676,11 +37704,11 @@ public sealed partial class Checker
     if (((t2.flags & TypeFlags.Object) != 0))
     {
         var resolved = this.resolveStructuredTypeMembers(t2);
-        var callSignatures = getInstantiatedSignatures(resolved.CallSignatures());
-        var constructSignatures = getInstantiatedSignatures(resolved.ConstructSignatures());
-        hasSignatures = ((hasSignatures || (GoRuntime.Len(resolved.CallSignatures()) != 0)) || (GoRuntime.Len(resolved.ConstructSignatures()) != 0));
+        var callSignatures = getInstantiatedSignatures(resolved.CallSignaturesSlice());
+        var constructSignatures = getInstantiatedSignatures(resolved.ConstructSignaturesSlice());
+        hasSignatures = ((hasSignatures || (GoRuntime.Len(resolved.CallSignaturesSlice()) != 0)) || (GoRuntime.Len(resolved.ConstructSignaturesSlice()) != 0));
         hasApplicableSignature = ((hasApplicableSignature || (GoRuntime.Len(callSignatures) != 0)) || (GoRuntime.Len(constructSignatures) != 0));
-        if ((!Core.Same(callSignatures, resolved.CallSignatures()) || !Core.Same(constructSignatures, resolved.ConstructSignatures())))
+        if ((!Core.Same(callSignatures, resolved.CallSignaturesSlice()) || !Core.Same(constructSignatures, resolved.ConstructSignaturesSlice())))
         {
             var symbol = this.newSymbol(SymbolFlags.None, Ast.InternalSymbolNameInstantiationExpression);
             Debug.Assert((t2.symbol != null), "Instantiation expression source type must have a symbol");
@@ -38565,7 +38593,7 @@ public sealed partial class Checker
         {
             return new IterationTypes(this.anyType, this.anyType, this.anyType);
         }
-        List<Signature> methodSignatures = default;
+        Slice<Signature> methodSignatures = default;
         if ((methodType != null))
         {
             methodSignatures = this.getSignaturesOfType(methodType, SignatureKind.Call);
@@ -39032,7 +39060,7 @@ public sealed partial class Checker
                 members[symbol.Name] = symbol;
             }
         }
-        var result = this.newAnonymousType(t.symbol, members, null, null, this.getIndexInfosOfType(t));
+        var result = this.newAnonymousType(t.symbol, members, default, default, this.getIndexInfosOfType(t));
         result.objectFlags = t.objectFlags;
         return result;
     }
@@ -39149,7 +39177,7 @@ public sealed partial class Checker
                 members[prop2.Name] = this.getSpreadSymbol(prop2, false);
             }
         }
-        var result = this.newAnonymousType(symbol, members, null, null, this.getIndexInfosOfType(source));
+        var result = this.newAnonymousType(symbol, members, default, default, this.getIndexInfosOfType(source));
         result.objectFlags |= ObjectFlags.ObjectRestType;
         return result;
     }
@@ -39214,7 +39242,7 @@ public sealed partial class Checker
         {
             indexInfos = new List<IndexInfo> { stringIndexInfo };
         }
-        var result = this.newAnonymousType(null, members, null, null, indexInfos);
+        var result = this.newAnonymousType(null, members, default, default, indexInfos);
         result.objectFlags |= objectFlags;
         if (includePatternInType)
         {
@@ -40264,7 +40292,7 @@ public sealed partial class Checker
 {
     return this.getIndexInfoWithReadonly(info, @readonly);
 });
-        var spread = this.newAnonymousType(symbol, members, null, null, spreadIndexInfos);
+        var spread = this.newAnonymousType(symbol, members, default, default, spreadIndexInfos);
         spread.objectFlags |= (((ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral) | ObjectFlags.ContainsSpread) | objectFlags);
         return spread;
     }
@@ -40366,7 +40394,7 @@ public sealed partial class Checker
                 }
             }
         }
-        var spread = this.newAnonymousType(firstType.symbol, members, null, null, this.getIndexInfosOfType(firstType));
+        var spread = this.newAnonymousType(firstType.symbol, members, default, default, this.getIndexInfosOfType(firstType));
         spread.objectFlags |= (ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral);
         return spread;
     }
@@ -40382,7 +40410,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveTaggedTemplateExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveTaggedTemplateExpression(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         var tag = node.AsTaggedTemplateExpression().Tag;
         var tagType = this.checkExpression(tag);
@@ -40413,7 +40441,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveInstanceofExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveInstanceofExpression(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         var right = node.AsBinaryExpression().Right;
         var rightType = this.checkExpression(right);
@@ -40629,7 +40657,7 @@ public sealed partial class Checker
             this.valueSymbolLinks.Get(metaPropertySymbol).resolvedType = importMetaType;
             var members = createSymbolTable(new List<Symbol> { metaPropertySymbol });
             symbol.Members = members;
-            this.deferredGlobalImportMetaExpressionType = this.newAnonymousType(symbol, members, null, null, null);
+            this.deferredGlobalImportMetaExpressionType = this.newAnonymousType(symbol, members, default, default, null);
         }
         return this.deferredGlobalImportMetaExpressionType;
     }
@@ -41548,7 +41576,7 @@ public sealed partial class Checker
                     members[member.Name] = member;
                 }
             }
-            var t = this.newAnonymousType(symbol, members, null, null, null);
+            var t = this.newAnonymousType(symbol, members, default, default, null);
             t.objectFlags |= (ObjectFlags.ObjectLiteral | ObjectFlags.NonInferrableType);
             links.resolvedType = t;
         }
@@ -41837,7 +41865,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature resolveDecorator(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveDecorator(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         if (!Ast.CanHaveDecorators(node.Parent))
         {
@@ -41880,7 +41908,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool isPotentiallyUncalledDecorator(Node decorator, List<Signature> signatures)
+    private bool isPotentiallyUncalledDecorator(Node decorator, Slice<Signature> signatures)
     {
         return ((GoRuntime.Len(signatures) != 0) && Core.Every(signatures, (sig) =>
 {
@@ -42308,7 +42336,7 @@ public sealed partial class Checker
         members["name"] = this.newProperty("name", nameType);
         members["private"] = this.newProperty("private", Core.IfElse(isPrivate, this.trueType, this.falseType));
         members["static"] = this.newProperty("static", Core.IfElse(isStatic, this.trueType, this.falseType));
-        var overrideType2 = this.newAnonymousType(null, members, null, null, null);
+        var overrideType2 = this.newAnonymousType(null, members, default, default, null);
         this.cachedTypes[key] = overrideType2;
         return overrideType2;
     }

@@ -1,0 +1,17 @@
+{
+  "classification": "Four authored finite source-family inputs; full genuine pinned-Go Program records, not original upstream test bodies",
+  "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "command": [
+    "/home/greg/projects/typescript-dotnet/tools/.cache/program-oracle"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.09285033898777328,
+  "records": 4,
+  "repeatDiagnosticsAndPublicTypeQueries": true,
+  "files": {
+    "tools/.cache/program-oracle": "81788084c43dbb81a96ef302d22dc0688174ee9cc52046902e325def475cada7",
+    "validation/signature-slice-corpus/requests.jsonl": "9e5e652db025d7b8af1e4bb9c78a9e3ebfef134cf4cf3599fac88aeaabc991a7",
+    "validation/signature-slice-corpus/program-pairs.jsonl.gz": "afec0240922a1078de171cd9ae51f56573350c18a046bccefa55ed3f090d3514",
+    "artifacts/vscode-signature-slices/reference/original.jsonl": "a45bd4331204c4ff1cb865aaa7e1bc25f1fa16141ff31d60249d3b72acefd779"
+  }
+}

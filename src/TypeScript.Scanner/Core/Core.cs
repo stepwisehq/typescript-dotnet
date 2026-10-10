@@ -112,6 +112,124 @@ internal static partial class Core
 
 internal static partial class Core
 {
+    // core.go:183/192/199 and ordered slice search helpers. Descriptor copies
+    // capture the length while element reads retain the shared backing store.
+    public static bool Same<T>(Slice<T> left, Slice<T> right) => left.SameStorageRange(right);
+    public static bool Some<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        foreach (var value in values) if (predicate(value)) return true;
+        return false;
+    }
+    public static bool Every<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        foreach (var value in values) if (!predicate(value)) return false;
+        return true;
+    }
+    public static T? FirstOrNil<T>(Slice<T> values) => values.Length == 0 ? default : values[0];
+    public static T? LastOrNil<T>(Slice<T> values) => values.Length == 0 ? default : values[values.Length - 1];
+    public static T? Find<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        foreach (var value in values) if (predicate(value)) return value;
+        return typeof(T) == typeof(string) ? (T)(object)"" : default;
+    }
+    public static TOut? FirstNonNil<TIn, TOut>(Slice<TIn> values, Func<TIn, TOut?> map) where TOut : class
+    {
+        foreach (var value in values)
+        {
+            var mapped = map(value);
+            if (mapped is not null) return mapped;
+        }
+        return null;
+    }
+    public static int FindIndex<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        for (int i = 0; i < values.Length; i++) if (predicate(values[i])) return i;
+        return -1;
+    }
+    public static int CountWhere<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        int count = 0;
+        foreach (var value in values) if (predicate(value)) count++;
+        return count;
+    }
+    // core.go:305: only two nonempty inputs need a fresh combined buffer.
+    public static Slice<T> Concatenate<T>(Slice<T> left, Slice<T> right)
+    {
+        if (right.Length == 0) return left;
+        if (left.Length == 0) return right;
+        var result = Slice<T>.Make(checked(left.Length + right.Length));
+        left.AsSpan().CopyTo(result.AsSpan());
+        right.AsSpan().CopyTo(result.AsSpan().Slice(left.Length));
+        return result;
+    }
+    public static Slice<T> AppendIfUnique<T>(Slice<T> values, T element) where T : class =>
+        GoSlices.Contains(values, element) ? values : values.Append(element);
+
+    // core.go:36: return the original header unless the first exclusion occurs.
+    public static Slice<T> Filter<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (!predicate(values[i]))
+            {
+                var result = GoSlices.Clone(values.Slice2(0, i));
+                for (i++; i < values.Length; i++)
+                {
+                    var value = values[i];
+                    if (predicate(value)) result = result.Append(value);
+                }
+                return result;
+            }
+        }
+        return values;
+    }
+    // core.go:151: unchanged maps borrow; first change makes one detached result.
+    public static Slice<T> SameMap<T>(Slice<T> values, Func<T, T> map)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            var value = values[i];
+            var mapped = map(value);
+            if (!EqualityComparer<T>.Default.Equals(mapped, value))
+            {
+                var result = Slice<T>.Make(values.Length);
+                values.AsSpan().Slice(0, i).CopyTo(result.AsSpan());
+                result[i] = mapped;
+                for (int j = i + 1; j < values.Length; j++) result[j] = map(values[j]);
+                return result;
+            }
+        }
+        return values;
+    }
+    // core.go:80. Signature outputs keep descriptors; other mapped outputs keep
+    // their established owned List storage, without projecting the input slice.
+    public static Slice<U> MapSlice<T, U>(Slice<T> values, Func<T, U> map)
+    {
+        if (values.IsNil) return default;
+        var result = Slice<U>.Make(values.Length);
+        for (int i = 0; i < values.Length; i++) result[i] = map(values[i]);
+        return result;
+    }
+    public static List<U>? Map<T, U>(Slice<T> values, Func<T, U> map)
+    {
+        if (values.IsNil) return null;
+        var result = new List<U>(values.Length);
+        foreach (var value in values) result.Add(map(value));
+        return result;
+    }
+    // core.go:117: no mapped nonzero value retains a nil output List boundary.
+    public static List<U>? MapNonNil<T, U>(Slice<T> values, Func<T, U> map)
+    {
+        List<U>? result = null;
+        U zero = typeof(U) == typeof(string) ? (U)(object)string.Empty : default!;
+        foreach (var value in values)
+        {
+            var mapped = map(value);
+            if (!EqualityComparer<U>.Default.Equals(mapped, zero)) (result ??= new()).Add(mapped);
+        }
+        return result;
+    }
+
     public static T? FirstOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[0];
     public static int FindIndex<T>(List<T>? values, Func<T, bool> predicate) => values?.FindIndex(x => predicate(x)) ?? -1;
 

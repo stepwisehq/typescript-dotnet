@@ -279,13 +279,13 @@ public sealed partial class Graph
         if (payload is ConstrainedType c)
             fields.Add(F("resolvedBaseConstraint", "type", c.resolvedBaseConstraint));
         if (payload is StructuredType s)
-            fields.AddRange([F("members", "table", s.members), F("properties", "symbols", s.properties), F("signatures", "signatures", s.signatures), F("callSignatureCount", "number", s.callSignatureCount), F("indexInfos", "indexes", s.indexInfos), F("objectTypeWithoutAbstractConstructSignatures", "type", s.objectTypeWithoutAbstractConstructSignatures)]);
+            fields.AddRange([F("members", "table", s.members), F("properties", "symbols", s.properties), F("signatures", "signatures", GoSlices.ToListOrNull(s.signatures)), F("callSignatureCount", "number", s.callSignatureCount), F("indexInfos", "indexes", s.indexInfos), F("objectTypeWithoutAbstractConstructSignatures", "type", s.objectTypeWithoutAbstractConstructSignatures)]);
         if (payload is ObjectType o)
             fields.AddRange([F("target", "type", o.target), F("mapper", "mapper", o.mapper), F("instantiations", "instantiations", o.instantiations)]);
         if (payload is TypeReference r)
             fields.AddRange([F("node", "node", r.node), F("resolvedTypeArguments", "types", r.resolvedTypeArguments)]);
         if (payload is InterfaceType i)
-            fields.AddRange([F("allTypeParameters", "types", i.allTypeParameters), F("outerTypeParameterCount", "number", i.outerTypeParameterCount), F("thisType", "type", i.thisType), F("baseTypesResolved", "bool", i.baseTypesResolved), F("declaredMembersResolved", "bool", i.declaredMembersResolved), F("resolvedBaseConstructorType", "type", i.resolvedBaseConstructorType), F("resolvedBaseTypes", "types", i.resolvedBaseTypes), F("declaredMembers", "table", i.declaredMembers), F("declaredCallSignatures", "signatures", i.declaredCallSignatures), F("declaredConstructSignatures", "signatures", i.declaredConstructSignatures), F("declaredIndexInfos", "indexes", i.declaredIndexInfos)]);
+            fields.AddRange([F("allTypeParameters", "types", i.allTypeParameters), F("outerTypeParameterCount", "number", i.outerTypeParameterCount), F("thisType", "type", i.thisType), F("baseTypesResolved", "bool", i.baseTypesResolved), F("declaredMembersResolved", "bool", i.declaredMembersResolved), F("resolvedBaseConstructorType", "type", i.resolvedBaseConstructorType), F("resolvedBaseTypes", "types", i.resolvedBaseTypes), F("declaredMembers", "table", i.declaredMembers), F("declaredCallSignatures", "signatures", GoSlices.ToListOrNull(i.declaredCallSignatures)), F("declaredConstructSignatures", "signatures", GoSlices.ToListOrNull(i.declaredConstructSignatures)), F("declaredIndexInfos", "indexes", i.declaredIndexInfos)]);
         if (payload is UnionOrIntersectionType u)
             fields.AddRange([F("types", "types", u.types), F("propertyCache", "table", u.propertyCache), F("propertyCacheWithoutFunctionPropertyAugment", "table", u.propertyCacheWithoutFunctionPropertyAugment), F("resolvedProperties", "symbols", u.resolvedProperties)]);
         if (payload is UnionType union)

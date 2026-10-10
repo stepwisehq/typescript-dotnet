@@ -150,11 +150,33 @@ internal readonly struct GoIntegerRange(int count) : IEnumerable<int>
     }
 }
 
+// Go range copies the slice header and each indexed value before the body.
+internal readonly struct GoSliceRange<T>(Slice<T> source)
+{
+    public Enumerator GetEnumerator() => new(source);
+    public struct Enumerator(Slice<T> source)
+    {
+        private int next;
+        public KeyValuePair<int, T> Current { get; private set; }
+        public bool MoveNext()
+        {
+            if (next >= source.Length) return false;
+            Current = new(next, source[next]);
+            next++;
+            return true;
+        }
+    }
+}
+
 internal static class GoRuntime
 {
     // Narrow source descriptor overloads; existing List consumers are unchanged.
     public static int Len<T>(Slice<T> source) => source.Length;
     public static Slice<T> Append<T>(Slice<T> source, T value) => source.Append(value);
+    public static Slice<T> Append<T>(Slice<T> source, Slice<T> values) => source.Append(values);
+    public static Slice<T> Append<T>(Slice<T> source, ReadOnlySpan<T> values) => source.Append(values);
+    public static Slice<T> RangeValues<T>(Slice<T> source) => source;
+    public static GoSliceRange<T> Range<T>(Slice<T> source) => new(source);
     public static Slice<T> Slice<T>(Slice<T> source, int start) => source.Slice2(start);
     public static Slice<T> Slice<T>(Slice<T> source, int start, int end) => source.Slice2(start, end);
     public static IEnumerable<int> RangeKeys<T>(Slice<T> source)
@@ -234,6 +256,32 @@ internal static class GoRuntime
 
 internal static class GoSlices
 {
+    // Go slices.Clone retains nil and a nonnil empty zero-capacity header.
+    public static Slice<T> Clone<T>(Slice<T> values) => values.Length == 0
+        ? values.Slice3(0, 0, 0) : TypeScript.Scanner.Slice<T>.FromArray(values.AsSpan().ToArray());
+    public static Slice<T> Clip<T>(Slice<T> values) => values.Slice3(0, values.Length, values.Length);
+    public static int Index<T>(Slice<T> values, T target)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (EqualityComparer<T>.Default.Equals(values[i], target)) return i;
+        return -1;
+    }
+    public static bool Contains<T>(Slice<T> values, T target) => Index(values, target) >= 0;
+    public static bool Equal<T>(Slice<T> left, Slice<T> right)
+    {
+        if (left.Length != right.Length) return false;
+        for (int i = 0; i < left.Length; i++)
+            if (!EqualityComparer<T>.Default.Equals(left[i], right[i])) return false;
+        return true;
+    }
+    // Explicit public/named-observer boundary only; internal consumers borrow.
+    public static List<T> ToListOrNull<T>(Slice<T> values)
+    {
+        if (values.IsNil) return null;
+        var result = new List<T>(values.Length);
+        result.AddRange(values.AsSpan());
+        return result;
+    }
     public static int Index<T>(List<T> values, T target) => values?.IndexOf(target) ?? -1;
     public static bool Contains<T>(List<T> values, T target) => Index(values, target) >= 0;
     public static bool Equal<T>(List<T> left, List<T> right)

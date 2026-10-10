@@ -936,8 +936,8 @@ public sealed partial class Checker
     // relater.go:909. Preserve signature resolution even for absent data-only slots.
     private Type findBestTypeForInvokable(Type source, Type target, SignatureKind kind)
     {
-        if ((getSignaturesOfType(source, kind)?.Count ?? 0) != 0)
-            return target.Types().FirstOrDefault(t => (getSignaturesOfType(t, kind)?.Count ?? 0) != 0);
+        if (GoRuntime.Len(getSignaturesOfType(source, kind)) != 0)
+            return target.Types().FirstOrDefault(t => GoRuntime.Len(getSignaturesOfType(t, kind)) != 0);
         return null;
     }
 
@@ -1023,9 +1023,9 @@ public sealed partial class Checker
         var calls = getSignaturesOfStructuredType(source, SignatureKind.Call);
         var constructs = getSignaturesOfStructuredType(source, SignatureKind.Construct);
         var properties = getPropertiesOfObjectType(source);
-        if (((calls?.Count ?? 0) != 0 || (constructs?.Count ?? 0) != 0) && (properties?.Count ?? 0) == 0)
+        if ((calls.Length != 0 || constructs.Length != 0) && (properties?.Count ?? 0) == 0)
         {
-            if (((getSignaturesOfType(target, SignatureKind.Call)?.Count ?? 0) != 0 && (calls?.Count ?? 0) != 0) || ((getSignaturesOfType(target, SignatureKind.Construct)?.Count ?? 0) != 0 && (constructs?.Count ?? 0) != 0))
+            if ((GoRuntime.Len(getSignaturesOfType(target, SignatureKind.Call)) != 0 && calls.Length != 0) || (GoRuntime.Len(getSignaturesOfType(target, SignatureKind.Construct)) != 0 && constructs.Length != 0))
                 return true;
             return false;
         }
@@ -1607,7 +1607,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2083:1.
-    private TypePredicate getUnionOrIntersectionTypePredicate(List<Signature> signatures, bool isUnion)
+    private TypePredicate getUnionOrIntersectionTypePredicate(Slice<Signature> signatures, bool isUnion)
     {
         TypePredicate last = default;
         List<Type> types = default;
@@ -1651,7 +1651,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2187:1.
-    private Signature findMatchingSignature(List<Signature> signatureList, Signature signature, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes)
+    private Signature findMatchingSignature(Slice<Signature> signatureList, Signature signature, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes)
     {
         Func<Type, Type, Ternary> compareTypes = partialMatch ? this.compareTypesSubtypeOf : this.compareTypesIdentical;
         {
@@ -1898,13 +1898,13 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2152:1.
-    private List<Signature> findMatchingSignatures(List<List<Signature>> signatureLists, Signature signature, int listIndex)
+    private Slice<Signature> findMatchingSignatures(List<Slice<Signature>> signatureLists, Signature signature, int listIndex)
     {
         if ((GoRuntime.Len(signature.typeParameters) != 0))
         {
             if ((listIndex > 0))
             {
-                return null;
+                return default;
             }
 
             {
@@ -1913,18 +1913,15 @@ public sealed partial class Checker
                 {
                     if ((this.findMatchingSignature(signatureLists[i], signature, false, false, false) == null))
                     {
-                        return null;
+                        return default;
                     }
                 }
             }
 
-            return new List<Signature>
-            {
-                signature
-            };
+            return Slice<Signature>.FromArray([signature]);
         }
 
-        List<Signature> result = default;
+        Slice<Signature> result = default;
         {
             foreach (var i2 in GoRuntime.RangeKeys(signatureLists))
             {
@@ -1944,7 +1941,7 @@ public sealed partial class Checker
 
                 if ((match == null))
                 {
-                    return null;
+                    return default;
                 }
 
                 result = Core.AppendIfUnique(result, match);
@@ -2098,8 +2095,8 @@ public sealed partial class Checker
                         var constructs = c.getSignaturesOfType(source, SignatureKind.Construct);
                         // relater.go:2729. Only the first call/construct return is
                         // checked, using this relation and source-only recursion.
-                        if ((calls?.Count ?? 0) > 0 && isRelatedTo(c.getReturnTypeOfSignature(calls[0]), target, RecursionFlags.Source, false) != Ternary.False ||
-                            (constructs?.Count ?? 0) > 0 && isRelatedTo(c.getReturnTypeOfSignature(constructs[0]), target, RecursionFlags.Source, false) != Ternary.False)
+                        if (calls.Length > 0 && isRelatedTo(c.getReturnTypeOfSignature(calls[0]), target, RecursionFlags.Source, false) != Ternary.False ||
+                            constructs.Length > 0 && isRelatedTo(c.getReturnTypeOfSignature(constructs[0]), target, RecursionFlags.Source, false) != Ternary.False)
                             reportError(Diagnostics.Value_of_type_0_has_no_properties_in_common_with_type_1_Did_you_mean_to_call_it, sourceString, targetString);
                         else
                             reportError(Diagnostics.Type_0_has_no_properties_in_common_with_type_1, sourceString, targetString);
@@ -4547,7 +4544,7 @@ public sealed partial class Checker
             return false;
         var returnExpression = node.Body();
         var sourceReturn = getReturnTypeOfSignature(sourceSig);
-        var targetReturn = getUnionType(targetSignatures.Select(getReturnTypeOfSignature).ToList());
+        var targetReturn = getUnionType(Core.Map(targetSignatures, getReturnTypeOfSignature));
         if (checkTypeRelatedTo(sourceReturn, targetReturn, relation, null))
             return false;
         if (returnExpression != null && elaborateError(returnExpression, sourceReturn, targetReturn, relation, null, diagnosticOutput))

@@ -11,4 +11,5 @@
     <Compile Include="../Configuration.Checks/ConfigurationFileSystem.cs" Link="Retained/ConfigurationFileSystem.cs" />
     <Compile Include="../Configuration.Checks/Check.cs" Link="Retained/Check.cs" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="../signature-slice-corpus/slice-witness-expected.json" LogicalName="Program.Checks.SignatureSliceWitness" /></ItemGroup>
 </Project>

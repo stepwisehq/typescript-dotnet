@@ -763,7 +763,7 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:545:1.
-    private Signature resolveJsxOpeningLikeElement(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    private Signature resolveJsxOpeningLikeElement(Node node, GoRef<Slice<Signature>> candidatesOutArray, CheckMode checkMode)
     {
         var isJsxOpenFragment = Ast.IsJsxOpeningFragment(node);
         Type exprTypes = default;
@@ -1020,7 +1020,7 @@ public sealed partial class Checker
         Func<Type> createJsxAttributesType = () =>
         {
             objectFlags |= ObjectFlags.FreshLiteral;
-            var result = this.newAnonymousType(attributesSymbol, attributesTable, null, null, null);
+            var result = this.newAnonymousType(attributesSymbol, attributesTable, default, default, null);
             result.objectFlags |= ((objectFlags | ObjectFlags.ObjectLiteral) | ObjectFlags.ContainsObjectOrArrayLiteral);
             return result;
         };
@@ -1202,7 +1202,7 @@ public sealed partial class Checker
                 childrenPropSymbol.ValueDeclaration.AsPropertySignatureDeclaration().Symbol = childrenPropSymbol;
                 var childPropMap = new SymbolTable();
                 childPropMap[jsxChildrenPropertyName] = childrenPropSymbol;
-                spread = this.getSpreadType(spread, this.newAnonymousType(attributesSymbol, childPropMap, null, null, null), attributesSymbol, (objectFlags | this.getPropagatingFlagsOfTypes(childTypes, TypeFlags.None)), false);
+                spread = this.getSpreadType(spread, this.newAnonymousType(attributesSymbol, childPropMap, default, default, null), attributesSymbol, (objectFlags | this.getPropagatingFlagsOfTypes(childTypes, TypeFlags.None)), false);
             }
         }
 
@@ -1272,14 +1272,11 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:896:1.
-    private List<Signature> getUninstantiatedJsxSignaturesOfType(Type elementType, Node caller)
+    private Slice<Signature> getUninstantiatedJsxSignaturesOfType(Type elementType, Node caller)
     {
         if (((elementType.flags & TypeFlags.String) != 0))
         {
-            return new List<Signature>
-            {
-                this.anySignature
-            };
+            return Slice<Signature>.FromArray([this.anySignature]);
         }
 
         if (((elementType.flags & TypeFlags.StringLiteral) != 0))
@@ -1288,14 +1285,11 @@ public sealed partial class Checker
             if ((intrinsicType == null))
             {
                 this.error(caller, Diagnostics.Property_0_does_not_exist_on_type_1, getStringLiteralValue(elementType), ("JSX." + JsxNames.IntrinsicElements));
-                return null;
+                return default;
             }
 
             var fakeSignature = this.createSignatureForJSXIntrinsic(caller, intrinsicType);
-            return new List<Signature>
-            {
-                fakeSignature
-            };
+            return Slice<Signature>.FromArray([fakeSignature]);
         }
 
         var apparentElemType = this.getApparentType(elementType);

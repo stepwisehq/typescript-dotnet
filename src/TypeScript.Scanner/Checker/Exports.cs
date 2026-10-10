@@ -88,7 +88,8 @@ public sealed partial class Checker
     public List<Signature> GetSignaturesOfType(Type t, SignatureKind kind)
     {
         validateOwnedType(t);
-        return getSignaturesOfType(t, kind);
+        // exports.go public slice; retain the managed mutable List snapshot boundary.
+        return GoSlices.ToListOrNull(getSignaturesOfType(t, kind));
     }
 
     public Type GetReturnTypeOfSignature(Signature signature)

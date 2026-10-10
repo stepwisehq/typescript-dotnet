@@ -1,5 +1,13 @@
 # Active performance work (2026-10-10)
 
+**Resume here:** the internal `Slice<Signature>` rollout after checkpoint `2e69b54`
+is qualified for an intermediate checkpoint. Native AOT VS Code and focused checks
+pass; matched allocation is down2.435%. See the evidence below. Next selection is
+inference candidate buffers versus the source-shaped markNodeAssignmentsWorker
+visitor allocation path, using the saved joint allocation profile.
+Sol verifier owns heavy jobs; source-only implementation may proceed against a
+frozen7bab baseline. No broad final regression run is scheduled.
+
 **Latest authorization: continue allocation and UTF8 work regardless of GC results.**
 User explicitly directed ongoing allocation/string-copy reduction and byte-backed
 ReadOnlySpan<byte> work. Sol scanner owns the approved owned-byte loader/source/view/parser/scanner pipeline
@@ -52,7 +60,7 @@ semantics remain unchanged, distinct from Go's captured slice-header length.
 No identifier/symbol/path byte-view migration has begun: user agrees to wait for
 profiles before prioritizing that larger change.
 
-**Current execution handoff / intermediate Git checkpoint:** source is frozen and
+**Last qualified intermediate checkpoint:** source was frozen and
 qualified as Scanner DLL `7bab3765`, native CLI `3b524d18`, under
 `artifacts/vscode-range-pathkey`. Native VS Code:23.33s /95.87 CPU seconds
 /11,411,500KiB peak, all ten complete expected diagnostics and available pinned
@@ -69,12 +77,59 @@ The package-scoped Go `-m=2` escape-report attempt was stopped after135.672s at
 observed16.04GiB Go-process RSS with no escape-analysis conclusion; no retry.
 Evidence: `artifacts/vscode-generic-signature-state/go-escape`.
 
-Next: scanner and support are assessing a coherent borrowed `Slice<Signature>`
-storage/getter/consumer boundary against Go. No signature-model edits yet. Preserve
-Go nil/Clip/ownership semantics and function boundaries; do not simply share mutable
-Lists globally or introduce mutable empty singletons. Commit this qualified work
-before beginning the next source packet. Build/native VS Code first remains the
-validation order; no comprehensive acceptance run is scheduled.
+Progress commit is `2e69b54` (clean tree at creation). The next authorized packet
+is an end-to-end internal `Slice<Signature>` rollout through structured/declared/
+composite storage, resolution, signature inference, and owned overload candidates.
+Public List-return APIs retain explicit nil-aware detached snapshots. Other Type,
+Symbol, IndexInfo, and Node storage stays unchanged; outer lists of signature
+headers may remain owned `List<Slice<Signature>>` collections.
+
+Contract: preserve Go function structure, nil/empty producer normalization,
+clipped public-type versus unclipped checker views, shallow element identities,
+Core.Same owner/start/length rules (capacity ignored; all empties same), clone-on-
+first-change maps, and independently owned candidate mutation. No dual persistent
+List/Slice storage or temporary per-call projection internally. Restore exact
+zero/one/two signature-family producer branches. Shared helpers are only those
+required by this signature chain. Inline header sizes grow, so allocation/RSS/speed
+benefit must be measured. This is signature storage completion within ongoing
+allocation work, not compiler-wide Slice or optimization completion.
+
+Ownership: Sol scanner owns Checker.cs/Types.cs/Exports.cs; support owns shared
+Slice/Core/runtime helpers and downstream signature consumers; verification owns
+independent review, targeted Go-backed controls and the sole build window. Plan
+one integration build after static readiness, then actual native VS Code first.
+Afterward use existing Callable89/Collections44 plus relevant generic-callable
+rows and finite header/behavior controls, then one allocation comparison against
+frozen7bab or the documented olderfe6 baseline. No comprehensive regression run.
+
+**Signature rollout first workload:** central integration needed one grouped repair
+(nine mechanical binding errors), then built cleanly in5.867s. Frozen library
+`cd2b47bb`, Native AOT CLI `c7a34224`, under `artifacts/vscode-signature-slices`.
+Actual Linux x64 Native AOT VS Code:22.73s /97.14 CPU seconds /11,323,472KiB peak;
+Server GC true/16, exit1, all ten complete diagnostic records and available pinned
+chains exact. This is one observation versus7bab23.33s, not a causal speed claim.
+Focused checks pass: eight new managed controls, four native shared boundaries,
+four native complete Go Program records, Callable89, Collections44 and TypeSystem77.
+Named observer adapters preserve schemas/expectations; an older Slice<Node> observer
+cast failed first and was corrected only in the harness. Independent source review
+found no material issue after grouped binding repairs. No full regression gate is
+scheduled.
+Matched sampled interval allocation22,490,726,952→21,942,971,296bytes (20.946→20.436GiB,
+−2.435%). Signature Lists451,909,624→0; signature arrays234,309,112→68,657,256bytes.
+Candidate zero loss/truncation,192899ticks with stacks; baseline one missing stack.
+One sampled trace per version, not exact census or native allocation totals. Final
+comparison and joint type/caller analysis are saved under
+`artifacts/vscode-signature-slices/{allocation-comparison.json,candidate-allocation/joint.json}`.
+No heavy job is running. Existing Sol support investigates inference candidate ownership;
+Sol verification investigates the visitor path; both are read-only until selection.
+
+**Pre-signature allocation baseline:** exact frozen7bab managed CLI, Server GC,
+`artifacts/vscode-signature-slices/baseline-allocation`:22,490,726,952 sampled
+interval bytes (20.945GiB),198091ticks, zero lost/truncated events; one tick has no
+stack. Ten diagnostic DTOs exact. CLI refsfalse build2.242s, no library rebuild;
+profiled wall25.73s is not a benchmark. This supersedes fe6 as the baseline for
+signature migration. Earlier fe6→7bab accumulated Append/range changes reduce
+23.289→20.945GiB; no signature benefit is included yet.
 
 **Latest profiles:** matched Server CoreCLR captures show sampled allocation weight
 28.3346→23.2893GiB (−17.81%), `5b6220a8`→`fe6cb0db`; ten diagnostics exact,

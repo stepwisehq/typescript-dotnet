@@ -68,7 +68,7 @@ public sealed partial class Graph
                     continue;
                 var properties = checker.GetPropertiesOfType(type);
                 var storage = type.AsStructuredType();
-                if ((storage.signatures?.Count ?? 0) != 0 || (storage.indexInfos?.Count ?? 0) != 0 || storage.callSignatureCount != 0)
+                if ((storage.signatures.Length) != 0 || (storage.indexInfos?.Count ?? 0) != 0 || storage.callSignatureCount != 0)
                     throw new InvalidOperationException("Non-data structured type in object observer");
                 var record = new ObjectTypeObservation
                 {
@@ -77,8 +77,8 @@ public sealed partial class Graph
                     PropertiesNull = properties is null,
                     RawPropertiesNull = storage.properties is null,
                     RawProperties = (storage.properties ?? []).Select(s => Symbol(s)!.Value).ToList(),
-                    SignaturesNull = storage.signatures is null,
-                    SignatureCount = storage.signatures?.Count ?? 0,
+                    SignaturesNull = storage.signatures.IsNil,
+                    SignatureCount = storage.signatures.Length,
                     CallSignatureCount = storage.callSignatureCount,
                     IndexInfosNull = storage.indexInfos is null,
                     IndexInfoCount = storage.indexInfos?.Count ?? 0,

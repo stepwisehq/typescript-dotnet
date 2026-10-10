@@ -1037,6 +1037,58 @@ one workload observation, not a controlled benchmark or whole optimization compl
 The progress checkpoint preserves the ongoing native-first feedback loop; it does
 not imply a new broad finalization gate.
 
+## Internal signature slice rollout
+
+The [signature snapshot](../artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json)
+replaces internal signature List storage end to end with Go-like value slice headers:
+structured/interface/composite producers, instantiation, relation and display consumers,
+and the resolution/candidate output chain. Type, Symbol and IndexInfo collections are
+unchanged. The original structured getters clip capacity while the internal checker
+getter preserves its unclipped two-index view. Empty setter inputs normalize to nil;
+a single signature family shares clipped storage and two nonempty families concatenate
+into detached storage. Unchanged maps retain the original header, while changed maps
+allocate an ordered shallow result. Reordered overload candidates own separate storage
+before indexed replacements. These distinctions were checked across whole affected
+functions and direct helper paths by independent reviewers.
+
+Existing public List-returning signature APIs explicitly materialize nil-aware detached
+shallow snapshots. Internal consumers use descriptors rather than these projections.
+The existing named validation record schemas also project only at their record boundary;
+their expectations remain unchanged. Raw signature field representation changes are not
+binary or reflection ABI equivalence claims. Descriptor fields are larger than reference
+fields, and Go allocator size-class rounding is not reproduced by nominal slice growth;
+net memory and speed effects require measurement.
+
+A coherent Release retry compiled with zero warnings/errors after nine mechanical
+bindings were corrected. The [first native VS Code run](../artifacts/vscode-signature-slices/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly in
+22.73s wall /97.14s CPU /11,323,472 KiB peak. This is a single observation, not an
+attributed speed improvement. Four authored shared boundary controls and four authored
+Program inputs compare against [real Go slice observations](../validation/signature-slice-corpus/slice-witness-provenance.json)
+and [complete pinned-Go Program records](../validation/signature-slice-corpus/reference-provenance.json).
+All eight managed checks passed. Native AOT separately passed the four shared boundary
+checks and [four complete Program comparisons](../artifacts/vscode-signature-slices/focused/native-program-four.jsonl).
+The [consolidated focused report](../artifacts/vscode-signature-slices/focused/report.json)
+also records Callable89, Collections44 and TypeSystem77 managed checks passing with
+zero skips. Named record adapters were corrected without changing their expectations.
+The controls are not original upstream compiler test bodies, and no new private
+observation acceptance was introduced.
+
+The [matched CoreCLR allocation comparison](../artifacts/vscode-signature-slices/allocation-comparison.json)
+reports sampled interval weight of 20.946 versus 20.436 GiB (2.44% lower), with
+Server GC and the same workload. Signature List weight fell from 451,909,624 bytes
+to no sampled events; Signature array weight fell from 234,309,112 to 68,657,256
+bytes. This is consistent with removing internal List projections and copies; an
+absence of sampled events does not prove zero actual allocations. ObjectType,
+TypeReference and InterfaceType sample weights increased, reported separately
+from the removed buffers; larger descriptor fields are a representation cost,
+not a proven attribution of those exact increases. Type array weight was broadly
+unchanged. Both traces preserve all ten diagnostic records and report zero lost
+events, no truncation and no aggregation overflow. Each variant has one sampled
+trace, so these weights are estimates rather than an exact allocation census.
+They describe CoreCLR rather than Native AOT allocations; the native timing
+observations above do not establish a causal speed improvement.
+
 ## Reproduction and records
 
 ```bash

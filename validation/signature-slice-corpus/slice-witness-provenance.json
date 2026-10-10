@@ -1,0 +1,17 @@
+{
+  "classification": "Authored Go-spec public slice boundary witness; no compiler private-state instrumentation or allocator capacity sequence assertions",
+  "command": [
+    "/home/greg/projects/typescript-dotnet/tools/.cache/go/bin/go",
+    "run",
+    "/home/greg/projects/typescript-dotnet/tools/signature-slice-reference/main.go"
+  ],
+  "GO111MODULE": "off",
+  "exitCode": 0,
+  "elapsedSeconds": 0.38639347298885696,
+  "observations": 5,
+  "files": {
+    "tools/signature-slice-reference/main.go": "85d09c95f24ef86aad0c80e0440ad7d8c3dbe5563fd70144d4bf6499882eb46c",
+    "validation/signature-slice-corpus/slice-witness-expected.json": "d510f5f14e4c36abf9353852d87222c8deba3687364990a7d8697fcde7dddbc1",
+    "tools/.cache/go/bin/go": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624"
+  }
+}

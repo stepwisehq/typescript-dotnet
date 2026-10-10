@@ -44,7 +44,7 @@ public sealed partial class StoredGraph
             }
 
             if (signature.composite != null)
-                seed += "/composite:" + (signature.composite.isUnion ? "true" : "false") + "(" + string.Join(";", signature.composite.signatures.Select(s => SignatureSeed(s, stack))) + ")";
+                seed += "/composite:" + (signature.composite.isUnion ? "true" : "false") + "(" + string.Join(";", GoSlices.ToListOrNull(signature.composite.signatures).Select(s => SignatureSeed(s, stack))) + ")";
             return seed;
         }
         finally

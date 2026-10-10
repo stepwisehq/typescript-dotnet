@@ -47,7 +47,7 @@ public sealed partial class Checker
 
             case CompositeSignature value:
             {
-                return ("CompositeSignature", new List<(string Name, string Kind, object Value)> { ("isUnion", "bool", value.isUnion), ("signatures", "list", value.signatures), });
+                return ("CompositeSignature", new List<(string Name, string Kind, object Value)> { ("isUnion", "bool", value.isUnion), ("signatures", "list", GoSlices.ToListOrNull(value.signatures)), });
             }
 
             case IndexInfo value:
@@ -260,7 +260,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -277,8 +277,8 @@ public sealed partial class Checker
                     ("resolvedBaseConstructorType", "reference", value.resolvedBaseConstructorType),
                     ("resolvedBaseTypes", "list", value.resolvedBaseTypes),
                     ("declaredMembers", "table", value.declaredMembers),
-                    ("declaredCallSignatures", "list", value.declaredCallSignatures),
-                    ("declaredConstructSignatures", "list", value.declaredConstructSignatures),
+                    ("declaredCallSignatures", "list", GoSlices.ToListOrNull(value.declaredCallSignatures)),
+                    ("declaredConstructSignatures", "list", GoSlices.ToListOrNull(value.declaredConstructSignatures)),
                     ("declaredIndexInfos", "list", value.declaredIndexInfos),
                     ("elementInfos", "list", value.elementInfos),
                     ("minLength", "number", value.minLength),
@@ -292,7 +292,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -309,8 +309,8 @@ public sealed partial class Checker
                     ("resolvedBaseConstructorType", "reference", value.resolvedBaseConstructorType),
                     ("resolvedBaseTypes", "list", value.resolvedBaseTypes),
                     ("declaredMembers", "table", value.declaredMembers),
-                    ("declaredCallSignatures", "list", value.declaredCallSignatures),
-                    ("declaredConstructSignatures", "list", value.declaredConstructSignatures),
+                    ("declaredCallSignatures", "list", GoSlices.ToListOrNull(value.declaredCallSignatures)),
+                    ("declaredConstructSignatures", "list", GoSlices.ToListOrNull(value.declaredConstructSignatures)),
                     ("declaredIndexInfos", "list", value.declaredIndexInfos),
                 };
             case TypeReference value:
@@ -319,7 +319,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -335,7 +335,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -357,7 +357,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -374,7 +374,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -390,7 +390,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -460,7 +460,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),
@@ -480,7 +480,7 @@ public sealed partial class Checker
                     ("resolvedBaseConstraint", "reference", value.resolvedBaseConstraint),
                     ("members", "table", value.members),
                     ("properties", "list", value.properties),
-                    ("signatures", "list", value.signatures),
+                    ("signatures", "list", GoSlices.ToListOrNull(value.signatures)),
                     ("callSignatureCount", "number", value.callSignatureCount),
                     ("indexInfos", "list", value.indexInfos),
                     ("objectTypeWithoutAbstractConstructSignatures", "reference", value.objectTypeWithoutAbstractConstructSignatures),

@@ -1525,7 +1525,7 @@ public sealed partial class Checker
             }
         }
 
-        this.setStructuredTypeMembers(t, members, null, null, indexInfos);
+        this.setStructuredTypeMembers(t, members, default, default, indexInfos);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1156:1.
@@ -1678,7 +1678,7 @@ public sealed partial class Checker
             };
         }
 
-        return this.newAnonymousType(null, members, null, null, indexInfos);
+        return this.newAnonymousType(null, members, default, default, indexInfos);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1262:1.

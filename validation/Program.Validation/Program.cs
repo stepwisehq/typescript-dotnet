@@ -7,6 +7,11 @@ internal static class Entry
 {
     private static void Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--signature-slice-boundaries")
+        {
+            Console.WriteLine("signature-slice-boundaries: " + SignatureSliceBoundaryChecks.RunAll() + " passed");
+            return;
+        }
         if (args.Length == 1 && args[0] == "--filename-role-checks")
         {
             Console.WriteLine("filename-role-checks: " + SourceFileNameChecks.RunAll() + " passed");

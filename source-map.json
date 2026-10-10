@@ -205,7 +205,16 @@
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "signatureSliceAdaptation": {
+        "adaptation": "Signature Slice overloads retain core.Same first-slot/length identity (capacity ignored, all empty equal), ordered filtering and first-change SameMap ownership. MapSlice produces signature descriptors; ordinary Map/MapNonNil still produce existing List outputs for Type/Symbol storage.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -557,13 +566,31 @@
           "snapshot": "artifacts/vscode-range-pathkey/build/snapshot-1/snapshot.json",
           "evidence": "artifacts/vscode-range-pathkey/independent-review.json"
         }
+      },
+      "signatureSliceAdaptation": {
+        "adaptation": "Authored Slice append/Clip/Clone/search/range helpers retain nil versus allocated-empty, captured headers and element order. ToListOrNull is limited to explicit public or named validation boundaries; ordinary internal signature paths do not project Lists.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       }
     },
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/Slice.cs",
       "status": "new",
-      "scope": "Authored array-backed value descriptor for Go slice header/storage semantics: nil versus empty, two/three-index slicing, shared writes, append reuse/growth, overlap-safe copy and captured range. First production use: inference source/target stacks. Nominal nextslicecap growth adapted from Go 1.27.1 runtime/slice.go under licenses/Go-LICENSE.txt; CLR allocator size-class rounding and exact automatic-capacity parity are excluded. No pooling or general migration of List-based compatibility helpers."
+      "scope": "Authored array-backed value descriptor for Go slice header/storage semantics: nil versus empty, two/three-index slicing, shared writes, append reuse/growth, overlap-safe copy and captured range. First production use: inference source/target stacks. Nominal nextslicecap growth adapted from Go 1.27.1 runtime/slice.go under licenses/Go-LICENSE.txt; CLR allocator size-class rounding and exact automatic-capacity parity are excluded. No pooling or general migration of List-based compatibility helpers.",
+      "signatureSliceAdaptation": {
+        "adaptation": "Insert preserves ordered overlapping movement and capacity reuse; SameStorageRange implements source core.Same first-slot/length comparison, ignoring capacity and equating all empty headers. Existing nominal growth excludes Go allocator size-class rounding; no exact automatically grown capacity claim.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": null,
@@ -986,6 +1013,16 @@
         "review": "Whole function/direct optional-signature helpers and resolveCall/chooseOverload publication reviewed independently.",
         "snapshot": "artifacts/vscode-range-pathkey/build/snapshot-1/snapshot.json",
         "evidence": "artifacts/vscode-range-pathkey/independent-review.json"
+      },
+      "signatureSliceAdaptation": {
+        "adaptation": "Internal signature getters, producers, instantiation, union master Same checks and complete resolution/candidate GoRef chain use Slice<Signature>. Structured setter preserves empty normalization, one-kind Clip sharing and two-kind detached concatenation; internal two-index getters remain unclipped. Owned reorder output uses capacity=len(input) and Insert before indexed overload replacement; other Type/Symbol/IndexInfo storage remains unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json",
+        "sampledAllocationFinding": "Total 20.946\u219220.436 GiB; Signature List interval weight 451,909,624\u21920 sampled bytes and Signature[] 234,309,112\u219268,657,256. Header-containing object sample increases are reported separately; zero sampling is not zero actual allocation. Type[] weight broadly unchanged."
       }
     },
     {
@@ -1038,7 +1075,16 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "signatureSliceAdaptation": {
+        "adaptation": "Structured, declared interface and composite signature fields use Slice<Signature>. Internal CallSignaturesSlice/ConstructSignaturesSlice preserve source clipped shared views (types.go:949/953); existing public List getters explicitly return nil-aware detached shallow snapshots.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -1093,7 +1139,16 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignRepair": "Original tuple/tuple numeric-index skip at relater.go4132 restored after full discriminated-type/property/rest/signature/index helper review; residual original complete record exact on candidate8. No diagnostic or type-relation normalization.",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "signatureSliceAdaptation": {
+        "adaptation": "Signature relationship inputs/results borrow Slice headers; nested signature groups retain existing outer Lists. Original relationship control flow, signature ordering and nil/singleton decisions are unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1184,7 +1239,16 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "signatureSliceAdaptation": {
+        "adaptation": "Signature predicates accept descriptors. Added source utilities.go:1316 minAndMax Slice overload preserves zero/first/ordered callback behavior with each element captured before callback; original List overload remains unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -1371,7 +1435,16 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "signatureSliceAdaptation": {
+        "adaptation": "Signature display traversal uses clipped structured signature descriptors and descriptor filtering. Public display/AST outputs and non-signature storage remain unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -1597,7 +1670,16 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "signatureSliceAdaptation": {
+        "adaptation": "Existing public GetSignaturesOfType List result is an explicit nil-aware detached shallow snapshot of the internal signature descriptor. Public method signature remains unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/pseudotypenodebuilder.go",
@@ -2375,7 +2457,9 @@
       "status": "new",
       "scope": "Static authored callable/signature/link/cache observer for exact Go comparison and Native AOT; preserves nullable states and identity/order.",
       "callablesCampaignState": "accepted-callables",
-      "callablesCampaignEvidence": "validation/results/callables-verified.json"
+      "callablesCampaignEvidence": "validation/results/callables-verified.json",
+      "signatureSliceAdaptation": "Existing named schema reads descriptor length/nil or explicitly projects detached shallow Lists, preserving original schema/order/null and failure policy. No production cache decision or expectation changes; focused Callable89/Collections44 retained checks pass; expectations unchanged. Prior unused-identifier Slice<Node> storage also explicitly projects in the same existing named nodes field.",
+      "signatureSliceFocusedEvidence": "artifacts/vscode-signature-slices/focused/report.json"
     },
     {
       "upstream": "tsc/internal/jsnum/jsnum_test.go",
@@ -2510,6 +2594,15 @@
         "review": "artifacts/vscode-generic-signature-state/build/source-ready.json",
         "snapshot": "artifacts/vscode-append-capacities/build/snapshot-1/snapshot.json",
         "evidence": "artifacts/vscode-append-capacities/independent-review.json"
+      },
+      "signatureSliceAdaptation": {
+        "adaptation": "Two anonymous/structured producer call sites pass default nil signature descriptors; existing inference algorithms and Type candidate Lists remain unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       }
     },
     {
@@ -2620,7 +2713,16 @@
       "status": "new",
       "scope": "Authored Native AOT static observer of stored checker/model/cache fields. Reads actual slots without reflection or semantic resolution; preserves null kinds and validates ownership. Independent oracle/reached payload coverage and acceptance pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
-      "collectionsCampaignState": "accepted-collections-contract"
+      "collectionsCampaignState": "accepted-collections-contract",
+      "signatureSliceAdaptation": {
+        "adaptation": "Existing named authored Collections profile explicitly projects signature descriptors into nil-aware detached List records; ordinary Program paths retain no projection or new instrumentation. Other field representations remain unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/ast/ast_generated.go",
@@ -4914,7 +5016,16 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "signatureSliceAdaptation": {
+        "adaptation": "JSX signature producers and candidate GoRef joins use Slice descriptors, retaining original nil/singleton/ordered resolution branches. Non-signature storage remains unchanged.",
+        "snapshot": "artifacts/vscode-signature-slices/build/snapshot-1/snapshot.json",
+        "state": "Complete affected source paths independently reviewed; coherent Release build and first native VS Code ten diagnostic records exact. Focused managed eight new controls plus Callable89/Collections44/TypeSystem77 passed; Native AOT four shared boundaries and four complete Program comparisons passed. One matched CoreCLR trace per variant reports 2.435% lower sampled allocation interval weight with unchanged ten diagnostic records and zero event loss/truncation/aggregation overflow; no exact allocation census or causal native speed claim.",
+        "contract": "docs/STATE.md",
+        "evidence": "docs/VSCODE-CHECK-STATUS.md",
+        "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
+        "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
+      }
     },
     {
       "upstream": "tsc/internal/stringutil/compare.go",
@@ -5242,6 +5353,80 @@
       "destination": "tests/Parser.Tests/PathKeyByteValidationTests.cs",
       "status": "new",
       "scope": "Three authored managed raw-byte ingress controls; all256 bytes/malformed bytes, scalar/null rejection, explicit Unicode/case key. Not original upstream tests; no direct native execution claim."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Checker.Validation/ObjectGraph.cs",
+      "status": "new",
+      "scope": "Authored named validation record projection; not an upstream checking algorithm.",
+      "signatureSliceAdaptation": "Existing named schema reads descriptor length/nil or explicitly projects detached shallow Lists, preserving original schema/order/null and failure policy. No production cache decision or expectation changes; focused Callable89/Collections44 retained checks pass; expectations unchanged.",
+      "signatureSliceFocusedEvidence": "artifacts/vscode-signature-slices/focused/report.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Checker.Validation/DataGraph.cs",
+      "status": "new",
+      "scope": "Authored named validation record projection; not an upstream checking algorithm.",
+      "signatureSliceAdaptation": "Existing named schema reads descriptor length/nil or explicitly projects detached shallow Lists, preserving original schema/order/null and failure policy. No production cache decision or expectation changes; focused Callable89/Collections44 retained checks pass; expectations unchanged.",
+      "signatureSliceFocusedEvidence": "artifacts/vscode-signature-slices/focused/report.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Collections.Validation/StoredCaches.cs",
+      "status": "new",
+      "scope": "Authored named validation record projection; not an upstream checking algorithm.",
+      "signatureSliceAdaptation": "Existing named schema reads descriptor length/nil or explicitly projects detached shallow Lists, preserving original schema/order/null and failure policy. No production cache decision or expectation changes; focused Callable89/Collections44 retained checks pass; expectations unchanged.",
+      "signatureSliceFocusedEvidence": "artifacts/vscode-signature-slices/focused/report.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Program.Checks/SignatureSliceBoundaryChecks.cs",
+      "status": "new",
+      "scope": "Four authored shared signature boundary controls: clipped versus unclipped slot/append behavior, actual structured-producer normalization, Same/first-change mapping identity, and public nil-aware detached List snapshots. Five Clip/write/append observations compare to a real Go stdlib witness; not original upstream test bodies.",
+      "evidence": "artifacts/vscode-signature-slices/focused/report.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.NoEmit.Tests/SignatureSliceTests.cs",
+      "status": "new",
+      "scope": "Thin four-case shared boundary xUnit adapter plus four authored input selections comparing complete genuine pinned-Go Program records, including repeated diagnostics/public queries. Not original upstream compiler test bodies.",
+      "evidence": "artifacts/vscode-signature-slices/focused/report.json"
+    },
+    {
+      "upstream": null,
+      "destination": "tools/signature-slice-reference/main.go",
+      "status": "new",
+      "scope": "Authored Go stdlib driver observes five public Clip/write/append/nil outcomes; no compiler-private instrumentation or allocator growth-capacity sequence assertions."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/signature-slice-corpus/requests.jsonl",
+      "status": "new",
+      "scope": "Four authored finite signature-family Program requests; inputs retained unchanged for pinned-Go complete record comparison."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/signature-slice-corpus/program-pairs.jsonl.gz",
+      "status": "new",
+      "scope": "Four authored requests paired with complete actual pinned-Go Program observations. Exact original diagnostic/query expectations retained; not original compiler test body reuse."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/signature-slice-corpus/reference-provenance.json",
+      "status": "new",
+      "scope": "Pinned compiler commit, actual Program oracle command/hash, request/resource/output digests and four-record execution provenance."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/signature-slice-corpus/slice-witness-expected.json",
+      "status": "new",
+      "scope": "Five actual public boolean observations from authored Go stdlib slice witness; no private graph or capacity-sequence output."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/signature-slice-corpus/slice-witness-provenance.json",
+      "status": "new",
+      "scope": "Actual Go witness command/tool/source/output digests and successful execution provenance."
     }
   ],
   "activePhase": {

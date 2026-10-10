@@ -339,14 +339,18 @@ public class StructuredType : ConstrainedType
 {
     internal SymbolTable members;
     internal List<Symbol> properties;
-    internal List<Signature> signatures;
+    internal Slice<Signature> signatures;
     internal int callSignatureCount;
     internal List<IndexInfo> indexInfos;
     internal Type objectTypeWithoutAbstractConstructSignatures;
     public override StructuredType AsStructuredType() => this;
     // types.go:949/953. Preserve ordered call/construct slices and their nil state.
-    public List<Signature> CallSignatures() => signatures?.GetRange(0, callSignatureCount);
-    public List<Signature> ConstructSignatures() => signatures?.GetRange(callSignatureCount, signatures.Count - callSignatureCount);
+    // Public managed Lists remain detached compatibility snapshots. Ordinary
+    // checker paths use Go's clipped descriptors without projecting a List.
+    public List<Signature> CallSignatures() => GoSlices.ToListOrNull(CallSignaturesSlice());
+    public List<Signature> ConstructSignatures() => GoSlices.ToListOrNull(ConstructSignaturesSlice());
+    internal Slice<Signature> CallSignaturesSlice() => signatures.Slice3(0, callSignatureCount, callSignatureCount);
+    internal Slice<Signature> ConstructSignaturesSlice() => signatures.Slice3(callSignatureCount, signatures.Length, signatures.Length);
     public List<Symbol> Properties() => properties;
 }
 
@@ -383,7 +387,7 @@ public class InterfaceType : TypeReference
     internal Type resolvedBaseConstructorType;
     internal List<Type> resolvedBaseTypes;
     internal SymbolTable declaredMembers;
-    internal List<Signature> declaredCallSignatures, declaredConstructSignatures;
+    internal Slice<Signature> declaredCallSignatures, declaredConstructSignatures;
     internal List<IndexInfo> declaredIndexInfos;
     public override InterfaceType AsInterfaceType() => this;
     public List<Type> OuterTypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(0, outerTypeParameterCount);
@@ -692,7 +696,7 @@ public sealed class Signature
 internal sealed class CompositeSignature
 {
     internal bool isUnion;
-    internal List<Signature> signatures;
+    internal Slice<Signature> signatures;
 }
 
 public enum TypePredicateKind : int
