@@ -1,12 +1,27 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** the internal `Slice<Signature>` rollout after checkpoint `2e69b54`
-is qualified for an intermediate checkpoint. Native AOT VS Code and focused checks
-pass; matched allocation is down2.435%. See the evidence below. Next selection is
-inference candidate buffers versus the source-shaped markNodeAssignmentsWorker
-visitor allocation path, using the saved joint allocation profile.
-Sol verifier owns heavy jobs; source-only implementation may proceed against a
-frozen7bab baseline. No broad final regression run is scheduled.
+**Resume here:** signature rollout is committed as `14ccfc9`; it reduced matched
+sampled allocation20.946→20.436GiB (2.435%), Native AOT and focused checks passed.
+The next cached-assignment-visitor / union-tail-copy batch is qualified for an
+intermediate commit: library `bc0e8cdd`, native CLI `6085e839`, native VS Code23.73s
+/98.32 CPU seconds /11,210,476KiB peak, all ten diagnostic DTOs and pinned available
+chains exact. One build3.992s, publish9.487s. Eight existing full Go flow records and
+77 TypeSystem public rows pass0skip; unchanged expectations. Evidence:
+`artifacts/vscode-flow-union-allocation/{first-vscode/result.json,focused/report.json}`.
+No new allocation capture or speedup claim for this small batch. Full regressions
+remain deferred. No heavy job is active.
+The finite initializeClosures review is complete. Next measured candidate is restoring
+upstream cached compareTypesAssignable: two disjoint TypeComparer caller groups total
+95,050,240 sampled bytes. Read-only assessment saved at
+`artifacts/vscode-flow-union-allocation/initialize-closures-assessment.json`.
+No implementation yet. Scope is Checker cached field + Relater worker adjustment;
+worker must call compareTypesAssignableSimple directly to avoid recursion through
+its new cached field. Other predicates lacked quantified callback evidence; don't
+infer all Func<Type,bool> allocations are removable. Sol scanner implements, support
+reviews, verifier owns native-first validation when this next packet starts.
+Inference candidate migration remains deferred: exact visible candidate-attributed
+pair is only59,585,336bytes and wider static-action attribution is ambiguous; a
+four-file alias/reducer change would be disproportionate without stronger evidence.
 
 **Latest authorization: continue allocation and UTF8 work regardless of GC results.**
 User explicitly directed ongoing allocation/string-copy reduction and byte-backed
@@ -120,8 +135,8 @@ Candidate zero loss/truncation,192899ticks with stacks; baseline one missing sta
 One sampled trace per version, not exact census or native allocation totals. Final
 comparison and joint type/caller analysis are saved under
 `artifacts/vscode-signature-slices/{allocation-comparison.json,candidate-allocation/joint.json}`.
-No heavy job is running. Existing Sol support investigates inference candidate ownership;
-Sol verification investigates the visitor path; both are read-only until selection.
+Inference and visitor triage is complete; see active selected batch above.
+No broad inference-candidate or Type storage migration has begun.
 
 **Pre-signature allocation baseline:** exact frozen7bab managed CLI, Server GC,
 `artifacts/vscode-signature-slices/baseline-allocation`:22,490,726,952 sampled

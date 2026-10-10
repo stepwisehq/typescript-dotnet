@@ -31,6 +31,8 @@ public sealed partial class Checker
     internal Symbol resolveName(Node location, string name, SymbolFlags meaning, Message nameNotFoundMessage, bool isUse, bool excludeGlobals) =>
         nameResolver.Resolve(location, name, meaning, nameNotFoundMessage, isUse, excludeGlobals);
     private ModuleResolutionKind moduleResolutionKind;
+    // checker.go:891/1268: cache this worker once instead of allocating a Visitor per node.
+    private Visitor markNodeAssignments;
 
     internal List<SourceFile> files;
     internal Dictionary<SourceFile, int> fileIndexMap;
@@ -352,6 +354,8 @@ public sealed partial class Checker
         c.getGlobalClassAccessorDecoratorTargetType = c.getGlobalTypeResolver("ClassAccessorDecoratorTarget", 2, true);
         c.getGlobalClassAccessorDecoratorResultType = c.getGlobalTypeResolver("ClassAccessorDecoratorResult", 2, true);
         c.getGlobalClassFieldDecoratorContextType = c.getGlobalTypeResolver("ClassFieldDecoratorContext", 2, true);
+        // checker.go:1125/1268 initializeClosures, before iteration and checker initialization.
+        c.markNodeAssignments = c.markNodeAssignmentsWorker;
         c.initializeIterationResolvers();
         c.initializeChecker();
         return c;
@@ -1647,11 +1651,17 @@ public sealed partial class Checker
         if (types.Count >= 2)
         {
             types.Sort(CompareTypes);
+            // checker.go:26346: range borrows the sorted suffix; writes never overtake reads.
+            int length = types.Count;
             int unique = 1;
-            foreach (var t in types.Skip(1).ToArray())
+            for (int read = 1; read < length; read++)
+            {
+                var t = types[read];
                 if (t != types[unique - 1])
                     types[unique++] = t;
-            types.RemoveRange(unique, types.Count - unique);
+            }
+            // Go clears the discarded tail before shortening the header.
+            types.RemoveRange(unique, length - unique);
         }
 
         return (types, includes);

@@ -1043,7 +1043,7 @@ public sealed partial class Checker
             links.flags |= NodeCheckFlags.AssignmentsMarked;
             if (!this.hasParentWithAssignmentsMarked(parent))
             {
-                this.markNodeAssignmentsWorker(parent);
+                this.markNodeAssignments(parent);
             }
         }
     }
@@ -1119,7 +1119,7 @@ public sealed partial class Checker
             return false;
         }
 
-        return node.ForEachChild(this.markNodeAssignmentsWorker);
+        return node.ForEachChild(this.markNodeAssignments);
     }
 }
 

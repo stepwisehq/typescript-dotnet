@@ -1023,6 +1023,14 @@
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json",
         "sampledAllocationFinding": "Total 20.946\u219220.436 GiB; Signature List interval weight 451,909,624\u21920 sampled bytes and Signature[] 234,309,112\u219268,657,256. Header-containing object sample increases are reported separately; zero sampling is not zero actual allocation. Type[] weight broadly unchanged."
+      },
+      "flowVisitorUnionAllocationAdaptation": {
+        "sourceResponsibilities": "checker.go:891/1125/1268 cached markNodeAssignments callback; checker.go:26295-26355 union accumulation and sorted suffix dedup.",
+        "adaptation": "One immutable instance-bound Visitor is cached per checker before iteration/checker initialization. Ordered in-place union suffix reads replace Skip(1).ToArray, with captured count/value and write cursor never overtaking reads; RemoveRange clears/truncates discarded tail. Existing sorting and Type List storage remain unchanged.",
+        "snapshot": "artifacts/vscode-flow-union-allocation/build/snapshot-1/snapshot.json",
+        "review": "artifacts/vscode-flow-union-allocation/build/independent-review.json",
+        "state": "Independent whole-function/direct-helper review clear, single build clean, native VS Code ten complete records exact; focused eight existing assignment-sensitive compiler full records/original assertions and TypeSystem77 public records pass without expected changes. No new allocation profile or speedup claim.",
+        "focusedEvidence": "artifacts/vscode-flow-union-allocation/focused/report.json"
       }
     },
     {
@@ -1187,7 +1195,15 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "cachedAssignmentVisitorAdaptation": {
+        "sourceResponsibilities": "flow.go:2683/2700/2743 and checker.go:1268.",
+        "adaptation": "Root assignment traversal and every recursive ForEachChild use the original once-per-checker cached Visitor; worker branches, assignment positions/flags and short-circuit behavior unchanged.",
+        "snapshot": "artifacts/vscode-flow-union-allocation/build/snapshot-1/snapshot.json",
+        "review": "artifacts/vscode-flow-union-allocation/build/independent-review.json",
+        "state": "Source-reviewed and native ten diagnostic records exact; focused eight existing assignment-sensitive compiler full records/original assertions and TypeSystem77 public records pass without expected changes. No profile or speedup claim.",
+        "focusedEvidence": "artifacts/vscode-flow-union-allocation/focused/report.json"
+      }
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",

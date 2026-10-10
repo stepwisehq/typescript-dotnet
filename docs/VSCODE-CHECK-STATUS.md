@@ -1089,6 +1089,28 @@ trace, so these weights are estimates rather than an exact allocation census.
 They describe CoreCLR rather than Native AOT allocations; the native timing
 observations above do not establish a causal speed improvement.
 
+## Cached assignment visitor and union deduplication
+
+The [visitor/union snapshot](../artifacts/vscode-flow-union-allocation/build/snapshot-1/snapshot.json)
+restores the pinned Go once-per-checker assignment visitor (checker.go:1268), replacing
+fresh delegate construction at recursive child traversal. Root and recursive calls use
+the same cached worker; assignment flags, positions, exclusions and traversal ordering
+are unchanged. Sorted union deduplication now borrows the suffix through ordered indexed
+reads instead of allocating a Skip iterator and snapshot array. The write cursor never
+overtakes the read cursor; tail clearing and truncation remain explicit. The existing
+sort and owned Type List storage are unchanged. [Independent whole-path review](../artifacts/vscode-flow-union-allocation/build/independent-review.json)
+found no semantic issue.
+
+The sole library build took 3.992s and Native AOT publication took 9.487s. The
+[first native VS Code run](../artifacts/vscode-flow-union-allocation/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly in
+23.73s wall /98.32s CPU /11,210,476 KiB peak. This is a single observation with no
+speedup claim or new allocation profile. The [focused report](../artifacts/vscode-flow-union-allocation/focused/report.json)
+records eight existing assignment-sensitive compiler inputs passing complete pinned-Go
+record comparison and original assertions, plus TypeSystem77 public checks passing
+with zero failures/skips. Expected records are unchanged; this is focused qualification,
+not a new broad acceptance gate.
+
 ## Reproduction and records
 
 ```bash
