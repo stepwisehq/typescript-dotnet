@@ -13,6 +13,8 @@ public sealed class Symbol
     public Node ValueDeclaration;
     public SymbolTable Members, Exports;
     internal long id;
+    // Authored public ownership guard only; an opaque token never references the checker.
+    internal object authoredOwnerToken;
     public Symbol Parent, ExportSymbol;
     public bool IsExternalModule() => (Flags & SymbolFlags.Module) != 0 && Ast.IsAmbientModuleSymbolName(Name);
     public bool IsStatic() => ValueDeclaration is not null && (ValueDeclaration.ModifierFlags() & ModifierFlags.Static) != 0;

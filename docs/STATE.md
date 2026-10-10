@@ -1,9 +1,23 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** latest qualified checkpoint is `3ee0dc5` (cached checker callbacks
-and private JSDoc rewind reuse), following `e9ff790` and `14ccfc9`.
+**Resume here:** latest committed checkpoint is `737eead` (direct page slots).
+Frozen ownership-token/static-reporter batch `282c618e` is qualified and its four
+production files plus one Fact are STAGED for a separate checkpoint; newer Checker
+loops and Relater callbacks are UNSTAGED and must not be included accidentally.
+Ownership profile19.321389→18.701305GiB sampled (−3.2093%), zero loss/truncation,
+one missing stack, all ten diagnostics exact. Native22.32s /90.99CPU /10,298,208KiB,
+focused4 original fullrecords+3 public API Facts+14native self+10native callable pass.
+Final reports under `artifacts/vscode-symbol-ownership-token/`.
+
+Next combined callback batch is independently reviewed, source ready and verifier
+build/native-VSCode-first authorized: Scanner's two Checker loops (contextual
+literal/deprecation predicates); support's Relater direct local variance helper,
+explicit generic state+static property callback with deferred source read, nil-backed
+empty exclude-set adapter. Artifacts `vscode-contextual-deprecation-loops` and
+`vscode-relater-callbacks`; no runtime/allocation claim for these newer edits yet.
 Do not stop automatically at a commit: user challenged that premature stopping;
 continued allocation work is authorized and no blocker existed.
+
 Latest Native AOT VS Code23.73s /98.32CPU /10.691GiB peak, all ten diagnostics exact;
 pinned Go9.61s /46.86CPU /7.374GiB (single observations, not paired benchmark).
 Latest sampled CoreCLR allocations20.436GiB after signatures vs baseline20.946GiB;
@@ -30,9 +44,12 @@ pass. Cumulative frozen profile complete:20.4359845→19.3213894GiB sampled inte
 (−5.4541%), no lost/truncated events, all diagnostics exact. Includes visitor/union,
 callback/JSDoc and refslots, not per-packet causal attribution or Native AOT bytes.
 Saved under `artifacts/vscode-link-slots/allocation-comparison.json`. Six alternating
-frozen native runs AB/BA/AB are now running, no profiler, for throughput evidence.
-Root staged the two Linkslot production files and Utilities adapter for a separate
-checkpoint; token files MUST remain unstaged until separately qualified.
+frozen native runs AB/BA/AB completed, all diagnostics exact: signaturebaseline
+mean23.17s/100.017CPU versus refslotcandidate21.36s/95.76CPU (−7.81%wall,−4.26%CPU).
+Three observations each, cumulative changes and descriptive statistics only;
+candidate wall range19.72–23.83s, peakRSSmean+0.90%. Saved paired-native/report.json.
+Linkslot checkpoint is `737eead`; ownership-token/reporter changes remain separate
+and unstaged until independently qualified.
 Existing CoreCLR trace heap history actually reports1→3→9→15 heaps; do not infer
 16 heaps from ProcessorCount16. Native actual heap count remains unqualified. After this next batch, profile cumulative allocation
 against the frozen signature baseline: use exact `cd2b47bb`20.436GiB candidate from
@@ -50,8 +67,12 @@ Next investigation in parallel: instantiateSymbolTable matches upstream core reu
 but authoredOwnedSymbols HashSet incurs profile-visible growth. Scanner proposed an
 opaque owner-token reference per Symbol plus one token/checker, preserving existing
 public foreign-symbol guards without retaining checker via token. Support approved exact one-insertion/three-membership token equivalence. Scanner
-now implements only Ast/Symbol.cs+Checker.cs+Exports.cs, support reviews. Stamp ONLY
-newSymbolEx; bound/direct-new Symbols retain null tokens and unchanged declaration
+implemented Ast/Symbol.cs+Types.cs+Checker.cs+Exports.cs plus two-site non-null
+reporter Action<Checker,Node,TypeFacts> static callbacks. Signature sister ownership
+set also replaced from its single factory and guard. Finalsource independentreview
+passed, one new existing-seam signature admission Fact added. Verifierbuild/nativefirst
+active; do not use stale three-file Symbol-only scope. Stamp ONLY
+newSymbolEx/newSignature; bound/direct-new Symbols retain null tokens and unchanged declaration
 fallback; preserve foreign-transient rejection. No checker backreference. One field
 on every Symbol has a cost; do not claim net savings until measured. This is authored
 compatibility bookkeeping, not an upstream algorithm replacement. Implementation

@@ -51,9 +51,9 @@ public sealed partial class Checker
     {
         if (symbol == null)
             throw new ArgumentNullException(nameof(symbol));
-        if ((symbol.Flags & SymbolFlags.Transient) != 0 && !authoredOwnedSymbols.Contains(symbol))
+        if ((symbol.Flags & SymbolFlags.Transient) != 0 && !ReferenceEquals(symbol.authoredOwnerToken, authoredOwnershipToken))
             throw new ArgumentException("Symbol belongs to a different checker", nameof(symbol));
-        if (!authoredOwnedSymbols.Contains(symbol))
+        if (!ReferenceEquals(symbol.authoredOwnerToken, authoredOwnershipToken))
         {
             var declarations = symbol.Declarations;
             if (declarations == null || declarations.Count == 0)
@@ -113,7 +113,7 @@ public sealed partial class Checker
     private void validateOwnedSignature(Signature signature)
     {
         ArgumentNullException.ThrowIfNull(signature);
-        if (!authoredOwnedSignatures.Contains(signature))
+        if (!ReferenceEquals(signature.authoredOwnerToken, authoredOwnershipToken))
             throw new ArgumentException("Signature belongs to a different checker", nameof(signature));
     }
 }
@@ -148,7 +148,7 @@ public sealed partial class Checker
     private void validateOwnedProjectSymbol(Symbol symbol)
     {
         ArgumentNullException.ThrowIfNull(symbol);
-        if (authoredOwnedSymbols.Contains(symbol))
+        if (ReferenceEquals(symbol.authoredOwnerToken, authoredOwnershipToken))
             return;
         if ((symbol.Flags & SymbolFlags.Transient) != 0 || symbol.Declarations == null || symbol.Declarations.Count == 0)
             throw new ArgumentException("Symbol belongs to a different checker", nameof(symbol));

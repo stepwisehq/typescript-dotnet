@@ -670,6 +670,8 @@ public enum SignatureFlags : uint
 public sealed class Signature
 {
     internal uint id;
+    // Authored public ownership guard only; an opaque token never references the checker.
+    internal object authoredOwnerToken;
     internal SignatureFlags flags;
     internal int minArgumentCount, resolvedMinArgumentCount;
     internal Node declaration;

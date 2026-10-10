@@ -566,9 +566,10 @@ public sealed partial class Checker
         {
             Flags = flags | SymbolFlags.Transient,
             Name = name,
-            CheckFlags = checkFlags
+            CheckFlags = checkFlags,
+            // checker.go:14341 newSymbol: this existing creation path alone owns the symbol.
+            authoredOwnerToken = authoredOwnershipToken
         };
-        authoredOwnedSymbols.Add(symbol);
         return symbol;
     }
 
@@ -7526,8 +7527,9 @@ public sealed partial class Checker
     }
 
     private Type checkNonNullExpression(Node node) => checkNonNullType(checkExpression(node), node);
-    private Type checkNonNullType(Type t, Node node) => checkNonNullTypeWithReporter(t, node, reportObjectPossiblyNullOrUndefinedError);
-    private Type checkNonNullTypeWithReporter(Type t, Node node, Action<Node, TypeFacts> reportError)
+    // checker.go:7612/7615. Explicit receiver preserves the unbound Go reporter without per-call bound delegates.
+    private Type checkNonNullType(Type t, Node node) => checkNonNullTypeWithReporter(t, node, static (checker, location, facts) => checker.reportObjectPossiblyNullOrUndefinedError(location, facts));
+    private Type checkNonNullTypeWithReporter(Type t, Node node, Action<Checker, Node, TypeFacts> reportError)
     {
         if (strictNullChecks && (t.flags & TypeFlags.Unknown) != 0)
         {
@@ -7548,7 +7550,7 @@ public sealed partial class Checker
         var facts = getTypeFacts(t, TypeFacts.IsUndefinedOrNull);
         if ((facts & TypeFacts.IsUndefinedOrNull) != 0)
         {
-            reportError(node, facts);
+            reportError(this, node, facts);
             var nonNullable = GetNonNullableType(t);
             return (nonNullable.flags & (TypeFlags.Nullable | TypeFlags.Never)) != 0 ? errorType : nonNullable;
         }
@@ -12958,7 +12960,8 @@ public sealed partial class Checker
     {
         SignatureCount++;
         var sig = new Signature();
-        authoredOwnedSignatures.Add(sig);
+        // Authored ownership follows only this existing checker.go:25781 factory path.
+        sig.authoredOwnerToken = authoredOwnershipToken;
         sig.id = (uint)SignatureCount;
         sig.flags = flags;
         sig.declaration = declaration;
@@ -15907,7 +15910,7 @@ public sealed partial class Checker
         {
             callChainFlags = SignatureFlags.None;
         }
-        funcType = this.checkNonNullTypeWithReporter(funcType, node.Expression(), reportCannotInvokePossiblyNullOrUndefinedError);
+        funcType = this.checkNonNullTypeWithReporter(funcType, node.Expression(), static (checker, location, facts) => checker.reportCannotInvokePossiblyNullOrUndefinedError(location, facts));
         if ((funcType == this.silentNeverType))
         {
             return this.silentNeverSignature;
@@ -21844,10 +21847,9 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // Authored public-boundary ownership only. These sets do not participate in
-    // upstream checking algorithms, caches or semantic graph serialization.
-    private readonly HashSet<Symbol> authoredOwnedSymbols = new(ReferenceEqualityComparer.Instance);
-    private readonly HashSet<Signature> authoredOwnedSignatures = new(ReferenceEqualityComparer.Instance);
+    // Authored public-boundary ownership only, outside upstream checking/cache semantics.
+    // A standalone token avoids growing Symbol/Signature sets and has no checker back-reference.
+    private readonly object authoredOwnershipToken = new();
 }
 
 public sealed partial class Checker

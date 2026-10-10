@@ -1160,6 +1160,46 @@ direct page slots. Each variant has one matched Server GC trace with zero lost
 events or truncation. These estimates do not isolate this packet or measure exact
 allocated bytes; the single native observation establishes no speedup.
 
+The [six alternating native observations](../artifacts/vscode-link-slots/paired-native/report.json)
+compare the frozen signature checkpoint to the frozen ref-slot candidate, without
+profiling: mean wall23.17→21.36s (−7.81%), mean CPU100.017→95.76s (−4.26%).
+All six complete diagnostic records remain exact. There are only three observations
+per version; candidate wall spans19.72–23.83s and mean peak RSS is0.90% higher.
+These are descriptive cumulative results, not per-change attribution or statistical
+significance. Ownership-token and static-reporter follow-ups are not included.
+
+## Opaque ownership tokens and unbound reporters
+
+The [ownership/reporter snapshot](../artifacts/vscode-symbol-ownership-token/build/snapshot-1/snapshot.json)
+replaces two authored public-API ownership sets with one opaque token per checker.
+Only the existing symbol/signature creation paths stamp it; foreign/default objects,
+null guards and declaration fallbacks retain the previous admission behavior.
+The token has no checker back-reference. This adds a reference field to every Symbol
+and Signature, so removed set arrays and strong roots do not establish a net memory
+win by inspection. The private non-null helper now receives an explicit checker and
+two static reporters, matching Go's unbound method callbacks without changing
+errors, narrowing or callback timing. The [independent review](../artifacts/vscode-symbol-ownership-token/build/independent-review.json)
+binds these four source files only; subsequent unstaged loop/Relater work is excluded.
+
+The [first native run](../artifacts/vscode-symbol-ownership-token/first-vscode/result.json)
+returned all ten complete diagnostic records and available pinned-Go chains exactly
+in 22.32s wall /90.99s CPU /10,298,208 KiB peak. The [focused report](../artifacts/vscode-symbol-ownership-token/focused/report.json)
+records four unchanged original nullable/unknown/inference inputs passing complete
+record comparison, three managed public-API Facts passing, and actual Native AOT
+controls passing with 14 self-test and ten callable observations. One new authored
+Fact covers own/foreign/default/null signatures; original expectations are unchanged.
+This is focused qualification, not a broad gate or a native speedup claim.
+
+The [matched allocation comparison](../artifacts/vscode-symbol-ownership-token/allocation-comparison.json)
+reports CoreCLR sampled interval weight of 19.321389 to 18.701305 GiB (−3.2093%).
+Ownership-set entry arrays have no candidate samples, while Symbol and Signature
+object weights increase, consistent with the added fields; these type weights do
+not establish exact layout costs. The net sample includes both ownership and reporter
+changes and does not isolate their effects. Each version has one matched Server GC
+trace with zero lost events or truncation; one of 179,980 candidate events has no
+stack. These are sampled estimates, separate from native timing, not an allocation
+census or a native speedup claim.
+
 ## Reproduction and records
 
 ```bash
