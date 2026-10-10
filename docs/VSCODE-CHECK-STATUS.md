@@ -1379,6 +1379,24 @@ This estimates the combined packet, not exact native bytes or per-site savings; 
 single native observation establishes no speedup. Subsequent callback source edits
 and expanded authored token-lifetime assertions are outside this qualified snapshot.
 
+The subsequent [frozen4bc callback/span packet](../artifacts/vscode-instantiation-state/build/snapshot-1/snapshot.json)
+uses static operation state for instantiation/inference and evolving-array maps,
+borrows temporary template inference text for comparisons/search/rune decoding,
+and provides borrowed rune traversal with explicit owned-array boundaries. Original
+first-change cloning, bivariant restoration, WTF-8 decoding and retained string
+outputs remain unchanged. Expanded authored token-lifetime assertions retain the
+existing 17-case registry.
+
+[Native VS Code](../artifacts/vscode-instantiation-state/first-vscode/result.json)
+kept all ten diagnostics exact at 23.33s wall /97.59s CPU /10,030,632 KiB peak.
+[Focused managed checks](../artifacts/vscode-instantiation-state/focused/report.json)
+passed 19 original complete records, 77 TypeSystem records, 3,842 scanner cases,
+17 lifetime checks and five token checks;
+[native checks](../artifacts/vscode-instantiation-state/focused/native-report.json)
+passed 539 original scanner records and 17 shared lifetime checks. No expected
+records changed. No new allocation capture or speedup claim accompanies this
+snapshot; later private-stack/candidate and AST source work is separate.
+
 ## Reproduction and records
 
 ```bash

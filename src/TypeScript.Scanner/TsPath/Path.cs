@@ -366,7 +366,7 @@ public static partial class TsPath
     public static string ToFileNameLowerCaseGoBytes(string bytes)
     {
         var builder = new GoBuilder();
-        foreach (int rune in GoString.Runes(bytes))
+        foreach (int rune in GoString.EnumerateRunes(bytes))
             builder.WriteRune(rune == 0x130 ? rune : UnicodeCase.ToLower(rune));
         return builder.String();
     }
@@ -572,7 +572,7 @@ public static class CaseSensitivityOperations
         string canonical = value.Canonicalize(prefix);
         if (!value.Canonicalize(text).StartsWith(canonical, StringComparison.Ordinal))
             return (text, false);
-        int count = GoString.Runes(canonical).Length, offset = 0;
+        int count = GoString.CountRunes(canonical), offset = 0;
         for (int i = 0; i < count && offset < text.Length; i++)
             offset += Utf8.DecodeRuneInString(text.AsSpan(offset)).Size;
         return (text[offset..], true);

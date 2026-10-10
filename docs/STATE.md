@@ -1,6 +1,7 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `08d2294` commits qualified path/ASCII/singleton reductions after checker/flow callbacks.
+**Resume here:** HEAD `146839d` commits borrowed scanner tokens, flow slices and conditional targets;
+`08d2294` preserves the preceding path/ASCII/singleton reductions.
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
 or committing a checkpoint does not finish the work. Native AOT VS Code first,
 focused checks next; comprehensive regressions remain deferred until finalization.
@@ -53,8 +54,8 @@ scanner token views/cached projection, parser fixed-token byte comparisons,
 shared flow branch/loop Type slices through borrowed union inputs, conditional
 inference two-target span, JsNum span iteration, and initial runtime string fixes.
 Verifier froze all235 source files at library `93159964`, native `b62aaf99`.
-Root staged the exact eleven changed source files before further source edits;
-DO NOT stage later changes into that index until separately qualified. Clean retry
+The exact eleven production files are committed in `146839d`; subsequent source
+changes belong to the next batches. Clean retry
 9.22s, native publish10.81s after four finite compile-binding fixes. Native VS Code
 passes exact ten complete diagnostics and pinned chains: 24.34 wall /96.57 CPU
 seconds, peak9,829,460 KiB, no swaps/major faults. This single observation does not
@@ -64,9 +65,21 @@ capture vs b81a:16.404452 ->15.453668GiB (-5.7959%), zero loss/truncation; all14
 candidate ticks typed with named stacks. No native throughput win established. Evidence:
 `artifacts/vscode-scanner-token-views/`. Source-only next work has resumed.
 
+**Next frozen checkpoint, STAGED but not yet committed:** library `4bc27d0c`,
+native build at `artifacts/vscode-instantiation-state/`; ten exact production files
+and the reviewed existing token-lifetime assertions are in the index. Native VS
+Code passes exact10:23.33 wall /97.59 CPU seconds /10,030,632 KiB peak. Clean build
+8.85s, publish10.85s. Focused checks passed:19 original whole compiler records, TypeSystem77, Scanner3842,
+shared lifetime17/token5 managed;539 complete scanner records and17 shared lifetime
+cases under Native AOT. No new allocation capture for this callback/rune batch. Preserve the index when committing;
+new AST, private stacks and JsNum edits are UNSTAGED and unqualified.
+
 **Next source ownership:** support continues remaining checker/relater/inference
-callback state; scanner adds allocation-free rune enumeration/count and exact owned
-rune output, verifier updates genuine upstream range/count consumers. Next scanner
+callback state; rune enumeration/count and exact owned rune output plus range/count consumers are
+in frozen4bc27. Scanner is implementing the AST stage; support is implementing all
+identified private checker slice stacks, and verifier owns JsNum span/narrow-integer
+fastpath work. Standard long/ulong span parsers handle decimal/binary/hex with
+signed64 limit; octal needs a bounded adapter. These changes remain unqualified. Next scanner
 stage is AST/parser/binder text propagation with generated-source updates: 16-byte
 dual-backed immutable raw-string/byte-array view, public Text projections and
 setters retained, borrowed internal reads and standard ordinal SymbolTable alternate

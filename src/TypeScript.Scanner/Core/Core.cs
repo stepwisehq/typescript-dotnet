@@ -184,18 +184,21 @@ internal static partial class Core
         return values;
     }
     // core.go:151: unchanged maps borrow; first change makes one detached result.
-    public static Slice<T> SameMap<T>(Slice<T> values, Func<T, T> map)
+    public static Slice<T> SameMap<T>(Slice<T> values, Func<T, T> map) =>
+        SameMap(values, map, static (value, callback) => callback(value));
+
+    public static Slice<T> SameMap<T, TState>(Slice<T> values, TState state, Func<T, TState, T> map)
     {
         for (int i = 0; i < values.Length; i++)
         {
             var value = values[i];
-            var mapped = map(value);
+            var mapped = map(value, state);
             if (!EqualityComparer<T>.Default.Equals(mapped, value))
             {
                 var result = Slice<T>.Make(values.Length);
                 values.AsSpan().Slice(0, i).CopyTo(result.AsSpan());
                 result[i] = mapped;
-                for (int j = i + 1; j < values.Length; j++) result[j] = map(values[j]);
+                for (int j = i + 1; j < values.Length; j++) result[j] = map(values[j], state);
                 return result;
             }
         }
@@ -203,11 +206,14 @@ internal static partial class Core
     }
     // core.go:80. Signature outputs keep descriptors; other mapped outputs keep
     // their established owned List storage, without projecting the input slice.
-    public static Slice<U> MapSlice<T, U>(Slice<T> values, Func<T, U> map)
+    public static Slice<U> MapSlice<T, U>(Slice<T> values, Func<T, U> map) =>
+        MapSlice(values, map, static (value, callback) => callback(value));
+
+    public static Slice<U> MapSlice<T, U, TState>(Slice<T> values, TState state, Func<T, TState, U> map)
     {
         if (values.IsNil) return default;
         var result = Slice<U>.Make(values.Length);
-        for (int i = 0; i < values.Length; i++) result[i] = map(values[i]);
+        for (int i = 0; i < values.Length; i++) result[i] = map(values[i], state);
         return result;
     }
     public static List<U>? Map<T, U>(Slice<T> values, Func<T, U> map)
@@ -316,7 +322,7 @@ internal static partial class Core
     public static ScriptKind GetScriptKindFromFileName(RootedFilePath fileName)
     {
         var lowered = new GoBuilder();
-        foreach (int rune in GoString.Runes(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive))) lowered.WriteRune(UnicodeCase.ToLower(rune));
+        foreach (int rune in GoString.EnumerateRunes(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive))) lowered.WriteRune(UnicodeCase.ToLower(rune));
         string extension = lowered.String();
         return extension switch
         {

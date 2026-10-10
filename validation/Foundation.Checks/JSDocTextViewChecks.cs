@@ -213,6 +213,54 @@ public static class JSDocTextViewChecks
         Equal(savedFlags, scanner.TokenFlags(), "Restored flags");
         Equal(Kind.Identifier, scanner.Scan(), "Scan continues after saved token");
         Equal("after", scanner.TokenValue(), "Restored text suffix available");
+
+        // Authored lifetime controls: ordinary token values borrow their source;
+        // scalar projection is cached, and Mark preserves both representation states.
+        foreach (var (tokenText, kind, value, offset) in new[]
+        {
+            ("name", Kind.Identifier, "name", 0),
+            ("'text'", Kind.StringLiteral, "text", 1),
+            ("`text`", Kind.NoSubstitutionTemplateLiteral, "text", 1)
+        })
+        {
+            ByteStringView tokenSource = tokenText;
+            scanner.SetByteTextInternal(tokenSource);
+            Equal(kind, scanner.Scan(), "Borrowed token kind");
+            var beforeProjection = scanner.Mark();
+            var borrowed = scanner.TokenValueTextView();
+            Require(MemoryMarshal.TryGetArray(tokenSource.Memory, out var owner), "Token source has byte owner");
+            Require(MemoryMarshal.TryGetArray(borrowed.Memory, out var tokenBytes), "Token value has byte owner");
+            Require(ReferenceEquals(owner.Array, tokenBytes.Array), "Ordinary token value shares source owner");
+            Equal(owner.Offset + offset, tokenBytes.Offset, "Token value byte offset");
+            Equal(value.Length, tokenBytes.Count, "Token value byte length");
+            string projected = scanner.TokenValueByteString();
+            Equal(value, projected, "Raw token value");
+            Require(ReferenceEquals(projected, scanner.TokenValueByteString()), "Repeated scalar projection is cached");
+            var afterProjection = scanner.Mark();
+
+            scanner.SetByteTextInternal("different");
+            Equal(Kind.Identifier, scanner.Scan(), "Alternate source token");
+            scanner.SetByteTextInternal(tokenSource);
+            scanner.Rewind(afterProjection);
+            Require(ReferenceEquals(projected, scanner.TokenValueByteString()), "Projected scalar survives Rewind");
+            scanner.Rewind(beforeProjection);
+            Require(scanner.TokenValueTextView().Memory.Equals(borrowed.Memory), "Unprojected borrowed header survives Rewind");
+            Equal(value, scanner.TokenValueByteString(), "Restored unprojected spelling");
+            Require(ReferenceEquals(scanner.TokenValueByteString(), scanner.TokenValueByteString()), "Restored projection is cached");
+            Equal(Kind.EndOfFile, scanner.Scan(), "Restored token source boundary");
+        }
+
+        foreach (var (tokenText, kind) in new[]
+        {
+            ("na\\u006De", Kind.Identifier),
+            ("'na\\x6De'", Kind.StringLiteral),
+            ("`na\\x6De`", Kind.NoSubstitutionTemplateLiteral)
+        })
+        {
+            scanner.SetByteTextInternal(tokenText);
+            Equal(kind, scanner.Scan(), "Transformed token kind");
+            Equal("name", scanner.TokenValueByteString(), "Transformed value is decoded rather than borrowed raw spelling");
+        }
     }
 
     private static SourceFile Parse(byte[] source, ScriptKind kind) =>

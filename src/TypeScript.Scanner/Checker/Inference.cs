@@ -1111,16 +1111,17 @@ public sealed partial class Checker
             }
 
             n.bivariant = (((n.bivariant || (kind == Kind.MethodDeclaration)) || (kind == Kind.MethodSignature)) || (kind == Kind.Constructor));
-            this.applyToParameterTypes(source, target, (s, t) =>
+            // inference.go:864. Synchronous traversal keeps the operation's bivariant state.
+            this.applyToParameterTypes(source, target, (checker: this, n), static (s, t, state) =>
             {
-                this.inferFromContravariantTypesIfStrictFunctionTypes(n, s, t);
+                state.checker.inferFromContravariantTypesIfStrictFunctionTypes(state.n, s, t);
             });
             n.bivariant = saveBivariant;
         }
 
-        this.applyToReturnTypes(source, target, (s2, t2) =>
+        this.applyToReturnTypes(source, target, (checker: this, n), static (s2, t2, state) =>
         {
-            this.inferFromTypes(n, s2, t2);
+            state.checker.inferFromTypes(state.n, s2, t2);
         });
     }
 

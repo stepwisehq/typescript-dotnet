@@ -3082,10 +3082,10 @@ public sealed partial class Checker
     {
         if (isEvolvingArrayTypeList(types))
         {
-            return this.getEvolvingArrayType(this.getUnionType(Core.MapSlice(types, this.getElementTypeOfEvolvingArrayType)));
+            return this.getEvolvingArrayType(this.getUnionType(Core.MapSlice(types, this, static (type, checker) => checker.getElementTypeOfEvolvingArrayType(type))));
         }
 
-        var result = this.recombineUnknownType(this.getUnionTypeEx(Core.SameMap(types, this.finalizeEvolvingArrayType), subtypeReduction, null, null));
+        var result = this.recombineUnknownType(this.getUnionTypeEx(Core.SameMap(types, this, static (type, checker) => checker.finalizeEvolvingArrayType(type)), subtypeReduction, null, null));
         if ((((result != f.declaredType) && (((result.flags & f.declaredType.flags) & TypeFlags.Union) != 0)) && GoSlices.Equal(result.AsUnionType().types, f.declaredType.AsUnionType().types)))
         {
             return f.declaredType;

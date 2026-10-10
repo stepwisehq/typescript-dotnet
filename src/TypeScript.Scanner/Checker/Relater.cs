@@ -5148,7 +5148,9 @@ public sealed partial class Checker
         var targetEnd = target.texts[(GoRuntime.Len(target.texts) - 1)];
         var startLen = Math.Min(GoRuntime.Len(sourceStart), GoRuntime.Len(targetStart));
         var endLen = Math.Min(GoRuntime.Len(sourceEnd), GoRuntime.Len(targetEnd));
-        return ((GoRuntime.Slice(sourceStart, 0, startLen) != GoRuntime.Slice(targetStart, 0, startLen)) || (GoRuntime.Slice(sourceEnd, (GoRuntime.Len(sourceEnd) - endLen)) != GoRuntime.Slice(targetEnd, (GoRuntime.Len(targetEnd) - endLen))));
+        // relater.go:2354. Go bounded string comparisons borrow their bytes.
+        return !sourceStart.AsSpan(0, startLen).SequenceEqual(targetStart.AsSpan(0, startLen)) ||
+            !sourceEnd.AsSpan(GoRuntime.Len(sourceEnd) - endLen).SequenceEqual(targetEnd.AsSpan(GoRuntime.Len(targetEnd) - endLen));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2365:1.
@@ -5246,26 +5248,28 @@ public sealed partial class Checker
             return null;
         }
 
-        var remainingEndText = GoRuntime.Slice(sourceEndText, 0, (GoRuntime.Len(sourceEndText) - GoRuntime.Len(targetEndText)));
+        // relater.go:2429. Borrow raw byte-character spans for temporary Go string slices;
+        // materialize only retained literal/template text at the original output boundary.
+        var remainingEndLength = GoRuntime.Len(sourceEndText) - GoRuntime.Len(targetEndText);
         var seg = 0;
         var pos = GoRuntime.Len(targetStartText);
         List<Type> matches = default;
         // relater.go:2433/2439. Direct local calls preserve shared operation state without delegate conversion.
-        string getSourceText(int index)
+        ReadOnlySpan<char> getSourceText(int index)
         {
             if ((index < lastSourceIndex))
             {
-                return sourceTexts[index];
+                return sourceTexts[index].AsSpan();
             }
 
-            return remainingEndText;
+            return sourceEndText.AsSpan(0, remainingEndLength);
         }
         void addMatch(int s, int p)
         {
             Type matchType = default;
             if ((s == seg))
             {
-                matchType = this.getStringLiteralType(StringUtil.CombineSurrogatePairs(GoRuntime.Slice(getSourceText(s), pos, p)));
+                matchType = this.getStringLiteralType(StringUtil.CombineSurrogatePairs(getSourceText(s).Slice(pos, p - pos).ToString()));
             }
             else
             {
@@ -5273,7 +5277,7 @@ public sealed partial class Checker
                 matchTexts[0] = GoRuntime.Slice(sourceTexts[seg], pos);
                 for (int copyIndex = seg + 1; copyIndex < s; copyIndex++)
                     matchTexts[copyIndex - seg] = sourceTexts[copyIndex];
-                matchTexts[(s - seg)] = GoRuntime.Slice(getSourceText(s), 0, p);
+                matchTexts[(s - seg)] = getSourceText(s).Slice(0, p).ToString();
                 matchType = this.getTemplateLiteralType(matchTexts, GoRuntime.Slice(sourceTypes, seg, s));
             }
 
@@ -5292,7 +5296,7 @@ public sealed partial class Checker
                     var p2 = pos;
                     while (true)
                     {
-                        var d = GoStrings.Index(GoRuntime.Slice(getSourceText(s2), p2), delim);
+                        var d = getSourceText(s2).Slice(p2).IndexOf(delim.AsSpan(), StringComparison.Ordinal);
                         if ((d >= 0))
                         {
                             p2 += d;
@@ -5315,9 +5319,9 @@ public sealed partial class Checker
                 {
                     {
                         var sourceText = getSourceText(seg);
-                        if ((pos < GoRuntime.Len(sourceText)))
+                        if ((pos < sourceText.Length))
                         {
-                            var tuple2 = StringUtil.DecodeJSStringRune(GoRuntime.Slice(sourceText, pos));
+                            var tuple2 = StringUtil.DecodeJSStringRune(sourceText.Slice(pos));
                             var size = tuple2.Item2;
                             addMatch(seg, (pos + size));
                         }
@@ -5337,7 +5341,7 @@ public sealed partial class Checker
             }
         }
 
-        addMatch(lastSourceIndex, GoRuntime.Len(getSourceText(lastSourceIndex)));
+        addMatch(lastSourceIndex, getSourceText(lastSourceIndex).Length);
         return matches;
     }
 

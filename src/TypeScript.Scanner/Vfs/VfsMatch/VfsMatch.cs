@@ -252,7 +252,7 @@ public static class VfsMatch
                 if (sensitivity.IsCaseInsensitive())
                 {
                     var builder = new GoBuilder();
-                    foreach (int rune in GoString.Runes(literal))
+                    foreach (int rune in GoString.EnumerateRunes(literal))
                         builder.WriteRune(UnicodeCase.ToLower(rune));
                     literal = builder.String();
                 }

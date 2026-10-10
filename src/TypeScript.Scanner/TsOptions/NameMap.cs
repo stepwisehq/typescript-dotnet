@@ -42,7 +42,7 @@ public static partial class TsOptions
     internal static string goLower(string bytes)
     {
         var result = new GoBuilder();
-        foreach (int rune in GoString.Runes(bytes))
+        foreach (int rune in GoString.EnumerateRunes(bytes))
             result.WriteRune(UnicodeCase.ToLower(rune));
         return result.String();
     }

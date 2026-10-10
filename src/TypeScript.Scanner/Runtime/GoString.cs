@@ -19,17 +19,69 @@ internal static class GoString
     public static string ToUtf8(string text) => Encoding.Latin1.GetString(Encoding.UTF8.GetBytes(text));
     public static string ToString(string bytes) => Encoding.UTF8.GetString(Bytes(bytes));
     public static byte[] Bytes(string bytes) => Encoding.Latin1.GetBytes(bytes);
+    // Go range reads an immutable UTF-8 string without owning a rune array.
+    public static GoRuneRange EnumerateRunes(string bytes) => new(bytes);
+    public static int CountRunes(string bytes)
+    {
+        int count = 0;
+        foreach (int rune in EnumerateRunes(bytes)) count++;
+        return count;
+    }
+
+    // Go runtime/string.go stringtoslicerune: count then fill the owned output.
+    // See licenses/Go-LICENSE.txt. Indexing/mutation clients retain this array API;
+    // ordinary range clients use EnumerateRunes and never allocate this storage.
     public static int[] Runes(string bytes)
     {
-        var runes = new List<int>();
-        for (int i = 0; i < bytes.Length;)
-        {
-            var(rune, size) = Utf8.DecodeRuneInString(bytes.AsSpan(i));
-            runes.Add(rune);
-            i += size;
-        }
+        int count = CountRunes(bytes);
+        if (count == 0) return Array.Empty<int>();
+        var runes = new int[count];
+        int index = 0;
+        foreach (int rune in EnumerateRunes(bytes)) runes[index++] = rune;
+        return runes;
+    }
 
-        return runes.ToArray();
+}
+
+// Heap-compatible immutable header; direct foreach uses the value enumerator.
+// Explicit enumerable interfaces box only at the requested interface boundary.
+internal readonly struct GoRuneRange : IEnumerable<int>
+{
+    private readonly string source;
+    private readonly int length;
+    internal GoRuneRange(string source)
+    {
+        this.source = source;
+        length = source.Length;
+    }
+    public Enumerator GetEnumerator() => new(source, length);
+    IEnumerator<int> IEnumerable<int>.GetEnumerator() => GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public struct Enumerator : IEnumerator<int>
+    {
+        private readonly string source;
+        private readonly int length;
+        private int offset;
+        public int Current { get; private set; }
+        object System.Collections.IEnumerator.Current => Current;
+        internal Enumerator(string source, int length)
+        {
+            this.source = source;
+            this.length = length;
+            offset = 0;
+            Current = default;
+        }
+        public bool MoveNext()
+        {
+            if (offset >= length) return false;
+            var (rune, size) = Utf8.DecodeRuneInString(source.AsSpan(offset, length - offset));
+            Current = rune;
+            offset += size;
+            return true;
+        }
+        public void Dispose() { }
+        public void Reset() => throw new NotSupportedException();
     }
 }
 

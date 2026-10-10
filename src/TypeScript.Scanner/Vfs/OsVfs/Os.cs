@@ -40,7 +40,7 @@ public static class OsVfs
             string executable = Environment.ProcessPath ?? throw new IOException("vfs: failed to get executable path");
             string raw = PathByteText.FromUnicode(executable);
             var swapped = new GoBuilder();
-            foreach (int rune in GoString.Runes(raw))
+            foreach (int rune in GoString.EnumerateRunes(raw))
             {
                 int upper = UnicodeCase.ToUpper(rune);
                 swapped.WriteRune(upper == rune ? UnicodeCase.ToLower(rune) : upper);

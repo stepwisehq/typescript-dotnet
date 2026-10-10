@@ -5342,7 +5342,7 @@ public sealed partial class Checker
     private Type getReducedUnionType(Type t)
     {
         var types = t.Types();
-        var reduced = instantiateList(types, null, (u, _) => getReducedType(u));
+        var reduced = instantiateList(types, this, static (u, checker) => checker.getReducedType(u));
         if (ReferenceEquals(reduced, types))
             return t;
         var result = getUnionType(reduced);
@@ -6862,9 +6862,9 @@ public sealed partial class Checker
                 result = getUnionTypeEx(widenedTypes, widenedTypes.Any(isEmptyObjectType) ? UnionReduction.Subtype : UnionReduction.Literal, null, null);
             }
             else if ((t.flags & TypeFlags.Intersection) != 0)
-                result = getIntersectionType(instantiateList(t.Types(), null, (u, _) => getWidenedType(u)));
+                result = getIntersectionType(instantiateList(t.Types(), this, static (u, checker) => checker.getWidenedType(u)));
             else if (isArrayOrTupleType(t))
-                result = createTypeReference(t.Target(), instantiateList(getTypeArguments(t), null, (u, _) => getWidenedType(u)));
+                result = createTypeReference(t.Target(), instantiateList(getTypeArguments(t), this, static (u, checker) => checker.getWidenedType(u)));
             if (result != null && context == null)
             {
                 cachedTypes[key] = result;
@@ -11931,29 +11931,38 @@ public sealed partial class Checker
         return values;
     }
 
-    private List<Type> instantiateTypes(List<Type> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateType);
+    // checker.go:23255/23259/23263/23267. Source passes unbound checker methods;
+    // static callbacks carry the checker and mapper without creating bound delegates.
+    private List<Type> instantiateTypes(List<Type> values, TypeMapper mapper) =>
+        instantiateList(values, (checker: this, mapper), static (value, state) => state.checker.instantiateType(value, state.mapper));
     // checker.go:23270: first changed element detaches; unchanged mapping retains the header.
     private Slice<T> instantiateList<T>(Slice<T> values, TypeMapper mapper, Func<T, TypeMapper, T> instantiate)
+        where T : class =>
+        instantiateList(values, (mapper, instantiate), static (value, state) => state.instantiate(value, state.mapper));
+
+    private Slice<T> instantiateList<T, TState>(Slice<T> values, TState state, Func<T, TState, T> instantiate)
         where T : class
     {
         for (int i = 0; i < values.Length; i++)
         {
             var value = values[i];
-            var mapped = instantiate(value, mapper);
+            var mapped = instantiate(value, state);
             if (mapped != value)
             {
                 var result = Slice<T>.Make(values.Length);
                 values.AsSpan().Slice(0, i).CopyTo(result.AsSpan());
                 result[i] = mapped;
                 for (int j = i + 1; j < values.Length; j++)
-                    result[j] = instantiate(values[j], mapper);
+                    result[j] = instantiate(values[j], state);
                 return result;
             }
         }
         return values;
     }
-    private Slice<Signature> instantiateSignatures(Slice<Signature> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateSignature);
-    private List<IndexInfo> instantiateIndexInfos(List<IndexInfo> values, TypeMapper mapper) => instantiateList(values, mapper, instantiateIndexInfo);
+    private Slice<Signature> instantiateSignatures(Slice<Signature> values, TypeMapper mapper) =>
+        instantiateList(values, (checker: this, mapper), static (value, state) => state.checker.instantiateSignature(value, state.mapper));
+    private List<IndexInfo> instantiateIndexInfos(List<IndexInfo> values, TypeMapper mapper) =>
+        instantiateList(values, (checker: this, mapper), static (value, state) => state.checker.instantiateIndexInfo(value, state.mapper));
     private SymbolTable instantiateSymbolTable(SymbolTable symbols, TypeMapper mapper)
     {
         if ((symbols?.Count ?? 0) == 0)
@@ -15603,7 +15612,7 @@ public sealed partial class Checker
 {
     private List<Symbol> instantiateSymbols(List<Symbol> symbols, TypeMapper m)
     {
-        return this.instantiateList(symbols, m, instantiateSymbol);
+        return this.instantiateList(symbols, (checker: this, mapper: m), static (value, state) => state.checker.instantiateSymbol(value, state.mapper));
     }
 }
 
