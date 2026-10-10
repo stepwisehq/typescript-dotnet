@@ -475,7 +475,7 @@ public static class Runner
                         row.AliasArguments = Ts(alias.TypeArguments());
                     }
 
-                    row.Signatures = d?.signatures?.Select(s => Signature(s)!.Value).ToList();
+                    row.Signatures = d is null ? null : GoSlices.ToListOrNull(d.signatures)?.Select(s => Signature(s)!.Value).ToList();
                     if (row.DataType == "IntrinsicType")
                         row.IntrinsicNameBase64 = Encoder.Bytes(t.AsIntrinsicType().IntrinsicName());
                     if (row.DataType == "LiteralType")

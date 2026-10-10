@@ -1331,6 +1331,31 @@ They include intervening changes and support no speedup claim. Allocation profil
 and flat native CPU samples remain separate measurements; unresolved worker callers
 cannot establish a causal allocation-to-GC timing relationship.
 
+## Path fast paths and singleton capacity
+
+The [qualified b81a packet](../artifacts/vscode-path-normalization-fastpath/build/snapshot-1/snapshot.json)
+restores the pinned Go simple-normalization entry and its root/trailing/relative
+path guards. Scalar disk-boundary helpers reuse ASCII spelling while preserving
+strict non-ASCII, invalid UTF-8/WTF-8 and null behavior. Singleton arena results
+retain one mutable shallow element with explicit initial capacity 1. Native VS Code
+[retained all ten complete diagnostics](../artifacts/vscode-path-normalization-fastpath/first-vscode/result.json)
+at 22.64s wall/91.50s CPU; this single observation is not a speedup claim.
+
+The [focused checks](../artifacts/vscode-path-normalization-fastpath/focused/report.json)
+passed five existing path/fuzz cases, 21 existing shared ProjectSupport cases,
+27 native controls and 48 complete canonical pinned-Go project records. The stale
+project signature observer was repaired with an explicit nil-aware List snapshot;
+null/allocated-empty/order and expected DTOs are unchanged. Native publication also
+[warned](../artifacts/vscode-path-normalization-fastpath/focused/publish-native-projects.stdout)
+that stale dependent Collections StoredGraph.SignatureSeed metadata would throw.
+The selected 27/48 channels passed; that dependency must be refreshed before its
+mode or a final gate. This does not qualify every validator mode.
+
+The [matched CoreCLR allocation estimate](../artifacts/vscode-path-normalization-fastpath/allocation-comparison.json)
+fell 16.497538→16.404452GiB (−0.5642%) for the combined path/ASCII/singleton packet.
+Each role has one trace with zero loss/truncation or missing stacks; weights are
+sampled interval estimates, not exact Native AOT bytes or per-change savings.
+
 ## Reproduction and records
 
 ```bash

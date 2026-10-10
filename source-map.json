@@ -598,7 +598,12 @@
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       },
-      "spanCloneAdaptation": "GoArena.CloneAsList accepts a borrowed ReadOnlySpan solely while constructing the same nil-aware detached mutable List. Slice overload delegates to it. This does not implement upstream persistent arena slabs; public AST List storage remains unchanged. Evidence: artifacts/vscode-parser-inline-scratch/."
+      "spanCloneAdaptation": "GoArena.CloneAsList accepts a borrowed ReadOnlySpan solely while constructing the same nil-aware detached mutable List. Slice overload delegates to it. This does not implement upstream persistent arena slabs; public AST List storage remains unchanged. Evidence: artifacts/vscode-parser-inline-scratch/.",
+      "singletonArenaCapacityAdaptation": {
+        "sourceResponsibilities": "core/arena.go46 NewSlice1 -> NewSlice(1).",
+        "adaptation": "Explicit List capacity1 preserves one shallow mutable element while removing initial spare capacity; no shared arena storage claim.",
+        "qualification": "Qualified in b81a combined path packet; allocation evidence is combined and sampled, not all NewSlice1 payload removable."
+      }
     },
     {
       "upstream": null,
@@ -741,7 +746,13 @@
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
       "declarationsCampaignState": "accepted selected D1\u2013D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Original byte-string basename extension predicate.",
-      "declarationsCampaignEvidence": "validation/results/declarations-verified.json"
+      "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
+      "normalizationFastpathAdaptation": {
+        "sourceResponsibilities": "path.go424/426,537/554/499 getNormalizedAbsolutePathFromNormalizedSlashes/simpleNormalizePath/hasRelativePathSegment.",
+        "adaptation": "Restored ordered simple-path entry with exact root/trailing and leading-dot/slash semantic guard; original general fallback retained. LastIndexByte search borrows a bounded span before materializing the retained path.",
+        "evidence": "artifacts/vscode-path-normalization-fastpath/",
+        "qualification": "Frozenb81a native22.64wall/91.50CPU exact10; existing managed path/fuzz5 and ProjectSupport21, native controls27 and complete canonical Go DTO48 pass. No blanket validator acceptance: stale Collections StoredGraph.SignatureSeed dependency warning remains and must be rebuilt before that mode/final gate. Sampled combined path/ASCII/singleton16.497538 to16.404452GiB (-0.5642%), zero loss/truncation/missing stacks; one trace per role, no per-change/native speed claim."
+      }
     },
     {
       "upstream": null,
@@ -3304,7 +3315,12 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Named legacy policy scopes actual full resolver calls, including existing winning-file/eligible-directory admission; full graph host is separate.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "asciiBoundaryAdaptation": {
+        "adaptation": "Authored scalar/raw-byte boundary returns unchanged nonnull ASCII spelling via standard Ascii.IsValid char span. Existing strict null/nonASCII/invalid UTF8/WTF8 encoding/decoding and host exceptions remain; null-forgiving fallback annotations only satisfy compiler analysis.",
+        "review": "artifacts/vscode-scalar-path-ascii/build/independent-review.json",
+        "qualification": "Qualified with b81a path packet; expanded existing shared ScalarModuleEncoding body, no new cases or upstream-test claim."
+      }
     },
     {
       "upstream": null,
@@ -3588,7 +3604,12 @@
       "scope": "Authored explicit Unicode/Go byte-string API boundary. Pure paths never decode.",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "asciiBoundaryAdaptation": {
+        "adaptation": "Authored scalar/raw-byte boundary returns unchanged nonnull ASCII spelling via standard Ascii.IsValid char span. Existing strict null/nonASCII/invalid UTF8/WTF8 encoding/decoding and host exceptions remain; null-forgiving fallback annotations only satisfy compiler analysis.",
+        "review": "artifacts/vscode-scalar-path-ascii/build/independent-review.json",
+        "qualification": "Qualified with b81a path packet; expanded existing shared ScalarModuleEncoding body, no new cases or upstream-test claim."
+      }
     },
     {
       "upstream": "tsc/internal/tspath/pathkey.go",

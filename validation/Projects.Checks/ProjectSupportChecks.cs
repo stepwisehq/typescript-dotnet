@@ -211,6 +211,36 @@ public static partial class ProjectSupportChecks
     // surrogates, while this filesystem adapter explicitly rejects their paths.
     private static void ScalarModuleEncoding()
     {
+        // Authored scalar/raw-byte boundary controls, shared by the existing
+        // managed and native Resolution.PrecedenceAndFlags case.
+        foreach (string ascii in new[] { "", "./a.ts", "\0\t\n\u007F" })
+        {
+            Equal(PathByteText.FromUnicode(ascii), ascii);
+            Equal(PathByteText.ToUnicode(ascii), ascii);
+            Equal(ProjectDiskHost.DecodeModuleReference(ascii), ascii);
+        }
+        const string scalar = "é/\U0001F600.ts";
+        const string raw = "\u00C3\u00A9/\u00F0\u009F\u0098\u0080.ts";
+        Equal(PathByteText.FromUnicode(scalar), raw);
+        Equal(PathByteText.ToUnicode(raw), scalar);
+        Equal(ProjectDiskHost.DecodeModuleReference(raw), scalar);
+        ExpectBoundaryException<System.Text.EncoderFallbackException>(() => PathByteText.FromUnicode("\uD800"));
+        foreach (string malformed in new[] { "\u00FF", "\u00C0\u0080", "\u00ED\u00A0\u0080" })
+        {
+            ExpectBoundaryException<System.Text.DecoderFallbackException>(() => PathByteText.ToUnicode(malformed));
+            Reject(() => ProjectDiskHost.DecodeModuleReference(malformed), "pathEncoding");
+        }
+        ExpectBoundaryException<ArgumentNullException>(() => PathByteText.FromUnicode(null!));
+        ExpectBoundaryException<ArgumentNullException>(() => PathByteText.ToUnicode(null!));
+        ExpectBoundaryException<ArgumentNullException>(() => ProjectDiskHost.DecodeModuleReference(null!));
+
+        static void ExpectBoundaryException<TException>(Action action) where TException : Exception
+        {
+            try { action(); }
+            catch (TException) { return; }
+            throw new InvalidOperationException("Expected " + typeof(TException).Name + " at the scalar path boundary.");
+        }
+
         using var disk = new Fixture();
         disk.Config("{\"files\":[\"main.ts\"]}");
         disk.Write("\uFFFD.ts", "export const x=1;");

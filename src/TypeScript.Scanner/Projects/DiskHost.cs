@@ -13,9 +13,13 @@ internal sealed class ProjectDiskHost
     // and resolve a different filename. General scanner/string values stay intact.
     internal static string DecodeModuleReference(string bytes)
     {
+        // This authored scalar-disk boundary needs no conversion for ASCII.
+        // Invalid/WTF-8 and all non-ASCII retain the original strict decoder.
+        if (bytes is not null && Ascii.IsValid(bytes.AsSpan()))
+            return bytes;
         try
         {
-            return scalarPathEncoding.GetString(GoString.Bytes(bytes));
+            return scalarPathEncoding.GetString(GoString.Bytes(bytes!));
         }
         catch (DecoderFallbackException)
         {

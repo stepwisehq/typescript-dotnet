@@ -215,13 +215,22 @@ public static partial class TsPath
         return getNormalizedAbsolutePathFromNormalizedSlashes(fileName);
     }
 
-    // path.go:424. The upstream simpleNormalizePath optimization is omitted;
-    // the original general normalization algorithm is retained for every path.
+    // path.go:424. Try the original simple path before the general segment reduction.
     private static string getNormalizedAbsolutePathFromNormalizedSlashes(string fileName)
     {
-        if (fileName == "")
-            return "";
-        int rootLength = GetRootLength(fileName), length = fileName.Length;
+        int rootLength = GetRootLength(fileName);
+        var (simpleNormalized, ok) = simpleNormalizePath(fileName);
+        if (ok)
+        {
+            int simpleLength = simpleNormalized.Length;
+            if (simpleLength > rootLength)
+                return RemoveTrailingDirectorySeparator(simpleNormalized);
+            if (simpleLength == rootLength && rootLength != 0)
+                return EnsureTrailingDirectorySeparator(simpleNormalized);
+            return simpleNormalized;
+        }
+
+        int length = fileName.Length;
         string root = fileName[..rootLength], normalized = "";
         bool changed = false, seenNonDotDotSegment = rootLength != 0;
         int index = rootLength, normalizedUpTo = index;
@@ -276,7 +285,8 @@ public static partial class TsPath
                 {
                     if (!changed)
                     {
-                        normalized = normalizedUpTo - 1 >= 0 ? fileName[..Math.Max(rootLength, fileName[..(normalizedUpTo - 1)].LastIndexOf('/'))] : fileName[..normalizedUpTo];
+                        // path.go:499. Borrow the search prefix; only the retained result is materialized.
+                        normalized = normalizedUpTo - 1 >= 0 ? fileName[..Math.Max(rootLength, fileName.AsSpan(0, normalizedUpTo - 1).LastIndexOf('/'))] : fileName[..normalizedUpTo];
                         changed = true;
                     }
                     else
@@ -314,6 +324,18 @@ public static partial class TsPath
         }
 
         return length == rootLength ? EnsureTrailingDirectorySeparator(fileName) : fileName;
+    }
+
+    // path.go:537. These ASCII operations preserve the original raw Go-byte path role.
+    private static (string Path, bool Ok) simpleNormalizePath(string path)
+    {
+        if (!hasRelativePathSegment(path))
+            return (path, true);
+        string simplified = path.Replace("/./", "/", StringComparison.Ordinal);
+        string trimmed = simplified.StartsWith("./", StringComparison.Ordinal) ? simplified[2..] : simplified;
+        if (trimmed != path && !hasRelativePathSegment(trimmed) && !(trimmed != simplified && trimmed.StartsWith('/')))
+            return (trimmed, true);
+        return ("", false);
     }
 
     public static string NormalizePath(string path)

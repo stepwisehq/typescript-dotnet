@@ -10,7 +10,8 @@ internal sealed class GoRef<T>(Func<T> get, Action<T> set)
 
 internal sealed class GoArena<T>
 {
-    public List<T> NewSlice1(T value) => new()
+    // core/arena.go:46. The single published slot has no spare logical capacity.
+    public List<T> NewSlice1(T value) => new(1)
     {
         value
     };
