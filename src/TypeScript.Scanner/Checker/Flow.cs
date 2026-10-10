@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/flow.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Original selected branch, assignment, capture, predicate-call, array evolution, loop,
-// constructor/static property and post-super flow paths; broader body families remain external.
+// Synchronous TypeScript flow, assignment, narrowing and reachability responsibilities.
+// The for-await consumer remains explicitly external; enabled tracing is not implemented.
 #nullable disable
 using TypeScript.Scanner;
 
@@ -10,6 +10,264 @@ namespace TypeScript.Checking;
 
 public sealed partial class Checker
 {
+    // flow.go:1059–1252. Each flow edge retains the actual clause range.
+    private FlowType getTypeAtSwitchClause(FlowState f, FlowNode flow)
+    {
+        var data = flow.Node.AsFlowSwitchClauseData();
+        var expr = Ast.SkipParentheses(data.SwitchStatement.Expression());
+        var flowType = getTypeAtFlowNode(f, flow.Antecedent);
+        var t = flowType.t;
+        if (isMatchingReference(f.reference, expr))
+            t = narrowTypeBySwitchOnDiscriminant(t, data);
+        else if (expr.Kind == Kind.TypeOfExpression && isMatchingReference(f.reference, expr.Expression()))
+            t = narrowTypeBySwitchOnTypeOf(t, data);
+        else if (expr.Kind == Kind.TrueKeyword)
+            t = narrowTypeBySwitchOnTrue(f, t, data);
+        else
+        {
+            if (strictNullChecks)
+            {
+                if (optionalChainContainsReference(expr, f.reference))
+                    t = narrowTypeBySwitchOptionalChainContainment(t, data, clause => (clause.flags & (TypeFlags.Undefined | TypeFlags.Never)) == 0);
+                else if (Ast.IsTypeOfExpression(expr) && optionalChainContainsReference(expr.Expression(), f.reference))
+                    t = narrowTypeBySwitchOptionalChainContainment(t, data,
+                        clause => !((clause.flags & TypeFlags.Never) != 0 || (clause.flags & TypeFlags.StringLiteral) != 0 && getStringLiteralValue(clause) == "undefined"));
+            }
+            var access = getDiscriminantPropertyAccess(f, expr, t);
+            if (access != null)
+                t = narrowTypeBySwitchOnDiscriminantProperty(t, access, data);
+        }
+        return newFlowType(t, flowType.incomplete);
+    }
+
+    private Type narrowTypeBySwitchOnDiscriminant(Type t, FlowSwitchClauseData data)
+    {
+        var switchTypes = getSwitchClauseTypes(data.SwitchStatement);
+        if (GoRuntime.Len(switchTypes) == 0)
+            return t;
+        var clauseTypes = GoRuntime.Slice(switchTypes, (int)data.ClauseStart, (int)data.ClauseEnd);
+        var hasDefaultClause = data.ClauseStart == data.ClauseEnd || (clauseTypes?.Contains(neverType) ?? false);
+        if ((t.flags & TypeFlags.Unknown) != 0 && !hasDefaultClause)
+        {
+            List<Type> groundClauseTypes = null;
+            for (var i = 0; i < clauseTypes.Count; i++)
+            {
+                var s = clauseTypes[i];
+                if ((s.flags & (TypeFlags.Primitive | TypeFlags.NonPrimitive)) != 0)
+                {
+                    if (groundClauseTypes != null)
+                        groundClauseTypes.Add(s);
+                }
+                else if ((s.flags & TypeFlags.Object) != 0)
+                {
+                    groundClauseTypes ??= GoRuntime.Slice(clauseTypes, 0, i);
+                    groundClauseTypes = GoRuntime.Append(groundClauseTypes, nonPrimitiveType);
+                }
+                else
+                    return t;
+            }
+            return getUnionType(groundClauseTypes ?? clauseTypes);
+        }
+        var discriminantType = getUnionType(clauseTypes);
+        Type caseType = null;
+        if ((discriminantType.flags & TypeFlags.Never) != 0)
+            caseType = neverType;
+        else
+        {
+            if ((discriminantType.flags & TypeFlags.Primitive) != 0 && isUniformUnionType(t))
+            {
+                var regularType = getRegularTypeOfLiteralType(discriminantType);
+                if (unionContainsType(t, regularType, false))
+                    caseType = regularType;
+            }
+            if (caseType == null)
+            {
+                var filtered = filterType(t, constituent => areTypesComparable(discriminantType, constituent));
+                caseType = replacePrimitivesWithLiterals(filtered, discriminantType);
+            }
+        }
+        if (!hasDefaultClause)
+            return caseType;
+        var defaultType = filterType(t, constituent =>
+        {
+            if (!isUnitLikeType(constituent))
+                return true;
+            var unit = (constituent.flags & TypeFlags.Undefined) != 0
+                ? undefinedType : getRegularTypeOfLiteralType(extractUnitType(constituent));
+            return !switchTypes.Any(st => isUnitType(st) && areTypesComparable(st, unit));
+        });
+        return (caseType.flags & TypeFlags.Never) != 0 ? defaultType : getUnionType(new List<Type> { caseType, defaultType });
+    }
+
+    private Type narrowTypeBySwitchOnTypeOf(Type t, FlowSwitchClauseData data)
+    {
+        var witnesses = getSwitchClauseTypeOfWitnesses(data.SwitchStatement);
+        if (witnesses == null)
+            return t;
+        var clauses = data.SwitchStatement.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
+        var defaultIndex = Core.FindIndex(clauses, clause => clause.Kind == Kind.DefaultClause);
+        var clauseStart = (int)data.ClauseStart;
+        var clauseEnd = (int)data.ClauseEnd;
+        var hasDefaultClause = clauseStart == clauseEnd || defaultIndex >= clauseStart && defaultIndex < clauseEnd;
+        if (hasDefaultClause)
+        {
+            var notEqualFacts = getNotEqualFactsFromTypeofSwitch(clauseStart, clauseEnd, witnesses);
+            return filterType(t, constituent => getTypeFacts(constituent, notEqualFacts) == notEqualFacts);
+        }
+        return getUnionType(Core.Map(GoRuntime.Slice(witnesses, clauseStart, clauseEnd),
+            text => text != "" ? narrowTypeByTypeName(t, text) : neverType));
+    }
+
+    private Type narrowTypeBySwitchOnTrue(FlowState f, Type t, FlowSwitchClauseData data)
+    {
+        var clauses = data.SwitchStatement.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
+        var defaultIndex = Core.FindIndex(clauses, clause => clause.Kind == Kind.DefaultClause);
+        var clauseStart = (int)data.ClauseStart;
+        var clauseEnd = (int)data.ClauseEnd;
+        var hasDefaultClause = clauseStart == clauseEnd || defaultIndex >= clauseStart && defaultIndex < clauseEnd;
+        for (var i = 0; i < clauseStart; i++)
+        {
+            var clause = clauses[i];
+            if (clause.Kind == Kind.CaseClause)
+                t = narrowType(f, t, clause.Expression(), false);
+        }
+        if (hasDefaultClause)
+        {
+            for (var i = clauseEnd; i < clauses.Count; i++)
+            {
+                var clause = clauses[i];
+                if (clause.Kind == Kind.CaseClause)
+                    t = narrowType(f, t, clause.Expression(), false);
+            }
+            return t;
+        }
+        return getUnionType(Core.Map(GoRuntime.Slice(clauses, clauseStart, clauseEnd),
+            clause => clause.Kind == Kind.CaseClause ? narrowType(f, t, clause.Expression(), true) : neverType));
+    }
+
+    private Type narrowTypeBySwitchOptionalChainContainment(Type t, FlowSwitchClauseData data, Func<Type, bool> clauseCheck)
+    {
+        var everyClauseChecks = data.ClauseStart != data.ClauseEnd &&
+            Core.Every(GoRuntime.Slice(getSwitchClauseTypes(data.SwitchStatement), (int)data.ClauseStart, (int)data.ClauseEnd), clauseCheck);
+        return everyClauseChecks ? getTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
+    }
+
+    private Type narrowTypeBySwitchOnDiscriminantProperty(Type t, Node access, FlowSwitchClauseData data)
+    {
+        if (data.ClauseStart < data.ClauseEnd && (t.flags & TypeFlags.Union) != 0)
+        {
+            var (accessedName, _) = getAccessedPropertyName(access);
+            if (accessedName != "" && getKeyPropertyName(t) == accessedName)
+            {
+                var clauseTypes = GoRuntime.Slice(getSwitchClauseTypes(data.SwitchStatement), (int)data.ClauseStart, (int)data.ClauseEnd);
+                var candidate = getUnionType(Core.Map(clauseTypes, s => getConstituentTypeForKeyType(t, s) ?? unknownType));
+                if (candidate != unknownType)
+                    return candidate;
+            }
+        }
+        return narrowTypeByDiscriminant(t, access, constituent => narrowTypeBySwitchOnDiscriminant(constituent, data));
+    }
+
+    // flow.go:1933–2046. Resolution-in-progress is observable through recursive flow queries.
+    private bool isExhaustiveSwitchStatement(Node node)
+    {
+        var links = switchStatementLinks.Get(node);
+        if (links.exhaustiveState == ExhaustiveState.Unknown)
+        {
+            links.exhaustiveState = ExhaustiveState.Computing;
+            var exhaustive = computeExhaustiveSwitchStatement(node);
+            if (links.exhaustiveState == ExhaustiveState.Computing)
+                links.exhaustiveState = exhaustive ? ExhaustiveState.True : ExhaustiveState.False;
+        }
+        else if (links.exhaustiveState == ExhaustiveState.Computing)
+            links.exhaustiveState = ExhaustiveState.False;
+        return links.exhaustiveState == ExhaustiveState.True;
+    }
+
+    private bool computeExhaustiveSwitchStatement(Node node)
+    {
+        if (Ast.IsTypeOfExpression(node.Expression()))
+        {
+            var witnesses = getSwitchClauseTypeOfWitnesses(node);
+            if (witnesses == null)
+                return false;
+            var operandConstraint = getBaseConstraintOrType(checkExpressionCached(node.Expression().Expression()));
+            var facts = getNotEqualFactsFromTypeofSwitch(0, 0, witnesses);
+            if ((operandConstraint.flags & TypeFlags.AnyOrUnknown) != 0)
+                return (TypeFacts.AllTypeofNE & facts) == TypeFacts.AllTypeofNE;
+            return !someType(operandConstraint, t => getTypeFacts(t, facts) == facts);
+        }
+        var type = getBaseConstraintOrType(checkExpressionCached(node.Expression()));
+        if (!isLiteralType(type))
+            return false;
+        var switchTypes = getSwitchClauseTypes(node);
+        if (GoRuntime.Len(switchTypes) == 0 || Core.Some(switchTypes, isNeitherUnitTypeNorNever))
+            return false;
+        return eachTypeContainedIn(mapType(type, getRegularTypeOfLiteralType), switchTypes);
+    }
+
+    private static bool eachTypeContainedIn(Type source, List<Type> types) =>
+        (source.flags & TypeFlags.Union) != 0
+            ? !Core.Some(source.AsUnionType().types, t => !(types?.Contains(t) ?? false))
+            : types?.Contains(source) ?? false;
+
+    private static bool isNeitherUnitTypeNorNever(Type t) => (t.flags & (TypeFlags.Unit | TypeFlags.Never)) == 0;
+
+    private List<string> getSwitchClauseTypeOfWitnesses(Node node)
+    {
+        var links = switchStatementLinks.Get(node);
+        if (!links.witnessesComputed)
+        {
+            var clauses = node.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
+            // Go make([]string,n) initializes empty strings, rather than managed nulls.
+            List<string> witnesses = Enumerable.Repeat("", GoRuntime.Len(clauses)).ToList();
+            for (var i = 0; i < GoRuntime.Len(clauses); i++)
+            {
+                var clause = clauses[i];
+                if (clause.Kind != Kind.CaseClause)
+                    continue;
+                if (!Ast.IsStringLiteralLike(clause.Expression()))
+                {
+                    witnesses = null;
+                    break;
+                }
+                var text = clause.Expression().Text();
+                if (!witnesses.Contains(text))
+                    witnesses[i] = text;
+            }
+            links.witnesses = witnesses;
+            links.witnessesComputed = true;
+        }
+        return links.witnesses;
+    }
+
+    private static TypeFacts getNotEqualFactsFromTypeofSwitch(int start, int end, List<string> witnesses)
+    {
+        var facts = TypeFacts.None;
+        for (var i = 0; i < GoRuntime.Len(witnesses); i++)
+        {
+            var witness = witnesses[i];
+            if ((i < start || i >= end) && witness != "")
+                facts |= typeofNEFacts.TryGetValue(witness, out var f) ? f : TypeFacts.TypeofNEHostObject;
+        }
+        return facts;
+    }
+
+    private List<Type> getSwitchClauseTypes(Node node)
+    {
+        var links = switchStatementLinks.Get(node);
+        if (!links.switchTypesComputed)
+        {
+            var clauses = node.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
+            links.switchTypes = Core.Map(clauses, getTypeOfSwitchClause);
+            links.switchTypesComputed = true;
+        }
+        return links.switchTypes;
+    }
+
+    private Type getTypeOfSwitchClause(Node clause) => clause.Kind == Kind.CaseClause
+        ? getRegularTypeOfLiteralType(getTypeOfExpression(clause.Expression())) : neverType;
+
     private struct FlowType
     {
         internal Type t;
@@ -204,7 +462,7 @@ public sealed partial class Checker
                 }
             }
             else if ((flags & FlowFlags.SwitchClause) != 0)
-                throw unsupported("getTypeAtFlowNode: excluded switch flow");
+                t = getTypeAtSwitchClause(f, flow);
             else if ((flags & FlowFlags.Start) != 0)
             {
                 var container = flow.Node;
@@ -469,9 +727,71 @@ public sealed partial class Checker
         if (node.Kind == Kind.VariableDeclaration)
             return getInitialTypeOfVariableDeclaration(node);
         if (node.Kind == Kind.BindingElement)
-            throw unsupported("getInitialType: excluded binding element");
+            return getInitialTypeOfBindingElement(node);
         throw new InvalidOperationException("Unhandled case in getInitialType");
     }
+
+    // flow.go:2273. The parent source type is projected before a local default.
+    private Type getInitialTypeOfBindingElement(Node node)
+    {
+        var pattern = node.Parent;
+        var parentType = getInitialType(pattern.Parent);
+        Type t;
+        if (Ast.IsObjectBindingPattern(pattern))
+            t = getTypeOfDestructuredProperty(parentType, getBindingElementPropertyName(node));
+        else if (!hasDotDotDotToken(node))
+            t = getTypeOfDestructuredArrayElement(parentType, GoSlices.Index(pattern.Elements(), node));
+        else
+            t = getTypeOfDestructuredSpreadExpression(parentType);
+        return getTypeWithDefault(t, node.Initializer());
+    }
+
+    // flow.go:2323–2388. Actual assignment syntax recursively determines the
+    // supplied type; iteration/index defaults preserve source option semantics.
+    private Type getAssignedTypeOfArrayLiteralElement(Node node, Node element) =>
+        getTypeOfDestructuredArrayElement(getAssignedType(node), GoSlices.Index(node.Elements(), element));
+
+    private Type getTypeOfDestructuredArrayElement(Type t, int index)
+    {
+        if (everyType(t, isTupleLikeType))
+        {
+            var tupleElementType = getTupleElementType(t, index);
+            if (tupleElementType != null)
+                return tupleElementType;
+        }
+        var elementType = checkIteratedTypeOrElementType(IterationUse.Destructuring, t, undefinedType, null);
+        return elementType != null ? includeUndefinedInIndexSignature(elementType) : errorType;
+    }
+
+    private Type getAssignedTypeOfSpreadExpression(Node node) => getTypeOfDestructuredSpreadExpression(getAssignedType(node.Parent));
+
+    private Type getTypeOfDestructuredSpreadExpression(Type t)
+    {
+        var elementType = checkIteratedTypeOrElementType(IterationUse.Destructuring, t, undefinedType, null) ?? errorType;
+        return createArrayType(elementType);
+    }
+
+    private Type getAssignedTypeOfPropertyAssignment(Node node) => getTypeOfDestructuredProperty(getAssignedType(node.Parent), node.Name());
+
+    private Type getTypeOfDestructuredProperty(Type t, Node name)
+    {
+        var nameType = getLiteralTypeFromPropertyName(name);
+        if (!isTypeUsableAsPropertyName(nameType))
+            return errorType;
+        var text = getPropertyNameFromType(nameType);
+        var propType = getTypeOfPropertyOfType(t, text);
+        if (propType != null)
+            return propType;
+        var indexInfo = getApplicableIndexInfoForName(t, text);
+        return indexInfo != null ? includeUndefinedInIndexSignature(indexInfo.valueType) : errorType;
+    }
+
+    private Type getAssignedTypeOfShorthandPropertyAssignment(Node node) =>
+        getTypeWithDefault(getAssignedTypeOfPropertyAssignment(node), node.AsShorthandPropertyAssignment().ObjectAssignmentInitializer);
+
+    private bool isDestructuringAssignmentTarget(Node parent) =>
+        Ast.IsBinaryExpression(parent.Parent) && parent.Parent.AsBinaryExpression().Left == parent ||
+        Ast.IsForOfStatement(parent.Parent) && parent.Parent.Initializer() == parent;
 
     private Type getInitialTypeOfVariableDeclaration(Node node)
     {
@@ -675,7 +995,11 @@ public sealed partial class Checker
 
                 case true when ((flags & FlowFlags.SwitchClause) != 0):
                     {
-                        throw unsupported("isReachableFlowNodeWorker: excluded switch");
+                        var data = flow.Node.AsFlowSwitchClauseData();
+                        if (data.ClauseStart == data.ClauseEnd && isExhaustiveSwitchStatement(data.SwitchStatement))
+                            return false;
+                        flow = flow.Antecedent;
+                        break;
                     }
 
                 case true when ((flags & FlowFlags.ReduceLabel) != 0):
@@ -1199,13 +1523,13 @@ public sealed partial class Checker
                     {
                         if (this.optionalChainContainsReference(left, f.reference))
                         {
-                            throw unsupported("narrowTypeByOptionalChainContainment: excluded optional chain");
+                            t = narrowTypeByOptionalChainContainment(f, t, @operator, right, assumeTrue);
                         }
                         else
                         {
                             if (this.optionalChainContainsReference(right, f.reference))
                             {
-                                throw unsupported("narrowTypeByOptionalChainContainment: excluded optional chain");
+                                t = narrowTypeByOptionalChainContainment(f, t, @operator, left, assumeTrue);
                             }
                         }
                     }
@@ -1247,12 +1571,31 @@ public sealed partial class Checker
 
             case Kind.InstanceOfKeyword:
                 {
-                    throw unsupported("narrowTypeByBinaryExpression: excluded instanceof");
+                    return narrowTypeByInstanceof(f, t, expr, assumeTrue);
                 }
 
             case Kind.InKeyword:
                 {
-                    throw unsupported("narrowTypeByBinaryExpression: excluded in");
+                    if (Ast.IsPrivateIdentifier(expr.Left))
+                        return narrowTypeByPrivateIdentifierInInExpression(f, t, expr, assumeTrue);
+                    var target = getReferenceCandidate(expr.Right);
+                    if (containsMissingType(t) && Ast.IsAccessExpression(f.reference) && isMatchingReference(f.reference.Expression(), target))
+                    {
+                        var leftType = getTypeOfExpression(expr.Left);
+                        if (isTypeUsableAsPropertyName(leftType))
+                        {
+                            var (accessedName, ok) = getAccessedPropertyName(f.reference);
+                            if (ok && accessedName == getPropertyNameFromType(leftType))
+                                return getTypeWithFacts(t, assumeTrue ? TypeFacts.NEUndefined : TypeFacts.EQUndefined);
+                        }
+                    }
+                    if (isMatchingReference(f.reference, target))
+                    {
+                        var leftType = getTypeOfExpression(expr.Left);
+                        if (isTypeUsableAsPropertyName(leftType))
+                            return narrowTypeByInKeyword(f, t, leftType, assumeTrue);
+                    }
+                    break;
                 }
 
             case Kind.CommaToken:
@@ -1628,6 +1971,117 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
+    // flow.go:811. Custom Symbol.hasInstance predicates precede constructor typing.
+    private Type narrowTypeByInstanceof(FlowState f, Type t, BinaryExpression expr, bool assumeTrue)
+    {
+        var left = getReferenceCandidate(expr.Left);
+        if (!isMatchingReference(f.reference, left))
+        {
+            if (assumeTrue && strictNullChecks && optionalChainContainsReference(left, f.reference))
+                return getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull);
+            return t;
+        }
+        var rightType = getTypeOfExpression(expr.Right);
+        if (!isTypeDerivedFrom(rightType, globalObjectType))
+            return t;
+        TypePredicate predicate = null;
+        var signature = getEffectsSignature(expr.AsNode());
+        if (signature != null)
+            predicate = getTypePredicateOfSignature(signature);
+        if (predicate != null && predicate.kind == TypePredicateKind.Identifier && predicate.parameterIndex == 0)
+            return getNarrowedType(t, predicate.t, assumeTrue, true);
+        if (!isTypeDerivedFrom(rightType, globalFunctionType))
+            return t;
+        var instanceType = mapType(rightType, getInstanceType);
+        if (IsTypeAny(t) && (instanceType == globalObjectType || instanceType == globalFunctionType) ||
+            !assumeTrue && !((instanceType.flags & TypeFlags.Object) != 0 && !IsEmptyAnonymousObjectType(instanceType)))
+            return t;
+        return getNarrowedType(t, instanceType, assumeTrue, true);
+    }
+
+    // flow.go:966.
+    private Type getInstanceType(Type constructorType)
+    {
+        var prototypePropertyType = getTypeOfPropertyOfType(constructorType, "prototype");
+        if (prototypePropertyType != null && !IsTypeAny(prototypePropertyType))
+            return prototypePropertyType;
+        var constructSignatures = getSignaturesOfType(constructorType, SignatureKind.Construct);
+        if (GoRuntime.Len(constructSignatures) != 0)
+            return getUnionType(Core.Map(constructSignatures, signature => getReturnTypeOfSignature(getErasedSignature(signature))));
+        return emptyObjectType;
+    }
+
+    // flow.go:982.
+    private Type narrowTypeByPrivateIdentifierInInExpression(FlowState f, Type t, BinaryExpression expr, bool assumeTrue)
+    {
+        var target = getReferenceCandidate(expr.Right);
+        if (!isMatchingReference(f.reference, target))
+            return t;
+        var symbol = getSymbolForPrivateIdentifierExpression(expr.Left);
+        if (symbol == null)
+            return t;
+        var classSymbol = symbol.Parent;
+        var targetType = Ast.HasStaticModifier(symbol.ValueDeclaration)
+            ? getTypeOfSymbol(classSymbol) : getDeclaredTypeOfSymbol(classSymbol);
+        return getNarrowedType(t, targetType, assumeTrue, true);
+    }
+
+    // flow.go:1001.
+    private Type narrowTypeByInKeyword(FlowState f, Type t, Type nameType, bool assumeTrue)
+    {
+        var name = getPropertyNameFromType(nameType);
+        var isKnownProperty = someType(t, constituent => isTypePresencePossible(constituent, name, true));
+        if (isKnownProperty)
+            return filterType(t, constituent => isTypePresencePossible(constituent, name, assumeTrue));
+        if (assumeTrue)
+        {
+            var recordSymbol = getGlobalRecordSymbol();
+            if (recordSymbol != null)
+                return getIntersectionType(new List<Type> { t, getTypeAliasInstantiation(recordSymbol, new List<Type> { nameType, unknownType }, null) });
+        }
+        return t;
+    }
+
+    // flow.go:1024.
+    private bool isTypePresencePossible(Type t, string propName, bool assumeTrue)
+    {
+        var prop = getPropertyOfType(t, propName);
+        if (prop != null)
+            return (prop.Flags & SymbolFlags.Optional) != 0 || (prop.CheckFlags & CheckFlags.Partial) != 0 || assumeTrue;
+        return getApplicableIndexInfoForName(t, propName) != null || !assumeTrue;
+    }
+
+    // flow.go:1032. Equality operator and value domain determine null removal.
+    private Type narrowTypeByOptionalChainContainment(FlowState f, Type t, Kind @operator, Node value, bool assumeTrue)
+    {
+        var equalsOperator = @operator is Kind.EqualsEqualsToken or Kind.EqualsEqualsEqualsToken;
+        var nullableFlags = @operator is Kind.EqualsEqualsToken or Kind.ExclamationEqualsToken ? TypeFlags.Nullable : TypeFlags.Undefined;
+        var valueType = getTypeOfExpression(value);
+        var removeNullable = equalsOperator != assumeTrue && everyType(valueType, constituent => (constituent.flags & nullableFlags) != 0) ||
+            equalsOperator == assumeTrue && everyType(valueType, constituent => (constituent.flags & (TypeFlags.AnyOrUnknown | nullableFlags)) == 0);
+        return removeNullable ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
+    }
+
+    // flow.go:2093.
+    private Type getSymbolHasInstanceMethodOfObjectType(Type t)
+    {
+        var hasInstancePropertyName = getPropertyNameForKnownSymbolName("hasInstance");
+        if (allTypesAssignableToKind(t, TypeFlags.NonPrimitive))
+        {
+            var hasInstanceProperty = getPropertyOfType(t, hasInstancePropertyName);
+            if (hasInstanceProperty != null)
+            {
+                var hasInstancePropertyType = getTypeOfSymbol(hasInstanceProperty);
+                if (hasInstancePropertyType != null && GoRuntime.Len(getSignaturesOfType(hasInstancePropertyType, SignatureKind.Call)) != 0)
+                    return hasInstancePropertyType;
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
     private Type getNarrowedType(Type t, Type candidate, bool assumeTrue, bool checkDerived)
     {
         if (((t.flags & TypeFlags.Union) == 0))
@@ -1832,11 +2286,15 @@ public sealed partial class Checker
     {
         var antecedentStart = GoRuntime.Len(antecedentTypes);
         bool subtypeReduction = false, seenIncomplete = false;
+        FlowNode bypassFlow = null;
         for (var list = antecedents; list != null; list = list.Next)
         {
             var antecedent = list.Flow;
-            if ((antecedent.Flags & FlowFlags.SwitchClause) != 0)
-                throw unsupported("getTypeAtFlowBranchLabel: excluded switch bypass");
+            if (bypassFlow == null && (antecedent.Flags & FlowFlags.SwitchClause) != 0 && antecedent.Node.AsFlowSwitchClauseData().IsEmpty())
+            {
+                bypassFlow = antecedent;
+                continue;
+            }
             var flowType = getTypeAtFlowNode(f, antecedent);
             if (flowType.t == f.declaredType && f.declaredType == f.initialType)
             {
@@ -1853,6 +2311,26 @@ public sealed partial class Checker
                 subtypeReduction = true;
             if (flowType.incomplete)
                 seenIncomplete = true;
+        }
+
+        if (bypassFlow != null)
+        {
+            var flowType = getTypeAtFlowNode(f, bypassFlow);
+            if ((flowType.t.flags & TypeFlags.Never) == 0 &&
+                !(GoRuntime.Slice(antecedentTypes, antecedentStart)?.Contains(flowType.t) ?? false) &&
+                !isExhaustiveSwitchStatement(bypassFlow.Node.AsFlowSwitchClauseData().SwitchStatement))
+            {
+                if (flowType.t == f.declaredType && f.declaredType == f.initialType)
+                {
+                    antecedentTypes = GoRuntime.Slice(antecedentTypes, 0, antecedentStart);
+                    return new FlowType(flowType.t);
+                }
+                antecedentTypes = GoRuntime.Append(antecedentTypes, flowType.t);
+                if (!isTypeSubsetOf(flowType.t, f.initialType))
+                    subtypeReduction = true;
+                if (flowType.incomplete)
+                    seenIncomplete = true;
+            }
         }
 
         var result = newFlowType(getUnionOrEvolvingArrayType(f, GoRuntime.Slice(antecedentTypes, antecedentStart), subtypeReduction ? UnionReduction.Subtype : UnionReduction.Literal), seenIncomplete);
@@ -2002,7 +2480,7 @@ public sealed partial class Checker
 
         if (Ast.IsBindingElement(access))
         {
-            throw unsupported("getAccessedPropertyName: excluded binding element");
+            return getDestructuringPropertyName(access);
         }
 
         if (Ast.IsParameterDeclaration(access))
@@ -2054,7 +2532,10 @@ public sealed partial class Checker
             case Kind.ObjectBindingPattern:
             case Kind.ArrayBindingPattern:
                 {
-                    throw unsupported("isConstantReference: excluded binding pattern");
+                    var rootDeclaration = Ast.GetRootDeclaration(node.Parent);
+                    if (Ast.IsParameterDeclaration(rootDeclaration) || Ast.IsVariableDeclaration(rootDeclaration) && Ast.IsCatchClause(rootDeclaration.Parent))
+                        return !isSomeSymbolAssigned(rootDeclaration);
+                    return Ast.IsVariableDeclaration(rootDeclaration) && isVarConstLike(rootDeclaration);
                 }
         }
 
@@ -2222,7 +2703,8 @@ public sealed partial class Checker
             Type funcType = default;
             if (Ast.IsBinaryExpression(node))
             {
-                throw unsupported("getEffectsSignature: excluded instanceof effects");
+                var rightType = checkNonNullExpression(node.AsBinaryExpression().Right);
+                funcType = getSymbolHasInstanceMethodOfObjectType(rightType);
             }
             else
             {
@@ -2236,7 +2718,7 @@ public sealed partial class Checker
                     {
                         if (Ast.IsOptionalChain(node))
                         {
-                            throw unsupported("getEffectsSignature: excluded optional call");
+                            funcType = checkNonNullType(getOptionalExpressionType(checkExpression(node.Expression()), node.Expression()), node.Expression());
                         }
                         else
                         {
@@ -2660,10 +3142,28 @@ public sealed partial class Checker
     private Type getAssignedType(Node node)
     {
         var parent = node.Parent;
-        if (parent.Kind == Kind.BinaryExpression)
-            return getAssignedTypeOfBinaryExpression(parent);
-        if (parent.Kind is Kind.DeleteExpression or Kind.ArrayLiteralExpression or Kind.SpreadElement or Kind.PropertyAssignment or Kind.ShorthandPropertyAssignment)
-            throw unsupported("getAssignedType: excluded delete/destructuring");
+        switch (parent.Kind)
+        {
+            case Kind.ForInStatement:
+                return stringType;
+            case Kind.ForOfStatement:
+                var t = checkRightHandSideOfForOf(parent);
+                if (t != null)
+                    return t;
+                break;
+            case Kind.BinaryExpression:
+                return getAssignedTypeOfBinaryExpression(parent);
+            case Kind.DeleteExpression:
+                return undefinedType;
+            case Kind.ArrayLiteralExpression:
+                return getAssignedTypeOfArrayLiteralElement(parent, node);
+            case Kind.SpreadElement:
+                return getAssignedTypeOfSpreadExpression(parent);
+            case Kind.PropertyAssignment:
+                return getAssignedTypeOfPropertyAssignment(parent);
+            case Kind.ShorthandPropertyAssignment:
+                return getAssignedTypeOfShorthandPropertyAssignment(parent);
+        }
         return errorType;
     }
 }
@@ -2672,8 +3172,10 @@ public sealed partial class Checker
 {
     private Type getAssignedTypeOfBinaryExpression(Node node)
     {
-        if (Ast.IsArrayLiteralExpression(node.Parent) || Ast.IsPropertyAssignment(node.Parent))
-            throw unsupported("getAssignedTypeOfBinaryExpression: excluded destructuring");
+        var isDestructuringDefaultAssignment = Ast.IsArrayLiteralExpression(node.Parent) && isDestructuringAssignmentTarget(node.Parent) ||
+            Ast.IsPropertyAssignment(node.Parent) && isDestructuringAssignmentTarget(node.Parent.Parent);
+        if (isDestructuringDefaultAssignment)
+            return getTypeWithDefault(getAssignedType(node), node.AsBinaryExpression().Right);
         return getTypeOfExpression(node.AsBinaryExpression().Right);
     }
 }
@@ -3278,8 +3780,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // flow.go:2339. The fixed profile currently leaves the option false, but the
-    // original helper retains the genuine missing-type edge when enabled.
+    // flow.go:2339. Preserve the actual indexed-access option and missing-type edge.
     private Type includeUndefinedInIndexSignature(Type t)
     {
         if (t == null)

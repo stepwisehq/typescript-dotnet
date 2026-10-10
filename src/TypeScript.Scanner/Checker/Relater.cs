@@ -4518,7 +4518,7 @@ public sealed partial class Checker
         foreach (var prop in node.Properties() ?? [])
         {
             if (prop.Kind == Kind.SpreadAssignment)
-                throw unsupported("elaborateObjectLiteral: spread");
+                continue;
             var nameType = getLiteralTypeFromProperty(getSymbolOfDeclaration(prop), TypeFlags.StringOrNumberLiteralOrUnique, false);
             if (nameType == null || (nameType.flags & TypeFlags.Never) != 0)
                 continue;

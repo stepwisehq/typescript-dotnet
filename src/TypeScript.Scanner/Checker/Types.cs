@@ -576,6 +576,29 @@ internal sealed class ReverseMappedSymbolLinks
 }
 
 // types.go:281. Spread indices are lazily computed for an array literal.
+// types.go:300; source properties contributing to a synthetic spread member.
+internal sealed class SpreadLinks
+{
+    internal Symbol leftSpread;
+    internal Symbol rightSpread;
+}
+
+internal enum ExhaustiveState : byte
+{
+    Unknown,
+    Computing,
+    False,
+    True
+}
+
+internal sealed class SwitchStatementLinks
+{
+    internal ExhaustiveState exhaustiveState;
+    internal bool switchTypesComputed, witnessesComputed;
+    internal List<Type> switchTypes;
+    internal List<string> witnesses;
+}
+
 internal sealed class ArrayLiteralLinks
 {
     internal bool indicesComputed;

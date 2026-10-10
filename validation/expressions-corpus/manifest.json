@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "campaign": "typescript-synchronous-expressions-statements-flow",
+  "baseline": "5efa4e5",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "cases": 85,
+  "groups": [
+    {
+      "name": "families",
+      "requests": "validation/expressions-corpus/requests-families.jsonl",
+      "expected": "validation/expressions-corpus/expected-families.jsonl.gz",
+      "provenance": "validation/expressions-corpus/requests-families-provenance.json",
+      "cases": 59,
+      "requestsSha256": "8af6fb32f9bb2d8579ec266986a61d1bc6eb1f45524fe8d91a31ba0571011ae2",
+      "expectedSha256": "ef8df9c9fed7d9f317a4d3650f5e38a2e1fee17da979b490bf80daa831de9827",
+      "provenanceSha256": "0168ffa031363da94679b93847852584f2317a9e6257c60ba00f2d644e45219b",
+      "originalOutputSha256": "40427b4a2a55ab17b561995f068b5017282dcdef23324a102b225054554841f2",
+      "originalReport": "artifacts/expressions-validation/original/families59/report.json"
+    },
+    {
+      "name": "vertical",
+      "requests": "validation/expressions-corpus/requests-vertical.jsonl",
+      "expected": "validation/expressions-corpus/expected-vertical.jsonl.gz",
+      "provenance": "validation/expressions-corpus/requests-vertical-provenance.json",
+      "cases": 2,
+      "requestsSha256": "edff107e8a1e4e0337ee2fce7fc9a2b7cd88634ec3cfb622f492d175c74aa455",
+      "expectedSha256": "4c7a4c693daa40cd341f369fd46b03b57e0ff9d915a76574ac29d4cea918d8b8",
+      "provenanceSha256": "177fa4579f180d0812dc5c6e85aaf632550b271779285a2df0cd430561db0f44",
+      "originalOutputSha256": "d2d591f9df28cf67d843def83c3f80fb40b31dd05d2365888e9bf6cd84c34e29",
+      "originalReport": "artifacts/expressions-validation/original/vertical/report.json"
+    },
+    {
+      "name": "compiler-inputs",
+      "requests": "validation/expressions-corpus/requests-compiler-inputs.jsonl",
+      "expected": "validation/expressions-corpus/expected-compiler-inputs.jsonl.gz",
+      "provenance": "validation/expressions-corpus/requests-compiler-inputs-provenance.json",
+      "cases": 24,
+      "requestsSha256": "461b4fb4ae0c0962a91252f627e2666bf42b35f908f8463e12475527ef8bf401",
+      "expectedSha256": "35c75f6431bdd65092c8191ad193aec8a125a3eb513ef3cdd62fe5d5e8b1888a",
+      "provenanceSha256": "deb8a76a533b6df97f428572090059a6b6f9df0a6433df2ba026d150c892621a",
+      "originalOutputSha256": "05cd93509230eccc46a911c52e27a055e6416208581500ad1252ceccb4c67668",
+      "originalReport": "artifacts/expressions-validation/original/compiler-inputs24/report.json"
+    }
+  ],
+  "sharedChecks": {
+    "count": 6,
+    "groups": [
+      {
+        "flag": "--checker-checks",
+        "count": 2,
+        "classNames": [
+          "Expressions.Tests.CheckerOriginalTests"
+        ],
+        "names": [
+          "TestGetSymbolAtLocation",
+          "TestGetTypeAtLocationOfTypeOnlyImportClause"
+        ]
+      },
+      {
+        "flag": "--mapper-semantic-checks",
+        "count": 3,
+        "classNames": [
+          "Expressions.Tests.MapperSemanticTests"
+        ],
+        "names": [
+          "TestCompositeProjectContentMapperSupplementalRoots",
+          "TestContentMapperInvalidMappings",
+          "TestContentMapperSourceFileState"
+        ]
+      },
+      {
+        "flag": "--external-semantic-boundary-checks",
+        "count": 1,
+        "classNames": [
+          "Expressions.Tests.ExternalSemanticBoundaryTests"
+        ],
+        "names": [
+          "Authored.ExternalSemanticConsumers"
+        ]
+      }
+    ],
+    "xUnitClassCounts": {
+      "Expressions.Tests.CheckerOriginalTests": 2,
+      "Expressions.Tests.MapperSemanticTests": 3,
+      "Expressions.Tests.ExternalSemanticBoundaryTests": 1
+    }
+  },
+  "corpusXUnitClass": "Expressions.Tests.ExpressionsOracleTests",
+  "originalTests": [
+    {
+      "package": "./internal/checker",
+      "functions": [
+        "TestGetSymbolAtLocation",
+        "TestGetTypeAtLocationOfTypeOnlyImportClause"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/checker/checker_test.go": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b"
+      }
+    },
+    {
+      "package": "./internal/compiler",
+      "functions": [
+        "TestCompositeProjectContentMapperSupplementalRoots",
+        "TestContentMapperInvalidMappings",
+        "TestContentMapperSourceFileState"
+      ],
+      "sourceFiles": {
+        "upstream/TypeScript/tsc/internal/compiler/contentmapper_test.go": "630f10ec32eb34f500aad399f6b7a54122a11921c1a23ee72e51acb982a8f334"
+      }
+    }
+  ],
+  "orderControls": {
+    "cases": 12,
+    "sequencesPerRuntime": 2,
+    "executionsPerRuntime": 26,
+    "requests": "validation/expressions-corpus/order-requests.jsonl",
+    "requestsSha256": "8c1c35e6bff98d07af16e07629ffd8ea9aa70d6a16359e8f0cea0753521cda66"
+  },
+  "currentCheckingEnvironment": {
+    "DECLARATIONS_CURRENT_CHECKING": "1"
+  },
+  "currentCheckingReplacement": {
+    "configurationManifest": "validation/declarations-corpus/configuration-current-manifest.json",
+    "resolutionManifest": "validation/declarations-corpus/resolution-current-manifest.json",
+    "migration": "validation/declarations-corpus/checking-environment-migration.json",
+    "migrationSha256": "4db955a73815d0e2d5d67d60ffd4725db527b3854c8b6fdd0a87aff3d81b176f",
+    "configurationManifestSha256": "a92a7b9f1a9e63227c9959e023ffce8e4d34d7c301e3afdd5655d36897749256",
+    "resolutionManifestSha256": "cb5e53a601331638e23190e3975c14a302f784d31a9db61514e7cfa5113dd976"
+  },
+  "cliControls": {
+    "cases": 2,
+    "requests": "validation/expressions-corpus/cli-requests.jsonl",
+    "requestsSha256": "5fa83208460565a08d5a48ce2e4279b74a16351768a0b314f0beefbdbac8b204",
+    "runner": "tools/check-expressions-cli.py",
+    "runnerSha256": "b8952c591f784ae3de70b381eb8ff9ed0c7ce21bc4f062c40078216420c26524",
+    "provenance": "validation/expressions-corpus/cli-provenance.json",
+    "provenanceSha256": "717fd0a9c3fa77c85fe864a1760f2c8ceae831d79822c185d38ffc0602e7c96b",
+    "semanticObserver": "tools/resolution-cli-oracle/main.go",
+    "semanticObserverSha256": "887d169f97d76623efba66645c56f91d6fd563c2256b2336dc506aa8be6b9379",
+    "sourceFiles": {
+      "examples/expressions/order-fulfillment/src/main.ts": "3769193af3ab7ec55875457aca3007e4e2c560f78f8cdd5cc750250021f46245",
+      "examples/expressions/order-fulfillment/src/model.ts": "e5c908669ea023d89c5c61beaf317517bdb1d246b7839202bb7565533f9aef5f",
+      "examples/expressions/order-fulfillment/src/service.ts": "c5554d2e223201ea56237f9a56025df4c2bca7ae5cccb3382d8df88fd0eea1d3",
+      "examples/expressions/order-fulfillment/tsconfig.json": "6744c6d930068da318bc5d14d1e3c5d5709f7c6fed5c32311bb217f5c20574d5",
+      "examples/expressions/order-fulfillment-invalid/src/main.ts": "1537962a8a6f0774979b6cff6a874b0a455658ca7e4ce76e2d0d912053889231",
+      "examples/expressions/order-fulfillment-invalid/src/model.ts": "e5c908669ea023d89c5c61beaf317517bdb1d246b7839202bb7565533f9aef5f",
+      "examples/expressions/order-fulfillment-invalid/src/service.ts": "c5554d2e223201ea56237f9a56025df4c2bca7ae5cccb3382d8df88fd0eea1d3",
+      "examples/expressions/order-fulfillment-invalid/tsconfig.json": "6744c6d930068da318bc5d14d1e3c5d5709f7c6fed5c32311bb217f5c20574d5"
+    },
+    "expectedExits": {
+      "order-fulfillment-valid": 0,
+      "order-fulfillment-invalid": 1
+    }
+  },
+  "jsonErrorProjection": {
+    "controls": 6,
+    "expected": "validation/program-corpus/json-error-controls-expected.json",
+    "expectedSha256": "31115caa8aa1ff8b5bc1190d9b29aaaa581e403ec6f11fa984ad4a047937d8db",
+    "provenance": "validation/program-corpus/json-error-controls-provenance.json",
+    "provenanceSha256": "7ac1c7310473382b06251d3911f66d28ffe3724c4a3f9e5a8fd78ab4f7564625"
+  },
+  "semanticObservation": {
+    "provenance": "validation/declarations-corpus/semantic-observation-provenance.json",
+    "provenanceSha256": "0604e69f15f8534063dbf2eaf7d95c886746824ef34a4862ff94c1b2cf24b981"
+  },
+  "authoredControlRetirement": {
+    "provenance": "validation/declarations-corpus/authored-control-retirement-provenance.json",
+    "provenanceSha256": "5e0ffd4ddc03d2cd9e1a13f96e486e84adeb7685b553faa8fba5356945fc4b84"
+  }
+}

@@ -1,25 +1,29 @@
 # TypeScript port feasibility study
 
-The **genuine checker initialization and declaration/object-model contract is complete**,
-verified under actual **Linux x64 Native AOT**, building on accepted Program construction,
-configuration, resolution, scanner/parser/AST and binder foundations. Ordinary
-`tscheck --config <tsconfig> --json` now uses actual Program options and unchanged upstream
-libraries, with no fixed-library admission gate or hidden library injection.
+The **TypeScript synchronous expression, statement and checker-flow contract is complete**,
+verified under actual **Linux x64 Native AOT**, on the accepted declaration/object,
+Program, configuration, resolution and syntax/binder foundations. Ordinary
+`tscheck --config <tsconfig> --json` uses genuine Program options and unchanged upstream
+libraries, without hidden library injection.
 
-Supported declaration behavior includes classes and constructors, inheritance, member
-visibility and initialization, accessors, enums, TS namespaces/augmentation/merging and
-their necessary semantic dependencies. The [warehouse example](./examples/declarations/)
-checks successfully with genuine ES2022 libraries; its invalid variant reports all six
-expected diagnostics and exits 1. See the [usage/reproduction guide](./docs/DECLARATIONS-VERIFY.md),
-[contract assessment](./docs/DECLARATIONS-ASSESSMENT.md), [proof](./validation/results/declarations-verified.json),
-[source mapping](./source-map.json) and [checker roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
+Supported behavior includes runtime destructuring/defaults/rest, object/array spread,
+optional access/calls, synchronous loops, switch and labels, try/catch/finally,
+predicates and flow-sensitive narrowing, alongside existing classes, functions,
+generics, objects and modules. The strict ES2022 [order-fulfillment project](./examples/expressions/)
+checks successfully; its invalid variant reports all five expected diagnostics and
+exits 1. See the [usage/reproduction guide](./docs/EXPRESSIONS-VERIFY.md),
+[contract assessment](./docs/EXPRESSIONS-ASSESSMENT.md),
+[proof](./validation/results/expressions-verified.json), [source mapping](./source-map.json)
+and [checker roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md).
 
-Acceptance includes 77 new xUnit cases, 71 complete pinned-Go comparisons in managed
-and native execution, six shared assertion groups, repeated-order checks and all retained
-regression stages. The 24,674 selected-suite TRX aggregate counts passed case executions,
-not unique upstream tests. Broad remaining body/control-flow, advanced type, async/generator,
-JS/JSDoc/JSX/decorator and option/module semantics are unfinished. This is not full
-checker parity or support for every API in the embedded libraries.
+Acceptance includes 91 new xUnit cases, 85 complete pinned-Go managed/native comparisons,
+six shared assertion groups, repeated-order checks and all retained regressions.
+The 24,765 selected-suite TRX aggregate counts passed case executions, not unique
+upstream tests. Reused compiler inputs are not full compiler-test passes. Remaining
+advanced types, async/generators/disposal, JS/JSDoc/JSX/decorators and module/option
+semantics are unfinished. This is not whole-checker parity or support for every API
+in the genuine libraries. Private-state observations remain diagnostic aids, not
+independent exhaustive acceptance requirements.
 
 All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and

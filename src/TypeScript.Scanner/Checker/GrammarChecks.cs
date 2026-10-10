@@ -7,6 +7,36 @@ using TypeScript.Scanner;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    private TypeScript.Scanner.Scanner regExpScanner;
+
+    // grammarchecks.go:69. Reuse the source scanner and retain byte-span diagnostics.
+    private bool checkGrammarRegularExpressionLiteral(RegularExpressionLiteral node)
+    {
+        var sourceFile = Ast.GetSourceFileOfNode(node.AsNode());
+        if (hasParseDiagnostics(sourceFile))
+            return false;
+        Diagnostic lastError = null;
+        regExpScanner ??= TypeScript.Scanner.Scanner.NewScanner();
+        regExpScanner.SetScriptTarget(languageVersion);
+        regExpScanner.SetLanguageVariant(sourceFile.LanguageVariant);
+        regExpScanner.SetOnError((message, start, length, args) =>
+        {
+            if (message.Category() == DiagnosticCategory.Message && lastError != null && start == lastError.Pos() && length == lastError.Len())
+                lastError.AddRelatedInfo(Ast.NewDiagnostic(null, new(start, start + length), message, args));
+            else if (lastError == null || start != lastError.Pos())
+                lastError = addDiagnostic(Ast.NewDiagnostic(sourceFile, new(start, start + length), message, args));
+        });
+        regExpScanner.SetText(GoString.Bytes(sourceFile.Text()));
+        regExpScanner.ResetTokenState(node.AsNode().Pos());
+        regExpScanner.Scan();
+        var tokenIsRegularExpressionLiteral = regExpScanner.ReScanSlashToken(true) == Kind.RegularExpressionLiteral;
+        regExpScanner.SetText("");
+        regExpScanner.SetOnError(null);
+        if (!tokenIsRegularExpressionLiteral)
+            throw new InvalidOperationException("Regular expression scanner did not return a regular expression literal");
+        return lastError != null;
+    }
+
     private bool grammarErrorOnNode(Node node, Message message, params object[] args)
     {
         if ((Ast.GetSourceFileOfNode(node).Diagnostics()?.Count ?? 0) != 0)
@@ -22,6 +52,66 @@ public sealed partial class Checker
             return false;
         diagnostics.Add(Ast.NewDiagnostic(file, new(start, start + length), message, args));
         return true;
+    }
+
+    private bool grammarErrorOnNodeSkippedOnNoEmit(Node node, Message message, params object[] args)
+    {
+        if (hasParseDiagnostics(Ast.GetSourceFileOfNode(node)))
+            return false;
+        var diagnostic = NewDiagnosticForNode(node, message, args);
+        diagnostic.SetSkippedOnNoEmit();
+        addDiagnostic(diagnostic);
+        return true;
+    }
+
+    // grammarchecks.go:859/1813/2087. Literal grammar is distinct from execution.
+    private bool checkGrammarTaggedTemplateChain(TaggedTemplateExpression node)
+    {
+        if (node.QuestionDotToken != null || (node.Flags & NodeFlags.OptionalChain) != 0)
+            return grammarErrorOnNode(node.Template, Diagnostics.Tagged_template_expressions_are_not_permitted_in_an_optional_chain);
+        return false;
+    }
+
+    private bool checkGrammarMetaProperty(MetaProperty node)
+    {
+        var name = node.Name();
+        var text = name.Text();
+        switch (node.KeywordToken)
+        {
+            case Kind.NewKeyword:
+                if (text != "target")
+                    return grammarErrorOnNode(name, Diagnostics.X_0_is_not_a_valid_meta_property_for_keyword_1_Did_you_mean_2,
+                        text, TypeScript.Scanner.Scanner.TokenToString(node.KeywordToken), "target");
+                break;
+            case Kind.ImportKeyword:
+                if (text != "meta")
+                {
+                    var isCallee = Ast.IsCallExpression(node.Parent) && node.Parent.Expression() == node.AsNode();
+                    if (Ast.IsImportPhaseMetaProperty(node.AsNode()))
+                    {
+                        if (!isCallee)
+                            return grammarErrorAtPos(node.AsNode(), node.AsNode().End(), 0, Diagnostics.X_0_expected, "(");
+                    }
+                    else
+                    {
+                        if (isCallee)
+                            return grammarErrorOnNode(name, Diagnostics.X_0_is_not_a_valid_meta_property_for_keyword_import_Did_you_mean_meta_defer_or_source, text);
+                        return grammarErrorOnNode(name, Diagnostics.X_0_is_not_a_valid_meta_property_for_keyword_1_Did_you_mean_2,
+                            text, TypeScript.Scanner.Scanner.TokenToString(node.KeywordToken), "meta");
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+    private bool checkGrammarBigIntLiteral(BigIntLiteral node)
+    {
+        var literalType = Ast.IsLiteralTypeNode(node.Parent) ||
+            Ast.IsPrefixUnaryExpression(node.Parent) && Ast.IsLiteralTypeNode(node.Parent.Parent);
+        if (!literalType && (node.Flags & NodeFlags.Ambient) == 0 && languageVersion < ScriptTarget.ES2020)
+            return grammarErrorOnNode(node.AsNode(), Diagnostics.BigInt_literals_are_not_available_when_targeting_lower_than_ES2020);
+        return false;
     }
 
     private bool checkGrammarModifiers(Node node)
@@ -409,11 +499,6 @@ public sealed partial class Checker
 
                         case Kind.ExportKeyword:
                         {
-                            if ((flags & ModifierFlags.Export) != 0 && compilerOptions.VerbatimModuleSyntax == Tristate.True)
-                            {
-                                throw unsupported("checkGrammarModifiers: source exports");
-                            }
-
                             if (((flags & ModifierFlags.Export) != 0))
                             {
                                 return this.grammarErrorOnNode(modifier, Diagnostics.X_0_modifier_already_seen, "export");
@@ -866,13 +951,24 @@ public sealed partial class Checker
         var flags = getCombinedNodeFlagsCached(node);
         var scope = flags & NodeFlags.BlockScoped;
         if (Ast.IsBindingPattern(node.Name()))
-            throw unsupported("checkGrammarVariableDeclaration: binding pattern");
+        {
+            if (scope == NodeFlags.AwaitUsing)
+                return grammarErrorOnNode(node, Diagnostics.X_0_declarations_may_not_have_binding_patterns, "await using");
+            if (scope == NodeFlags.Using)
+                return grammarErrorOnNode(node, Diagnostics.X_0_declarations_may_not_have_binding_patterns, "using");
+        }
         if (node.Parent.Parent.Kind != Kind.ForInStatement && node.Parent.Parent.Kind != Kind.ForOfStatement)
         {
             if ((flags & NodeFlags.Ambient) != 0)
                 checkAmbientInitializer(node);
-            else if (node.Initializer() == null && scope == NodeFlags.Const)
-                return grammarErrorOnNode(node, Diagnostics.X_0_declarations_must_be_initialized, "const");
+            else if (node.Initializer() == null)
+            {
+                if (Ast.IsBindingPattern(node.Name()) && !Ast.IsBindingPattern(node.Parent))
+                    return grammarErrorOnNode(node, Diagnostics.A_destructuring_declaration_must_have_an_initializer);
+                if (scope == NodeFlags.AwaitUsing || scope == NodeFlags.Using || scope == NodeFlags.Const)
+                    return grammarErrorOnNode(node, Diagnostics.X_0_declarations_must_be_initialized,
+                        scope == NodeFlags.AwaitUsing ? "await using" : scope == NodeFlags.Using ? "using" : "const");
+            }
         }
 
         var exclamation = node.AsVariableDeclaration().ExclamationToken;
@@ -882,15 +978,40 @@ public sealed partial class Checker
             return grammarErrorOnNode(exclamation, message);
         }
 
+        // Named hostless test adapters retain their captured module kind; genuine Programs supply the source host.
+        if ((program?.GetEmitModuleFormatOfFile(Ast.GetSourceFileOfNode(node)) ?? moduleKind) < ModuleKind.System &&
+            (node.Parent.Parent.Flags & NodeFlags.Ambient) == 0 && Ast.HasSyntacticModifier(node.Parent.Parent, ModifierFlags.Export))
+            checkGrammarForEsModuleMarkerInBindingName(node.Name());
         return scope != 0 && checkGrammarNameInLetOrConstDeclarations(node.Name());
+    }
+
+    private bool checkGrammarForEsModuleMarkerInBindingName(Node name)
+    {
+        if (Ast.IsIdentifier(name))
+        {
+            if (name.Text() == "__esModule")
+                return grammarErrorOnNodeSkippedOnNoEmit(name, Diagnostics.Identifier_expected_esModule_is_reserved_as_an_exported_marker_when_transforming_ECMAScript_modules);
+        }
+        else
+        {
+            foreach (var element in name.Elements() ?? [])
+                if (element.Name() != null)
+                    return checkGrammarForEsModuleMarkerInBindingName(element.Name());
+        }
+        return false;
     }
 
     private bool checkGrammarNameInLetOrConstDeclarations(Node name)
     {
-        if (name.Kind != Kind.Identifier)
-            throw unsupported("checkGrammarNameInLetOrConstDeclarations: binding pattern");
-        if (name.Text() == "let")
-            return grammarErrorOnNode(name, Diagnostics.X_let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations);
+        if (name.Kind == Kind.Identifier)
+        {
+            if (name.Text() == "let")
+                return grammarErrorOnNode(name, Diagnostics.X_let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations);
+        }
+        else
+            foreach (var element in name.Elements() ?? [])
+                if (element.AsBindingElement().Name() != null)
+                    checkGrammarNameInLetOrConstDeclarations(element.Name());
         return false;
     }
 
@@ -2053,8 +2174,6 @@ public sealed partial class Checker
     private bool checkGrammarBreakOrContinueStatement(Node node)
     {
         var targetLabel = node.Label();
-        if (targetLabel != null)
-            throw unsupported("checkGrammarBreakOrContinueStatement: labeled source jump");
         Node current = node;
         while ((current != null))
         {
@@ -2066,9 +2185,17 @@ public sealed partial class Checker
             switch (current.Kind)
             {
                 case Kind.LabeledStatement:
-                    throw unsupported("checkGrammarBreakOrContinueStatement: source label");
+                    if (targetLabel != null && current.Label().Text() == targetLabel.Text())
+                    {
+                        if (node.Kind == Kind.ContinueStatement && !Ast.IsIterationStatement(current.Statement(), true))
+                            return grammarErrorOnNode(node, Diagnostics.A_continue_statement_can_only_jump_to_a_label_of_an_enclosing_iteration_statement);
+                        return false;
+                    }
+                    break;
                 case Kind.SwitchStatement:
-                    throw unsupported("checkGrammarBreakOrContinueStatement: source switch");
+                    if (node.Kind == Kind.BreakStatement && targetLabel == null)
+                        return false;
+                    break;
                 default:
                 {
                     if ((Ast.IsIterationStatement(current, false) && (targetLabel == null)))
@@ -2083,6 +2210,10 @@ public sealed partial class Checker
             current = current.Parent;
         }
 
+        if (targetLabel != null)
+            return grammarErrorOnNode(node, node.Kind == Kind.BreakStatement
+                ? Diagnostics.A_break_statement_can_only_jump_to_a_label_of_an_enclosing_statement
+                : Diagnostics.A_continue_statement_can_only_jump_to_a_label_of_an_enclosing_iteration_statement);
         Message message2 = default;
         if ((node.Kind == Kind.BreakStatement))
         {

@@ -1,0 +1,18 @@
+{
+  "baseline": "5efa4e5",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "classification": "authored-disk-checking-inputs-exact-genuine-Program-diagnostics-not-original-test-bodies",
+  "cases": 2,
+  "sourceFiles": {
+    "examples/expressions/order-fulfillment/src/main.ts": "3769193af3ab7ec55875457aca3007e4e2c560f78f8cdd5cc750250021f46245",
+    "examples/expressions/order-fulfillment/src/model.ts": "e5c908669ea023d89c5c61beaf317517bdb1d246b7839202bb7565533f9aef5f",
+    "examples/expressions/order-fulfillment/src/service.ts": "c5554d2e223201ea56237f9a56025df4c2bca7ae5cccb3382d8df88fd0eea1d3",
+    "examples/expressions/order-fulfillment/tsconfig.json": "6744c6d930068da318bc5d14d1e3c5d5709f7c6fed5c32311bb217f5c20574d5",
+    "examples/expressions/order-fulfillment-invalid/src/main.ts": "1537962a8a6f0774979b6cff6a874b0a455658ca7e4ce76e2d0d912053889231",
+    "examples/expressions/order-fulfillment-invalid/src/model.ts": "e5c908669ea023d89c5c61beaf317517bdb1d246b7839202bb7565533f9aef5f",
+    "examples/expressions/order-fulfillment-invalid/src/service.ts": "c5554d2e223201ea56237f9a56025df4c2bca7ae5cccb3382d8df88fd0eea1d3",
+    "examples/expressions/order-fulfillment-invalid/tsconfig.json": "6744c6d930068da318bc5d14d1e3c5d5709f7c6fed5c32311bb217f5c20574d5"
+  },
+  "requestsSha256": "5fa83208460565a08d5a48ce2e4279b74a16351768a0b314f0beefbdbac8b204",
+  "optionsAndLibraries": "Actual strict ES2022/ESNext/Bundler parsed options and unchanged bundled ES2022 bytes; skipLibCheck remains false; no profile/hidden roots."
+}

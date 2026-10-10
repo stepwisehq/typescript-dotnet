@@ -117,6 +117,8 @@ public sealed partial class Checker
     private readonly Dictionary<CachedTypeKey, Type> cachedTypes = new();
     private readonly NodeFactory factory = new();
     internal readonly LinkStore<Node, ArrayLiteralLinks> arrayLiteralLinks = new();
+    internal readonly LinkStore<Node, SwitchStatementLinks> switchStatementLinks = new();
+    internal readonly LinkStore<Symbol, SpreadLinks> spreadLinks = new();
     private Type nanType;
     private Node currentNode, lastGetCombinedNodeFlagsNode;
     private NodeFlags lastGetCombinedNodeFlagsResult;
@@ -695,6 +697,21 @@ public sealed partial class Checker
             case Kind.ForOfStatement:
                 checkForOfStatement(node);
                 break;
+            case Kind.ForInStatement:
+                checkForInStatement(node);
+                break;
+            case Kind.WithStatement:
+                checkWithStatement(node);
+                break;
+            case Kind.SwitchStatement:
+                checkSwitchStatement(node);
+                break;
+            case Kind.LabeledStatement:
+                checkLabeledStatement(node);
+                break;
+            case Kind.TryStatement:
+                checkTryStatement(node);
+                break;
             case Kind.BreakStatement:
             case Kind.ContinueStatement:
                 checkBreakOrContinueStatement(node);
@@ -770,6 +787,7 @@ public sealed partial class Checker
                 checkUnionOrIntersectionType(node);
                 break;
             case Kind.EmptyStatement:
+            case Kind.DebuggerStatement:
                 checkGrammarStatementInAmbientContext(node);
                 break;
             case Kind.TypeLiteral:
@@ -886,16 +904,8 @@ public sealed partial class Checker
 
     private void checkBindingElement(Node node)
     {
-        if (!isInAmbientOrTypeNode(node) && !isBindingElementInDeclarationSignature(node))
-            throw unsupported("destructuring implementation binding");
         checkGrammarBindingElement(node.AsBindingElement());
         checkVariableLikeDeclaration(node);
-    }
-
-    private static bool isBindingElementInDeclarationSignature(Node node)
-    {
-        var root = Ast.WalkUpBindingElementsAndPatterns(node);
-        return Ast.IsParameterDeclaration(root) && Ast.NodeIsMissing(Ast.GetContainingFunction(root).Body());
     }
 
     // checkVariableLikeDeclaration (5977): primary/secondary scalar declarations.
@@ -926,8 +936,8 @@ public sealed partial class Checker
                 renamedBindingElementsInTypes = GoRuntime.Append(renamedBindingElementsInTypes, node);
                 return;
             }
-            if (Ast.IsObjectBindingPattern(node.Parent) && hasDotDotDotToken(node))
-                throw unsupported("object rest binding declaration");
+            if (Ast.IsObjectBindingPattern(node.Parent) && hasDotDotDotToken(node) && languageVersion < ScriptTarget.ES2018)
+                checkExternalEmitHelpers(node, ExternalEmitHelpers.Rest);
             if (propName != null && Ast.IsComputedPropertyName(propName))
                 checkComputedPropertyName(propName);
             var parent = node.Parent.Parent;
@@ -962,7 +972,25 @@ public sealed partial class Checker
             var needCheckInitializer = initializer != null && node.Parent.Parent.Kind != Kind.ForInStatement;
             var needCheckWidenedType = !Core.Some(name.Elements(), element => element.Name() != null);
             if (needCheckInitializer || needCheckWidenedType)
-                throw unsupported("destructuring initializer validation");
+            {
+                var widenedType = getWidenedTypeForVariableLikeDeclaration(node, false);
+                if (needCheckInitializer)
+                {
+                    var initializerType = checkExpressionCached(initializer);
+                    if (strictNullChecks && needCheckWidenedType)
+                        checkNonNullNonVoidType(initializerType, node);
+                    else
+                        checkTypeAssignableToAndOptionallyElaborate(initializerType,
+                            getWidenedTypeForVariableLikeDeclaration(node, false), node, initializer);
+                }
+                if (needCheckWidenedType)
+                {
+                    if (Ast.IsArrayBindingPattern(name))
+                        checkIteratedTypeOrElementType(IterationUse.Destructuring, widenedType, undefinedType, node);
+                    else if (strictNullChecks)
+                        checkNonNullNonVoidType(widenedType, node);
+                }
+            }
             return;
         }
         var symbol = getSymbolOfDeclaration(node);
@@ -2213,7 +2241,10 @@ public sealed partial class Checker
             {
                 case Kind.ForInStatement:
                     {
-                        throw unsupported("getTypeForVariableLikeDeclaration: source for-in");
+                        var indexType = getIndexType(getNonNullableTypeIfNeeded(checkExpressionEx(grandParent.Expression(), checkMode)));
+                        return (indexType.flags & (TypeFlags.TypeParameter | TypeFlags.Index)) != 0
+                            ? getExtractStringType(indexType)
+                            : stringType;
                     }
                 case Kind.ForOfStatement:
                     {
@@ -2371,7 +2402,7 @@ public sealed partial class Checker
         }
         if (Ast.IsBindingPattern(declaration.Name()))
         {
-            throw unsupported("getTypeForVariableLikeDeclaration: binding pattern");
+            return getTypeFromBindingPattern(declaration.Name(), false, true);
         }
         return null;
     }
@@ -2380,11 +2411,41 @@ public sealed partial class Checker
     private Type checkDeclarationInitializer(Node declaration, CheckMode checkMode = CheckMode.Normal, Type contextualType = null)
     {
         var initializer = declaration.Initializer();
-        var t = getQuickTypeOfExpression(initializer);
-        if (t == null)
-            t = contextualType != null ? checkExpressionWithContextualType(initializer, contextualType, null, checkMode) : checkExpressionCachedEx(initializer, checkMode);
-        if (Ast.IsParameterDeclaration(Ast.GetRootDeclaration(declaration)) && Ast.IsBindingPattern(declaration.Name()))
-            throw unsupported("checkDeclarationInitializer: binding pattern");
+        var t = this.getQuickTypeOfExpression(initializer);
+        if ((t == null))
+        {
+            if ((contextualType != null))
+            {
+                t = this.checkExpressionWithContextualType(initializer, contextualType, null, checkMode);
+            }
+            else
+            {
+                t = this.checkExpressionCachedEx(initializer, checkMode);
+            }
+        }
+        if (Ast.IsParameterDeclaration(Ast.GetRootDeclaration(declaration)))
+        {
+            var name = declaration.Name();
+            switch (name.Kind)
+            {
+                case Kind.ObjectBindingPattern:
+                {
+                    if (isObjectLiteralType(t))
+                    {
+                        return this.padObjectLiteralType(t, name);
+                    }
+                    break;
+                }
+                case Kind.ArrayBindingPattern:
+                {
+                    if (isTupleType(t))
+                    {
+                        return this.padTupleType(t, name);
+                    }
+                    break;
+                }
+            }
+        }
         return t;
     }
 
@@ -2402,7 +2463,7 @@ public sealed partial class Checker
                 {
                     if (isCallChain(expr))
                     {
-                        throw unsupported("getQuickTypeOfExpression: optional call");
+                        return this.getReturnTypeOfSingleNonGenericSignatureOfCallChain(expr);
                     }
 
                     return this.getReturnTypeOfSingleNonGenericSignature(this.checkNonNullExpression(expr.Expression()), SignatureKind.Call);
@@ -2520,10 +2581,31 @@ public sealed partial class Checker
             case Kind.NullKeyword:
                 return nullWideningType;
             case Kind.StringLiteral:
+            case Kind.NoSubstitutionTemplateLiteral:
+                if (isSkipDirectInferenceNode(node)) return blockedStringType;
                 return getFreshTypeOfLiteralType(getStringLiteralType(node.Text()));
             case Kind.NumericLiteral:
                 checkGrammarNumericLiteral(node);
                 return getFreshTypeOfLiteralType(getNumberLiteralType(JsNum.FromString(node.Text())));
+            case Kind.BigIntLiteral:
+                checkGrammarBigIntLiteral(node.AsBigIntLiteral());
+                return getFreshTypeOfLiteralType(getBigIntLiteralType(JsNum.NewPseudoBigInt(JsNum.ParsePseudoBigInt(node.Text()), false)));
+            case Kind.TemplateExpression:
+                return checkTemplateExpression(node);
+            case Kind.RegularExpressionLiteral:
+                return checkRegularExpressionLiteral(node);
+            case Kind.TaggedTemplateExpression:
+                return checkTaggedTemplateExpression(node);
+            case Kind.NonNullExpression:
+                return checkNonNullAssertion(node);
+            case Kind.SatisfiesExpression:
+                return checkSatisfiesExpression(node);
+            case Kind.MetaProperty:
+                return checkMetaProperty(node);
+            case Kind.DeleteExpression:
+                return checkDeleteExpression(node);
+            case Kind.OmittedExpression:
+                return undefinedWideningType;
             case Kind.TrueKeyword:
                 return trueType;
             case Kind.FalseKeyword:
@@ -2540,6 +2622,8 @@ public sealed partial class Checker
                 return checkObjectLiteral(node, checkMode);
             case Kind.PropertyAccessExpression:
                 return checkPropertyAccessExpression(node, checkMode);
+            case Kind.QualifiedName:
+                return checkQualifiedName(node, checkMode);
             case Kind.NewExpression:
             case Kind.CallExpression:
                 return checkCallExpression(node, checkMode);
@@ -2682,38 +2766,114 @@ public sealed partial class Checker
     // getTypeOfNode (32483): ordered admitted scalar branches.
     private Type getTypeOfNode(Node node)
     {
-        if (Ast.IsSourceFile(node) && !Ast.IsExternalOrCommonJSModule(node.AsSourceFile()))
-            return errorType;
-        if ((node.Flags & NodeFlags.InWithStatement) != 0)
-            return errorType;
+        if ((Ast.IsSourceFile(node) && !Ast.IsExternalOrCommonJSModule(node.AsSourceFile())))
+        {
+            return this.errorType;
+        }
+        if (((node.Flags & NodeFlags.InWithStatement) != 0))
+        {
+            return this.errorType;
+        }
+        var tuple1 = Ast.TryGetClassImplementingOrExtendingHeritageClauseElement(node); var classDecl = tuple1.Item1; var isImplements = tuple1.Item2;
+        Type classType = default;
+        if ((classDecl != null))
+        {
+            classType = this.getDeclaredTypeOfClassOrInterface(this.getSymbolOfDeclaration(classDecl));
+        }
         if (Ast.IsPartOfTypeNode(node))
-            return getTypeFromTypeNode(node);
+        {
+            var typeFromTypeNode = this.getTypeFromTypeNode(node);
+            if ((classType != null))
+            {
+                return this.getTypeWithThisArgument(typeFromTypeNode, classType.AsInterfaceType().thisType, false);
+            }
+            return typeFromTypeNode;
+        }
         if (Ast.IsExpressionNode(node))
-            return getRegularTypeOfExpression(node);
+        {
+            return this.getRegularTypeOfExpression(node);
+        }
+        if (((classType != null) && !isImplements))
+        {
+            var baseType = Core.FirstOrNil(this.getBaseTypes(classType));
+            if ((baseType != null))
+            {
+                return this.getTypeWithThisArgument(baseType, classType.AsInterfaceType().thisType, false);
+            }
+            return this.errorType;
+        }
         if (Ast.IsTypeDeclaration(node))
-            return getDeclaredTypeOfSymbol(getSymbolOfDeclaration(node));
+        {
+            var symbol = this.getSymbolOfDeclaration(node);
+            return this.getDeclaredTypeOfSymbol(symbol);
+        }
         if (Ast.IsTypeDeclarationName(node))
         {
-            var typeSymbol = getSymbolAtLocation(node, false);
-            return typeSymbol != null ? getDeclaredTypeOfSymbol(typeSymbol) : errorType;
+            var symbol2 = this.getSymbolAtLocation(node, false);
+            if ((symbol2 != null))
+            {
+                return this.getDeclaredTypeOfSymbol(symbol2);
+            }
+            return this.errorType;
         }
-
+        if (Ast.IsBindingElement(node))
+        {
+            var t = this.getTypeForVariableLikeDeclaration(node, true, CheckMode.Normal);
+            if ((t != null))
+            {
+                return t;
+            }
+            return this.errorType;
+        }
         if (Ast.IsDeclaration(node))
         {
-            var symbol = getSymbolOfDeclaration(node);
-            return symbol != null ? getTypeOfSymbol(symbol) : errorType;
+            var symbol3 = this.getSymbolOfDeclaration(node);
+            if ((symbol3 != null))
+            {
+                return this.getTypeOfSymbol(symbol3);
+            }
+            return this.errorType;
         }
-
         if (Ast.IsDeclarationNameOrImportPropertyName(node))
         {
-            var symbol = getSymbolAtLocation(node, false);
-            return symbol != null ? getTypeOfSymbol(symbol) : errorType;
+            var symbol4 = this.getSymbolAtLocation(node, false);
+            if ((symbol4 != null))
+            {
+                return this.getTypeOfSymbol(symbol4);
+            }
+            return this.errorType;
         }
-
-        // Literal-type children (numeric/string), statements and other admitted
-        // nonsemantic locations reach the genuine upstream final errorType arm.
-        // Heritage/type declarations/binding/import/meta clauses are excluded by admission.
-        return errorType;
+        if (Ast.IsBindingPattern(node))
+        {
+            var t2 = this.getTypeForVariableLikeDeclaration(node.Parent, true, CheckMode.Normal);
+            if ((t2 != null))
+            {
+                return t2;
+            }
+            return this.errorType;
+        }
+        if (isInRightSideOfImportOrExportAssignment(node))
+        {
+            var symbol5 = this.getSymbolAtLocation(node, false);
+            if ((symbol5 != null))
+            {
+                var declaredType = this.getDeclaredTypeOfSymbol(symbol5);
+                if (!this.isErrorType(declaredType))
+                {
+                    return declaredType;
+                }
+                return this.getTypeOfSymbol(symbol5);
+            }
+        }
+        if ((Ast.IsMetaProperty(node.Parent) && (node.Parent.AsMetaProperty().KeywordToken == node.Kind)))
+        {
+            return this.checkMetaPropertyKeyword(node.Parent);
+        }
+        if (Ast.IsImportAttributes(node))
+        {
+            throw unsupported("source import attribute type query");
+        }
+        return this.errorType;
     }
 
     // GetSymbolAtLocation/getSymbolAtLocation (32134/32147): script/ordinary name branches.
@@ -2742,19 +2902,96 @@ public sealed partial class Checker
             return parentSymbol;
         }
 
-        if (Ast.IsIdentifier(node) || node.Kind is Kind.PropertyAccessExpression or Kind.QualifiedName)
+        if (Ast.IsLiteralComputedPropertyDeclarationName(node))
+            return getSymbolOfDeclaration(node.Parent.Parent);
+        if (Ast.IsIdentifier(node))
+        {
+            var parent = node.Parent;
+            if (Ast.IsBindingElement(parent) && Ast.IsObjectBindingPattern(parent.Parent) && node == parent.PropertyName())
+            {
+                var typeOfPattern = getTypeOfNode(parent.Parent);
+                var propertyDeclaration = getPropertyOfType(typeOfPattern, node.Text());
+                if (propertyDeclaration != null) return propertyDeclaration;
+            }
+            else if (Ast.IsMetaProperty(parent) && parent.Name() == node)
+            {
+                var metaProp = parent.AsMetaProperty();
+                if (metaProp.KeywordToken == Kind.NewKeyword && node.Text() == "target")
+                    return checkNewTargetMetaProperty(parent).symbol;
+                if (metaProp.KeywordToken == Kind.ImportKeyword && node.Text() == "meta")
+                    return getGlobalImportMetaExpressionType().AsObjectType().members["meta"];
+                return null;
+            }
+        }
+        if ((Ast.IsIdentifier(node) || node.Kind is Kind.PrivateIdentifier or Kind.PropertyAccessExpression or Kind.QualifiedName) && !Ast.IsThisInTypeQuery(node))
             return getSymbolOfNameOrPropertyAccessExpression(node);
-        if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral && node.Parent != null && node.Parent.Kind is Kind.ImportDeclaration or Kind.ExportDeclaration && Ast.GetExternalModuleName(node.Parent) == node)
-            return resolveExternalModuleName(node, node, ignoreErrors, getImportAttributesTypeForModuleSpecifier(node));
+        if (node.Kind == Kind.ThisKeyword || Ast.IsThisInTypeQuery(node))
+        {
+            var container = getThisContainer(node, false, false);
+            if (Ast.IsFunctionLike(container))
+            {
+                var sig = getSignatureFromDeclaration(container);
+                if (sig.thisParameter != null) return sig.thisParameter;
+            }
+            return Ast.IsInExpressionContext(node) ? checkExpression(node).symbol : getTypeFromThisTypeNode(node).symbol;
+        }
+        if (node.Kind == Kind.ThisType)
+            return getTypeFromThisTypeNode(node).symbol;
+        if (node.Kind == Kind.SuperKeyword)
+            return checkExpression(node).symbol;
+        if (node.Kind == Kind.ConstructorKeyword)
+            return node.Parent?.Kind == Kind.Constructor ? node.Parent.Parent.Symbol() : null;
+        if (node.Kind == Kind.MetaProperty)
+            return checkExpression(node).symbol;
+        if (node.Kind is Kind.NewKeyword or Kind.ImportKeyword)
+        {
+            if (Ast.IsImportPhaseMetaProperty(node.Parent)) return null;
+            return Ast.IsMetaProperty(node.Parent) ? checkMetaPropertyKeyword(node.Parent).symbol : null;
+        }
+        if (node.Kind == Kind.InstanceOfKeyword)
+        {
+            if (!Ast.IsBinaryExpression(node.Parent)) return null;
+            var t = getTypeOfExpression(node.Parent.AsBinaryExpression().Right);
+            var methodType = getSymbolHasInstanceMethodOfObjectType(t);
+            return methodType?.symbol ?? t.symbol;
+        }
+        if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral)
+        {
+            var parent = node.Parent;
+            var grandParent = parent?.Parent;
+            if (Ast.IsExternalModuleImportEqualsDeclaration(grandParent) && Ast.GetExternalModuleImportEqualsDeclarationExpression(grandParent) == node ||
+                (parent?.Kind is Kind.ImportDeclaration or Kind.ExportDeclaration && Ast.GetExternalModuleName(parent) == node) ||
+                Ast.IsLiteralTypeNode(parent) && Ast.IsLiteralImportTypeNode(grandParent) && grandParent.AsImportTypeNode().Argument == parent)
+                return resolveExternalModuleName(node, node, ignoreErrors, getImportAttributesTypeForModuleSpecifier(node));
+        }
+        if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral or Kind.NumericLiteral)
+        {
+            Type objectType = null;
+            if (Ast.IsElementAccessExpression(node.Parent) && node.Parent.AsElementAccessExpression().ArgumentExpression == node)
+                objectType = getTypeOfExpression(node.Parent.Expression());
+            else if (Ast.IsLiteralTypeNode(node.Parent) && Ast.IsIndexedAccessTypeNode(node.Parent.Parent))
+                objectType = getTypeFromTypeNode(node.Parent.Parent.AsIndexedAccessTypeNode().ObjectType);
+            return objectType != null ? getPropertyOfType(objectType, node.Text()) : null;
+        }
+        if (node.Kind is Kind.DefaultKeyword or Kind.FunctionKeyword or Kind.EqualsGreaterThanToken or Kind.ClassKeyword)
+            return getSymbolOfDeclaration(node.Parent);
+        if (node.Kind == Kind.ExportKeyword && Ast.IsExportAssignment(node.Parent))
+        {
+            var symbol = node.Parent.Symbol();
+            if (symbol == null) throw new InvalidOperationException("Symbol should be defined");
+            return symbol;
+        }
+        if (Ast.IsLiteralImportTypeNode(node))
+            return getSymbolAtLocation(node.AsImportTypeNode().Argument.AsLiteralTypeNode().Literal, ignoreErrors);
         if (node.Kind is Kind.StringLiteral or Kind.NumericLiteral or Kind.TrueKeyword or Kind.FalseKeyword or Kind.NullKeyword or Kind.ParenthesizedExpression)
             return null;
-        // The omitted import/meta/member clauses cannot occur in admitted input.
-        // Keywords/type nodes and other non-name locations retain Go's final nil arm.
+        // External JS/JSDoc/JSX query consumers remain outside this source slice.
+        // Other non-name locations retain the original final nil arm.
         return null;
     }
 
-    // checker.go:32333. Selected ordinary expression identifier branch; aliases,
-    // heritage/import/JSDoc-qualified/member names are excluded by admission.
+    // checker.go:32333. Ordinary TS names distinguish expression checking from
+    // type/namespace resolution; JS/JSDoc/JSX consumers retain their boundaries.
     private Symbol getSymbolOfNameOrPropertyAccessExpression(Node name)
     {
         if (Ast.IsDeclarationName(name))
@@ -2773,25 +3010,31 @@ public sealed partial class Checker
             }
         }
 
-        if (name.Kind == Kind.PropertyAccessExpression)
-        {
-            var links = symbolNodeLinks.Get(name);
-            if (links.resolvedSymbol != null)
-                return links.resolvedSymbol;
-            checkPropertyAccessExpression(name);
-            if (links.resolvedSymbol == null && !Ast.IsPrivateIdentifier(name.Name()))
-                links.resolvedSymbol = getApplicableIndexSymbol(checkExpressionCached(name.Expression()), getLiteralTypeFromPropertyName(name.Name()));
-            return links.resolvedSymbol;
-        }
-
         if (Ast.IsExpressionNode(name))
         {
             if (Ast.NodeIsMissing(name))
                 return null;
-            return resolveEntityName(name, SymbolFlags.Value, true, true, null);
+            if (Ast.IsIdentifier(name))
+                return resolveEntityName(name, SymbolFlags.Value, true, true, null);
+            if (Ast.IsPrivateIdentifier(name))
+                return getSymbolForPrivateIdentifierExpression(name);
+            if (Ast.IsPropertyAccessExpression(name) || Ast.IsQualifiedName(name))
+            {
+                var links = symbolNodeLinks.Get(name);
+                if (links.resolvedSymbol != null)
+                    return links.resolvedSymbol;
+                if (Ast.IsPropertyAccessExpression(name))
+                {
+                    checkPropertyAccessExpression(name);
+                    if (links.resolvedSymbol == null && !Ast.IsPrivateIdentifier(name.Name()))
+                        links.resolvedSymbol = getApplicableIndexSymbol(checkExpressionCached(name.Expression()), getLiteralTypeFromPropertyName(name.Name()));
+                }
+                else
+                    checkQualifiedName(name, CheckMode.Normal);
+                return links.resolvedSymbol;
+            }
         }
-
-        if (Ast.IsEntityName(name) && isTypeReferenceIdentifier(name))
+        else if (Ast.IsEntityName(name) && isTypeReferenceIdentifier(name))
         {
             var meaning = name.Parent.Kind == Kind.TypeReference ? SymbolFlags.Type : SymbolFlags.Namespace;
             var symbol = resolveEntityName(name, meaning, true, true, null);
@@ -2802,6 +3045,8 @@ public sealed partial class Checker
             return getUnresolvedSymbolForEntityName(name);
         }
 
+        if (name.Parent.Kind == Kind.TypePredicate)
+            return resolveEntityName(name, SymbolFlags.FunctionScopedVariable, true, false, null);
         return null;
     }
 
@@ -3070,7 +3315,7 @@ public sealed partial class Checker
         var declarationContainer = this.getControlFlowContainer(declaration);
         var flowContainer = this.getControlFlowContainer(node);
         var isOuterVariable = (flowContainer != declarationContainer);
-        var isSpreadDestructuringAssignmentTarget = ((((node.Parent != null) && (node.Parent.Parent != null)) && Ast.IsSpreadAssignment(node.Parent)) && throwUnsupportedDestructuring(node.Parent.Parent));
+        var isSpreadDestructuringAssignmentTarget = ((((node.Parent != null) && (node.Parent.Parent != null)) && Ast.IsSpreadAssignment(node.Parent)) && isDestructuringAssignmentTarget(node.Parent.Parent));
         var isModuleExports = ((symbol.Flags & SymbolFlags.ModuleExports) != 0);
         var typeIsAutomatic = ((t == this.autoType) || (t == this.autoArrayType));
         var isAutomaticTypeInNonNull = (typeIsAutomatic && (node.Parent.Kind == Kind.NonNullExpression));
@@ -3165,8 +3410,6 @@ public sealed partial class Checker
             {
                 case true when (((Ast.IsBindingElement(declaration) && (declaration.Initializer() == null)) && !hasDotDotDotToken(declaration)) && (GoRuntime.Len(declaration.Parent.Elements()) >= 2)):
                     {
-                        if (!isInAmbientOrTypeNode(declaration) && !isBindingElementInDeclarationSignature(declaration))
-                            throw unsupported("getNarrowedTypeOfSymbol: implementation destructuring");
                         var rootDeclaration = Ast.GetRootDeclaration(declaration);
                         var rootInitializer = rootDeclaration.Initializer();
                         if (rootInitializer != null && Ast.IsNodeDescendantOf(location, rootInitializer) &&
@@ -4521,7 +4764,7 @@ public sealed partial class Checker
             case Kind.PropertySignature:
             case Kind.BindingElement:
                 {
-                    return this.getContextualTypeForInitializerExpression(node);
+                    return this.getContextualTypeForInitializerExpression(node, contextFlags);
                 }
 
             case Kind.ArrowFunction:
@@ -4595,7 +4838,7 @@ public sealed partial class Checker
 
             case Kind.TemplateSpan:
                 {
-                    throw unsupported("getContextualType: source TemplateSpan");
+                    return this.getContextualTypeForSubstitutionExpression(parent.Parent, node);
                 }
 
             case Kind.ParenthesizedExpression:
@@ -4644,18 +4887,22 @@ public sealed partial class Checker
         return null;
     }
 
-    private Type getContextualTypeForInitializerExpression(Node node)
+    private Type getContextualTypeForInitializerExpression(Node node, ContextFlags contextFlags = ContextFlags.None)
     {
         var declaration = node.Parent;
-        if (node == declaration.Initializer())
+        var initializer = declaration.Initializer();
+        if ((node == initializer))
         {
-            var result = getContextualTypeForVariableLikeDeclaration(declaration);
-            if (result != null)
+            var result = this.getContextualTypeForVariableLikeDeclaration(declaration, contextFlags);
+            if ((result != null))
+            {
                 return result;
-            if (Ast.IsBindingPattern(declaration.Name()))
-                throw unsupported("getContextualTypeForInitializerExpression: binding pattern");
+            }
+            if (((((contextFlags & ContextFlags.SkipBindingPatterns) == 0) && Ast.IsBindingPattern(declaration.Name())) && (GoRuntime.Len(declaration.Name().Elements()) > 0)))
+            {
+                return this.getTypeFromBindingPattern(declaration.Name(), true, false);
+            }
         }
-
         return null;
     }
 
@@ -4676,7 +4923,7 @@ public sealed partial class Checker
 
             case Kind.BindingElement:
                 {
-                    throw unsupported("contextual binding element");
+                    return getContextualTypeForBindingElement(declaration, contextFlags);
                 }
 
             case Kind.PropertyDeclaration:
@@ -5067,8 +5314,6 @@ public sealed partial class Checker
         }
         this.checkNodeDeferred(node);
         var inDestructuringPattern = Ast.IsAssignmentTarget(node);
-        if (inDestructuringPattern)
-            throw unsupported("checkObjectLiteral: destructuring pattern");
         this.checkGrammarObjectLiteralExpression(node, inDestructuringPattern);
         SymbolTable allPropertiesTable = default;
         if (this.strictNullChecks)
@@ -5142,6 +5387,7 @@ public sealed partial class Checker
     {
         this.patternForType[result2] = node;
     }
+    verificationCollectionsCaptureObject(result2, node, checkMode, contextualType);
     return result2;
 };
         {
@@ -5161,20 +5407,20 @@ public sealed partial class Checker
                     switch (memberDecl.Kind)
                     {
                         case Kind.PropertyAssignment:
-                            {
-                                t = this.checkPropertyAssignment(memberDecl, checkMode);
-                                break;
-                            }
+                        {
+                            t = this.checkPropertyAssignment(memberDecl, checkMode);
+                            break;
+                        }
                         case Kind.ShorthandPropertyAssignment:
-                            {
-                                t = this.checkShorthandPropertyAssignment(memberDecl, inDestructuringPattern, checkMode);
-                                break;
-                            }
+                        {
+                            t = this.checkShorthandPropertyAssignment(memberDecl, inDestructuringPattern, checkMode);
+                            break;
+                        }
                         default:
-                            {
-                                t = this.checkObjectLiteralMethod(memberDecl, checkMode);
-                                break;
-                            }
+                        {
+                            t = this.checkObjectLiteralMethod(memberDecl, checkMode);
+                            break;
+                        }
                     }
                     objectFlags |= (t.objectFlags & ObjectFlags.PropagatingFlags);
                     Type nameType = default;
@@ -5243,7 +5489,36 @@ public sealed partial class Checker
                 {
                     if ((memberDecl.Kind == Kind.SpreadAssignment))
                     {
-                        throw unsupported("checkObjectLiteral: object spread");
+                        if ((GoRuntime.Len(propertiesArray) > 0))
+                        {
+                            spread = this.getSpreadType(spread, createObjectLiteralType(), node.Symbol(), objectFlags, inConstContext);
+                            propertiesArray = null;
+                            propertiesTable = new SymbolTable();
+                            hasComputedStringProperty = false;
+                            hasComputedNumberProperty = false;
+                            hasComputedSymbolProperty = false;
+                        }
+                        var t2 = this.getReducedType(this.checkExpressionEx(memberDecl.Expression(), (checkMode & CheckMode.Inferential)));
+                        if (this.isValidSpreadType(t2))
+                        {
+                            var mergedType = this.tryMergeUnionOfObjectTypeAndEmptyObject(t2, inConstContext);
+                            if ((allPropertiesTable != null))
+                            {
+                                this.checkSpreadPropOverrides(mergedType, allPropertiesTable, memberDecl);
+                            }
+                            offset = GoRuntime.Len(propertiesArray);
+                            if (this.isErrorType(spread))
+                            {
+                                continue;
+                            }
+                            spread = this.getSpreadType(spread, mergedType, node.Symbol(), objectFlags, inConstContext);
+                        }
+                        else
+                        {
+                            this.error(memberDecl, Diagnostics.Spread_types_may_only_be_created_from_object_types);
+                            spread = this.errorType;
+                        }
+                        continue;
                     }
                     else
                     {
@@ -5290,11 +5565,24 @@ public sealed partial class Checker
         }
         if ((spread != this.emptyObjectType))
         {
-            throw unsupported("checkObjectLiteral: object spread");
+            if ((GoRuntime.Len(propertiesArray) > 0))
+            {
+                spread = this.getSpreadType(spread, createObjectLiteralType(), node.Symbol(), objectFlags, inConstContext);
+                propertiesArray = null;
+                propertiesTable = new SymbolTable();
+                hasComputedStringProperty = false;
+                hasComputedNumberProperty = false;
+            }
+            return this.mapType(spread, (t3) =>
+{
+    if ((t3 == this.emptyObjectType))
+    {
+        return createObjectLiteralType();
+    }
+    return t3;
+});
         }
-        var resultType = createObjectLiteralType();
-        verificationCollectionsCaptureObject(resultType, node, checkMode, contextualType);
-        return resultType;
+        return createObjectLiteralType();
     }
 
     internal Type removeMissingType(Type t, bool isOptional)
@@ -5322,7 +5610,11 @@ public sealed partial class Checker
     {
         var links = sourceFileLinks.Get(file.AsNode());
         foreach (var node in links.deferredNodes.Values())
+        {
+            if (isCanceled())
+                break;
             checkDeferredNode(node);
+        }
         links.deferredNodes = new();
     }
 
@@ -5333,40 +5625,50 @@ public sealed partial class Checker
         instantiationCount = 0;
         switch (node.Kind)
         {
-            case Kind.TypeParameter:
-                checkTypeParameterDeferred(node);
+            case Kind.CallExpression:
+            case Kind.NewExpression:
+            case Kind.TaggedTemplateExpression:
+                // Failed overload resolution defers argument checking so it runs once.
+                resolveUntypedCall(node);
                 break;
-            case Kind.ClassExpression:
-                checkClassExpressionDeferred(node);
-                break;
-            case Kind.ObjectLiteralExpression:
-                checkContextualDeprecations(node);
-                break;
+            case Kind.Decorator:
+                throw unsupported("checkDeferredNode: decorators");
+            case Kind.JsxOpeningElement:
+            case Kind.JsxSelfClosingElement:
+            case Kind.JsxElement:
+            case Kind.JsxAttributes:
+                throw unsupported("checkDeferredNode: JSX semantics");
             case Kind.FunctionExpression:
             case Kind.ArrowFunction:
             case Kind.MethodDeclaration:
             case Kind.MethodSignature:
                 checkFunctionExpressionOrObjectLiteralMethodDeferred(node);
                 break;
-            case Kind.VoidExpression:
-                checkExpression(node.Expression());
-                break;
-            case Kind.CallExpression:
-            case Kind.NewExpression:
-                resolveUntypedCall(node);
-                break;
             case Kind.GetAccessor:
             case Kind.SetAccessor:
                 checkAccessorDeclaration(node);
                 break;
-            case Kind.AsExpression:
+            case Kind.ClassExpression:
+                checkClassExpressionDeferred(node);
+                break;
+            case Kind.TypeParameter:
+                checkTypeParameterDeferred(node);
+                break;
             case Kind.TypeAssertionExpression:
+            case Kind.AsExpression:
                 checkAssertionDeferred(node);
                 break;
-            default:
-                throw unsupported("checkDeferredNode: unselected deferred syntax");
+            case Kind.VoidExpression:
+                checkExpression(node.Expression());
+                break;
+            case Kind.BinaryExpression:
+                if (Ast.IsInstanceOfExpression(node))
+                    resolveUntypedCall(node);
+                break;
+            case Kind.ObjectLiteralExpression:
+                checkContextualDeprecations(node);
+                break;
         }
-
         currentNode = saved;
     }
 
@@ -5383,19 +5685,29 @@ public sealed partial class Checker
     {
         var contextualType = getApparentTypeOfContextualType(node);
         foreach (var property in node.Properties() ?? [])
+        {
+            if (isCanceled())
+                return;
             if (property.Name() != null && property.Name().Kind != Kind.ComputedPropertyName)
                 checkDeprecatedProperty(property.Name(), contextualType);
+        }
     }
 
     private void checkDeprecatedProperty(Node name, Type contextualType)
     {
-        if (contextualType == null)
-            return;
-        var property = getPropertyOfType(contextualType, name.Text());
-        if (property == null || (property.Declarations?.Count ?? 0) == 0)
-            return;
-        if (isDeprecatedSymbol(property))
-            throw unsupported("checkDeprecatedProperty: deprecated tags");
+        if ((contextualType == null))
+        {
+            return ;
+        }
+        var prop = this.getPropertyOfType(contextualType, name.Text());
+        if (((prop == null) || (GoRuntime.Len(prop.Declarations) == 0)))
+        {
+            return ;
+        }
+        if (this.isDeprecatedSymbol(prop))
+        {
+            this.addDeprecatedSuggestion(name, prop.Declarations, name.Text());
+        }
     }
 
     private bool isDeprecatedSymbol(Symbol symbol)
@@ -6544,7 +6856,7 @@ public sealed partial class Checker
     {
         if (((node.Flags & NodeFlags.OptionalChain) != 0))
         {
-            throw unsupported("optional property access");
+            return this.checkPropertyAccessChain(node, checkMode);
         }
 
         var expr = node.Expression();
@@ -6630,7 +6942,7 @@ public sealed partial class Checker
 
             if ((indexInfo == null))
             {
-                var isUncheckedJS = false; // Checked-JS semantic consumers remain external.
+                var isUncheckedJS = this.isUncheckedJSSuggestion(node, leftType.symbol, true);
                 if ((!isUncheckedJS && this.isJSLiteralType(leftType)))
                 {
                     return this.anyType;
@@ -11935,7 +12247,7 @@ public sealed partial class Checker
 
         if (((sig.flags & SignatureFlags.IsInnerCallChain) != 0))
         {
-            throw unsupported("getReturnTypeOfSignature: optional call chain");
+            t = this.addOptionalTypeMarker(t);
         }
         else
         {
@@ -12566,9 +12878,8 @@ public sealed partial class Checker
         var links = this.valueSymbolLinks.Get(parameter);
         if ((links.resolvedType != null))
         {
-            return;
+            return ;
         }
-
         var declaration = parameter.ValueDeclaration;
         var t = contextualType;
         if ((t == null))
@@ -12582,11 +12893,14 @@ public sealed partial class Checker
                 t = this.getTypeOfSymbol(parameter);
             }
         }
-
         links.resolvedType = this.addOptionalityEx(t, false, (((declaration != null) && (declaration.Initializer() == null)) && isOptionalDeclaration(declaration)));
         if (((declaration != null) && !Ast.IsIdentifier(declaration.Name())))
         {
-            throw unsupported("assignParameterType: binding pattern");
+            if ((links.resolvedType == this.unknownType))
+            {
+                links.resolvedType = this.getTypeFromBindingPattern(declaration.Name(), false, false);
+            }
+            this.assignBindingElementTypes(declaration.Name(), links.resolvedType);
         }
     }
 }
@@ -14384,11 +14698,24 @@ public sealed partial class Checker
 {
     private Signature resolveSignature(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
     {
-        if (node.Kind == Kind.CallExpression)
-            return resolveCallExpression(node, candidatesOutArray, checkMode);
-        if (node.Kind == Kind.NewExpression)
-            return resolveNewExpression(node, candidatesOutArray, checkMode);
-        throw unsupported("resolveSignature: non-call syntax");
+        switch (node.Kind)
+        {
+            case Kind.CallExpression:
+                return resolveCallExpression(node, candidatesOutArray, checkMode);
+            case Kind.NewExpression:
+                return resolveNewExpression(node, candidatesOutArray, checkMode);
+            case Kind.TaggedTemplateExpression:
+                return resolveTaggedTemplateExpression(node, candidatesOutArray, checkMode);
+            case Kind.Decorator:
+                throw unsupported("resolveSignature: decorators");
+            case Kind.JsxOpeningFragment:
+            case Kind.JsxOpeningElement:
+            case Kind.JsxSelfClosingElement:
+                throw unsupported("resolveSignature: JSX semantics");
+            case Kind.BinaryExpression:
+                return resolveInstanceofExpression(node, candidatesOutArray, checkMode);
+        }
+        throw new InvalidOperationException("Unhandled case in resolveSignature");
     }
 }
 
@@ -14425,7 +14752,11 @@ public sealed partial class Checker
         var funcType = this.checkExpression(node.Expression());
         if (isCallChain(node))
         {
-            throw unsupported("resolveCallExpression: optional chain");
+            var nonOptionalType = this.getOptionalExpressionType(funcType, node.Expression());
+            callChainFlags = nonOptionalType == funcType ? SignatureFlags.None
+                : Ast.IsOutermostOptionalChain(node) ? SignatureFlags.IsOuterCallChain
+                : SignatureFlags.IsInnerCallChain;
+            funcType = nonOptionalType;
         }
         else
         {
@@ -14505,7 +14836,7 @@ public sealed partial class Checker
         var reportErrors = (!this.isInferencePartiallyBlocked && (candidatesOutArray == null));
         CallState s = new();
         s.node = node;
-        if ((((!isDecorator && !isInstanceof) && node.Expression().Kind != Kind.SuperKeyword) && !Ast.IsJsxOpeningFragment(node)))
+        if ((((!isDecorator && !isInstanceof) && !Ast.IsSuperCall(node)) && !Ast.IsJsxOpeningFragment(node)))
         {
             s.typeArguments = node.TypeArguments();
             if (((isTaggedTemplate || isJsxOpeningOrSelfClosingElement) || (node.Expression().Kind != Kind.SuperKeyword)))
@@ -14584,8 +14915,9 @@ public sealed partial class Checker
         var specializedIndex = -1;
         var result = GoRuntime.MakeSlice<Signature>(0);
         {
-            foreach (var signature in GoRuntime.RangeValues(signatures))
+            foreach (var sourceSignature in GoRuntime.RangeValues(signatures))
             {
+                var signature = sourceSignature;
                 Symbol symbol = default;
                 Node parent = default;
                 if ((signature.declaration != null))
@@ -14627,7 +14959,7 @@ public sealed partial class Checker
 
                 if ((callChainFlags != 0))
                 {
-                    throw unsupported("reorderCandidates: optional chain");
+                    signature = this.getOptionalCallSignature(signature, callChainFlags);
                 }
 
                 result = GoRuntime.Append(GoRuntime.Append(GoRuntime.Slice(result, 0, spliceIndex), signature), GoRuntime.Slice(result, spliceIndex));
@@ -14763,7 +15095,6 @@ public sealed partial class Checker
         {
             return true;
         }
-
         int argCount = default;
         var callIsIncomplete = false;
         var effectiveParameterCount = this.getParameterCount(signature);
@@ -14771,62 +15102,62 @@ public sealed partial class Checker
         switch (true)
         {
             case true when Ast.IsTaggedTemplateExpression(node):
+            {
+                argCount = GoRuntime.Len(args);
+                var template = node.AsTaggedTemplateExpression().Template;
+                if (Ast.IsTemplateExpression(template))
                 {
-                    throw unsupported("hasCorrectArity: excluded call syntax");
+                    var lastSpan = Core.LastOrNil(template.AsTemplateExpression().TemplateSpans.Nodes);
+                    callIsIncomplete = (Ast.NodeIsMissing(lastSpan.AsTemplateSpan().Literal) || Ast.IsUnterminatedLiteral(lastSpan.AsTemplateSpan().Literal));
                 }
-
+                else
+                {
+                    callIsIncomplete = Ast.IsUnterminatedLiteral(template);
+                }
+                break;
+            }
             case true when Ast.IsDecorator(node):
-                {
-                    throw unsupported("hasCorrectArity: excluded call syntax");
-                }
-
+            {
+                throw unsupported("hasCorrectArity: decorators");
+            }
             case true when Ast.IsBinaryExpression(node):
-                {
-                    throw unsupported("hasCorrectArity: excluded call syntax");
-                }
-
+            {
+                argCount = 1;
+                break;
+            }
             case true when Ast.IsJsxOpeningLikeElement(node):
-                {
-                    throw unsupported("hasCorrectArity: excluded call syntax");
-                }
-
+                throw unsupported("hasCorrectArity: JSX");
             case true when (Ast.IsNewExpression(node) && (node.ArgumentList() == null)):
-                {
-                    throw unsupported("hasCorrectArity: excluded call syntax");
-                }
-
+            {
+                return (this.getMinArgumentCount(signature) == 0);
+            }
             default:
+            {
+                if (signatureHelpTrailingComma)
                 {
-                    if (signatureHelpTrailingComma)
-                    {
-                        argCount = (GoRuntime.Len(args) + 1);
-                    }
-                    else
-                    {
-                        argCount = GoRuntime.Len(args);
-                    }
-
-                    callIsIncomplete = (node.ArgumentList().End() == node.End());
-                    var spreadArgIndex = this.getSpreadArgumentIndex(args);
-                    if ((spreadArgIndex >= 0))
-                    {
-                        return spreadArgIndex >= this.getMinArgumentCount(signature) && (this.hasEffectiveRestParameter(signature) || spreadArgIndex < this.getParameterCount(signature));
-                    }
-
-                    break;
+                    argCount = (GoRuntime.Len(args) + 1);
                 }
+                else
+                {
+                    argCount = GoRuntime.Len(args);
+                }
+                callIsIncomplete = (node.ArgumentList().End() == node.End());
+                var spreadArgIndex = this.getSpreadArgumentIndex(args);
+                if ((spreadArgIndex >= 0))
+                {
+                    return ((spreadArgIndex >= this.getMinArgumentCount(signature)) && ((this.hasEffectiveRestParameter(signature) || (spreadArgIndex < this.getParameterCount(signature)))));
+                }
+                break;
+            }
         }
-
         if ((!this.hasEffectiveRestParameter(signature) && (argCount > effectiveParameterCount)))
         {
             return false;
         }
-
         if ((callIsIncomplete || (argCount >= effectiveMinimumArguments)))
         {
             return true;
         }
-
         {
             var i = argCount;
             for (; (i < effectiveMinimumArguments); i++)
@@ -14838,7 +15169,6 @@ public sealed partial class Checker
                 }
             }
         }
-
         return true;
     }
 }
@@ -15137,7 +15467,18 @@ public sealed partial class Checker
     {
         switch (true)
         {
-            case true when Ast.IsJsxOpeningFragment(node) || Ast.IsTaggedTemplateExpression(node) || Ast.IsDecorator(node):
+            case true when Ast.IsTaggedTemplateExpression(node):
+            {
+                var template = node.AsTaggedTemplateExpression().Template;
+                var firstArg = this.createSyntheticExpression(template, this.getGlobalTemplateStringsArrayType(), false, null);
+                if (!Ast.IsTemplateExpression(template)) return new List<Node> { firstArg };
+                var spans = template.AsTemplateExpression().TemplateSpans.Nodes;
+                var args = GoRuntime.MakeSlice<Node>(GoRuntime.Len(spans) + 1);
+                args[0] = firstArg;
+                for (var i = 0; i < GoRuntime.Len(spans); i++) args[i + 1] = spans[i].Expression();
+                return args;
+            }
+            case true when Ast.IsJsxOpeningFragment(node) || Ast.IsDecorator(node):
                 throw unsupported("getEffectiveCallArguments: source JSX/template/decorator");
             case true when Ast.IsBinaryExpression(node):
                 {
@@ -15440,10 +15781,18 @@ public sealed partial class Checker
         {
             return this.voidType;
         }
-
         var thisArgumentType = this.checkExpression(node);
-        if (Ast.IsOptionalChain(node.Parent))
-            throw unsupported("getThisArgumentType: optional chain");
+        switch (true)
+        {
+            case true when Ast.IsOptionalChainRoot(node.Parent):
+            {
+                return this.GetNonNullableType(thisArgumentType);
+            }
+            case true when Ast.IsOptionalChain(node.Parent):
+            {
+                return this.removeOptionalTypeMarker(thisArgumentType);
+            }
+        }
         return thisArgumentType;
     }
 }
@@ -18162,7 +18511,6 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     private readonly Dictionary<Type, Node> patternForType = new();
-    private static bool throwUnsupportedDestructuring(Node node) => throw unsupported("destructuring assignment");
     // checker.go:29331. Fixed VerbatimModuleSyntax=false; source imports are not admitted.
     private void markAliasReferenced(Symbol symbol, Node location)
     {
@@ -18303,7 +18651,9 @@ public sealed partial class Checker
 
             case Kind.BigIntLiteral:
                 {
-                    throw unsupported("prefix unary: bigint literal source");
+                    if (expr.Operator == Kind.MinusToken)
+                        return this.getFreshTypeOfLiteralType(this.getBigIntLiteralType(JsNum.NewPseudoBigInt(JsNum.ParsePseudoBigInt(expr.Operand.Text()), true)));
+                    break;
                 }
         }
 
@@ -18416,7 +18766,8 @@ public sealed partial class Checker
         var @operator = operatorToken.Kind;
         if (((@operator == Kind.EqualsToken) && (((left.Kind == Kind.ObjectLiteralExpression) || (left.Kind == Kind.ArrayLiteralExpression)))))
         {
-            throw unsupported("binary expression: destructuring assignment");
+            return checkDestructuringAssignment(left, checkExpressionEx(right, checkMode), checkMode,
+                right.Kind == Kind.ThisKeyword);
         }
 
         var leftType = this.checkExpressionEx(left, checkMode);
@@ -18511,7 +18862,7 @@ public sealed partial class Checker
                                 case Kind.AsteriskAsteriskToken:
                                 case Kind.AsteriskAsteriskEqualsToken:
                                     {
-                                        if ((this.compilerOptions.GetEmitScriptTarget() < ScriptTarget.ES2016))
+                                        if ((this.languageVersion < ScriptTarget.ES2016))
                                         {
                                             this.error(errorNode, Diagnostics.Exponentiation_cannot_be_performed_on_bigint_values_unless_the_target_option_is_set_to_es2016_or_later);
                                         }
@@ -18678,12 +19029,12 @@ public sealed partial class Checker
 
             case Kind.InstanceOfKeyword:
                 {
-                    throw unsupported("instanceof expression");
+                    return this.checkInstanceOfExpression(left, right, leftType, rightType, checkMode);
                 }
 
             case Kind.InKeyword:
                 {
-                    throw unsupported("in expression");
+                    return this.checkInExpression(left, right, leftType, rightType);
                 }
 
             case Kind.AmpersandAmpersandToken:
@@ -18756,7 +19107,14 @@ public sealed partial class Checker
 
             case Kind.CommaToken:
                 {
-                    throw unsupported("comma expression");
+                    if (this.compilerOptions.AllowUnreachableCode != Tristate.True && this.isSideEffectFree(left) && !this.isIndirectCall(left.Parent))
+                    {
+                        var sf = Ast.GetSourceFileOfNode(left);
+                        var start = TypeScript.Scanner.Scanner.SkipTrivia(sf.Text(), left.Pos());
+                        var isInDiag2657 = Core.Some(sf.Diagnostics(), d => d.Code() == Diagnostics.JSX_expressions_must_have_one_parent_element.Code() && d.Loc().Contains(start));
+                        if (!isInDiag2657) this.error(left, Diagnostics.Left_side_of_comma_operator_is_unused_and_has_no_side_effects);
+                    }
+                    return rightType;
                 }
         }
 
@@ -19963,7 +20321,10 @@ public sealed partial class Checker
 
             case ThisAssignmentDeclarationKind.Constructor:
                 {
-                    throw unsupported("class constructor property flow");
+                    if (location == null)
+                        throw new InvalidOperationException("constructor should not be nil when this assignment is in a constructor.");
+                    t = getFlowTypeInConstructor(symbol, location);
+                    break;
                 }
 
             case ThisAssignmentDeclarationKind.Method:
@@ -27574,7 +27935,7 @@ public sealed partial class Checker
             var iteratedType = this.checkRightHandSideOfForOf(node);
             if ((Ast.IsArrayLiteralExpression(varExpr) || Ast.IsObjectLiteralExpression(varExpr)))
             {
-                throw unsupported("checkForOfStatement: source destructuring");
+                this.checkDestructuringAssignment(varExpr, iteratedType ?? this.errorType, CheckMode.Normal, false);
             }
             else
             {
@@ -27612,7 +27973,7 @@ public sealed partial class Checker
     {
         if (((node.Flags & NodeFlags.OptionalChain) != 0))
         {
-            throw unsupported("checkIndexedAccess: optional chain");
+            return this.checkElementAccessChain(node, checkMode);
         }
 
         return this.checkElementAccessExpression(node, this.checkNonNullExpression(node.Expression()), checkMode);
@@ -27693,21 +28054,22 @@ public sealed partial class Checker
         var e = Ast.SkipParentheses(expr);
         if (Ast.IsIdentifier(e))
         {
-            var symbol = getResolvedSymbol(e);
-            if ((symbol.Flags & SymbolFlags.Variable) != 0)
+            var symbol = this.getResolvedSymbol(e);
+            if (((symbol.Flags & SymbolFlags.Variable) != 0))
             {
                 var child = expr;
                 var node = expr.Parent;
-                while (node != null)
+                while ((node != null))
                 {
-                    if (Ast.IsForInStatement(node) && child == node.AsForInOrOfStatement().Statement)
-                        throw unsupported("isForInVariableForNumericPropertyNames: source for-in");
+                    if ((((Ast.IsForInStatement(node) && (child == node.AsForInOrOfStatement().Statement)) && (this.getForInVariableSymbol(node) == symbol)) && this.hasNumericPropertyNames(this.getTypeOfExpression(node.Expression()))))
+                    {
+                        return true;
+                    }
                     child = node;
                     node = node.Parent;
                 }
             }
         }
-
         return false;
     }
 }
@@ -31787,10 +32149,10 @@ public sealed partial class Checker
                 {
                     var wrappingDeclaration = Ast.WalkUpBindingElementsAndPatterns(node);
                     System.Diagnostics.Debug.Assert(Ast.IsPartOfParameterDeclaration(wrappingDeclaration), "Only parameter declaration should be checked here");
-                    var diagnostic = NewDiagnosticForNode(node.Name(), Diagnostics.X_0_is_an_unused_renaming_of_1_Did_you_intend_to_use_it_as_a_type_annotation, TypeScript.Scanner.Scanner.DeclarationNameToString(node.Name()), TypeScript.Scanner.Scanner.DeclarationNameToString(node.PropertyName()));
+                    var diagnostic = NewDiagnosticForNode(node.Name(), Diagnostics.X_0_is_an_unused_renaming_of_1_Did_you_intend_to_use_it_as_a_type_annotation, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.Name()), TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.PropertyName()));
                     if ((wrappingDeclaration.Type() == null))
                     {
-                        diagnostic.AddRelatedInfo(Ast.NewDiagnostic(Ast.GetSourceFileOfNode(wrappingDeclaration), new TextRange(wrappingDeclaration.End(), wrappingDeclaration.End()), Diagnostics.We_can_only_write_a_type_for_0_by_adding_a_type_for_the_entire_parameter_here, TypeScript.Scanner.Scanner.DeclarationNameToString(node.PropertyName())));
+                        diagnostic.AddRelatedInfo(Ast.NewDiagnostic(Ast.GetSourceFileOfNode(wrappingDeclaration), new TextRange(wrappingDeclaration.End(), wrappingDeclaration.End()), Diagnostics.We_can_only_write_a_type_for_0_by_adding_a_type_for_the_entire_parameter_here, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.PropertyName())));
                     }
                     this.addDiagnostic(diagnostic);
                 }
@@ -35186,7 +35548,7 @@ public sealed partial class Checker
                 }
             }
         }
-        var diagName = TypeScript.Scanner.Scanner.DeclarationNameToString(right);
+        var diagName = TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(right);
         if ((propertyOnType != null))
         {
             var typeValueDecl = propertyOnType.ValueDeclaration;
@@ -36126,6 +36488,7 @@ public sealed partial class Checker
 {
     // checker.go:1074–1124: lazy source factories, including external consumers.
     internal Func<Type> getGlobalImportMetaType;
+    private Type deferredGlobalImportMetaExpressionType;
     internal Func<Symbol> getGlobalExtractSymbol;
     internal Func<Type> getGlobalDisposableType;
     internal Func<Type> getGlobalAsyncDisposableType;
@@ -36346,9 +36709,7 @@ public sealed partial class Checker
 {
     private Type getTypeForBindingElement(Node declaration)
     {
-        if (!isInAmbientOrTypeNode(declaration) && !isBindingElementInDeclarationSignature(declaration))
-            throw unsupported("destructuring binding inference");
-        var checkMode = hasDotDotDotToken(declaration) ? CheckMode.RestBindingElement : CheckMode.Normal;
+        var checkMode = Core.IfElse(hasDotDotDotToken(declaration), CheckMode.RestBindingElement, CheckMode.Normal);
         var parentType = this.getTypeForBindingElementParent(declaration.Parent.Parent, checkMode);
         if ((parentType != null))
         {
@@ -36395,80 +36756,109 @@ public sealed partial class Checker
         {
             parentType = this.GetNonNullableType(parentType);
         }
-        else if (this.strictNullChecks && pattern.Parent.Initializer() != null)
+        else
         {
-            throw unsupported("destructuring initializer flow");
+            if (((this.strictNullChecks && (pattern.Parent.Initializer() != null)) && !this.hasTypeFacts(this.getTypeOfInitializer(pattern.Parent.Initializer()), TypeFacts.EQUndefined)))
+            {
+                parentType = this.getTypeWithFacts(parentType, TypeFacts.NEUndefined);
+            }
         }
-        var accessFlags = (AccessFlags.ExpressionPosition | ((noTupleBoundsCheck || this.hasDefaultValue(declaration)) ? AccessFlags.AllowMissing : AccessFlags.None));
+        var accessFlags = (AccessFlags.ExpressionPosition | Core.IfElse((noTupleBoundsCheck || this.hasDefaultValue(declaration)), AccessFlags.AllowMissing, AccessFlags.None));
         Type t = default;
         switch (pattern.Kind)
         {
             case Kind.ObjectBindingPattern:
+            {
+                if (hasDotDotDotToken(declaration))
                 {
-                    if (hasDotDotDotToken(declaration))
+                    parentType = this.getReducedType(parentType);
+                    if ((((parentType.flags & TypeFlags.Unknown) != 0) || !this.isValidSpreadType(parentType)))
                     {
-                        throw unsupported("object rest binding type");
+                        this.error(declaration, Diagnostics.Rest_types_may_only_be_created_from_object_types);
+                        return this.errorType;
                     }
-                    else
+                    var elements = pattern.Elements();
+                    var literalMembers = GoRuntime.MakeSlice<Node>(0);
                     {
-                        var name2 = declaration.PropertyNameOrName();
-                        var indexType = this.getLiteralTypeFromPropertyName(name2);
-                        var declaredType = this.getIndexedAccessTypeEx(parentType, indexType, accessFlags, name2, null);
-                        t = this.getFlowTypeOfDestructuring(declaration, declaredType);
+                        foreach (var element in GoRuntime.RangeValues(elements))
+                        {
+                            if (!hasDotDotDotToken(element))
+                            {
+                                var name = element.PropertyNameOrName();
+                                literalMembers = GoRuntime.Append(literalMembers, name);
+                            }
+                        }
                     }
-                    break;
+                    t = this.getRestType(parentType, literalMembers, declaration.Symbol());
                 }
+                else
+                {
+                    var name2 = declaration.PropertyNameOrName();
+                    var indexType = this.getLiteralTypeFromPropertyName(name2);
+                    var declaredType = this.getIndexedAccessTypeEx(parentType, indexType, accessFlags, name2, null);
+                    t = this.getFlowTypeOfDestructuring(declaration, declaredType);
+                }
+                break;
+            }
             case Kind.ArrayBindingPattern:
+            {
+                var elementType = this.checkIteratedTypeOrElementType((IterationUse.Destructuring | Core.IfElse(hasDotDotDotToken(declaration), IterationUse.None, IterationUse.PossiblyOutOfBounds)), parentType, this.undefinedType, pattern);
+                var index = GoSlices.Index(pattern.Elements(), declaration);
+                if (hasDotDotDotToken(declaration))
                 {
-                    var elementType = this.checkIteratedTypeOrElementType((IterationUse.Destructuring | (hasDotDotDotToken(declaration) ? IterationUse.None : IterationUse.PossiblyOutOfBounds)), parentType, this.undefinedType, pattern);
-                    var index = GoSlices.Index(pattern.Elements(), declaration);
-                    if (hasDotDotDotToken(declaration))
+                    var baseConstraint = this.mapType(parentType, (t2) =>
+{
+    if (((t2.flags & TypeFlags.InstantiableNonPrimitive) != 0))
+    {
+        return this.getBaseConstraintOrType(t2);
+    }
+    return t2;
+});
+                    if (everyType(baseConstraint, isTupleType))
                     {
-                        var baseConstraint = this.mapType(parentType, (t2) =>
-    {
-        if (((t2.flags & TypeFlags.InstantiableNonPrimitive) != 0))
-        {
-            return this.getBaseConstraintOrType(t2);
-        }
-        return t2;
-    });
-                        if (everyType(baseConstraint, isTupleType))
-                        {
-                            t = this.mapType(baseConstraint, (t3) =>
-    {
-        return this.sliceTupleType(t3, index, 0);
-    });
-                        }
-                        else
-                        {
-                            t = this.createArrayType(elementType);
-                        }
+                        t = this.mapType(baseConstraint, (t3) =>
+{
+    return this.sliceTupleType(t3, index, 0);
+});
                     }
                     else
                     {
-                        if (this.isArrayLikeType(parentType))
-                        {
-                            var indexType2 = this.getNumberLiteralType(new JsNum.Number(index));
-                            var declaredType2 = Core.OrElse(this.getIndexedAccessTypeOrUndefined(parentType, indexType2, accessFlags, declaration.Name(), null), this.errorType);
-                            t = this.getFlowTypeOfDestructuring(declaration, declaredType2);
-                        }
-                        else
-                        {
-                            t = elementType;
-                        }
+                        t = this.createArrayType(elementType);
                     }
-                    break;
                 }
-            default:
+                else
                 {
-                    throw new InvalidOperationException("Unhandled case in getBindingElementTypeFromParentType");
+                    if (this.isArrayLikeType(parentType))
+                    {
+                        var indexType2 = this.getNumberLiteralType((double)index);
+                        var declaredType2 = Core.OrElse(this.getIndexedAccessTypeOrUndefined(parentType, indexType2, accessFlags, declaration.Name(), null), this.errorType);
+                        t = this.getFlowTypeOfDestructuring(declaration, declaredType2);
+                    }
+                    else
+                    {
+                        t = elementType;
+                    }
                 }
+                break;
+            }
+            default:
+            {
+                throw new InvalidOperationException("Unhandled case in getBindingElementTypeFromParentType");
+            }
         }
         if ((declaration.Initializer() == null))
         {
             return t;
         }
-        throw unsupported("destructuring binding initializer");
+        if ((Ast.WalkUpBindingElementsAndPatterns(declaration).Type() != null))
+        {
+            if ((this.strictNullChecks && !this.hasTypeFacts(this.checkDeclarationInitializer(declaration, CheckMode.Normal, null), TypeFacts.IsUndefined)))
+            {
+                return this.getNonUndefinedType(t);
+            }
+            return t;
+        }
+        return this.widenTypeInferredFromInitializer(declaration, this.getUnionTypeEx(new List<Type> { this.getNonUndefinedType(t), this.checkDeclarationInitializer(declaration, CheckMode.Normal, null) }, UnionReduction.Subtype, null, null));
     }
 }
 
@@ -36783,5 +37173,1932 @@ public sealed partial class Checker
     {
         var doneType = Core.OrElse(this.getTypeOfPropertyOfType(t, "done"), this.falseType);
         return this.isTypeAssignableTo(Core.IfElse((kind == IterationTypeKind.Yield), this.falseType, this.trueType), doneType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkForInStatement(Node node)
+    {
+        var data = node.AsForInOrOfStatement();
+        this.checkGrammarForInOrForOfStatement(data);
+        var rightType = this.getNonNullableTypeIfNeeded(this.checkExpression(data.Expression));
+        if (Ast.IsVariableDeclarationList(data.Initializer))
+        {
+            var declarations = data.Initializer.AsVariableDeclarationList().Declarations.Nodes;
+            if (((GoRuntime.Len(declarations) != 0) && Ast.IsBindingPattern(declarations[0].Name())))
+            {
+                this.error(declarations[0].Name(), Diagnostics.The_left_hand_side_of_a_for_in_statement_cannot_be_a_destructuring_pattern);
+            }
+            this.checkVariableDeclarationList(data.Initializer);
+        }
+        else
+        {
+            var varExpr = data.Initializer;
+            var leftType = this.checkExpression(varExpr);
+            if ((Ast.IsArrayLiteralExpression(varExpr) || Ast.IsObjectLiteralExpression(varExpr)))
+            {
+                this.error(varExpr, Diagnostics.The_left_hand_side_of_a_for_in_statement_cannot_be_a_destructuring_pattern);
+            }
+            else
+            {
+                if (!this.isTypeAssignableTo(this.getIndexTypeOrString(rightType), leftType))
+                {
+                    this.error(varExpr, Diagnostics.The_left_hand_side_of_a_for_in_statement_must_be_of_type_string_or_any);
+                }
+                else
+                {
+                    this.checkReferenceExpression(varExpr, Diagnostics.The_left_hand_side_of_a_for_in_statement_must_be_a_variable_or_a_property_access, Diagnostics.The_left_hand_side_of_a_for_in_statement_may_not_be_an_optional_property_access);
+                }
+            }
+        }
+        if (((rightType == this.neverType) || !this.isTypeAssignableToKind(rightType, (TypeFlags.NonPrimitive | TypeFlags.InstantiableNonPrimitive))))
+        {
+            this.error(data.Expression, Diagnostics.The_right_hand_side_of_a_for_in_statement_must_be_of_type_any_an_object_type_or_a_type_parameter_but_here_has_type_0, this.typeToStringByteString(rightType));
+        }
+        this.checkSourceElement(data.Statement);
+        if ((node.Locals() != null))
+        {
+            this.registerForUnusedIdentifiersCheck(node);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getIndexTypeOrString(Type t)
+    {
+        var indexType = this.getExtractStringType(this.getIndexType(t));
+        return Core.IfElse(((indexType.flags & TypeFlags.Never) != 0), this.stringType, indexType);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkWithStatement(Node node)
+    {
+        if (!this.checkGrammarStatementInAmbientContext(node))
+        {
+            if (((node.Flags & NodeFlags.AwaitContext) != 0))
+            {
+                this.grammarErrorOnFirstToken(node, Diagnostics.X_with_statements_are_not_allowed_in_an_async_function_block);
+            }
+        }
+        this.checkExpression(node.Expression());
+        var sourceFile = Ast.GetSourceFileOfNode(node);
+        if (!this.hasParseDiagnostics(sourceFile))
+        {
+            var start = TypeScript.Scanner.Scanner.SkipTrivia(sourceFile.Text(), node.Pos());
+            var end = node.Statement().Pos();
+            this.grammarErrorAtPos(sourceFile.AsNode(), start, (end - start), Diagnostics.The_with_statement_is_not_supported_All_symbols_in_a_with_block_will_have_type_any);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkSwitchStatement(Node node)
+    {
+        this.checkGrammarStatementInAmbientContext(node);
+        Node firstDefaultClause = default;
+        var hasDuplicateDefaultClause = false;
+        var expressionType = this.checkExpression(node.Expression());
+        var caseBlock = node.AsSwitchStatement().CaseBlock;
+        {
+            foreach (var clause in GoRuntime.RangeValues(caseBlock.AsCaseBlock().Clauses.Nodes))
+            {
+                if ((Ast.IsDefaultClause(clause) && !hasDuplicateDefaultClause))
+                {
+                    if ((firstDefaultClause == null))
+                    {
+                        firstDefaultClause = clause;
+                    }
+                    else
+                    {
+                        this.grammarErrorOnNode(clause, Diagnostics.A_default_clause_cannot_appear_more_than_once_in_a_switch_statement);
+                        hasDuplicateDefaultClause = true;
+                    }
+                }
+                if (Ast.IsCaseClause(clause))
+                {
+                    var caseType = this.checkExpression(clause.Expression());
+                    if (!this.isTypeEqualityComparableTo(expressionType, caseType))
+                    {
+                        this.checkTypeComparableTo(caseType, expressionType, clause.Expression(), null);
+                    }
+                }
+                this.checkSourceElements(clause.Statements());
+                if (this.compilerOptions.NoFallthroughCasesInSwitch == Tristate.True)
+                {
+                    {
+                        var flowNode = clause.AsCaseOrDefaultClause().FallthroughFlowNode;
+                        if (((flowNode != null) && this.isReachableFlowNode(flowNode)))
+                        {
+                            this.error(clause, Diagnostics.Fallthrough_case_in_switch);
+                        }
+                    }
+                }
+            }
+        }
+        if ((caseBlock.Locals() != null))
+        {
+            this.registerForUnusedIdentifiersCheck(caseBlock);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkLabeledStatement(Node node)
+    {
+        var labeledStatement = node.AsLabeledStatement();
+        var labelNode = labeledStatement.Label;
+        var labelText = labelNode.Text();
+        if (!this.checkGrammarStatementInAmbientContext(node))
+        {
+            {
+                var current = node.Parent;
+                for (; ((current != null) && !Ast.IsFunctionLike(current)); current = current.Parent)
+                {
+                    if ((Ast.IsLabeledStatement(current) && (current.Label().Text() == labelText)))
+                    {
+                        this.grammarErrorOnNode(labelNode, Diagnostics.Duplicate_label_0, labelText);
+                        break;
+                    }
+                }
+            }
+        }
+        if ((((labelNode.Flags & NodeFlags.Unreachable) != 0) && (this.compilerOptions.AllowUnusedLabels != Tristate.True)))
+        {
+            this.errorOrSuggestion((this.compilerOptions.AllowUnusedLabels == Tristate.False), labelNode, Diagnostics.Unused_label);
+        }
+        this.checkSourceElement(labeledStatement.Statement);
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkTryStatement(Node node)
+    {
+        this.checkGrammarStatementInAmbientContext(node);
+        var data = node.AsTryStatement();
+        this.checkBlock(data.TryBlock);
+        if ((data.CatchClause != null))
+        {
+            this.checkCatchClause(data.CatchClause);
+        }
+        if ((data.FinallyBlock != null))
+        {
+            this.checkBlock(data.FinallyBlock);
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkCatchClause(Node node)
+    {
+        var declaration = node.AsCatchClause().VariableDeclaration;
+        if ((declaration != null))
+        {
+            this.checkVariableLikeDeclaration(declaration);
+            var typeNode = declaration.Type();
+            if ((typeNode != null))
+            {
+                var t = this.getTypeFromTypeNode(typeNode);
+                if (((t != null) && ((t.flags & TypeFlags.AnyOrUnknown) == 0)))
+                {
+                    this.grammarErrorOnFirstToken(typeNode, Diagnostics.Catch_clause_variable_type_annotation_must_be_any_or_unknown_if_specified);
+                }
+            }
+            else
+            {
+                if ((declaration.Initializer() != null))
+                {
+                    this.grammarErrorOnFirstToken(declaration.Initializer(), Diagnostics.Catch_clause_variable_cannot_have_an_initializer);
+                }
+                else
+                {
+                    var blockLocals = node.AsCatchClause().Block.Locals();
+                    if ((blockLocals != null))
+                    {
+                        {
+                            foreach (var caughtName in GoRuntime.RangeKeys(node.Locals()))
+                            {
+                                {
+                                    var blockLocal = blockLocals[caughtName];
+                                    if ((((blockLocal != null) && (blockLocal.ValueDeclaration != null)) && ((blockLocal.Flags & SymbolFlags.BlockScopedVariable) != 0)))
+                                    {
+                                        this.grammarErrorOnNode(blockLocal.ValueDeclaration, Diagnostics.Cannot_redeclare_identifier_0_in_catch_clause, caughtName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        this.checkBlock(node.AsCatchClause().Block);
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSpreadableProperty(Symbol prop)
+    {
+        return ((!Core.Some(prop.Declarations, Ast.IsPrivateIdentifierClassElementDeclaration) && ((prop.Flags & (((SymbolFlags.Method | SymbolFlags.GetAccessor) | SymbolFlags.SetAccessor))) == 0)) || !Core.Some(prop.Declarations, (d) =>
+{
+    return ((d.Parent != null) && Ast.IsClassLike(d.Parent));
+}));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getSpreadSymbol(Symbol prop, bool @readonly)
+    {
+        var isSetonlyAccessor = (((prop.Flags & SymbolFlags.SetAccessor) != 0) && ((prop.Flags & SymbolFlags.GetAccessor) == 0));
+        if ((!isSetonlyAccessor && (@readonly == this.isReadonlySymbol(prop))))
+        {
+            return prop;
+        }
+        var flags = (SymbolFlags.Property | ((prop.Flags & SymbolFlags.Optional)));
+        var result = this.newSymbolEx(flags, prop.Name, ((prop.CheckFlags & CheckFlags.Late) | Core.IfElse(@readonly, CheckFlags.Readonly, CheckFlags.None)));
+        var links = this.valueSymbolLinks.Get(result);
+        if (isSetonlyAccessor)
+        {
+            links.resolvedType = this.undefinedType;
+        }
+        else
+        {
+            links.resolvedType = this.getTypeOfSymbol(prop);
+        }
+        result.Declarations = prop.Declarations;
+        links.nameType = this.valueSymbolLinks.Get(prop).nameType;
+        this.mappedSymbolLinks.Get(result).syntheticOrigin = prop;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type padObjectLiteralType(Type t, Node pattern)
+    {
+        List<Node> missingElements = default;
+        {
+            foreach (var e in GoRuntime.RangeValues(pattern.Elements()))
+            {
+                if (hasDotDotDotToken(e))
+                {
+                    continue;
+                }
+                var name = this.getPropertyNameFromBindingElement(e);
+                if (((name != Ast.InternalSymbolNameMissing) && (this.getPropertyOfType(t, name) == null)))
+                {
+                    missingElements = GoRuntime.Append(missingElements, e);
+                }
+            }
+        }
+        if ((GoRuntime.Len(missingElements) == 0))
+        {
+            return t;
+        }
+        var members = new SymbolTable();
+        {
+            foreach (var range2 in GoRuntime.Range(this.getPropertiesOfObjectType(t)))
+            {
+                var _2 = range2.Key;
+                var prop = range2.Value;
+                members[prop.Name] = prop;
+            }
+        }
+        {
+            foreach (var range3 in GoRuntime.Range(missingElements))
+            {
+                var _3 = range3.Key;
+                var e2 = range3.Value;
+                var symbol = this.newSymbol((SymbolFlags.Property | SymbolFlags.Optional), this.getPropertyNameFromBindingElement(e2));
+                this.valueSymbolLinks.Get(symbol).resolvedType = this.getTypeFromBindingElement(e2, false, true);
+                members[symbol.Name] = symbol;
+            }
+        }
+        var result = this.newAnonymousType(t.symbol, members, null, null, this.getIndexInfosOfType(t));
+        result.objectFlags = t.objectFlags;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private string getPropertyNameFromBindingElement(Node e)
+    {
+        var exprType = this.getLiteralTypeFromPropertyName(e.PropertyNameOrName());
+        if (isTypeUsableAsPropertyName(exprType))
+        {
+            return getPropertyNameFromType(exprType);
+        }
+        return Ast.InternalSymbolNameMissing;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type padTupleType(Type t, Node pattern)
+    {
+        var patternElements = pattern.Elements();
+        if ((((t.TargetTupleType().combinedFlags & ElementFlags.Variable) != 0) || (this.getTypeReferenceArity(t) >= GoRuntime.Len(patternElements))))
+        {
+            return t;
+        }
+        var elementTypes = GoSlices.Clone(this.getElementTypes(t));
+        var elementInfos = GoSlices.Clone(t.TargetTupleType().elementInfos);
+        {
+            var i = this.getTypeReferenceArity(t);
+            for (; (i < GoRuntime.Len(patternElements)); i++)
+            {
+                var e = patternElements[i];
+                if (((i < (GoRuntime.Len(patternElements) - 1)) || !((Ast.IsBindingElement(e) && hasDotDotDotToken(e)))))
+                {
+                    var elementType = this.anyType;
+                    if ((!Ast.IsOmittedExpression(e) && this.hasDefaultValue(e)))
+                    {
+                        elementType = this.getTypeFromBindingElement(e, false, false);
+                    }
+                    elementTypes = GoRuntime.Append(elementTypes, elementType);
+                    elementInfos = GoRuntime.Append(elementInfos, new TupleElementInfo { flags = ElementFlags.Optional });
+                    if ((!Ast.IsOmittedExpression(e) && !this.hasDefaultValue(e)))
+                    {
+                        this.reportImplicitAny(e, this.anyType, WideningKind.Normal);
+                    }
+                }
+            }
+        }
+        return this.createTupleTypeEx(elementTypes, elementInfos, t.TargetTupleType().@readonly);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getRestType(Type source, List<Node> properties, Symbol symbol)
+    {
+        source = this.filterType(source, (t) =>
+{
+    return ((t.flags & TypeFlags.Nullable) == 0);
+});
+        if (((source.flags & TypeFlags.Never) != 0))
+        {
+            return this.emptyObjectType;
+        }
+        if (((source.flags & TypeFlags.Union) != 0))
+        {
+            return this.mapType(source, (t2) =>
+{
+    return this.getRestType(t2, properties, symbol);
+});
+        }
+        var omitKeyType = this.getUnionType(Core.Map(properties, this.getLiteralTypeFromPropertyName));
+        List<Symbol> spreadableProperties = default;
+        List<Type> unspreadableToRestKeys = default;
+        {
+            foreach (var prop in GoRuntime.RangeValues(this.getPropertiesOfType(source)))
+            {
+                var literalTypeFromProperty = this.getLiteralTypeFromProperty(prop, TypeFlags.StringOrNumberLiteralOrUnique, false);
+                if (((!this.isTypeAssignableTo(literalTypeFromProperty, omitKeyType) && ((getDeclarationModifierFlagsFromSymbol(prop) & ((ModifierFlags.Private | ModifierFlags.Protected))) == 0)) && this.isSpreadableProperty(prop)))
+                {
+                    spreadableProperties = GoRuntime.Append(spreadableProperties, prop);
+                }
+                else
+                {
+                    unspreadableToRestKeys = GoRuntime.Append(unspreadableToRestKeys, literalTypeFromProperty);
+                }
+            }
+        }
+        if ((this.isGenericObjectType(source) || this.isGenericIndexType(omitKeyType)))
+        {
+            if ((GoRuntime.Len(unspreadableToRestKeys) != 0))
+            {
+                omitKeyType = this.getUnionType(GoRuntime.Append(new List<Type> { omitKeyType }, unspreadableToRestKeys));
+            }
+            if (((omitKeyType.flags & TypeFlags.Never) != 0))
+            {
+                return source;
+            }
+            var omitTypeAlias = this.getGlobalOmitSymbol();
+            if ((omitTypeAlias == null))
+            {
+                return this.errorType;
+            }
+            return this.getTypeAliasInstantiation(omitTypeAlias, new List<Type> { source, omitKeyType }, null);
+        }
+        var members = new SymbolTable();
+        {
+            foreach (var range6 in GoRuntime.Range(spreadableProperties))
+            {
+                var _2 = range6.Key;
+                var prop2 = range6.Value;
+                members[prop2.Name] = this.getSpreadSymbol(prop2, false);
+            }
+        }
+        var result = this.newAnonymousType(symbol, members, null, null, this.getIndexInfosOfType(source));
+        result.objectFlags |= ObjectFlags.ObjectRestType;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromBindingPattern(Node pattern, bool includePatternInType, bool reportErrors)
+    {
+        if (includePatternInType)
+        {
+            this.contextualBindingPatterns = GoRuntime.Append(this.contextualBindingPatterns, pattern);
+        }
+        Type result = default;
+        if (Ast.IsObjectBindingPattern(pattern))
+        {
+            result = this.getTypeFromObjectBindingPattern(pattern, includePatternInType, reportErrors);
+        }
+        else
+        {
+            result = this.getTypeFromArrayBindingPattern(pattern, includePatternInType, reportErrors);
+        }
+        if (includePatternInType)
+        {
+            this.contextualBindingPatterns = GoRuntime.Slice(this.contextualBindingPatterns, 0, (GoRuntime.Len(this.contextualBindingPatterns) - 1));
+        }
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromObjectBindingPattern(Node pattern, bool includePatternInType, bool reportErrors)
+    {
+        var members = new SymbolTable();
+        IndexInfo stringIndexInfo = default;
+        var objectFlags = (ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral);
+        {
+            foreach (var e in GoRuntime.RangeValues(pattern.Elements()))
+            {
+                var name = e.PropertyNameOrName();
+                if (hasDotDotDotToken(e))
+                {
+                    stringIndexInfo = this.newIndexInfo(this.stringType, this.anyType, false, null, null);
+                    continue;
+                }
+                var exprType = this.getLiteralTypeFromPropertyName(name);
+                if (!isTypeUsableAsPropertyName(exprType))
+                {
+                    objectFlags |= ObjectFlags.ObjectLiteralPatternWithComputedProperties;
+                    continue;
+                }
+                var text = getPropertyNameFromType(exprType);
+                var flags = (SymbolFlags.Property | Core.IfElse((e.Initializer() != null), SymbolFlags.Optional, SymbolFlags.None));
+                var symbol = this.newSymbol(flags, text);
+                this.valueSymbolLinks.Get(symbol).resolvedType = this.getTypeFromBindingElement(e, includePatternInType, reportErrors);
+                members[symbol.Name] = symbol;
+            }
+        }
+        List<IndexInfo> indexInfos = default;
+        if ((stringIndexInfo != null))
+        {
+            indexInfos = new List<IndexInfo> { stringIndexInfo };
+        }
+        var result = this.newAnonymousType(null, members, null, null, indexInfos);
+        result.objectFlags |= objectFlags;
+        if (includePatternInType)
+        {
+            this.patternForType[result] = pattern;
+            result.objectFlags |= ObjectFlags.ContainsObjectOrArrayLiteral;
+        }
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromArrayBindingPattern(Node pattern, bool includePatternInType, bool reportErrors)
+    {
+        var elements = pattern.Elements();
+        var lastElement = Core.LastOrNil(elements);
+        Node restElement = default;
+        if ((((lastElement != null) && Ast.IsBindingElement(lastElement)) && hasDotDotDotToken(lastElement)))
+        {
+            restElement = lastElement;
+        }
+        if (((GoRuntime.Len(elements) == 0) || ((GoRuntime.Len(elements) == 1) && (restElement != null))))
+        {
+            if ((this.languageVersion >= ScriptTarget.ES2015))
+            {
+                return this.createIterableType(this.anyType);
+            }
+            return this.anyArrayType;
+        }
+        var minLength = (Core.FindLastIndex(elements, (e) =>
+{
+    return !((((e == restElement) || (e.Name() == null)) || this.hasDefaultValue(e)));
+}) + 1);
+        var elementTypes = GoRuntime.MakeSlice<Type>(GoRuntime.Len(elements));
+        var elementInfos = GoRuntime.MakeSlice<TupleElementInfo>(GoRuntime.Len(elements));
+        {
+            foreach (var range8 in GoRuntime.Range(elements))
+            {
+                var i = range8.Key;
+                var e2 = range8.Value;
+                Type t = default;
+                if ((e2.Name() == null))
+                {
+                    t = this.anyType;
+                }
+                else
+                {
+                    t = this.getTypeFromBindingElement(e2, includePatternInType, reportErrors);
+                }
+                ElementFlags flags = default;
+                if ((e2 == restElement))
+                {
+                    flags = ElementFlags.Rest;
+                }
+                else
+                {
+                    if ((i >= minLength))
+                    {
+                        flags = ElementFlags.Optional;
+                    }
+                    else
+                    {
+                        flags = ElementFlags.Required;
+                    }
+                }
+                elementTypes[i] = t;
+                elementInfos[i] = new TupleElementInfo { flags = flags };
+            }
+        }
+        var result = this.createTupleTypeEx(elementTypes, elementInfos, false);
+        if (includePatternInType)
+        {
+            result = this.cloneTypeReference(result);
+            this.patternForType[result] = pattern;
+            result.objectFlags |= ObjectFlags.ContainsObjectOrArrayLiteral;
+        }
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTypeFromBindingElement(Node element, bool includePatternInType, bool reportErrors)
+    {
+        if ((element.Initializer() != null))
+        {
+            var contextualType = this.unknownType;
+            if (Ast.IsBindingPattern(element.Name()))
+            {
+                contextualType = this.getTypeFromBindingPattern(element.Name(), true, false);
+            }
+            return this.addOptionality(this.getWidenedLiteralTypeForInitializer(element, this.checkDeclarationInitializer(element, CheckMode.Normal, contextualType)));
+        }
+        if (Ast.IsBindingPattern(element.Name()))
+        {
+            return this.getTypeFromBindingPattern(element.Name(), includePatternInType, reportErrors);
+        }
+        if ((reportErrors && !declarationBelongsToPrivateAmbientMember(element)))
+        {
+            this.reportImplicitAny(element, this.anyType, WideningKind.Normal);
+        }
+        if (includePatternInType)
+        {
+            return this.nonInferrableAnyType;
+        }
+        return this.anyType;
+    }
+}
+
+public sealed partial class Checker
+{
+
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualTypeForBindingElement(Node declaration, ContextFlags contextFlags)
+    {
+        var name = declaration.PropertyNameOrName();
+        if ((Ast.IsBindingPattern(name) || Ast.IsComputedNonLiteralName(name)))
+        {
+            return null;
+        }
+        var parent = declaration.Parent.Parent;
+        var parentType = this.getContextualTypeForVariableLikeDeclaration(parent, contextFlags);
+        if ((parentType == null))
+        {
+            if ((!Ast.IsBindingElement(parent) && (parent.Initializer() != null)))
+            {
+                parentType = this.checkDeclarationInitializer(parent, Core.IfElse(hasDotDotDotToken(declaration), CheckMode.RestBindingElement, CheckMode.Normal), null);
+            }
+        }
+        if ((parentType == null))
+        {
+            return null;
+        }
+        if (Ast.IsArrayBindingPattern(parent.Name()))
+        {
+            var index = GoSlices.Index(declaration.Parent.Elements(), declaration);
+            if ((index < 0))
+            {
+                return null;
+            }
+            return this.getContextualTypeForElementExpression(parentType, index, -1, -1, -1);
+        }
+        var nameType = this.getLiteralTypeFromPropertyName(name);
+        if (isTypeUsableAsPropertyName(nameType))
+        {
+            return this.getTypeOfPropertyOfType(parentType, getPropertyNameFromType(nameType));
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void assignBindingElementTypes(Node pattern, Type parentType)
+    {
+        {
+            foreach (var element in GoRuntime.RangeValues(pattern.Elements()))
+            {
+                var name = element.Name();
+                if ((name != null))
+                {
+                    var t = this.getBindingElementTypeFromParentType(element, parentType, false);
+                    if (Ast.IsIdentifier(name))
+                    {
+                        this.valueSymbolLinks.Get(this.getSymbolOfDeclaration(element)).resolvedType = t;
+                    }
+                    else
+                    {
+                        this.assignBindingElementTypes(name, t);
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type createIterableType(Type iteratedType)
+    {
+        return this.createTypeFromGenericGlobalType(this.getGlobalIterableTypeChecked(), new List<Type> { iteratedType, this.voidType, this.undefinedType });
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkNonNullNonVoidType(Type t, Node node)
+    {
+        var nonNullType = this.checkNonNullType(t, node);
+        if (((nonNullType.flags & TypeFlags.Void) != 0))
+        {
+            if (Ast.IsEntityNameExpression(node))
+            {
+                var nodeText = entityNameToString(node);
+                if ((Ast.IsIdentifier(node) && (nodeText == "undefined")))
+                {
+                    this.error(node, Diagnostics.The_value_0_cannot_be_used_here, nodeText);
+                    return nonNullType;
+                }
+                if ((GoRuntime.Len(nodeText) < 100))
+                {
+                    this.error(node, Diagnostics.X_0_is_possibly_undefined, nodeText);
+                    return nonNullType;
+                }
+            }
+            this.error(node, Diagnostics.Object_is_possibly_undefined);
+        }
+        return nonNullType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isValidSpreadType(Type t)
+    {
+        var s = this.removeDefinitelyFalsyTypes(this.mapType(t, this.getBaseConstraintOrType));
+        return (((s.flags & ((((TypeFlags.Any | TypeFlags.NonPrimitive) | TypeFlags.Object) | TypeFlags.InstantiableNonPrimitive))) != 0) || (((s.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(s.Types(), this.isValidSpreadType)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkDestructuringAssignment(Node node, Type sourceType, CheckMode checkMode, bool rightIsThis)
+    {
+        Node target = default;
+        if (Ast.IsShorthandPropertyAssignment(node))
+        {
+            var initializer = node.AsShorthandPropertyAssignment().ObjectAssignmentInitializer;
+            if ((initializer != null))
+            {
+                if ((this.strictNullChecks && !this.hasTypeFacts(this.checkExpression(initializer), TypeFacts.IsUndefined)))
+                {
+                    sourceType = this.getTypeWithFacts(sourceType, TypeFacts.NEUndefined);
+                }
+                this.checkBinaryLikeExpression(node.Name(), node.AsShorthandPropertyAssignment().EqualsToken, initializer, checkMode, null);
+            }
+            target = node.Name();
+        }
+        else
+        {
+            target = node;
+        }
+        if ((Ast.IsBinaryExpression(target) && (target.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)))
+        {
+            this.checkBinaryExpression(target, checkMode);
+            target = target.AsBinaryExpression().Left;
+            if (this.strictNullChecks)
+            {
+                sourceType = this.getTypeWithFacts(sourceType, TypeFacts.NEUndefined);
+            }
+        }
+        if (Ast.IsObjectLiteralExpression(target))
+        {
+            return this.checkObjectLiteralAssignment(target, sourceType, rightIsThis);
+        }
+        if (Ast.IsArrayLiteralExpression(target))
+        {
+            return this.checkArrayLiteralAssignment(target, sourceType, checkMode);
+        }
+        return this.checkReferenceAssignment(target, sourceType, checkMode);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkObjectLiteralAssignment(Node node, Type sourceType, bool rightIsThis)
+    {
+        var properties = node.PropertyList();
+        if ((this.strictNullChecks && (GoRuntime.Len(properties.Nodes) == 0)))
+        {
+            return this.checkNonNullType(sourceType, node);
+        }
+        {
+            foreach (var i in GoRuntime.RangeKeys(properties.Nodes))
+            {
+                this.checkObjectLiteralDestructuringPropertyAssignment(node, sourceType, i, properties, rightIsThis);
+            }
+        }
+        return sourceType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkObjectLiteralDestructuringPropertyAssignment(Node node, Type objectLiteralType, int propertyIndex, NodeList allProperties, bool rightIsThis)
+    {
+        var properties = node.Properties();
+        var property = properties[propertyIndex];
+        if ((Ast.IsPropertyAssignment(property) || Ast.IsShorthandPropertyAssignment(property)))
+        {
+            var name = property.Name();
+            if (((name != null) && Ast.IsPrivateIdentifier(name)))
+            {
+                this.grammarErrorOnNode(name, Diagnostics.Private_identifiers_cannot_be_used_in_destructuring_patterns);
+            }
+            var exprType = this.getLiteralTypeFromPropertyName(name);
+            if (isTypeUsableAsPropertyName(exprType))
+            {
+                var text = getPropertyNameFromType(exprType);
+                var prop = this.getPropertyOfType(objectLiteralType, text);
+                if ((prop != null))
+                {
+                    this.markPropertyAsReferenced(prop, property, rightIsThis);
+                    this.checkPropertyAccessibility(property, false, true, objectLiteralType, prop);
+                }
+            }
+            var elementType = this.getIndexedAccessTypeEx(objectLiteralType, exprType, (AccessFlags.ExpressionPosition | Core.IfElse(this.hasDefaultValue(property), AccessFlags.AllowMissing, AccessFlags.None)), name, null);
+            var t = this.getFlowTypeOfDestructuring(property, elementType);
+            var expr = property;
+            if (Ast.IsPropertyAssignment(property))
+            {
+                expr = property.Initializer();
+            }
+            return this.checkDestructuringAssignment(expr, t, CheckMode.Normal, false);
+        }
+        if (Ast.IsSpreadAssignment(property))
+        {
+            if ((propertyIndex < (GoRuntime.Len(properties) - 1)))
+            {
+                this.error(property, Diagnostics.A_rest_element_must_be_last_in_a_destructuring_pattern);
+                return null;
+            }
+            if ((this.languageVersion < ScriptTarget.ES2018))
+            {
+                this.checkExternalEmitHelpers(property, ExternalEmitHelpers.Rest);
+            }
+            List<Node> nonRestNames = default;
+            if ((allProperties != null))
+            {
+                {
+                    foreach (var otherProperty in GoRuntime.RangeValues(allProperties.Nodes))
+                    {
+                        if (!Ast.IsSpreadAssignment(otherProperty))
+                        {
+                            nonRestNames = GoRuntime.Append(nonRestNames, otherProperty.Name());
+                        }
+                    }
+                }
+            }
+            var t2 = this.getRestType(objectLiteralType, nonRestNames, objectLiteralType.symbol);
+            this.checkGrammarForDisallowedTrailingComma(allProperties, Diagnostics.A_rest_parameter_or_binding_pattern_may_not_have_a_trailing_comma);
+            return this.checkDestructuringAssignment(property.Expression(), t2, CheckMode.Normal, false);
+        }
+        this.error(property, Diagnostics.Property_assignment_expected);
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkArrayLiteralAssignment(Node node, Type sourceType, CheckMode checkMode)
+    {
+        var elements = node.Elements();
+        var possiblyOutOfBoundsType = Core.OrElse(this.checkIteratedTypeOrElementType((IterationUse.Destructuring | IterationUse.PossiblyOutOfBounds), sourceType, this.undefinedType, node), this.errorType);
+        var inBoundsType = Core.IfElse((this.compilerOptions.NoUncheckedIndexedAccess == Tristate.True), null, possiblyOutOfBoundsType);
+        {
+            foreach (var i in GoRuntime.RangeKeys(elements))
+            {
+                var t = possiblyOutOfBoundsType;
+                if ((elements[i].Kind == Kind.SpreadElement))
+                {
+                    if ((inBoundsType == null))
+                    {
+                        inBoundsType = Core.OrElse(this.checkIteratedTypeOrElementType(IterationUse.Destructuring, sourceType, this.undefinedType, node), this.errorType);
+                    }
+                    t = inBoundsType;
+                }
+                this.checkArrayLiteralDestructuringElementAssignment(node, sourceType, i, t, checkMode);
+            }
+        }
+        return sourceType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkArrayLiteralDestructuringElementAssignment(Node node, Type sourceType, int elementIndex, Type elementType, CheckMode checkMode)
+    {
+        var elements = node.ElementList();
+        var element = elements.Nodes[elementIndex];
+        if (!Ast.IsOmittedExpression(element))
+        {
+            if (!Ast.IsSpreadElement(element))
+            {
+                var indexType = this.getNumberLiteralType((double)elementIndex);
+                if (this.isArrayLikeType(sourceType))
+                {
+                    var accessFlags = (AccessFlags.ExpressionPosition | Core.IfElse(this.hasDefaultValue(element), AccessFlags.AllowMissing, AccessFlags.None));
+                    var elementType2 = Core.OrElse(this.getIndexedAccessTypeOrUndefined(sourceType, indexType, accessFlags, this.createSyntheticExpression(element, indexType, false, null), null), this.errorType);
+                    var assignedType = elementType2;
+                    if (this.hasDefaultValue(element))
+                    {
+                        assignedType = this.getTypeWithFacts(elementType2, TypeFacts.NEUndefined);
+                    }
+                    var t = this.getFlowTypeOfDestructuring(element, assignedType);
+                    return this.checkDestructuringAssignment(element, t, checkMode, false);
+                }
+                return this.checkDestructuringAssignment(element, elementType, checkMode, false);
+            }
+            if ((elementIndex < (GoRuntime.Len(elements.Nodes) - 1)))
+            {
+                this.error(element, Diagnostics.A_rest_element_must_be_last_in_a_destructuring_pattern);
+            }
+            else
+            {
+                var restExpression = element.Expression();
+                if ((Ast.IsBinaryExpression(restExpression) && (restExpression.AsBinaryExpression().OperatorToken.Kind == Kind.EqualsToken)))
+                {
+                    this.error(restExpression.AsBinaryExpression().OperatorToken, Diagnostics.A_rest_element_cannot_have_an_initializer);
+                }
+                else
+                {
+                    this.checkGrammarForDisallowedTrailingComma(elements, Diagnostics.A_rest_parameter_or_binding_pattern_may_not_have_a_trailing_comma);
+                    Type t2 = default;
+                    if (everyType(sourceType, isTupleType))
+                    {
+                        t2 = this.mapType(sourceType, (t3) =>
+{
+    return this.sliceTupleType(t3, elementIndex, 0);
+});
+                    }
+                    else
+                    {
+                        t2 = this.createArrayType(elementType);
+                    }
+                    return this.checkDestructuringAssignment(restExpression, t2, checkMode, false);
+                }
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkReferenceAssignment(Node target, Type sourceType, CheckMode checkMode)
+    {
+        var targetType = this.checkExpressionEx(target, checkMode);
+        var message = Core.IfElse(Ast.IsSpreadAssignment(target.Parent), Diagnostics.The_target_of_an_object_rest_assignment_must_be_a_variable_or_a_property_access, Diagnostics.The_left_hand_side_of_an_assignment_expression_must_be_a_variable_or_a_property_access);
+        var optionalMessage = Core.IfElse(Ast.IsSpreadAssignment(target.Parent), Diagnostics.The_target_of_an_object_rest_assignment_may_not_be_an_optional_property_access, Diagnostics.The_left_hand_side_of_an_assignment_expression_may_not_be_an_optional_property_access);
+        if (this.checkReferenceExpression(target, message, optionalMessage))
+        {
+            this.checkTypeAssignableToAndOptionallyElaborate(sourceType, targetType, target, target, null, null);
+        }
+        return sourceType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Symbol getForInVariableSymbol(Node node)
+    {
+        var initializer = node.Initializer();
+        if (Ast.IsVariableDeclarationList(initializer))
+        {
+            var declarations = initializer.AsVariableDeclarationList().Declarations.Nodes;
+            if ((GoRuntime.Len(declarations) > 0))
+            {
+                var variable = declarations[0];
+                if (((variable != null) && !Ast.IsBindingPattern(variable.Name())))
+                {
+                    return this.getSymbolOfDeclaration(variable);
+                }
+            }
+        }
+        else
+        {
+            if (Ast.IsIdentifier(initializer))
+            {
+                return this.getResolvedSymbol(initializer);
+            }
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasNumericPropertyNames(Type t)
+    {
+        return ((GoRuntime.Len(this.getIndexInfosOfType(t)) == 1) && (this.getIndexInfoOfType(t, this.numberType) != null));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getTupleElementType(Type t, int index)
+    {
+        var propType = this.getTypeOfPropertyOfType(t, Strconv.Itoa(index));
+        if ((propType != null))
+        {
+            return propType;
+        }
+        if (everyType(t, isTupleType))
+        {
+            return this.getTupleElementTypeOutOfStartCount(t, (double)index, Core.IfElse((this.compilerOptions.NoUncheckedIndexedAccess == Tristate.True), this.undefinedType, null));
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type extractUnitType(Type t)
+    {
+        if (((t.flags & TypeFlags.Intersection) != 0))
+        {
+            var u = Core.Find(t.AsIntersectionType().types, isUnitType);
+            if ((u != null))
+            {
+                return u;
+            }
+        }
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getExtractStringType(Type t)
+    {
+        var extractTypeAlias = this.getGlobalExtractSymbol();
+        if ((extractTypeAlias != null))
+        {
+            return this.getTypeAliasInstantiation(extractTypeAlias, new List<Type> { t, this.stringType }, null);
+        }
+        return this.stringType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getOptionalExpressionType(Type exprType, Node expression)
+    {
+        switch (true)
+        {
+            case true when Ast.IsExpressionOfOptionalChainRoot(expression):
+            {
+                return this.GetNonNullableType(exprType);
+            }
+            case true when Ast.IsOptionalChain(expression):
+            {
+                return this.removeOptionalTypeMarker(exprType);
+            }
+            default:
+            {
+                return exprType;
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type propagateOptionalTypeMarker(Type t, Node node, bool wasOptional)
+    {
+        if (wasOptional)
+        {
+            if (Ast.IsOutermostOptionalChain(node))
+            {
+                return this.getOptionalType(t, false);
+            }
+            return this.addOptionalTypeMarker(t);
+        }
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type addOptionalTypeMarker(Type t)
+    {
+        if (this.strictNullChecks)
+        {
+            return this.getUnionType(new List<Type> { t, this.optionalType });
+        }
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type removeOptionalTypeMarker(Type t)
+    {
+        if (this.strictNullChecks)
+        {
+            return this.removeType(t, this.optionalType);
+        }
+        return t;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkTemplateExpression(Node node)
+    {
+        var expr = node.AsTemplateExpression();
+        var length = GoRuntime.Len(expr.TemplateSpans.Nodes);
+        var texts = GoRuntime.MakeSlice<string>((length + 1));
+        var types = GoRuntime.MakeSlice<Type>(length);
+        texts[0] = expr.Head.Text();
+        {
+            foreach (var range1 in GoRuntime.Range(expr.TemplateSpans.Nodes))
+            {
+                var i = range1.Key;
+                var span = range1.Value;
+                var t = this.checkExpression(span.Expression());
+                if (this.maybeTypeOfKindConsideringBaseConstraint(t, TypeFlags.ESSymbolLike))
+                {
+                    this.error(span.Expression(), Diagnostics.Implicit_conversion_of_a_symbol_to_a_string_will_fail_at_runtime_Consider_wrapping_this_expression_in_String);
+                }
+                texts[(i + 1)] = span.AsTemplateSpan().Literal.Text();
+                types[i] = Core.IfElse(this.isTypeAssignableTo(t, this.templateConstraintType), t, this.stringType);
+            }
+        }
+        object evaluated = default;
+        if (!Ast.IsTaggedTemplateExpression(node.Parent))
+        {
+            evaluated = this.evaluate(node, node).Value;
+        }
+        if ((evaluated != null))
+        {
+            return this.getFreshTypeOfLiteralType(this.getStringLiteralType(((string)evaluated)));
+        }
+        if (((this.isConstContext(node) || this.isTemplateLiteralContext(node)) || someType(Core.OrElse(this.getContextualType(node, ContextFlags.None), this.unknownType), this.isTemplateLiteralContextualType)))
+        {
+            return this.getTemplateLiteralType(texts, types);
+        }
+        return this.stringType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkRegularExpressionLiteral(Node node)
+    {
+        var nodeLinks = this.nodeLinks.Get(node);
+        if (((nodeLinks.flags & NodeCheckFlags.TypeChecked) == 0))
+        {
+            nodeLinks.flags |= NodeCheckFlags.TypeChecked;
+            this.checkGrammarRegularExpressionLiteral(node.AsRegularExpressionLiteral());
+        }
+        return this.globalRegExpType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkElementAccessChain(Node node, CheckMode checkMode)
+    {
+        var exprType = this.checkExpression(node.Expression());
+        var nonOptionalType = this.getOptionalExpressionType(exprType, node.Expression());
+        return this.propagateOptionalTypeMarker(this.checkElementAccessExpression(node, this.checkNonNullType(nonOptionalType, node.Expression()), checkMode), node, (nonOptionalType != exprType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature getOptionalCallSignature(Signature signature, SignatureFlags callChainFlags)
+    {
+        if (((signature.flags & SignatureFlags.CallChainFlags) == callChainFlags))
+        {
+            return signature;
+        }
+        var key = new CachedSignatureKey { sig = signature, key = Core.IfElse((callChainFlags == SignatureFlags.IsInnerCallChain), SignatureKeyInner, SignatureKeyOuter) };
+        {
+            var cached = this.cachedSignatures.GetValueOrDefault(key);
+            if ((cached != null))
+            {
+                return cached;
+            }
+        }
+        var result = this.cloneSignature(signature);
+        result.flags |= callChainFlags;
+        this.cachedSignatures[key] = result;
+        return result;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkTaggedTemplateExpression(Node node)
+    {
+        if (!this.checkGrammarTaggedTemplateChain(node.AsTaggedTemplateExpression()))
+        {
+            this.checkGrammarTypeArguments(node, node.TypeArgumentList());
+        }
+        var signature = this.getResolvedSignature(node, null, CheckMode.Normal);
+        this.checkDeprecatedSignature(signature, node);
+        return this.getReturnTypeOfSignature(signature);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkNonNullAssertion(Node node)
+    {
+        if (((node.Flags & NodeFlags.OptionalChain) != 0))
+        {
+            return this.checkNonNullChain(node);
+        }
+        return this.GetNonNullableType(this.checkExpression(node.Expression()));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkNonNullChain(Node node)
+    {
+        var leftType = this.checkExpression(node.Expression());
+        var nonOptionalType = this.getOptionalExpressionType(leftType, node.Expression());
+        return this.propagateOptionalTypeMarker(this.GetNonNullableType(nonOptionalType), node, (nonOptionalType != leftType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkSatisfiesExpression(Node node)
+    {
+        var typeNode = node.Type();
+        this.checkSourceElement(typeNode);
+        var exprType = this.checkExpression(node.Expression());
+        var targetType = this.getTypeFromTypeNode(typeNode);
+        if (this.isErrorType(targetType))
+        {
+            return targetType;
+        }
+        this.checkTypeAssignableToAndOptionallyElaborate(exprType, targetType, node, node.Expression(), Diagnostics.Type_0_does_not_satisfy_the_expected_type_1, null);
+        return exprType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkMetaProperty(Node node)
+    {
+        this.checkGrammarMetaProperty(node.AsMetaProperty());
+        switch (node.AsMetaProperty().KeywordToken)
+        {
+            case Kind.NewKeyword:
+            {
+                return this.checkNewTargetMetaProperty(node);
+            }
+            case Kind.ImportKeyword:
+            {
+                if (Ast.IsImportPhaseMetaProperty(node))
+                {
+                    if (Ast.IsCallExpression(node.Parent))
+                    {
+                        Debug.Assert((node.Parent.Expression() != node), "Trying to get the type of a phase import meta-property in its call");
+                    }
+                    return this.errorType;
+                }
+                return this.checkImportMetaProperty(node);
+            }
+        }
+        throw new InvalidOperationException("Unhandled case in checkMetaProperty");
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkNewTargetMetaProperty(Node node)
+    {
+        var container = Ast.GetNewTargetContainer(node);
+        if ((container == null))
+        {
+            this.error(node, Diagnostics.Meta_property_0_is_only_allowed_in_the_body_of_a_function_declaration_function_expression_or_constructor, "new.target");
+            return this.errorType;
+        }
+        if (Ast.IsConstructorDeclaration(container))
+        {
+            var symbol = this.getSymbolOfDeclaration(container.Parent);
+            return this.getTypeOfSymbol(symbol);
+        }
+        var symbol2 = this.getSymbolOfDeclaration(container);
+        return this.getTypeOfSymbol(symbol2);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkImportMetaProperty(Node node)
+    {
+        if (((ModuleKind.Node16 <= this.moduleKind) && (this.moduleKind <= ModuleKind.NodeNext)))
+        {
+            var sourceFileMetaData = this.program.GetSourceFileMetaData(PathKey.FromGoString(Ast.GetSourceFileOfNode(node).PathKey()));
+            if ((sourceFileMetaData.ImpliedNodeFormat != ResolutionMode.ESNext))
+            {
+                this.error(node, Diagnostics.The_import_meta_meta_property_is_not_allowed_in_files_which_will_build_into_CommonJS_output);
+            }
+        }
+        else
+        {
+            if (((this.moduleKind < ModuleKind.ES2020) && (this.moduleKind != ModuleKind.System)))
+            {
+                this.error(node, Diagnostics.The_import_meta_meta_property_is_only_allowed_when_the_module_option_is_es2020_es2022_esnext_system_node16_node18_node20_or_nodenext);
+            }
+        }
+        var file = Ast.GetSourceFileOfNode(node);
+        Debug.Assert(((file.Flags & NodeFlags.PossiblyContainsImportMeta) != 0), "Containing file is missing import meta node flag.");
+        if ((node.Name().Text() == "meta"))
+        {
+            return this.getGlobalImportMetaType();
+        }
+        return this.errorType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkMetaPropertyKeyword(Node node)
+    {
+        return this.errorType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkDeleteExpression(Node node)
+    {
+        this.checkExpression(node.Expression());
+        var expr = Ast.SkipParentheses(node.Expression());
+        if (!Ast.IsAccessExpression(expr))
+        {
+            this.error(expr, Diagnostics.The_operand_of_a_delete_operator_must_be_a_property_reference);
+            return this.booleanType;
+        }
+        if ((Ast.IsPropertyAccessExpression(expr) && Ast.IsPrivateIdentifier(expr.Name())))
+        {
+            this.error(expr, Diagnostics.The_operand_of_a_delete_operator_cannot_be_a_private_identifier);
+        }
+        var symbol = this.getExportSymbolOfValueSymbolIfExported(this.getResolvedSymbolOrNil(expr));
+        if ((symbol != null))
+        {
+            if (this.isReadonlySymbol(symbol))
+            {
+                this.error(expr, Diagnostics.The_operand_of_a_delete_operator_cannot_be_a_read_only_property);
+            }
+            else
+            {
+                this.checkDeleteExpressionMustBeOptional(expr, symbol);
+            }
+        }
+        return this.booleanType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkDeleteExpressionMustBeOptional(Node expr, Symbol symbol)
+    {
+        var t = this.getTypeOfSymbol(symbol);
+        if ((this.strictNullChecks && ((t.flags & ((TypeFlags.AnyOrUnknown | TypeFlags.Never))) == 0)))
+        {
+            bool isOptional = default;
+            if (this.exactOptionalPropertyTypes)
+            {
+                isOptional = ((symbol.Flags & SymbolFlags.Optional) != 0);
+            }
+            else
+            {
+                isOptional = this.hasTypeFacts(t, TypeFacts.IsUndefined);
+            }
+            if (!isOptional)
+            {
+                this.error(expr, Diagnostics.The_operand_of_a_delete_operator_must_be_optional);
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkPropertyAccessChain(Node node, CheckMode checkMode)
+    {
+        var leftType = this.checkExpression(node.Expression());
+        var nonOptionalType = this.getOptionalExpressionType(leftType, node.Expression());
+        return this.propagateOptionalTypeMarker(this.checkPropertyAccessExpressionOrQualifiedName(node, node.Expression(), this.checkNonNullType(nonOptionalType, node.Expression()), node.Name(), checkMode, false), node, (nonOptionalType != leftType));
+    }
+}
+
+public sealed partial class Checker
+{
+    private void checkSpreadPropOverrides(Type t, SymbolTable props, Node spread)
+    {
+        {
+            foreach (var right in GoRuntime.RangeValues(this.getPropertiesOfType(t)))
+            {
+                if ((((right.Flags & SymbolFlags.Optional) == 0) && ((right.CheckFlags & CheckFlags.Partial) == 0)))
+                {
+                    {
+                        var left = props[right.Name];
+                        if ((left != null))
+                        {
+                            var diagnostic = this.error(left.ValueDeclaration, Diagnostics.X_0_is_specified_more_than_once_so_this_usage_will_be_overwritten, left.Name);
+                            diagnostic.AddRelatedInfo(NewDiagnosticForNode(spread, Diagnostics.This_spread_always_overwrites_this_property));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getSpreadType(Type left, Type right, Symbol symbol, ObjectFlags objectFlags, bool @readonly)
+    {
+        if ((((left.flags & TypeFlags.Any) != 0) || ((right.flags & TypeFlags.Any) != 0)))
+        {
+            return this.anyType;
+        }
+        if ((((left.flags & TypeFlags.Unknown) != 0) || ((right.flags & TypeFlags.Unknown) != 0)))
+        {
+            return this.unknownType;
+        }
+        if (((left.flags & TypeFlags.Never) != 0))
+        {
+            return right;
+        }
+        if (((right.flags & TypeFlags.Never) != 0))
+        {
+            return left;
+        }
+        left = this.tryMergeUnionOfObjectTypeAndEmptyObject(left, @readonly);
+        if (((left.flags & TypeFlags.Union) != 0))
+        {
+            if (this.checkCrossProductUnion(new List<Type> { left, right }))
+            {
+                return this.mapType(left, (t) =>
+{
+    return this.getSpreadType(t, right, symbol, objectFlags, @readonly);
+});
+            }
+            return this.errorType;
+        }
+        right = this.tryMergeUnionOfObjectTypeAndEmptyObject(right, @readonly);
+        if (((right.flags & TypeFlags.Union) != 0))
+        {
+            if (this.checkCrossProductUnion(new List<Type> { left, right }))
+            {
+                return this.mapType(right, (t2) =>
+{
+    return this.getSpreadType(left, t2, symbol, objectFlags, @readonly);
+});
+            }
+            return this.errorType;
+        }
+        if (((right.flags & (((((((TypeFlags.BooleanLike | TypeFlags.NumberLike) | TypeFlags.BigIntLike) | TypeFlags.StringLike) | TypeFlags.EnumLike) | TypeFlags.NonPrimitive) | TypeFlags.Index))) != 0))
+        {
+            return left;
+        }
+        if ((this.isGenericObjectType(left) || this.isGenericObjectType(right)))
+        {
+            if (this.isEmptyObjectType(left))
+            {
+                return right;
+            }
+            if (((left.flags & TypeFlags.Intersection) != 0))
+            {
+                var types = left.Types();
+                var lastLeft = types[(GoRuntime.Len(types) - 1)];
+                if ((this.isNonGenericObjectType(lastLeft) && this.isNonGenericObjectType(right)))
+                {
+                    var newTypes = GoSlices.Clone(types);
+                    newTypes[(GoRuntime.Len(newTypes) - 1)] = this.getSpreadType(lastLeft, right, symbol, objectFlags, @readonly);
+                    return this.getIntersectionType(newTypes);
+                }
+            }
+            return this.getIntersectionType(new List<Type> { left, right });
+        }
+        var members = new SymbolTable();
+        HashSet<string> skippedPrivateMembers = new(StringComparer.Ordinal);
+        List<IndexInfo> indexInfos = default;
+        if ((left == this.emptyObjectType))
+        {
+            indexInfos = this.getIndexInfosOfType(right);
+        }
+        else
+        {
+            indexInfos = this.getUnionIndexInfos(new List<Type> { left, right });
+        }
+        {
+            foreach (var rightProp in GoRuntime.RangeValues(this.getPropertiesOfType(right)))
+            {
+                if (((getDeclarationModifierFlagsFromSymbol(rightProp) & ((ModifierFlags.Private | ModifierFlags.Protected))) != 0))
+                {
+                    skippedPrivateMembers.Add(rightProp.Name);
+                }
+                else
+                {
+                    if (this.isSpreadableProperty(rightProp))
+                    {
+                        members[rightProp.Name] = this.getSpreadSymbol(rightProp, @readonly);
+                    }
+                }
+            }
+        }
+        {
+            foreach (var range4 in GoRuntime.Range(this.getPropertiesOfType(left)))
+            {
+                var _2 = range4.Key;
+                var leftProp = range4.Value;
+                if ((skippedPrivateMembers.Contains(leftProp.Name) || !this.isSpreadableProperty(leftProp)))
+                {
+                    continue;
+                }
+                if ((members[leftProp.Name] != null))
+                {
+                    var rightProp2 = members[leftProp.Name];
+                    var rightType = this.getTypeOfSymbol(rightProp2);
+                    if (((rightProp2.Flags & SymbolFlags.Optional) != 0))
+                    {
+                        var declarations = Core.Concatenate(leftProp.Declarations, rightProp2.Declarations);
+                        var flags = (SymbolFlags.Property | ((leftProp.Flags & SymbolFlags.Optional)));
+                        var result = this.newSymbol(flags, leftProp.Name);
+                        var links = this.valueSymbolLinks.Get(result);
+                        var leftType = this.getTypeOfSymbol(leftProp);
+                        var leftTypeWithoutUndefined = this.removeMissingOrUndefinedType(leftType);
+                        var rightTypeWithoutUndefined = this.removeMissingOrUndefinedType(rightType);
+                        if ((leftTypeWithoutUndefined == rightTypeWithoutUndefined))
+                        {
+                            links.resolvedType = leftType;
+                        }
+                        else
+                        {
+                            links.resolvedType = this.getUnionTypeEx(new List<Type> { leftType, rightTypeWithoutUndefined }, UnionReduction.Subtype, null, null);
+                        }
+                        this.spreadLinks.Get(result).leftSpread = leftProp;
+                        this.spreadLinks.Get(result).rightSpread = rightProp2;
+                        result.Declarations = declarations;
+                        links.nameType = this.valueSymbolLinks.Get(leftProp).nameType;
+                        members[leftProp.Name] = result;
+                    }
+                }
+                else
+                {
+                    members[leftProp.Name] = this.getSpreadSymbol(leftProp, @readonly);
+                }
+            }
+        }
+        var spreadIndexInfos = Core.SameMap(indexInfos, (info) =>
+{
+    return this.getIndexInfoWithReadonly(info, @readonly);
+});
+        var spread = this.newAnonymousType(symbol, members, null, null, spreadIndexInfos);
+        spread.objectFlags |= (((ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral) | ObjectFlags.ContainsSpread) | objectFlags);
+        return spread;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getReturnTypeOfSingleNonGenericSignatureOfCallChain(Node expr)
+    {
+        var funcType = this.checkExpression(expr.Expression());
+        var nonOptionalType = this.getOptionalExpressionType(funcType, expr.Expression());
+        var returnType = this.getReturnTypeOfSingleNonGenericSignature(funcType, SignatureKind.Call);
+        if ((returnType != null))
+        {
+            return this.propagateOptionalTypeMarker(returnType, expr, (nonOptionalType != funcType));
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isTemplateLiteralContext(Node node)
+    {
+        var parent = node.Parent;
+        return ((Ast.IsParenthesizedExpression(parent) && this.isTemplateLiteralContext(parent)) || (Ast.IsElementAccessExpression(parent) && (parent.AsElementAccessExpression().ArgumentExpression == node)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isTemplateLiteralContextualType(Type t)
+    {
+        return (((t.flags & ((TypeFlags.StringLiteral | TypeFlags.TemplateLiteral))) != 0) || (((t.flags & TypeFlags.InstantiableNonPrimitive) != 0) && this.maybeTypeOfKind(Core.OrElse(this.getBaseConstraintOfType(t), this.unknownType), TypeFlags.StringLike)));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type tryMergeUnionOfObjectTypeAndEmptyObject(Type t, bool @readonly)
+    {
+        if (((t.flags & TypeFlags.Union) == 0))
+        {
+            return t;
+        }
+        if (Core.Every(t.Types(), this.isEmptyObjectTypeOrSpreadsIntoEmptyObject))
+        {
+            var empty = Core.Find(t.Types(), this.isEmptyObjectType);
+            if ((empty != null))
+            {
+                return empty;
+            }
+            return this.emptyObjectType;
+        }
+        var firstType = Core.Find(t.Types(), (t2) =>
+{
+    return !this.isEmptyObjectTypeOrSpreadsIntoEmptyObject(t2);
+});
+        if ((firstType == null))
+        {
+            return t;
+        }
+        var secondType = Core.Find(t.Types(), (t3) =>
+{
+    return ((t3 != firstType) && !this.isEmptyObjectTypeOrSpreadsIntoEmptyObject(t3));
+});
+        if ((secondType != null))
+        {
+            return t;
+        }
+        var members = new SymbolTable();
+        {
+            foreach (var prop in GoRuntime.RangeValues(this.getPropertiesOfType(firstType)))
+            {
+                if (((getDeclarationModifierFlagsFromSymbol(prop) & ((ModifierFlags.Private | ModifierFlags.Protected))) != 0))
+                {
+                }
+                else
+                {
+                    if (this.isSpreadableProperty(prop))
+                    {
+                        var isSetonlyAccessor = (((prop.Flags & SymbolFlags.SetAccessor) != 0) && ((prop.Flags & SymbolFlags.GetAccessor) == 0));
+                        var flags = (SymbolFlags.Property | SymbolFlags.Optional);
+                        var result = this.newSymbolEx(flags, prop.Name, ((prop.CheckFlags & CheckFlags.Late) | Core.IfElse(@readonly, CheckFlags.Readonly, CheckFlags.None)));
+                        var links = this.valueSymbolLinks.Get(result);
+                        if (isSetonlyAccessor)
+                        {
+                            links.resolvedType = this.undefinedType;
+                        }
+                        else
+                        {
+                            links.resolvedType = this.addOptionalityEx(this.getTypeOfSymbol(prop), true, true);
+                        }
+                        result.Declarations = prop.Declarations;
+                        links.nameType = this.valueSymbolLinks.Get(prop).nameType;
+                        this.mappedSymbolLinks.Get(result).syntheticOrigin = prop;
+                        members[prop.Name] = result;
+                    }
+                }
+            }
+        }
+        var spread = this.newAnonymousType(firstType.symbol, members, null, null, this.getIndexInfosOfType(firstType));
+        spread.objectFlags |= (ObjectFlags.ObjectLiteral | ObjectFlags.ContainsObjectOrArrayLiteral);
+        return spread;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isEmptyObjectTypeOrSpreadsIntoEmptyObject(Type t)
+    {
+        return (this.isEmptyObjectType(t) || ((t.flags & (((((((((TypeFlags.Null | TypeFlags.Undefined) | TypeFlags.BooleanLike) | TypeFlags.NumberLike) | TypeFlags.BigIntLike) | TypeFlags.StringLike) | TypeFlags.EnumLike) | TypeFlags.NonPrimitive) | TypeFlags.Index))) != 0));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature resolveTaggedTemplateExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    {
+        var tag = node.AsTaggedTemplateExpression().Tag;
+        var tagType = this.checkExpression(tag);
+        var apparentType = this.getApparentType(tagType);
+        if (this.isErrorType(apparentType))
+        {
+            return this.resolveErrorCall(node);
+        }
+        var callSignatures = this.getSignaturesOfType(apparentType, SignatureKind.Call);
+        var numConstructSignatures = GoRuntime.Len(this.getSignaturesOfType(apparentType, SignatureKind.Construct));
+        if (this.isUntypedFunctionCall(tagType, apparentType, GoRuntime.Len(callSignatures), numConstructSignatures))
+        {
+            return this.resolveUntypedCall(node);
+        }
+        if ((GoRuntime.Len(callSignatures) == 0))
+        {
+            if (Ast.IsArrayLiteralExpression(node.Parent))
+            {
+                this.error(tag, Diagnostics.It_is_likely_that_you_are_missing_a_comma_to_separate_these_two_template_expressions_They_form_a_tagged_template_expression_which_cannot_be_invoked);
+                return this.resolveErrorCall(node);
+            }
+            this.invocationError(tag, apparentType, SignatureKind.Call, null);
+            return this.resolveErrorCall(node);
+        }
+        return this.resolveCall(node, callSignatures, candidatesOutArray, checkMode, SignatureFlags.None, null);
+    }
+}
+
+public sealed partial class Checker
+{
+    private Signature resolveInstanceofExpression(Node node, GoRef<List<Signature>> candidatesOutArray, CheckMode checkMode)
+    {
+        var right = node.AsBinaryExpression().Right;
+        var rightType = this.checkExpression(right);
+        if (!IsTypeAny(rightType))
+        {
+            var hasInstanceMethodType = this.getSymbolHasInstanceMethodOfObjectType(rightType);
+            if ((hasInstanceMethodType != null))
+            {
+                var apparentType = this.getApparentType(hasInstanceMethodType);
+                if (this.isErrorType(apparentType))
+                {
+                    return this.resolveErrorCall(node);
+                }
+                var callSignatures = this.getSignaturesOfType(apparentType, SignatureKind.Call);
+                var constructSignatures = this.getSignaturesOfType(apparentType, SignatureKind.Construct);
+                if (this.isUntypedFunctionCall(hasInstanceMethodType, apparentType, GoRuntime.Len(callSignatures), GoRuntime.Len(constructSignatures)))
+                {
+                    return this.resolveUntypedCall(node);
+                }
+                if ((GoRuntime.Len(callSignatures) != 0))
+                {
+                    return this.resolveCall(node, callSignatures, candidatesOutArray, checkMode, SignatureFlags.None, null);
+                }
+            }
+            else
+            {
+                if (!((this.typeHasCallOrConstructSignatures(rightType) || this.isTypeSubtypeOf(rightType, this.globalFunctionType))))
+                {
+                    this.error(right, Diagnostics.The_right_hand_side_of_an_instanceof_expression_must_be_either_of_type_any_a_class_function_or_other_type_assignable_to_the_Function_interface_type_or_an_object_type_with_a_Symbol_hasInstance_method);
+                    return this.resolveErrorCall(node);
+                }
+            }
+        }
+        return this.anySignature;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isSideEffectFree(Node node)
+    {
+        node = Ast.SkipParentheses(node);
+        switch (node.Kind)
+        {
+            case Kind.Identifier:
+            case Kind.StringLiteral:
+            case Kind.RegularExpressionLiteral:
+            case Kind.TaggedTemplateExpression:
+            case Kind.TemplateExpression:
+            case Kind.NoSubstitutionTemplateLiteral:
+            case Kind.NumericLiteral:
+            case Kind.BigIntLiteral:
+            case Kind.TrueKeyword:
+            case Kind.FalseKeyword:
+            case Kind.NullKeyword:
+            case Kind.UndefinedKeyword:
+            case Kind.FunctionExpression:
+            case Kind.ClassExpression:
+            case Kind.ArrowFunction:
+            case Kind.ArrayLiteralExpression:
+            case Kind.ObjectLiteralExpression:
+            case Kind.TypeOfExpression:
+            case Kind.NonNullExpression:
+            case Kind.JsxSelfClosingElement:
+            case Kind.JsxElement:
+            {
+                return true;
+            }
+            case Kind.ConditionalExpression:
+            {
+                return (this.isSideEffectFree(node.AsConditionalExpression().WhenTrue) && this.isSideEffectFree(node.AsConditionalExpression().WhenFalse));
+            }
+            case Kind.BinaryExpression:
+            {
+                if (Ast.IsAssignmentOperator(node.AsBinaryExpression().OperatorToken.Kind))
+                {
+                    return false;
+                }
+                return (this.isSideEffectFree(node.AsBinaryExpression().Left) && this.isSideEffectFree(node.AsBinaryExpression().Right));
+            }
+            case Kind.PrefixUnaryExpression:
+            {
+                switch (node.AsPrefixUnaryExpression().Operator)
+                {
+                    case Kind.ExclamationToken:
+                    case Kind.PlusToken:
+                    case Kind.MinusToken:
+                    case Kind.TildeToken:
+                    {
+                        return true;
+                    }
+                }
+                break;
+            }
+        }
+        return false;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool isIndirectCall(Node node)
+    {
+        var left = node.AsBinaryExpression().Left;
+        var right = node.AsBinaryExpression().Right;
+        return ((((Ast.IsParenthesizedExpression(node.Parent) && Ast.IsNumericLiteral(left)) && (left.Text() == "0")) && (((Ast.IsCallExpression(node.Parent.Parent) && (node.Parent.Parent.Expression() == node.Parent)) || Ast.IsTaggedTemplateExpression(node.Parent.Parent)))) && ((Ast.IsAccessExpression(right) || (Ast.IsIdentifier(right) && (right.Text() == "eval")))));
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkInstanceOfExpression(Node left, Node right, Type leftType, Type rightType, CheckMode checkMode)
+    {
+        if (((leftType == this.silentNeverType) || (rightType == this.silentNeverType)))
+        {
+            return this.silentNeverType;
+        }
+        if ((!IsTypeAny(leftType) && this.allTypesAssignableToKind(leftType, TypeFlags.Primitive)))
+        {
+            this.error(left, Diagnostics.The_left_hand_side_of_an_instanceof_expression_must_be_of_type_any_an_object_type_or_a_type_parameter);
+        }
+        var signature = this.getResolvedSignature(left.Parent, null, checkMode);
+        if ((signature == this.resolvingSignature))
+        {
+            return this.silentNeverType;
+        }
+        var returnType = this.getReturnTypeOfSignature(signature);
+        this.checkTypeAssignableTo(returnType, this.booleanType, right, Diagnostics.An_object_s_Symbol_hasInstance_method_must_return_a_boolean_value_for_it_to_be_used_on_the_right_hand_side_of_an_instanceof_expression);
+        return this.booleanType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkInExpression(Node left, Node right, Type leftType, Type rightType)
+    {
+        if (((leftType == this.silentNeverType) || (rightType == this.silentNeverType)))
+        {
+            return this.silentNeverType;
+        }
+        if (Ast.IsPrivateIdentifier(left))
+        {
+            if ((((this.languageVersion < ScriptTarget.ES2022) || (this.languageVersion < ScriptTarget.ESNext)) || !this.compilerOptions.GetUseDefineForClassFields()))
+            {
+                this.checkExternalEmitHelpers(left, ExternalEmitHelpers.ClassPrivateFieldIn);
+            }
+            if (((this.symbolNodeLinks.Get(left).resolvedSymbol == null) && (Ast.GetContainingClass(left) != null)))
+            {
+                var isUncheckedJS = this.isUncheckedJSSuggestion(left, rightType.symbol, true);
+                this.reportNonexistentProperty(left, rightType, isUncheckedJS);
+            }
+        }
+        else
+        {
+            this.checkTypeAssignableTo(this.checkNonNullType(leftType, left), this.stringNumberSymbolType, left, null);
+        }
+        if (this.checkTypeAssignableTo(this.checkNonNullType(rightType, right), this.nonPrimitiveType, right, null))
+        {
+            if (this.hasEmptyObjectIntersection(rightType))
+            {
+                this.error(right, Diagnostics.Type_0_may_represent_a_primitive_value_which_is_not_permitted_as_the_right_operand_of_the_in_operator, this.typeToStringByteString(rightType));
+            }
+        }
+        return this.booleanType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private bool hasEmptyObjectIntersection(Type t)
+    {
+        return someType(t, (t2) =>
+{
+    return ((t2 == this.unknownEmptyObjectType) || (((t2.flags & TypeFlags.Intersection) != 0) && this.IsEmptyAnonymousObjectType(this.getBaseConstraintOrType(t2))));
+});
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getContextualTypeForSubstitutionExpression(Node template, Node substitutionExpression)
+    {
+        if (Ast.IsTaggedTemplateExpression(template.Parent))
+        {
+            return this.getContextualTypeForArgument(template.Parent, substitutionExpression);
+        }
+        return null;
+    }
+}
+
+public sealed partial class Checker
+{
+    private IndexInfo getIndexInfoWithReadonly(IndexInfo info, bool @readonly)
+    {
+        if ((info.isReadonly != @readonly))
+        {
+            return this.newIndexInfo(info.keyType, info.valueType, @readonly, info.declaration, info.components);
+        }
+        return info;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type getGlobalImportMetaExpressionType()
+    {
+        if ((this.deferredGlobalImportMetaExpressionType == null))
+        {
+            var symbol = this.newSymbol(SymbolFlags.None, "ImportMetaExpression");
+            var importMetaType = this.getGlobalImportMetaType();
+            var metaPropertySymbol = this.newSymbolEx(SymbolFlags.Property, "meta", CheckFlags.Readonly);
+            metaPropertySymbol.Parent = symbol;
+            this.valueSymbolLinks.Get(metaPropertySymbol).resolvedType = importMetaType;
+            var members = createSymbolTable(new List<Symbol> { metaPropertySymbol });
+            symbol.Members = members;
+            this.deferredGlobalImportMetaExpressionType = this.newAnonymousType(symbol, members, null, null, null);
+        }
+        return this.deferredGlobalImportMetaExpressionType;
+    }
+}
+
+public sealed partial class Checker
+{
+    private Type checkQualifiedName(Node node, CheckMode checkMode)
+    {
+        var left = node.AsQualifiedName().Left;
+        Type leftType = default;
+        if ((Ast.IsPartOfTypeQuery(node) && Ast.IsThisIdentifier(left)))
+        {
+            leftType = this.checkNonNullType(this.checkThisExpression(left), left);
+        }
+        else
+        {
+            leftType = this.checkNonNullExpression(left);
+        }
+        return this.checkPropertyAccessExpressionOrQualifiedName(node, left, leftType, node.AsQualifiedName().Right, checkMode, false);
     }
 }

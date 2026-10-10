@@ -11,12 +11,11 @@ Follow the active phase in [STATE.md](./docs/STATE.md). If it records no active
 work, report that checkpoint and wait for a new bounded mandate; this resume
 instruction does not authorize starting the full compiler.
 
-Latest completed campaign: [genuine initialization and declaration/object models](./docs/DECLARATIONS-ASSESSMENT.md).
-Its [proof](./validation/results/declarations-verified.json) includes actual Linux x64
-Native AOT and all retained regressions. No implementation campaign is currently active;
-if delivery is not yet committed, finish the reviewed commit rather than rerunning
-acceptance. The [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md) recommends TS body/control-flow
-completion next, subject to a new mandate.
+Latest accepted campaign: [TypeScript expressions, statements and checker flow](./docs/EXPRESSIONS-ASSESSMENT.md),
+from `5efa4e5`. Its delivery commit contains the [proof](./validation/results/expressions-verified.json)
+and [checkpoint](./docs/EXPRESSIONS-STATUS.md). There is no active implementation campaign;
+await a new mandate. The [roadmap](./docs/CHECKER-COMPLETION-ROADMAP.md) recommends remaining
+type-system closure next. Do not restart accepted foundations or begin optimization.
 
 ## User mandate
 
@@ -244,6 +243,12 @@ Later user directions, in chronological order:
     retain only justified language adaptations and clearly authored test adapters.
     Regression assertions remain evidence, not a requirement to preserve temporary
     production architecture. Explicit unsupported paths remain until actually ported.
+
+27. Proceed from `5efa4e5` with TypeScript expressions/statements/checker-flow completion.
+    The exact [mandate](./docs/EXPRESSIONS-PROMPT.md) and
+    [contract](./docs/EXPRESSIONS-CONTRACT.md) govern autonomous delivery. Retain genuine
+    Program/libraries, actual Native AOT, complete diagnostics/inferred types and all
+    regression gates; advanced-type/protocol/JS boundaries remain explicit.
 
 ## Recovery sequence
 

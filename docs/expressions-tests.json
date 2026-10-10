@@ -1,0 +1,1050 @@
+{
+  "schema": 1,
+  "baseline": "5efa4e5",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "verified-E1-E6-complete-frozen-gate",
+  "directOriginalFunctions": [
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetSymbolAtLocation",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "All three actual source node symbol queries are non-null."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "historical": "accepted-declarations-proof",
+        "currentOriginal": "passed-pristine-pinned-Go-complete-original-body",
+        "managed": "passed-current-shared-original-assertions",
+        "native": "passed-linux-x64-NativeAOT-shared-original-assertions",
+        "xUnit": "passed-current-Expressions.Tests-original-wrapper",
+        "proof": "validation/results/expressions-verified.json"
+      }
+    },
+    {
+      "package": "./internal/checker",
+      "source": "upstream/TypeScript/tsc/internal/checker/checker_test.go",
+      "sourceSha256": "b4bd82d0cfb311742e7092e33b367f18c72d0100ccd15377f694646d70ece50b",
+      "name": "TestGetTypeAtLocationOfTypeOnlyImportClause",
+      "disposition": "assertion-preserving-port",
+      "counterpart": "validation/Declarations.Checks/CheckerOriginalChecks.cs",
+      "assertions": [
+        "No parsed configuration diagnostics.",
+        "Both type-only nondefault import clause types are non-null and reference-equal to the regular import clause type.",
+        "Default import clause type is reference-equal to the actual default interface reference type."
+      ],
+      "adaptations": [
+        "t.Parallel execution is sequential in shared dispatcher; no original assertion/domain omission.",
+        "Source vfstest setup uses existing raw-byte read-side virtual host; original case-insensitive setting retained."
+      ],
+      "execution": {
+        "historical": "accepted-declarations-proof",
+        "currentOriginal": "passed-pristine-pinned-Go-complete-original-body",
+        "managed": "passed-current-shared-original-assertions",
+        "native": "passed-linux-x64-NativeAOT-shared-original-assertions",
+        "xUnit": "passed-current-Expressions.Tests-original-wrapper",
+        "proof": "validation/results/expressions-verified.json"
+      }
+    }
+  ],
+  "otherPinnedCheckerDomains": {
+    "benchmark": "BenchmarkNewChecker performance outside scope; no assertion claim",
+    "tracer": "TestTracerPushPreservesEndArgMutations enabled tracing external under E1-E6"
+  },
+  "compilerInputs": {
+    "fixtures": 24,
+    "reusedFixtures": 20,
+    "excludedFixtures": 4,
+    "requests": 24,
+    "inputs": [
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowLoopAnalysis.ts",
+        "sourceSha256": "bed07302fb7defeb125bba8f1b1db420ff8db6d7c126b14a53e4296dbcdccdcb",
+        "domain": "E5 loop/reduce-label fixed points",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-01-01-controlFlowLoopAnalysis"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-01-01-controlFlowLoopAnalysis",
+            "compilerDirectives": {
+              "noimplicitany": "true",
+              "strictnullchecks": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "a04f430e57bc161e5a718191ae0b8a13c14fd8c29b1211746a6982d64ef31728"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowLoopAnalysis.errors.txt": "4e2283cf686db7efbaa85ce8c3f304f38134a74b23e50b80ac2ebab344ba8cb4",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowLoopAnalysis.symbols": "88c95f148433c15dba1ec795f97098cde797357dd38b2ac652aaf170a5c1dd3f",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowLoopAnalysis.types": "34eca205860aa6ad7b67e03cf2df04639a19db62b069cfaeb8746e09bce2e0f7"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowInstanceof.ts",
+        "sourceSha256": "763eaad14738e805cfcf8eacb95fc6f56011d96e95a2bdec43f48114630091d5",
+        "domain": "E3/E5 instanceof narrowing",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Original whole input checks uglify.js JSDoc/JavaScript (allowJs/checkJs true), external under E1-E6. Preserve both original TS and JS bytes; no source erasure or option override. Synchronous TS instanceof remains covered by authored genuine Program cases.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowBreakContinueWithLabel.ts",
+        "sourceSha256": "f82b24ab1bd7327da9887f7c400031f797de6bf556977559d8146b16b0eaa4e3",
+        "domain": "E4/E5 labeled loop joins",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-03-01-controlFlowBreakContinueWithLabel"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-03-01-controlFlowBreakContinueWithLabel",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "4b5a54670a1f04a8e68bf450270769c78b487a99029098479c6132d08a579652"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowBreakContinueWithLabel.symbols": "09ec143b682e5c1a9678f2fbd9a6e91395850ac14c340d6ee5b5e7a341e54873",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowBreakContinueWithLabel.types": "4f847811b50ac4d37b27a8fabe705b22e24f99e7fcd1db211b575792d39932fc"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/switchCaseNarrowsMatchingClausesEvenWhenNonMatchingClausesExist.ts",
+        "sourceSha256": "20f935fee12b21781dfd8c38b10e873c6fffadac96c64a4cd1ebd89f6940909e",
+        "domain": "E4/E5 matching switch clause narrowing",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-04-01-switchCaseNarrowsMatchingClausesEvenWhenNonMatchingClausesExist"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-04-01-switchCaseNarrowsMatchingClausesEvenWhenNonMatchingClausesExist",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "b04d8188174f1632ddfa094bf7db1dc31bb949240a3e9ed156ed553271d8e7c7"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/switchCaseNarrowsMatchingClausesEvenWhenNonMatchingClausesExist.symbols": "0558d2967ac5ee4a6edc491b32029048bc71fbf7f6f16c3b7033d7025fb7a8f4",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/switchCaseNarrowsMatchingClausesEvenWhenNonMatchingClausesExist.types": "85b28dc03384064a2a0f919d0d6a9cb9941e2e79dd03a44fd6d25ec4a9d08828"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/destructureCatchClause.ts",
+        "sourceSha256": "cda36f38f5b4f04987961db3c6b8890637d7196026e389605973292189b2600b",
+        "domain": "E1/E4 catch pattern/options",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-05-01-destructureCatchClause",
+          "expression-input-05-02-destructureCatchClause",
+          "expression-input-05-03-destructureCatchClause",
+          "expression-input-05-04-destructureCatchClause"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-05-01-destructureCatchClause",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015",
+              "useunknownincatchvariables": "true"
+            },
+            "requestSha256": "015e96014f062956c667a7460c0b16873a0dfb806220ce70ee2eeefad602813f"
+          },
+          {
+            "name": "expression-input-05-02-destructureCatchClause",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015",
+              "useunknownincatchvariables": "false"
+            },
+            "requestSha256": "4c93b6386a96e64a80937e4bfe1268e1a3e54a83461a278bb67db23b0eadf45a"
+          },
+          {
+            "name": "expression-input-05-03-destructureCatchClause",
+            "compilerDirectives": {
+              "strict": "false",
+              "target": "es2015",
+              "useunknownincatchvariables": "true"
+            },
+            "requestSha256": "c315a3a3c3b65837f490b0062fbde1c5b6ad8351a543148f23562f4af915bfae"
+          },
+          {
+            "name": "expression-input-05-04-destructureCatchClause",
+            "compilerDirectives": {
+              "strict": "false",
+              "target": "es2015",
+              "useunknownincatchvariables": "false"
+            },
+            "requestSha256": "862bfa09feb3b860bfec4ef51baf10d41635921e9e80778eee9ef8ea8ffdc53f"
+          }
+        ],
+        "baselineSourceFiles": {},
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/assignmentRestElementWithErrorSourceType.ts",
+        "sourceSha256": "27036ca8b9a614feeb8daca8312b7526f37f214c4334451c63f880e7cfffd31b",
+        "domain": "E1 rest source errors",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-06-01-assignmentRestElementWithErrorSourceType"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-06-01-assignmentRestElementWithErrorSourceType",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "17bca06a7facb3df6bc1affd339be8768e26f07eca4df54a50822f482f392e32"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/assignmentRestElementWithErrorSourceType.errors.txt": "6fabeced70049d92139cb6e95973bce70a8487a9b87ac591e3c030bde6484464",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/assignmentRestElementWithErrorSourceType.symbols": "fbecbf20ec72de98fff33d0ed82d5b3f3a341a4d6a3ba9344371fd3c7848af8e",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/assignmentRestElementWithErrorSourceType.types": "97094d4ae6c08a74b67e6909a58ccd57201cd84efd2e2ab27e1a71a47676e926"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/destructuringInitializerContextualTypeFromContext.ts",
+        "sourceSha256": "185031d59c3e83171f8d2d539f53599b53de4d493f6b532844f5b3c85bbcb695",
+        "domain": "E1 contextual default inference",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-07-01-destructuringInitializerContextualTypeFromContext"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-07-01-destructuringInitializerContextualTypeFromContext",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "8138a01025bec8c59e4cce335925aa65f75e1ef81d41eca08a9f186363be5b41"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/destructuringInitializerContextualTypeFromContext.symbols": "cb16029c823725ded87aadf0530cd6f9025cbbc0d6ba882c2f71499eb0a8a346",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/destructuringInitializerContextualTypeFromContext.types": "1f744d98d11e441622ee666ffc1ab1f80ef344ee9b173684fbc7ec3b2a80ecd8"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/destructuredLateBoundNameHasCorrectTypes.ts",
+        "sourceSha256": "9a4ad3d6f80c64a5aae5ab0f14898b20a1e0a5df84491cd694c65873bb837e8a",
+        "domain": "E1/E2 computed binding names",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-08-01-destructuredLateBoundNameHasCorrectTypes"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-08-01-destructuredLateBoundNameHasCorrectTypes",
+            "compilerDirectives": {
+              "target": "es6"
+            },
+            "requestSha256": "df1d09a94dfa538ea71c5ba80b590e333df7081af6de620532c488bd5d561f46"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/destructuredLateBoundNameHasCorrectTypes.errors.txt": "45563fbcf7f31c6e89fe053d8f6dbbf416fb4d0c608b32381161c2b6adbccf39",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/destructuredLateBoundNameHasCorrectTypes.symbols": "5f5c5352d30385ae63830f674c6c7167663fe00cf807beba59ff94f62142bbb5",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/destructuredLateBoundNameHasCorrectTypes.types": "416021acea9752546e42c2063220e31a0ebbb89a60cfe0beb2b0b29a455a8dc6"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/forOfStringConstituents.ts",
+        "sourceSha256": "b6e348239db168f870a816c8b6bcc8de1397b587cf97ee5a453ce45375886d31",
+        "domain": "E4 genuine string iteration",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-09-01-forOfStringConstituents"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-09-01-forOfStringConstituents",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "ef5d71b5d8ae4039f96f6d78c7723bbf007931e2236e02154d76cc6e1d9dfcbe"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forOfStringConstituents.symbols": "834468a296a0429fb8521a9dc3f6a7b94a8eb4706c5278b0738ddfc2a7683017",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forOfStringConstituents.types": "17f9384055100d43168d537ec75a551a9cb95a380504bcb16d209dde3e60d65e"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/forIn.ts",
+        "sourceSha256": "3fadbeb91ac10ea49ae6fe210b6432c13b305d90e5e7c2485cf6cba825311135",
+        "domain": "E4 for-in diagnostics and inferred keys",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-10-01-forIn"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-10-01-forIn",
+            "compilerDirectives": {
+              "strict": "false",
+              "target": "es2015"
+            },
+            "requestSha256": "e307a5f61461d62b2e2e7338b2a8abbdb06cf515fd11fd939a5192212f7c57c9"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forIn.errors.txt": "b805249dbbb929c4599c3a2552df9d7632419a3697c186747ff631c2454b285e",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forIn.symbols": "efa3f8910705890f4b9660c0f21de65af5b7bf0653edcfe96b62779ef4e3cd06",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/forIn.types": "285641653cdbc4198eae1a7accae0e359ee2696831fee4e62963299fb81d31ee"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowForIndexSignatures.ts",
+        "sourceSha256": "866a864d0c18a6230c4d2c3932bec1ed5a8d37a7f1bfedd408e1fc6a9829e7a7",
+        "domain": "E5 indexed-property flow",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-11-01-controlFlowForIndexSignatures"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-11-01-controlFlowForIndexSignatures",
+            "compilerDirectives": {
+              "strictnullchecks": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "0d3c1db42f134a3b964b5f797138d16ef0ddf330ba2f2b163c0a08d250778be3"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowForIndexSignatures.errors.txt": "d472f4c9df2398440fd8e9240b0bea8549db934a13660bc5139137c720cc0945",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowForIndexSignatures.symbols": "c8e9996603538d3267b43e3b47230f2c32803a1e61ec06f2300e91461e6ca065",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowForIndexSignatures.types": "1d9b239385e0f21d14b3093ebb792c271e0f0aafebc7c603a3f43839804c7a87"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowCommaExpressionAssertionWithinTernary.ts",
+        "sourceSha256": "38391a1b6dd084bd92314cf91922f00b0a9232e633a62741201c9054385d3789",
+        "domain": "E3/E5 comma and assertion transfer",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-12-01-controlFlowCommaExpressionAssertionWithinTernary"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-12-01-controlFlowCommaExpressionAssertionWithinTernary",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "0907f16eb3872b814b30a3c426fc6148b3c3e06bed5f65260ecef38809365605"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowCommaExpressionAssertionWithinTernary.symbols": "4c53cb00efb3129bb61136926c4089ed15321ba4c9da8f5d7d4726847f8eaac3",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowCommaExpressionAssertionWithinTernary.types": "5e0a0bc2f3c52c94468d3b4e29ce740a50b8008a17e40ae4f706b55a964dbcda"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/compiler/controlFlowFavorAssertedTypeThroughTypePredicate.ts",
+        "sourceSha256": "5b25aa4341eeeaa8e3213243f5c62dffb67d3a91357dc8b94c7a7b053508e2d5",
+        "domain": "E5 predicate asserted-type selection",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-13-01-controlFlowFavorAssertedTypeThroughTypePredicate"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-13-01-controlFlowFavorAssertedTypeThroughTypePredicate",
+            "compilerDirectives": {
+              "noemit": "true",
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "ebf8b243df5a44528070979f7a2bdb8b64ea61e49962a308256fd26c32107290"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowFavorAssertedTypeThroughTypePredicate.symbols": "57212790ef80dff2b6c0ca1f9f1469111a99736450f47ce64392e04edf6dd130",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/compiler/controlFlowFavorAssertedTypeThroughTypePredicate.types": "197407131661a437f5245844e26ae3f0a4f3603278d0d31cc4795970fc78ffeb"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/spread/objectSpreadNegative.ts",
+        "sourceSha256": "befcd8c0ed48a64a3fbed710a337d923b3c76c353c0b37d8d3b5a73fec490aee",
+        "domain": "E2 original spread negative/target variants",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-14-01-objectSpreadNegative",
+          "expression-input-14-02-objectSpreadNegative"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-14-01-objectSpreadNegative",
+            "compilerDirectives": {
+              "strictnullchecks": "true",
+              "target": "es5"
+            },
+            "requestSha256": "4a38f086a2b723c22b1ec75fcb68fe1a7966c742d405fb8f033d14d694bcf338"
+          },
+          {
+            "name": "expression-input-14-02-objectSpreadNegative",
+            "compilerDirectives": {
+              "strictnullchecks": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "b97a027b29fb65439f3f7783d0acb37d39f7ef2862979ffa0750899cc4e28ce1"
+          }
+        ],
+        "baselineSourceFiles": {},
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/types/spread/objectSpreadNegativeParse.ts",
+        "sourceSha256": "b28506a7112cc222e295e23a57178e0fcdab0498a8c5f1f7c33af68605d388ef",
+        "domain": "E2 malformed spread recovery",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-15-01-objectSpreadNegativeParse"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-15-01-objectSpreadNegativeParse",
+            "compilerDirectives": {
+              "lib": "es5",
+              "target": "es2015"
+            },
+            "requestSha256": "9b34d71aa1cfe69b31b65c0ccd2c4ea8fcdc7a324077141084c70873ee50ae68"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/objectSpreadNegativeParse.errors.txt": "dd3f0a798089b85b359b876d4e6dae8c5a8211bb9ea31ec64fad116ae8fcb2da",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/objectSpreadNegativeParse.symbols": "3d834f98dc8cb9293dfc9b55df4a69622cf15bd9a2e5610c0e41f7537b4d7943",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/objectSpreadNegativeParse.types": "38ef69009586ab7a546e5ce4e455c44914372b841be294d0b2a8b78f89d7f6bf"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/expressions/optionalChaining/propertyAccessChain/propertyAccessChain.ts",
+        "sourceSha256": "edb4170826c050025f14b5d4f8eb1e9ab8e4fc08e24e167b9fe870c923750809",
+        "domain": "E2 optional property chains",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-16-01-propertyAccessChain"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-16-01-propertyAccessChain",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "73a6457275ae8020d412718ec8aacf9633fb63aa86bf203dc61e6d8bbbdf8b6e"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.2.symbols": "17d4c51c372e0258f0431dee8d7b2c43ac78d818219335b451902ed39db23a73",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.2.types": "491255d78d127d9c0113ed5d2e57bf25d0ff952b81c8f43080133aebac0f930d",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.3.errors.txt": "941c77038f018a90103e372ea60bfc090d54e2b41b1f9774ab5be187c264d332",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.3.symbols": "a415499bc8ebb493ff57c3dff0f19b678becb3758f1c89dc9cd4dbbd1d938f09",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.3.types": "6efea6a17c5938d894c71ee64bdf231d5ae06a3e7861bc5a70049d375a69989f",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.symbols": "67cc795f8ea163bef1ca67626cb9a0f5400da92afeaa3bf4ec86ea1999ed4b3e",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/propertyAccessChain.types": "59dc1eb1f004457e4b79f5c48d2f440985b2700edc01521d01f69e14a558feac"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/expressions/optionalChaining/elementAccessChain/elementAccessChain.ts",
+        "sourceSha256": "e8c7b7830b7a7a5a69f4f111bac54af41944bdd1ccc51798e16114af53b7095a",
+        "domain": "E2 optional indexed chains",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-17-01-elementAccessChain"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-17-01-elementAccessChain",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es2015"
+            },
+            "requestSha256": "c7a4d74b0c72cbd7362f049f0862b0a650db389b0d1061cab21b724740b38cce"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.2.symbols": "a29118cb0af7e8d8742e4861fd24fc494e65f7e16253b901c8cda54a2d4c031a",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.2.types": "77aaea178e8bdd735e01b0a0b04a16d5898e4a6ee65cbe85b6bf9cbee3678fe4",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.3.errors.txt": "cf7012dba74f3ddff772c69b59cc5fb5e663184af5b8eb53ed4f54e9ac57b65c",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.3.symbols": "62534a2ffe639825372e7c3851971ce969da708dfeae34f04cc39b8af86c3cb4",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.3.types": "9ee76cb1a0e78ff086e16675260f842b0aeabddd217e8c78d001a266394644b9",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.symbols": "6770f055842305d49ae469276dd2770d0bf4bdb8a1eaef2be486b71cc3510038",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/elementAccessChain.types": "8bc765c1eb5dfb486828e9c2a97f77499bc12894a29d24a788ea1b1724cada2e"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/expressions/optionalChaining/callChain/thisMethodCall.ts",
+        "sourceSha256": "3ac6e375bd7616177c161f07b22d9d33c9e030659e38a4c4604ea29572d1e32d",
+        "domain": "E2 optional call this receiver",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-18-01-thisMethodCall"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-18-01-thisMethodCall",
+            "compilerDirectives": {
+              "strict": "true",
+              "target": "es6"
+            },
+            "requestSha256": "5579ee7eba530e872b86eb596f929b5ddcd90675ec790a88c8d3040b35b1cca2"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/thisMethodCall.symbols": "4f784e2784288f97cf2674af134f34dee3c84a746910eabfd2ffe911c71a20f1",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/thisMethodCall.types": "df8423118a16608942f488d0c5b8d82c198e61531ae2222a71963c821cfe3da2"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/expressions/optionalChaining/taggedTemplateChain/taggedTemplateChain.ts",
+        "sourceSha256": "7726ffbf9decfc146019263493de2791ee86f8447ef36c5d3eabdb0471a89bb2",
+        "domain": "E2/E3 forbidden optional tagged template",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-19-01-taggedTemplateChain"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-19-01-taggedTemplateChain",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "b176cbd14ad96919a8b05195f8ed15e74e90f6c44d3c2a7ac3665647c1921e08"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/taggedTemplateChain.errors.txt": "a88b004e601a10850b5244a552fdea390c35ad48b6d18ccb574a5a154859d773",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/taggedTemplateChain.symbols": "340463249b7c05f28d87ea8143e2358f4f5cb2c1863217b621e0af34b59fd596",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/taggedTemplateChain.types": "6e3667b980b0c2d071321f4eb5df6242e0286d1fbdac7ac64b125c2f32ad5693"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/switchStatements/switchStatements.ts",
+        "sourceSha256": "cd1b31b19877f1cb8c3ba9d4ac25bf57c846119309c7284b17008cfdc5b864a3",
+        "domain": "E4 original switch domain",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-20-01-switchStatements"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-20-01-switchStatements",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "5f8261bc2aaaf46f8f21f75cfcc7fbdf13a7eb5abd3c092fb176104397309ed3"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/switchStatements.errors.txt": "acef919b78b4ae95d8ffd208260dbd29b2bb434c35b6f9b24a6775fb75c00017",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/switchStatements.symbols": "f28dbf4bb2108205d770e30fff5b1ae6ba75f7605f1cb380619ab00603b69927",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/switchStatements.types": "eb5a1537fd4210bebc3fd260a79cdceb29fdbac55935b02b63be74fa4baa9576"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/es6/destructuring/destructuringObjectBindingPatternAndAssignment4.ts",
+        "sourceSha256": "062d6651b9d729dd461a6c78bd55392714173aaf1a8f7f0b3ab8a768b57b34de",
+        "domain": "E1 runtime object binding/assignment",
+        "disposition": "reused-compiler-input-semantic-differential",
+        "originalAssertionsClaimed": 0,
+        "requestNames": [
+          "expression-input-21-01-destructuringObjectBindingPatternAndAssignment4"
+        ],
+        "variants": [
+          {
+            "name": "expression-input-21-01-destructuringObjectBindingPatternAndAssignment4",
+            "compilerDirectives": {
+              "target": "es2015"
+            },
+            "requestSha256": "b82db0cb9013a3c40ed4f3aef6b2e11ced01d0f5ba9533d3e4b99b38fa692126"
+          }
+        ],
+        "baselineSourceFiles": {
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/destructuringObjectBindingPatternAndAssignment4.errors.txt": "1f4ef7c78d992f9bb8c42594cf6412b7e0fc816c616896468fb41f7f041c7fa0",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/destructuringObjectBindingPatternAndAssignment4.symbols": "44b54296c46c2040d62118019008088fdf100b4673beabdf16e31ce4e93c1e00",
+          "upstream/TypeScript/tsc/testdata/baselines/reference/conformance/destructuringObjectBindingPatternAndAssignment4.types": "2e7cb2786c7ee14a093ab2d34605df0f54704a2bdaeb99faf794946476cb637a"
+        },
+        "adaptations": {
+          "extraction": "Existing source-reviewed regular compiler parser removes directives and joins CRLF/LF with LF; all extracted source bytes retained.",
+          "options": "Original regular compiler harness defaults plus actual directive variants serialized into authored config. Real libraries loaded; no noEmit override, library reduction or checker diagnostic filter.",
+          "configMetadata": "Authored configuration file seeds ConfigFilePath and source metadata; not original harness direct option ingestion. No selected input uses embedded configuration or output remapping.",
+          "externalOperations": "Original emit/declaration-output and full type/symbol baseline traversal not executed. Baseline bytes hashed only as original source provenance, not falsely claimed matching."
+        },
+        "execution": {
+          "original": "passed-genuine-Go-complete-semantic-record",
+          "managed": "passed-complete-record-comparison",
+          "native": "passed-linux-x64-NativeAOT-complete-record-comparison",
+          "proof": "validation/results/expressions-verified.json",
+          "originalReport": "artifacts/expressions-validation/original-go/compiler-inputs/report.json",
+          "managedReport": "artifacts/expressions-validation/managed-corpus/compiler-inputs/report.json",
+          "nativeReport": "artifacts/expressions-validation/native-corpus/compiler-inputs/report.json"
+        }
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/for-await-ofStatements/emitter.forAwait.ts",
+        "sourceSha256": "3626753deb028da7f2e15b5ad94494b166e98ae727d28c5757b42f50f438ce66",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Async iteration/protocol execution external under E1-E6; no await erasure.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/dynamicImport/importCallExpressionAsyncES6CJS.ts",
+        "sourceSha256": "fbe15493f02f19b91ba20f0c4e4e58dff4e4912fb945ccbb6551d62bd6ec21a3",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Dynamic-import Promise and async execution external under E1-E6.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      },
+      {
+        "source": "upstream/TypeScript/tsc/testdata/tests/cases/conformance/statements/VariableStatements/usingDeclarations/usingDeclarations.9.ts",
+        "sourceSha256": "80812138e15bef439e8c0e973ec0849106cde03e75b7ee7844cce75edd3b90a5",
+        "disposition": "excluded-whole-input-external-body-consumer",
+        "reason": "Resource management/disposal external under E1-E6; no source rewrite.",
+        "requestNames": [],
+        "originalAssertionsClaimed": 0
+      }
+    ]
+  },
+  "authoredSourceFamilies": {
+    "baseline": "5efa4e5",
+    "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "classification": "authored-source-family-public-Program-semantic-inputs-not-original-test-bodies",
+    "cases": 59,
+    "requestsSha256": "8af6fb32f9bb2d8579ec266986a61d1bc6eb1f45524fe8d91a31ba0571011ae2",
+    "domains": {
+      "nested-object-binding-default-rest": "E1",
+      "array-binding-default-elision-rest": "E1/E3",
+      "binding-parameter-contextual-callback": "E1/E2",
+      "binding-iterable": "E1/E4",
+      "binding-invalid-rest-and-source": "E1",
+      "binding-default-initializer-reference": "E1/E5",
+      "object-assignment-pattern": "E1/E5",
+      "array-assignment-default-rest": "E1/E5",
+      "assignment-pattern-invalid-targets": "E1",
+      "object-spread-overwrite-contextual": "E2",
+      "object-spread-union-and-generic": "E2",
+      "spread-invalid-operands": "E2",
+      "array-call-spread-tuple-context": "E2",
+      "computed-shorthand-object-method": "E2/E3",
+      "optional-property-element-chain": "E2/E5",
+      "optional-call-overload-this": "E2",
+      "optional-chain-invalid-assignment-call": "E2",
+      "literals-bigint-regex-templates": "E3",
+      "literal-target-negative": "E3",
+      "tagged-template-contextual": "E3",
+      "non-null-assertion-satisfies": "E3",
+      "delete-and-exact-optional": "E3/E5",
+      "in-instanceof-private-brand": "E3/E5",
+      "operator-arithmetic-bitwise-comma": "E3",
+      "logical-assignment-and-short-circuit": "E3/E5",
+      "meta-properties-source": "E3",
+      "meta-properties-invalid-context": "E3",
+      "conditional-contextual-function-result": "E2/E3",
+      "for-in-key-and-for-of-binding": "E1/E4",
+      "for-in-for-of-invalid-targets": "E4",
+      "switch-discriminants-exhaustive": "E4/E5",
+      "switch-fallthrough-invalid-case": "E4",
+      "labels-break-continue-and-loops": "E4/E5",
+      "labels-break-continue-invalid": "E4",
+      "try-catch-finally-unknown": "E4/E5",
+      "catch-binding-and-options": "E1/E4",
+      "try-finally-definite-assignment": "E4/E5",
+      "return-unreachable-and-empty-statements": "E4",
+      "with-statement-source-error": "E4",
+      "flow-typeof-equality-branch-merge": "E5",
+      "flow-alias-discriminant-destructuring": "E1/E5",
+      "flow-optional-chain-containment": "E2/E5",
+      "flow-in-unlisted-property": "E5",
+      "flow-predicate-assertion-effects": "E5",
+      "flow-assignment-invalidation": "E5",
+      "flow-loop-fixed-point": "E5",
+      "flow-closure-and-constant-reference": "E5",
+      "flow-switch-bypass-and-never-return": "E4/E5",
+      "directives-no-unused-and-recovery": "E1/E3/E4",
+      "flow-private-brand-derived-origin": "E3/E5",
+      "flow-custom-instanceof-predicate": "E3/E5",
+      "optional-call-assertion-effect": "E2/E5",
+      "binding-indexed-access-option-and-reassignment": "E1/E5",
+      "flow-switch-typeof-default-return": "E4/E5",
+      "regex-invalid-flags-and-target": "E3",
+      "meta-properties-valid-constructor": "E3",
+      "flow-switch-true-predicate-narrowing": "E4/E5",
+      "flow-exhaustive-switch-without-default": "E4/E5",
+      "public-binding-property-and-meta-symbols": "E1/E3"
+    },
+    "sourceFiles": {
+      "upstream/TypeScript/tsc/internal/checker/checker.go": "48b81825085b9c85482a4d9b9fcda9cdd1ac89102cac4f173d9bafbdf39696b8",
+      "upstream/TypeScript/tsc/internal/checker/flow.go": "57b3b63434dc53a6e3836a5cbf9c88abe047f8653afbb596b881436547de6f1c",
+      "upstream/TypeScript/tsc/internal/checker/grammarchecks.go": "7fc8eaadf44ea13883e075348579b2af9e318dda78c89d01b79a4cf0350707d9",
+      "upstream/TypeScript/tsc/internal/checker/relater.go": "f124a5f8f902d25bb974762abb743f7cc0e66f77c3c3b6468182913e80072d47",
+      "upstream/TypeScript/tsc/internal/checker/inference.go": "83f6bce6296df35258ba9886ea3bfda491e000e2439cd49cc66cc531ac55aff0",
+      "upstream/TypeScript/tsc/internal/compiler/program.go": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c"
+    },
+    "observation": "Genuine Program/config/options/libraries with complete diagnostics and public inferred/narrowed identifier occurrence types. No source text or diagnostic normalization.",
+    "exclusions": "Finite source-family evidence, not exhaustive compiler tests; async/yield/for-await/using/dynamic import/JS/JSX/decorators/operational advanced type closure external under E1-E6."
+  },
+  "authoredExternalSemanticControl": {
+    "name": "Authored.ExternalSemanticConsumers",
+    "counterpart": "validation/Declarations.Checks/ExternalSemanticBoundaryChecks.cs",
+    "classification": "authored-external-consumer-contract; no Go unsupported-result parity or original-body claim",
+    "assertions": [
+      "Checked JS actual semantic consumer returns javascriptSemantics.",
+      "CheckJs false skips semantic checking while explicit owned JS type query rejects and retains file/kind/byte span.",
+      "Actual JSX and decorator semantic consumers explicitly reject external semantics.",
+      "All fixtures acquire genuine ES5 global environment with original options."
+    ],
+    "execution": {
+      "managed": "passed-current-authored-consumer-assertions",
+      "native": "passed-linux-x64-NativeAOT-authored-consumer-assertions",
+      "xUnit": "passed-current-Expressions.Tests-external-boundary-wrapper",
+      "proof": "validation/results/expressions-verified.json"
+    }
+  },
+  "execution": {
+    "original": "85/85-complete-genuine-Go-records; five-reused-complete-original-bodies",
+    "managed": "85/85-complete-records-in-current-frozen-gate",
+    "native": "85/85-complete-records-on-actual-linux-x64-NativeAOT",
+    "proof": "validation/results/expressions-verified.json",
+    "newXUnitCases": 91,
+    "currentSharedGroups": 6,
+    "reproducibleManifest": "validation/expressions-corpus/manifest.json",
+    "managedReport": "artifacts/expressions-validation/managed-corpus/families/report.json",
+    "sharedManagedReport": "validation/results/expressions-verified.json",
+    "nativeReport": "artifacts/expressions-validation/native-corpus/families/report.json",
+    "nativeOrderReport": "artifacts/expressions-validation/native-order/report.json",
+    "nativeCliReport": "artifacts/expressions-validation/native-cli/report.json",
+    "xUnit": "91-passed-zero-failed-zero-skipped",
+    "selectedTRXCaseExecutions": 24765,
+    "aggregationScope": "selected current and retained TRX records; not distinct upstream inventory or every repeated execution",
+    "elapsedSeconds": 1398.79
+  },
+  "retainedOriginalMapperFunctions": [
+    "TestCompositeProjectContentMapperSupplementalRoots",
+    "TestContentMapperInvalidMappings",
+    "TestContentMapperSourceFileState"
+  ],
+  "newOriginalAssertionBodies": 0,
+  "originalBodyReuse": 5
+}

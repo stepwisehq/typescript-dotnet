@@ -7,6 +7,53 @@ using TypeScript.Scanner;
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
+    // utilities.go:1150. Entity-name callers supply a parent, as in the source precondition.
+    private static bool isInRightSideOfImportOrExportAssignment(Node node)
+    {
+        while (node.Parent.Kind == Kind.QualifiedName)
+            node = node.Parent;
+        return node.Parent.Kind == Kind.ImportEqualsDeclaration && node.Parent.AsImportEqualsDeclaration().ModuleReference == node ||
+            node.Parent.Kind == Kind.ExportAssignment && node.Parent.Expression() == node;
+    }
+
+    // utilities.go:350. Empty input retains a nil table; duplicate names retain the last symbol.
+    private static SymbolTable createSymbolTable(List<Symbol> symbols)
+    {
+        if (GoRuntime.Len(symbols) == 0)
+            return null;
+        var result = new SymbolTable();
+        foreach (var symbol in symbols)
+            result[symbol.Name] = symbol;
+        return result;
+    }
+
+    // utilities.go:1777. Suggestions in unchecked JS retain the source file/declaration exclusions.
+    private bool isUncheckedJSSuggestion(Node node, Symbol suggestion, bool excludeClasses)
+    {
+        var file = Ast.GetSourceFileOfNode(node);
+        if (file != null && compilerOptions.CheckJs == Tristate.Unknown &&
+            file.CheckJsDirective == null && (file.ScriptKind == ScriptKind.JS || file.ScriptKind == ScriptKind.JSX))
+        {
+            SourceFile declarationFile = null;
+            if (suggestion != null)
+            {
+                var firstDeclaration = Core.FirstOrNil(suggestion.Declarations);
+                if (firstDeclaration != null)
+                    declarationFile = Ast.GetSourceFileOfNode(firstDeclaration);
+            }
+
+            var suggestionHasNoExtendsOrDecorators = suggestion == null ||
+                suggestion.ValueDeclaration == null ||
+                !Ast.IsClassLike(suggestion.ValueDeclaration) ||
+                GoRuntime.Len(Ast.GetExtendsHeritageClauseElements(suggestion.ValueDeclaration)) != 0 ||
+                Ast.ClassOrConstructorParameterIsDecorated(false, suggestion.ValueDeclaration);
+            return !(file != declarationFile && declarationFile != null && Ast.IsGlobalSourceFile(declarationFile.AsNode())) &&
+                !(excludeClasses && suggestion != null && (suggestion.Flags & SymbolFlags.Class) != 0 && suggestionHasNoExtendsOrDecorators) &&
+                !(node != null && excludeClasses && Ast.IsPropertyAccessExpression(node) && node.Expression().Kind == Kind.ThisKeyword && suggestionHasNoExtendsOrDecorators);
+        }
+        return false;
+    }
+
     // utilities.go:38. Nil maps have no entries; an unmatched value is Go's zero value.
     private static TValue findInMap<TKey, TValue>(Dictionary<TKey, TValue> map, Func<TValue, bool> predicate) where TKey : notnull
     {

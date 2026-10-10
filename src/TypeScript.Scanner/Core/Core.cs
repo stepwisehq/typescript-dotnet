@@ -104,6 +104,9 @@ internal static partial class Core
 {
     public static T? FirstOrNil<T>(List<T>? values) => values is null || values.Count == 0 ? default : values[0];
     public static int FindIndex<T>(List<T>? values, Func<T, bool> predicate) => values?.FindIndex(x => predicate(x)) ?? -1;
+
+    // core.go:246; nil slices have no matching index.
+    public static int FindLastIndex<T>(List<T>? values, Func<T, bool> predicate) => values?.FindLastIndex(x => predicate(x)) ?? -1;
     // core.go:218. Original range captures slice-header length and returns Go zero.
     public static T? Find<T>(List<T>? values, Func<T, bool> predicate)
     {

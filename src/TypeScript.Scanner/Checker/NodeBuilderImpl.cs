@@ -1450,7 +1450,7 @@ internal sealed partial class NodeBuilderImpl
     }
 
     // nodebuilderimpl.go:2897/2912. Anonymous records and callable objects retain mapping,
-    // cycles, reverse-mapped forms and alias fallback; source classes remain excluded.
+    // cycles, reverse-mapped forms, instantiation expressions and alias fallback.
     private Node createAnonymousTypeNode(Type t) => createAnonymousTypeNodeEx(t, false, false);
     private Node createAnonymousTypeNodeEx(Type t, bool forceClassExpansion, bool forceExpansion)
     {
@@ -1459,7 +1459,24 @@ internal sealed partial class NodeBuilderImpl
         if (symbol != null)
         {
             if ((t.objectFlags & ObjectFlags.InstantiationExpressionType) != 0)
-                throw Checker.unsupported("createAnonymousTypeNodeEx: source instantiation expression");
+            {
+                var existing = t.AsInstantiationExpressionType().node;
+                // A constituent can retain a typeof node belonging to the whole type;
+                // reuse it only when its actual type is this instance.
+                if (Ast.IsTypeQueryNode(existing) && getTypeFromTypeNode(existing, false) == t)
+                {
+                    if (visitedTypes.Contains(typeId))
+                        return createCyclicStructurePlaceholder();
+                    visitedTypes.Add(typeId);
+                    var typeNode = tryReuseExistingNonParameterTypeNode(existing, t, null, null);
+                    visitedTypes.Remove(typeId);
+                    if (typeNode != null)
+                        return typeNode;
+                }
+                if (visitedTypes.Contains(typeId))
+                    return createCyclicStructurePlaceholder();
+                return visitAndTransformType(t, createTypeNodeFromObjectType);
+            }
             var instanceSide = isClassInstanceSide(ch, t) ? SymbolFlags.Type : SymbolFlags.Value;
             var(emitTypeOf, emittedSymbol) = shouldEmitTypeOfSymbol(forceExpansion, forceClassExpansion, instanceSide, symbol, typeId);
             if (emitTypeOf)
@@ -1646,6 +1663,30 @@ internal sealed partial class NodeBuilderImpl
         if (Ast.IsInJSFile(existing))
             throw Checker.unsupported("canReuseExistingJSTypeNode: JSDoc type reference");
         return existingTypeNodeIsNotReferenceOrIsReferenceWithCompatibleTypeArgumentCount(existing, t);
+    }
+
+    // nodebuilderimpl.go:493/549. Preserve optional annotation equivalence and
+    // the ordinary recovery-boundary visitor when reusing an existing type node.
+    private bool typeNodeIsEquivalentToType(Node annotatedDeclaration, Type t, Type typeFromTypeNode)
+    {
+        if (typeFromTypeNode == t)
+            return true;
+        if (annotatedDeclaration == null)
+            return false;
+        return Checker.isOptionalDeclaration(annotatedDeclaration) && ch.getTypeWithFacts(t, Checker.TypeFacts.NEUndefined) == typeFromTypeNode;
+    }
+
+    private Node tryReuseExistingNonParameterTypeNode(Node existing, Type t, Node host, Type annotationType)
+    {
+        host ??= ctx.enclosingDeclaration;
+        annotationType ??= getTypeFromTypeNode(existing, true);
+        if (annotationType != null && typeNodeIsEquivalentToType(host, t, annotationType) && canReuseExistingJSTypeNode(existing, t))
+        {
+            var result = tryReuseExistingNodeHelper(existing);
+            if (result != null)
+                return result;
+        }
+        return null;
     }
 
     private bool existingTypeNodeIsNotReferenceOrIsReferenceWithCompatibleTypeArgumentCount(Node existing, Type t)

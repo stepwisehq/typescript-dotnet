@@ -1,9 +1,36 @@
 # Current project state
 
+**Accepted: TypeScript synchronous expressions, statements and checker-flow E1–E6.**
+Baseline `5efa4e5`; delivery commit contains this state and the
+[durable proof](../validation/results/expressions-verified.json). No active implementation
+campaign. Read the [assessment](EXPRESSIONS-ASSESSMENT.md),
+[contract](EXPRESSIONS-CONTRACT.md), [checkpoint](EXPRESSIONS-STATUS.md) and
+[verification guide](EXPRESSIONS-VERIFY.md).
+
+Actual Linux x64 Native AOT and managed execution pass 85 complete pinned-Go records,
+six shared groups, 26 order/repeat executions per runtime and both ordinary disk
+projects (valid exit 0, invalid exit 1 with five complete diagnostics). All 91 new
+xUnit cases and retained gates pass; selected-suite TRX aggregate 24,765 passed case
+executions, zero failures/skips. This aggregate is not a unique-test inventory.
+The successful frozen gate took 1,398.790 seconds; five drift checks clear and
+242 historical fixture/proof files unchanged. Independent Sol review has no unresolved
+substantive in-contract finding. The assessment records the first failed gate and
+source/public-query versus observer-bookkeeping repairs without changed expectations.
+
+Recommended next: remaining type-system closure under the [checker roadmap](CHECKER-COMPLETION-ROADMAP.md).
+Await a new mandate. Async/protocol, advanced-type closure and JS-specific semantics
+remain unfinished; whole-checker completion is not claimed. Private-state observations
+remain diagnostic aids, not automatic acceptance obligations. No new instrumentation
+was added. Large-project comparison and .NET 11/optimization remain deferred.
+
+## Historical accepted campaigns
+
+The scopes and superseded recommendations below are historical; the current checkpoint
+above controls resumption.
+
 **Accepted: genuine checker initialization and declaration/object-model completion,
 D1–D6.** Baseline `e7b81a2`; delivery commit contains this state and
-[durable proof](../validation/results/declarations-verified.json). No active implementation
-campaign remains. Follow the [assessment](DECLARATIONS-ASSESSMENT.md),
+[durable proof](../validation/results/declarations-verified.json). The expression/statement/flow contract above supersedes this historical checkpoint. Follow the [assessment](DECLARATIONS-ASSESSMENT.md),
 [contract](DECLARATIONS-CONTRACT.md), [checkpoint](DECLARATIONS-STATUS.md) and
 [reproduction guide](DECLARATIONS-VERIFY.md).
 
@@ -23,8 +50,8 @@ profiles remain named test adapters. Whole checker files are still partial. Runt
 body/flow, operational string mappings, async/generator and JS/JSX/JSDoc/decorator work
 remain separate; see the [refreshed roadmap](CHECKER-COMPLETION-ROADMAP.md).
 Recommended next: complete TypeScript expressions/statements and control flow over
-these accepted declaration models. Do not start another campaign or repeat accepted
-gates without a new mandate or concrete regression. Finish checker/infrastructure
+these accepted declaration models. That campaign is now accepted above; reuse accepted
+evidence rather than repeating audits without a concrete regression. Finish checker/infrastructure
 before large-project comparisons; .NET 11/optimization remains deferred.
 
 **Accepted: Program construction and environment assembly, P1–P6.** Baseline
@@ -66,11 +93,6 @@ or new process framework; simplify only an active bottleneck. Make substantive c
 to observations explicit, never change expectations to conceal defects, and disable
 observation-only overhead before future performance comparisons. Let an underway final
 acceptance run finish.
-
-## Historical accepted campaigns
-
-These records retain their original scopes and superseded next-step recommendations.
-The current Program checkpoint above controls resumption.
 
 **Accepted: source-import module-resolution completion, R1–R6.**
 Baseline `37bd57d`; upstream remains `fed0bf24149fb1ed36039212648bafdafc1ea10e`.

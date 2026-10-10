@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Modified partial C# port of tsc/internal/evaluator/evaluator.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Original selected numeric/string/entity evaluation for checker diagnostics.
-// Written template interpolation and element access remain guarded.
+// Modified C# port of tsc/internal/evaluator/evaluator.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Constant expression evaluation delegates entity references to the source caller.
 #nullable disable
 namespace TypeScript.Scanner;
 internal static class Evaluator
@@ -89,7 +88,7 @@ internal static class Evaluator
                 case Kind.NoSubstitutionTemplateLiteral:
                     return new(expr.Text(), true, false, false);
                 case Kind.TemplateExpression:
-                    throw TypeScript.Checking.Checker.unsupported("Evaluator: source template interpolation");
+                    return evaluateTemplateExpression(expr, location, evaluate);
                 case Kind.NumericLiteral:
                     return new(JsNum.FromString(expr.Text()), false, false, false);
                 case Kind.Identifier:
@@ -104,6 +103,26 @@ internal static class Evaluator
             return new(null, isSyntacticallyString, resolvedOtherFiles, hasExternalReferences);
         };
         return evaluate;
+    }
+
+    // evaluator.go:124. A nonconstant substitution discards accumulated reference flags, as upstream.
+    private static Result evaluateTemplateExpression(Node expr, Node location, EvaluatorDelegate evaluate)
+    {
+        var text = new System.Text.StringBuilder();
+        text.Append(expr.AsTemplateExpression().Head.Text());
+        var resolvedOtherFiles = false;
+        var hasExternalReferences = false;
+        foreach (var span in expr.AsTemplateExpression().TemplateSpans.Nodes)
+        {
+            var spanResult = evaluate(span.Expression(), location);
+            if (spanResult.Value == null)
+                return new(null, true, false, false);
+            text.Append(AnyToString(spanResult.Value));
+            text.Append(span.AsTemplateSpan().Literal.Text());
+            resolvedOtherFiles |= spanResult.ResolvedOtherFiles;
+            hasExternalReferences |= spanResult.HasExternalReferences;
+        }
+        return new(text.ToString(), true, resolvedOtherFiles, hasExternalReferences);
     }
 
     internal static string AnyToString(object value) => value switch

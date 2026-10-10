@@ -171,26 +171,27 @@ public sealed partial class Checker
         return SymbolFlags.Type;
     }
 
-    // emitsupport.go:285. The anonymous property-signature branch can add undefined
-    // only for a reverse-mapped symbol; mapped types remain guarded; ordinary parameter defaults retain the original worker.
+    // emitsupport.go:285. Diagnostic type-node reuse preserves the source reverse-mapped property condition.
     internal bool requiresAddingImplicitUndefined(Node declaration, Symbol symbol, Node enclosingDeclaration)
     {
         if (!Ast.IsParseTreeNode(declaration))
             return false;
         switch (declaration.Kind)
         {
+            case Kind.PropertyDeclaration:
             case Kind.PropertySignature:
                 symbol ??= getSymbolOfDeclaration(declaration);
                 var t = getTypeOfSymbol(symbol);
-                if ((symbol.CheckFlags & CheckFlags.ReverseMapped) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0)
-                    throw unsupported("requiresAddingImplicitUndefined: reverse mapping");
-                return false; // Exact final conjunct (ReverseMappedSymbolLinks.Has) is false in this guarded slice.
+                _ = mappedSymbolLinks.Has(symbol);
+                return (symbol.Flags & SymbolFlags.Property) != 0 &&
+                    (symbol.Flags & SymbolFlags.Optional) != 0 && isOptionalDeclaration(declaration) &&
+                    ReverseMappedSymbolLinks.Has(symbol) && ReverseMappedSymbolLinks.Get(symbol).mappedType != null &&
+                    containsNonMissingUndefinedType(this, t);
             case Kind.Parameter:
                 return requiresAddingImplicitUndefinedWorker(declaration, enclosingDeclaration);
-            case Kind.PropertyDeclaration:
             case Kind.JSDocPropertyTag:
             case Kind.JSDocParameterTag:
-                throw unsupported("requiresAddingImplicitUndefined: class/JS");
+                throw unsupported("requiresAddingImplicitUndefined: JS");
             default:
                 throw new InvalidOperationException("Node cannot possibly require adding undefined");
         }
