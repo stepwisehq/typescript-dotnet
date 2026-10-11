@@ -25,13 +25,13 @@ broader rollout. Combined changes cannot establish isolated per-technique gains.
 | --- | --- | --- |
 | Workstation GC is unsuitable for this measured workload | Server GC enabled in the executable and verified under Native AOT. No new heap-count or GC-policy experiment is underway. | [Measured Server GC comparison](#server-gc-enabled-and-verified-under-native-aot) |
 | Go substrings retain backing storage; ordinary C# substrings copy | Borrow immutable source through byte views, JSDoc fragments, tokens and AST text; project only actual string consumers. Earlier paths qualified; current descriptor consumers and transformed-token byte builders await integrated acceptance. | [JSDoc sharing](#comprehensive-jsdoc-commentlink-text-sharing-verified-implementation), [owned UTF8 pipeline](#owned-utf8-source-pipeline-active-completion-contract) |
-| Repeated byte/string conversions during comparisons and scans | Span comparison/search, direct UTF8/WTF8 decoding, preserved byte offsets and invalid-byte advancement. Current fixed ASCII SearchValues runs and rune/escape output closure are source-only. | [Borrowed token work](#borrowed-tokens-flow-slices-and-conditional-targets), [live state](./STATE.md) |
-| Names are forced into managed strings just to enter internal maps | Borrowed immutable ByteStringKey with standard Dictionary and alternate lookup; symbol/literal/property keys compile in the combined snapshot. Resolver/cache/path continuation is underway. No custom table or interner. | [Source mapping](../source-map.json), [key support](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs), [live state](./STATE.md) |
+| Repeated byte/string conversions during comparisons and scans | Span comparison/search, direct UTF8/WTF8 decoding, preserved byte offsets and invalid-byte advancement. Fixed ASCII SearchValues runs and rune/escape output closure are included in the combined native workload proof; broader regression acceptance remains pending. | [Borrowed token work](#borrowed-tokens-flow-slices-and-conditional-targets), [live state](./STATE.md) |
+| Names are forced into managed strings just to enter internal maps | Borrowed immutable ByteStringKey with standard Dictionary and alternate lookup; symbol/literal/property keys compile in the combined snapshot. Resolver/cache/path continuation is included in the combined native workload proof; broader acceptance remains pending. No custom table or interner. | [Source mapping](../source-map.json), [key support](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs), [live state](./STATE.md) |
 | Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families continue in the combined rollout. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
 | Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. Earlier families qualified; apply throughout remaining connected consumers. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
-| Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST merge is in the compiled combined source; checker Type merge is underway. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
+| Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST and checker Type merges are in the integration5 workload proof; mapper header/payload merging is included in integration6. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
 | Link/reference ownership adds per-record wrapper objects | Direct reference slots and opaque ownership tokens with preserved source lifetime/identity. Earlier qualified changes; no unrelated private-observer redesign. | [Link storage](#fixed-link-store-reference-slots), [ownership/reporters](#opaque-ownership-tokens-and-unbound-reporters) |
-| Scratch copies, general path work and singleton growth add avoidable work | Retain source scratch/header reuse, ASCII/path fast paths and source initial capacities. Required persistent snapshots remain detached. Broader canonical resolver/path receivers are underway. | [Path/capacity work](#path-fast-paths-and-singleton-capacity), [parser scratch](#type-constituent-slices-and-parser-scratch) |
+| Scratch copies, general path work and singleton growth add avoidable work | Retain source scratch/header reuse, ASCII/path fast paths and source initial capacities. Required persistent snapshots remain detached. Broader canonical resolver/path receivers are included in the combined workload proof. | [Path/capacity work](#path-fast-paths-and-singleton-capacity), [parser scratch](#type-constituent-slices-and-parser-scratch) |
 
 Important retained findings:
 
@@ -48,12 +48,41 @@ Important retained findings:
   heap sample is not an exact whole-run allocation census. RSS is not allocation
   volume. Later source changes have no measured savings until integrated execution.
 
-Latest qualified implementation baseline is `b84b436`. The later combined production
-build passed with zero warnings/errors (integration3); additional source families
-are now being implemented. Its behavioral, Native AOT and performance acceptance
-remain pending. Raw profiles and immutable source snapshots are retained under
+Latest qualified implementation baseline is `b84b436`. The frozen integration5
+snapshot built with zero warnings/errors and published under Linux x64 Native
+AOT; its allocation/CPU profiles do not cover the later integration6 continuation. Its first VS Code run matched all ten complete diagnostics and available pinned
+chains: **23.63s wall, 94.93s CPU, 9,064,632 KiB peak RSS**, expected exit 1, empty
+stderr and no source/config/binary drift. This single run is workload evidence, not
+a strong throughput claim or the pending broader regression acceptance. The matched
+CoreCLR profile reports **14.642716 → 13.0697 GiB sampled allocation weight (−10.74%)**,
+zero lost events/truncation, and one allocation event without a stack. Strings fell
+from about 813 to 474 MB; wider symbol and byte-key storage offset part of the gain.
+These are sampled managed intervals, not exact Native AOT allocation totals.
+See [exact execution evidence](../artifacts/vscode-allocation-rollout/integration-5/boundary-summary.json)
+and [profile comparison](../artifacts/vscode-allocation-rollout/integration-5/managed-profile/comparison.json).
+The integration6 continuation implements a missed upstream active-mapper cache
+reuse rule and deferred/switch/accessibility storage owners end-to-end.
+The corresponding [native CPU profile](../artifacts/vscode-allocation-rollout/integration-5/native-cpu/analysis.json)
+attributes **48.272% of 7,986 sampled user-CPU observations** to Server GC helpers,
+versus **0.63%** in XxHash32 completion. This supports continued allocation/lifetime
+work, not a hash redesign. Worker-thread caller stacks were unavailable (4,066
+samples), limiting caller attribution; these percentages cannot be subtracted from
+wall time. Required link identities, the shared JSDoc projection owner, and the
+existing Symbol ownership token remain explicit adaptations. A proposed token-only
+subtype was declined because its modest binder-only savings do not justify added
+layout/guard complexity. Generic binder factories and parser forwarding captures
+are included in integration6, alongside immediate Checker/Relater/Inference callbacks. These are source-shaped follow-through changes, not runtime-policy tuning. Raw profiles and immutable source snapshots are retained under
 [artifacts/](../artifacts/); no new SVG flamegraphs or per-local-change benchmark
 cycle should be started from the historical reproduction commands below.
+
+Latest combined workload proof: **integration6**, after the additional cache,
+mapper, binder factory, and callback families above. Production build **10.509s**,
+zero warnings/errors; Native AOT publish **11.462s**; the first VS Code run matched
+all ten diagnostics and available pinned chains: **26.13s wall, 112.18s CPU,
+10,020,768 KiB peak RSS**. Source/config/binary guards passed. This single run is
+slower than integration5, so no speed improvement is claimed; no new allocation
+profile measures this continuation. It is not final broad regression acceptance.
+See [integration6 evidence](../artifacts/vscode-allocation-rollout/integration-6/boundary-summary.json).
 
 ## Workload and compiler identity
 

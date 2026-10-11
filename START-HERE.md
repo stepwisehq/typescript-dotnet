@@ -44,7 +44,9 @@ cycle of one or two local changes followed by targeted tests and benchmarks.
   allocation captures or full gates after compaction.** Use coordinated integration
   builds as the larger rollout comes together. Run behavioral and performance
   verification after the complete integrated change; investigate concrete defects
-  proportionately. This changes verification timing, not correctness requirements.
+  proportionately. At that boundary, build/publish and run the actual VS Code workload
+  before launching the broad regression suites, as the user requested. This changes
+  verification timing and order, not correctness requirements.
 - Retain source review, original upstream expectations, meaningful Go comparisons,
   xUnit coverage and actual Linux x64 Native AOT acceptance before finalization.
   Preserve useful existing evidence; never call a partially verified change accepted.
