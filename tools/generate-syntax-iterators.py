@@ -21,7 +21,7 @@ for source,destination in [('ast.go','Ast.cs'),('ast_generated.go','AstGenerated
   cls,body=m[1],re.sub(r'\s+',' ',m[2]).strip()
   if cls=='NodeDefault': continue # NodeData default enumerates no children.
   if cls=='SyntheticExpression': continue # checker-created payload excluded by foundation contract.
-  chunks.extend(['public partial class '+cls,'{','    internal override IEnumerable<Node> IterChildren()','    {'])
+  chunks.extend(['public partial class '+cls,'{','    public override IEnumerable<Node> IterChildren()','    {'])
   if cls=='JSDocParameterOrPropertyTag':
    chunks.extend(['        if (TagName is not null) yield return TagName;','        if (IsNameFirst)','        {','            if (name is not null) yield return name;','            if (TypeExpression is not null) yield return TypeExpression;','        }','        else','        {','            if (TypeExpression is not null) yield return TypeExpression;','            if (name is not null) yield return name;','        }','        foreach (var child in Ast.IterateSyntaxNodes(Comment?.Nodes ?? default)) yield return child;'])
    if body!='return forEachChild_JSDocParameterOrPropertyTag(node, v)':raise ValueError(body)

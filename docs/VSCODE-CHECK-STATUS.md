@@ -11,6 +11,98 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Current CPU attribution and checked dispatch continuation
+
+Integration20 was committed as `3f466095`. One subsequent CPU recording used its
+unchanged Linux x64 Native executable, default adaptive Server GC and normal
+VSCode invocation, with99Hz user-CPU sampling and32KiB DWARF stack snapshots.
+All ten complete diagnostics and source/binary/configuration guards passed.
+The controller's strict stderr check failed on perf's optional `/proc/schedstat`
+metadata warning; that original failure is preserved. Independent inspection found
+5,177 sample records,99,404 context-switch records and no recorded sample loss or
+throttling. An additional event-description header warning also exists in the older
+trace; fixed event attributes and samples decode. These are tool-metadata limitations,
+not a clean-tool-output claim or justification to repeat the recording.
+
+The installed perf's libdw thread-selection bug was worked around by decoding one
+worker TID per process. Four current workers account for88.48% of sampled worker CPU;
+2,888 of their2,981 samples have recovered multi-frame stacks. Raw traces remain for
+standard viewers; no SVG or replacement viewer was created.
+
+Current sampled user-CPU attribution:
+
+- Dedicated GC/background-GC threads:33.80%. GC-named method leaves:34.98%, a
+  separate overlapping classification that includes allocation helpers.
+- Dictionary lookup/insertion leaves:9.52%; hashing:2.84%.
+- Runtime type tests/casts:4.21%, including real required predicates and byte-owner
+  checks as well as payload dispatch. This is not all removable overhead.
+
+Cumulative allocation is only1.178 times the saved Go total. A larger retained
+object/reference graph and differing collection policies are plausible contributors
+to the remaining CPU cost, but allocation totals do not measure live/promoted/scanned
+objects. Current evidence establishes no new substantial missing Go ownership rule.
+Shared native generic method names do not establish concrete dictionary owners;
+recovered callers identify actual link, name and relation operations instead.
+
+The next complete implementation removes redundant intermediate payload checks in
+218 concrete accessors and joins20 existing virtual forwarding slots across AST,
+Type and Mapper owners. Standard checked casts retain the original bare-header and
+wrong-payload fallback; virtual overrides retain custom behavior. Interface predicates,
+cache algorithms and required Go operations remain unchanged. Both generators are
+updated, and added assertions reuse existing shared test bodies and case counts.
+This is a CLR dispatch adaptation, not an unchecked-cast or checker-algorithm rewrite.
+
+Integration21 built cleanly and passed Native VSCode first at16.48wall/61.68CPU
+seconds. Two reverse-order runs each gave baseline walls15.36/17.11s and candidate
+16.84/15.55s: medians16.235/16.195s. This does **not** demonstrate a repeatable speedup.
+CPU medians were64.685/65.48s; peak-RSS medians8,887,960/8,548,110KiB. These small
+samples do not isolate causes. The simpler source-faithful dispatch passed broad
+behavioral qualification as recorded below; acceptance includes the complete gate.
+No new allocation capture was required for this dispatch-only change.
+
+Evidence: [current CPU recording and warning review](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/verification-result-review.json),
+[recovered caller analysis](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/per-tid-recovery/analysis.json),
+[independent CPU review](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/per-tid-recovery/support-peer-review.json),
+[GC/layout assessment](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/gc-layout-assessment.json),
+[dispatch source review](../artifacts/vscode-checked-payload-dispatch/build/virtual-join/verification-peer-review.json)
+and [paired timing review](../artifacts/vscode-allocation-rollout/integration-21/build-1/paired-timing/verification-peer-review.json).
+
+## Integration21: checked and virtual payload dispatch (accepted)
+
+The complete connected dispatch family passed independent source review and actual
+Linux x64 Native AOT acceptance. All1,721 selected managed cases passed with no
+failures/skips; Native Foundation3,153 original assertions plus87 shared controls,
+utilities20 original observations and Program9 controls passed. All15,304 original
+no-emit rows independently match unchanged pinned upstream expectations. Actual
+compiler and four Native application/ILC dependency bindings,946 live source/fixture
+files,242 production copies and13 baseline files remain exact.
+
+The server reboot interrupted the full corpus after8,832 complete rows. Of those,
+6,784 retain durable original result metadata;2,048 preserve complete exact actual
+rows but lost per-chunk result metadata. That prefix was transparently reconstructed
+from reviewed sequential-controller advancement into chunk69 and saved progress;
+missing raw exit metadata was not fabricated. A separate durable continuation
+executed the remaining6,472 rows. This is an interrupted/resumed pass; original raw
+evidence remains intact. [Final acceptance review](../artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json)
+and [resumed complete results](../artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/selected-result-resumed.json)
+record the distinction. Historical integration20 proof remains unchanged.
+
+A subsequent same-binary GC screen ran default,batch,batch,default; only batch set
+`DOTNET_gcConcurrent=0`. All four complete diagnostics and guards passed. Default
+walls were20.34/18.95s, CPU76.30/64.83s and RSS8,774,380/8,487,860KiB;
+batch walls18.30/18.54s, CPU77.41/77.62s and RSS9,401,436/8,836,464KiB.
+Default best/median/range wall:18.95/19.645/18.95–20.34s; batch:
+18.30/18.42/18.30–18.54s. CPU medians70.565/77.515s and RSS medians
+8,631,120/9,118,950KiB favor default. These are two observations per policy,
+post-reboot defaults differ from prior timings, and causality/repeatable benefit is
+unresolved. Default GC remains unchanged pending investigation.
+[Raw GC comparison](../artifacts/vscode-allocation-rollout/integration-21/gc-background-screen/paired-timing/comparison.json)
+preserves exact runs. No new allocation or profiling capture was made.
+
+The current target is Native VSCode wall time at most1.2 times pinned Go with
+equivalent files/settings. This correctness checkpoint does not meet that target
+or demonstrate a dispatch speedup; the authorized campaign continues.
+
 ## Integration20: callback/setup completion and Native throughput policy (accepted)
 
 The complete batch has passed integrated acceptance. It closes synchronous
@@ -78,9 +170,9 @@ existing command plus `-p:BuildProjectReferences=false`,
 `-p:OptimizationPreference=Speed` and `-p:UseSizeOptimizedLinq=false` after explicit
 dependency compilation. Saved correctness durations are not speed measurements.
 
-No new CPU or sampled-allocation capture is attributed to20. Recovery of old17
-Native worker stacks is a separate investigation pending independent review; it
-does not establish current20 compiler/GC/lock costs. Go performance parity remains
+No new sampled-allocation capture accompanied20 acceptance. The subsequent current20
+CPU capture and independently reviewed older17 recovery are described above; neither
+establishes an exact Native/Go GC-cost ratio. Go performance parity remains
 unproven, and the combined source/publication-policy observations do not isolate
 which change caused the resource difference.
 

@@ -18,19 +18,20 @@ internal class TypeMapper
 {
     // Every real mapper payload inherits this header; a bare mapper has no payload.
     internal TypeMapperData data => this as TypeMapperData;
-    internal Type Map(Type t) => data.Map(t);
-    internal TypeMapperKind Kind() => data.Kind();
-    internal bool MapsThisOnly() => data.MapsThisOnly();
+    internal virtual Type Map(Type t) => data.Map(t);
+    internal virtual TypeMapperKind Kind() => data.Kind();
+    internal virtual bool MapsThisOnly() => data.MapsThisOnly();
 }
 
 // mapper.go:102 embeds the TypeMapper header in each mapper payload. Managed
-// inheritance retains one identity; wrapper dispatch and payload virtuals stay distinct.
+// inheritance retains one identity; a single virtual override chain preserves
+// source dispatch while the standalone header keeps its null-view fallback.
 internal abstract class TypeMapperData : TypeMapper
 {
     internal TypeMapper mapper => this;
-    internal new abstract Type Map(Type t);
-    internal new virtual TypeMapperKind Kind() => TypeMapperKind.Unknown;
-    internal new virtual bool MapsThisOnly() => false;
+    internal abstract override Type Map(Type t);
+    internal override TypeMapperKind Kind() => TypeMapperKind.Unknown;
+    internal override bool MapsThisOnly() => false;
 }
 
 internal class TypeMapperBase : TypeMapperData

@@ -92,6 +92,28 @@ family checkpoint. Resume investigation and implementation of substantial remain
 Go-faithful opportunities; do not treat committing measured progress as completion
 of that mandate. Keep the accepted checkpoint separate from active work.
 
+## Current performance target (2026-10-11)
+
+The user set a concrete target: the Linux x64 Native AOT compiler should type-check
+VSCode in no more than **1.2 times the pinned Go compiler's wall time**, under equivalent
+source, project options, libraries and environment. Use fresh paired uninstrumented
+runs for the final comparison; the historical Go9.61s implies about11.5s only as a
+planning reference. Preserve complete diagnostic agreement and Native AOT acceptance.
+For performance comparison, run each compiler several times with equal run counts
+and report best wall time plus median and range; alternate order and retain every
+result. The user explicitly requested best-run reporting to reduce interruption noise.
+Compare best to best, not the best candidate against a slower reference observation.
+Continue autonomously while sane, source-faithful improvements remain; do not stop
+at internal milestones or weaken compiler behavior to meet the number. Runtime/library
+adaptations must remain explicit and justified. No large algorithmic deviation.
+
+After a WSL crash and host disk pressure the user explicitly requested cleanup of
+our generated garbage. Keep current checkpoints and useful original evidence; avoid
+retaining every historical executable, copied runtime, derived ETLX or huge folded
+stack export. Delete reproducible intermediates and losslessly compress historical
+results as appropriate. Cleanup is delegated to Sol; resume interrupted work from
+validated durable progress, preserving and labeling crash reconstruction.
+
 ## User mandate
 
 Read [the original prompt, preserved verbatim](./docs/INITIAL-PROMPT.md).

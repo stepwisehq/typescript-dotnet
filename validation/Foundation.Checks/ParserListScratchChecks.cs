@@ -6,6 +6,14 @@ namespace TypeScript.Foundation;
 
 public static class ParserListScratchChecks
 {
+    private sealed class DispatchProbeNode(Node child) : NodeData
+    {
+        public override Node Name() => child;
+        public override bool ForEachChild(Visitor visitor) => visitor(child);
+        public override string DataType() => "DispatchProbeNode";
+        public override IEnumerable<SyntaxField> SyntaxFields() { yield break; }
+    }
+
     public static IReadOnlyList<string> Cases { get; } = ["detached-list-boundary", "nested-large-lists"];
 
     public static void Run(string name)
@@ -52,6 +60,21 @@ public static class ParserListScratchChecks
             bare.Pos() == 3 && bare.End() == 7 && ReferenceEquals(bare.Parent, parentBlock) &&
             bare.FunctionLikeData() is null,
             "Standalone Node header access and null typed views remain valid");
+        Require(ReferenceEquals(scalar, scalar.AsIdentifier()) && bare.AsIdentifier() is null,
+            "Concrete payload views retain canonical identity and a bare header's null result");
+        bool wrongConcrete = false;
+        try { scalar.AsBlock(); }
+        catch (InvalidCastException) { wrongConcrete = true; }
+        Require(wrongConcrete, "A mismatched concrete payload view retains its checked cast failure");
+        Node dispatchProbe = new DispatchProbeNode(scalar);
+        int visited = 0;
+        Require(ReferenceEquals(dispatchProbe.Name(), scalar) && dispatchProbe.ForEachChild(child =>
+            { visited++; return ReferenceEquals(child, scalar); }) && visited == 1,
+            "Node header calls retain custom payload overrides and callback results");
+        bool bareDispatch = false;
+        try { bare.Name(); }
+        catch (NullReferenceException) { bareDispatch = true; }
+        Require(bareDispatch, "A bare Node header retains the payload dispatch's null failure");
 
         // parser.go:111/725: missing lists share one sentinel header. Clone and
         // public header replacement must derive the current state from that header.

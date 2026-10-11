@@ -1,3 +1,64 @@
+# Crash recovery and storage cleanup (2026-10-11)
+
+The WSL/server reboot interrupted integration21 full Native no-emit acceptance.
+User reports host disk pressure, has freed host space, and explicitly authorized
+cleaning our generated garbage then resuming. Do not infer crash cause from guest df.
+All precrash jobs/agents died; session27376 is NOT active. Last progress8832/15304,
+69chunks. Source changes, original review artifacts and exact binaries survived.
+
+Cleanup complete. Project62→24GiB; artifacts56→18GiB. Two artifact passes reclaimed
+38.331GiB (30.819GiB derived exports/ETLX and compressed JSONL;7.512GiB obsolete
+historical validation binaries/runtime copies plus compressed TRX/logs). Receipts:
+artifacts/storage-cleanup/2026-10-11-artifacts.json and historical-builds.json.
+Standard pinned `go clean -cache` reclaimed27.29GiB; obsolete installers175.76MiB.
+Current20/21, original traces, matching profile binaries/debug, source/metadata retained.
+
+Integration21 continuation completed: root session59438 exit0, all15304 exact original
+records; reused8832 and executed6472. Independent final acceptance ACK73497dc8 confirms
+full rows,1721managed, NativeFoundation3153+87,utilities20,Program9,actualILC and all
+source/binary guards.2048 prefix records explicitly reconstructed from preserved exact
+actual rows and sequential controller evidence; no invented uninterrupted pass.
+Source/metadata freeze is now released; root preparing accepted dispatch checkpoint.
+
+Same-binary backgroundGC screen completed session8691: default20.34/18.95s,
+batch18.30/18.54s; all full diagnostics exact. Default retained (small screen, higher
+batchCPU and variableRSS; no large/repeatable benefit claim). Native21 immutable
+binary/compiler and full evidence remain under artifacts/vscode-allocation-rollout/integration-21.
+Current Sol lanes: storage_audit prepares fresh5Go/5defaultNative/5Conserve3 timing
+recipe with equal-count best/median/range and rotatedorder. recovery supplies exact
+runtime budget evidence and independent recipe review. cache_audit completed acceptance
+review/proof/docs/map updates and made folded exports opt-in in artifact-only analyzer
+source; compiled historical analyzer unchanged. No future hugeexports unless requested.
+Root owns execution/release/STATE/commit; no competing performance workloads.
+Conserve3 is a single source-grounded hypothesis about repeated GC scanning vs heap
+headroom, NOT adopted policy or equivalentGoGOGC. No compiler algorithm changed.
+
+Prevention: Go cache trims by age, not a size ceiling; reuse unchanged pinned oracle
+binaries and clear build cache between accepted boundaries when disk pressure warrants.
+Keep original profiling traces and compact summaries, avoid retaining huge derived
+stack exports/ETLX indefinitely. No blanket cache disabling, new storage framework,
+or repeated small-change builds/profiles. HostVHD free space differs from guest df;
+no VHD compaction/shutdown or host settings changed.
+
+NEW USER TARGET: Linuxx64 Native AOT VSCode wall <=1.2x pinnedGo with equivalent
+files/options/libraries/environment and complete diagnostics. HistoricalGo9.61s
+implies11.53s planning threshold only; final acceptance needs freshpaired Go/Native
+runs, observation overhead off. Continue sane upstream-faithful improvements without
+stopping at milestones; no semantic weakening or broad algorithm redesign. Target
+persisted START-HERE. User requests several VSCode runs and best result: report
+best plus median/range for equal-count fresh Go/Native, retain all runs. Stackalloc investigation found17existingexplicit sites plus3
+inlinearrayfamilies; remaining spelling-rune32scratch potential is not a measuredhotspot.
+No stackalloc edits authorized during frozen gate.
+
+Recovery recipe97ada464 reviewed clear: all8832 raw original rows exact;
+6784 have durablemetadata,2048 records chunks53–68 reconstruct from exactactualrows+
+sequentialcontroller creating69 after exit/exactguards. Progress alone insufficient
+because it precedes assertion. Preserve zero/lostmetadata, mark recovered provenance.
+Remaining6472 startchunk69, separatecontinuation with fsync files/result/directory.
+
+The standing autonomous performance mandate continues. Resume active compiler state
+below once this recovery/cleanup is complete; do not treat reboot as a new campaign.
+
 # Active: continuing Go-faithful performance and allocation work
 
 Resume under [START-HERE.md](../START-HERE.md)'s comprehensive ownership SOP.
@@ -7,9 +68,10 @@ Active source root is /home/greg/projects/typescript-dotnet on main.
 
 ## Integration20: accepted in this checkpoint
 
-Accepted predecessor source5951030; main documentation checkpoint3714e565.
-Production source matches the verified integration20 snapshot.
-No build/publication/regression/performance process remains active. Root session39453
+Current accepted source/acceptance checkpoint3f466095 (integration20).
+Predecessor source5951030; rejected-experiment documentation3714e565.
+Integration20 is preserved; the next dispatch family is now authorized below.
+All integration20/21 gates finished; current performance continuation is recorded above. Root session39453
 finished exit0: INTEGRATION20 SELECTED VALIDATION PASSED, original15304/15304 exact.
 
 Completed families:
@@ -61,13 +123,56 @@ claims. No package installation, source rebuild, new recording or SVG was needed
 Old17 predates18/19/20 changes; recovered required semantic/map work alone does not
 justify replacement algorithms or establish current20 bottlenecks.
 
-Root authorized scanner to prepare ONE current20 CPU recording with the exact frozen
-build-2 Native CLI, default runtime,99Hz userCPU and32768B DWARF snapshots. No rebuild,
-new viewer or private instrumentation. Capture only after acceptance/gates; root will
-run reviewed recipe, keep complete diagnostics/source/binary/config guards, then
-recover dominant workers perTID and assess current source-grounded remaining costs.
-Profiled elapsed time is not a speed benchmark. Continue implementation when concrete
-faithful opportunities are established; do not invent missing Go optimizations.
+Root captured ONE current20 CPU profile using exact frozen build-2 CLI after all gates,
+no rebuild/competingwork: integration-20/native-cpu/perf.data (8f56316c),5177samples,
+179MB,99Hz userCPU/32768B DWARF. Full10 diagnostics exact,242live/copy+binary/config
+guards pass, child expectedexit1. Controller session7273 exited1 only because strict
+stderr classifier encountered perf 'Failed to open /proc/schedstat'. Original report/
+assertion/data preserved. Verifier confirmed warning is optional CPU_DOMAIN_INFO header
+metadata, not CPU/switch recording:5177 SAMPLE,99404 SWITCH,0 LOST/THROTTLE, complete
+record boundaries. HEADER_EVENT_DESC metadata warning also exists on17; fixed attrs
+and leaves decode. Current CPU data usable with explicit limitations;
+DO NOT rerecord or silently rewrite failure. Scanner authorized leaf/thread/loss pass
+then separate dominantTID decoder processes using proven libdw workaround. Support
+closed historical recoveryreview39b6cde2 and available for current independent review.
+Current recovery complete:2981 selectedworker samples,2888multiframe,88.483%workerCPU.
+Current leaf casts4.21%all sampleduserCPU, dictionary9.52%, GC-runtime34.98% (includes
+allocationhelpers); dedicatedGC/BGC33.80% overlaps, do not sum. Fullsources/callers
+under integration20/native-cpu/per-tid-recovery/analysis.json. No inferred wallgain.
+Current capture result independentreview8a5a47c8; support reviewing attribution.
+
+Root AUTHORIZED next complete concrete payload-dispatch family (scanner implementation,
+verification independent review): AST/Type/PseudoType concrete AsX and matching generators.
+Standard C# fastpath `this as Concrete ?? (Concrete)data` removes redundant intermediate
+base-payload check on valid objects, retains original bare-header null and mismatched
+payload exception via cold fallback. Go AsX uses checked type assertions, NOT unchecked
+casts: no Unsafe.As. Preserve real nullable predicates, Node Base-named public interfaces
+and Type embedded virtual overrides; don't flatten Mapper virtual dispatch blindly.
+Concrete218accessors and full virtualowner8 implemented, independentsourceACK0210bc3b;
+final2sharedcontrols independentlyreviewed933af5ff. Source and buildmetadata frozen.
+Verifier added2existing shared control bodies, originalcasecounts/assertions unchanged.
+Root expanded sameconnectedfamily after sourceassessment: six Type embedded accessors
+can become base virtual originalforwarding +TypeData override originalnildefaults,
+retaining all custom/concrete overrides while removing redundant intermediate RTTI.
+Scanner also owns complete analogous Node/Mapper forwarding joins where equivalent;
+coordinate independentreview of generatedvisibility/abstractmethods and cached
+SubtreeFactsValue recursion. No cachealgorithm change. Node IterChildren internalpayload
+vs publicwrapper needs explicit visibility adaptation or retained guard if incompatible.
+Preserve original baseforwarding behavior for bareheaders. No direct-predicate bypass.
+Complete all applicable manual/generated family sites with source mapping, not just
+sampled hot methods. Integration21/build-1 passed10.27s zero warnings/errors, compiler2dca9be631dfb3051467a1e4ac41aaf29cb1591837aa6b0b38099b8c5a9042b9.
+Actual Native FIRST passed16.48wall/61.68CPU/8,657,716KiBRSS, full10 exact/all242guards.
+Reversepaired baseline20/candidate21 completed60316: baseline15.36/17.11wall,
+candidate16.84/15.55; medians16.235/16.195wall,64.685/65.48CPU,
+8,887,960/8,548,110KiBRSS. No meaningful demonstrated speedup;2observations each.
+Actual firstpublication independentACK4eb3ad28, pairedACK0d8afb6e. Root decides
+standard faithful virtual dispatch removes authoredredundanthop, qualifybehavior
+without speedup claim. Original regression session27376 was interrupted by reboot;
+reviewed durable continuation completed59438 with full15304 exact. Final ACK73497dc8
+includes managed/Native controls and actual compiler/application dependency bindings.
+No new allocation capture needed for dispatch-only family. Source/metadata freeze lifted.
+Current runtime-policy investigation appears at top; no map algorithm rewrite or
+rejectedSymbol arena revival from required lookup hotspots.
 
 ## Preserved rejected experiment and runtime decision
 

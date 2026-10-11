@@ -664,5 +664,170 @@
         "sha256": "c6839618da8de86da4af236ad4d600cb7c9608f075f6376df45a34c136cf2e53"
       }
     }
+  },
+  "checkedPayloadDispatch": {
+    "status": "accepted integration21 complete connected checked/virtual payload dispatch family",
+    "compilerSha256": "2dca9be631dfb3051467a1e4ac41aaf29cb1591837aa6b0b38099b8c5a9042b9",
+    "nativeCliSha256": "acf3b93ec1740077c226db3a96b9c3d96c1c87d653dbf46641e8467ecf25f4dd",
+    "scope": "218 concrete checked accessors and20 forwarding slots across Node/Type/Mapper;8 production/generator files,2 existing shared control bodies. Original fallback exceptions, genuine overrides, iterator order and cache algorithms retained.",
+    "acceptanceCounts": {
+      "managedMixedProvenance": 1721,
+      "nativeFoundationOriginal": 3153,
+      "nativeFoundationShared": 87,
+      "nativeUtilitiesOriginal": 20,
+      "nativeProgramControls": 9,
+      "nativeOriginalNoEmit": 15304
+    },
+    "sourceGuards": {
+      "liveSourceFixtureFiles": 946,
+      "productionCopies": 242,
+      "baselineFiles": 13,
+      "actualNativeApplicationBindings": 4
+    },
+    "recovery": {
+      "interruptedAndResumed": true,
+      "uninterruptedPassClaimed": false,
+      "originalCompleteRows": 8832,
+      "originalDurableResultRows": 6784,
+      "reconstructedMissingMetadataRows": 2048,
+      "newContinuationRows": 6472,
+      "basis": "Preserved complete actual original rows independently exact;53\u201368 result metadata lost at reboot, transparently reconstructed using reviewed sequential controller reaching next chunk69 plus progress8832. Original raw files untouched; remaining51chunks executed separately. No fabricated exit metadata."
+    },
+    "dispatchTiming": {
+      "baselineWallSeconds": [
+        15.36,
+        17.11
+      ],
+      "candidateWallSeconds": [
+        16.84,
+        15.55
+      ],
+      "wallMedianSeconds": {
+        "baseline": 16.235,
+        "candidate": 16.195
+      },
+      "interpretation": "Essentially flat within observed variance; no demonstrated repeatable speedup."
+    },
+    "gcBackgroundScreen": {
+      "status": "Four guarded runs exact; default policy retained pending investigation",
+      "binarySha256": "acf3b93ec1740077c226db3a96b9c3d96c1c87d653dbf46641e8467ecf25f4dd",
+      "onlyCandidateOverride": {
+        "DOTNET_gcConcurrent": "0"
+      },
+      "order": [
+        "default",
+        "batch",
+        "batch",
+        "default"
+      ],
+      "runs": [
+        {
+          "variant": "default",
+          "wallSeconds": 20.34,
+          "cpuSeconds": 76.30000000000001,
+          "peakResidentKiB": 8774380,
+          "exitCode": 1,
+          "completeTenDiagnosticJsonExact": true,
+          "stderrEmpty": true
+        },
+        {
+          "variant": "batch",
+          "wallSeconds": 18.3,
+          "cpuSeconds": 77.41,
+          "peakResidentKiB": 9401436,
+          "exitCode": 1,
+          "completeTenDiagnosticJsonExact": true,
+          "stderrEmpty": true
+        },
+        {
+          "variant": "batch",
+          "wallSeconds": 18.54,
+          "cpuSeconds": 77.62,
+          "peakResidentKiB": 8836464,
+          "exitCode": 1,
+          "completeTenDiagnosticJsonExact": true,
+          "stderrEmpty": true
+        },
+        {
+          "variant": "default",
+          "wallSeconds": 18.95,
+          "cpuSeconds": 64.83,
+          "peakResidentKiB": 8487860,
+          "exitCode": 1,
+          "completeTenDiagnosticJsonExact": true,
+          "stderrEmpty": true
+        }
+      ],
+      "medians": {
+        "default": {
+          "wallSeconds": 19.645,
+          "cpuSeconds": 70.565,
+          "peakResidentKiB": 8631120.0
+        },
+        "batch": {
+          "wallSeconds": 18.42,
+          "cpuSeconds": 77.515,
+          "peakResidentKiB": 9118950.0
+        }
+      },
+      "wallBestMedianRangeSeconds": {
+        "default": {
+          "best": 18.95,
+          "median": 19.645,
+          "range": [
+            18.95,
+            20.34
+          ]
+        },
+        "batch": {
+          "best": 18.3,
+          "median": 18.42,
+          "range": [
+            18.3,
+            18.54
+          ]
+        }
+      },
+      "interpretation": "Batch wall median lower in this two-observation screen, CPU/RSS medians higher. Post-reboot defaults slower than prior21 timings; no isolated causality or repeatable improvement demonstrated. Default retained pending investigation; neither policy establishes <=1.2x pinned-Go target."
+    },
+    "performanceTarget": "Continue sane Go-faithful work toward Native VSCode wall <=1.2x pinned-Go equivalent files/settings; not met or accepted by this checkpoint.",
+    "evidence": {
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/build-result.json": {
+        "sha256": "d8705c4294b69abf27c5f7b9570b774abc9b2f116d7fe3ad57f0fb3822d5a10d"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/native/binding.json": {
+        "sha256": "bb75ff163c201dd3663456ec904b032617dd73dda414b17abcab71ae0e16264d"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/first-vscode/verification-peer-review.json": {
+        "sha256": "4eb3ad28027820d414150d50878af7a8dfdaedb0bbf1a9d02a255dba39974f3a"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/paired-timing/verification-peer-review.json": {
+        "sha256": "0d8afb6e3857c4e58b71d549761bbe92dbe03b1e5ef4b6b9ba1ebc847a26bfe1"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/selected-result-resumed.json": {
+        "sha256": "49870a9c2afb83b1a1ae323edafa00c69528850478f60434bf34fbe17597aa8a"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/native-noemit-continuation/result.json": {
+        "sha256": "ab3bb6bfcc5611f8ed815f3901a7f81a2801118f16d6a22f44f1cd657e700230"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/continuation-peer-review.json": {
+        "sha256": "8536f0736df03ec0e1f57699ead5abdbbc5583c2934e6a1a3a917f79c40f4321"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json": {
+        "sha256": "73497dc89c97a4a838ef28318ac451b5e59f8d09810c8dc265938ddfd189b97d"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/gc-background-screen/paired-timing/comparison.json": {
+        "sha256": "8bcb1768bf54a4bf90f4829929f5b36748c972000e70b3c83b33a53cee6b8865"
+      },
+      "artifacts/vscode-allocation-rollout/integration-21/gc-background-screen/recipe-independent-review.json": {
+        "sha256": "0a3133676e96cc537e075ad3b4fa4edf5a2142cb62022d5ea80e92df6c56705d"
+      },
+      "artifacts/vscode-checked-payload-dispatch/build/virtual-join/verification-peer-review.json": {
+        "sha256": "0210bc3b4bd0db7d5226b5a2d92367feb3e2e01bf986749378b87793e2a93154"
+      },
+      "artifacts/vscode-checked-payload-dispatch/controls/virtual-chain-successor/scanner-peer-review.json": {
+        "sha256": "933af5ffe75b7dbf3705aaa506e6ff9533988e9288e9b8ac847bc0dca5f582c2"
+      }
+    }
   }
 }

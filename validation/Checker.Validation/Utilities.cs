@@ -154,8 +154,63 @@ public static class Utilities
             throw new InvalidOperationException("Packed link lifetime control: " + message);
     }
 
+    private sealed class DispatchProbeType(ObjectType result) : TypeBase
+    {
+        public override ObjectType AsObjectType() => result;
+    }
+
+    private sealed class DispatchProbeMapper(Type result) : TypeMapperBase
+    {
+        internal Type Result = result;
+        internal override Type Map(Type type) => Result;
+        internal override TypeMapperKind Kind() => TypeMapperKind.Merged;
+        internal override bool MapsThisOnly() => true;
+    }
+
+    private static void PayloadDispatchControls()
+    {
+        Type intrinsic = new IntrinsicType();
+        var bare = new Type();
+        Require(ReferenceEquals(intrinsic, intrinsic.AsIntrinsicType()) && bare.AsIntrinsicType() is null,
+            "concrete Type views retain canonical identity and the bare header's null result");
+        bool wrongType = false;
+        try { intrinsic.AsLiteralType(); }
+        catch (InvalidCastException) { wrongType = true; }
+        Require(wrongType, "a mismatched Type view retains its checked cast failure");
+        Type objectType = new ObjectType();
+        Require(ReferenceEquals(objectType, objectType.AsObjectType()) && intrinsic.AsObjectType() is null,
+            "embedded Type views retain identity and the nonembedding null result");
+        bool bareEmbedded = false;
+        try { bare.AsObjectType(); }
+        catch (NullReferenceException) { bareEmbedded = true; }
+        Require(bareEmbedded, "a bare Type header retains the embedded view's null dispatch failure");
+        Type dispatchProbe = new DispatchProbeType(objectType.AsObjectType());
+        Require(ReferenceEquals(dispatchProbe.AsObjectType(), objectType),
+            "a Type header call retains the actual custom embedded-view override");
+        var mapperPayload = new DispatchProbeMapper(intrinsic);
+        TypeMapper mapper = mapperPayload;
+        Require(ReferenceEquals(mapper.Map(objectType), intrinsic) && mapper.Kind() == TypeMapperKind.Merged &&
+            mapper.MapsThisOnly(), "Mapper header calls retain custom payload overrides");
+        mapperPayload.Result = objectType;
+        Require(ReferenceEquals(mapper.Map(intrinsic), objectType), "Mapper dispatch reads live payload state");
+        bool bareMapper = false;
+        try { new TypeMapper().Map(intrinsic); }
+        catch (NullReferenceException) { bareMapper = true; }
+        Require(bareMapper, "a bare Mapper header retains the payload dispatch's null failure");
+
+        var direct = TypeScript.PseudoChecking.PseudoType.NewPseudoTypeDirect(new NodeFactory().NewIdentifier("payload"));
+        var barePseudo = new TypeScript.PseudoChecking.PseudoType();
+        Require(ReferenceEquals(direct, direct.AsPseudoTypeDirect()) && barePseudo.AsPseudoTypeDirect() is null,
+            "concrete PseudoType views retain canonical identity and the bare header's null result");
+        bool wrongPseudo = false;
+        try { direct.AsPseudoTypeTuple(); }
+        catch (InvalidCastException) { wrongPseudo = true; }
+        Require(wrongPseudo, "a mismatched PseudoType view retains its checked cast failure");
+    }
+
     public static List<UtilityObservation> Run()
     {
+        PayloadDispatchControls();
         PackedGrowthControls();
         var observations = new List<UtilityObservation>();
         void Flag(string name, bool value) => observations.Add(new() { Name = name, BoolValue = value });

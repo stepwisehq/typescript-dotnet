@@ -263,8 +263,8 @@ for (recv,rtype,fn,ps,rt),body in fs:
 for model in ['JSDocLink', 'JSDocLinkPlain', 'JSDocLinkCode']:
     parts.append('    internal Node Update'+model+'WithFragments('+model+' node, Node name, JSDocTextFragments text)\n    {\n        if (name != node.name || !ReferenceEquals(text, node.TextFragments))\n            return Ast.UpdateNode(this.New'+model+'WithFragments(name, text), node.AsNode(), hooks);\n        return node.AsNode();\n    }')
 parts.append('}\npublic partial class Node\n{')
-for n in concrete:parts.append('    public '+n+' As'+n+'() => ('+n+')data;')
-parts.append('    public SourceFile AsSourceFile() => (SourceFile)data;')
+for n in concrete:parts.append('    public '+n+' As'+n+'() => this as '+n+' ?? ('+n+')data;')
+parts.append('    public SourceFile AsSourceFile() => this as SourceFile ?? (SourceFile)data;')
 parts.append('}\n')
 # Generated kind predicates, mechanically preserve switches/range conditions.
 parts.append('public static partial class Ast\n{')

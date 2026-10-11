@@ -76,11 +76,11 @@ public partial class Node
     public int End() => Loc.End();
     public short KindValue() => (short)Kind;
     public string KindString() => Kind.String();
-    public SubtreeFacts SubtreeFacts() => (SubtreeFacts)data.SubtreeFactsValue();
-    internal uint SubtreeFactsValue() => data.SubtreeFactsValue();
-    public Node Name() => data.Name();
-    public ModifierList Modifiers() => data.Modifiers();
-    public void SetModifiers(ModifierList modifiers) => data.SetModifiers(modifiers);
+    public SubtreeFacts SubtreeFacts() => (SubtreeFacts)SubtreeFactsValue();
+    internal virtual uint SubtreeFactsValue() => data.SubtreeFactsValue();
+    public virtual Node Name() => data.Name();
+    public virtual ModifierList Modifiers() => data.Modifiers();
+    public virtual void SetModifiers(ModifierList modifiers) => data.SetModifiers(modifiers);
     public FunctionLikeBase FunctionLikeData() => data as FunctionLikeBase;
     public ClassLikeBase ClassLikeData() => data as ClassLikeBase;
     public BodyBase BodyData() => data as BodyBase;
@@ -106,10 +106,10 @@ public partial class Node
     public Slice<Node> Comments() => CommentList()?.Nodes ?? default;
     public Slice<Node> Properties() => PropertyList()?.Nodes ?? default;
     public Slice<Node> Elements() => ElementList()?.Nodes ?? default;
-    public bool ForEachChild(Visitor visitor) => data.ForEachChild(visitor);
-    public string DataType() => data.DataType();
-    public IEnumerable<SyntaxField> SyntaxFields() => data.SyntaxFields();
-    public IEnumerable<Node> IterChildren() => data.IterChildren();
+    public virtual bool ForEachChild(Visitor visitor) => data.ForEachChild(visitor);
+    public virtual string DataType() => data.DataType();
+    public virtual IEnumerable<SyntaxField> SyntaxFields() => data.SyntaxFields();
+    public virtual IEnumerable<Node> IterChildren() => data.IterChildren();
     public bool Contains(Node descendant)
     {
         for (var n = descendant; n is not null; n = n.Parent)
@@ -176,13 +176,14 @@ public partial class Node
     public bool IsJSDoc() => Kind == Kind.JSDoc;
     public Slice<Node> JSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? default : (file ?? Ast.GetSourceFileOfNode(this))?.JSDoc(this) ?? default;
     public Slice<Node> EagerJSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? default : (file ?? Ast.GetSourceFileOfNode(this))?.EagerJSDoc(this) ?? default;
-    public Node Clone(NodeFactoryCoercible factory) => data.Clone(factory);
-    public Node VisitEachChild(NodeVisitor visitor) => data.VisitEachChild(visitor);
+    public virtual Node Clone(NodeFactoryCoercible factory) => data.Clone(factory);
+    public virtual Node VisitEachChild(NodeVisitor visitor) => data.VisitEachChild(visitor);
 }
 
 // ast.go:1210/1252 embeds the common Node header in each concrete payload.
-// CLR inheritance keeps that header and payload in one object. Node's nonvirtual
-// dispatchers still call the distinct virtual NodeData implementation surface.
+// CLR inheritance keeps that header and payload in one object. Node's virtual
+// surface dispatches directly to the payload override; bare headers retain the
+// original null-view forwarding fallback.
 public abstract partial class NodeData : Node, INodeData
 {
     internal virtual uint ComputeSubtreeFacts() => 0;
@@ -192,25 +193,25 @@ public abstract partial class NodeData : Node, INodeData
     internal virtual uint CachedSubtreeFacts => 0;
 
     // ast.go:1234. Ordinary payloads compute without a retained cache field.
-    internal new virtual uint SubtreeFactsValue() => ComputeSubtreeFacts();
+    internal override uint SubtreeFactsValue() => ComputeSubtreeFacts();
 
-    public new virtual Node Name() => null;
-    public new virtual ModifierList Modifiers() => null;
-    public new virtual void SetModifiers(ModifierList value)
+    public override Node Name() => null;
+    public override ModifierList Modifiers() => null;
+    public override void SetModifiers(ModifierList value)
     {
     }
 
-    public new virtual bool ForEachChild(Visitor visitor) => false;
-    internal new virtual IEnumerable<Node> IterChildren()
+    public override bool ForEachChild(Visitor visitor) => false;
+    public override IEnumerable<Node> IterChildren()
     {
         yield break;
     }
 
-    public new virtual Node Clone(NodeFactoryCoercible factory) => null;
-    public new virtual Node VisitEachChild(NodeVisitor visitor) => AsNode();
-    public new abstract string DataType();
-    public new abstract IEnumerable<SyntaxField> SyntaxFields();
-    public new virtual IEnumerable<SyntaxField> BoundFields()
+    public override Node Clone(NodeFactoryCoercible factory) => null;
+    public override Node VisitEachChild(NodeVisitor visitor) => AsNode();
+    public abstract override string DataType();
+    public abstract override IEnumerable<SyntaxField> SyntaxFields();
+    public override IEnumerable<SyntaxField> BoundFields()
     {
         yield break;
     }
@@ -704,7 +705,7 @@ public partial class Node
     public Symbol Symbol() => DeclarationData()?.Symbol;
     public Symbol LocalSymbol() => ExportableData()?.LocalSymbol;
     public SymbolTable Locals() => LocalsContainerData()?.Locals;
-    public IEnumerable<SyntaxField> BoundFields() => data.BoundFields();
+    public virtual IEnumerable<SyntaxField> BoundFields() => data.BoundFields();
 }
 
 public sealed class PatternAmbientModule
@@ -5076,7 +5077,7 @@ public static partial class Ast
 // Generated by tools/generate-syntax-iterators.py from ast.go.
 public partial class SourceFile
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;

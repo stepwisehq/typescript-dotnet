@@ -13,7 +13,7 @@ public sealed class SyntheticExpression : NodeData, ExpressionBase
 
     public override bool ForEachChild(Visitor visitor) => Ast.Visit(visitor, TupleNameSource);
     public override Node VisitEachChild(NodeVisitor visitor) => visitor.Factory.UpdateSyntheticExpression(this, Type, IsSpread, visitor.VisitNode(TupleNameSource));
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (TupleNameSource != null)
             yield return TupleNameSource;
@@ -42,5 +42,5 @@ public sealed partial class NodeFactory
 
 public partial class Node
 {
-    public SyntheticExpression AsSyntheticExpression() => (SyntheticExpression)data;
+    public SyntheticExpression AsSyntheticExpression() => this as SyntheticExpression ?? (SyntheticExpression)data;
 }

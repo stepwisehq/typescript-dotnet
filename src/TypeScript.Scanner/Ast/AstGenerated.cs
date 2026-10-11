@@ -8396,197 +8396,197 @@ public sealed partial class NodeFactory
 
 public partial class Node
 {
-    public Token AsToken() => (Token)data;
-    public Identifier AsIdentifier() => (Identifier)data;
-    public PrivateIdentifier AsPrivateIdentifier() => (PrivateIdentifier)data;
-    public QualifiedName AsQualifiedName() => (QualifiedName)data;
-    public ComputedPropertyName AsComputedPropertyName() => (ComputedPropertyName)data;
-    public Decorator AsDecorator() => (Decorator)data;
-    public EmptyStatement AsEmptyStatement() => (EmptyStatement)data;
-    public IfStatement AsIfStatement() => (IfStatement)data;
-    public DoStatement AsDoStatement() => (DoStatement)data;
-    public WhileStatement AsWhileStatement() => (WhileStatement)data;
-    public ForStatement AsForStatement() => (ForStatement)data;
-    public ForInOrOfStatement AsForInOrOfStatement() => (ForInOrOfStatement)data;
-    public BreakStatement AsBreakStatement() => (BreakStatement)data;
-    public ContinueStatement AsContinueStatement() => (ContinueStatement)data;
-    public ReturnStatement AsReturnStatement() => (ReturnStatement)data;
-    public WithStatement AsWithStatement() => (WithStatement)data;
-    public SwitchStatement AsSwitchStatement() => (SwitchStatement)data;
-    public CaseBlock AsCaseBlock() => (CaseBlock)data;
-    public CaseOrDefaultClause AsCaseOrDefaultClause() => (CaseOrDefaultClause)data;
-    public ThrowStatement AsThrowStatement() => (ThrowStatement)data;
-    public TryStatement AsTryStatement() => (TryStatement)data;
-    public CatchClause AsCatchClause() => (CatchClause)data;
-    public DebuggerStatement AsDebuggerStatement() => (DebuggerStatement)data;
-    public LabeledStatement AsLabeledStatement() => (LabeledStatement)data;
-    public ExpressionStatement AsExpressionStatement() => (ExpressionStatement)data;
-    public Block AsBlock() => (Block)data;
-    public VariableStatement AsVariableStatement() => (VariableStatement)data;
-    public VariableDeclaration AsVariableDeclaration() => (VariableDeclaration)data;
-    public VariableDeclarationList AsVariableDeclarationList() => (VariableDeclarationList)data;
-    public BindingPattern AsBindingPattern() => (BindingPattern)data;
-    public ParameterDeclaration AsParameterDeclaration() => (ParameterDeclaration)data;
-    public BindingElement AsBindingElement() => (BindingElement)data;
-    public MissingDeclaration AsMissingDeclaration() => (MissingDeclaration)data;
-    public FunctionDeclaration AsFunctionDeclaration() => (FunctionDeclaration)data;
-    public ClassDeclaration AsClassDeclaration() => (ClassDeclaration)data;
-    public ClassExpression AsClassExpression() => (ClassExpression)data;
-    public HeritageClause AsHeritageClause() => (HeritageClause)data;
-    public InterfaceDeclaration AsInterfaceDeclaration() => (InterfaceDeclaration)data;
-    public TypeAliasDeclaration AsTypeAliasDeclaration() => (TypeAliasDeclaration)data;
-    public EnumMember AsEnumMember() => (EnumMember)data;
-    public EnumDeclaration AsEnumDeclaration() => (EnumDeclaration)data;
-    public ModuleBlock AsModuleBlock() => (ModuleBlock)data;
-    public NotEmittedStatement AsNotEmittedStatement() => (NotEmittedStatement)data;
-    public NotEmittedTypeElement AsNotEmittedTypeElement() => (NotEmittedTypeElement)data;
-    public ImportDeclaration AsImportDeclaration() => (ImportDeclaration)data;
-    public ExternalModuleReference AsExternalModuleReference() => (ExternalModuleReference)data;
-    public NamespaceImport AsNamespaceImport() => (NamespaceImport)data;
-    public NamedImports AsNamedImports() => (NamedImports)data;
-    public ExportAssignment AsExportAssignment() => (ExportAssignment)data;
-    public NamespaceExportDeclaration AsNamespaceExportDeclaration() => (NamespaceExportDeclaration)data;
-    public NamespaceExport AsNamespaceExport() => (NamespaceExport)data;
-    public NamedExports AsNamedExports() => (NamedExports)data;
-    public ExportSpecifier AsExportSpecifier() => (ExportSpecifier)data;
-    public CallSignatureDeclaration AsCallSignatureDeclaration() => (CallSignatureDeclaration)data;
-    public ConstructSignatureDeclaration AsConstructSignatureDeclaration() => (ConstructSignatureDeclaration)data;
-    public ConstructorDeclaration AsConstructorDeclaration() => (ConstructorDeclaration)data;
-    public GetAccessorDeclaration AsGetAccessorDeclaration() => (GetAccessorDeclaration)data;
-    public SetAccessorDeclaration AsSetAccessorDeclaration() => (SetAccessorDeclaration)data;
-    public IndexSignatureDeclaration AsIndexSignatureDeclaration() => (IndexSignatureDeclaration)data;
-    public MethodSignatureDeclaration AsMethodSignatureDeclaration() => (MethodSignatureDeclaration)data;
-    public MethodDeclaration AsMethodDeclaration() => (MethodDeclaration)data;
-    public PropertySignatureDeclaration AsPropertySignatureDeclaration() => (PropertySignatureDeclaration)data;
-    public PropertyDeclaration AsPropertyDeclaration() => (PropertyDeclaration)data;
-    public SemicolonClassElement AsSemicolonClassElement() => (SemicolonClassElement)data;
-    public ClassStaticBlockDeclaration AsClassStaticBlockDeclaration() => (ClassStaticBlockDeclaration)data;
-    public OmittedExpression AsOmittedExpression() => (OmittedExpression)data;
-    public KeywordExpression AsKeywordExpression() => (KeywordExpression)data;
-    public StringLiteral AsStringLiteral() => (StringLiteral)data;
-    public NumericLiteral AsNumericLiteral() => (NumericLiteral)data;
-    public BigIntLiteral AsBigIntLiteral() => (BigIntLiteral)data;
-    public RegularExpressionLiteral AsRegularExpressionLiteral() => (RegularExpressionLiteral)data;
-    public NoSubstitutionTemplateLiteral AsNoSubstitutionTemplateLiteral() => (NoSubstitutionTemplateLiteral)data;
-    public BinaryExpression AsBinaryExpression() => (BinaryExpression)data;
-    public PrefixUnaryExpression AsPrefixUnaryExpression() => (PrefixUnaryExpression)data;
-    public PostfixUnaryExpression AsPostfixUnaryExpression() => (PostfixUnaryExpression)data;
-    public YieldExpression AsYieldExpression() => (YieldExpression)data;
-    public ArrowFunction AsArrowFunction() => (ArrowFunction)data;
-    public FunctionExpression AsFunctionExpression() => (FunctionExpression)data;
-    public AsExpression AsAsExpression() => (AsExpression)data;
-    public SatisfiesExpression AsSatisfiesExpression() => (SatisfiesExpression)data;
-    public ConditionalExpression AsConditionalExpression() => (ConditionalExpression)data;
-    public PropertyAccessExpression AsPropertyAccessExpression() => (PropertyAccessExpression)data;
-    public ElementAccessExpression AsElementAccessExpression() => (ElementAccessExpression)data;
-    public CallExpression AsCallExpression() => (CallExpression)data;
-    public NewExpression AsNewExpression() => (NewExpression)data;
-    public MetaProperty AsMetaProperty() => (MetaProperty)data;
-    public NonNullExpression AsNonNullExpression() => (NonNullExpression)data;
-    public SpreadElement AsSpreadElement() => (SpreadElement)data;
-    public TemplateExpression AsTemplateExpression() => (TemplateExpression)data;
-    public TemplateSpan AsTemplateSpan() => (TemplateSpan)data;
-    public TaggedTemplateExpression AsTaggedTemplateExpression() => (TaggedTemplateExpression)data;
-    public ParenthesizedExpression AsParenthesizedExpression() => (ParenthesizedExpression)data;
-    public ArrayLiteralExpression AsArrayLiteralExpression() => (ArrayLiteralExpression)data;
-    public ObjectLiteralExpression AsObjectLiteralExpression() => (ObjectLiteralExpression)data;
-    public SpreadAssignment AsSpreadAssignment() => (SpreadAssignment)data;
-    public PropertyAssignment AsPropertyAssignment() => (PropertyAssignment)data;
-    public ShorthandPropertyAssignment AsShorthandPropertyAssignment() => (ShorthandPropertyAssignment)data;
-    public DeleteExpression AsDeleteExpression() => (DeleteExpression)data;
-    public TypeOfExpression AsTypeOfExpression() => (TypeOfExpression)data;
-    public VoidExpression AsVoidExpression() => (VoidExpression)data;
-    public AwaitExpression AsAwaitExpression() => (AwaitExpression)data;
-    public TypeAssertion AsTypeAssertion() => (TypeAssertion)data;
-    public KeywordTypeNode AsKeywordTypeNode() => (KeywordTypeNode)data;
-    public UnionTypeNode AsUnionTypeNode() => (UnionTypeNode)data;
-    public IntersectionTypeNode AsIntersectionTypeNode() => (IntersectionTypeNode)data;
-    public ConditionalTypeNode AsConditionalTypeNode() => (ConditionalTypeNode)data;
-    public TypeOperatorNode AsTypeOperatorNode() => (TypeOperatorNode)data;
-    public InferTypeNode AsInferTypeNode() => (InferTypeNode)data;
-    public ArrayTypeNode AsArrayTypeNode() => (ArrayTypeNode)data;
-    public IndexedAccessTypeNode AsIndexedAccessTypeNode() => (IndexedAccessTypeNode)data;
-    public TypeReferenceNode AsTypeReferenceNode() => (TypeReferenceNode)data;
-    public ExpressionWithTypeArguments AsExpressionWithTypeArguments() => (ExpressionWithTypeArguments)data;
-    public LiteralTypeNode AsLiteralTypeNode() => (LiteralTypeNode)data;
-    public ThisTypeNode AsThisTypeNode() => (ThisTypeNode)data;
-    public TypePredicateNode AsTypePredicateNode() => (TypePredicateNode)data;
-    public ImportAttribute AsImportAttribute() => (ImportAttribute)data;
-    public ImportAttributes AsImportAttributes() => (ImportAttributes)data;
-    public TypeQueryNode AsTypeQueryNode() => (TypeQueryNode)data;
-    public MappedTypeNode AsMappedTypeNode() => (MappedTypeNode)data;
-    public TypeLiteralNode AsTypeLiteralNode() => (TypeLiteralNode)data;
-    public TupleTypeNode AsTupleTypeNode() => (TupleTypeNode)data;
-    public NamedTupleMember AsNamedTupleMember() => (NamedTupleMember)data;
-    public OptionalTypeNode AsOptionalTypeNode() => (OptionalTypeNode)data;
-    public RestTypeNode AsRestTypeNode() => (RestTypeNode)data;
-    public ParenthesizedTypeNode AsParenthesizedTypeNode() => (ParenthesizedTypeNode)data;
-    public FunctionTypeNode AsFunctionTypeNode() => (FunctionTypeNode)data;
-    public ConstructorTypeNode AsConstructorTypeNode() => (ConstructorTypeNode)data;
-    public TemplateHead AsTemplateHead() => (TemplateHead)data;
-    public TemplateMiddle AsTemplateMiddle() => (TemplateMiddle)data;
-    public TemplateTail AsTemplateTail() => (TemplateTail)data;
-    public TemplateLiteralTypeNode AsTemplateLiteralTypeNode() => (TemplateLiteralTypeNode)data;
-    public TemplateLiteralTypeSpan AsTemplateLiteralTypeSpan() => (TemplateLiteralTypeSpan)data;
-    public PartiallyEmittedExpression AsPartiallyEmittedExpression() => (PartiallyEmittedExpression)data;
-    public JsxElement AsJsxElement() => (JsxElement)data;
-    public JsxAttributes AsJsxAttributes() => (JsxAttributes)data;
-    public JsxNamespacedName AsJsxNamespacedName() => (JsxNamespacedName)data;
-    public JsxOpeningElement AsJsxOpeningElement() => (JsxOpeningElement)data;
-    public JsxSelfClosingElement AsJsxSelfClosingElement() => (JsxSelfClosingElement)data;
-    public JsxFragment AsJsxFragment() => (JsxFragment)data;
-    public JsxOpeningFragment AsJsxOpeningFragment() => (JsxOpeningFragment)data;
-    public JsxClosingFragment AsJsxClosingFragment() => (JsxClosingFragment)data;
-    public JsxAttribute AsJsxAttribute() => (JsxAttribute)data;
-    public JsxSpreadAttribute AsJsxSpreadAttribute() => (JsxSpreadAttribute)data;
-    public JsxClosingElement AsJsxClosingElement() => (JsxClosingElement)data;
-    public JsxExpression AsJsxExpression() => (JsxExpression)data;
-    public JsxText AsJsxText() => (JsxText)data;
-    public SyntaxList AsSyntaxList() => (SyntaxList)data;
-    public JSDoc AsJSDoc() => (JSDoc)data;
-    public JSDocTypeExpression AsJSDocTypeExpression() => (JSDocTypeExpression)data;
-    public JSDocNonNullableType AsJSDocNonNullableType() => (JSDocNonNullableType)data;
-    public JSDocNullableType AsJSDocNullableType() => (JSDocNullableType)data;
-    public JSDocAllType AsJSDocAllType() => (JSDocAllType)data;
-    public JSDocVariadicType AsJSDocVariadicType() => (JSDocVariadicType)data;
-    public JSDocOptionalType AsJSDocOptionalType() => (JSDocOptionalType)data;
-    public JSDocTypeTag AsJSDocTypeTag() => (JSDocTypeTag)data;
-    public JSDocUnknownTag AsJSDocUnknownTag() => (JSDocUnknownTag)data;
-    public JSDocTemplateTag AsJSDocTemplateTag() => (JSDocTemplateTag)data;
-    public JSDocReturnTag AsJSDocReturnTag() => (JSDocReturnTag)data;
-    public JSDocPublicTag AsJSDocPublicTag() => (JSDocPublicTag)data;
-    public JSDocPrivateTag AsJSDocPrivateTag() => (JSDocPrivateTag)data;
-    public JSDocProtectedTag AsJSDocProtectedTag() => (JSDocProtectedTag)data;
-    public JSDocReadonlyTag AsJSDocReadonlyTag() => (JSDocReadonlyTag)data;
-    public JSDocOverrideTag AsJSDocOverrideTag() => (JSDocOverrideTag)data;
-    public JSDocDeprecatedTag AsJSDocDeprecatedTag() => (JSDocDeprecatedTag)data;
-    public JSDocSeeTag AsJSDocSeeTag() => (JSDocSeeTag)data;
-    public JSDocImplementsTag AsJSDocImplementsTag() => (JSDocImplementsTag)data;
-    public JSDocAugmentsTag AsJSDocAugmentsTag() => (JSDocAugmentsTag)data;
-    public JSDocSatisfiesTag AsJSDocSatisfiesTag() => (JSDocSatisfiesTag)data;
-    public JSDocThrowsTag AsJSDocThrowsTag() => (JSDocThrowsTag)data;
-    public JSDocThisTag AsJSDocThisTag() => (JSDocThisTag)data;
-    public JSDocImportTag AsJSDocImportTag() => (JSDocImportTag)data;
-    public JSDocCallbackTag AsJSDocCallbackTag() => (JSDocCallbackTag)data;
-    public JSDocOverloadTag AsJSDocOverloadTag() => (JSDocOverloadTag)data;
-    public JSDocTypedefTag AsJSDocTypedefTag() => (JSDocTypedefTag)data;
-    public JSDocSignature AsJSDocSignature() => (JSDocSignature)data;
-    public JSDocNameReference AsJSDocNameReference() => (JSDocNameReference)data;
-    public ModuleDeclaration AsModuleDeclaration() => (ModuleDeclaration)data;
-    public ImportEqualsDeclaration AsImportEqualsDeclaration() => (ImportEqualsDeclaration)data;
-    public ExportDeclaration AsExportDeclaration() => (ExportDeclaration)data;
-    public ImportTypeNode AsImportTypeNode() => (ImportTypeNode)data;
-    public ImportClause AsImportClause() => (ImportClause)data;
-    public ImportSpecifier AsImportSpecifier() => (ImportSpecifier)data;
-    public JSDocText AsJSDocText() => (JSDocText)data;
-    public JSDocLink AsJSDocLink() => (JSDocLink)data;
-    public JSDocLinkPlain AsJSDocLinkPlain() => (JSDocLinkPlain)data;
-    public JSDocLinkCode AsJSDocLinkCode() => (JSDocLinkCode)data;
-    public TypeParameterDeclaration AsTypeParameterDeclaration() => (TypeParameterDeclaration)data;
-    public SyntheticReferenceExpression AsSyntheticReferenceExpression() => (SyntheticReferenceExpression)data;
-    public JSDocTypeLiteral AsJSDocTypeLiteral() => (JSDocTypeLiteral)data;
-    public JSDocParameterOrPropertyTag AsJSDocParameterOrPropertyTag() => (JSDocParameterOrPropertyTag)data;
-    public SourceFile AsSourceFile() => (SourceFile)data;
+    public Token AsToken() => this as Token ?? (Token)data;
+    public Identifier AsIdentifier() => this as Identifier ?? (Identifier)data;
+    public PrivateIdentifier AsPrivateIdentifier() => this as PrivateIdentifier ?? (PrivateIdentifier)data;
+    public QualifiedName AsQualifiedName() => this as QualifiedName ?? (QualifiedName)data;
+    public ComputedPropertyName AsComputedPropertyName() => this as ComputedPropertyName ?? (ComputedPropertyName)data;
+    public Decorator AsDecorator() => this as Decorator ?? (Decorator)data;
+    public EmptyStatement AsEmptyStatement() => this as EmptyStatement ?? (EmptyStatement)data;
+    public IfStatement AsIfStatement() => this as IfStatement ?? (IfStatement)data;
+    public DoStatement AsDoStatement() => this as DoStatement ?? (DoStatement)data;
+    public WhileStatement AsWhileStatement() => this as WhileStatement ?? (WhileStatement)data;
+    public ForStatement AsForStatement() => this as ForStatement ?? (ForStatement)data;
+    public ForInOrOfStatement AsForInOrOfStatement() => this as ForInOrOfStatement ?? (ForInOrOfStatement)data;
+    public BreakStatement AsBreakStatement() => this as BreakStatement ?? (BreakStatement)data;
+    public ContinueStatement AsContinueStatement() => this as ContinueStatement ?? (ContinueStatement)data;
+    public ReturnStatement AsReturnStatement() => this as ReturnStatement ?? (ReturnStatement)data;
+    public WithStatement AsWithStatement() => this as WithStatement ?? (WithStatement)data;
+    public SwitchStatement AsSwitchStatement() => this as SwitchStatement ?? (SwitchStatement)data;
+    public CaseBlock AsCaseBlock() => this as CaseBlock ?? (CaseBlock)data;
+    public CaseOrDefaultClause AsCaseOrDefaultClause() => this as CaseOrDefaultClause ?? (CaseOrDefaultClause)data;
+    public ThrowStatement AsThrowStatement() => this as ThrowStatement ?? (ThrowStatement)data;
+    public TryStatement AsTryStatement() => this as TryStatement ?? (TryStatement)data;
+    public CatchClause AsCatchClause() => this as CatchClause ?? (CatchClause)data;
+    public DebuggerStatement AsDebuggerStatement() => this as DebuggerStatement ?? (DebuggerStatement)data;
+    public LabeledStatement AsLabeledStatement() => this as LabeledStatement ?? (LabeledStatement)data;
+    public ExpressionStatement AsExpressionStatement() => this as ExpressionStatement ?? (ExpressionStatement)data;
+    public Block AsBlock() => this as Block ?? (Block)data;
+    public VariableStatement AsVariableStatement() => this as VariableStatement ?? (VariableStatement)data;
+    public VariableDeclaration AsVariableDeclaration() => this as VariableDeclaration ?? (VariableDeclaration)data;
+    public VariableDeclarationList AsVariableDeclarationList() => this as VariableDeclarationList ?? (VariableDeclarationList)data;
+    public BindingPattern AsBindingPattern() => this as BindingPattern ?? (BindingPattern)data;
+    public ParameterDeclaration AsParameterDeclaration() => this as ParameterDeclaration ?? (ParameterDeclaration)data;
+    public BindingElement AsBindingElement() => this as BindingElement ?? (BindingElement)data;
+    public MissingDeclaration AsMissingDeclaration() => this as MissingDeclaration ?? (MissingDeclaration)data;
+    public FunctionDeclaration AsFunctionDeclaration() => this as FunctionDeclaration ?? (FunctionDeclaration)data;
+    public ClassDeclaration AsClassDeclaration() => this as ClassDeclaration ?? (ClassDeclaration)data;
+    public ClassExpression AsClassExpression() => this as ClassExpression ?? (ClassExpression)data;
+    public HeritageClause AsHeritageClause() => this as HeritageClause ?? (HeritageClause)data;
+    public InterfaceDeclaration AsInterfaceDeclaration() => this as InterfaceDeclaration ?? (InterfaceDeclaration)data;
+    public TypeAliasDeclaration AsTypeAliasDeclaration() => this as TypeAliasDeclaration ?? (TypeAliasDeclaration)data;
+    public EnumMember AsEnumMember() => this as EnumMember ?? (EnumMember)data;
+    public EnumDeclaration AsEnumDeclaration() => this as EnumDeclaration ?? (EnumDeclaration)data;
+    public ModuleBlock AsModuleBlock() => this as ModuleBlock ?? (ModuleBlock)data;
+    public NotEmittedStatement AsNotEmittedStatement() => this as NotEmittedStatement ?? (NotEmittedStatement)data;
+    public NotEmittedTypeElement AsNotEmittedTypeElement() => this as NotEmittedTypeElement ?? (NotEmittedTypeElement)data;
+    public ImportDeclaration AsImportDeclaration() => this as ImportDeclaration ?? (ImportDeclaration)data;
+    public ExternalModuleReference AsExternalModuleReference() => this as ExternalModuleReference ?? (ExternalModuleReference)data;
+    public NamespaceImport AsNamespaceImport() => this as NamespaceImport ?? (NamespaceImport)data;
+    public NamedImports AsNamedImports() => this as NamedImports ?? (NamedImports)data;
+    public ExportAssignment AsExportAssignment() => this as ExportAssignment ?? (ExportAssignment)data;
+    public NamespaceExportDeclaration AsNamespaceExportDeclaration() => this as NamespaceExportDeclaration ?? (NamespaceExportDeclaration)data;
+    public NamespaceExport AsNamespaceExport() => this as NamespaceExport ?? (NamespaceExport)data;
+    public NamedExports AsNamedExports() => this as NamedExports ?? (NamedExports)data;
+    public ExportSpecifier AsExportSpecifier() => this as ExportSpecifier ?? (ExportSpecifier)data;
+    public CallSignatureDeclaration AsCallSignatureDeclaration() => this as CallSignatureDeclaration ?? (CallSignatureDeclaration)data;
+    public ConstructSignatureDeclaration AsConstructSignatureDeclaration() => this as ConstructSignatureDeclaration ?? (ConstructSignatureDeclaration)data;
+    public ConstructorDeclaration AsConstructorDeclaration() => this as ConstructorDeclaration ?? (ConstructorDeclaration)data;
+    public GetAccessorDeclaration AsGetAccessorDeclaration() => this as GetAccessorDeclaration ?? (GetAccessorDeclaration)data;
+    public SetAccessorDeclaration AsSetAccessorDeclaration() => this as SetAccessorDeclaration ?? (SetAccessorDeclaration)data;
+    public IndexSignatureDeclaration AsIndexSignatureDeclaration() => this as IndexSignatureDeclaration ?? (IndexSignatureDeclaration)data;
+    public MethodSignatureDeclaration AsMethodSignatureDeclaration() => this as MethodSignatureDeclaration ?? (MethodSignatureDeclaration)data;
+    public MethodDeclaration AsMethodDeclaration() => this as MethodDeclaration ?? (MethodDeclaration)data;
+    public PropertySignatureDeclaration AsPropertySignatureDeclaration() => this as PropertySignatureDeclaration ?? (PropertySignatureDeclaration)data;
+    public PropertyDeclaration AsPropertyDeclaration() => this as PropertyDeclaration ?? (PropertyDeclaration)data;
+    public SemicolonClassElement AsSemicolonClassElement() => this as SemicolonClassElement ?? (SemicolonClassElement)data;
+    public ClassStaticBlockDeclaration AsClassStaticBlockDeclaration() => this as ClassStaticBlockDeclaration ?? (ClassStaticBlockDeclaration)data;
+    public OmittedExpression AsOmittedExpression() => this as OmittedExpression ?? (OmittedExpression)data;
+    public KeywordExpression AsKeywordExpression() => this as KeywordExpression ?? (KeywordExpression)data;
+    public StringLiteral AsStringLiteral() => this as StringLiteral ?? (StringLiteral)data;
+    public NumericLiteral AsNumericLiteral() => this as NumericLiteral ?? (NumericLiteral)data;
+    public BigIntLiteral AsBigIntLiteral() => this as BigIntLiteral ?? (BigIntLiteral)data;
+    public RegularExpressionLiteral AsRegularExpressionLiteral() => this as RegularExpressionLiteral ?? (RegularExpressionLiteral)data;
+    public NoSubstitutionTemplateLiteral AsNoSubstitutionTemplateLiteral() => this as NoSubstitutionTemplateLiteral ?? (NoSubstitutionTemplateLiteral)data;
+    public BinaryExpression AsBinaryExpression() => this as BinaryExpression ?? (BinaryExpression)data;
+    public PrefixUnaryExpression AsPrefixUnaryExpression() => this as PrefixUnaryExpression ?? (PrefixUnaryExpression)data;
+    public PostfixUnaryExpression AsPostfixUnaryExpression() => this as PostfixUnaryExpression ?? (PostfixUnaryExpression)data;
+    public YieldExpression AsYieldExpression() => this as YieldExpression ?? (YieldExpression)data;
+    public ArrowFunction AsArrowFunction() => this as ArrowFunction ?? (ArrowFunction)data;
+    public FunctionExpression AsFunctionExpression() => this as FunctionExpression ?? (FunctionExpression)data;
+    public AsExpression AsAsExpression() => this as AsExpression ?? (AsExpression)data;
+    public SatisfiesExpression AsSatisfiesExpression() => this as SatisfiesExpression ?? (SatisfiesExpression)data;
+    public ConditionalExpression AsConditionalExpression() => this as ConditionalExpression ?? (ConditionalExpression)data;
+    public PropertyAccessExpression AsPropertyAccessExpression() => this as PropertyAccessExpression ?? (PropertyAccessExpression)data;
+    public ElementAccessExpression AsElementAccessExpression() => this as ElementAccessExpression ?? (ElementAccessExpression)data;
+    public CallExpression AsCallExpression() => this as CallExpression ?? (CallExpression)data;
+    public NewExpression AsNewExpression() => this as NewExpression ?? (NewExpression)data;
+    public MetaProperty AsMetaProperty() => this as MetaProperty ?? (MetaProperty)data;
+    public NonNullExpression AsNonNullExpression() => this as NonNullExpression ?? (NonNullExpression)data;
+    public SpreadElement AsSpreadElement() => this as SpreadElement ?? (SpreadElement)data;
+    public TemplateExpression AsTemplateExpression() => this as TemplateExpression ?? (TemplateExpression)data;
+    public TemplateSpan AsTemplateSpan() => this as TemplateSpan ?? (TemplateSpan)data;
+    public TaggedTemplateExpression AsTaggedTemplateExpression() => this as TaggedTemplateExpression ?? (TaggedTemplateExpression)data;
+    public ParenthesizedExpression AsParenthesizedExpression() => this as ParenthesizedExpression ?? (ParenthesizedExpression)data;
+    public ArrayLiteralExpression AsArrayLiteralExpression() => this as ArrayLiteralExpression ?? (ArrayLiteralExpression)data;
+    public ObjectLiteralExpression AsObjectLiteralExpression() => this as ObjectLiteralExpression ?? (ObjectLiteralExpression)data;
+    public SpreadAssignment AsSpreadAssignment() => this as SpreadAssignment ?? (SpreadAssignment)data;
+    public PropertyAssignment AsPropertyAssignment() => this as PropertyAssignment ?? (PropertyAssignment)data;
+    public ShorthandPropertyAssignment AsShorthandPropertyAssignment() => this as ShorthandPropertyAssignment ?? (ShorthandPropertyAssignment)data;
+    public DeleteExpression AsDeleteExpression() => this as DeleteExpression ?? (DeleteExpression)data;
+    public TypeOfExpression AsTypeOfExpression() => this as TypeOfExpression ?? (TypeOfExpression)data;
+    public VoidExpression AsVoidExpression() => this as VoidExpression ?? (VoidExpression)data;
+    public AwaitExpression AsAwaitExpression() => this as AwaitExpression ?? (AwaitExpression)data;
+    public TypeAssertion AsTypeAssertion() => this as TypeAssertion ?? (TypeAssertion)data;
+    public KeywordTypeNode AsKeywordTypeNode() => this as KeywordTypeNode ?? (KeywordTypeNode)data;
+    public UnionTypeNode AsUnionTypeNode() => this as UnionTypeNode ?? (UnionTypeNode)data;
+    public IntersectionTypeNode AsIntersectionTypeNode() => this as IntersectionTypeNode ?? (IntersectionTypeNode)data;
+    public ConditionalTypeNode AsConditionalTypeNode() => this as ConditionalTypeNode ?? (ConditionalTypeNode)data;
+    public TypeOperatorNode AsTypeOperatorNode() => this as TypeOperatorNode ?? (TypeOperatorNode)data;
+    public InferTypeNode AsInferTypeNode() => this as InferTypeNode ?? (InferTypeNode)data;
+    public ArrayTypeNode AsArrayTypeNode() => this as ArrayTypeNode ?? (ArrayTypeNode)data;
+    public IndexedAccessTypeNode AsIndexedAccessTypeNode() => this as IndexedAccessTypeNode ?? (IndexedAccessTypeNode)data;
+    public TypeReferenceNode AsTypeReferenceNode() => this as TypeReferenceNode ?? (TypeReferenceNode)data;
+    public ExpressionWithTypeArguments AsExpressionWithTypeArguments() => this as ExpressionWithTypeArguments ?? (ExpressionWithTypeArguments)data;
+    public LiteralTypeNode AsLiteralTypeNode() => this as LiteralTypeNode ?? (LiteralTypeNode)data;
+    public ThisTypeNode AsThisTypeNode() => this as ThisTypeNode ?? (ThisTypeNode)data;
+    public TypePredicateNode AsTypePredicateNode() => this as TypePredicateNode ?? (TypePredicateNode)data;
+    public ImportAttribute AsImportAttribute() => this as ImportAttribute ?? (ImportAttribute)data;
+    public ImportAttributes AsImportAttributes() => this as ImportAttributes ?? (ImportAttributes)data;
+    public TypeQueryNode AsTypeQueryNode() => this as TypeQueryNode ?? (TypeQueryNode)data;
+    public MappedTypeNode AsMappedTypeNode() => this as MappedTypeNode ?? (MappedTypeNode)data;
+    public TypeLiteralNode AsTypeLiteralNode() => this as TypeLiteralNode ?? (TypeLiteralNode)data;
+    public TupleTypeNode AsTupleTypeNode() => this as TupleTypeNode ?? (TupleTypeNode)data;
+    public NamedTupleMember AsNamedTupleMember() => this as NamedTupleMember ?? (NamedTupleMember)data;
+    public OptionalTypeNode AsOptionalTypeNode() => this as OptionalTypeNode ?? (OptionalTypeNode)data;
+    public RestTypeNode AsRestTypeNode() => this as RestTypeNode ?? (RestTypeNode)data;
+    public ParenthesizedTypeNode AsParenthesizedTypeNode() => this as ParenthesizedTypeNode ?? (ParenthesizedTypeNode)data;
+    public FunctionTypeNode AsFunctionTypeNode() => this as FunctionTypeNode ?? (FunctionTypeNode)data;
+    public ConstructorTypeNode AsConstructorTypeNode() => this as ConstructorTypeNode ?? (ConstructorTypeNode)data;
+    public TemplateHead AsTemplateHead() => this as TemplateHead ?? (TemplateHead)data;
+    public TemplateMiddle AsTemplateMiddle() => this as TemplateMiddle ?? (TemplateMiddle)data;
+    public TemplateTail AsTemplateTail() => this as TemplateTail ?? (TemplateTail)data;
+    public TemplateLiteralTypeNode AsTemplateLiteralTypeNode() => this as TemplateLiteralTypeNode ?? (TemplateLiteralTypeNode)data;
+    public TemplateLiteralTypeSpan AsTemplateLiteralTypeSpan() => this as TemplateLiteralTypeSpan ?? (TemplateLiteralTypeSpan)data;
+    public PartiallyEmittedExpression AsPartiallyEmittedExpression() => this as PartiallyEmittedExpression ?? (PartiallyEmittedExpression)data;
+    public JsxElement AsJsxElement() => this as JsxElement ?? (JsxElement)data;
+    public JsxAttributes AsJsxAttributes() => this as JsxAttributes ?? (JsxAttributes)data;
+    public JsxNamespacedName AsJsxNamespacedName() => this as JsxNamespacedName ?? (JsxNamespacedName)data;
+    public JsxOpeningElement AsJsxOpeningElement() => this as JsxOpeningElement ?? (JsxOpeningElement)data;
+    public JsxSelfClosingElement AsJsxSelfClosingElement() => this as JsxSelfClosingElement ?? (JsxSelfClosingElement)data;
+    public JsxFragment AsJsxFragment() => this as JsxFragment ?? (JsxFragment)data;
+    public JsxOpeningFragment AsJsxOpeningFragment() => this as JsxOpeningFragment ?? (JsxOpeningFragment)data;
+    public JsxClosingFragment AsJsxClosingFragment() => this as JsxClosingFragment ?? (JsxClosingFragment)data;
+    public JsxAttribute AsJsxAttribute() => this as JsxAttribute ?? (JsxAttribute)data;
+    public JsxSpreadAttribute AsJsxSpreadAttribute() => this as JsxSpreadAttribute ?? (JsxSpreadAttribute)data;
+    public JsxClosingElement AsJsxClosingElement() => this as JsxClosingElement ?? (JsxClosingElement)data;
+    public JsxExpression AsJsxExpression() => this as JsxExpression ?? (JsxExpression)data;
+    public JsxText AsJsxText() => this as JsxText ?? (JsxText)data;
+    public SyntaxList AsSyntaxList() => this as SyntaxList ?? (SyntaxList)data;
+    public JSDoc AsJSDoc() => this as JSDoc ?? (JSDoc)data;
+    public JSDocTypeExpression AsJSDocTypeExpression() => this as JSDocTypeExpression ?? (JSDocTypeExpression)data;
+    public JSDocNonNullableType AsJSDocNonNullableType() => this as JSDocNonNullableType ?? (JSDocNonNullableType)data;
+    public JSDocNullableType AsJSDocNullableType() => this as JSDocNullableType ?? (JSDocNullableType)data;
+    public JSDocAllType AsJSDocAllType() => this as JSDocAllType ?? (JSDocAllType)data;
+    public JSDocVariadicType AsJSDocVariadicType() => this as JSDocVariadicType ?? (JSDocVariadicType)data;
+    public JSDocOptionalType AsJSDocOptionalType() => this as JSDocOptionalType ?? (JSDocOptionalType)data;
+    public JSDocTypeTag AsJSDocTypeTag() => this as JSDocTypeTag ?? (JSDocTypeTag)data;
+    public JSDocUnknownTag AsJSDocUnknownTag() => this as JSDocUnknownTag ?? (JSDocUnknownTag)data;
+    public JSDocTemplateTag AsJSDocTemplateTag() => this as JSDocTemplateTag ?? (JSDocTemplateTag)data;
+    public JSDocReturnTag AsJSDocReturnTag() => this as JSDocReturnTag ?? (JSDocReturnTag)data;
+    public JSDocPublicTag AsJSDocPublicTag() => this as JSDocPublicTag ?? (JSDocPublicTag)data;
+    public JSDocPrivateTag AsJSDocPrivateTag() => this as JSDocPrivateTag ?? (JSDocPrivateTag)data;
+    public JSDocProtectedTag AsJSDocProtectedTag() => this as JSDocProtectedTag ?? (JSDocProtectedTag)data;
+    public JSDocReadonlyTag AsJSDocReadonlyTag() => this as JSDocReadonlyTag ?? (JSDocReadonlyTag)data;
+    public JSDocOverrideTag AsJSDocOverrideTag() => this as JSDocOverrideTag ?? (JSDocOverrideTag)data;
+    public JSDocDeprecatedTag AsJSDocDeprecatedTag() => this as JSDocDeprecatedTag ?? (JSDocDeprecatedTag)data;
+    public JSDocSeeTag AsJSDocSeeTag() => this as JSDocSeeTag ?? (JSDocSeeTag)data;
+    public JSDocImplementsTag AsJSDocImplementsTag() => this as JSDocImplementsTag ?? (JSDocImplementsTag)data;
+    public JSDocAugmentsTag AsJSDocAugmentsTag() => this as JSDocAugmentsTag ?? (JSDocAugmentsTag)data;
+    public JSDocSatisfiesTag AsJSDocSatisfiesTag() => this as JSDocSatisfiesTag ?? (JSDocSatisfiesTag)data;
+    public JSDocThrowsTag AsJSDocThrowsTag() => this as JSDocThrowsTag ?? (JSDocThrowsTag)data;
+    public JSDocThisTag AsJSDocThisTag() => this as JSDocThisTag ?? (JSDocThisTag)data;
+    public JSDocImportTag AsJSDocImportTag() => this as JSDocImportTag ?? (JSDocImportTag)data;
+    public JSDocCallbackTag AsJSDocCallbackTag() => this as JSDocCallbackTag ?? (JSDocCallbackTag)data;
+    public JSDocOverloadTag AsJSDocOverloadTag() => this as JSDocOverloadTag ?? (JSDocOverloadTag)data;
+    public JSDocTypedefTag AsJSDocTypedefTag() => this as JSDocTypedefTag ?? (JSDocTypedefTag)data;
+    public JSDocSignature AsJSDocSignature() => this as JSDocSignature ?? (JSDocSignature)data;
+    public JSDocNameReference AsJSDocNameReference() => this as JSDocNameReference ?? (JSDocNameReference)data;
+    public ModuleDeclaration AsModuleDeclaration() => this as ModuleDeclaration ?? (ModuleDeclaration)data;
+    public ImportEqualsDeclaration AsImportEqualsDeclaration() => this as ImportEqualsDeclaration ?? (ImportEqualsDeclaration)data;
+    public ExportDeclaration AsExportDeclaration() => this as ExportDeclaration ?? (ExportDeclaration)data;
+    public ImportTypeNode AsImportTypeNode() => this as ImportTypeNode ?? (ImportTypeNode)data;
+    public ImportClause AsImportClause() => this as ImportClause ?? (ImportClause)data;
+    public ImportSpecifier AsImportSpecifier() => this as ImportSpecifier ?? (ImportSpecifier)data;
+    public JSDocText AsJSDocText() => this as JSDocText ?? (JSDocText)data;
+    public JSDocLink AsJSDocLink() => this as JSDocLink ?? (JSDocLink)data;
+    public JSDocLinkPlain AsJSDocLinkPlain() => this as JSDocLinkPlain ?? (JSDocLinkPlain)data;
+    public JSDocLinkCode AsJSDocLinkCode() => this as JSDocLinkCode ?? (JSDocLinkCode)data;
+    public TypeParameterDeclaration AsTypeParameterDeclaration() => this as TypeParameterDeclaration ?? (TypeParameterDeclaration)data;
+    public SyntheticReferenceExpression AsSyntheticReferenceExpression() => this as SyntheticReferenceExpression ?? (SyntheticReferenceExpression)data;
+    public JSDocTypeLiteral AsJSDocTypeLiteral() => this as JSDocTypeLiteral ?? (JSDocTypeLiteral)data;
+    public JSDocParameterOrPropertyTag AsJSDocParameterOrPropertyTag() => this as JSDocParameterOrPropertyTag ?? (JSDocParameterOrPropertyTag)data;
+    public SourceFile AsSourceFile() => this as SourceFile ?? (SourceFile)data;
 }
 
 public static partial class Ast
@@ -10707,7 +10707,7 @@ public sealed partial class SyntheticReferenceExpression
 // Generated by tools/generate-syntax-iterators.py from ast_generated.go.
 public partial class QualifiedName
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Left is not null)
             yield return this.Left;
@@ -10718,7 +10718,7 @@ public partial class QualifiedName
 
 public partial class ComputedPropertyName
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10727,7 +10727,7 @@ public partial class ComputedPropertyName
 
 public partial class Decorator
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10736,7 +10736,7 @@ public partial class Decorator
 
 public partial class IfStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10749,7 +10749,7 @@ public partial class IfStatement
 
 public partial class DoStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Statement is not null)
             yield return this.Statement;
@@ -10760,7 +10760,7 @@ public partial class DoStatement
 
 public partial class WhileStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10771,7 +10771,7 @@ public partial class WhileStatement
 
 public partial class ForStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Initializer is not null)
             yield return this.Initializer;
@@ -10786,7 +10786,7 @@ public partial class ForStatement
 
 public partial class ForInOrOfStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.AwaitModifier is not null)
             yield return this.AwaitModifier;
@@ -10801,7 +10801,7 @@ public partial class ForInOrOfStatement
 
 public partial class BreakStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Label is not null)
             yield return this.Label;
@@ -10810,7 +10810,7 @@ public partial class BreakStatement
 
 public partial class ContinueStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Label is not null)
             yield return this.Label;
@@ -10819,7 +10819,7 @@ public partial class ContinueStatement
 
 public partial class ReturnStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10828,7 +10828,7 @@ public partial class ReturnStatement
 
 public partial class WithStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10839,7 +10839,7 @@ public partial class WithStatement
 
 public partial class SwitchStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10850,7 +10850,7 @@ public partial class SwitchStatement
 
 public partial class CaseBlock
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Clauses?.Nodes ?? default))
             yield return child;
@@ -10859,7 +10859,7 @@ public partial class CaseBlock
 
 public partial class CaseOrDefaultClause
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10870,7 +10870,7 @@ public partial class CaseOrDefaultClause
 
 public partial class ThrowStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10879,7 +10879,7 @@ public partial class ThrowStatement
 
 public partial class TryStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TryBlock is not null)
             yield return this.TryBlock;
@@ -10892,7 +10892,7 @@ public partial class TryStatement
 
 public partial class CatchClause
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.VariableDeclaration is not null)
             yield return this.VariableDeclaration;
@@ -10903,7 +10903,7 @@ public partial class CatchClause
 
 public partial class LabeledStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Label is not null)
             yield return this.Label;
@@ -10914,7 +10914,7 @@ public partial class LabeledStatement
 
 public partial class ExpressionStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -10923,7 +10923,7 @@ public partial class ExpressionStatement
 
 public partial class Block
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
@@ -10932,7 +10932,7 @@ public partial class Block
 
 public partial class VariableStatement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -10943,7 +10943,7 @@ public partial class VariableStatement
 
 public partial class VariableDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -10958,7 +10958,7 @@ public partial class VariableDeclaration
 
 public partial class VariableDeclarationList
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Declarations?.Nodes ?? default))
             yield return child;
@@ -10967,7 +10967,7 @@ public partial class VariableDeclarationList
 
 public partial class BindingPattern
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
@@ -10976,7 +10976,7 @@ public partial class BindingPattern
 
 public partial class ParameterDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -10995,7 +10995,7 @@ public partial class ParameterDeclaration
 
 public partial class BindingElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.DotDotDotToken is not null)
             yield return this.DotDotDotToken;
@@ -11010,7 +11010,7 @@ public partial class BindingElement
 
 public partial class MissingDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11019,7 +11019,7 @@ public partial class MissingDeclaration
 
 public partial class FunctionDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11042,7 +11042,7 @@ public partial class FunctionDeclaration
 
 public partial class ClassDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11059,7 +11059,7 @@ public partial class ClassDeclaration
 
 public partial class ClassExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11076,7 +11076,7 @@ public partial class ClassExpression
 
 public partial class HeritageClause
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
@@ -11085,7 +11085,7 @@ public partial class HeritageClause
 
 public partial class InterfaceDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11102,7 +11102,7 @@ public partial class InterfaceDeclaration
 
 public partial class TypeAliasDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11117,7 +11117,7 @@ public partial class TypeAliasDeclaration
 
 public partial class EnumMember
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -11128,7 +11128,7 @@ public partial class EnumMember
 
 public partial class EnumDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11141,7 +11141,7 @@ public partial class EnumDeclaration
 
 public partial class ModuleBlock
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
@@ -11150,7 +11150,7 @@ public partial class ModuleBlock
 
 public partial class ImportDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11165,7 +11165,7 @@ public partial class ImportDeclaration
 
 public partial class ExternalModuleReference
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11174,7 +11174,7 @@ public partial class ExternalModuleReference
 
 public partial class NamespaceImport
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -11183,7 +11183,7 @@ public partial class NamespaceImport
 
 public partial class NamedImports
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
@@ -11192,7 +11192,7 @@ public partial class NamedImports
 
 public partial class ExportAssignment
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11205,7 +11205,7 @@ public partial class ExportAssignment
 
 public partial class NamespaceExportDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11216,7 +11216,7 @@ public partial class NamespaceExportDeclaration
 
 public partial class NamespaceExport
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -11225,7 +11225,7 @@ public partial class NamespaceExport
 
 public partial class NamedExports
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
@@ -11234,7 +11234,7 @@ public partial class NamedExports
 
 public partial class ExportSpecifier
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.PropertyName is not null)
             yield return this.PropertyName;
@@ -11245,7 +11245,7 @@ public partial class ExportSpecifier
 
 public partial class CallSignatureDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
@@ -11258,7 +11258,7 @@ public partial class CallSignatureDeclaration
 
 public partial class ConstructSignatureDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
@@ -11271,7 +11271,7 @@ public partial class ConstructSignatureDeclaration
 
 public partial class ConstructorDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11290,7 +11290,7 @@ public partial class ConstructorDeclaration
 
 public partial class GetAccessorDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11311,7 +11311,7 @@ public partial class GetAccessorDeclaration
 
 public partial class SetAccessorDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11332,7 +11332,7 @@ public partial class SetAccessorDeclaration
 
 public partial class IndexSignatureDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11345,7 +11345,7 @@ public partial class IndexSignatureDeclaration
 
 public partial class MethodSignatureDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11364,7 +11364,7 @@ public partial class MethodSignatureDeclaration
 
 public partial class MethodDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11389,7 +11389,7 @@ public partial class MethodDeclaration
 
 public partial class PropertySignatureDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11406,7 +11406,7 @@ public partial class PropertySignatureDeclaration
 
 public partial class PropertyDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11423,7 +11423,7 @@ public partial class PropertyDeclaration
 
 public partial class ClassStaticBlockDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11434,7 +11434,7 @@ public partial class ClassStaticBlockDeclaration
 
 public partial class BinaryExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11451,7 +11451,7 @@ public partial class BinaryExpression
 
 public partial class PrefixUnaryExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Operand is not null)
             yield return this.Operand;
@@ -11460,7 +11460,7 @@ public partial class PrefixUnaryExpression
 
 public partial class PostfixUnaryExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Operand is not null)
             yield return this.Operand;
@@ -11469,7 +11469,7 @@ public partial class PostfixUnaryExpression
 
 public partial class YieldExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.AsteriskToken is not null)
             yield return this.AsteriskToken;
@@ -11480,7 +11480,7 @@ public partial class YieldExpression
 
 public partial class ArrowFunction
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11501,7 +11501,7 @@ public partial class ArrowFunction
 
 public partial class FunctionExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11524,7 +11524,7 @@ public partial class FunctionExpression
 
 public partial class AsExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11535,7 +11535,7 @@ public partial class AsExpression
 
 public partial class SatisfiesExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11546,7 +11546,7 @@ public partial class SatisfiesExpression
 
 public partial class ConditionalExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Condition is not null)
             yield return this.Condition;
@@ -11563,7 +11563,7 @@ public partial class ConditionalExpression
 
 public partial class PropertyAccessExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11576,7 +11576,7 @@ public partial class PropertyAccessExpression
 
 public partial class ElementAccessExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11589,7 +11589,7 @@ public partial class ElementAccessExpression
 
 public partial class CallExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11604,7 +11604,7 @@ public partial class CallExpression
 
 public partial class NewExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11617,7 +11617,7 @@ public partial class NewExpression
 
 public partial class MetaProperty
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -11626,7 +11626,7 @@ public partial class MetaProperty
 
 public partial class NonNullExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11635,7 +11635,7 @@ public partial class NonNullExpression
 
 public partial class SpreadElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11644,7 +11644,7 @@ public partial class SpreadElement
 
 public partial class TemplateExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Head is not null)
             yield return this.Head;
@@ -11655,7 +11655,7 @@ public partial class TemplateExpression
 
 public partial class TemplateSpan
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11666,7 +11666,7 @@ public partial class TemplateSpan
 
 public partial class TaggedTemplateExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Tag is not null)
             yield return this.Tag;
@@ -11681,7 +11681,7 @@ public partial class TaggedTemplateExpression
 
 public partial class ParenthesizedExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11690,7 +11690,7 @@ public partial class ParenthesizedExpression
 
 public partial class ArrayLiteralExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
@@ -11699,7 +11699,7 @@ public partial class ArrayLiteralExpression
 
 public partial class ObjectLiteralExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes ?? default))
             yield return child;
@@ -11708,7 +11708,7 @@ public partial class ObjectLiteralExpression
 
 public partial class SpreadAssignment
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11717,7 +11717,7 @@ public partial class SpreadAssignment
 
 public partial class PropertyAssignment
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11734,7 +11734,7 @@ public partial class PropertyAssignment
 
 public partial class ShorthandPropertyAssignment
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -11753,7 +11753,7 @@ public partial class ShorthandPropertyAssignment
 
 public partial class DeleteExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11762,7 +11762,7 @@ public partial class DeleteExpression
 
 public partial class TypeOfExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11771,7 +11771,7 @@ public partial class TypeOfExpression
 
 public partial class VoidExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11780,7 +11780,7 @@ public partial class VoidExpression
 
 public partial class AwaitExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11789,7 +11789,7 @@ public partial class AwaitExpression
 
 public partial class TypeAssertion
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -11800,7 +11800,7 @@ public partial class TypeAssertion
 
 public partial class UnionTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
@@ -11809,7 +11809,7 @@ public partial class UnionTypeNode
 
 public partial class IntersectionTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
@@ -11818,7 +11818,7 @@ public partial class IntersectionTypeNode
 
 public partial class ConditionalTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.CheckType is not null)
             yield return this.CheckType;
@@ -11833,7 +11833,7 @@ public partial class ConditionalTypeNode
 
 public partial class TypeOperatorNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -11842,7 +11842,7 @@ public partial class TypeOperatorNode
 
 public partial class InferTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TypeParameter is not null)
             yield return this.TypeParameter;
@@ -11851,7 +11851,7 @@ public partial class InferTypeNode
 
 public partial class ArrayTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.ElementType is not null)
             yield return this.ElementType;
@@ -11860,7 +11860,7 @@ public partial class ArrayTypeNode
 
 public partial class IndexedAccessTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.ObjectType is not null)
             yield return this.ObjectType;
@@ -11871,7 +11871,7 @@ public partial class IndexedAccessTypeNode
 
 public partial class TypeReferenceNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TypeName is not null)
             yield return this.TypeName;
@@ -11882,7 +11882,7 @@ public partial class TypeReferenceNode
 
 public partial class ExpressionWithTypeArguments
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -11893,7 +11893,7 @@ public partial class ExpressionWithTypeArguments
 
 public partial class LiteralTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Literal is not null)
             yield return this.Literal;
@@ -11902,7 +11902,7 @@ public partial class LiteralTypeNode
 
 public partial class TypePredicateNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.AssertsModifier is not null)
             yield return this.AssertsModifier;
@@ -11915,7 +11915,7 @@ public partial class TypePredicateNode
 
 public partial class ImportAttribute
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -11926,7 +11926,7 @@ public partial class ImportAttribute
 
 public partial class ImportAttributes
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Attributes?.Nodes ?? default))
             yield return child;
@@ -11935,7 +11935,7 @@ public partial class ImportAttributes
 
 public partial class TypeQueryNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.ExprName is not null)
             yield return this.ExprName;
@@ -11946,7 +11946,7 @@ public partial class TypeQueryNode
 
 public partial class MappedTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.ReadonlyToken is not null)
             yield return this.ReadonlyToken;
@@ -11965,7 +11965,7 @@ public partial class MappedTypeNode
 
 public partial class TypeLiteralNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
@@ -11974,7 +11974,7 @@ public partial class TypeLiteralNode
 
 public partial class TupleTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
@@ -11983,7 +11983,7 @@ public partial class TupleTypeNode
 
 public partial class NamedTupleMember
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.DotDotDotToken is not null)
             yield return this.DotDotDotToken;
@@ -11998,7 +11998,7 @@ public partial class NamedTupleMember
 
 public partial class OptionalTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12007,7 +12007,7 @@ public partial class OptionalTypeNode
 
 public partial class RestTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12016,7 +12016,7 @@ public partial class RestTypeNode
 
 public partial class ParenthesizedTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12025,7 +12025,7 @@ public partial class ParenthesizedTypeNode
 
 public partial class FunctionTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
@@ -12038,7 +12038,7 @@ public partial class FunctionTypeNode
 
 public partial class ConstructorTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -12053,7 +12053,7 @@ public partial class ConstructorTypeNode
 
 public partial class TemplateLiteralTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Head is not null)
             yield return this.Head;
@@ -12064,7 +12064,7 @@ public partial class TemplateLiteralTypeNode
 
 public partial class TemplateLiteralTypeSpan
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12075,7 +12075,7 @@ public partial class TemplateLiteralTypeSpan
 
 public partial class PartiallyEmittedExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -12084,7 +12084,7 @@ public partial class PartiallyEmittedExpression
 
 public partial class JsxElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.OpeningElement is not null)
             yield return this.OpeningElement;
@@ -12097,7 +12097,7 @@ public partial class JsxElement
 
 public partial class JsxAttributes
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes ?? default))
             yield return child;
@@ -12106,7 +12106,7 @@ public partial class JsxAttributes
 
 public partial class JsxNamespacedName
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Namespace is not null)
             yield return this.Namespace;
@@ -12117,7 +12117,7 @@ public partial class JsxNamespacedName
 
 public partial class JsxOpeningElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12130,7 +12130,7 @@ public partial class JsxOpeningElement
 
 public partial class JsxSelfClosingElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12143,7 +12143,7 @@ public partial class JsxSelfClosingElement
 
 public partial class JsxFragment
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.OpeningFragment is not null)
             yield return this.OpeningFragment;
@@ -12156,7 +12156,7 @@ public partial class JsxFragment
 
 public partial class JsxAttribute
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12167,7 +12167,7 @@ public partial class JsxAttribute
 
 public partial class JsxSpreadAttribute
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -12176,7 +12176,7 @@ public partial class JsxSpreadAttribute
 
 public partial class JsxClosingElement
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12185,7 +12185,7 @@ public partial class JsxClosingElement
 
 public partial class JsxExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.DotDotDotToken is not null)
             yield return this.DotDotDotToken;
@@ -12196,7 +12196,7 @@ public partial class JsxExpression
 
 public partial class SyntaxList
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Children))
             yield return child;
@@ -12205,7 +12205,7 @@ public partial class SyntaxList
 
 public partial class JSDoc
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
@@ -12216,7 +12216,7 @@ public partial class JSDoc
 
 public partial class JSDocTypeExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12225,7 +12225,7 @@ public partial class JSDocTypeExpression
 
 public partial class JSDocNonNullableType
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12234,7 +12234,7 @@ public partial class JSDocNonNullableType
 
 public partial class JSDocNullableType
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12243,7 +12243,7 @@ public partial class JSDocNullableType
 
 public partial class JSDocVariadicType
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12252,7 +12252,7 @@ public partial class JSDocVariadicType
 
 public partial class JSDocOptionalType
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Type is not null)
             yield return this.Type;
@@ -12261,7 +12261,7 @@ public partial class JSDocOptionalType
 
 public partial class JSDocTypeTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12274,7 +12274,7 @@ public partial class JSDocTypeTag
 
 public partial class JSDocUnknownTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12285,7 +12285,7 @@ public partial class JSDocUnknownTag
 
 public partial class JSDocTemplateTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12300,7 +12300,7 @@ public partial class JSDocTemplateTag
 
 public partial class JSDocReturnTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12313,7 +12313,7 @@ public partial class JSDocReturnTag
 
 public partial class JSDocPublicTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12324,7 +12324,7 @@ public partial class JSDocPublicTag
 
 public partial class JSDocPrivateTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12335,7 +12335,7 @@ public partial class JSDocPrivateTag
 
 public partial class JSDocProtectedTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12346,7 +12346,7 @@ public partial class JSDocProtectedTag
 
 public partial class JSDocReadonlyTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12357,7 +12357,7 @@ public partial class JSDocReadonlyTag
 
 public partial class JSDocOverrideTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12368,7 +12368,7 @@ public partial class JSDocOverrideTag
 
 public partial class JSDocDeprecatedTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12379,7 +12379,7 @@ public partial class JSDocDeprecatedTag
 
 public partial class JSDocSeeTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12392,7 +12392,7 @@ public partial class JSDocSeeTag
 
 public partial class JSDocImplementsTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12405,7 +12405,7 @@ public partial class JSDocImplementsTag
 
 public partial class JSDocAugmentsTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12418,7 +12418,7 @@ public partial class JSDocAugmentsTag
 
 public partial class JSDocSatisfiesTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12431,7 +12431,7 @@ public partial class JSDocSatisfiesTag
 
 public partial class JSDocThrowsTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12444,7 +12444,7 @@ public partial class JSDocThrowsTag
 
 public partial class JSDocThisTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12457,7 +12457,7 @@ public partial class JSDocThisTag
 
 public partial class JSDocImportTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12474,7 +12474,7 @@ public partial class JSDocImportTag
 
 public partial class JSDocCallbackTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12489,7 +12489,7 @@ public partial class JSDocCallbackTag
 
 public partial class JSDocOverloadTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12502,7 +12502,7 @@ public partial class JSDocOverloadTag
 
 public partial class JSDocTypedefTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.TagName is not null)
             yield return this.TagName;
@@ -12517,7 +12517,7 @@ public partial class JSDocTypedefTag
 
 public partial class JSDocSignature
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
@@ -12530,7 +12530,7 @@ public partial class JSDocSignature
 
 public partial class JSDocNameReference
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12539,7 +12539,7 @@ public partial class JSDocNameReference
 
 public partial class ModuleDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -12554,7 +12554,7 @@ public partial class ModuleDeclaration
 
 public partial class ImportEqualsDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -12567,7 +12567,7 @@ public partial class ImportEqualsDeclaration
 
 public partial class ExportDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -12582,7 +12582,7 @@ public partial class ExportDeclaration
 
 public partial class ImportTypeNode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Argument is not null)
             yield return this.Argument;
@@ -12597,7 +12597,7 @@ public partial class ImportTypeNode
 
 public partial class ImportClause
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12608,7 +12608,7 @@ public partial class ImportClause
 
 public partial class ImportSpecifier
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.PropertyName is not null)
             yield return this.PropertyName;
@@ -12619,7 +12619,7 @@ public partial class ImportSpecifier
 
 public partial class JSDocLink
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12628,7 +12628,7 @@ public partial class JSDocLink
 
 public partial class JSDocLinkPlain
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12637,7 +12637,7 @@ public partial class JSDocLinkPlain
 
 public partial class JSDocLinkCode
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.name is not null)
             yield return this.name;
@@ -12646,7 +12646,7 @@ public partial class JSDocLinkCode
 
 public partial class TypeParameterDeclaration
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
@@ -12663,7 +12663,7 @@ public partial class TypeParameterDeclaration
 
 public partial class SyntheticReferenceExpression
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (this.Expression is not null)
             yield return this.Expression;
@@ -12674,7 +12674,7 @@ public partial class SyntheticReferenceExpression
 
 public partial class JSDocTypeLiteral
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         foreach (var child in Ast.IterateSyntaxNodes(this.JSDocPropertyTags))
             yield return child;
@@ -12683,7 +12683,7 @@ public partial class JSDocTypeLiteral
 
 public partial class JSDocParameterOrPropertyTag
 {
-    internal override IEnumerable<Node> IterChildren()
+    public override IEnumerable<Node> IterChildren()
     {
         if (TagName is not null)
             yield return TagName;

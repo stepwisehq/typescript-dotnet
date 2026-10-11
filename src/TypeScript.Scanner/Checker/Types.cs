@@ -181,29 +181,29 @@ public class Type
     public ObjectFlags ObjectFlags() => objectFlags;
     public Symbol Symbol() => symbol;
     public TypeAlias Alias() => alias;
-    public IntrinsicType AsIntrinsicType() => (IntrinsicType)data;
-    public LiteralType AsLiteralType() => (LiteralType)data;
-    public UniqueESSymbolType AsUniqueESSymbolType() => (UniqueESSymbolType)data;
-    public TupleType AsTupleType() => (TupleType)data;
-    public MappedType AsMappedType() => (MappedType)data;
-    public ReverseMappedType AsReverseMappedType() => (ReverseMappedType)data;
-    public EvolvingArrayType AsEvolvingArrayType() => (EvolvingArrayType)data;
-    public UnionType AsUnionType() => (UnionType)data;
-    public IntersectionType AsIntersectionType() => (IntersectionType)data;
-    public TypeParameter AsTypeParameter() => (TypeParameter)data;
-    public IndexType AsIndexType() => (IndexType)data;
-    public IndexedAccessType AsIndexedAccessType() => (IndexedAccessType)data;
-    public TemplateLiteralType AsTemplateLiteralType() => (TemplateLiteralType)data;
-    public StringMappingType AsStringMappingType() => (StringMappingType)data;
-    public SubstitutionType AsSubstitutionType() => (SubstitutionType)data;
-    public ConditionalType AsConditionalType() => (ConditionalType)data;
-    public ConstrainedType AsConstrainedType() => data.AsConstrainedType();
-    public StructuredType AsStructuredType() => data.AsStructuredType();
-    public UnionOrIntersectionType AsUnionOrIntersectionType() => data.AsUnionOrIntersectionType();
-    public ObjectType AsObjectType() => data.AsObjectType();
-    public TypeReference AsTypeReference() => data.AsTypeReference();
-    public InstantiationExpressionType AsInstantiationExpressionType() => (InstantiationExpressionType)data;
-    public InterfaceType AsInterfaceType() => data.AsInterfaceType();
+    public IntrinsicType AsIntrinsicType() => this as IntrinsicType ?? (IntrinsicType)data;
+    public LiteralType AsLiteralType() => this as LiteralType ?? (LiteralType)data;
+    public UniqueESSymbolType AsUniqueESSymbolType() => this as UniqueESSymbolType ?? (UniqueESSymbolType)data;
+    public TupleType AsTupleType() => this as TupleType ?? (TupleType)data;
+    public MappedType AsMappedType() => this as MappedType ?? (MappedType)data;
+    public ReverseMappedType AsReverseMappedType() => this as ReverseMappedType ?? (ReverseMappedType)data;
+    public EvolvingArrayType AsEvolvingArrayType() => this as EvolvingArrayType ?? (EvolvingArrayType)data;
+    public UnionType AsUnionType() => this as UnionType ?? (UnionType)data;
+    public IntersectionType AsIntersectionType() => this as IntersectionType ?? (IntersectionType)data;
+    public TypeParameter AsTypeParameter() => this as TypeParameter ?? (TypeParameter)data;
+    public IndexType AsIndexType() => this as IndexType ?? (IndexType)data;
+    public IndexedAccessType AsIndexedAccessType() => this as IndexedAccessType ?? (IndexedAccessType)data;
+    public TemplateLiteralType AsTemplateLiteralType() => this as TemplateLiteralType ?? (TemplateLiteralType)data;
+    public StringMappingType AsStringMappingType() => this as StringMappingType ?? (StringMappingType)data;
+    public SubstitutionType AsSubstitutionType() => this as SubstitutionType ?? (SubstitutionType)data;
+    public ConditionalType AsConditionalType() => this as ConditionalType ?? (ConditionalType)data;
+    public virtual ConstrainedType AsConstrainedType() => data.AsConstrainedType();
+    public virtual StructuredType AsStructuredType() => data.AsStructuredType();
+    public virtual UnionOrIntersectionType AsUnionOrIntersectionType() => data.AsUnionOrIntersectionType();
+    public virtual ObjectType AsObjectType() => data.AsObjectType();
+    public virtual TypeReference AsTypeReference() => data.AsTypeReference();
+    public InstantiationExpressionType AsInstantiationExpressionType() => this as InstantiationExpressionType ?? (InstantiationExpressionType)data;
+    public virtual InterfaceType AsInterfaceType() => data.AsInterfaceType();
     // types.go:752/766. Actual target/mapper fields, including nullable origins.
     public Type Target()
     {
@@ -290,16 +290,17 @@ public class Type
 }
 
 // types.go:685/872. Ordinary inheritance retains the embedded Go Type header
-// in its payload object. The computed view preserves the source interface dispatch.
+// in its payload object. Virtual overrides preserve source interface dispatch
+// without a redundant intermediate payload cast on ordinary calls.
 public abstract class TypeData : Type
 {
     public Type AsType() => this;
-    public new virtual ConstrainedType AsConstrainedType() => null;
-    public new virtual StructuredType AsStructuredType() => null;
-    public new virtual UnionOrIntersectionType AsUnionOrIntersectionType() => null;
-    public new virtual ObjectType AsObjectType() => null;
-    public new virtual TypeReference AsTypeReference() => null;
-    public new virtual InterfaceType AsInterfaceType() => null;
+    public override ConstrainedType AsConstrainedType() => null;
+    public override StructuredType AsStructuredType() => null;
+    public override UnionOrIntersectionType AsUnionOrIntersectionType() => null;
+    public override ObjectType AsObjectType() => null;
+    public override TypeReference AsTypeReference() => null;
+    public override InterfaceType AsInterfaceType() => null;
 }
 
 public class TypeBase : TypeData

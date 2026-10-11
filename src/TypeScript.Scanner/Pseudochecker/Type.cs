@@ -45,17 +45,17 @@ internal class PseudoType
         return n;
     }
 
-    internal PseudoTypeTuple AsPseudoTypeTuple() => (PseudoTypeTuple)data;
+    internal PseudoTypeTuple AsPseudoTypeTuple() => this as PseudoTypeTuple ?? (PseudoTypeTuple)data;
     internal static PseudoType NewPseudoTypeTuple(List<PseudoType> elements) => newPseudoType(PseudoTypeKind.Tuple, new PseudoTypeTuple { Elements = elements });
-    internal PseudoTypeSingleCallSignature AsPseudoTypeSingleCallSignature() => (PseudoTypeSingleCallSignature)data;
+    internal PseudoTypeSingleCallSignature AsPseudoTypeSingleCallSignature() => this as PseudoTypeSingleCallSignature ?? (PseudoTypeSingleCallSignature)data;
     internal static PseudoType NewPseudoTypeSingleCallSignature(Node signature, List<PseudoParameter> parameters, List<TypeParameterDeclaration> typeParameters, PseudoType returnType) => newPseudoType(PseudoTypeKind.SingleCallSignature, new PseudoTypeSingleCallSignature { Signature = signature, Parameters = parameters, TypeParameters = typeParameters, ReturnType = returnType });
-    internal PseudoTypeDirect AsPseudoTypeDirect() => (PseudoTypeDirect)data;
-    internal PseudoTypeInferred AsPseudoTypeInferred() => (PseudoTypeInferred)data;
-    internal PseudoTypeNoResult AsPseudoTypeNoResult() => (PseudoTypeNoResult)data;
-    internal PseudoTypeMaybeConstLocation AsPseudoTypeMaybeConstLocation() => (PseudoTypeMaybeConstLocation)data;
-    internal PseudoTypeUnion AsPseudoTypeUnion() => (PseudoTypeUnion)data;
-    internal PseudoTypeObjectLiteral AsPseudoTypeObjectLiteral() => (PseudoTypeObjectLiteral)data;
-    internal PseudoTypeLiteral AsPseudoTypeLiteral() => (PseudoTypeLiteral)data;
+    internal PseudoTypeDirect AsPseudoTypeDirect() => this as PseudoTypeDirect ?? (PseudoTypeDirect)data;
+    internal PseudoTypeInferred AsPseudoTypeInferred() => this as PseudoTypeInferred ?? (PseudoTypeInferred)data;
+    internal PseudoTypeNoResult AsPseudoTypeNoResult() => this as PseudoTypeNoResult ?? (PseudoTypeNoResult)data;
+    internal PseudoTypeMaybeConstLocation AsPseudoTypeMaybeConstLocation() => this as PseudoTypeMaybeConstLocation ?? (PseudoTypeMaybeConstLocation)data;
+    internal PseudoTypeUnion AsPseudoTypeUnion() => this as PseudoTypeUnion ?? (PseudoTypeUnion)data;
+    internal PseudoTypeObjectLiteral AsPseudoTypeObjectLiteral() => this as PseudoTypeObjectLiteral ?? (PseudoTypeObjectLiteral)data;
+    internal PseudoTypeLiteral AsPseudoTypeLiteral() => this as PseudoTypeLiteral ?? (PseudoTypeLiteral)data;
     internal static readonly PseudoType PseudoTypeUndefined = newPseudoType(PseudoTypeKind.Undefined, new PseudoTypeBase());
     internal static readonly PseudoType PseudoTypeNull = newPseudoType(PseudoTypeKind.Null, new PseudoTypeBase());
     internal static readonly PseudoType PseudoTypeAny = newPseudoType(PseudoTypeKind.Any, new PseudoTypeBase());
