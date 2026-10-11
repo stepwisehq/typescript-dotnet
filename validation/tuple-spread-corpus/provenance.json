@@ -1,0 +1,11 @@
+{
+  "classification": "authored differential public Program input; reference is unmodified pinned Go compiler",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "oracle": "tools/.cache/program-oracle",
+  "oracleSha256": "81788084c43dbb81a96ef302d22dc0688174ee9cc52046902e325def475cada7",
+  "exitCode": 0,
+  "elapsedSeconds": 0.02503440299187787,
+  "requestSha256": "0b4f84413964a58f868e063d152c34f921e226dd0badbe1c927bbe00c3429fc9",
+  "expectedSha256": "7b9ec413239be9347dfdbfd9f61635017512d2696f353abb8078ed6c89d19786",
+  "coverage": "Semantic bulk/perfile/repeat diagnostics plus public type queries; initial parse-only attempt retained separately"
+}
