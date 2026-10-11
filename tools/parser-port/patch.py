@@ -18,7 +18,6 @@ for p in output.glob('*.cs'):
   s=s.replace(var+'.Pos()',var+'.Pos').replace(var+'.End()',var+'.End')
  s=s.replace('return ;','return;').replace('this.notParenthesizedArrow.Has(', 'this.notParenthesizedArrow.Contains(')
  s=s.replace('result.Nodes = missingListNodes;\n        result.IsMissing = true;', 'result.Nodes = missingListNodes;')
- s=s.replace('result.Nodes = missingListNodes;', 'result.Nodes = missingListNodes;\n        result.IsMissing = true;')
  s=re.sub(r'(?<![.:])jsdocScannerInfo\.', 'global::TypeScript.Scanner.jsdocScannerInfo.',s)
  s=s.replace('result.CommentDirectives = this.scanner.CommentDirectives();','result.CommentDirectives = this.scanner.CommentDirectives()?.ToList();')
  s=s.replace('Core.IfElse(inForStatementInitializer,', 'Core.IfElse<Func<Parser,Node>>(inForStatementInitializer,')

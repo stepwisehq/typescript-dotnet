@@ -115,8 +115,10 @@ for n in sorted(bases-base_excluded):
     parts.append('public interface '+n+' : INodeData\n{\n'+''.join('    '+typ(t)+' '+cname(f)+' { get; set; }\n' for f,t in fields(n))+'}\n')
 for n in concrete:
     ff=fields(n); aa=ancestors(n)
-    parts.append('public sealed partial class '+n+' : NodeData'+''.join(', '+a for a in aa)+'\n{')
-    if composite(n):parts.append('    internal override bool CacheSubtreeFacts => true;')
+    # Only the source CompositeBase embeds atomic facts; scalar payloads retain
+    # no cache field. Both managed bases share the canonical Node identity.
+    node_base = 'CompositeNodeData' if composite(n) else 'NodeData'
+    parts.append('public sealed partial class '+n+' : '+node_base+''.join(', '+a for a in aa)+'\n{')
     for f,t in ff:
         ct=typ(t);initial=' = "";' if ct=='string' else ''
         if n in jsdoc_fragment_models and f == 'text':

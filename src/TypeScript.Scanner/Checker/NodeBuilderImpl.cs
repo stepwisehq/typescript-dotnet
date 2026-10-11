@@ -569,7 +569,8 @@ internal sealed partial class NodeBuilderImpl
                     symbolName = symbol.Name;
                 else
                 {
-                    var results = new Dictionary<Symbol, ByteStringValue>();
+                    // nodebuilderimpl.go:780 retains a one-entry capacity hint.
+                    var results = new Dictionary<Symbol, ByteStringValue>(1);
                     foreach (var(name, exported)in exports)
                         if (ch.getSymbolIfSameReference(exported, symbol) != null && !Checker.isLateBoundName(name.Value) && !name.Value.EqualsString(Ast.InternalSymbolNameExportEquals))
                             results[exported] = name.Value;

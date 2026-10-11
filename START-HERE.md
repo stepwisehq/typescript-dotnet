@@ -67,6 +67,10 @@ cycle of one or two local changes followed by targeted tests and benchmarks.
   publication, or reuse frozen artifacts with `BuildProjectReferences=false` after
   explicit dependency compilation. Pinning `SourceRevisionId` alone may leave changed
   SourceLink metadata. A commit can regenerate metadata without any source edit.
+  When fields/methods change, verify actual ILC references for affected application
+  dependencies too: stale RID-specific validator assemblies can survive a fresh
+  top-level build. Refresh those dependencies before publication; do not rebuild
+  the production compiler or change assertions to repair a harness binding failure.
 - Do not generate more SVG flamegraphs. Keep raw traces and useful analysis for a
   performance viewer. Do not build replacement process or viewer infrastructure.
 
@@ -81,6 +85,12 @@ and parallel-efficiency costs. Earlier public-symbol-packing exclusions were sco
 choices for the previous rollout; assess faithful standard.NET storage alternatives
 under this new mandate. Do not treat the necessity of logical records as proof that
 separate CLR allocation is necessary. Follow the active lanes and decisions in STATE.
+
+After accepted checkpoint `827f131`, the user explicitly reiterated **“We need to
+keep going yeah?”** Continue the performance/allocation campaign beyond a successful
+family checkpoint. Resume investigation and implementation of substantial remaining
+Go-faithful opportunities; do not treat committing measured progress as completion
+of that mandate. Keep the accepted checkpoint separate from active work.
 
 ## User mandate
 

@@ -127,10 +127,13 @@ public sealed class Project : ICheckerProgramHost
             filesByPath.Add(pair.Key, pair.Value);
         var libraries = new List<SourceFile>();
         foreach (var file in sourceFiles)
-            if (program.IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue()))) libraries.Add(file);
+        {
+            if (program.IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue())))
+                libraries.Add(file);
+            else
+                users.Add(file);
+        }
         LibraryFiles = libraries.ToArray();
-        foreach (var file in sourceFiles)
-            if (!LibraryFiles.Contains(file, ReferenceEqualityComparer.Instance)) users.Add(file);
         RootFileNames = (inspection.Parsed!.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
         foreach (var root in inspection.Parsed.FileNames() ?? [])
             if (program.GetSourceFile(root) is { } file && !roots.Contains(file, ReferenceEqualityComparer.Instance))

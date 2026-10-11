@@ -2417,7 +2417,7 @@ public partial class Binder
                 exportsProperty.Declarations = symbol.Declarations;
                 exportsProperty.ValueDeclaration = symbol.ValueDeclaration;
                 exportsProperty.Parent = symbol;
-                symbol.Members = new SymbolTable();
+                symbol.Members = new SymbolTable(1);
                 symbol.Members["exports"] = exportsProperty;
             }
 

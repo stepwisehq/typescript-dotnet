@@ -42,10 +42,10 @@ public partial class Parser
  private Node currentParent;
  private Visitor setParentFromContext;
  private static readonly string[] viableKeywordSuggestions = Scanner.GetViableKeywordSuggestions();
- private static readonly List<Node> missingListNodes = new();
+ private static readonly Slice<Node> missingListNodes = NodeList.MissingNodes;
  // Go parser-pool adapter: each request obtains an isolated managed parser.
  private static Parser getParser() => newParser();
- private static bool isMissingNodeList(NodeList list) => list != null && ReferenceEquals(list.Nodes,missingListNodes);
+ private static bool isMissingNodeList(NodeList list) => list != null && list.IsMissing;
  // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
  public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileRaw(opts,GoString.ToUtf8(sourceText),scriptKind);
  public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileRaw(opts,GoString.FromBytes(sourceText),scriptKind);

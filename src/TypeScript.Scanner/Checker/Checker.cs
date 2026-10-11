@@ -237,6 +237,9 @@ public sealed partial class Checker
 
         c.emitStandardClassFields = c.compilerOptions.GetEmitStandardClassFields();
         c.erasableSyntaxOnly = c.compilerOptions.ErasableSyntaxOnly == Tristate.True;
+        // checker.go:941/1139. Reserve the global-symbol count before inserting
+        // globalThis or merging any file's globals.
+        c.globals.EnsureCapacity(countGlobalSymbols(files));
         c.undefinedSymbol = c.newSymbol(SymbolFlags.Property, "undefined");
         c.argumentsSymbol = c.newSymbol(SymbolFlags.Property, "arguments");
         c.requireSymbol = c.newSymbol(SymbolFlags.Property, "require");
@@ -388,10 +391,21 @@ public sealed partial class Checker
     // checker.go:1128. Stable source-file order belongs to the checker environment.
     private static Dictionary<SourceFile, int> createFileIndexMap(Slice<SourceFile> files)
     {
-        var result = new Dictionary<SourceFile, int>(ReferenceEqualityComparer.Instance);
+        var result = new Dictionary<SourceFile, int>(files.Length, ReferenceEqualityComparer.Instance);
         for (var i = 0; i < files.Length; i++)
             result[files[i]] = i;
         return result;
+    }
+
+    // checker.go:1139. External/CommonJS modules do not contribute file locals
+    // to the global table. The count is a capacity hint, not a merge or lookup.
+    private static int countGlobalSymbols(Slice<SourceFile> files)
+    {
+        int count = 0;
+        foreach (var file in files)
+            if (!Ast.IsExternalOrCommonJSModule(file))
+                count += file.Locals?.Count ?? 0;
+        return count;
     }
 
     // checker.go:1309. Augmentations have distinct phases around global types.
@@ -1362,7 +1376,6 @@ public sealed partial class Checker
         t.objectFlags = objectFlags & ~(ObjectFlags.CouldContainTypeVariablesComputed | ObjectFlags.CouldContainTypeVariables | ObjectFlags.MembersResolved);
         t.id = (uint)TypeCount;
         t.checker = this;
-        t.data = data;
         return t;
     }
 
@@ -4508,7 +4521,7 @@ public sealed partial class Checker
 {
     private static readonly Lazy<Dictionary<string, Symbol>> primitiveTypeAliasSuggestions = new(() =>
     {
-        var result = new Dictionary<string, Symbol>(StringComparer.Ordinal);
+        var result = new Dictionary<string, Symbol>(6, StringComparer.Ordinal);
         foreach (var (primitive, builtin) in new (string, string)[]
         {
             ("string", "String"),
@@ -9345,9 +9358,9 @@ public sealed partial class Checker
     // checker.go:26590. Borrow input headers; normalization and published constituents stay owned.
     private Type getIntersectionTypeEx(ReadOnlySpan<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
-        var orderedTypes = Slice<Type>.Make(0, types.Length);
+        var orderedTypes = new orderedSet<Type> { values = Slice<Type>.Make(0, types.Length) };
         var includes = addTypesToIntersection(ref orderedTypes, 0, types);
-        var typeSet = orderedTypes;
+        var typeSet = orderedTypes.values;
         ObjectFlags objectFlags = ObjectFlags.None;
         if ((includes & TypeFlags.Never) != 0)
             return GoSlices.Contains(typeSet, silentNeverType) ? silentNeverType : neverType;
@@ -9440,14 +9453,14 @@ public sealed partial class Checker
         return result;
     }
 
-    private TypeFlags addTypesToIntersection(ref Slice<Type> typeSet, TypeFlags includes, ReadOnlySpan<Type> types)
+    private TypeFlags addTypesToIntersection(ref orderedSet<Type> typeSet, TypeFlags includes, ReadOnlySpan<Type> types)
     {
         foreach (var t in types)
             includes = addTypeToIntersection(ref typeSet, includes, getRegularTypeOfLiteralType(t));
         return includes;
     }
 
-    private TypeFlags addTypeToIntersection(ref Slice<Type> typeSet, TypeFlags includes, Type t)
+    private TypeFlags addTypeToIntersection(ref orderedSet<Type> typeSet, TypeFlags includes, Type t)
     {
         var flags = t.flags;
         if ((flags & TypeFlags.Intersection) != 0)
@@ -9457,7 +9470,7 @@ public sealed partial class Checker
             if ((includes & TypeFlags.IncludesEmptyObject) == 0)
             {
                 includes |= TypeFlags.IncludesEmptyObject;
-                typeSet = typeSet.Append(t);
+                typeSet.add(t);
             }
         }
         else
@@ -9477,11 +9490,11 @@ public sealed partial class Checker
                     t = undefinedType;
                 }
 
-                if (!GoSlices.Contains(typeSet, t))
+                if (!typeSet.contains(t))
                 {
                     if ((t.flags & TypeFlags.Unit) != 0 && (includes & TypeFlags.Unit) != 0)
                         includes |= TypeFlags.NonPrimitive;
-                    typeSet = typeSet.Append(t);
+                    typeSet.add(t);
                 }
             }
 

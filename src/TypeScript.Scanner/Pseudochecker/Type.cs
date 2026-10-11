@@ -7,7 +7,7 @@ using TypeScript.Scanner;
 
 namespace TypeScript.PseudoChecking;
 // PseudoTypes are syntactic skeletons, not semantic types. Managed payloads flatten
-// Go's embedded bases while retaining the wrapper's tag and reference identity.
+// Go's embedded bases into one object retaining the header tag and identity.
 internal enum PseudoTypeKind : short
 {
     Direct,
@@ -32,15 +32,16 @@ internal enum PseudoTypeKind : short
     BigIntLiteral
 }
 
-internal sealed class PseudoType
+internal class PseudoType
 {
     internal PseudoTypeKind Kind;
-    private PseudoTypeBase data;
+    // type.go:43/62 embeds the header in its payload. A standalone header still
+    // has no payload; canonical factories return the payload object itself.
+    private PseudoTypeBase data => this as PseudoTypeBase;
     private static PseudoType newPseudoType(PseudoTypeKind kind, PseudoTypeBase data)
     {
         var n = data.AsPseudoType();
         n.Kind = kind;
-        n.data = data;
         return n;
     }
 
@@ -76,10 +77,9 @@ internal sealed class PseudoType
     internal static PseudoType NewPseudoTypeBigIntLiteral(Node node) => newPseudoType(PseudoTypeKind.BigIntLiteral, new PseudoTypeLiteral { Node = node });
 }
 
-internal class PseudoTypeBase
+internal class PseudoTypeBase : PseudoType
 {
-    private readonly PseudoType node = new();
-    internal PseudoType AsPseudoType() => node;
+    internal PseudoType AsPseudoType() => this;
 }
 
 internal sealed class PseudoTypeDirect : PseudoTypeBase

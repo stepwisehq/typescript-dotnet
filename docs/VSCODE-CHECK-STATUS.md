@@ -11,6 +11,112 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Record ownership and source fast paths (integration19, accepted)
+
+From accepted `827f131`, the combined source changes close several related costs:
+
+- AST, semantic Type, TypeMapper and PseudoType payload dispatch derives from the
+  concrete CLR object instead of retaining redundant self-references. PseudoType
+  also loses its separate wrapper. Scalar AST nodes no longer carry the cache that
+  upstream embeds only in composite nodes. Composite volatile facts and propagation
+  remain unchanged; missing-list state follows the source sentinel/header.
+- Intersection construction now follows upstream orderedSet: linear membership
+  through16 entries, then a standard identity HashSet, retaining insertion order
+  and the original slice capacity. Known-count map hints omitted from globals,
+  file indexing, diagnostic alias results and one-member binding tables are restored.
+- Immediate Relater error reporters reuse a lazy bound delegate across the existing
+  exclusive lease/free-list lifecycle. Captured comparers retained by inference
+  remain. The authored RealProgram adapter classifies libraries/user files once
+  using the genuine Program predicate, preserving source order and duplicates.
+
+All source families and the added assertions in the existing two parser-list
+controls have independent Sol reviews. Controls cover computed-zero facts,
+propagation, bare-header behavior, missing-list clone/header replacement and growth;
+they do not add a private-layout census or change original expected results.
+The public authored IsMissing field becomes a getter derived from the current
+slice header. Generator and parser regeneration inputs preserve the changes.
+
+The frozen production build passed with zero warnings/errors. Actual Linux x64
+Native AOT VSCode ran first and retained all10 complete diagnostic records/available
+Go chains: **17.22s wall /71.48s CPU /9,672,180KiB peak RSS**. This single observation
+versus18's17.72s does not establish repeatable speedup; CPU and RSS did not decline.
+Compiler SHA256 is `bd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f`.
+
+The one [allocation capture](../artifacts/vscode-allocation-rollout/integration-19/managed-profile/comparison.json)
+reports **10,818,807,776 sampled bytes /10.075800GiB**, down **3.2024%** from18 and
+**71.3493%** from the original matched ServerGC baseline. Source-bound AST payloads
+account for much of the combined reduction; individual layout savings are not
+isolated experiments. All92,791 ticks have types,92,790 have stacks with at least
+one resolved frame; zero loss/truncation/overflow. Compiler-generated closure labels
+can change between builds and must not be treated as stable semantic identities.
+Partial GC histories and sampled CoreCLR intervals cannot establish exact Native/Go
+allocation or GC-time ratios. Unlike18, capture completed before any regression
+build/test; only offline analysis overlapped correctness tests.
+
+Acceptance passed **1,712 selected managed cases** (Checker832, TypeSystem84,
+Parser695 and additional NoEmit101), **15,304 complete original Native records**,
+**3,153 original foundation assertions**,87 shared controls and20 original utility
+observations. Independent source, profile and final evidence review found no
+unresolved behavioral discrepancy. Actual compiler/application ILC inputs and
+587 source/harness inputs remained bound to the frozen snapshot. Earlier16/17/18
+gates remain retained rather than relabeled as executed under19.
+
+A stale RID-specific Parser.Validation dependency caused the first NativeFoundation
+run to fail with MissingMethodException despite correct compiler binding. The fresh
+already-built dependency was restored; only Checker and Foundation validators were
+republished. Initial failure and retries remain in the evidence. A controller-only
+NameError after all Native checks passed prevented final aggregate emission; the
+aggregate was reconstructed from original TRX/stage/chunk records and independently
+reviewed, without rerunning the corpus. Twelve cold nullable warnings match18;
+production had none. Actual ILC application dependencies now receive the same
+binding checks as the compiler, avoiding this active publication pitfall.
+
+One production build/CLI publication, one allocation capture and one selected
+harness build were used; three validator publications required two binding retries.
+No semantic repair or production rebuild. Full original managed corpus execution
+was omitted here because the original Native corpus plus selected managed suites
+cover this integration, while earlier managed-original evidence remains preserved.
+Three Sol agents were reused; no token/cost measurements are available.
+
+Reproduce via the existing [no-emit instructions](./CHECKER-NOEMIT-REPRODUCTION.md),
+[shared foundation checks](../validation/Foundation.Checks/ParserListScratchChecks.cs)
+and [exact selected commands/results](../artifacts/vscode-allocation-rollout/integration-19/regressions/selected-result.json).
+The ordinary VSCode command remains unchanged; [durable proof](../validation/results/allocation-rollout-verified.json)
+records this snapshot separately from previous acceptance.
+The [cumulative allocation comparison](../artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/comparison.json)
+now uses public runtime counters around normal CLI checking, before report formatting:
+
+| Runtime | Before | After | Workload delta |
+| --- | ---: | ---: | ---: |
+| Native AOT10.0.12 | 103,648B | 10,675,045,432B | **10,674,941,784B** |
+| Go1.27.1 | 1,014,928B | 8,993,153,232B | **8,992,138,304B** |
+
+Native's cumulative heap-accounted delta is **1.18714× Go (+18.714%)**, a gap of
+1,682,803,480B. Earlier comparisons between CoreCLR sampled intervals and Go's
+potentially GC-lagging heap profile cannot support a several-times allocation claim.
+This new measurement is the current CLI-wide volume comparison. It does not revise
+or discard the earlier raw profiles, which remain useful for allocation attribution.
+
+Artifact-only Native entry/finally blocks call GC.GetTotalAllocatedBytes(precise:true)
+and reference the exact frozen compiler. A Go build overlay changes only the main
+wrapper/imports, calling runtime.ReadMemStats before/after unchanged runMain and
+writing before os.Exit. Removing the additions reproduces both original CLIs.
+Both runs retained exact complete diagnostics, empty stderr and original exit1/2;
+source/config/binary and actual Native ILC reference guards passed. No forcedGC,
+profiling, production source modification or repeat run. Sidecar formatting is
+outside the final counter; instrumented elapsed times are not speed measurements.
+The [preparation/build/run recipe](../artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/source-ready.json)
+records reproduction and bounds.
+
+Runtime allocator rounding, object headers, stack allocation, frontend startup and
+cleanup boundaries differ. These are cumulative heap-accounted bytes, not retained
+memory, RSS, native allocations or equal logical allocation counts. Native's public
+collection deltas36/17/9 and Go's19 collections describe different collectors and
+cannot be compared as equivalent cycles. CPUcount/GOMAXPROCS16 is not observed GC
+heap count. The remaining time gap therefore warrants a bounded standard ServerGC
+policy investigation using the unchanged integrated compiler; this is underway,
+with no production policy change selected yet.
+
 ## Current CPU and storage follow-through (2026-10-11, accepted)
 
 The [current CPU comparison](../artifacts/vscode-allocation-rollout/integration-17/cpu-comparison.json)

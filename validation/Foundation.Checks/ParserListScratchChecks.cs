@@ -30,6 +30,50 @@ public static class ParserListScratchChecks
         Require(arena.CloneHeader(Slice<Node>.Make(0, 16)).IsNil, "Allocated empty scratch also publishes nil node storage");
         Require(arena.CloneHeader(ReadOnlySpan<Node>.Empty).IsNil, "Empty borrowed span publishes nil node storage");
         var factory = new NodeFactory();
+
+        // Source ast.go caches even a computed-zero result on composites. Scalar
+        // payloads compute their facts without the composite cache marker.
+        var emptyBlock = factory.NewBlock(factory.NewNodeList(default(Slice<Node>)), false);
+        Require(emptyBlock.data.CachedSubtreeFacts == 0 && emptyBlock.SubtreeFacts() == SubtreeFacts.FactsNone,
+            "An empty block computes zero subtree facts");
+        Require(emptyBlock.data.CachedSubtreeFacts == (uint)SubtreeFacts.FactsComputed &&
+            emptyBlock.SubtreeFacts() == SubtreeFacts.FactsNone &&
+            emptyBlock.data.CachedSubtreeFacts == (uint)SubtreeFacts.FactsComputed,
+            "A repeated computed-zero query retains its cache marker without exposing it as a fact");
+        var scalar = factory.NewIdentifier("cached-child");
+        var childStatement = factory.NewExpressionStatement(scalar);
+        var parentBlock = factory.NewBlock(factory.NewNodeList(Slice<Node>.FromArray([childStatement])), false);
+        Require((parentBlock.SubtreeFacts() & SubtreeFacts.ContainsIdentifier) != 0 &&
+            parentBlock.SubtreeFacts() == childStatement.SubtreeFacts() &&
+            scalar.SubtreeFacts() == SubtreeFacts.ContainsIdentifier && scalar.data.CachedSubtreeFacts == 0,
+            "Composite propagation retains child facts while scalar queries remain uncached");
+        var bare = new Node { Kind = Kind.Identifier, Loc = new(3, 7), Parent = parentBlock };
+        Require(ReferenceEquals(bare.AsNode(), bare) && ReferenceEquals(bare.AsMutable(), bare) &&
+            bare.Pos() == 3 && bare.End() == 7 && ReferenceEquals(bare.Parent, parentBlock) &&
+            bare.FunctionLikeData() is null,
+            "Standalone Node header access and null typed views remain valid");
+
+        // parser.go:111/725: missing lists share one sentinel header. Clone and
+        // public header replacement must derive the current state from that header.
+        var missingFile = Parser.ParseSourceFile(new("/missing-list.ts", "/missing-list.ts"), "function missing {}", ScriptKind.TS);
+        var missing = missingFile.Statements.Nodes[0].ParameterList();
+        Require(missing.IsMissing && !factory.NewNodeList(default(Slice<Node>)).IsMissing &&
+            !factory.NewNodeList(Slice<Node>.Make(0, 1)).IsMissing,
+            "Only the actual parser sentinel denotes a missing list");
+        var missingClone = missing.Clone(factory);
+        var missingHeader = missingClone.Nodes;
+        Require(missingClone.IsMissing, "A shallow missing-list clone retains the sentinel");
+        missingClone.Nodes = Slice<Node>.Make(0, 1);
+        Require(!missingClone.IsMissing && missing.IsMissing,
+            "Replacing a clone header updates its missing state without changing the original");
+        missingClone.Nodes = missingHeader;
+        Require(missingClone.IsMissing, "Restoring the original header restores the missing state");
+        missingClone.Nodes = missingHeader.Slice2(0, 1);
+        Require(missingClone.IsMissing, "Sentinel identity depends on capacity and slot ownership, not length");
+        missingClone.Nodes = missingHeader.Append((ReadOnlySpan<Node>)[scalar, scalar]);
+        Require(!missingClone.IsMissing && missing.IsMissing && missing.Nodes.Length == 0,
+            "Growth past sentinel capacity detaches the clone without writing the shared sentinel");
+
         Node first = factory.NewIdentifier("first"), second = factory.NewIdentifier("second"), replacement = factory.NewIdentifier("replacement");
         Node[] borrowed = [replacement, first, second, replacement];
         var spanPublished = arena.CloneHeader(borrowed.AsSpan(1, 2));

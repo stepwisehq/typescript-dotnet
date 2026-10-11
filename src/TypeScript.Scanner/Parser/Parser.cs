@@ -901,7 +901,6 @@ public partial class Parser
     {
         var result = this.parseEmptyNodeList();
         result.Nodes = missingListNodes;
-        result.IsMissing = true;
         return result;
     }
 
@@ -9521,7 +9520,7 @@ public partial class Parser
     private Visitor setParentFromContext;
     private static readonly string[] viableKeywordSuggestions = Scanner.GetViableKeywordSuggestions();
     // parser.go:111/6490: missing lists have a distinct zero-length cap-one backing slot.
-    private static readonly Slice<Node> missingListNodes = Slice<Node>.Make(0, 1);
+    private static readonly Slice<Node> missingListNodes = NodeList.MissingNodes;
     // parser.go:119-131. Standard managed concurrent storage supplies exclusive
     // reusable parser leases; discarded owners can be collected normally.
     private static readonly System.Collections.Concurrent.ConcurrentBag<Parser> parserPool = new();
@@ -9553,7 +9552,7 @@ public partial class Parser
         parser.currentParent = null;
         parserPool.Add(parser);
     }
-    private static bool isMissingNodeList(NodeList list) => list != null && list.Nodes.Capacity == 1 && list.Nodes.Slice2(0, 1).SameStorageRange(missingListNodes.Slice2(0, 1));
+    private static bool isMissingNodeList(NodeList list) => list != null && list.IsMissing;
     // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.FromUnicode(sourceText), scriptKind);
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.CopyFrom(sourceText), scriptKind);

@@ -173,9 +173,9 @@ public class Type
     internal Symbol symbol;
     internal TypeAlias alias;
     internal Checker checker;
-    internal TypeData data;
+    // The payload inherits this header; bare internal Type values retain a null view.
+    internal TypeData data => this as TypeData;
     internal Type() { }
-    internal Type(TypeData data) => this.data = data;
     public uint Id() => id;
     public TypeFlags Flags() => flags;
     public ObjectFlags ObjectFlags() => objectFlags;
@@ -290,10 +290,9 @@ public class Type
 }
 
 // types.go:685/872. Ordinary inheritance retains the embedded Go Type header
-// in its payload object. Self data preserves the source interface dispatch.
+// in its payload object. The computed view preserves the source interface dispatch.
 public abstract class TypeData : Type
 {
-    protected TypeData() => data = this;
     public Type AsType() => this;
     public new virtual ConstrainedType AsConstrainedType() => null;
     public new virtual StructuredType AsStructuredType() => null;

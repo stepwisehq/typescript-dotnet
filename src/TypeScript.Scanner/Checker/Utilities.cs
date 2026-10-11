@@ -109,6 +109,40 @@ public sealed partial class Checker
             node.Parent.Kind == Kind.ExportAssignment && node.Parent.Expression() == node;
     }
 
+    // utilities.go:875-908. The source instantiation is orderedSet[*Type].
+    // Pointer identity and the small-set scan precede the original thresholded
+    // membership map; append order is independent of hash iteration order.
+    private struct orderedSet<T> where T : class
+    {
+        private const int orderedSetMapThreshold = 16;
+        private HashSet<T> valuesByKey;
+        internal Slice<T> values;
+
+        internal bool contains(T value)
+        {
+            if (valuesByKey != null)
+                return valuesByKey.Contains(value);
+            foreach (var existing in values)
+                if (ReferenceEquals(existing, value))
+                    return true;
+            return false;
+        }
+
+        internal void add(T value)
+        {
+            values = values.Append(value);
+            if (valuesByKey == null)
+            {
+                if (values.Length <= orderedSetMapThreshold)
+                    return;
+                valuesByKey = new HashSet<T>(values.Length, ReferenceEqualityComparer.Instance);
+                foreach (var previous in values.Slice2(0, values.Length - 1))
+                    valuesByKey.Add(previous);
+            }
+            valuesByKey.Add(value);
+        }
+    }
+
     // utilities.go:350. Empty input retains a nil table; duplicate names retain the last symbol.
     private static SymbolTable createSymbolTable(Slice<Symbol> symbols)
     {

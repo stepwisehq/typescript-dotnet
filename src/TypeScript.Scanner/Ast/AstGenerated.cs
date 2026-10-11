@@ -323,9 +323,8 @@ public sealed partial class PrivateIdentifier : NodeData, PrimaryExpressionBase,
     }
 }
 
-public sealed partial class QualifiedName : NodeData, FlowNodeBase
+public sealed partial class QualifiedName : CompositeNodeData, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public Node Left { get; set; }
     public Node Right { get; set; }
@@ -346,9 +345,8 @@ public sealed partial class QualifiedName : NodeData, FlowNodeBase
     }
 }
 
-public sealed partial class ComputedPropertyName : NodeData
+public sealed partial class ComputedPropertyName : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
@@ -366,9 +364,8 @@ public sealed partial class ComputedPropertyName : NodeData
     }
 }
 
-public sealed partial class Decorator : NodeData
+public sealed partial class Decorator : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
@@ -403,9 +400,8 @@ public sealed partial class EmptyStatement : NodeData, StatementBase, FlowNodeBa
     }
 }
 
-public sealed partial class IfStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class IfStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
     public Node ThenStatement { get; set; }
@@ -428,9 +424,8 @@ public sealed partial class IfStatement : NodeData, StatementBase, FlowNodeBase
     }
 }
 
-public sealed partial class DoStatement : NodeData, IterationStatementBase, StatementBase, FlowNodeBase
+public sealed partial class DoStatement : CompositeNodeData, IterationStatementBase, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Statement { get; set; }
     public new Node Expression { get; set; }
@@ -451,9 +446,8 @@ public sealed partial class DoStatement : NodeData, IterationStatementBase, Stat
     }
 }
 
-public sealed partial class WhileStatement : NodeData, IterationStatementBase, StatementBase, FlowNodeBase
+public sealed partial class WhileStatement : CompositeNodeData, IterationStatementBase, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Statement { get; set; }
     public new Node Expression { get; set; }
@@ -474,9 +468,8 @@ public sealed partial class WhileStatement : NodeData, IterationStatementBase, S
     }
 }
 
-public sealed partial class ForStatement : NodeData, IterationStatementBase, StatementBase, FlowNodeBase, LocalsContainerBase
+public sealed partial class ForStatement : CompositeNodeData, IterationStatementBase, StatementBase, FlowNodeBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Statement { get; set; }
     public new SymbolTable Locals { get; set; }
@@ -505,9 +498,8 @@ public sealed partial class ForStatement : NodeData, IterationStatementBase, Sta
     }
 }
 
-public sealed partial class ForInOrOfStatement : NodeData, StatementBase, FlowNodeBase, LocalsContainerBase
+public sealed partial class ForInOrOfStatement : CompositeNodeData, StatementBase, FlowNodeBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
@@ -576,9 +568,8 @@ public sealed partial class ContinueStatement : NodeData, StatementBase, FlowNod
     }
 }
 
-public sealed partial class ReturnStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class ReturnStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
 
@@ -597,9 +588,8 @@ public sealed partial class ReturnStatement : NodeData, StatementBase, FlowNodeB
     }
 }
 
-public sealed partial class WithStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class WithStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
     public new Node Statement { get; set; }
@@ -620,9 +610,8 @@ public sealed partial class WithStatement : NodeData, StatementBase, FlowNodeBas
     }
 }
 
-public sealed partial class SwitchStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class SwitchStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
     public Node CaseBlock { get; set; }
@@ -643,9 +632,8 @@ public sealed partial class SwitchStatement : NodeData, StatementBase, FlowNodeB
     }
 }
 
-public sealed partial class CaseBlock : NodeData, LocalsContainerBase
+public sealed partial class CaseBlock : CompositeNodeData, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public NodeList Clauses { get; set; }
@@ -666,9 +654,8 @@ public sealed partial class CaseBlock : NodeData, LocalsContainerBase
     }
 }
 
-public sealed partial class CaseOrDefaultClause : NodeData
+public sealed partial class CaseOrDefaultClause : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node Expression { get; set; }
     public new NodeList Statements { get; set; }
     public FlowNode FallthroughFlowNode { get; set; }
@@ -689,9 +676,8 @@ public sealed partial class CaseOrDefaultClause : NodeData
     }
 }
 
-public sealed partial class ThrowStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class ThrowStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
 
@@ -710,9 +696,8 @@ public sealed partial class ThrowStatement : NodeData, StatementBase, FlowNodeBa
     }
 }
 
-public sealed partial class TryStatement : NodeData, StatementBase, FlowNodeBase
+public sealed partial class TryStatement : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public Node TryBlock { get; set; }
     public Node CatchClause { get; set; }
@@ -735,9 +720,8 @@ public sealed partial class TryStatement : NodeData, StatementBase, FlowNodeBase
     }
 }
 
-public sealed partial class CatchClause : NodeData, LocalsContainerBase
+public sealed partial class CatchClause : CompositeNodeData, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node VariableDeclaration { get; set; }
@@ -819,9 +803,8 @@ public sealed partial class ExpressionStatement : NodeData, StatementBase, FlowN
     }
 }
 
-public sealed partial class Block : NodeData, StatementBase, FlowNodeBase, LocalsContainerBase
+public sealed partial class Block : CompositeNodeData, StatementBase, FlowNodeBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
@@ -846,9 +829,8 @@ public sealed partial class Block : NodeData, StatementBase, FlowNodeBase, Local
     }
 }
 
-public sealed partial class VariableStatement : NodeData, StatementBase, FlowNodeBase, ModifiersBase
+public sealed partial class VariableStatement : CompositeNodeData, StatementBase, FlowNodeBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public ModifierList modifiers { get; set; }
     public Node DeclarationList { get; set; }
@@ -871,9 +853,8 @@ public sealed partial class VariableStatement : NodeData, StatementBase, FlowNod
     }
 }
 
-public sealed partial class VariableDeclaration : NodeData, DeclarationBase, ExportableBase
+public sealed partial class VariableDeclaration : CompositeNodeData, DeclarationBase, ExportableBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public Node name { get; set; }
@@ -901,9 +882,8 @@ public sealed partial class VariableDeclaration : NodeData, DeclarationBase, Exp
     }
 }
 
-public sealed partial class VariableDeclarationList : NodeData
+public sealed partial class VariableDeclarationList : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public NodeList Declarations { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Declarations);
@@ -921,9 +901,8 @@ public sealed partial class VariableDeclarationList : NodeData
     }
 }
 
-public sealed partial class BindingPattern : NodeData
+public sealed partial class BindingPattern : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
@@ -941,9 +920,8 @@ public sealed partial class BindingPattern : NodeData
     }
 }
 
-public sealed partial class ParameterDeclaration : NodeData, DeclarationBase, ModifiersBase
+public sealed partial class ParameterDeclaration : CompositeNodeData, DeclarationBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node DotDotDotToken { get; set; }
@@ -975,9 +953,8 @@ public sealed partial class ParameterDeclaration : NodeData, DeclarationBase, Mo
     }
 }
 
-public sealed partial class BindingElement : NodeData, DeclarationBase, ExportableBase, FlowNodeBase
+public sealed partial class BindingElement : CompositeNodeData, DeclarationBase, ExportableBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public FlowNode FlowNode { get; set; }
@@ -1031,9 +1008,8 @@ public sealed partial class MissingDeclaration : NodeData, StatementBase, FlowNo
     }
 }
 
-public sealed partial class FunctionDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase
+public sealed partial class FunctionDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
@@ -1081,9 +1057,8 @@ public sealed partial class FunctionDeclaration : NodeData, StatementBase, FlowN
     }
 }
 
-public sealed partial class ClassDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ClassLikeBase, ExportableBase, ModifiersBase, LocalsContainerBase
+public sealed partial class ClassDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ClassLikeBase, ExportableBase, ModifiersBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
@@ -1121,9 +1096,8 @@ public sealed partial class ClassDeclaration : NodeData, StatementBase, FlowNode
     }
 }
 
-public sealed partial class ClassExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ClassLikeBase, ExportableBase, ModifiersBase, LocalsContainerBase
+public sealed partial class ClassExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ClassLikeBase, ExportableBase, ModifiersBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
@@ -1159,9 +1133,8 @@ public sealed partial class ClassExpression : NodeData, PrimaryExpressionBase, M
     }
 }
 
-public sealed partial class HeritageClause : NodeData
+public sealed partial class HeritageClause : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public Kind Token { get; set; }
     public NodeList Types { get; set; }
 
@@ -1265,9 +1238,8 @@ public sealed partial class TypeAliasDeclaration : NodeData, TypeSyntaxBase, Sta
     }
 }
 
-public sealed partial class EnumMember : NodeData, DeclarationBase, NamedMemberBase, ModifiersBase
+public sealed partial class EnumMember : CompositeNodeData, DeclarationBase, NamedMemberBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -1295,9 +1267,8 @@ public sealed partial class EnumMember : NodeData, DeclarationBase, NamedMemberB
     }
 }
 
-public sealed partial class EnumDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase
+public sealed partial class EnumDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
@@ -1327,9 +1298,8 @@ public sealed partial class EnumDeclaration : NodeData, StatementBase, FlowNodeB
     }
 }
 
-public sealed partial class ModuleBlock : NodeData, StatementBase, FlowNodeBase
+public sealed partial class ModuleBlock : CompositeNodeData, StatementBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new NodeList Statements { get; set; }
 
@@ -1382,9 +1352,8 @@ public sealed partial class NotEmittedTypeElement : NodeData, TypeElementBase, D
     }
 }
 
-public sealed partial class ImportDeclaration : NodeData, StatementBase, FlowNodeBase, ModifiersBase, DeclarationBase
+public sealed partial class ImportDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, ModifiersBase, DeclarationBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public ModifierList modifiers { get; set; }
     public new Symbol Symbol { get; set; }
@@ -1467,9 +1436,8 @@ public sealed partial class NamespaceImport : NodeData, DeclarationBase, Exporta
     }
 }
 
-public sealed partial class NamedImports : NodeData
+public sealed partial class NamedImports : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
@@ -1487,9 +1455,8 @@ public sealed partial class NamedImports : NodeData
     }
 }
 
-public sealed partial class ExportAssignment : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
+public sealed partial class ExportAssignment : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
@@ -1566,9 +1533,8 @@ public sealed partial class NamespaceExport : NodeData, DeclarationBase
     }
 }
 
-public sealed partial class NamedExports : NodeData
+public sealed partial class NamedExports : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
@@ -1586,9 +1552,8 @@ public sealed partial class NamedExports : NodeData
     }
 }
 
-public sealed partial class ExportSpecifier : NodeData, DeclarationBase, ExportableBase
+public sealed partial class ExportSpecifier : CompositeNodeData, DeclarationBase, ExportableBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public new bool IsTypeOnly { get; set; }
@@ -1674,9 +1639,8 @@ public sealed partial class ConstructSignatureDeclaration : NodeData, TypeElemen
     }
 }
 
-public sealed partial class ConstructorDeclaration : NodeData, ClassElementBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase
+public sealed partial class ConstructorDeclaration : CompositeNodeData, ClassElementBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public new SymbolTable Locals { get; set; }
@@ -1717,9 +1681,8 @@ public sealed partial class ConstructorDeclaration : NodeData, ClassElementBase,
     }
 }
 
-public sealed partial class GetAccessorDeclaration : NodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
+public sealed partial class GetAccessorDeclaration : CompositeNodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -1765,9 +1728,8 @@ public sealed partial class GetAccessorDeclaration : NodeData, AccessorDeclarati
     }
 }
 
-public sealed partial class SetAccessorDeclaration : NodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
+public sealed partial class SetAccessorDeclaration : CompositeNodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -1886,9 +1848,8 @@ public sealed partial class MethodSignatureDeclaration : NodeData, TypeElementBa
     }
 }
 
-public sealed partial class MethodDeclaration : NodeData, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
+public sealed partial class MethodDeclaration : CompositeNodeData, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -1965,9 +1926,8 @@ public sealed partial class PropertySignatureDeclaration : NodeData, TypeElement
     }
 }
 
-public sealed partial class PropertyDeclaration : NodeData, ClassElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
+public sealed partial class PropertyDeclaration : CompositeNodeData, ClassElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -2014,9 +1974,8 @@ public sealed partial class SemicolonClassElement : NodeData, ClassElementBase, 
     }
 }
 
-public sealed partial class ClassStaticBlockDeclaration : NodeData, ClassElementBase, DeclarationBase, ModifiersBase, LocalsContainerBase
+public sealed partial class ClassStaticBlockDeclaration : CompositeNodeData, ClassElementBase, DeclarationBase, ModifiersBase, LocalsContainerBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public new SymbolTable Locals { get; set; }
@@ -2189,9 +2148,8 @@ public sealed partial class NoSubstitutionTemplateLiteral : NodeData, Expression
     }
 }
 
-public sealed partial class BinaryExpression : NodeData, ExpressionBase, DeclarationBase, ModifiersBase
+public sealed partial class BinaryExpression : CompositeNodeData, ExpressionBase, DeclarationBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node Left { get; set; }
@@ -2283,9 +2241,8 @@ public sealed partial class YieldExpression : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class ArrowFunction : NodeData, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
+public sealed partial class ArrowFunction : CompositeNodeData, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public new SymbolTable Locals { get; set; }
@@ -2328,9 +2285,8 @@ public sealed partial class ArrowFunction : NodeData, ExpressionBase, Declaratio
     }
 }
 
-public sealed partial class FunctionExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
+public sealed partial class FunctionExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public new SymbolTable Locals { get; set; }
@@ -2418,9 +2374,8 @@ public sealed partial class SatisfiesExpression : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class ConditionalExpression : NodeData, ExpressionBase
+public sealed partial class ConditionalExpression : CompositeNodeData, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node Condition { get; set; }
     public new Node QuestionToken { get; set; }
     public Node WhenTrue { get; set; }
@@ -2446,9 +2401,8 @@ public sealed partial class ConditionalExpression : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class PropertyAccessExpression : NodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
+public sealed partial class PropertyAccessExpression : CompositeNodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
     public new Node QuestionDotToken { get; set; }
@@ -2472,9 +2426,8 @@ public sealed partial class PropertyAccessExpression : NodeData, MemberExpressio
     }
 }
 
-public sealed partial class ElementAccessExpression : NodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
+public sealed partial class ElementAccessExpression : CompositeNodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Node Expression { get; set; }
     public new Node QuestionDotToken { get; set; }
@@ -2497,9 +2450,8 @@ public sealed partial class ElementAccessExpression : NodeData, MemberExpression
     }
 }
 
-public sealed partial class CallExpression : NodeData, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
+public sealed partial class CallExpression : CompositeNodeData, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Node Expression { get; set; }
     public new Node QuestionDotToken { get; set; }
@@ -2524,9 +2476,8 @@ public sealed partial class CallExpression : NodeData, LeftHandSideExpressionBas
     }
 }
 
-public sealed partial class NewExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class NewExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node Expression { get; set; }
     public new NodeList TypeArguments { get; set; }
     public new NodeList Arguments { get; set; }
@@ -2548,9 +2499,8 @@ public sealed partial class NewExpression : NodeData, PrimaryExpressionBase, Mem
     }
 }
 
-public sealed partial class MetaProperty : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
+public sealed partial class MetaProperty : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, FlowNodeBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public Kind KeywordToken { get; set; }
     public Node name { get; set; }
@@ -2610,9 +2560,8 @@ public sealed partial class SpreadElement : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class TemplateExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class TemplateExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node Head { get; set; }
     public NodeList TemplateSpans { get; set; }
 
@@ -2653,9 +2602,8 @@ public sealed partial class TemplateSpan : NodeData
     }
 }
 
-public sealed partial class TaggedTemplateExpression : NodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class TaggedTemplateExpression : CompositeNodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node Tag { get; set; }
     public new Node QuestionDotToken { get; set; }
     public new NodeList TypeArguments { get; set; }
@@ -2698,9 +2646,8 @@ public sealed partial class ParenthesizedExpression : NodeData, PrimaryExpressio
     }
 }
 
-public sealed partial class ArrayLiteralExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class ArrayLiteralExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new NodeList Elements { get; set; }
     public bool MultiLine { get; set; }
 
@@ -2720,9 +2667,8 @@ public sealed partial class ArrayLiteralExpression : NodeData, PrimaryExpression
     }
 }
 
-public sealed partial class ObjectLiteralExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
+public sealed partial class ObjectLiteralExpression : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new NodeList Properties { get; set; }
     public bool MultiLine { get; set; }
@@ -2763,9 +2709,8 @@ public sealed partial class SpreadAssignment : NodeData, ObjectLiteralElementBas
     }
 }
 
-public sealed partial class PropertyAssignment : NodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
+public sealed partial class PropertyAssignment : CompositeNodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -2795,9 +2740,8 @@ public sealed partial class PropertyAssignment : NodeData, ObjectLiteralElementB
     }
 }
 
-public sealed partial class ShorthandPropertyAssignment : NodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
+public sealed partial class ShorthandPropertyAssignment : CompositeNodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
@@ -3108,9 +3052,8 @@ public sealed partial class TypeReferenceNode : NodeData, NodeWithTypeArgumentsB
     }
 }
 
-public sealed partial class ExpressionWithTypeArguments : NodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class ExpressionWithTypeArguments : CompositeNodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node Expression { get; set; }
     public new NodeList TypeArguments { get; set; }
 
@@ -3187,9 +3130,8 @@ public sealed partial class TypePredicateNode : NodeData, TypeNodeBase, TypeSynt
     }
 }
 
-public sealed partial class ImportAttribute : NodeData
+public sealed partial class ImportAttribute : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node name { get; set; }
     public Node Value { get; set; }
 
@@ -3210,9 +3152,8 @@ public sealed partial class ImportAttribute : NodeData
     }
 }
 
-public sealed partial class ImportAttributes : NodeData
+public sealed partial class ImportAttributes : CompositeNodeData
 {
-    internal override bool CacheSubtreeFacts => true;
     public Kind Token { get; set; }
     public new NodeList Attributes { get; set; }
     public bool MultiLine { get; set; }
@@ -3622,9 +3563,8 @@ public sealed partial class PartiallyEmittedExpression : NodeData, LeftHandSideE
     }
 }
 
-public sealed partial class JsxElement : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class JsxElement : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node OpeningElement { get; set; }
     public new NodeList Children { get; set; }
     public Node ClosingElement { get; set; }
@@ -3646,9 +3586,8 @@ public sealed partial class JsxElement : NodeData, PrimaryExpressionBase, Member
     }
 }
 
-public sealed partial class JsxAttributes : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
+public sealed partial class JsxAttributes : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new NodeList Properties { get; set; }
 
@@ -3667,9 +3606,8 @@ public sealed partial class JsxAttributes : NodeData, PrimaryExpressionBase, Mem
     }
 }
 
-public sealed partial class JsxNamespacedName : NodeData, ExpressionBase
+public sealed partial class JsxNamespacedName : CompositeNodeData, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node Namespace { get; set; }
     public Node name { get; set; }
 
@@ -3690,9 +3628,8 @@ public sealed partial class JsxNamespacedName : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class JsxOpeningElement : NodeData, ExpressionBase
+public sealed partial class JsxOpeningElement : CompositeNodeData, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node TagName { get; set; }
     public new NodeList TypeArguments { get; set; }
     public new Node Attributes { get; set; }
@@ -3714,9 +3651,8 @@ public sealed partial class JsxOpeningElement : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class JsxSelfClosingElement : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class JsxSelfClosingElement : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Node TagName { get; set; }
     public new NodeList TypeArguments { get; set; }
     public new Node Attributes { get; set; }
@@ -3738,9 +3674,8 @@ public sealed partial class JsxSelfClosingElement : NodeData, PrimaryExpressionB
     }
 }
 
-public sealed partial class JsxFragment : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
+public sealed partial class JsxFragment : CompositeNodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public Node OpeningFragment { get; set; }
     public new NodeList Children { get; set; }
     public Node ClosingFragment { get; set; }
@@ -3792,9 +3727,8 @@ public sealed partial class JsxClosingFragment : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class JsxAttribute : NodeData, DeclarationBase
+public sealed partial class JsxAttribute : CompositeNodeData, DeclarationBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public Node name { get; set; }
     public new Node Initializer { get; set; }
@@ -4557,9 +4491,8 @@ public sealed partial class JSDocNameReference : NodeData, TypeNodeBase, TypeSyn
     }
 }
 
-public sealed partial class ModuleDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase, LocalsContainerBase, BodyBase
+public sealed partial class ModuleDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase, LocalsContainerBase, BodyBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
@@ -4601,9 +4534,8 @@ public sealed partial class ModuleDeclaration : NodeData, StatementBase, FlowNod
     }
 }
 
-public sealed partial class ImportEqualsDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase
+public sealed partial class ImportEqualsDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
@@ -4635,9 +4567,8 @@ public sealed partial class ImportEqualsDeclaration : NodeData, StatementBase, F
     }
 }
 
-public sealed partial class ExportDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
+public sealed partial class ExportDeclaration : CompositeNodeData, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
@@ -4695,9 +4626,8 @@ public sealed partial class ImportTypeNode : NodeData, NodeWithTypeArgumentsBase
     }
 }
 
-public sealed partial class ImportClause : NodeData, DeclarationBase, ExportableBase
+public sealed partial class ImportClause : CompositeNodeData, DeclarationBase, ExportableBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public Kind PhaseModifier { get; set; }
@@ -4723,9 +4653,8 @@ public sealed partial class ImportClause : NodeData, DeclarationBase, Exportable
     }
 }
 
-public sealed partial class ImportSpecifier : NodeData, DeclarationBase, ExportableBase
+public sealed partial class ImportSpecifier : CompositeNodeData, DeclarationBase, ExportableBase
 {
-    internal override bool CacheSubtreeFacts => true;
     public new Symbol Symbol { get; set; }
     public new Symbol LocalSymbol { get; set; }
     public new bool IsTypeOnly { get; set; }

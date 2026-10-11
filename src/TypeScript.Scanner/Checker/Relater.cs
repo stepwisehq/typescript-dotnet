@@ -2033,6 +2033,10 @@ public sealed partial class Checker
         internal bool overflow;
         internal int relationCount;
         internal Relater next;
+        // The bound reportError reads this exclusively leased receiver's current
+        // state. Retain one delegate across recursion and the existing free-list reuse.
+        private ErrorReporter errorReporter;
+        private ErrorReporter getErrorReporter() => errorReporter ??= reportError;
         internal Relater(Checker checker) => c = checker;
         internal bool VerificationOwnedBy(Checker checker) => ReferenceEquals(c, checker);
         internal Ternary isRelatedToSimple(Type source, Type target) => isRelatedToEx(source, target, RecursionFlags.Both, false, null, IntersectionState.None);
@@ -2044,7 +2048,7 @@ public sealed partial class Checker
                 return Ternary.True;
             if ((originalSource.flags & TypeFlags.Object) != 0 && (originalTarget.flags & TypeFlags.Primitive) != 0)
             {
-                if (relation == c.comparableRelation && (originalTarget.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(originalTarget, originalSource, relation) || c.isSimpleTypeRelatedTo(originalSource, originalTarget, relation, reportErrors ? reportError : null))
+                if (relation == c.comparableRelation && (originalTarget.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(originalTarget, originalSource, relation) || c.isSimpleTypeRelatedTo(originalSource, originalTarget, relation, reportErrors ? getErrorReporter() : null))
                     return Ternary.True;
                 if (reportErrors)
                     reportErrorResults(originalSource, originalTarget, originalSource, originalTarget, headMessage);
@@ -2082,7 +2086,7 @@ public sealed partial class Checker
                 }
             }
 
-            if (relation == c.comparableRelation && (target.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(target, source, relation) || c.isSimpleTypeRelatedTo(source, target, relation, reportErrors ? reportError : null))
+            if (relation == c.comparableRelation && (target.flags & TypeFlags.Never) == 0 && c.isSimpleTypeRelatedTo(target, source, relation) || c.isSimpleTypeRelatedTo(source, target, relation, reportErrors ? getErrorReporter() : null))
                 return Ternary.True;
             if (((source.flags | target.flags) & TypeFlags.StructuredOrInstantiable) != 0)
             {
@@ -3636,7 +3640,7 @@ public sealed partial class Checker
             }
 
             TypeComparer isRelatedToWorker = new SignatureRelatedComparer(this, intersectionState).Compare;
-            return c.compareSignaturesRelated(source, target, checkMode, reportErrors, reportError, isRelatedToWorker, c.reportUnreliableMapper);
+            return c.compareSignaturesRelated(source, target, checkMode, reportErrors, getErrorReporter(), isRelatedToWorker, c.reportUnreliableMapper);
         }
 
         // relater.go:4593. Actual length check and nil-slot resolution boundaries.

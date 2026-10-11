@@ -129,7 +129,12 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined integration16 acceptance passed; see docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined integration16 acceptance passed; see docs/STATE.md.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Node payload dispatch uses the CLR runtime type instead of a redundant self-reference. Only source CompositeBase payloads retain subtree facts through CompositeNodeData, with unchanged volatile cache/mask semantics. Missing NodeList state follows the upstream shared sentinel/header rather than a separate mutable bool; the pure Ast sentinel avoids triggering Parser static registration from public reads. IsMissing is now getter-only. Header clones and mutations determine source missing state.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -486,7 +491,12 @@
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Source parser.go:516-610 uses explicit static callback state for diagnostic ranges; parser/source diagnostic headers and actual mark/rewind/append ownership retained. Combined integration16 behavioral/Native AOT acceptance passed; source review and remaining boundaries recorded in docs/STATE.md.",
-      "sourceReuseRolloutAdaptation": "Source parser.go119-133 parser pool restored with standard ConcurrentBag, all source/isolated/lazy-JSDoc leases return in finally; reset all per-parse state except scanner and cached visitor, reset embedded factory adaptation, detach arena headers without clearing published arrays. Unlike sync.Pool, idle owners and retained scanner source may persist across GC; no exact memory-policy parity claim. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
+      "sourceReuseRolloutAdaptation": "Source parser.go119-133 parser pool restored with standard ConcurrentBag, all source/isolated/lazy-JSDoc leases return in finally; reset all per-parse state except scanner and cached visitor, reset embedded factory adaptation, detach arena headers without clearing published arrays. Unlike sync.Pool, idle owners and retained scanner source may persist across GC; no exact memory-policy parity claim. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "missingListNodes shares the pure Ast sentinel and isMissingNodeList uses the derived header predicate; redundant mutable missing-state assignments removed, including parser regeneration inputs. Actual parser flow, list storage and clones preserved.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -565,7 +575,12 @@
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
       "astCandidateStackCheckpoint": "Eleven text payload families/factories/clones retain borrowed raw headers with explicit public string getters/setters. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
       "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined integration16 acceptance passed; see docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined integration16 acceptance passed; see docs/STATE.md.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "All 71 generated composite payloads derive CompositeNodeData; ordinary payloads no longer retain a subtree-facts cache. Generator classification remains the existing upstream composite classification. Manual SourceFile follows the same base.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -982,7 +997,12 @@
       "astCandidateStackCheckpoint": "Declaration lookup borrows AST raw-text headers and reuses actual stored keys; insertion remains a string boundary. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
       "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Ambient/private/signed/external module-name construction retains byte descriptors until genuine owned concatenation. Three source factory boundaries allocate typed Symbol/FlowNode/FlowList directly; removed empty generic allocation adapter did not pack objects. Original identities, flags and counts retained. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md.",
-      "sourceReuseRolloutAdaptation": "Source binder.go102-129 exclusive owner reuse restored with standard ConcurrentBag and finally; clear per-file state/drop arena header while retaining cached bind visitor. Published symbols/declaration arrays remain valid. Standard bag retains idle owners unlike Go GC-evictable pool. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
+      "sourceReuseRolloutAdaptation": "Source binder.go102-129 exclusive owner reuse restored with standard ConcurrentBag and finally; clear per-file state/drop arena header while retaining cached bind visitor. Published symbols/declaration arrays remain valid. Standard bag retains idle owners unlike Go GC-evictable pool. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Restore upstream one-member capacity for the CommonJS symbol members table; preserve table presence and contents.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -1272,7 +1292,12 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: Retained generic/member/deferred/switch/accessibility and tuple metadata, variance, return/yield/constraint/contextual/iterator scratch, ambient symbols, diagnostic node groups and outer signature collections use source Slice ownership through consumers. Preserve actual Clone/Clip, nil/cache markers, captured-header traversal and canonical normalization. Immediate callbacks use explicit state; required escaping/recursive captures remain. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: Retained generic/member/deferred/switch/accessibility and tuple metadata, variance, return/yield/constraint/contextual/iterator scratch, ambient symbols, diagnostic node groups and outer signature collections use source Slice ownership through consumers. Preserve actual Clone/Clip, nil/cache markers, captured-header traversal and canonical normalization. Immediate callbacks use explicit state; required escaping/recursive captures remain. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Restore upstream capacity hints for globals and file-index maps; retain source file filtering/countGlobalSymbols. Intersection construction now uses the upstream orderedSet threshold algorithm with the existing initial slice capacity. Remove redundant newType self-slot publication after runtime-type dispatch adaptation.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -1350,7 +1375,12 @@
       },
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Embedded Type payloads share one managed object. Generic/member/tuple/variance owner fields use Go-shaped headers; target retention and allocated-empty distinctions preserved. Tuples retain actual transformation copies and returned element-flag buffers. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
       "arenaStorageRolloutAdaptation": "In progress: internal link records use arena-backed value payloads; MembersAndExports embeds two table slots. SourceFileLinks retains a lazy ordered-set carrier to preserve live iterator ownership, with lazy membership and Slice keys. Public Symbol/Node/Type identity unchanged. Combined build/Native AOT and regression qualification pending; see docs/STATE.md.",
-      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending."
+      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Computed TypeData runtime-type view replaces the redundant self-reference after the prior embedded-header merge. Standalone Type retains null payload view; concrete payload identity and checker ownership are unchanged.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -1470,7 +1500,12 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: Connected relation Type/Symbol/Node and outer-signature scratch uses source headers; actual reusable source/target stacks retained. Immediate recursion identity, structured/index relations and template predicates use explicit state with original order, lazy reads and quit semantics. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: Connected relation Type/Symbol/Node and outer-signature scratch uses source headers; actual reusable source/target stacks retained. Immediate recursion identity, structured/index relations and template predicates use explicit state with original order, lazy reads and quit semantics. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Reuse one lazy standard bound ErrorReporter delegate across immediate calls on the exclusively leased/free-list Relater receiver. Recursion reads the same live receiver state. Required retained inference TypeComparer and SignatureRelatedComparer callbacks remain allocated. Adds a receiver reference field; benefit is measured for the combined integration only.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1612,6 +1647,11 @@
         "adaptation": "Union/intersection constituents and template placeholder types use Go-like Slice headers through relations, inference, reduction, printer and node-builder consumers. Source-required Clip/Clone, shared-header reuse and detached mutation buffers retained; new inline headers are larger than former List references. Other type-argument/tuple metadata storage remains outside this packet.",
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
+      },
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Port utilities.go orderedSet membership acceleration: linear pointer-identity scan through 16 entries, standard hinted HashSet with ReferenceEqualityComparer from entry 17. Retain insertion-ordered Slice, source threshold, recursive scratch and publication behavior.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
       }
     },
     {
@@ -1764,7 +1804,8 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: Tracked-symbol cache/recovery and deferred-report headers retain source scope, rollback and replay ownership. Stable tracked-record and callback identities retained. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: Tracked-symbol cache/recovery and deferred-report headers retain source scope, rollback and replay ownership. Stable tracked-record and callback identities retained. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
+      "knownCapacityFollowThrough": "NodeBuilderImpl companion restores the known source alias-result count as initial capacity; integration19 Native AOT and selected regression acceptance passed."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
@@ -2333,7 +2374,12 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Represent Go embedded PseudoType header and payload as one CLR object with a computed typed view, removing the separate wrapper and back-reference. Kind/casts/factories/singletons retain identity. Diagnostic/type-node support only; does not expand emit scope. No isolated workload gain claimed.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/pseudochecker/lookup.go",
@@ -2460,7 +2506,12 @@
       "collectionsCampaignScope": "Original inference fixing/nonfixing/backreference mapper behavior and selected generic mapper support. Cache/context/provenance verification pending.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
       "collectionsCampaignState": "accepted-collections-contract",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: TypeMapperData inherits TypeMapper to represent source TypeMapperBase embedding as one managed object (mapper.go102). Data/self dispatch, factory kinds/IDs and deferred captures retained. Named observation guard follows concrete payload first without changing observation schema. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: TypeMapperData inherits TypeMapper to represent source TypeMapperBase embedding as one managed object (mapper.go102). Data/self dispatch, factory kinds/IDs and deferred captures retained. Named observation guard follows concrete payload first without changing observation schema. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Computed TypeMapperData runtime-type view replaces redundant self-reference; standalone header retains null payload behavior, concrete mapper identity unchanged.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/checker/symbolaccessibility.go",
@@ -3551,7 +3602,12 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "filenameSharingAdaptation": "Private genuine-Program adapter preserves original raw filename while maintaining existing public Unicode filename/parse-options contract, eliminating repeated internal re-encoding."
+      "filenameSharingAdaptation": "Private genuine-Program adapter preserves original raw filename while maintaining existing public Unicode filename/parse-options contract, eliminating repeated internal re-encoding.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Authored RealProgram adapter classifies library/user files in one source-order pass through the existing keyed Program.IsSourceFileDefaultLibrary predicate instead of rescanning LibraryFiles. Genuine Program classification, duplicates/order and diagnostics retained; distinct legacy fixed-library adapter unchanged.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": null,
@@ -5539,7 +5595,12 @@
       "mappingAdaptation": "Two-function upstream helper unit folded into existing Checker/Utilities counterparts; no new standalone fragment.",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
       "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
-      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
+      "recordOwnershipFollowThrough": {
+        "adaptation": "Restore upstream capacity hints for globals and file-index maps; retain source file filtering/countGlobalSymbols. Intersection construction now uses the upstream orderedSet threshold algorithm with the existing initial slice capacity. Remove redundant newType self-slot publication after runtime-type dispatch adaptation.",
+        "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
+        "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      }
     },
     {
       "upstream": "tsc/internal/checker/nodebuilder_hover.go",

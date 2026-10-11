@@ -1,3 +1,69 @@
+# Active: cumulative allocation comparison after accepted integration19
+
+The user explicitly directed continuing after827f131. Go performance parity is
+unmet; do not stop at another checkpoint/report/commit. Follow START-HERE.md's
+comprehensive ownership-path SOP; Astra coordination/GPT-6.1 Sol implementation and
+independent review remain. Do not redo accepted families or local benchmark loops.
+
+Integration19 is accepted; this checkpoint includes source/doc/proof changes and
+the completed cumulative Native/Go allocation comparison. No tracked production changes after
+freeze; all source/control/profile/final evidence independent ACKs closed.
+- Frozen compiler bd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f.
+  Production10.07s zero warnings/errors; NativeCLI11.05s exact frozen compiler.
+- VSCode FIRST17.22wall/71.48CPU/9,672,180KiB,10completeDTO/Gochains exact.
+  One observation versus prior17.72s; CPU/RSS did not decline, no speedup claim.
+- One capture BEFORE tests:10,818,807,776sampledB/10.075800GiB,−3.2024%vs18,
+  −71.3493%originalServerGC.92,791typed ticks, one missingstack,zero loss/truncation.
+  Offlineanalysis only overlapped correctness tests. Profile independentACK closed.
+- Managed1712pass:Checker832/TypeSystem84/selectedParser695/additionalNoEmit101.
+  NativeFoundation3153+87shared controls/utilities20/full15304originals exact.
+  FullNative120chunks340.08s. Actual compiler/applicationILCinputs,587/242guards exact.
+- InitialNativeFoundation MissingMethodException was stale RID Parser.Validation;
+  fresh already-built dependency restored, onlyChecker/Foundation republished.
+  Initialfailure retained. Finalcontroller aggregate-only NameError occurred AFTER
+  allNative outputs/result persisted; aggregate independently reconstructed from
+  unchangedTRX/stage/chunk records. No semantic repair/production rebuild/retests.
+  Twelve cold nullable warnings match18, separate from productionzero.
+- Changes: AST composite-only cache, Node/Type/Mapper runtime typed selfviews,
+  PseudoType singleobjectembedding, source missinglistsentinel; known-count hints,
+  intersectionorderedSet threshold17, lazy leasedRelater reporter reuse, one-pass
+  authored genuineProgram libraryclassification. Preserve Go copies/retainedcallbacks.
+  Source mapping/doc/proof updated; no unresolved sourcefindings.
+
+NEXT WORK IS RUNNING, not awaiting user assignment:
+- support owns artifact-only cumulative allocation measurement under
+  artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation.
+  Source-ready0650da84/scanner source and result ACKs closed; Native+Go runs passed.
+  Actual Native ILC references frozen19 compiler directly; Go -overlay changes only
+  CLI main measurement wrapper/imports. Tracked production/upstream source untouched.
+- Native public GC.GetTotalAllocatedBytes(precise:true) reports before103,648B /
+  after10,675,045,432B /delta10,674,941,784B. ServerGCtrue,CPUcount16 is NOT GCheapcount.
+  Gen0/1/2 collection deltas36/17/9. Full10diagnostics/guards exact. Go completeddelta8,992,138,304B (before1,014,928/end8,993,153,232); ratio1.1871416,
+  gap1,682,803,480B. Bothcomplete10diagnostics/status/guards exact.
+- Go runtime.ReadMemStats.TotalAlloc measured around normalrunMain, before os.Exit;
+  no forcedGC/profiling, sidecarconstruction outside finalcounter. Absolute+delta
+  boundaries differ somewhat byfrontend/startup; not exactpurechecker/RSS/native
+  memory/objectcounts. Instrumentedelapsed is NOT benchmark. This resolves actual
+  sampled/lastGC-lag ambiguity; do not revive prior exact5x allocation claims.
+- scanner independently verified measurement results; resultACKb427ca2f closed.
+- verification final docs/proof consistency ACK closed; all19regressionexecution
+  finished. Root owns the checkpoint; support/verification own next GC design/review.
+- Next task assigned: support designs bounded standard ServerGC policy/heapbudget
+  comparison on UNCHANGED19Nativebinary; verification independentlyreviews. Four
+  checkerworkers/16CPU and prior37.57%SVRsampledcost motivate this now that cumulative
+  allocationgap is18.7%, notseveral-times. No productionGCpolicychange yet; wait
+  designreview/rootrelease, smallcontrolledcompleteVSCodecomparison, no hugegrid.
+  Continue from measured gap+existing17Native/GoCPU evidence to next substantial
+  source-grounded allocation/runtimeaction. No current evidence of another dominant
+  missed Go family. Naive publicSymbol Memory handles and ConcurrentDictionary swap
+  remain reviewed unfavorable designs; don't redo them without new evidence.
+  Runtime GC tuning is being assessed; no production configchange chosen yet.
+
+No dependent publication remains active. Preserve this accepted checkpoint and
+continue autonomously with the assigned runtime investigation. No commits during
+any future dependent publication. No new
+process framework, SVGs, custommaps/globalhandles/unsafeGCpointers/speculativepooling.
+
 # Allocation layout and current CPU follow-through accepted (2026-10-11)
 
 **Resume here:** the user authorized current Native AOT/pinned-Go CPU investigation

@@ -28,10 +28,16 @@ public sealed class NodeFactoryHooks
 
 public class NodeList
 {
+    // The pure shared header keeps public missing-state reads independent of
+    // Parser's static constructor and its lazy-JSDoc registration callback.
+    internal static readonly Slice<Node> MissingNodes = Slice<Node>.Make(0, 1);
     public TextRange Loc;
     // ast.go:123. Header clones share slots but have independent len/cap.
     public Slice<Node> Nodes;
-    public bool IsMissing;
+    // parser.go:111–116. Missing state belongs to the shared sentinel header,
+    // so header clones and subsequent Nodes mutations determine it directly.
+    public bool IsMissing => Nodes.Capacity == 1 &&
+        Nodes.Slice2(0, 1).SameStorageRange(MissingNodes.Slice2(0, 1));
     public int Pos() => Loc.Pos();
     public int End() => Loc.End();
     public bool HasTrailingComma() => Nodes is { Count: > 0 } && Nodes[^1].End() < End();
@@ -39,7 +45,6 @@ public class NodeList
     {
         var list = f.AsNodeFactory().NewNodeList(Nodes);
         list.Loc = Loc;
-        list.IsMissing = IsMissing;
         return list;
     }
 }
@@ -51,8 +56,7 @@ public sealed class ModifierList : NodeList
     {
         Loc = Loc,
         Nodes = Nodes,
-        ModifierFlags = ModifierFlags,
-        IsMissing = IsMissing
+        ModifierFlags = ModifierFlags
     };
 }
 
@@ -62,7 +66,10 @@ public partial class Node
     public NodeFlags Flags;
     public TextRange Loc;
     public Node Parent;
-    internal NodeData data;
+    // ast.go:180 stores the Go interface needed for embedded-payload dispatch.
+    // The CLR object's runtime type already identifies that same payload.
+    // A bare Node has no payload, preserving its previous null dispatch view.
+    internal NodeData data => this as NodeData;
     public Node AsNode() => this;
     public Node AsMutable() => this;
     public int Pos() => Loc.Pos();
@@ -178,34 +185,14 @@ public partial class Node
 // dispatchers still call the distinct virtual NodeData implementation surface.
 public abstract partial class NodeData : Node, INodeData
 {
-    protected NodeData() => data = this;
-
-    internal virtual uint ComputeSubtreeFacts()
-    {
-        // NodeDefault returns no facts; CompositeBase requires a concrete computation.
-        if (CacheSubtreeFacts)
-            throw new InvalidOperationException("not implemented");
-        return 0;
-    }
+    internal virtual uint ComputeSubtreeFacts() => 0;
 
     internal virtual uint PropagateSubtreeFacts() => SubtreeFactsValue();
-    private int cachedSubtreeFacts;
     internal virtual bool CacheSubtreeFacts => false;
-    internal uint CachedSubtreeFacts => (uint)System.Threading.Volatile.Read(ref cachedSubtreeFacts);
+    internal virtual uint CachedSubtreeFacts => 0;
 
-    internal new uint SubtreeFactsValue()
-    {
-        if (!CacheSubtreeFacts)
-            return ComputeSubtreeFacts();
-        uint facts = CachedSubtreeFacts;
-        if ((facts & SubtreeFactValues.FactsComputed) == 0)
-        {
-            facts |= ComputeSubtreeFacts() | SubtreeFactValues.FactsComputed;
-            System.Threading.Volatile.Write(ref cachedSubtreeFacts, (int)facts);
-        }
-
-        return facts & ~SubtreeFactValues.FactsComputed;
-    }
+    // ast.go:1234. Ordinary payloads compute without a retained cache field.
+    internal new virtual uint SubtreeFactsValue() => ComputeSubtreeFacts();
 
     public new virtual Node Name() => null;
     public new virtual ModifierList Modifiers() => null;
@@ -226,6 +213,32 @@ public abstract partial class NodeData : Node, INodeData
     public new virtual IEnumerable<SyntaxField> BoundFields()
     {
         yield break;
+    }
+}
+
+// ast_generated.go:148 and ast.go:1602. Only CompositeBase embeds facts.
+// CLR inheritance places its cache in the same concrete node object; virtual
+// worker dispatch retains the original uncached versus cached source algorithms.
+public abstract class CompositeNodeData : NodeData
+{
+    private int cachedSubtreeFacts;
+    internal sealed override bool CacheSubtreeFacts => true;
+    internal sealed override uint CachedSubtreeFacts =>
+        (uint)System.Threading.Volatile.Read(ref cachedSubtreeFacts);
+
+    internal override uint ComputeSubtreeFacts() =>
+        throw new InvalidOperationException("not implemented");
+
+    internal sealed override uint SubtreeFactsValue()
+    {
+        uint facts = CachedSubtreeFacts;
+        if ((facts & SubtreeFactValues.FactsComputed) == 0)
+        {
+            facts |= ComputeSubtreeFacts() | SubtreeFactValues.FactsComputed;
+            System.Threading.Volatile.Write(ref cachedSubtreeFacts, (int)facts);
+        }
+
+        return facts & ~SubtreeFactValues.FactsComputed;
     }
 }
 
@@ -469,7 +482,7 @@ public struct ContentMapperSourceFileInfo
     public SourceFile CanonicalSourceFile;
 }
 
-public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFileLike
+public sealed partial class SourceFile : CompositeNodeData, SourceFileLike, ISourceTextFileLike
 {
     internal SourceFileParseOptions parseOptions;
     // Authored filename-role boundary: Go ast.SourceFile stores the raw filename
@@ -626,7 +639,6 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, Statements) || Ast.Visit(v, EndOfFileToken);
-    internal override bool CacheSubtreeFacts => true;
 
     internal override uint ComputeSubtreeFacts() => Ast.PropagateNodeListSubtreeFacts(Statements, Ast.PropagateSubtreeFacts);
     public override string DataType() => "SourceFile";

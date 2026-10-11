@@ -328,5 +328,124 @@
     "productionSourceCount": 242,
     "sourceDrift": [],
     "finalIndependentEvidenceReview": "ACK: exact frozen sources, actual ILC inputs, TRX counts and complete original records independently reconciled; no unresolved finding."
+  },
+  "recordOwnershipFollowThrough": {
+    "status": "passed integration19 source/behavior/profile review; performance campaign continues",
+    "baselineCheckpoint": "827f131",
+    "compilerSha256": "bd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f",
+    "platform": "Linux x64 Native AOT; ServerGC",
+    "scope": "AST composite-cache ownership, Node/Type/Mapper/PseudoType embedded-header dispatch, source missing-list sentinel, omitted known-capacity map hints and intersection orderedSet threshold, immediate Relater reporter reuse, authored keyed library classification.",
+    "nativeVSCode": {
+      "wallSeconds": 17.22,
+      "cpuSeconds": 71.48,
+      "peakResidentKiB": 9672180,
+      "exitCode": 1,
+      "diagnosticCount": 10,
+      "completeTenDiagnosticJsonExact": true,
+      "pinnedAvailableDiagnosticChainsExact": true
+    },
+    "managedPassingCases": 1712,
+    "managedBySuite": {
+      "Checker": 832,
+      "TypeSystem": 84,
+      "selectedParser": 695,
+      "additionalNoEmit": 101
+    },
+    "nativeOriginalNoEmitCompleteJsonExact": 15304,
+    "nativeFoundationOriginalAssertions": 3153,
+    "nativeFoundationSharedControls": 87,
+    "nativeUtilitiesOriginalObservations": 20,
+    "sampledAllocation": {
+      "baselineSampledBytes": 11176731432,
+      "candidateSampledBytes": 10818807776,
+      "baselineGiB": 10.409142293035984,
+      "candidateGiB": 10.07579991221428,
+      "deltaBytes": -357923656,
+      "deltaPercent": -3.2024000771391226
+    },
+    "coverage": {
+      "eventsLost": 0,
+      "truncated": false,
+      "aggregationOverflowEvents": 0,
+      "events": 92791,
+      "missingTypeNameEvents": 0,
+      "eventsWithStacks": 92790,
+      "eventsWithAtLeastOneResolvedFrame": 92790
+    },
+    "limitations": [
+      "Selected integrated regression gate; earlier16/17/18 comprehensive channels retained separately, not all rerun.",
+      "Initial NativeFoundation MissingMethodException came from stale RID Parser.Validation; exact fresh dependency restored and only two affected validators republished. Initial failure retained.",
+      "Controller aggregate-only NameError after all Native checks passed preserved; final aggregate reconstructed independently from unchanged TRX/stage/chunk evidence, no workload rerun.",
+      "One Native workload observation, sampled CoreCLR allocations, not exact Native/Go allocation ratio or isolated causal savings. One allocation tick has no stack; zero loss/truncation/overflow.",
+      "Twelve cold harness nullable warnings match18, separate from production zero warnings/errors."
+    ],
+    "evidence": {
+      "artifacts/vscode-allocation-rollout/integration-19/build-result.json": {
+        "sha256": "3ed2f023d55f59f4a90bbe3931492861399da7d0d4e9a64504b186ce0f4d9317"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/source-hashes.json": {
+        "sha256": "cc38ae4a357812a1c40401cc0a4b3f924aa833ac8a75343344d94891bdc65022"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/native/publish-result.json": {
+        "sha256": "df354fc5d95edf2aac4b27788817d15d1c45787024fd4c4ab04b8c629a4c68aa"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/first-vscode/result.json": {
+        "sha256": "67bea2e3684e07f81ab49f2e6951c6c7b6edf6dd74a25db2a168b2779de2b340"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/managed-profile/run.json": {
+        "sha256": "f0ae1a3380922d141bec2a47be89582b7de955242772484f34ec0dad8192ce6d"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/managed-profile/comparison.json": {
+        "sha256": "a9413c10266b91dd6eea9d3560bb1a0abf81ac275662d7534971533eedcdda61"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/managed-profile/verification-peer-review.json": {
+        "sha256": "14069d6f744591c2464b2f8a5f4764ff74396df1e7b75ce1c91bf836bc6cfad2"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/regressions/selected-result.json": {
+        "sha256": "41f8b3261344db2af6ad78ea41c5a8da078907795620a295c0c9a5392c327b08"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/regressions/native-noemit/result.json": {
+        "sha256": "37176b754ca1d8a0c90d5aa0fa258e2d1ff4383137a433832ab58dbab7a99a81"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/regressions/verification-final-ack.json": {
+        "sha256": "1993d7f752d13a2268752d8cf5e297cb828998393e17346ec6c4b590d965be84"
+      },
+      "artifacts/vscode-allocation-rollout/integration-19/regressions/native-dependency-binding-before.json": {
+        "sha256": "c287f06705a4122bf682cd3bed808879e3d5a6f596038cddce68a60c9a31bc34"
+      }
+    },
+    "cumulativeRuntimeAllocation": {
+      "nativeBytes": 10674941784,
+      "goBytes": 8992138304,
+      "nativeVsGoRatio": 1.1871416367396654,
+      "method": "One instrumented NativeAOT CLI and one pinnedGo CLI; public cumulative counter before/after ordinary checking, after diagnostic publication but before sidecar formatting; no forcedGC/profiling.",
+      "completeDiagnosticsExact": true,
+      "productionCompilerUnmodified": true,
+      "limits": [
+        "Cumulative heap-accounted bytes, not sampled weights, retained/RSS/native bytes or object counts. Go size classes/tiny allocator and Native object headers/alignment differ.",
+        "ReadMemStats suspends runtime and flushes caches; precise Native counter is potentially expensive. Not a speed benchmark.",
+        "Absolute counters include startup differently; delta reduces but does not eliminate different frontend startup/lifetime boundaries.",
+        "ProcessorCount and GOMAXPROCS are public settings, not observed GC heap count.",
+        "IO failure leaves measurement missing/invalid while retaining compiler status; hard process termination/Go internal os.Exit bypass wrapper. Existing workload must return normally.",
+        "One run per runtime after review/release. Full diagnostics and input/binary source guards required."
+      ],
+      "evidence": {
+        "artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/source-ready.json": {
+          "sha256": "0650da842bffa188f6112b84a2fbe83bcc29bc573868ff47e58b08071ddb8381"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/scanner-peer-review.json": {
+          "sha256": "404b9cac2a22a4eb6b0259292e419c6af0cb76f7f73b1a9bebade90c368a2264"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/build-result.json": {
+          "sha256": "fc63878a8158a42518523cf254e0b643e5df2859b2fd071d73b560501ff937e9"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/comparison.json": {
+          "sha256": "6007263bcded7cfe94b6d38f533cccad85463a7b35d579cbbb2592381218fa90"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation/scanner-result-review.json": {
+          "sha256": "b427ca2f560960d54ce25e8d02e818faf7a4cf64d68f1f4d38d7416eae115a86"
+        }
+      }
+    }
   }
 }

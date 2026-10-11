@@ -16,7 +16,8 @@ internal enum TypeMapperKind : int
 
 internal class TypeMapper
 {
-    internal TypeMapperData data;
+    // Every real mapper payload inherits this header; a bare mapper has no payload.
+    internal TypeMapperData data => this as TypeMapperData;
     internal Type Map(Type t) => data.Map(t);
     internal TypeMapperKind Kind() => data.Kind();
     internal bool MapsThisOnly() => data.MapsThisOnly();
@@ -27,8 +28,6 @@ internal class TypeMapper
 internal abstract class TypeMapperData : TypeMapper
 {
     internal TypeMapper mapper => this;
-    protected TypeMapperData() => data = this;
-
     internal new abstract Type Map(Type t);
     internal new virtual TypeMapperKind Kind() => TypeMapperKind.Unknown;
     internal new virtual bool MapsThisOnly() => false;
