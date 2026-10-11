@@ -307,6 +307,44 @@ records this recommendation; the coordinator owns the actual revert decision.
 and [independent result review](../artifacts/vscode-allocation-rollout/integration-22-poh/result-independent-review.json)
 preserve the candidate boundary and evidence.
 
+### Integration23 AVX2 artifact: promising, CPU-specific
+
+One isolated Native publication reused the exact accepted21 compiler IL and three
+reviewed wrapper sources. The sole project change was `IlcInstructionSet=avx2`;
+actual ILC references, explicit ISA flag, Speed, ServerGC and LINQ settings passed
+independent review. Disassembly of each matching published binary proved256-bit
+YMM instructions in candidate XXH accumulation/stripe and Span sequence-equality
+paths, where the baseline wrapper used narrower instructions. These selected
+paths establish enabled code generation, not their share of the measured gain.
+Compiler algorithms, ownership and production source remain unchanged.
+
+Five fresh processes each of Go, the existing portable21 wrapper and the AVX2
+wrapper ran in rotated order, with observer OFF and Default policy in both Native
+arms. Identical compact mode-verification sidecars were included in outer timing.
+All15 complete original outputs, expected exits, modes, raw timing arithmetic and
+frozen guards passed independent review.
+
+| Runtime | Wall best / median / range (s) | CPU median / range (s) | Peak RSS median / range (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |9.13 /9.56 /9.13–11.23 |46.87 /44.29–54.34 |7,770,552 /7,721,224–8,085,140 |
+| Portable21 Native wrapper |17.12 /17.84 /17.12–20.37 |74.81 /63.98–80.46 |8,632,012 /8,256,952–9,664,696 |
+| AVX2 Native wrapper |13.70 /16.58 /13.70–18.85 |59.02 /55.19–72.37 |8,690,436 /8,628,404–9,188,736 |
+
+Retain the **promising CPU-specific artifact**, without changing production's
+portable default or claiming full acceptance. Within this cohort, AVX2 best wall
+improved19.98%, median wall7.06% and median CPU21.11%, with median RSS0.68% higher.
+AVX2/Go ratios were1.501 best and1.734 median; the1.2 target remains unmet. Five
+observations and overlapping ranges do not establish statistical significance or
+causally assign gains to hashing, byte equality or another generated path.
+The required ISA narrows portability to AVX2-capable CPUs with OS vector-state
+support; this Native binary has no assumed portable JIT fallback. Keep these
+fresh Go comparisons within their cohort.
+
+[Publication and selected code proof](../artifacts/vscode-allocation-rollout/integration-23-avx2/publication-independent-review.json),
+[complete timing results](../artifacts/vscode-allocation-rollout/integration-23-avx2/timing/comparison.json)
+and [independent result review](../artifacts/vscode-allocation-rollout/integration-23-avx2/result-independent-review.json)
+preserve this artifact's evidence and platform limits.
+
 ## Integration20: callback/setup completion and Native throughput policy (accepted)
 
 The complete batch has passed integrated acceptance. It closes synchronous

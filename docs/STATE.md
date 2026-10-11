@@ -14,12 +14,28 @@ Accepted production compiler remains integration21/077578ed; 1.2x Go target unme
 SLL and R2R also rejected; production runtime defaults unchanged. All jobs finished;
 no build/performance workload active, source/metadata freeze released. Root is recording
 these reviewed results, not stopping the autonomous performance mandate.
-Next: Sol cache_audit read-only assessment of actual NativeAOT default ISA versus
-runtime-dispatched vector/AES paths in our byte/hash/copy consumers and pinnedGo.
-Determine whether host-specific code generation enables a real missing standard.NET
-path before any publication; preserve compiler algorithms and explicit platform bounds.
+Next active packet: integration23-avx2. Sol cache_audit confirmed accepted21 actual
+XXH3 long accumulation/Span comparison SSE2, pinned ILC default excludes optimistic
+AVX/VEX while Go dispatchesAVX2. Root authorized ONE explicitIlcInstructionSet=avx2
+artifact-only candidate using unchanged21 wrapper/frozenIL, Default/telemetryOFF.
+Authorcache_audit prepares coherentpublish+FIRST+5Go/5old21wrapper/5new23wrapper packet;
+Solrecovery reviews packet once, root executes. No productioncsproj/algorithm change.
+AVX2CPU requirement explicit; nativeflag/AVX512 expansion excluded. Packet0738d3a1 independently reviewed clear; root publication96863 completed. Native
+FIRST61900 passed exactoriginaldiagnostics (19.218s preliminaryelapsed). Fiveeach
+Go/accepted21wrapper/AVX2 telemetryOFF timing56801 completed all15exact +finalguards.
+Best/median Go9.13/9.56, portable17.12/17.84, AVX2 13.70/16.58; targetunmet.
+Recovery independently proved actualYMM vsbaselineXMM XXH/Span paths and reviewed
+all15rawresults/guards clear; statusdoc updated. Retain promisingCPU-specificartifact;
+portableproductiondefault unchanged.
+Next Solcache_audit assessing existing heaptools for exactNativeAOT retainedstorage
+composition (meaningful GC cost concern). No new census framework/source/capture
+authorized; investigate tool feasibility first. No competing owned workloads.
+Preserveproductionportabledefault until evidence. Publication complete; metadata freeze released after timing56801 finalguards.
 Do not restart rejected Symbol arenas, NodeLinks conversion, GC knob grids or POH rollout.
 Use established proof/commands; avoid another recipe-review cycle for incidental wording.
+Storageagent removed only rejected22 stale snapshot/linux-x64 subtree137.61MiB;
+receipt artifacts/storage-cleanup/2026-10-11-rejected22-stale-snapshot.json. Future-safe
+centralbuild recipe copies top-level outputs only; originalrecipes/evidence unchanged.
 
 # Crash recovery and storage cleanup (2026-10-11)
 
