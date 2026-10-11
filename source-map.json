@@ -5947,12 +5947,13 @@
     "name": "comprehensive-go-faithful-allocation-rollout",
     "baselineCommit": "b84b436",
     "procedureCommit": "7a3537e",
-    "status": "In progress: comprehensive source ownership rollout through integration15 compiled and passed Linux x64 Native AOT VS Code (18.02s, ten diagnostics exact). Latest sampled profile14 is11.074105GiB and excludes successor pool/fixed-concat/callback work. All39 harness projects compile. Initial40,451 xUnit cases:39,788pass/663fail, all15,304original noemit records match; reviewed observer/comparer/bundled-init repairs pass integration16 Native AOT VS Code (22.12s, ten diagnostics exact), repaired comprehensive gates underway. No Go performance parity claim.",
+    "status": "Integration16 comprehensive allocation rollout accepted: composite40,451 managed outcomes, all15,304 Native original noemit outputs, fresh17,723 scanner/parser/binder inputs each,83 Native semantic/control commands and retained direct tests. Native VSCode22.12s exact10; sampled managed10.840235GiB (-69.175587%original matchedServerGC). No Go speed parity. Final profile identified shared generic Latin1-guard boxing; faithful whole-family continuation active and not covered by accepted16 proof.",
     "state": "docs/STATE.md",
     "procedure": "START-HERE.md",
     "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
     "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change.",
-    "lastIntegratedCheckpoint": "cae7ee5"
+    "lastIntegratedCheckpoint": "c1efeb9",
+    "evidence": "validation/results/allocation-rollout-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",

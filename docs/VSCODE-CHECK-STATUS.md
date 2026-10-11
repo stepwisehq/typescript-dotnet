@@ -49,7 +49,9 @@ Important retained findings:
   heap sample is not an exact whole-run allocation census. RSS is not allocation
   volume. Later source changes have no measured savings until integrated execution.
 
-Latest qualified implementation baseline is `b84b436`. The frozen integration5
+The following integration5–16 chronology preserves earlier checkpoint status; the
+[final integrated results](#comprehensive-rollout-integrated-results-2026-10-11)
+supersede its pending-action statements. The earlier qualified baseline was `b84b436`. The frozen integration5
 snapshot built with zero warnings/errors and published under Linux x64 Native
 AOT; its allocation/CPU profiles do not cover the later integration6 continuation. Its first VS Code run matched all ten complete diagnostics and available pinned
 chains: **23.63s wall, 94.93s CPU, 9,064,632 KiB peak RSS**, expected exit 1, empty
@@ -228,9 +230,113 @@ Integration16 builds and publishes actual Linux x64 Native AOT with the reviewed
 VS Code again matches ten complete diagnostics and available pinned chains:
 **22.12s wall,77.65s CPU,9,976,960KiB peak RSS**, empty stderr and all guards unchanged.
 Previous15 was18.02s; these individual runs do not establish a causal performance change.
-The repaired comprehensive xUnit/native gates are proceeding; initial failures and
-outputs are retained. This checkpoint is implementation progress, not final regression
-acceptance or Go performance parity.
+The repaired managed gate has **40,451 unique passing test outcomes**. This is
+composite evidence: the full twelve-suite retry passed40,434/40,451; the final
+cold-only observer/control repair passed the entire264-case Program suite and all11
+filename controls. Both full managed runs independently matched **all15,304 original
+no-emit outputs** by name and complete JSON. The original failures and finite reruns
+are retained in the [composite report](../artifacts/vscode-allocation-rollout/integration-16/regressions/managed-composite-acceptance.json).
+This does not mean40,451 upstream test functions: the total includes data-driven
+cases, authored controls and differential fixtures with their existing provenance.
+
+All17 Native validation executables have published using the exact frozen compiler;
+the full15,304 original noemit comparison now passes under actual Native AOT
+(350.06s, complete JSON exact, no drift). Broad parser and scanner comparisons also
+pass17,723 inputs each; remaining semantic corpus/control commands are running. A commit during an earlier
+publication attempt changed generated assembly/SourceLink metadata, so its hash guard
+stopped before behavioral execution. Reusing the frozen compiler and compiling the
+cold dependencies explicitly with `BuildProjectReferences=false` resolved this without
+weakening the identity check. Failed publication logs remain available. Final Native
+acceptance and one matched allocation capture are pending; Go speed parity is not met.
+
+## Comprehensive rollout: integrated results (2026-10-11)
+
+The established allocation techniques now run through their connected production
+owners and consumers: borrowed UTF8/WTF8 source and keys, typed paths, retained and
+scratch slices, synchronous callbacks with explicit state, embedded records and link
+storage, upstream parser/binder/task reuse, shared spelling buffers and fixed-size
+concatenation. Actual Go copies, Clip/Clone, owned changed outputs and escaping
+callbacks remain. This closes the identified implementation families; it does not
+mean identical runtime representations or Go performance parity.
+
+The [durable result](../validation/results/allocation-rollout-verified.json) binds
+these results to compiler SHA256 `c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c`:
+
+| Acceptance evidence | Result and what it establishes |
+| --- | --- |
+| Managed xUnit |40,451 unique passing outcomes across12 suites, using the full run plus275 affected cold-only retries. Failures/retries remain explicit; this is not one all-green execution or40,451 upstream test functions. |
+| Native original no-emit corpus |All15,304 complete recorded checking/walker/type/symbol/diagnostic outputs match pinned Go, including ordering and parent relationships. |
+| Native foundation and binding input comparisons |Fresh pinned-Go comparisons match17,723 inputs each for scanner, parser and binder. Reusing compiler inputs here is not full compiler-test success. |
+| Native direct/shared controls |3,153 foundation assertions,17,633 finite fuzz seeds,87 additional shared controls and23 Slice assertions pass; fuzz seeds are not all structural comparisons. Smaller scanner1,276/parser471/gap8 comparisons also pass. |
+| Native semantic/environment coverage |All83 existing commands pass; decoded configurations12,824=12,817 exact plus7 matched original expansion failures. Nine supported disk CLI cases pass. Channels overlap and must not be summed as unique tests. |
+| Native VS Code |22.12s wall,77.65s CPU,9,976,960KiB peak RSS; ten complete diagnostics and available pinned chains exact, expected exit1, empty stderr. |
+| Final matched managed allocation capture |11,639,613,928 sampled bytes =10.840235GiB, −2.111860% vs integration14 and −69.175587% vs original matched Server GC. |
+
+All17 validation executables were actually AOT-published and executed on Linux x64.
+Production build has zero warnings/errors; cold observer compilation retains12
+reviewed nullable-flow warnings. Source/binary guards stayed exact. The additional
+ListFilesOnly-via-config attempt correctly received6266: the existing CLI has no
+corresponding override flag. Its original public-API control passed managed xUnit;
+this attempted transport is explicitly **not** a Native success. No CLI expansion,
+expected-output change or diagnostic suppression was introduced.
+
+The final capture has99,239 typed allocation events,99,237 with resolved stacks,
+no event loss/truncation/export overflow. The2 missing stacks limit attribution.
+Raw trace and ETLX remain available; no SVG was generated. These are sampled CoreCLR
+weights, not exact Native AOT totals, retained memory or exact Go allocation counts.
+Config hashes match the earlier captures; the recipe does not hash every project
+input. Single unprofiled observations ranged18.02–22.12s over the last three combined
+snapshots, versus saved pinned Go9.61s. This is not a controlled isolated-technique
+speedup experiment and the eventual speed target has not been met.
+
+The combined final continuation reduces sampled byte arrays337.2→278.0MB, builder
+objects37.1→13.6MB, parser owners30.6→0.11MB and parser-task map storage. These are
+sampled associations, not exact per-technique savings. Remaining costs include
+canonical Symbol/AST/type records, required detached arrays, wider managed Memory
+locations and dictionary entries. ConcurrentBag does not reproduce Go sync.Pool's
+GC eviction: idle parsers retain their scanner and last source until reused or the
+pool itself becomes unreachable. Existing source algorithms and published ownership
+are retained; runtime-layout/retention differences remain explicit.
+
+The final [comparison](../artifacts/vscode-allocation-rollout/integration-16/managed-profile/comparison.json)
+corrects the prior “26 map payloads” subtotal: integration14 omitted VarianceLinks
+543,176B, so the consistent26-type subtotal is652,708,008B. The overall historical
+total is unchanged. Final named link buckets do not uniformly shrink; wider location
+storage is a cost, not a claimed isolated benefit.
+
+Reproduce the production workload from the repository root (the final command is
+expected to return1 for the pinned VS Code diagnostics):
+
+```sh
+dotnet build src/TypeScript.Check/TypeScript.Check.csproj -c Release
+dotnet publish src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-x64 -p:PublishAot=true -p:BuildProjectReferences=false -p:CppCompilerAndLinker="$PWD/tools/.cache/native/bin/cc" -o artifacts/allocation-reproduction/cli
+artifacts/allocation-reproduction/cli/tscheck --config /home/greg/projects/vscode/src/tsconfig.json --noEmit --json
+```
+
+This uses the real project config, including `skipLibCheck: true`. For all managed
+suites, run each existing project with `dotnet test tests/<suite>/<suite>.csproj -c Release`.
+The exact [acceptance command manifest](../artifacts/vscode-allocation-rollout/integration-16/regressions/acceptance-summary.json)
+links the17 publication commands,83 semantic commands, foundation commands and
+120 noemit chunk commands (up to128 records each), plus the explicit dependency-build order. Existing
+corpora and original expected outputs are unchanged. Retained frozen artifacts can
+be rerun directly; a fresh build has new commit metadata and must establish its own
+binary hashes. Avoid committing during publication or implicitly rebuilding a
+previously frozen compiler through a harness dependency.
+
+Execution lessons: completing connected source families avoided per-edit test/profile
+loops. Deferring the broad gate exposed accumulated cold-observer binding debt;
+coordinated repair batches and finite affected retries closed it without a third full
+managed corpus pass. Commit-driven SourceLink churn wasted two publication attempts;
+explicit frozen-artifact reuse resolved it. One source-family independent reviewer
+was sufficient; reusing the three Sol lanes reduced repeated context transfer.
+The final source-role review found one additional concrete adaptation cost:
+about12.97MB of sampled Char boxing at generic Latin1 range checks, shared by
+concatenation, builders, hashing and ingress. A whole-family follow-up is active;
+the accepted frozen16 proof does not cover that later source. No repeated profile
+or benchmark is justified solely for this small change.
+
+No token or monetary usage measurement is available. These process observations
+are not estimates of subscription cost.
 
 ## Workload and compiler identity
 

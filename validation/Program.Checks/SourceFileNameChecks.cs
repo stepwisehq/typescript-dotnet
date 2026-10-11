@@ -137,13 +137,17 @@ public static class SourceFileNameChecks
                 foreach (var file in new[] { mapped.Canonical!, mapped.Supplemental![0] })
                 {
                     var retainedName = file.FileNameGoValue();
-                    var retainedOwner = retainedName.ByteView.Memory;
+                    ReadOnlySpan<byte> retainedBytes = retainedName.IsBytes ? retainedName.ByteSpan : default;
+                    ReadOnlySpan<char> retainedChars = retainedName.IsBytes ? default : retainedName.CharSpan;
                     string raw = file.FileNameGoBytes(), path = file.PathKey(), virtualName = file.VirtualFileName().AsString();
                     file.SetFileNameToUnicode();
-                    // Authored allocation control: byte-owned Go headers survive the
-                    // scalar promotion; separate public CLR projections need not share identity.
+                    // Authored allocation control: either immutable Go-header backing
+                    // remains live across scalar promotion; CLR projections need not share identity.
                     Equal(Cached(file, raw), raw);
-                    Require(retainedName.ByteView.Memory.Equals(retainedOwner), "Promotion replaced retained raw owner.");
+                    if (retainedName.IsBytes)
+                        Require(retainedBytes.Overlaps(retainedName.ByteSpan, out int byteOffset) && byteOffset == 0 && retainedBytes.Length == retainedName.Length, "Promotion replaced retained raw byte range.");
+                    else
+                        Require(retainedChars.Overlaps(retainedName.CharSpan, out int charOffset) && charOffset == 0 && retainedChars.Length == retainedName.Length, "Promotion replaced retained raw character range.");
                     Require(retainedName.EqualsValue(file.FileNameGoValue()), "Promotion changed retained raw bytes.");
                     Equal(file.PathKey(), path);
                     Equal(file.VirtualFileName().AsString(), virtualName);

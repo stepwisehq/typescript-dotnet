@@ -78,7 +78,8 @@ public static partial class ProgramRunner
             mapBytes = Convert.ToBase64String(data!);
         }
         JsonArray? supplemental = null;
-        if (file.SupplementalSourceFiles() is { } children)
+        var children = file.SupplementalSourceFiles();
+        if (!children.IsNil)
         {
             supplemental = [];
             foreach (var child in children) supplemental.Add((JsonNode?)JsonValue.Create(observer.File(child)));

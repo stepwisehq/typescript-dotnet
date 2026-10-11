@@ -170,6 +170,11 @@ internal static class ProgramDataChecks
                 // schema/value comparisons remain separate accepted obligations.
                 if (definition == typeof(ProcessedFiles) && (field.Name == "resolutionEdges" && field.FieldType == typeof(List<ProjectResolutionEdge>) || field.Name == "graphEdges" && field.FieldType == typeof(List<ResolvedProjectEdge>) || field.Name == "pathReferences" && field.FieldType == typeof(List<ResolvedProjectReferenceEdge>) || field.Name == "typeDirectives" && field.FieldType == typeof(List<ResolvedProjectTypeDirective>)))
                     continue;
+                // The authored public ownership guard stores only a standalone
+                // opaque token, never its checker. It is absent from Go Symbol;
+                // arbitrary object fields and host/delegate roots remain rejected.
+                if (definition == typeof(Symbol) && field.Name == "authoredOwnerToken" && field.FieldType == typeof(object))
+                    continue;
                 pending.Enqueue(field.FieldType);
             }
         }

@@ -63,6 +63,10 @@ cycle of one or two local changes followed by targeted tests and benchmarks.
 - Keep concise resumable state and source mapping. Preserve verified checkpoints
   separately from ongoing changes. A commit, subagent completion, internal milestone
   or context reset is not a reason to stop or request renewed authorization.
+  Freeze build metadata as well as source/binaries: defer commits during dependent
+  publication, or reuse frozen artifacts with `BuildProjectReferences=false` after
+  explicit dependency compilation. Pinning `SourceRevisionId` alone may leave changed
+  SourceLink metadata. A commit can regenerate metadata without any source edit.
 - Do not generate more SVG flamegraphs. Keep raw traces and useful analysis for a
   performance viewer. Do not build replacement process or viewer infrastructure.
 

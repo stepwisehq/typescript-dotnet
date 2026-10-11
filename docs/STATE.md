@@ -1,158 +1,95 @@
 # Active performance work (2026-10-11)
 
-**Resume here:** integrated allocation checkpoint `cae7ee5` preserves the complete
-source rollout through Native AOT VS Code integration12 and its sampled profile.
-Broad regression acceptance remains pending; this commit is not task completion.
-**Current task:** qualify reviewed runtime repairs, then finish comprehensive allocation
-acceptance. Initial39-project harness compilation closed; first12-suite xUnit run had
-39,788/40,451passes. ALL15,304 original noemit records matched. Failures exposed shared
-observer receiver gaps and two real production defects (optional alternate comparer
-and bundled partial-field initialization order); complete grouped fixes are reviewed.
-Original fixtures/expectations unchanged. Authored slice/filename identity observations
-now test source-relevant backing/content relationships rather than boxed/projected CLR
-object identity; rationale and original failure evidence retained.
-Integration16 production PASSED10.533s, zero warnings/errors,242inputs unchanged;
-libraryc20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c.
-Actual Native AOT publication PASSED10.537s consuming that exact library; VSCode
-PASSED22.12s wall/77.65s CPU/9,976,960KiB peak, ten exact complete diagnostics and
-available pinned chains, empty stderr/all guards unchanged. Single observation: previous
-15 was18.02s; no causal speed claim from these timings. Central39-project harness refresh
-attempt7 running. Repaired12-suite xUnit and17existing Native targets/corpora follow with bounded
-overlap; heavy managed/native noemit execution serialized. No new performance capture yet.
-All implementation/review agents paused; source frozen. Root metadata/checkpoint work
-only. Existing reviewed readiness154 paths plus3 reviewed runtime successor paths make
-157 eligible tracked/untracked files; diff-check clean, no artifacts/corpus data staged.
-Ordinary failed tests are work to resolve without renewed permission. No remaining
-concrete omitted allocation family was identified; required ownership/runtime costs
-remain. Go performance parity and full repaired regression acceptance are NOT established.
-Latest passed workload14:19.23s wall/80.76s CPU/9,242,060KiB peak, expected exit1, all ten
-complete diagnostics/available pinned chains exact, empty stderr,242 inputs unchanged.
-Library603161f3b174a5081578496da4f1428d34dd23da49c74004a4da44fe5f61bbbb;
-native0490a38ad7e6ddf6bd0c4c8c83e0903dd1bcbeecd062adef4286f9c4ba4d04ec.
-Matched frozen14 profile:11,890,729,536B/11.074105GiB sampled (−1.675614%vs12,
-−68.510575%vs original matched ServerGC),101,566 typed/stacked ticks, zero lost/truncated/
-overflow events, exact diagnostics. String349.8→61.2MB; Byte[]246.0→337.2MB. Named
-link-storage buckets essentially unchanged. These measures do not include successor
-source reuse/concat/callback work or establish isolated savings/Native AOT totals.
-Cold receiver adapters and broad regression qualification are still pending.
-A passing workload, commit or agent handoff is not task completion. Continue autonomously.
-Integration15 production command passed10.110s, zero warnings/errors,242 inputs
-unchanged. Fresh libraryca488e97986684ee809c15d62cf73a467440357255483a5bd98ea7873691c52a;
-Native publication10.352s consumed that exact library and actual VS Code PASSED:
-18.02s wall/74.72s CPU/10,049,996KiB peak, expected exit1/all ten complete diagnostics
-and available pinned chains exact, empty stderr, guards unchanged. Native executable
-abbbd41e5db7e5995dae0680ade6dc2508aea72bc9c959e3d0c59aa6866abc36.
-One observation, no causal speedup claim. Comprehensive regression gate preparation and
-central harness compilation underway; public parser lifetime controls3 source-ready
-for independent support review. Production source frozen; no new profile/repeats.
-Parser lifetime controls3 independently reviewed at artifacts/vscode-parser-pool/controls/
-support-peer-review.json: public mixed-kind/failure recovery, retained AST/diagnostic
-publication and parallel lazy-JSDoc paths shared by xUnit and Native harness. Binder
-existing FileIsolation/BindOnce tests and Program casing/depth originals cover its reuse.
-Comprehensive verifier uses existing corpora/commands directly, not historical scripts'
-recursive nested gates or stale source fingerprints. One ephemeral artifact-only MSBuild
-traversal groups test/validation compilation; fix discovered API bindings in a coordinated
-batch. Original expected behavior remains unchanged. No repository process framework.
-Grouped cold compile attempt1 failed before behavioral execution: 175 distinct
-compiler error records across 16 files, chiefly old nullable/List/string observer bindings
-to new Slice/borrowed APIs. Production15 source guards unchanged. Verifier owns split
-repair assignment to scanner/support/verifier and one coordinated retry. Preserve DTOs,
-original assertions and source nil/empty distinctions; no expected-output weakening.
-Cold repair lanes: scanner Parser.Validation2, support Resolution.Checks3 plus
-ProgramFactoryRunner, verifier Configuration/Projects plus actual matcher generator.
-Parser and support consumers independently ACK'd; scanner finishing independent Config
-review. Grouped retry follows final ACK, production15 remains frozen. Reproduction must
-use updated generator bindings too; direct upstream assertions/corpus data unchanged.
-Grouped compile attempt2 finished25.94s, exit1/no drift: Configuration/Resolution
-now compile;176 context-distinct errors across23 deeper Binder/Foundation/Program/
-Checker/Projects files exposed. Scanner owns Binder2+Foundation1; support Program12;
-verifier Checker6+Projects2. No behavioral tests yet. Repair/review as one next batch,
-then retry central traversal. Progress commit readiness deferred until cold source quiet.
-Second batch Checker/Projects9 and Binder/Foundation4 now includes the directly affected
-xUnit callers, avoiding a separate downstream repair round. Checker/Projects independent
-ACK closed after two reviewed declaration-header binding fixes; remaining Program lane
-and peer review continue. Meaningful observation adaptation: old boxed CLR reference
-assertions become Go slice backing-owner/offset+length sharing checks (Core.Same), with
-the same expected true relationship; a detached copy still fails. No corpus/diagnostic
-expectation change or requirement for exhaustive private-state equivalence introduced.
-Grouped compile3 completed7.80s, exit1/no drift: Program/Checker/Configuration/
-Resolution now compile;67 error records across19 deeper Collections/Foundation/test
-files remain. All agents confirmed running after followup reactivation: scanner owns
-Binder2+FoundationSyntax3; support Collections4+NoEmit test1; verifier Foundation8+
-Declarations1. Actual receiver bindings only; preserve clone-sharing relationships.
-No behavioral tests yet. Never wait for a completed agent's send_message reply:
-use followup_task or proceed with a reviewed frozen source boundary.
-All third repair families now reviewed/paused: Binder/Syntax5, Foundation/Declarations9,
-Collections/NoEmit5, including actual downstream tests. Grouped compile4 is running the
-same39-project traversal. Production15/five generator guards remain exact. No extra
-source audit is holding the build; no behavioral tests yet. Continue through any actual
-compiler issue and then existing behavior gates without seeking another assignment.
-Procedure checkpoint `7a3537e` persists the current SOP;
-implementation baseline `b84b436` commits qualified type constituent/parser scratch slices;
-`72565f3` records semantic regression provenance;
-`d39e05c` commits qualified AST slices/arenas; `faad6ec` commits checker text receivers;
-`5e960cd` commits AST/binder borrowed text, private stacks,
-inference candidates and numeric span parsing; `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
-borrowed scanner tokens, flow slices and conditional targets;
-`08d2294` preserves the preceding path/ASCII/singleton reductions.
-Continue Go-faithful allocation work autonomously; no blocker. Answering a question
-or committing a checkpoint does not finish the work.
-**Latest user steering supersedes per-packet validation:** implement the established
-Go-faithful allocation techniques comprehensively across complete ownership paths.
-No targeted tests, repeated benchmarks or profiles for each intermediate change.
-Use coordinated integration builds after coherent multi-lane changes; perform actual
-Native AOT VS Code and behavioral/performance acceptance after the broader rollout.
-Verification requirements remain; their frequency changes. At broad source closure,
-production build/Native AOT publish and the actual VS Code workload come before broad
-regression suites; diagnose concrete failures, then finalize acceptance. Do not reverse
-this order after resumption. Preserve source algorithms,
-control flow, function boundaries and actual Clip/Clone/detach semantics. No custom
-compiler redesign, interning, hashtables or speculative pooling. Explicit upstream
-pools/reuse may use proportionate standard .NET facilities with faithful lifetimes. Prefer standard .NET facilities
-where semantics fit. No new process framework.
-Latest emphasis: comprehensive UTF8-buffer byte comparisons without intermediate
-string resolution, and efficient token/rune advancement when scanning buffers.
-Preserve exact Go byte offsets, malformed UTF8/WTF8 and EOF advancement; standard
-span facilities must match those semantics. This is active scope, not a future idea.
+**Resume here:** comprehensive allocation integration16 is accepted with independent
+review, actual Linux x64 Native AOT and all retained regression channels. Implementation
+checkpoint `c1efeb9` plus the reviewed three-file cold successor forms that snapshot.
+The [durable result](../validation/results/allocation-rollout-verified.json) binds its
+exact compiler/source and finite evidence. Go performance parity is NOT established.
+**Continue autonomously:** final profile identified one real additional adaptation
+cost, generic Latin1 range checks boxing chars. Scanner owns the complete shared
+Concat/builder/hash/typed-ingress guard path; support independently reviews it.
+No per-local-change tests/profiles. Root owns checkpoint, integration and current docs;
+verifier is idle after accepted16 and can own the next integration when source ready.
 
-Current concrete continuation after14: scanner owns Core spelling-search buffer reuse
-and borrowed candidate/name matching through regexp/parser; support coordinates checker
-suggestion callers and remaining real slice/callback omissions. Pinned core.go retains
-one pooled distance-buffer pair across candidates; the old port allocated two arrays per
-candidate and materialized keys before search. Standard ArrayPool lease/return may
-preserve that explicit reuse; do not build custom pool infrastructure. Support is also
-assessing Binder.cs documented fresh-instance replacement of upstream sync.Pool. Preserve tie/order/max-candidate behavior
-and actual output projections. One combined source review/integration follows family
-closure; no local test or benchmark loop. Frozen14 allocation capture runs independently.
-The connected explicit upstream reuse family is now assigned: scanner owns parser
-get/put/reset/reparse lifetime (parser.go119; port explicitly used fresh instances),
-support owns binder.go102 and filesparser.go239 parseTaskData reuse. Core buffer pool
-belongs to scanner. Program writerPool at program.go1908 is emit-only, outside active
-no-emit work. Preserve source arena reset/detachment and published AST identities;
-use proportionate standard .NET facilities, no custom pooling framework. Review all
-owner/consumer lifetimes before one grouped integration, not individual pool trials.
+## Current evidence and next actions
 
-Source-ready continuation: parser pool4 (all three acquire paths,31 instance fields,
-factory reset, arena header detach) at artifacts/vscode-parser-pool/build/source-ready.json;
-binder/task reuse2 at artifacts/vscode-source-owner-reuse/build/source-ready.json;
-spelling owner6 at artifacts/vscode-spelling-borrowed-values/build/source-ready.json.
-Verifier reviews scanner/Core/parser; scanner reviews support checker/binder/task consumers.
-Support is closing the profile-identified remaining immediate predicate family across
-inference/effects/array/binary/class/base-type paths. True retained callbacks stay.
-Scanner additionally assesses shared fixed-concat output sizing versus Go; actual
-changed path output remains owned. No integrated build yet for these successors.
-Known-size concatenation omission confirmed: shared pathConcat and Evaluator binary+
-used incremental builder growth despite fixed output size. Scanner is closing shared
-ByteStringValue.Concat and all identified fixed-concat receivers with one owned buffer,
-standard span copy and empty/single-header reuse. Genuine incremental builders stay.
-After this/source reviews, verifier has standing authorization for integration15
-production→Native AOT→actual VS Code. Comprehensive retained regressions follow passing
-workload and source closure; no per-change runs. Verifier owns necessary public parser
-reuse/failure/parallel-JSDoc controls in existing shared harness; support reviews them.
-Existing binder BindOnce controls already cover concurrency, repetition and failure.
-Idle parser ConcurrentBag retains scanner and its last source/token/error delegate;
-Go sync.Pool may discard at GC. Document this actual retained-memory difference;
-it is not merely retention of tiny empty owner objects. No custom pool redesign.
+- Exact accepted compiler SHA256:
+  `c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c`.
+  Production0warnings/errors,242 source/generator inputs; final587 harness/production
+  guards unchanged. All17 Native executables consumed this exact library.
+- Actual Native VS Code: **22.12s wall /77.65s CPU /9,976,960KiB peak RSS**,
+  expected exit1, all ten complete diagnostics/available pinned chains exact.
+- Managed **40,451 unique passing outcomes**: full12 suite run40,434pass/17cold
+  failures, independently reviewed cold-only repair followed by264Program+11filename
+  passing reruns. Both full runs matched all15,304 original noemit complete outputs.
+  Composite provenance preserves initial failures; not one fictional all-green run.
+- Actual Native full15,304 original noemit PASSED; scanner/parser/binder fresh pinned
+  comparisons each17,723inputs PASSED; all83 semantic/control commands and shared
+  foundation/Slice controls PASSED. Nine supported disk CLI cases passed. A
+  ListFilesOnly-via-config attempt correctly failed6266; its public override is
+  managed-only, with no new CLI seam or changed expectation.
+- ONE final frozen16 managed capture: **11,639,613,928B /10.840235GiB sampled**,
+  −2.111860%vs14, −69.175587%vs original matched ServerGC.99,239typed events,
+  2missingstacks; zero lost/truncated/overflow. Exact workload diagnostics and guards.
+  Sampled CoreCLR values are not exact Native AOT/Go bytes or throughput measurements.
+- Independent completion/evidence review found no unresolved algorithm omission in
+  the reviewed owner families. Residual profile source inspection identified char
+  boxing at generic Latin1 guards (~12.97MB): scanner assesses/implements a simple
+  shared .NET alternative only if semantics fit. No custom SIMD/unsafe/redesign.
+  Other large residuals are actual canonical records, required results/copies and
+  documented wider runtime storage. Do not infer all remaining allocations removable.
+- Root persists accepted16 separately before later production integration. Do not
+  stop at that checkpoint. Coordinate subsequent build→Native VSCode first; choose
+  meaningful regression reuse based on concrete shared-helper change risk. No repeat
+  allocation capture for this small continuation without a new material reason.
+
+## Preserved evidence and limitations
+
+Initial full12 managed suites passed39,788/40,451; all15,304 original noemit records
+already matched. Failures exposed cold receiver gaps and two real production bugs:
+optional alternate-comparer fallback and bundled partial-field initialization order.
+Grouped fixes are independently reviewed; original fixtures/diagnostic expectations
+were not changed. Authored slice/filename controls now observe source-relevant
+backing/content relationships rather than boxed/projected CLR identity. Final17
+cold failures were nil-vs-empty supplemental outputs and exact carrier classification.
+The original failure logs and three-file successor review remain available.
+
+One ephemeral traversal compiled all39 existing harness projects. Final frozen
+no-reference dependency refresh passed30.62s;12 cold nullable-flow warnings were
+classified by the verifier, with no production warning or newly unsafe receiver.
+A commit during publication changed generated InformationalVersion and SourceLink;
+two hash-guard failures stopped before behavioral execution. Pinning SourceRevisionId
+alone was insufficient. Exact frozen DLL/PDB reuse, explicit dependency compilation,
+and `BuildProjectReferences=false` resolved it. Preserve that reproduction recipe.
+
+Historical pre-final integration14 capture: **11,890,729,536 bytes /
+11.074105 GiB sampled allocation weight**, −1.675614% vs12 and −68.510575% vs the
+original matched ServerGC capture. All101,566 events typed/stacked, no loss/truncation/
+overflow, exact diagnostics. Strings349.8→61.2MB, Byte[]246.0→337.2MB. This capture
+excludes subsequent owner pools/fixed concatenation/callbacks and runtime fixes.
+Sampled CoreCLR weights are not exact Native AOT or Go allocation totals.
+
+Integration15 actual Native VS Code was18.02s/74.72sCPU/10,049,996KiB;14 was
+19.23s/80.76sCPU/9,242,060KiB. These individual observations do not establish a
+causal slowdown or speedup. Saved pinned Go timing was9.61s wall; parity is not met.
+
+Implemented continuation and source-family ACKs are recorded in
+[source-map.json](../source-map.json), [the optimization reference index](./VSCODE-CHECK-STATUS.md)
+and artifacts/vscode-{typed-path-values,path-semantic-consumers,typed-path-consumers,
+glob-borrowed-values,spelling-borrowed-values,checker-spelling-values,parser-pool,
+source-owner-reuse,fixed-byte-concat,checker-immediate-predicates}/build.
+Required Clone/Clip/detach, canonical records, source buffers and escaping callbacks
+remain. ConcurrentBag parser reuse preserves the scanner/last source until reuse,
+where Go sync.Pool may discard on GC. Internal Memory location slots are wider than
+Go pointers; named link buckets did not uniformly shrink. No concrete omitted
+allocation family remains identified by the completed source reviews; this does not
+prove identical runtime allocation or exhaustive source correctness.
+
+Earlier checkpoints: `cae7ee5` qualified integration12; `b84b436` constituent/parser
+scratch, `d39e05c` AST slices/arenas, `faad6ec` checker text, `5e960cd` AST/binder text,
+`d6a3cb5` callback/runes, `146839d` borrowed tokens/flow/conditional targets,
+`08d2294` path/ASCII/singleton work. Older sections below are historical; this section
+and the current operating procedure supersede their next-action instructions.
 
 ## Recovery after VM interruption (2026-10-10)
 

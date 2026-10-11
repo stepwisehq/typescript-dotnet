@@ -1,0 +1,100 @@
+{
+  "status": "passed-integrated-correctness-and-measurement",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "implementationCheckpoint": "c1efeb9",
+  "platform": "Linux x64 Native AOT; .NET SDK10.0.401/runtime10.0.12; ServerGC",
+  "compilerSha256": "c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c",
+  "scope": "Integrated comprehensive Go-faithful allocation rollout through frozen integration16; does not establish Go performance parity or exhaustive correctness. Final cold-only observer/control successor is included. Follow-up Latin1 guard boxing discovered by final profile is separate active work.",
+  "managed": {
+    "uniquePassingTests": 40451,
+    "fullRunPassed": 40434,
+    "fullRunFailed": 17,
+    "affectedRetryPassed": 275,
+    "composition": "All12 frozen suites completed,17cold/authored representation failures preserved; grouped cold-only repair and264Program+11filename reruns pass. Unaffected original executions retained; not fictitious single all-green run.",
+    "originalNoEmitCompleteJsonExact": 15304
+  },
+  "native": {
+    "publishedExecutables": 17,
+    "exactFrozenCompilerConsumedByAll": true,
+    "fullOriginalNoEmitCompleteJsonExact": 15304,
+    "fullOriginalParserFreshGoExact": 17723,
+    "fullOriginalScannerFreshGoExact": 17723,
+    "fullOriginalBindingFreshGoExact": 17723,
+    "foundationOriginalAssertions": 3153,
+    "foundationFiniteFuzzSeeds": 17633,
+    "foundationAdditionalSharedControls": 87,
+    "sliceOriginalAssertions": 23,
+    "scannerCorpusCompleteRows": 1276,
+    "parserCorpusCompleteRows": 471,
+    "parserDiagnosticGapCompleteRows": 8,
+    "semanticAndSharedCommands": 83,
+    "decodedConfigurationFiles": 12824,
+    "decodedConfigurationExact": 12817,
+    "originalMatchedExpansionFailures": 7,
+    "diskPolicySupportedExact": 9,
+    "diskPolicyListFilesOnlyOverride": "Managed original public API control passed; invalid config transport correctly rejected6266. Not counted as Native pass; unchanged limited CLI has no corresponding override flag."
+  },
+  "nativeVSCode": {
+    "wallSeconds": 22.12,
+    "cpuSeconds": 77.65,
+    "maxRssKiB": 9976960,
+    "expectedExitCode": 1,
+    "completeDiagnosticsExact": 10,
+    "skipLibCheck": true
+  },
+  "sampledAllocation": {
+    "bytes": 11639613928,
+    "GiB": 10.840235210955143,
+    "versusIntegration14Percent": -2.111860397124754,
+    "versusOriginalMatchedServerGCPercent": -69.1755874340274,
+    "coverage": {
+      "eventsLost": 0,
+      "truncated": false,
+      "aggregationOverflowEvents": 0,
+      "events": 99239,
+      "missingTypeNameEvents": 0,
+      "eventsWithStacks": 99237,
+      "eventsWithAtLeastOneResolvedFrame": 99237
+    },
+    "limits": "One sampled CoreCLR trace per snapshot, not exact Native AOT/Go allocated bytes. Two missing stacks. No isolated causal speed claim. Matched config hashes are not an exhaustive VSCode input hash."
+  },
+  "observerAdaptations": [
+    "Old CLR List ReferenceEquals observations now assert actual nonempty Go header/backing-owner/offset+length sharing via Core.Same; detached copies fail where sharing is required. No original diagnostic/corpus expectation changed.",
+    "Authored mapped filename control accepts either immutable byte-array or raw-string backing; retains header/span range/content across scalar promotion and repeat post-promotion CLR projection identity. Pre/post incidental projection identity not source requirement.",
+    "Named cold Memory locations have canonical owner+offset+len equality; missing locations remain null. Header nil and allocated-empty JSON channels remain distinct."
+  ],
+  "limitations": [
+    "Native channels overlap by design; per-channel counts are not a unique summed test total.",
+    "No complete upstream emit/services regression claim; current whole-checker no-emit contract retained.",
+    "Cold dependency build succeeded with12nullable warnings at reviewed unchanged observer sites, separately classified; production0warnings/errors.",
+    "Commit-generated metadata churn caused2publication identity failures retained; exact frozen library restored, standard BuildProjectReferences=false after dependency compile avoids production rebuild.",
+    "Wider Memory locations and standard collection layouts remain runtime costs; ConcurrentBag retains idle owners where Go sync.Pool may discard at GC. Required source clones, detached outputs and escaping callbacks remain.",
+    "Final profile identified roughly13MB sampled Char boxing at shared generic Latin1 range guards. A separate source-faithful whole-guard-family continuation is in progress; this proof does not qualify its later source."
+  ],
+  "evidence": {
+    "artifacts/vscode-allocation-rollout/integration-16/regressions/acceptance-summary.json": {
+      "sha256": "36d14227cdeeb9bed4ca72cbca5de708b862df6230e7277b4b0c6bd2fa1a985e"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/regressions/managed-composite-acceptance.json": {
+      "sha256": "69b84ac38bdeee55a1c39d70dc7c9338b2d1af7b3730535387905a50f6844cc6"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/regressions/native-noemit/result.json": {
+      "sha256": "53279549f37727e456da7f1113b20a8ee8161130161f7a22d84276ff6c3de0f2"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/regressions/native-foundation/result.json": {
+      "sha256": "2a3b32bc44fb5ea4efca1e6de919f8cb642205561847724a52139169ca53203a"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/regressions/native-semantic/result.json": {
+      "sha256": "7ffe0b1393f1ba43c39e6785c4e2385b4a79b71916cdaf063b6807a15a3d7d09"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/managed-profile/comparison.json": {
+      "sha256": "1b292651e5ab27b01e99bfe9637d6e340e852d136af6460dc7b3226d404a0a51"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/first-vscode/result.json": {
+      "sha256": "3365f548c0a74fc7f04cdd48ecdff2143eb70c67f7ed111f797929342e4599a0"
+    },
+    "artifacts/vscode-allocation-rollout/integration-16/completion-review-support.json": {
+      "sha256": "82784bf9545fdd6aa3b07d3e02671625838c2e7a88799745e413b89b3e710928"
+    }
+  }
+}
