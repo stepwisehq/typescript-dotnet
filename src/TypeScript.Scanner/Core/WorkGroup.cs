@@ -34,26 +34,31 @@ internal sealed class ParallelWorkGroup : IWorkGroup
         }
         // Source WaitGroup.Go starts work during Queue. The pending count is
         // reserved before scheduling and includes work recursively queued by it.
-        _ = Task.Run(() =>
+        // A work group exposes no Task result. Keep normal ExecutionContext flow
+        // and the thread pool's local-queue preference with an explicit value state.
+        _ = ThreadPool.QueueUserWorkItem(static state => state.Group.Execute(state.Action),
+            (Group: this, Action: action), preferLocal: true);
+    }
+
+    private void Execute(Action action)
+    {
+        try { action(); }
+        catch (Exception error)
         {
-            try { action(); }
-            catch (Exception error)
+            // Go propagates a worker panic. Preserve a managed failure for
+            // the waiting caller rather than discard a worker exception.
+            lock (gate)
+                failure ??= ExceptionDispatchInfo.Capture(error);
+        }
+        finally
+        {
+            lock (gate)
             {
-                // Go propagates a worker panic. Preserve a managed failure for
-                // the waiting caller rather than discard an unobserved Task exception.
-                lock (gate)
-                    failure ??= ExceptionDispatchInfo.Capture(error);
+                pending--;
+                if (pending == 0)
+                    Monitor.PulseAll(gate);
             }
-            finally
-            {
-                lock (gate)
-                {
-                    pending--;
-                    if (pending == 0)
-                        Monitor.PulseAll(gate);
-                }
-            }
-        });
+        }
     }
 
     public void RunAndWait()

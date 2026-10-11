@@ -28,10 +28,10 @@ public sealed partial class Checker
             if (strictNullChecks)
             {
                 if (optionalChainContainsReference(expr, f.reference))
-                    t = narrowTypeBySwitchOptionalChainContainment(t, data, clause => (clause.flags & (TypeFlags.Undefined | TypeFlags.Never)) == 0);
+                    t = narrowTypeBySwitchOptionalChainContainment(t, data, static clause => (clause.flags & (TypeFlags.Undefined | TypeFlags.Never)) == 0);
                 else if (Ast.IsTypeOfExpression(expr) && optionalChainContainsReference(expr.Expression(), f.reference))
                     t = narrowTypeBySwitchOptionalChainContainment(t, data,
-                        clause => !((clause.flags & TypeFlags.Never) != 0 || (clause.flags & TypeFlags.StringLiteral) != 0 && getStringLiteralValueText(clause).EqualsBytes("undefined"u8)));
+                        static clause => !((clause.flags & TypeFlags.Never) != 0 || (clause.flags & TypeFlags.StringLiteral) != 0 && getStringLiteralValueText(clause).EqualsBytes("undefined"u8)));
             }
             var access = getDiscriminantPropertyAccess(f, expr, t);
             if (access != null)
@@ -108,7 +108,7 @@ public sealed partial class Checker
         if (witnesses.IsNil)
             return t;
         var clauses = data.SwitchStatement.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
-        var defaultIndex = Core.FindIndex(clauses, clause => clause.Kind == Kind.DefaultClause);
+        var defaultIndex = Core.FindIndex(clauses, static clause => clause.Kind == Kind.DefaultClause);
         var clauseStart = (int)data.ClauseStart;
         var clauseEnd = (int)data.ClauseEnd;
         var hasDefaultClause = clauseStart == clauseEnd || defaultIndex >= clauseStart && defaultIndex < clauseEnd;
@@ -124,7 +124,7 @@ public sealed partial class Checker
     private Type narrowTypeBySwitchOnTrue(FlowState f, Type t, FlowSwitchClauseData data)
     {
         var clauses = data.SwitchStatement.AsSwitchStatement().CaseBlock.AsCaseBlock().Clauses.Nodes;
-        var defaultIndex = Core.FindIndex(clauses, clause => clause.Kind == Kind.DefaultClause);
+        var defaultIndex = Core.FindIndex(clauses, static clause => clause.Kind == Kind.DefaultClause);
         var clauseStart = (int)data.ClauseStart;
         var clauseEnd = (int)data.ClauseEnd;
         var hasDefaultClause = clauseStart == clauseEnd || defaultIndex >= clauseStart && defaultIndex < clauseEnd;
@@ -148,10 +148,13 @@ public sealed partial class Checker
             static (clause, state) => clause.Kind == Kind.CaseClause ? state.checker.narrowType(state.f, state.t, clause.Expression(), true) : state.checker.neverType));
     }
 
-    private Type narrowTypeBySwitchOptionalChainContainment(Type t, FlowSwitchClauseData data, Func<Type, bool> clauseCheck)
+    private Type narrowTypeBySwitchOptionalChainContainment(Type t, FlowSwitchClauseData data, Func<Type, bool> clauseCheck) =>
+        narrowTypeBySwitchOptionalChainContainment(t, data, clauseCheck, static (clause, callback) => callback(clause));
+
+    private Type narrowTypeBySwitchOptionalChainContainment<TState>(Type t, FlowSwitchClauseData data, TState state, Func<Type, TState, bool> clauseCheck)
     {
         var everyClauseChecks = data.ClauseStart != data.ClauseEnd &&
-            Core.Every(GoRuntime.Slice(getSwitchClauseTypes(data.SwitchStatement), (int)data.ClauseStart, (int)data.ClauseEnd), clauseCheck);
+            Core.Every(GoRuntime.Slice(getSwitchClauseTypes(data.SwitchStatement), (int)data.ClauseStart, (int)data.ClauseEnd), state, clauseCheck);
         return everyClauseChecks ? getTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
     }
 
@@ -198,7 +201,7 @@ public sealed partial class Checker
             var facts = getNotEqualFactsFromTypeofSwitch(0, 0, witnesses);
             if ((operandConstraint.flags & TypeFlags.AnyOrUnknown) != 0)
                 return (TypeFacts.AllTypeofNE & facts) == TypeFacts.AllTypeofNE;
-            return !someType(operandConstraint, t => getTypeFacts(t, facts) == facts);
+            return !someType(operandConstraint, (checker: this, facts), static (t, state) => state.checker.getTypeFacts(t, state.facts) == state.facts);
         }
         var type = getBaseConstraintOrType(checkExpressionCached(node.Expression()));
         if (!isLiteralType(type))
@@ -206,7 +209,7 @@ public sealed partial class Checker
         var switchTypes = getSwitchClauseTypes(node);
         if (GoRuntime.Len(switchTypes) == 0 || Core.Some(switchTypes, isNeitherUnitTypeNorNever))
             return false;
-        return eachTypeContainedIn(mapType(type, getRegularTypeOfLiteralType), switchTypes);
+        return eachTypeContainedIn(mapType(type, this, static (mappedType, checker) => checker.getRegularTypeOfLiteralType(mappedType)), switchTypes);
     }
 
     private static bool eachTypeContainedIn(Type source, Slice<Type> types)
@@ -867,14 +870,14 @@ public sealed partial class Checker
 
     private Type getAssignmentReducedTypeWorker(Type declaredType, Type assignedType)
     {
-        var filteredType = this.filterType(declaredType, (t) =>
+        var filteredType = this.filterType(declaredType, (checker: this, assignedType), static (t, state) =>
         {
-            return this.typeMaybeAssignableTo(assignedType, t);
+            return state.checker.typeMaybeAssignableTo(state.assignedType, t);
         });
         var reducedType = filteredType;
         if ((((assignedType.flags & TypeFlags.BooleanLiteral) != 0) && isFreshLiteralType(assignedType)))
         {
-            reducedType = this.mapType(filteredType, this.getFreshTypeOfLiteralType);
+            reducedType = this.mapType(filteredType, this, static (mappedType, checker) => checker.getFreshTypeOfLiteralType(mappedType));
         }
 
         if (this.isTypeAssignableTo(assignedType, reducedType))
@@ -1266,7 +1269,7 @@ public sealed partial class Checker
                     return this.getNarrowedType(t, predicate.t, assumeTrue, false);
                 }
 
-                if (((this.strictNullChecks && this.optionalChainContainsReference(predicateArgument, f.reference)) && (((assumeTrue && !this.hasTypeFacts(predicate.t, TypeFacts.EQUndefined)) || (!assumeTrue && everyType(predicate.t, this.IsNullableType))))))
+                if (((this.strictNullChecks && this.optionalChainContainsReference(predicateArgument, f.reference)) && (((assumeTrue && !this.hasTypeFacts(predicate.t, TypeFacts.EQUndefined)) || (!assumeTrue && everyType(predicate.t, this, static (mappedType, checker) => checker.IsNullableType(mappedType)))))))
                 {
                     t = this.getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull);
                 }
@@ -1704,7 +1707,7 @@ public sealed partial class Checker
 
         if (assumeTrue)
         {
-            if ((!doubleEquals && ((((t.flags & TypeFlags.Unknown) != 0) || someType(t, this.IsEmptyAnonymousObjectType)))))
+            if ((!doubleEquals && ((((t.flags & TypeFlags.Unknown) != 0) || someType(t, this, static (constituent, checker) => checker.IsEmptyAnonymousObjectType(constituent))))))
             {
                 if ((((valueType.flags & ((TypeFlags.Primitive | TypeFlags.NonPrimitive))) != 0) || this.IsEmptyAnonymousObjectType(valueType)))
                 {
@@ -1726,9 +1729,9 @@ public sealed partial class Checker
                 }
             }
 
-            var filteredType = this.filterType(t, (t2) =>
+            var filteredType = this.filterType(t, (checker: this, valueType, doubleEquals), static (t2, state) =>
             {
-                return (this.areTypesComparable(t2, valueType) || (doubleEquals && isCoercibleUnderDoubleEquals(t2, valueType)));
+                return (state.checker.areTypesComparable(t2, state.valueType) || (state.doubleEquals && isCoercibleUnderDoubleEquals(t2, state.valueType)));
             });
             return this.replacePrimitivesWithLiterals(filteredType, valueType);
         }
@@ -1744,9 +1747,9 @@ public sealed partial class Checker
                 }
             }
 
-            return this.filterType(t, (t3) =>
+            return this.filterType(t, (checker: this, valueType), static (t3, state) =>
             {
-                return !((this.isUnitLikeType(t3) && this.areTypesComparable(t3, valueType)));
+                return !((state.checker.isUnitLikeType(t3) && state.checker.areTypesComparable(t3, state.valueType)));
             });
         }
 
@@ -1774,9 +1777,9 @@ public sealed partial class Checker
             var propertyAccess = this.getDiscriminantPropertyAccess(f, target, t);
             if ((propertyAccess != null))
             {
-                return this.narrowTypeByDiscriminant(t, propertyAccess, (t2) =>
+                return this.narrowTypeByDiscriminant(t, propertyAccess, (checker: this, literal, assumeTrue), static (t2, state) =>
                 {
-                    return this.narrowTypeByLiteralExpression(t2, literal, assumeTrue);
+                    return state.checker.narrowTypeByLiteralExpression(t2, state.literal, state.assumeTrue);
                 });
             }
 
@@ -1874,32 +1877,32 @@ public sealed partial class Checker
 {
     private Type narrowTypeByTypeFacts(Type t, Type impliedType, TypeFacts facts)
     {
-        return this.mapType(t, (t2) =>
+        return this.mapType(t, (checker: this, impliedType, facts), static (t2, state) =>
         {
             switch (true)
             {
-                case true when this.isTypeRelatedTo(t2, impliedType, this.strictSubtypeRelation):
+                case true when state.checker.isTypeRelatedTo(t2, state.impliedType, state.checker.strictSubtypeRelation):
                     {
-                        if (this.hasTypeFacts(t2, facts))
+                        if (state.checker.hasTypeFacts(t2, state.facts))
                         {
                             return t2;
                         }
 
-                        return this.neverType;
+                        return state.checker.neverType;
                     }
 
-                case true when this.isTypeSubtypeOf(impliedType, t2):
+                case true when state.checker.isTypeSubtypeOf(state.impliedType, t2):
                     {
-                        return impliedType;
+                        return state.impliedType;
                     }
 
-                case true when this.hasTypeFacts(t2, facts):
+                case true when state.checker.hasTypeFacts(t2, state.facts):
                     {
-                        return this.getIntersectionType((ReadOnlySpan<Type>)[t2, impliedType]);
+                        return state.checker.getIntersectionType((ReadOnlySpan<Type>)[t2, state.impliedType]);
                     }
             }
 
-            return this.neverType;
+            return state.checker.neverType;
         });
     }
 }
@@ -1942,9 +1945,9 @@ public sealed partial class Checker
             }
         }
 
-        return this.narrowTypeByDiscriminant(t, access, (t2) =>
+        return this.narrowTypeByDiscriminant(t, access, (checker: this, @operator, value, assumeTrue), static (t2, state) =>
         {
-            return this.narrowTypeByEquality(t2, @operator, value, assumeTrue);
+            return state.checker.narrowTypeByEquality(t2, state.@operator, state.value, state.assumeTrue);
         });
     }
 }
@@ -2025,7 +2028,7 @@ public sealed partial class Checker
             return getNarrowedType(t, predicate.t, assumeTrue, true);
         if (!isTypeDerivedFrom(rightType, globalFunctionType))
             return t;
-        var instanceType = mapType(rightType, getInstanceType);
+        var instanceType = mapType(rightType, this, static (mappedType, checker) => checker.getInstanceType(mappedType));
         if (IsTypeAny(t) && (instanceType == globalObjectType || instanceType == globalFunctionType) ||
             !assumeTrue && !((instanceType.flags & TypeFlags.Object) != 0 && !IsEmptyAnonymousObjectType(instanceType)))
             return t;
@@ -2040,7 +2043,7 @@ public sealed partial class Checker
             return prototypePropertyType;
         var constructSignatures = getSignaturesOfType(constructorType, SignatureKind.Construct);
         if (GoRuntime.Len(constructSignatures) != 0)
-            return getUnionType(Core.MapSlice(constructSignatures, signature => getReturnTypeOfSignature(getErasedSignature(signature))));
+            return getUnionType(Core.MapSlice(constructSignatures, this, static (signature, checker) => checker.getReturnTypeOfSignature(checker.getErasedSignature(signature))));
         return emptyObjectType;
     }
 
@@ -2063,9 +2066,9 @@ public sealed partial class Checker
     private Type narrowTypeByInKeyword(FlowState f, Type t, Type nameType, bool assumeTrue)
     {
         var name = getPropertyNameValueFromType(nameType);
-        var isKnownProperty = someType(t, constituent => isTypePresencePossible(constituent, name, true));
+        var isKnownProperty = someType(t, (checker: this, name), static (constituent, state) => state.checker.isTypePresencePossible(constituent, state.name, true));
         if (isKnownProperty)
-            return filterType(t, constituent => isTypePresencePossible(constituent, name, assumeTrue));
+            return filterType(t, (checker: this, name, assumeTrue), static (constituent, state) => state.checker.isTypePresencePossible(constituent, state.name, state.assumeTrue));
         if (assumeTrue)
         {
             var recordSymbol = getGlobalRecordSymbol();
@@ -2090,8 +2093,8 @@ public sealed partial class Checker
         var equalsOperator = @operator is Kind.EqualsEqualsToken or Kind.EqualsEqualsEqualsToken;
         var nullableFlags = @operator is Kind.EqualsEqualsToken or Kind.ExclamationEqualsToken ? TypeFlags.Nullable : TypeFlags.Undefined;
         var valueType = getTypeOfExpression(value);
-        var removeNullable = equalsOperator != assumeTrue && everyType(valueType, constituent => (constituent.flags & nullableFlags) != 0) ||
-            equalsOperator == assumeTrue && everyType(valueType, constituent => (constituent.flags & (TypeFlags.AnyOrUnknown | nullableFlags)) == 0);
+        var removeNullable = equalsOperator != assumeTrue && everyType(valueType, nullableFlags, static (constituent, flags) => (constituent.flags & flags) != 0) ||
+            equalsOperator == assumeTrue && everyType(valueType, nullableFlags, static (constituent, flags) => (constituent.flags & (TypeFlags.AnyOrUnknown | flags)) == 0);
         return removeNullable ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
     }
 
@@ -2150,9 +2153,9 @@ public sealed partial class Checker
 
             if (checkDerived)
             {
-                return this.filterType(t, (t2) =>
+                return this.filterType(t, (checker: this, candidate), static (t2, state) =>
                 {
-                    return !this.isTypeDerivedFrom(t2, candidate);
+                    return !state.checker.isTypeDerivedFrom(t2, state.candidate);
                 });
             }
 
@@ -2162,9 +2165,9 @@ public sealed partial class Checker
             }
 
             var trueType = this.getNarrowedType(t, candidate, true, false);
-            return this.recombineUnknownType(this.filterType(t, (t3) =>
+            return this.recombineUnknownType(this.filterType(t, (checker: this, trueType), static (t3, state) =>
             {
-                return !this.isTypeSubsetOf(t3, trueType);
+                return !state.checker.isTypeSubsetOf(t3, state.trueType);
             }));
         }
 
@@ -2184,17 +2187,17 @@ public sealed partial class Checker
             keyPropertyName = this.getKeyPropertyName(t);
         }
 
-        var narrowedType = this.mapType(candidate, (n) =>
+        var narrowedType = this.mapType(candidate, (checker: this, t, keyPropertyName, checkDerived), static (n, state) =>
         {
-            var matching = t;
-            if ((keyPropertyName.Length != 0))
+            var matching = state.t;
+            if ((state.keyPropertyName.Length != 0))
             {
                 {
-                    var discriminant = this.getTypeOfPropertyOfType(n, keyPropertyName);
+                    var discriminant = state.checker.getTypeOfPropertyOfType(n, state.keyPropertyName);
                     if ((discriminant != null))
                     {
                         {
-                            var constituent = this.getConstituentTypeForKeyType(t, discriminant);
+                            var constituent = state.checker.getConstituentTypeForKeyType(state.t, discriminant);
                             if ((constituent != null))
                             {
                                 matching = constituent;
@@ -2204,86 +2207,86 @@ public sealed partial class Checker
                 }
             }
 
-            Func<Type, Type> mapType = default;
-            if (checkDerived)
+            Func<Type, (Checker checker, Type n), Type> mapType = default;
+            if (state.checkDerived)
             {
-                mapType = (t4) =>
+                mapType = static (t4, mapState) =>
                 {
                     switch (true)
                     {
-                        case true when this.isTypeDerivedFrom(t4, n):
+                        case true when mapState.checker.isTypeDerivedFrom(t4, mapState.n):
                             {
                                 return t4;
                             }
 
-                        case true when this.isTypeDerivedFrom(n, t4):
+                        case true when mapState.checker.isTypeDerivedFrom(mapState.n, t4):
                             {
-                                return n;
+                                return mapState.n;
                             }
                     }
 
-                    return this.neverType;
+                    return mapState.checker.neverType;
                 };
             }
             else
             {
-                mapType = (t5) =>
+                mapType = static (t5, mapState) =>
                 {
                     switch (true)
                     {
-                        case true when this.isTypeStrictSubtypeOf(t5, n):
+                        case true when mapState.checker.isTypeStrictSubtypeOf(t5, mapState.n):
                             {
                                 return t5;
                             }
 
-                        case true when this.isTypeStrictSubtypeOf(n, t5):
+                        case true when mapState.checker.isTypeStrictSubtypeOf(mapState.n, t5):
                             {
-                                return n;
+                                return mapState.n;
                             }
 
-                        case true when this.isTypeSubtypeOf(t5, n):
+                        case true when mapState.checker.isTypeSubtypeOf(t5, mapState.n):
                             {
                                 return t5;
                             }
 
-                        case true when this.isTypeSubtypeOf(n, t5):
+                        case true when mapState.checker.isTypeSubtypeOf(mapState.n, t5):
                             {
-                                return n;
+                                return mapState.n;
                             }
                     }
 
-                    return this.neverType;
+                    return mapState.checker.neverType;
                 };
             }
 
-            var directlyRelated = this.mapType(matching, mapType);
+            var directlyRelated = state.checker.mapType(matching, (checker: state.checker, n), mapType);
             if (((directlyRelated.flags & TypeFlags.Never) == 0))
             {
                 return directlyRelated;
             }
 
-            Func<Type, Type, bool> isRelated = default;
-            if (checkDerived)
+            Func<Type, Type, Checker, bool> isRelated = default;
+            if (state.checkDerived)
             {
-                isRelated = this.isTypeDerivedFrom;
+                isRelated = static (source, target, checker) => checker.isTypeDerivedFrom(source, target);
             }
             else
             {
-                isRelated = this.isTypeSubtypeOf;
+                isRelated = static (source, target, checker) => checker.isTypeSubtypeOf(source, target);
             }
 
-            return this.mapType(t, (t6) =>
+            return state.checker.mapType(state.t, (checker: state.checker, n, isRelated), static (t6, fallbackState) =>
             {
-                if (this.maybeTypeOfKind(t6, TypeFlags.Instantiable))
+                if (fallbackState.checker.maybeTypeOfKind(t6, TypeFlags.Instantiable))
                 {
-                    var constraint = this.getBaseConstraintOfType(t6);
-                    if (((constraint == null) || isRelated(n, constraint)))
+                    var constraint = fallbackState.checker.getBaseConstraintOfType(t6);
+                    if (((constraint == null) || fallbackState.isRelated(fallbackState.n, constraint, fallbackState.checker)))
                     {
-                        return this.getIntersectionType((ReadOnlySpan<Type>)[t6, n]);
+                        return fallbackState.checker.getIntersectionType((ReadOnlySpan<Type>)[t6, fallbackState.n]);
                     }
                 }
 
-                return this.neverType;
+                return fallbackState.checker.neverType;
             });
         });
         switch (true)
@@ -2681,28 +2684,28 @@ public sealed partial class Checker
     {
         if ((this.maybeTypeOfKind(typeWithPrimitives, (((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.Number) | TypeFlags.BigInt)) && this.maybeTypeOfKind(typeWithLiterals, ((((TypeFlags.StringLiteral | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping) | TypeFlags.NumberLiteral) | TypeFlags.BigIntLiteral))))
         {
-            return this.mapType(typeWithPrimitives, (t) =>
+            return this.mapType(typeWithPrimitives, (checker: this, typeWithLiterals), static (t, state) =>
             {
                 switch (true)
                 {
                     case true when ((t.flags & TypeFlags.String) != 0):
                         {
-                            return this.extractTypesOfKind(typeWithLiterals, (((TypeFlags.String | TypeFlags.StringLiteral) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping));
+                            return state.checker.extractTypesOfKind(state.typeWithLiterals, (((TypeFlags.String | TypeFlags.StringLiteral) | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping));
                         }
 
-                    case true when (this.isPatternLiteralType(t) && !this.maybeTypeOfKind(typeWithLiterals, ((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping))):
+                    case true when (state.checker.isPatternLiteralType(t) && !state.checker.maybeTypeOfKind(state.typeWithLiterals, ((TypeFlags.String | TypeFlags.TemplateLiteral) | TypeFlags.StringMapping))):
                         {
-                            return this.extractTypesOfKind(typeWithLiterals, TypeFlags.StringLiteral);
+                            return state.checker.extractTypesOfKind(state.typeWithLiterals, TypeFlags.StringLiteral);
                         }
 
                     case true when ((t.flags & TypeFlags.Number) != 0):
                         {
-                            return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.Number | TypeFlags.NumberLiteral));
+                            return state.checker.extractTypesOfKind(state.typeWithLiterals, (TypeFlags.Number | TypeFlags.NumberLiteral));
                         }
 
                     case true when ((t.flags & TypeFlags.BigInt) != 0):
                         {
-                            return this.extractTypesOfKind(typeWithLiterals, (TypeFlags.BigInt | TypeFlags.BigIntLiteral));
+                            return state.checker.extractTypesOfKind(state.typeWithLiterals, (TypeFlags.BigInt | TypeFlags.BigIntLiteral));
                         }
 
                     default:
@@ -3010,9 +3013,9 @@ public sealed partial class Checker
 {
     private bool hasParentWithAssignmentsMarked(Node node)
     {
-        return (Ast.FindAncestor(node.Parent, (node2) =>
+        return (Ast.FindAncestor(node.Parent, this, static (node2, checker) =>
         {
-            return (Ast.IsFunctionOrSourceFile(node2) && ((this.nodeLinks.Get(node2).flags & NodeCheckFlags.AssignmentsMarked) != 0));
+            return (Ast.IsFunctionOrSourceFile(node2) && ((checker.nodeLinks.Get(node2).flags & NodeCheckFlags.AssignmentsMarked) != 0));
         }) != null);
     }
 }
@@ -3271,9 +3274,9 @@ public sealed partial class Checker
             return candidate;
         }
 
-        return this.filterType(t, (t2) =>
+        return this.filterType(t, (checker: this, candidate), static (t2, state) =>
         {
-            return this.isConstructedBy(t2, candidate);
+            return state.checker.isConstructedBy(t2, state.candidate);
         });
     }
 }
@@ -3854,7 +3857,7 @@ public sealed partial class Checker
         {
             this.error(symbol.ValueDeclaration, Diagnostics.Member_0_implicitly_has_an_1_type, this.symbolToString(symbol), this.typeToStringByteString(flowType));
         }
-        if (everyType(flowType, this.IsNullableType))
+        if (everyType(flowType, this, static (mappedType, checker) => checker.IsNullableType(mappedType)))
         {
             return null;
         }
@@ -3887,7 +3890,7 @@ public sealed partial class Checker
                 {
                     this.error(symbol.ValueDeclaration, Diagnostics.Member_0_implicitly_has_an_1_type, this.symbolToString(symbol), this.typeToStringByteString(flowType));
                 }
-                if (everyType(flowType, this.IsNullableType))
+                if (everyType(flowType, this, static (mappedType, checker) => checker.IsNullableType(mappedType)))
                 {
                     continue;
                 }

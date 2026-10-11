@@ -28,7 +28,7 @@ internal sealed class CheckerPool : ICheckerPool
     internal readonly TypeScript.Tracing.Tracing? tracing;
     internal readonly Checker[] checkers;
     internal readonly SemaphoreSlim[] locks;
-    internal Dictionary<SourceFile, Checker> fileAssociations = new(ReferenceEqualityComparer.Instance);
+    internal Dictionary<SourceFile, Checker> fileAssociations = null!;
     private readonly Lazy<bool> createCheckersOnce;
     internal CheckerPool(Program program, TypeScript.Tracing.Tracing? tracing = null)
     {
@@ -59,64 +59,74 @@ internal sealed class CheckerPool : ICheckerPool
         return new(false, 1, 1);
     }
 
-    internal static List<long> getCheckerAssociationWeights(List<long>? baseWeights, List<long>? importCounts)
+    internal static Slice<long> getCheckerAssociationWeights(Slice<long> baseWeights, Slice<long> importCounts)
     {
         long totalBaseWeight = 0, totalImports = 0;
-        for (int i = 0; i < (baseWeights?.Count ?? 0); i++)
+        for (int i = 0; i < baseWeights.Length; i++)
         {
-            totalBaseWeight = unchecked(totalBaseWeight + baseWeights![i]);
-            totalImports = unchecked(totalImports + importCounts![i]);
+            totalBaseWeight = unchecked(totalBaseWeight + baseWeights[i]);
+            totalImports = unchecked(totalImports + importCounts[i]);
         }
 
         long importWeight = totalImports > 0 ? Math.Max(totalBaseWeight / totalImports, 1) : 0;
-        var weights = new List<long>((baseWeights?.Count ?? 0));
-        for (int i = 0; i < (baseWeights?.Count ?? 0); i++)
-            weights.Add(unchecked(baseWeights![i] + importCounts![i] * importWeight));
+        var weights = Slice<long>.Make(baseWeights.Length);
+        for (int i = 0; i < baseWeights.Length; i++)
+            weights[i] = unchecked(baseWeights[i] + importCounts[i] * importWeight);
         return weights;
     }
 
-    internal static List<int>? getCheckerAssociationOrder(List<long>? weights, List<bool>? declarations, bool prioritizeSourceFiles)
+    internal static Slice<int> getCheckerAssociationOrder(Slice<long> weights, Slice<bool> declarations, bool prioritizeSourceFiles)
     {
         if (!prioritizeSourceFiles)
-            return null;
-        var order = Enumerable.Range(0, (weights?.Count ?? 0)).ToList();
-        order.Sort((left, right) => declarations![left] != declarations![right] ? (declarations![left] ? 1 : -1) : weights![left] != weights![right] ? (weights![left] > weights![right] ? -1 : 1) : left.CompareTo(right));
+            return default;
+        var order = Slice<int>.Make(weights.Length);
+        for (int i = 0; i < order.Length; i++)
+            order[i] = i;
+        GoSlices.SortFunc(order, (left, right) =>
+        {
+            if (declarations[left] != declarations[right])
+                return declarations[left] ? 1 : -1;
+            if (weights[left] != weights[right])
+                return weights[left] > weights[right] ? -1 : 1;
+            return left.CompareTo(right);
+        });
         return order;
     }
 
-    internal static List<int>? getCheckerAssociationsInOrder(List<long>? weights, List<List<int>?>? adjacentFiles, List<int>? order, int checkerCount, long penaltyMultiplier)
+    internal static Slice<int> getCheckerAssociationsInOrder(Slice<long> weights, Slice<Slice<int>> adjacentFiles, Slice<int> order, int checkerCount, long penaltyMultiplier)
     {
-        if ((weights?.Count ?? 0) == 0)
-            return null;
+        if (weights.Length == 0)
+            return default;
         long totalWeight = 0, maxFileWeight = 0, edgeCount = 0;
-        for (int i = 0; i < (weights?.Count ?? 0); i++)
+        for (int i = 0; i < weights.Length; i++)
         {
-            totalWeight = unchecked(totalWeight + weights![i]);
-            maxFileWeight = Math.Max(maxFileWeight, weights![i]);
-            edgeCount = unchecked(edgeCount + (adjacentFiles![i]?.Count ?? 0));
+            totalWeight = unchecked(totalWeight + weights[i]);
+            maxFileWeight = Math.Max(maxFileWeight, weights[i]);
+            edgeCount = unchecked(edgeCount + adjacentFiles[i].Length);
         }
 
-        var associations = Enumerable.Repeat(-1, (weights?.Count ?? 0)).ToList();
+        var associations = Slice<int>.Make(weights.Length);
+        associations.AsSpan().Fill(-1);
         var checkerWeights = new long[checkerCount];
         long average = unchecked(totalWeight + checkerCount - 1) / checkerCount;
         long maxWeight = Math.Max(maxFileWeight, unchecked(average + average / 100));
         double total = totalWeight;
         double alpha = penaltyMultiplier * (double)(edgeCount / 2) * Math.Sqrt(checkerCount) / (total * Math.Sqrt(total));
         var neighbors = new long[checkerCount];
-        for (int position = 0; position < (weights?.Count ?? 0); position++)
+        for (int position = 0; position < weights.Length; position++)
         {
-            int file = order is null ? position : order[position];
+            int file = order.IsNil ? position : order[position];
             Array.Clear(neighbors);
-            foreach (int adjacent in adjacentFiles![file] ?? [])
+            foreach (int adjacent in adjacentFiles[file])
                 if (associations[adjacent] >= 0)
                     neighbors[associations[adjacent]]++;
             int best = -1;
             double bestScore = double.NegativeInfinity;
             for (int checker = 0; checker < checkerCount; checker++)
             {
-                if (unchecked(checkerWeights[checker] + weights![file]) > maxWeight)
+                if (unchecked(checkerWeights[checker] + weights[file]) > maxWeight)
                     continue;
-                double oldWeight = checkerWeights[checker], newWeight = unchecked(checkerWeights[checker] + weights![file]);
+                double oldWeight = checkerWeights[checker], newWeight = unchecked(checkerWeights[checker] + weights[file]);
                 double score = neighbors[checker] - alpha * (newWeight * Math.Sqrt(newWeight) - oldWeight * Math.Sqrt(oldWeight));
                 if (score > bestScore || score == bestScore && (best < 0 || checkerWeights[checker] < checkerWeights[best]))
                 {
@@ -134,7 +144,7 @@ internal sealed class CheckerPool : ICheckerPool
             }
 
             associations[file] = best;
-            checkerWeights[best] = unchecked(checkerWeights[best] + weights![file]);
+            checkerWeights[best] = unchecked(checkerWeights[best] + weights[file]);
         }
 
         return associations;
@@ -202,44 +212,45 @@ internal sealed class CheckerPool : ICheckerPool
         }
 
         work.RunAndWait();
-        List<int> associations = Enumerable.Repeat(0, program.files.Count).ToList();
+        var associations = Slice<int>.Make(program.files.Length);
         if (checkerCount > 1)
         {
-            var baseWeights = new List<long>();
-            var importCounts = new List<long>();
-            var declarations = new List<bool>();
+            var baseWeights = Slice<long>.Make(program.files.Length);
+            var importCounts = Slice<long>.Make(program.files.Length);
+            var declarations = Slice<bool>.Make(program.files.Length);
             long totalBaseWeight = 0, declarationBaseWeight = 0;
-            foreach (SourceFile file in program.files)
+            for (int i = 0; i < program.files.Length; i++)
             {
+                SourceFile file = program.files[i];
                 long weight = getCheckerAssociationBaseWeight(file.NodeCount, file.TextView().Length);
                 totalBaseWeight = unchecked(totalBaseWeight + weight);
                 if (file.IsDeclarationFile)
                     declarationBaseWeight = unchecked(declarationBaseWeight + weight);
-                baseWeights.Add(weight);
-                importCounts.Add(file.Imports().Length);
-                declarations.Add(file.IsDeclarationFile);
+                baseWeights[i] = weight;
+                importCounts[i] = file.Imports().Length;
+                declarations[i] = file.IsDeclarationFile;
             }
 
             var policy = getCheckerAssociationPolicy(totalBaseWeight, declarationBaseWeight, checkerCount);
             if (policy.sourceFileWeightMultiplier != 1)
                 for (int i = 0; i < declarations.Count; i++)
                     if (!declarations[i])
-                        baseWeights![i] = unchecked(baseWeights![i] * policy.sourceFileWeightMultiplier);
+                        baseWeights[i] = unchecked(baseWeights[i] * policy.sourceFileWeightMultiplier);
             var weights = getCheckerAssociationWeights(baseWeights, importCounts);
-            associations = getCheckerAssociationsInOrder(weights, getImportAdjacency(), getCheckerAssociationOrder(weights, declarations, policy.prioritizeSourceFiles), checkerCount, policy.balancePenaltyMultiplier)!;
+            associations = getCheckerAssociationsInOrder(weights, getImportAdjacency(), getCheckerAssociationOrder(weights, declarations, policy.prioritizeSourceFiles), checkerCount, policy.balancePenaltyMultiplier);
         }
 
-        fileAssociations = new(ReferenceEqualityComparer.Instance);
+        fileAssociations = new(program.files.Length, ReferenceEqualityComparer.Instance);
         for (int i = 0; i < program.files.Count; i++)
             fileAssociations[program.files[i]] = checkers[associations[i]];
     }
 
-    internal List<List<int>?> getImportAdjacency()
+    internal Slice<Slice<int>> getImportAdjacency()
     {
-        var indices = new Dictionary<SourceFile, int>(ReferenceEqualityComparer.Instance);
+        var indices = new Dictionary<SourceFile, int>(program.files.Length, ReferenceEqualityComparer.Instance);
         for (int i = 0; i < program.files.Count; i++)
             indices[program.files[i]] = i;
-        var adjacency = Enumerable.Repeat<List<int>?>(null, program.files.Count).ToList();
+        var adjacency = Slice<Slice<int>>.Make(program.files.Length);
         for (int i = 0; i < program.files.Count; i++)
         {
             var modules = program.resolvedModules.GetValueOrDefault(program.files[i].PathKeyKey());
@@ -252,8 +263,8 @@ internal sealed class CheckerPool : ICheckerPool
                 SourceFile? target = program.GetSourceFileForResolvedModule(resolved!);
                 if (target is null || !indices.TryGetValue(target, out int index) || index == i)
                     continue;
-                (adjacency[i] ??= []).Add(index);
-                (adjacency[index] ??= []).Add(i);
+                adjacency[i] = adjacency[i].Append(index);
+                adjacency[index] = adjacency[index].Append(i);
             }
         }
 

@@ -1297,6 +1297,11 @@
         "adaptation": "Restore upstream capacity hints for globals and file-index maps; retain source file filtering/countGlobalSymbols. Intersection construction now uses the upstream orderedSet threshold algorithm with the existing initial slice capacity. Remove redundant newType self-slot publication after runtime-type dispatch adaptation.",
         "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
         "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      },
+      "throughputOwnershipFollowThrough": {
+        "adaptation": "Immediate connected literal/facts/falsy/narrowed-symbol/recursive spread transforms carry explicit state into static callbacks; original algorithms, cache/origin and required retained callbacks unchanged.",
+        "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
+        "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
       }
     },
     {
@@ -1578,7 +1583,12 @@
       },
       "astCandidateStackCheckpoint": "Flow reduce-label push/pop and pooled resets preserve Go header capacity/sharing rather than cloning Lists. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
       "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
-      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
+      "throughputOwnershipFollowThrough": {
+        "adaptation": "Complete remaining synchronous narrowing/map/filter/Some/Every callback family carries explicit state into static receivers, including nested branch-selected narrowing. No flow graph or narrowing algorithm change.",
+        "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
+        "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
+      }
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -5047,7 +5057,12 @@
         "Go",
         "Wait"
       ],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "throughputOwnershipFollowThrough": {
+        "adaptation": "Source WaitGroup.Go has no future. Standard ThreadPool.QueueUserWorkItem with static value state replaces unused Task and wrapper capture while preserving managed ExecutionContext flow, recursive pending accounting, first failure and finally completion. Managed failure transport remains a documented adaptation.",
+        "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
+        "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
+      }
     },
     {
       "upstream": "tsc/internal/compiler/checkerpool.go",
@@ -5067,7 +5082,12 @@
       "declarationsCampaignState": "accepted selected D1–D6 responsibility closure; not whole-checker completion",
       "declarationsCampaignScope": "Actual lazy acquisition/synchronization; enabled type tracing explicitly external.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "throughputOwnershipFollowThrough": {
+        "adaptation": "Source-sized slice buffers and len(files) map capacity hints replace growing setup Lists. Nil/order/FENNEL/worker-count/locking/cache policies preserved. Named cold inputs move to Slice rather than adding production List compatibility wrappers.",
+        "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
+        "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
+      }
     },
     {
       "upstream": "tsc/internal/vfs/cachedvfs/cachedvfs.go",
@@ -6017,9 +6037,16 @@
     "procedure": "START-HERE.md",
     "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
     "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change.",
-    "lastIntegratedCheckpoint": "82873ea",
-    "continuation": "Current CPU/layout continuation accepted in integration18: compact internal locations reviewed, actualNativeVSCode exact10/17.72s;16,321managed and full15,304original Native records pass. Sampled managed10.409142GiB. Public Symbol Memory-handle and concurrent-cache alternatives assessed/deferred due to storage tradeoffs; source four-checker grouping retained. See docs/STATE.md.",
-    "evidence": "validation/results/allocation-rollout-verified.json"
+    "lastIntegratedCheckpoint": "integration20/build-2; implementation and acceptance delivered together",
+    "continuation": "Integration20 callback/setup owner closure and standard CLI Speed/LINQ throughput policy accepted after independent source/config/result reviews: frozen compiler8eacff5c, NativeVSCode16.82s all10 exact,1721 mixed-provenance selected managed and full15304 original Native no-emit plus Foundation3153/shared87/utilities20/Program9 pass. Earlier accepted snapshots and rejected Symbol experiment remain distinct. No Go speed parity claim; continue only source-grounded opportunities under comprehensive SOP.",
+    "evidence": "validation/results/allocation-rollout-verified.json",
+    "nativePublicationPolicy": {
+      "optimizationPreference": "Speed",
+      "useSizeOptimizedLinq": false,
+      "serverGC": "existing adaptive ServerGC unchanged",
+      "instructionSet": "default unchanged",
+      "verified": "Actual --Ot/both LINQ false flags/VxsortEnabled archive; installed package MIBC empty, no PGO claim."
+    }
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",

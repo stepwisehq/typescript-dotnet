@@ -6,6 +6,9 @@
     <AssemblyName>tscheck</AssemblyName>
     <!-- CLI execution policy; applies to managed and NativeAOT runtimes. -->
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <!-- Compiler CLI favors throughput over Native AOT code size. -->
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <UseSizeOptimizedLinq>false</UseSizeOptimizedLinq>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../TypeScript.Scanner/TypeScript.Scanner.csproj" /></ItemGroup>
 </Project>

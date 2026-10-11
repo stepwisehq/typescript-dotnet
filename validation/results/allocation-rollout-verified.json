@@ -532,5 +532,137 @@
       "sha256": "29199fd1a7707dd0cbc3e64bf034b122ed9e00c9d5b41652a1cc01b4b5d96b38"
     },
     "preservedCommit": "953de084"
+  },
+  "throughputOwnershipFollowThrough": {
+    "status": "accepted integration20 complete connected source family and standard Native throughput publication policy",
+    "compilerSha256": "8eacff5cb69d7a5cac6d9bf5c607b5087dd09c7f662a33c49461cae036f1d6db",
+    "nativeSha256": "24c60da50168d72f7eae6c2c9c989263bd68b4187f1ddc8e9ea76c6946546ea7",
+    "implementation": "Remaining immediate Checker/Flow narrowing/map/filter captures use explicit state/static receivers. WorkGroup replaces unused Task/wrapper capture with safe context-flowing ThreadPool value-state work items. CheckerPool uses source-sized Slice buffers/map hints, preserving worker count/FENNEL/order/cache/failure/recursive semantics; existing seven cold controls use Slice without production-only scaffolding.",
+    "cliPolicy": {
+      "optimizationPreference": "Speed",
+      "useSizeOptimizedLinq": false,
+      "serverGC": true,
+      "instructionSet": "default unchanged; no instruction-set override",
+      "actualSpeedFlag": "--Ot",
+      "actualRuntimeArchive": "NativeAOT10.0.12 libRuntime.VxsortEnabled.a",
+      "mibcInputs": [],
+      "pgo": "No MIBC present; preference property is not evidence of PGO consumption."
+    },
+    "build": {
+      "zeroWarningsErrors": true,
+      "sourceDrift": [],
+      "preservedFailure": "Build-1 sole CS0176 static helper receiver binding failed; immutable reviewed finite repair and build-2 clean result retained."
+    },
+    "nativeVSCode": {
+      "wallSeconds": 16.82,
+      "cpuSeconds": 71.11,
+      "peakResidentKiB": 8166848,
+      "expectedExitCode": 1,
+      "completeDiagnosticRecordsExact": 10,
+      "stderrEmpty": true,
+      "binaryConfigSourceDrift": false
+    },
+    "managed": {
+      "passingCases": 1721,
+      "retainedPassingCases": 1712,
+      "additionalProgramControls": 9,
+      "counts": {
+        "Checker.Tests": 832,
+        "TypeSystem.Tests": 84,
+        "Parser.Tests": 695,
+        "Checker.NoEmit.Tests": 101,
+        "Program.Tests": 9
+      },
+      "failures": 0,
+      "skips": 0,
+      "provenance": "Mixed original upstream, port/shared and additional retained outcomes; not all original upstream tests. Earlier full40451 composite managed qualification retained as historical16 evidence, not relabeled20."
+    },
+    "native": {
+      "originalNoEmitCompleteJsonRecords": 15304,
+      "chunks": 120,
+      "originalFoundationAssertions": 3153,
+      "sharedFoundationControls": 87,
+      "originalUtilitiesObservations": 20,
+      "existingProgramControls": 9,
+      "publishedExecutables": 4,
+      "originalReferencesUnchanged": true,
+      "sourceCount": 946,
+      "productionSourceCount": 242,
+      "sourceDrift": [],
+      "allActualILCCompilerAndApplicationDependenciesVerified": true
+    },
+    "cumulativeAllocation": {
+      "candidateNativeBytes": 10594962224,
+      "savedNative19Bytes": 10674941784,
+      "savedGo19Bytes": 8992138304,
+      "deltaBytes": -79979560,
+      "deltaPercent": -0.7492271303987441,
+      "nativeToSavedGoRatio": 1.1782472495209522,
+      "collectionDeltas": [
+        36,
+        16,
+        9
+      ],
+      "scope": "One candidate artifact-only public precise-counter process, unchanged diagnostic output and frozen compiler; saved19 Native/Go counters reused, no Go run. Combined source and changed publication policy; formatting occurs after final counter."
+    },
+    "coldWarnings": "12 existing cold nullable warnings at unchanged Parser.Validation Runner (11) and Checker.Validation DataGraph (1); production0warnings/errors separately.",
+    "reproduction": {
+      "recipe": "artifacts/vscode-allocation-rollout/integration-20/regressions/run-selected.py",
+      "recipeSha256": "57b8f973143be70c32decf3cab09d9663e75fa0b099e3e32266263511a4cc5b9",
+      "explicitRelease": "artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/regression-release.json",
+      "originalNoEmitGuide": "docs/CHECKER-NOEMIT-REPRODUCTION.md",
+      "policy": "Validation Native publications pass OptimizationPreference=Speed and UseSizeOptimizedLinq=false, preserve existing project GC; compiler excluded from explicit normal/RID dependency rebuild and every actual ILC dependency checked."
+    },
+    "limitations": [
+      "One uninstrumented first workload observation is not repeatable speedup proof; original Go speed parity not demonstrated.",
+      "Exact cumulative bytes are heap-accounted, not object counts, retained/RSS/native bytes or sampled allocation; runtime accounting/startup boundaries differ.",
+      "Counter compares combined callbacks/scheduling/source buffers and Native publication policy against saved19; no isolated mechanism benefit claim.",
+      "No new sampled allocation or CPU capture under20; saved17 CPU stack-recovery investigation remains separate, pending independent evidence review, not current20 CPU attribution.",
+      "Actual firstVSCode precedes cumulative measurement and regression acceptance; no broader emit/service or exhaustive correctness claim."
+    ],
+    "evidence": {
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/build-result.json": {
+        "sha256": "54045619763848fc016db421fd187ec22a38f7fa7299de684d40e21ba7f00158"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/native/binding.json": {
+        "sha256": "1b0dca61e11964060b35fc1c338fd21792be9d09662d9895ed933612573fe6bf"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/native/verification-peer-review.json": {
+        "sha256": "7153b8decb426b26039cfc02e0b126a4032be35c3ca451f4031278f92e69e147"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/first-vscode/result.json": {
+        "sha256": "fa6cc4abc0423188baf3771c41f60eddbddd88f81a28b68545474afb7f8e76fd"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/cumulative-allocation/comparison.json": {
+        "sha256": "c705d46fd5870570eacf61837bb965fac2727663f0e33358c9db989ecccf72d4"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/cumulative-allocation/result-peer-review.json": {
+        "sha256": "de843168c99d1fbcdf8a98ec1f327f7f4f7531f2371e6f6e4672ce88e8e37a82"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/selected-result.json": {
+        "sha256": "cbbb70805b5d0dad823b3bfcb797bbcc123fd35e1696a6a6bf7c0ef21300defc"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/native-noemit/result.json": {
+        "sha256": "08526302fe9107f9bc1c2614e7833d18cbde532aa0c910ebe96e219bbe561601"
+      },
+      "artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/verification-peer-review.json": {
+        "sha256": "64a3080fe77ae4665c6c2122ff0737f6242b3cc9e7d57cb112e15abf6fefdac9"
+      },
+      "artifacts/vscode-narrowing-state/build/verification-peer-review.json": {
+        "sha256": "338ac6f87f2a462269a29dbec6b76f127a66edc79c1e465938e7bbd077cf022c"
+      },
+      "artifacts/vscode-narrowing-state/build/build-1-repair/verification-peer-review.json": {
+        "sha256": "4bc5b5548f5bb3718624efbee6aad3f7bcdfbc3fc61788b8b7f25546c782f77f"
+      },
+      "artifacts/vscode-workgroup-setup-state/build/verification-peer-review.json": {
+        "sha256": "b9a22d828ee53a4dac59629f8a198a290e6de2474e4f06729bb5135ff5d6db1b"
+      },
+      "artifacts/vscode-workgroup-setup-state/controls/scanner-peer-review.json": {
+        "sha256": "d0e7a0539bd9de0a94eb06e76b8c86ae4a3ea026d859f87a081820d4cd548ee5"
+      },
+      "artifacts/vscode-native-throughput-policy/config-peer-review.json": {
+        "sha256": "c6839618da8de86da4af236ad4d600cb7c9608f075f6376df45a34c136cf2e53"
+      }
+    }
   }
 }

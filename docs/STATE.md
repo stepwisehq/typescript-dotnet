@@ -1,49 +1,90 @@
-# Active: remaining Go-faithful allocation opportunities; Symbol experiment rejected
+# Active: continuing Go-faithful performance and allocation work
 
-Continue autonomously under START-HERE.md's comprehensive owner/storage/consumer SOP.
-The user repeatedly directed not stopping at internal milestones/commits/compaction.
-Astra root coordinates; GPT-6.1 Sol implementation and independent review remain required.
+Resume under [START-HERE.md](../START-HERE.md)'s comprehensive ownership SOP.
+Astra coordinates; existing GPT-6.1 Sol scanner/support/verification agents implement
+and independently review. Do not stop at a commit, family gate or compaction.
+Active source root is /home/greg/projects/typescript-dotnet on main.
 
-ACTIVE SOURCE ROOT is again /home/greg/projects/typescript-dotnet (main).
-Accepted production remains5951030, documentation checkpoint97529c9. No accepted
-source changes occurred during the isolated experiment. Do not accidentally execute
-or adopt experimental source from the symbol-arena worktree.
+## Integration20: accepted in this checkpoint
 
-Preserved experiment: /home/greg/projects/typescript-dotnet-symbol-arena,
-branch perf/symbol-arena, commit953de084, baseline97529c9. Complete Symbol owner/consumer23/cold26
-migration independently reviewed; reviewer found and closed TypeResolution boxed
-identity omission before publication. Four coordinated builds, final build-4 clean
-compiler025739c727d64d624b33f8a7adec8c306dd510b62bb6ede3527afb5a67bed3eb.
-Actual Linuxx64 Native first VSCode18.49s; all10fullDTO exact. Reverse paired tests:
-baseline15.41/18.21s, candidate17.87/18.99s. Medians16.81vs18.43wall,
-68.425vs70.285CPU,8,701,422vs9,908,206KiBRSS. Small sample, no statistical claim.
-Cumulativecandidate11,545,083,560B vsbaseline10,674,941,784B (+8.15%,870MB).
-Fewer collections31/15/7 vs36/17/9 is not a performance gain by itself. Source-shaped
-arenas do not offset wider managed owner/consumer locations in this experiment.
-Decision REJECT ADOPTION, preserve branch/evidence. No broad xUnit/fullNative gate
-for rejected code; no completeness/correctness acceptance claim. Original expected
-behavior unchanged. See docs/VSCODE-CHECK-STATUS.md and experiment's
-artifacts/symbol-arena/assessment.json, integration/build-4 and cumulative-allocation.
+Accepted predecessor source5951030; main documentation checkpoint3714e565.
+Production source matches the verified integration20 snapshot.
+No build/publication/regression/performance process remains active. Root session39453
+finished exit0: INTEGRATION20 SELECTED VALIDATION PASSED, original15304/15304 exact.
 
-Latest accepted resource correction still applies: Native10,674,941,784B vs pinnedGo
-8,992,138,304B =1.18714x (+18.714%), NOT several-times. Previous sample-vs-Goheap
-comparison cannot establish exact CLI allocation ratio. Runtime/heap accounting differs.
-Default adaptive ServerGC remains unchanged after prior fixed4/fixed16 screen;
-fixed16's6.93% medianwall benefit cost16.90%RSS in2runs, no policy default change.
+Completed families:
+- Flow.cs + Checker.cs: complete synchronous narrowing/map/filter explicit-state,
+  cached-static callbacks. Preserve branch/evaluation order, origins/reduction/caches
+  and genuinely retained/deferred closures. Source review338ac6f8; one CS0176 central
+  build qualification repair independently reviewed4bc5b554. No expectation changes.
+- WorkGroup.cs: standard stateful ThreadPool work item replaces unused Task/wrapper;
+  normal ExecutionContext, pending reservation, recursive queue, failure/finally/wait
+  semantics retained. CheckerPool.cs fixed-size Go Slice buffers and actual len(files)
+  capacity hints through producer/consumer chain; worker count/FENNEL/cache unchanged.
+  Production reviewb9a22d82; existing seven cold assertions migrated to actual Slice API
+  without retaining test-only production adapters. Cold adaptation reviewed separately.
+- CLI Native AOT standard throughput policy: OptimizationPreference=Speed and
+  UseSizeOptimizedLinq=false; ServerGC/default DATAS/ISA unchanged. Actual --Ot,
+  LINQfalse and VxsortEnabled runtime archive verified. Installed NativeAOT pack has
+  no MIBC: NO consumed PGO or PGO benefit claim. Config reviewc6839618.
 
-Current Sol lanes (READ ONLY assessment; no new source implementation assigned yet):
-- support: existing accepted checker/type/relation collection/callback owner paths,
-  reuse integration19 allocation +17CPU and prior inventories for concrete missing
-  upstream policy/algorithm. Avoid generic wishlist/restarting accepted work.
-- scanner: existing accepted owner/layout/parallel-resource paths, same evidence;
-  exclude exhausted scanner/text localcleanup and repeating public-handle variants.
-- verification: independent actual experiment timing/counter/output/ILC result review,
-  source whole-family ACK already29199fd1. Prepared broad regression recipe unexecuted,
-  review held deliberately because experiment rejected.
-Root records/commits rejected experiment separately, keeps main accepted source intact,
-then selects next substantial evidence-backed ownership path from the Sol findings.
-No benchmark/profile/build/test process remains. Do not launch redundant profiles or
-per-local-change test loops; no new process framework. No SVG flamegraphs.
+Evidence: artifacts/vscode-allocation-rollout/integration-20/.
+Build-1 failed only static qualification; preserved. Build-2 clean10.95s,0warnings/errors.
+Compiler8eacff5cb69d7a5cac6d9bf5c607b5087dd09c7f662a33c49461cae036f1d6db.
+CLI24c60da50168d72f7eae6c2c9c989263bd68b4187f1ddc8e9ea76c6946546ea7.
+Actual Linuxx64 Native VSCode FIRST16.82wall/71.11CPU/8,166,848KiBRSS;
+all10 complete diagnostics/chains exact, expectedexit1; independentACK7153b8de.
+One timing, not demonstrated repeatable speedup. Saved pinnedGo9.61s remains faster.
+Cumulative Native10,594,962,224B; -79,979,560B(-0.7492%) vs19,
+1.178247x(+17.8247%) savedpinnedGo8,992,138,304B. Collectiondelta36/16/9.
+Counter recipe/result ACKba6e320d/de843168. Combined source+policy result, not isolated
+causality. Heap-accounting/runtime differences explicit, not RSS or sampled byte ratio.
+
+Acceptance completed: managed1721 zero failure/skip (mixed original/port/additional
+provenance); NativeFoundation3153original+87shared controls, Utilities20original,
+Program7CheckerPool+2ConstructionBoundary, fulloriginal15304Native noemit exact.
+Fresh actual ILC compiler AND application dependency hashes, Speed/LINQfalse flags,
+946source/harness+242production guards verified. Production0warnings;12known unchanged
+cold nullable warnings separate. RecipeACK946486ae; final independent acceptanceACK64a3080f closed, including
+independent comparison of all15304 complete rows. Durable proof, assessment and source-map updated. No duplicate run or postcommit rebuild.
+This checkpoint records the implementation and acceptance; continue with current CPU work below.
+
+## Next work already authorized and active
+
+Scanner recovered saved17 Native CPU caller stacks by separate perf script --tid
+process per worker. Installedperf7.0.14 uses libdw (not libunwind), with cached-thread
+selection bug confirmed by installed code. Four-TID recovery keeps3441sample periods/
+timestamps, recovers3318multi-frame stacks; covers87.87%worker and54.758%alluserCPU.
+Analysis under integration-17/native-cpu/per-tid-recovery/. Support independently
+reviews sample conservation/binary/debug binding, coverage and inclusive/exclusive
+claims. No package installation, source rebuild, new recording or SVG was needed.
+Old17 predates18/19/20 changes; recovered required semantic/map work alone does not
+justify replacement algorithms or establish current20 bottlenecks.
+
+Root authorized scanner to prepare ONE current20 CPU recording with the exact frozen
+build-2 Native CLI, default runtime,99Hz userCPU and32768B DWARF snapshots. No rebuild,
+new viewer or private instrumentation. Capture only after acceptance/gates; root will
+run reviewed recipe, keep complete diagnostics/source/binary/config guards, then
+recover dominant workers perTID and assess current source-grounded remaining costs.
+Profiled elapsed time is not a speed benchmark. Continue implementation when concrete
+faithful opportunities are established; do not invent missing Go optimizations.
+
+## Preserved rejected experiment and runtime decision
+
+Symbol arena experiment remains isolated in /home/greg/projects/typescript-dotnet-symbol-arena,
+branch perf/symbol-arena commit953de084. Do not adopt source or run its compiler as main.
+Full owner/consumer migration reviewed, boxed TypeResolution identity defect fixed.
+Candidate allocations11,545,083,560B (+8.15%vs19); paired wallmedians18.43vs16.81s,
+CPU70.285vs68.425,RSS9,908,206vs8,701,422KiB;2observations each, no statistical claim.
+Wider managed locations outweighed fewer separate objects. REJECTED ADOPTION; broad
+acceptance deliberately not run, no correctness completion claim. Exact evidence and
+review preserved in experiment artifacts/symbol-arena/assessment.json and main proof.
+No blind arena packing variants or reopened accepted families.
+
+Default adaptive ServerGC retained: prior fixed16 screen's6.93%medianwall benefit
+cost16.90%RSS in2runs; fixedHeapCount also changes DATAS/conserve/affinity policies.
+No new GC policy sweep without concrete reason. Latest cumulative allocation ratio is
+~1.18xGo, NOT5x; old sampled managed vsGoheap totals were not comparable exact measures.
 
 # Allocation layout and current CPU follow-through accepted (2026-10-11)
 

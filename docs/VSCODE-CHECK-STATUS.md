@@ -11,6 +11,79 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Integration20: callback/setup completion and Native throughput policy (accepted)
+
+The complete batch has passed integrated acceptance. It closes synchronous
+narrowing callback captures through existing explicit-state/static APIs, replaces
+unused work-group Tasks with standard context-flowing thread-pool work items, and
+uses Go-sized checker association buffers and map hints. Worker count, FENNEL
+association, recursion/failure handling, source algorithms and expected results stay
+unchanged. Existing checker-pool tests now use Slice directly; production wrappers
+were not added just for tests.
+
+The compiler CLI now selects Native AOT `OptimizationPreference=Speed` and
+`UseSizeOptimizedLinq=false`, retaining the default instruction set and adaptive
+Server GC. Actual publication confirms `--Ot`, both LINQ feature settings and the
+linked10.0.12 `VxsortEnabled` runtime archive. The installed Native AOT package has
+no MIBC input; the true PGO preference property does not establish PGO consumption.
+These standard settings trade native code size for throughput; no isolated benefit
+is inferred from the combined batch.
+
+The frozen production compiler is
+`8eacff5cb69d7a5cac6d9bf5c607b5087dd09c7f662a33c49461cae036f1d6db`.
+Actual Linux x64 Native AOT VSCode FIRST passed with all ten complete diagnostic
+DTOs exact, expected exit1 and empty stderr:16.82wall/71.11CPU seconds and
+8,166,848KiB peakRSS. One observation does not establish a repeatable speedup.
+The separately instrumented public cumulative counter measured10,594,962,224B,
+79,979,560B (0.7492%) below saved19. The saved pinned Go counter is8,992,138,304B,
+so the current Native/Go accounting ratio is1.178247. These are cumulative heap
+bytes, not object counts or RSS; runtime accounting and startup boundaries differ.
+
+Acceptance passed **1,721 selected managed outcomes**: Checker832, TypeSystem84,
+Parser695, additional NoEmit101 and existing Program9 (checker-pool7/construction2).
+These have mixed original upstream, port/shared and additional provenance. Actual
+Linux x64 Native AOT passed **15,304 complete original no-emit records** in120 chunks,
+**3,153 original foundation assertions**,87 shared foundation controls,20 original
+utility observations and the same Program9. Every original no-emit row was compared
+in full against the unchanged reference, including union ordering and parent
+observations. Earlier full40,451 managed qualification is retained as historical16
+evidence; it was not repeated or relabeled as executed under20.
+
+All four validator publications consumed the frozen compiler and freshly built
+application dependencies, verified against their actual ILC response references.
+They use `Speed` and `UseSizeOptimizedLinq=false`, while retaining their existing GC
+settings. All946 source/harness/fixture inputs and242 production/generator inputs
+remained unchanged. Independent final evidence review found no discrepancy.
+Twelve existing nullable warnings in cold Parser/Checker observers remain distinct
+from the production build's zero warnings/errors. Build-1's sole static-helper
+qualification error and its reviewed finite correction remain preserved; build-2
+and all behavioral stages passed without weakening assertions or expected outputs.
+
+The [durable proof](../validation/results/allocation-rollout-verified.json) records
+the separate snapshot and counter boundaries. [Final selected results](../artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/selected-result.json),
+[full original Native results](../artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/native-noemit/result.json)
+and [independent acceptance review](../artifacts/vscode-allocation-rollout/integration-20/build-2/regressions/verification-peer-review.json)
+bind the actual counts, source hashes and consumed assemblies. Exact restore,
+dependency-build, test, publication and Native commands are preserved in each
+stage's result and the [reviewed recipe](../artifacts/vscode-allocation-rollout/integration-20/regressions/run-selected.py).
+It requires a fresh integration output and explicit release; do not overwrite this
+completed run. Production remains excluded from the normal/RID harness rebuilds.
+
+For standalone original managed/Native corpus reproduction, use the existing
+[no-emit guide](./CHECKER-NOEMIT-REPRODUCTION.md), including its five managed
+environment variables and prepared tracked/generated data. This selected managed
+run excluded `OriginalNoEmitDiagnosticsQueriesAndInvariants`; the full original
+corpus ran under actual Native AOT once. Native validator publication uses the
+existing command plus `-p:BuildProjectReferences=false`,
+`-p:OptimizationPreference=Speed` and `-p:UseSizeOptimizedLinq=false` after explicit
+dependency compilation. Saved correctness durations are not speed measurements.
+
+No new CPU or sampled-allocation capture is attributed to20. Recovery of old17
+Native worker stacks is a separate investigation pending independent review; it
+does not establish current20 compiler/GC/lock costs. Go performance parity remains
+unproven, and the combined source/publication-policy observations do not isolate
+which change caused the resource difference.
+
 ## Symbol-arena experiment: not adopted (2026-10-11)
 
 A complete isolated experiment on `perf/symbol-arena` (preserved as `953de084`) replaced individually allocated

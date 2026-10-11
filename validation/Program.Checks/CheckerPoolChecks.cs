@@ -48,12 +48,12 @@ public static class CheckerPoolChecks
                 Policy();
                 break;
             case "TestGetCheckerAssociationOrder":
-                Check.Sequence(CheckerPool.getCheckerAssociationOrder([5, 10, 7, 2], [true, false, false, true], true), [1, 2, 0, 3], "prioritized order");
-                Check.True(CheckerPool.getCheckerAssociationOrder([5], [false], false) is null, "unprioritized nil order");
+                Check.Sequence(CheckerPool.getCheckerAssociationOrder(Slice<long>.FromArray([5, 10, 7, 2]), Slice<bool>.FromArray([true, false, false, true]), true).AsSpan().ToArray(), [1, 2, 0, 3], "prioritized order");
+                Check.True(CheckerPool.getCheckerAssociationOrder(Slice<long>.FromArray([5]), Slice<bool>.FromArray([false]), false).IsNil, "unprioritized nil order");
                 break;
             case "TestGetCheckerAssociationWeights":
-                Check.Sequence(CheckerPool.getCheckerAssociationWeights([100, 50, 25], [0, 1, 3]), [100L, 93L, 154L], "normalizes import work");
-                Check.Sequence(CheckerPool.getCheckerAssociationWeights([100, 50, 25], [0, 0, 0]), [100L, 50L, 25L], "no imports");
+                Check.Sequence(CheckerPool.getCheckerAssociationWeights(Slice<long>.FromArray([100, 50, 25]), Slice<long>.FromArray([0, 1, 3])).AsSpan().ToArray(), [100L, 93L, 154L], "normalizes import work");
+                Check.Sequence(CheckerPool.getCheckerAssociationWeights(Slice<long>.FromArray([100, 50, 25]), Slice<long>.FromArray([0, 0, 0])).AsSpan().ToArray(), [100L, 50L, 25L], "no imports");
                 break;
             case "TestGetCheckerAssociations":
                 Associations();
@@ -76,21 +76,23 @@ public static class CheckerPoolChecks
             Check.Equal(CheckerPool.getCheckerAssociationPolicy(row.Total, row.Declaration, row.Count), row.Want, row.Name);
     }
 
-    private static List<List<int>?> Disconnected(int count) => Enumerable.Repeat<List<int>?>(null, count).ToList();
+    private static Slice<Slice<int>> Disconnected(int count) => Slice<Slice<int>>.Make(count);
 
     private static void Associations()
     {
-        Check.True(CheckerPool.getCheckerAssociationsInOrder(null, null, null, 4, CheckerPool.checkerAssociationBalancePenaltyMultiplier) is null, "empty nil inputs");
-        Check.Sequence(CheckerPool.getCheckerAssociationsInOrder([1, 1, 1, 1, 1, 1], Disconnected(6), null, 3, 1), [0, 1, 2, 0, 1, 2], "balances disconnected files");
-        Check.Sequence(CheckerPool.getCheckerAssociationsInOrder([1, 3, 2], Disconnected(3), null, 2, 1), [0, 1, 0], "uses program order");
+        Check.True(CheckerPool.getCheckerAssociationsInOrder(default, default, default, 4, CheckerPool.checkerAssociationBalancePenaltyMultiplier).IsNil, "empty nil inputs");
+        Check.Sequence(CheckerPool.getCheckerAssociationsInOrder(Slice<long>.FromArray([1, 1, 1, 1, 1, 1]), Disconnected(6), default, 3, 1).AsSpan().ToArray(), [0, 1, 2, 0, 1, 2], "balances disconnected files");
+        Check.Sequence(CheckerPool.getCheckerAssociationsInOrder(Slice<long>.FromArray([1, 3, 2]), Disconnected(3), default, 2, 1).AsSpan().ToArray(), [0, 1, 0], "uses program order");
         Check.Sequence(CheckerPool.getCheckerAssociationsInOrder(
-            [1, 1, 1, 1, 1, 1],
-            [[1, 2], [0, 2], [0, 1], [4, 5], [3, 5], [3, 4]],
-            null, 2, 1), [0, 0, 0, 1, 1, 1], "keeps dense components together");
-        List<long> weights = [8, 7, 6, 5, 4, 3, 2, 1];
-        List<int> associations = CheckerPool.getCheckerAssociationsInOrder(weights, Disconnected(weights.Count), null, 3, 1)!;
+            Slice<long>.FromArray([1, 1, 1, 1, 1, 1]),
+            Slice<Slice<int>>.FromArray([
+                Slice<int>.FromArray([1, 2]), Slice<int>.FromArray([0, 2]), Slice<int>.FromArray([0, 1]),
+                Slice<int>.FromArray([4, 5]), Slice<int>.FromArray([3, 5]), Slice<int>.FromArray([3, 4])]),
+            default, 2, 1).AsSpan().ToArray(), [0, 0, 0, 1, 1, 1], "keeps dense components together");
+        Slice<long> weights = Slice<long>.FromArray([8, 7, 6, 5, 4, 3, 2, 1]);
+        Slice<int> associations = CheckerPool.getCheckerAssociationsInOrder(weights, Disconnected(weights.Length), default, 3, 1);
         long[] loads = new long[3];
-        for (int i = 0; i < associations.Count; i++) loads[associations[i]] += weights[i];
+        for (int i = 0; i < associations.Length; i++) loads[associations[i]] += weights[i];
         for (int i = 0; i < loads.Length; i++) Check.True(loads[i] <= 13, "weighted balance cap checker " + i);
     }
 }

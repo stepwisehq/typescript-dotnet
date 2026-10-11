@@ -1433,7 +1433,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Union) != 0)
         {
             var u = t.AsUnionType();
-            return u.regularType ??= mapType(t, getRegularTypeOfLiteralType);
+            return u.regularType ??= mapType(t, this, static (type, checker) => checker.getRegularTypeOfLiteralType(type));
         }
 
         return t;
@@ -1505,7 +1505,7 @@ public sealed partial class Checker
         var key = new CachedTypeKey(CachedTypeKind.LiteralUnionBaseType, t.id);
         if (cachedTypes.TryGetValue(key, out var result))
             return result;
-        result = mapType(t, getBaseTypeOfLiteralType);
+        result = mapType(t, this, static (type, checker) => checker.getBaseTypeOfLiteralType(type));
         cachedTypes[key] = result;
         return result;
     }
@@ -1523,11 +1523,12 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.BooleanLiteral) != 0 && isFreshLiteralType(t))
             return booleanType;
         if ((t.flags & TypeFlags.Union) != 0)
-            return mapType(t, getWidenedLiteralType);
+            return mapType(t, this, static (type, checker) => checker.getWidenedLiteralType(type));
         return t;
     }
 
     private Type mapType(Type t, Func<Type, Type> f) => mapTypeEx(t, f, false);
+    private Type mapType<TState>(Type t, TState state, Func<Type, TState, Type> f) => mapTypeEx(t, state, f, false);
     private Type mapTypeEx(Type t, Func<Type, Type> f, bool noReductions) =>
         mapTypeEx(t, f, static (s, callback) => callback(s), noReductions);
 
@@ -4254,7 +4255,7 @@ public sealed partial class Checker
                             {
                                 links.flags |= NodeCheckFlags.InCheckIdentifier;
                                 var parentType = getTypeForBindingElementParent(parent, CheckMode.Normal);
-                                var parentTypeConstraint = parentType != null ? mapType(parentType, getBaseConstraintOrType) : null;
+                                var parentTypeConstraint = parentType != null ? mapType(parentType, this, static (type, checker) => checker.getBaseConstraintOrType(type)) : null;
                                 links.flags &= ~NodeCheckFlags.InCheckIdentifier;
                                 if (parentTypeConstraint != null && (parentTypeConstraint.flags & TypeFlags.Union) != 0 &&
                                     !(Ast.IsParameterDeclaration(rootDeclaration) && isSomeSymbolAssigned(rootDeclaration)))
@@ -4283,7 +4284,7 @@ public sealed partial class Checker
                                 if (context != null)
                                     mapper = context.nonFixingMapper;
                                 var restType = this.getReducedApparentType(this.instantiateType(this.getTypeOfSymbol(contextualSignature.parameters[0]), mapper));
-                                if ((restType.flags & TypeFlags.Union) != 0 && everyType(restType, isTupleType) && !Core.Some(fn.Parameters(), this.isSomeSymbolAssigned))
+                                if ((restType.flags & TypeFlags.Union) != 0 && everyType(restType, isTupleType) && !Core.Some(fn.Parameters(), this, static (parameter, checker) => checker.isSomeSymbolAssigned(parameter)))
                                 {
                                     var narrowedType = this.getFlowTypeOfReferenceEx(fn, restType, restType, null, getFlowNodeOfNode(location));
                                     var index = GoSlices.Index(fn.Parameters(), declaration) - (Ast.GetThisParameter(fn) != null ? 1 : 0);
@@ -7749,7 +7750,9 @@ public sealed partial class Checker
         if ((facts & targetFacts) == 0)
             return t;
         var emptyAndOther = getUnionType((ReadOnlySpan<Type>)[emptyObjectType, otherType]);
-        return mapType(t, u => hasTypeFacts(u, targetFacts) ? getIntersectionType((ReadOnlySpan<Type>)[u, (facts & includesFacts) == 0 && hasTypeFacts(u, otherFacts) ? emptyAndOther : emptyObjectType]) : u);
+        return mapType(t, (checker: this, targetFacts, facts, includesFacts, otherFacts, emptyAndOther), static (u, state) =>
+            state.checker.hasTypeFacts(u, state.targetFacts) ? state.checker.getIntersectionType((ReadOnlySpan<Type>)[u,
+                (state.facts & state.includesFacts) == 0 && state.checker.hasTypeFacts(u, state.otherFacts) ? state.emptyAndOther : state.checker.emptyObjectType]) : u);
     }
 
     private Type recombineUnknownType(Type t) => t == unknownUnionType ? unknownType : t;
@@ -9171,7 +9174,7 @@ public sealed partial class Checker
         return null;
     }
 
-    private Type extractTypesOfKind(Type t, TypeFlags kind) => filterType(t, constituent => (constituent.flags & kind) != 0);
+    private Type extractTypesOfKind(Type t, TypeFlags kind) => filterType(t, kind, static (constituent, flags) => (constituent.flags & flags) != 0);
     private string getPropertyNameFromIndex(Type indexType, Node accessNode) =>
         getPropertyNameValueFromIndex(indexType, accessNode).Materialize();
     private ByteStringValue getPropertyNameValueFromIndex(Type indexType, Node accessNode)
@@ -15921,9 +15924,9 @@ public sealed partial class Checker
             var origin = t.AsUnionType().origin;
             if ((((origin != null) && ((origin.flags & TypeFlags.Union) != 0)) && containsType(origin.Types(), targetType)))
             {
-                return this.filterType(t, (t2) =>
+                return this.filterType(t, targetType, static (t2, state) =>
                 {
-                    return (t2 != targetType);
+                    return (t2 != state);
                 });
             }
         }
@@ -18440,14 +18443,17 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static bool everyType(Type t, Func<Type, bool> f)
+    private static bool everyType(Type t, Func<Type, bool> f) =>
+        everyType(t, f, static (type, callback) => callback(type));
+
+    private static bool everyType<TState>(Type t, TState state, Func<Type, TState, bool> f)
     {
         if (((t.flags & TypeFlags.Union) != 0))
         {
-            return Core.Every(t.Types(), f);
+            return Core.Every(t.Types(), state, f);
         }
 
-        return f(t);
+        return f(t, state);
     }
 }
 
@@ -21124,7 +21130,7 @@ public sealed partial class Checker
 
             case true when ((t.flags & TypeFlags.Union) != 0):
                 {
-                    return this.mapType(t, this.getBaseTypeOfLiteralTypeForComparison);
+                    return this.mapType(t, this, static (type, checker) => checker.getBaseTypeOfLiteralTypeForComparison(type));
                 }
         }
 
@@ -21136,9 +21142,9 @@ public sealed partial class Checker
 {
     private Type removeDefinitelyFalsyTypes(Type t)
     {
-        return this.filterType(t, (t2) =>
+        return this.filterType(t, this, static (t2, state) =>
         {
-            return this.hasTypeFacts(t2, TypeFacts.Truthy);
+            return state.hasTypeFacts(t2, TypeFacts.Truthy);
         });
     }
 }
@@ -21147,7 +21153,7 @@ public sealed partial class Checker
 {
     private Type extractDefinitelyFalsyTypes(Type t)
     {
-        return this.mapType(t, this.getDefinitelyFalsyPartOfType);
+        return this.mapType(t, this, static (type, checker) => checker.getDefinitelyFalsyPartOfType(type));
     }
 }
 
@@ -22491,7 +22497,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
             return esSymbolType;
         if ((t.flags & TypeFlags.Union) != 0)
-            return mapType(t, getWidenedUniqueESSymbolType);
+            return mapType(t, this, static (type, checker) => checker.getWidenedUniqueESSymbolType(type));
         return t;
     }
 
@@ -39865,8 +39871,8 @@ public sealed partial class Checker
 {
     private bool isValidSpreadType(Type t)
     {
-        var s = this.removeDefinitelyFalsyTypes(this.mapType(t, this.getBaseConstraintOrType));
-        return (((s.flags & ((((TypeFlags.Any | TypeFlags.NonPrimitive) | TypeFlags.Object) | TypeFlags.InstantiableNonPrimitive))) != 0) || (((s.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(s.Types(), this.isValidSpreadType)));
+        var s = this.removeDefinitelyFalsyTypes(this.mapType(t, this, static (type, checker) => checker.getBaseConstraintOrType(type)));
+        return (((s.flags & ((((TypeFlags.Any | TypeFlags.NonPrimitive) | TypeFlags.Object) | TypeFlags.InstantiableNonPrimitive))) != 0) || (((s.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Every(s.Types(), this, static (type, checker) => checker.isValidSpreadType(type))));
     }
 }
 
