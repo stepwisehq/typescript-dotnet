@@ -1,10 +1,10 @@
 {
-  "status": "passed-integrated-correctness-and-measurement",
+  "status": "passed-comprehensive-rollout-and-reviewed-latin1-follow-through",
   "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
   "implementationCheckpoint": "c1efeb9",
   "platform": "Linux x64 Native AOT; .NET SDK10.0.401/runtime10.0.12; ServerGC",
   "compilerSha256": "c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c",
-  "scope": "Integrated comprehensive Go-faithful allocation rollout through frozen integration16; does not establish Go performance parity or exhaustive correctness. Final cold-only observer/control successor is included. Follow-up Latin1 guard boxing discovered by final profile is separate active work.",
+  "scope": "Comprehensive established Go-faithful allocation rollout through accepted integration16, followed by independently reviewed shared Latin1 guard closure qualified by integration17. Per-snapshot evidence remains distinct; no Go performance parity or exhaustive correctness claim.",
   "managed": {
     "uniquePassingTests": 40451,
     "fullRunPassed": 40434,
@@ -68,8 +68,7 @@
     "No complete upstream emit/services regression claim; current whole-checker no-emit contract retained.",
     "Cold dependency build succeeded with12nullable warnings at reviewed unchanged observer sites, separately classified; production0warnings/errors.",
     "Commit-generated metadata churn caused2publication identity failures retained; exact frozen library restored, standard BuildProjectReferences=false after dependency compile avoids production rebuild.",
-    "Wider Memory locations and standard collection layouts remain runtime costs; ConcurrentBag retains idle owners where Go sync.Pool may discard at GC. Required source clones, detached outputs and escaping callbacks remain.",
-    "Final profile identified roughly13MB sampled Char boxing at shared generic Latin1 range guards. A separate source-faithful whole-guard-family continuation is in progress; this proof does not qualify its later source."
+    "Wider Memory locations and standard collection layouts remain runtime costs; ConcurrentBag retains idle owners where Go sync.Pool may discard at GC. Required source clones, detached outputs and escaping callbacks remain."
   ],
   "evidence": {
     "artifacts/vscode-allocation-rollout/integration-16/regressions/acceptance-summary.json": {
@@ -95,6 +94,69 @@
     },
     "artifacts/vscode-allocation-rollout/integration-16/completion-review-support.json": {
       "sha256": "82784bf9545fdd6aa3b07d3e02671625838c2e7a88799745e413b89b3e710928"
+    }
+  },
+  "successor": {
+    "scope": "All14 generic Latin1 guards across10 production files replaced by one cached standard SearchValues<char>; one existing shared control body extended. Algorithms, strict admission, legacy fallback, equality/hash and publication ownership preserved.",
+    "compilerSha256": "d12c2ce2e799ae728a7597ffbabb21284732b82f5fde4e8f87a785cfe7808f16",
+    "nativeHashes": {
+      "artifacts/vscode-allocation-rollout/integration-17/native/cli/tscheck": "26003fc2f4f423d51c72c2771fb183a64b2ae6be84528ee3675769adc9304369",
+      "artifacts/vscode-allocation-rollout/integration-17/regressions/native/Foundation.Validation/Foundation.Validation": "2faf7d8aa152a26c46115301eb4abc95481cb8e08bdfa58c1b9040e7801f8954",
+      "artifacts/vscode-allocation-rollout/integration-17/regressions/native/Program.Validation/Program.Validation": "2536be313044e046ca3eb94800a43fa50fa5b1dee7938ee3ddc3fd2e2d985c6b",
+      "artifacts/vscode-allocation-rollout/integration-17/regressions/native/Checker.NoEmit.Validation/Program.Checks": "870928c3b3ffe9ffc3aed80a659affbdefbc1743a51f31a34a70600cf4777405",
+      "artifacts/vscode-allocation-rollout/integration-17/regressions/native/Scanner.Validation/Scanner.Validation": "a814d0fb49617fc2b07f409d97b1bc056f9b00c9e8335c6c596cc5a48d0bce2c"
+    },
+    "managedAffectedTotal": 4741,
+    "managedAffectedCounts": {
+      "Parser.Tests": {
+        "total": 635,
+        "passed": 635,
+        "failed": 0,
+        "notExecuted": 0
+      },
+      "Scanner.Tests": {
+        "total": 3842,
+        "passed": 3842,
+        "failed": 0,
+        "notExecuted": 0
+      },
+      "Program.Tests": {
+        "total": 264,
+        "passed": 264,
+        "failed": 0,
+        "notExecuted": 0
+      }
+    },
+    "nativeAffected": {
+      "foundationOriginalAssertions": 3153,
+      "byteTextHashSharedControls": 55,
+      "programControls": 78,
+      "filenameControls": 11,
+      "scannerCompleteCorpusRows": 1276,
+      "sharedGuardExtension": "Existing raw-string-equivalence body covers all256/empty/>FF and paired/unpairedsurrogates, stricttypedstring/descriptoringress, ordinalkeyhashcoherence, fixedconcat/builderlegacyfallback and publishedprefixlifetime; sixcasecount unchanged."
+    },
+    "fullNativeOriginalNoEmitCompleteJsonExact": 15304,
+    "nativeVSCode": {
+      "wallSeconds": 19.83,
+      "cpuSeconds": 72.27,
+      "maxRssKiB": 9441460,
+      "expectedExitCode": 1,
+      "completeDiagnosticsExact": 10
+    },
+    "retainedEvidence": "Integration16 full40,451 managed and83 Native commands retained; not claimed reexecuted under17. Integration16 allocation profile excludes17; no repeat profile or isolated savings claim.",
+    "evidence": {
+      "artifacts/vscode-allocation-rollout/integration-17/boundary-summary.json": {
+        "sha256": "9762a5ffd089cc9c340e2b5b243de882aafcc8b4fabe3e76a87b92bc59e1800e"
+      },
+      "artifacts/vscode-allocation-rollout/integration-17/regressions/native-noemit/result.json": {
+        "sha256": "30f859a31289ddd0cd959d1ebe88594f7118da6b8316c209be3376b484be07fc"
+      },
+      "artifacts/vscode-latin1-search-guard/build/support-peer-review.json": {
+        "sha256": "90722255fdc16a6ca2dec9945ff8be62922f44ab2af16b8e68833389cc5d5535"
+      },
+      "artifacts/vscode-latin1-search-guard/controls/support-peer-review.json": {
+        "sha256": "731947a98f50b7d095a93910d59c6ab2db0ce745f9fdca7ba7a4357c0eda7572"
+      }
     }
   }
 }

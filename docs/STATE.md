@@ -1,95 +1,78 @@
-# Active performance work (2026-10-11)
+# Comprehensive allocation rollout accepted (2026-10-11)
 
-**Resume here:** comprehensive allocation integration16 is accepted with independent
-review, actual Linux x64 Native AOT and all retained regression channels. Implementation
-checkpoint `c1efeb9` plus the reviewed three-file cold successor forms that snapshot.
-The [durable result](../validation/results/allocation-rollout-verified.json) binds its
-exact compiler/source and finite evidence. Go performance parity is NOT established.
-**Continue autonomously:** final profile identified one real additional adaptation
-cost, generic Latin1 range checks boxing chars. Scanner owns the complete shared
-Concat/builder/hash/typed-ingress guard path; support independently reviews it.
-No per-local-change tests/profiles. Root owns checkpoint, integration and current docs;
-verifier is idle after accepted16 and can own the next integration when source ready.
+**Resume here:** the comprehensive Go-faithful allocation rollout and its final
+profile-driven Latin1 guard continuation are complete, independently reviewed and
+verified on actual Linux x64 Native AOT. Source implementation checkpoint `c1efeb9`
+and broad acceptance checkpoint `4d058ea` precede the final guard delivery commit.
+The [durable proof](../validation/results/allocation-rollout-verified.json),
+[assessment/reproduction](./VSCODE-CHECK-STATUS.md#comprehensive-rollout-integrated-results-2026-10-11)
+and [source mapping](../source-map.json) distinguish both accepted snapshots.
+**Go performance parity is NOT achieved.** Completion means the established
+allocation techniques were rolled out through connected owners and consumers,
+not that every .NET allocation disappears or all future performance work is done.
+No implementation/test/profile process remains active after final acceptance.
 
-## Current evidence and next actions
+## Final accepted evidence
 
-- Exact accepted compiler SHA256:
-  `c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c`.
-  Production0warnings/errors,242 source/generator inputs; final587 harness/production
-  guards unchanged. All17 Native executables consumed this exact library.
-- Actual Native VS Code: **22.12s wall /77.65s CPU /9,976,960KiB peak RSS**,
-  expected exit1, all ten complete diagnostics/available pinned chains exact.
-- Managed **40,451 unique passing outcomes**: full12 suite run40,434pass/17cold
-  failures, independently reviewed cold-only repair followed by264Program+11filename
-  passing reruns. Both full runs matched all15,304 original noemit complete outputs.
-  Composite provenance preserves initial failures; not one fictional all-green run.
-- Actual Native full15,304 original noemit PASSED; scanner/parser/binder fresh pinned
-  comparisons each17,723inputs PASSED; all83 semantic/control commands and shared
-  foundation/Slice controls PASSED. Nine supported disk CLI cases passed. A
-  ListFilesOnly-via-config attempt correctly failed6266; its public override is
-  managed-only, with no new CLI seam or changed expectation.
-- ONE final frozen16 managed capture: **11,639,613,928B /10.840235GiB sampled**,
-  −2.111860%vs14, −69.175587%vs original matched ServerGC.99,239typed events,
-  2missingstacks; zero lost/truncated/overflow. Exact workload diagnostics and guards.
-  Sampled CoreCLR values are not exact Native AOT/Go bytes or throughput measurements.
-- Independent completion/evidence review found no unresolved algorithm omission in
-  the reviewed owner families. Residual profile source inspection identified char
-  boxing at generic Latin1 guards (~12.97MB): scanner assesses/implements a simple
-  shared .NET alternative only if semantics fit. No custom SIMD/unsafe/redesign.
-  Other large residuals are actual canonical records, required results/copies and
-  documented wider runtime storage. Do not infer all remaining allocations removable.
-- Root persists accepted16 separately before later production integration. Do not
-  stop at that checkpoint. Coordinate subsequent build→Native VSCode first; choose
-  meaningful regression reuse based on concrete shared-helper change risk. No repeat
-  allocation capture for this small continuation without a new material reason.
+- Latest integration17 Native VS Code: **19.83s wall /72.27s CPU /9,441,460KiB
+  peak RSS**, expected exit1, all ten complete diagnostics/available pinned chains
+  exact, empty stderr and clean source/config/binary guards. One observation;
+  saved pinned Go9.61s remains faster. No isolated speedup claim.
+- Latest production SHA256:
+  `d12c2ce2e799ae728a7597ffbabb21284732b82f5fde4e8f87a785cfe7808f16`.
+  Native CLI `26003fc2f4f423d51c72c2771fb183a64b2ae6be84528ee3675769adc9304369`.
+  Production zero warnings/errors,242 guarded inputs; final587 harness/production
+  inputs and five Native binaries unchanged across verification.
+- Integration17 affected managed **4,741pass** (Scanner3842,Program264,
+  selectedParser635), actual Native foundation3153+55text/hash controls,
+  Program78+11filename and Scanner1276complete rows pass. Full original
+  **15,304 Native noemit records pass**, including ordering/parent relationships;
+  complete aggregate output hash equals integration16. No failures/skips in selected
+  managed cases. Eleven reviewed cold nullable warnings remain, separately from
+  production zero warnings. Source/control independent reviews closed.
+- Retained integration16 broader evidence: **40,451 unique passing managed outcomes**,
+  composed of full12-suite40,434pass/17cold failures and reviewed264Program+11filename
+  reruns. Original failures preserved; not one fictitious all-green run. Native
+  original15304, fresh scanner/parser/binder17,723inputs each, all83semantic/control
+  commands and direct/shared foundation/Slice controls passed. These were not all
+  reexecuted under17. Nine supported disk CLI cases pass; command-line-only
+  ListFilesOnly config transport correctly failed6266, with public override managed-only.
+- ONE final comprehensive allocation capture belongs to **integration16/c20**,
+  before the small17guard successor: **11,639,613,928B /10.840235GiB sampled**,
+  −2.111860%vs14 and −69.175587%vs original matched ServerGC.99,239typed events,
+  2missingstacks; zero lost/truncated/overflow. Exact diagnostics/guards. No new
+  capture for the small successor. Sampled CoreCLR weights are not exact Native
+  AOT/Go bytes, retained memory or throughput. Corrected14 map subtotal includes
+  VarianceLinks543,176B; historical total is unchanged.
 
-## Preserved evidence and limitations
+## What was closed and what remains
 
-Initial full12 managed suites passed39,788/40,451; all15,304 original noemit records
-already matched. Failures exposed cold receiver gaps and two real production bugs:
-optional alternate-comparer fallback and bundled partial-field initialization order.
-Grouped fixes are independently reviewed; original fixtures/diagnostic expectations
-were not changed. Authored slice/filename controls now observe source-relevant
-backing/content relationships rather than boxed/projected CLR identity. Final17
-cold failures were nil-vs-empty supplemental outputs and exact carrier classification.
-The original failure logs and three-file successor review remain available.
+Borrowed UTF8/WTF8 source/text/key/path ownership, retained/scratch Slice headers,
+stateful immediate callbacks, embedded records/link storage, actual Go parser/binder/
+parse-task reuse, shared spelling buffers and fixed-concat allocation are implemented
+through their identified consumers. Actual Clone/Clip/detach, owned changed outputs
+and retained closures remain. All14 final Latin1 guards use standard cached
+SearchValues with full U+0000..00FF membership; existing strict rejection and
+legacyUnicode/surrogate behavior remain. One existing shared control body covers
+raw-string boundaries/hashing/output lifetime with all original assertions retained.
 
-One ephemeral traversal compiled all39 existing harness projects. Final frozen
-no-reference dependency refresh passed30.62s;12 cold nullable-flow warnings were
-classified by the verifier, with no production warning or newly unsafe receiver.
-A commit during publication changed generated InformationalVersion and SourceLink;
-two hash-guard failures stopped before behavioral execution. Pinning SourceRevisionId
-alone was insufficient. Exact frozen DLL/PDB reuse, explicit dependency compilation,
-and `BuildProjectReferences=false` resolved it. Preserve that reproduction recipe.
+Independent source-role review found no further concrete missing Go reuse/ownership
+path among dominant measured roles. Significant residual costs are canonical Symbol/
+AST/type records, actual arrays/source buffers, standard dictionary layout and wider
+Memory locations. ConcurrentBag does not reproduce sync.Pool GC eviction; idle
+parsers retain their scanner and previous source. Public symbol packing/custom
+handles/tables were not introduced to chase allocation equality. Any subsequent
+performance work should start from these measured remaining roles and preserved
+source requirements, rather than restart local changes or undo required copies.
 
-Historical pre-final integration14 capture: **11,890,729,536 bytes /
-11.074105 GiB sampled allocation weight**, −1.675614% vs12 and −68.510575% vs the
-original matched ServerGC capture. All101,566 events typed/stacked, no loss/truncation/
-overflow, exact diagnostics. Strings349.8→61.2MB, Byte[]246.0→337.2MB. This capture
-excludes subsequent owner pools/fixed concatenation/callbacks and runtime fixes.
-Sampled CoreCLR weights are not exact Native AOT or Go allocation totals.
-
-Integration15 actual Native VS Code was18.02s/74.72sCPU/10,049,996KiB;14 was
-19.23s/80.76sCPU/9,242,060KiB. These individual observations do not establish a
-causal slowdown or speedup. Saved pinned Go timing was9.61s wall; parity is not met.
-
-Implemented continuation and source-family ACKs are recorded in
-[source-map.json](../source-map.json), [the optimization reference index](./VSCODE-CHECK-STATUS.md)
-and artifacts/vscode-{typed-path-values,path-semantic-consumers,typed-path-consumers,
-glob-borrowed-values,spelling-borrowed-values,checker-spelling-values,parser-pool,
-source-owner-reuse,fixed-byte-concat,checker-immediate-predicates}/build.
-Required Clone/Clip/detach, canonical records, source buffers and escaping callbacks
-remain. ConcurrentBag parser reuse preserves the scanner/last source until reuse,
-where Go sync.Pool may discard on GC. Internal Memory location slots are wider than
-Go pointers; named link buckets did not uniformly shrink. No concrete omitted
-allocation family remains identified by the completed source reviews; this does not
-prove identical runtime allocation or exhaustive source correctness.
-
-Earlier checkpoints: `cae7ee5` qualified integration12; `b84b436` constituent/parser
-scratch, `d39e05c` AST slices/arenas, `faad6ec` checker text, `5e960cd` AST/binder text,
-`d6a3cb5` callback/runes, `146839d` borrowed tokens/flow/conditional targets,
-`08d2294` path/ASCII/singleton work. Older sections below are historical; this section
-and the current operating procedure supersede their next-action instructions.
+Follow the current SOP in [START-HERE.md](../START-HERE.md) after compaction.
+Use GPT-6.1 Sol implementation/review with coordinator-owned integration. One source
+family reviewer is enough; actionable child handoffs use followup_task. Keep build
+metadata frozen during publication: SourceRevisionId alone does not freeze SourceLink;
+use frozen artifacts with BuildProjectReferences=false after explicit dependency
+compilation, or commit before publishing. Source/confidence evidence and pending work
+must remain distinct. Older sections below are historical and do not restart accepted
+work. No new emit or language-service campaign is authorized by this checkpoint.
 
 ## Recovery after VM interruption (2026-10-10)
 

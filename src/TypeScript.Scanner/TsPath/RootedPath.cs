@@ -23,7 +23,7 @@ public readonly partial record struct RootedPath
     public static RootedPath FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }
@@ -80,7 +80,7 @@ public readonly partial record struct RootedFilePath
     public static RootedFilePath FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }
@@ -268,7 +268,7 @@ public readonly partial record struct RootedDirectoryPath
     public static RootedDirectoryPath FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }
@@ -401,7 +401,7 @@ public readonly partial record struct FileNameStem
     public static FileNameStem FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }

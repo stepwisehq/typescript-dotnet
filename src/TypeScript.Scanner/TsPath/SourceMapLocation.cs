@@ -23,7 +23,7 @@ public readonly partial record struct SourceMapLocation
     public static SourceMapLocation FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }

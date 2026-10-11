@@ -63,7 +63,7 @@ public readonly struct ByteStringKey : IEquatable<ByteStringKey>, IComparable<By
         if (key.IsNull) throw new ArgumentNullException(nameof(key));
         if (key.IsBytes) return unchecked((int)XxHash32.HashToUInt32(key.ByteSpan));
         var chars = key.CharSpan;
-        if (chars.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(chars))
             return string.GetHashCode(chars, StringComparison.Ordinal);
         byte[]? rented = null;
         Span<byte> bytes = chars.Length <= 256 ? stackalloc byte[chars.Length]

@@ -24,7 +24,7 @@ public readonly partial record struct PathKey
     {
         ArgumentNullException.ThrowIfNull(bytes);
         // pathkey.go's string key uses raw bytes; this managed ingress guard accepts all 256 byte values.
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }

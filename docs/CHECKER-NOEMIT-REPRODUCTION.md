@@ -55,7 +55,9 @@ plus 23 authored shared slice-semantics cases from the subsequent inference-stac
 migration, and three complete pinned-Go regex byte-argument regressions from the
 shared-text-view work, and eleven authored filename-role checks, plus four complete pinned-Go arrow-rune
 diagnostic comparisons from the owned-byte source work. An unfiltered
-current project run has 15,395 cases. The historical
+project run at that checkpoint had 15,395 cases. The later comprehensive allocation
+acceptance has15,405 cases in this suite; the shared controls and exact execution
+provenance are recorded in [the current results](VSCODE-CHECK-STATUS.md#comprehensive-rollout-integrated-results-2026-10-11). The historical
 acceptance totals above remain unchanged. The focused
 repair and actual Native AOT retry are recorded in [the VS Code findings](VSCODE-CHECK-STATUS.md).
 

@@ -24,11 +24,11 @@ broader rollout. Combined changes cannot establish isolated per-technique gains.
 | Identified allocation or runtime issue | Source-faithful technique and current coverage | Evidence / reference |
 | --- | --- | --- |
 | Workstation GC is unsuitable for this measured workload | Server GC enabled in the executable and verified under Native AOT. No new heap-count or GC-policy experiment is underway. | [Measured Server GC comparison](#server-gc-enabled-and-verified-under-native-aot) |
-| Go substrings retain backing storage; ordinary C# substrings copy | Borrow immutable source through byte views, JSDoc fragments, tokens and AST text; project only actual string consumers. Earlier paths qualified; current descriptor consumers and transformed-token byte builders await integrated acceptance. | [JSDoc sharing](#comprehensive-jsdoc-commentlink-text-sharing-verified-implementation), [owned UTF8 pipeline](#owned-utf8-source-pipeline-active-completion-contract) |
-| Repeated byte/string conversions during comparisons and scans | Span comparison/search, direct UTF8/WTF8 decoding, preserved byte offsets and invalid-byte advancement. Fixed ASCII SearchValues runs and rune/escape output closure are included in the combined native workload proof; broader regression acceptance remains pending. | [Borrowed token work](#borrowed-tokens-flow-slices-and-conditional-targets), [live state](./STATE.md) |
-| Names are forced into managed strings just to enter internal maps | Borrowed immutable ByteStringKey with standard Dictionary and alternate lookup; symbol/literal/property keys compile in the combined snapshot. Resolver/cache/path continuation is included in the combined native workload proof; broader acceptance remains pending. No custom table or interner. | [Source mapping](../source-map.json), [key support](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs), [live state](./STATE.md) |
-| Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families continue in the combined rollout. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
-| Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. Earlier families qualified; apply throughout remaining connected consumers. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
+| Go substrings retain backing storage; ordinary C# substrings copy | Borrow immutable source through byte views, JSDoc fragments, tokens and AST text; project only actual string consumers. Owners, descriptor consumers and transformed-token byte builders are included in accepted integration16. | [JSDoc sharing](#comprehensive-jsdoc-commentlink-text-sharing-verified-implementation), [owned UTF8 pipeline](#owned-utf8-source-pipeline-active-completion-contract) |
+| Repeated byte/string conversions during comparisons and scans | Span comparison/search, direct UTF8/WTF8 decoding, preserved byte offsets and invalid-byte advancement. Fixed ASCII SearchValues runs and rune/escape output closure are included in the combined native workload proof; broader regression acceptance passed in integration16. | [Borrowed token work](#borrowed-tokens-flow-slices-and-conditional-targets), [live state](./STATE.md) |
+| Names are forced into managed strings just to enter internal maps | Borrowed immutable ByteStringKey with standard Dictionary and alternate lookup; symbol/literal/property keys compile in the combined snapshot. Resolver/cache/path continuation is included in the combined native workload proof; broader acceptance passed in integration16. No custom table or interner. | [Source mapping](../source-map.json), [key support](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs), [live state](./STATE.md) |
+| Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families are included in accepted integration16. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
+| Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. The established connected immediate-callback families are included in accepted integration16. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
 | Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST and checker Type merges are in the integration5 workload proof; mapper header/payload merging is included in integration6. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
 | Go packs records into stable arena chunks; C# currently allocates records separately | AST/Type/Mapper wrapper merging is implemented. Internal ValueSymbolLinks, 26 map-backed link stores and inline node pages are implemented/reviewed and exercised in Native AOT integration12. Wider location storage has measured costs; aggregate allocation reduction is not an isolated arena benefit. Public Symbol packing remains excluded. | [Arena assessment](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/arena-assessment.json), [live state](./STATE.md) |
 | Link/reference ownership adds per-record wrapper objects | Direct reference slots and opaque ownership tokens with preserved source lifetime/identity. Earlier qualified changes; no unrelated private-observer redesign. | [Link storage](#fixed-link-store-reference-slots), [ownership/reporters](#opaque-ownership-tokens-and-unbound-reporters) |
@@ -313,8 +313,13 @@ dotnet publish src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-
 artifacts/allocation-reproduction/cli/tscheck --config /home/greg/projects/vscode/src/tsconfig.json --noEmit --json
 ```
 
-This uses the real project config, including `skipLibCheck: true`. For all managed
-suites, run each existing project with `dotnet test tests/<suite>/<suite>.csproj -c Release`.
+This uses the real project config, including `skipLibCheck: true`. Prepare the
+committed no-emit registry and export the required environment variables using the
+[existing reproduction guide](./CHECKER-NOEMIT-REPRODUCTION.md#prepare-this-checkout)
+before running the managed suites with
+`dotnet test tests/<suite>/<suite>.csproj -c Release`. That guide also supplies a
+fresh-build Native AOT command and complete15304-record comparison against the
+committed reference, without requiring the ignored local execution artifacts.
 The exact [acceptance command manifest](../artifacts/vscode-allocation-rollout/integration-16/regressions/acceptance-summary.json)
 links the17 publication commands,83 semantic commands, foundation commands and
 120 noemit chunk commands (up to128 records each), plus the explicit dependency-build order. Existing
@@ -331,12 +336,45 @@ explicit frozen-artifact reuse resolved it. One source-family independent review
 was sufficient; reusing the three Sol lanes reduced repeated context transfer.
 The final source-role review found one additional concrete adaptation cost:
 about12.97MB of sampled Char boxing at generic Latin1 range checks, shared by
-concatenation, builders, hashing and ingress. A whole-family follow-up is active;
-the accepted frozen16 proof does not cover that later source. No repeated profile
+concatenation, builders, hashing and ingress. The whole-family follow-up is accepted separately in integration17 below;
+the frozen16 measurements do not cover that later source. No repeated profile
 or benchmark is justified solely for this small change.
 
 No token or monetary usage measurement is available. These process observations
 are not estimates of subscription cost.
+
+### Shared Latin1 guard follow-through
+
+The final profile's concrete residual was addressed across all14 generic range-guard
+sites in10 files. One cached standard `SearchValues<char>` covers exactly
+U+0000..U+00FF; borrowed `ContainsAnyExcept` calls preserve null/empty handling,
+strict typed-path rejection, byte-key equality/hash behavior, and the existing
+builder/concatenation Unicode and surrogate fallback. Source and the extension to
+one existing shared test body passed independent review; its six cases and original
+assertions were preserved.
+
+Integration17 production builds with zero warnings/errors. The actual Linux x64
+Native AOT VS Code run matches ten complete diagnostics and available pinned chains:
+**19.83s wall,72.27s CPU,9,441,460KiB peak RSS**, expected exit1, empty stderr and
+unchanged source/config/binary guards. This is the latest unprofiled observation;
+it does not isolate the speed effect of this small change. The10.840235GiB allocation
+capture remains attributed to integration16 and excludes this successor.
+
+The follow-up passes4,741 managed cases (Scanner3842,Program264, selectedParser635)
+and affected actual Native AOT controls: foundation3153 plus55 shared byte/text/hash,
+Program78 plus11 filename, and scanner1276 complete comparison rows. Existing controls
+and the single-body extension cover all256 byte values,empty/>FF/surrogate boundaries,
+legacy output/lifetime and hash coherence. Four AOT executables consume the same
+frozen compiler. The full15,304 Native noemit comparison also PASSED (348.10s), with complete
+records, union ordering and parent relationships exact. Its aggregate output hash
+matches integration16. Earlier comprehensive evidence is retained with its original
+attribution; no third full managed corpus or repeat83-channel pass was claimed.
+No additional allocation capture was run for this small successor. All587 source
+and five Native binary guards remained exact. The [final successor evidence](../artifacts/vscode-allocation-rollout/integration-17/boundary-summary.json)
+and [durable proof](../validation/results/allocation-rollout-verified.json) preserve
+this attribution. Independent review found no further concrete missed Go ownership
+or reuse path among the dominant sampled allocation roles. The eventual Go speed
+target remains unmet; that result is distinct from completing this rollout.
 
 ## Workload and compiler identity
 

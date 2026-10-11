@@ -37,7 +37,7 @@ public struct ByteStringValue
             count++;
             single = part;
             length = checked(length + part.Length);
-            needsLegacyText |= !part.IsBytes && part.CharSpan.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0;
+            needsLegacyText |= !part.IsBytes && !GoString.IsByteText(part.CharSpan);
         }
         if (count <= 1) return single;
         if (needsLegacyText)

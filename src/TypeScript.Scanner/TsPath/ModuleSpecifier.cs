@@ -23,7 +23,7 @@ public readonly partial record struct ModuleSpecifier
     public static ModuleSpecifier FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes.AsSpan()))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
         }

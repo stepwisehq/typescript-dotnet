@@ -14,7 +14,7 @@ public static partial class TsPath
         {
             throw new ArgumentNullException(nameof(value));
         }
-        if (!value.IsBytes && value.CharSpan.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!value.IsBytes && !GoString.IsByteText(value.CharSpan))
         {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(value));
         }

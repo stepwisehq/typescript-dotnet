@@ -2,10 +2,29 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // .NET adaptation for Go byte strings. Internal strings contain one char per byte.
 using System.Text;
+using System.Buffers;
 
 namespace TypeScript.Scanner;
 internal static class GoString
 {
+    private static readonly SearchValues<char> byteCharacters = createByteCharacters();
+
+    private static SearchValues<char> createByteCharacters()
+    {
+        Span<char> characters = stackalloc char[256];
+        for (int i = 0; i < characters.Length; i++)
+        {
+            characters[i] = (char)i;
+        }
+        return SearchValues.Create(characters);
+    }
+
+    // Raw Go byte-character text permits the entire Latin1 range, including
+    // control characters. Cached standard search avoids the boxed char work
+    // observed in generic IndexOfAnyExceptInRange, without encoding the input.
+    internal static bool IsByteText(ReadOnlySpan<char> characters) =>
+        !characters.ContainsAnyExcept(byteCharacters);
+
     internal static int EncodeRune(int rune, Span<byte> bytes)
     {
         if (rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF)
@@ -271,7 +290,7 @@ internal sealed class GoBuilder
     public void WriteString(ReadOnlySpan<char> bytes)
     {
         if (legacy is not null) { legacy.Append(bytes); return; }
-        if (bytes.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        if (!GoString.IsByteText(bytes))
         {
             UseLegacy().Append(bytes);
             return;

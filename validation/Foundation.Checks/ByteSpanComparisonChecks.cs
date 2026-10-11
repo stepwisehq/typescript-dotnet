@@ -72,6 +72,59 @@ public static class ByteSpanComparisonChecks
                 Equal(GoStrings.Index(bytes.AsSpan(), needle), GoStrings.Index(bytes.AsSpan(), pattern.AsSpan()), "Mixed raw search keeps existing behavior");
             }
         }
+
+        // Raw byte-character membership is not ASCII or Unicode encoding. Use
+        // independent CLR characters to exercise every allowed value and the
+        // actual concatenation, builder and strict ingress branches. Retained
+        // Latin1 key hash coherence is covered by the existing AstTextValue
+        // Lookup case; the nonbyte ordinal fallback is checked below.
+        string latin1 = new(Enumerable.Range(0, 256).Select(i => (char)i).ToArray());
+        byte[] allBytes = Enumerable.Range(0, 256).Select(i => (byte)i).ToArray();
+        var rawValue = ByteStringValue.FromString(latin1);
+        var byteValue = ByteStringValue.FromView(ByteStringView.FromOwnedBytes(allBytes));
+        Require(GoString.IsByteText(ReadOnlySpan<char>.Empty), "Empty raw text has no invalid character");
+        Require(ByteStringValue.Concat(default, default).Length == 0, "Empty fixed concatenation retains Go empty text");
+        Equal(0, FileSpec.FromGoString("").AsValue().Length, "Empty typed input remains valid empty text");
+        Require(GoString.IsByteText(latin1.AsSpan()), "NUL, control, DEL and every high Latin1 character are byte text");
+        Require(FileSpec.FromGoString(latin1).AsValue().EqualsValue(byteValue), "String typed ingress accepts all256 raw byte values");
+        Require(FileSpec.FromValue(rawValue).AsValue().EqualsValue(byteValue), "Descriptor typed ingress accepts the same raw byte role");
+        var byteConcat = ByteStringValue.Concat(rawValue, byteValue);
+        Require(byteConcat.IsBytes && byteConcat.EqualsString(latin1 + latin1), "Mixed fixed concatenation retains exact byte content");
+        var byteBuilder = new GoBuilder();
+        byteBuilder.WriteString(latin1);
+        Require(byteBuilder.Value().IsBytes && byteBuilder.Value().EqualsValue(byteValue), "Byte builder accepts high Latin1 without Unicode conversion");
+
+        foreach (string nonByte in new[] { "\u0100", "\uffff", "\ud800", "\udfff", "\ud83d\ude00" })
+        {
+            Require(!GoString.IsByteText(nonByte.AsSpan()), "Nonbyte BMP and paired/unpaired surrogate units fail byte membership");
+            bool stringRejected = false;
+            try { _ = FileSpec.FromGoString(nonByte); }
+            catch (ArgumentException) { stringRejected = true; }
+            Require(stringRejected, "Public raw typed ingress rejects nonbyte characters");
+            bool descriptorRejected = false;
+            try { _ = FileSpec.FromValue(ByteStringValue.FromString(nonByte)); }
+            catch (ArgumentException) { descriptorRejected = true; }
+            Require(descriptorRejected, "Descriptor typed ingress preserves strict rejection");
+
+            var legacyKey = ByteStringKey.FromString(nonByte);
+            var sameLegacyKey = ByteStringKey.FromValue(ByteStringValue.FromString(new string(nonByte.AsSpan())));
+            Require(legacyKey.Equals(sameLegacyKey), "Legacy key comparison retains nonbyte character content");
+            Equal(string.GetHashCode(nonByte.AsSpan(), StringComparison.Ordinal), legacyKey.GetHashCode(), "Nonbyte key hashing uses the existing ordinal role");
+            Equal(legacyKey.GetHashCode(), sameLegacyKey.GetHashCode(), "Legacy key hash is independent of string owner");
+
+            var suffix = ByteStringValue.FromString("\u00ff");
+            var legacyConcat = ByteStringValue.Concat(byteValue, ByteStringValue.FromString(nonByte), suffix);
+            Require(!legacyConcat.IsBytes && legacyConcat.EqualsString(latin1 + nonByte + "\u00ff"), "Fixed concatenation preserves legacy UTF16 instead of encoding or truncating");
+            var soleLegacy = ByteStringValue.Concat(default, ByteStringValue.FromString(nonByte));
+            Require(!soleLegacy.IsBytes && soleLegacy.EqualsString(nonByte), "Sole nonempty legacy operand retains its original role");
+            var legacyBuilder = new GoBuilder();
+            legacyBuilder.WriteString(byteValue);
+            var publishedBytes = legacyBuilder.Value();
+            legacyBuilder.WriteString(nonByte);
+            legacyBuilder.WriteString(suffix);
+            Require(!legacyBuilder.Value().IsBytes && legacyBuilder.Value().EqualsString(latin1 + nonByte + "\u00ff"), "Builder switches to legacy UTF16 and retains following raw bytes");
+            Require(publishedBytes.IsBytes && publishedBytes.EqualsValue(byteValue), "Legacy transition leaves an earlier published byte prefix unchanged");
+        }
     }
 
     private static void RawRoles()
