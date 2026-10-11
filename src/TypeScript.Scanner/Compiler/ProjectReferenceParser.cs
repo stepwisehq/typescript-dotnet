@@ -11,7 +11,7 @@ internal sealed class ProjectReferenceParseTask
 {
     internal RootedFilePath configName;
     internal ParsedCommandLine? resolved;
-    internal List<ProjectReferenceParseTask>? subTasks;
+    internal Slice<ProjectReferenceParseTask> subTasks;
     internal void Parse(ProjectReferenceParser parser)
     {
         var loader = parser.loader;
@@ -33,24 +33,24 @@ internal sealed class ProjectReferenceParser
     private readonly IWorkGroup workGroup;
     private readonly SyncMap<PathKey, ProjectReferenceParseTask> tasksByFileName = new();
     internal ProjectReferenceParser(FileLoader loader, bool singleThreaded) => (this.loader, workGroup) = (loader, Core.NewWorkGroup(singleThreaded));
-    internal static List<ProjectReferenceParseTask>? CreateProjectReferenceParseTasks(List<RootedFilePath>? references) => references?.Select(name => new ProjectReferenceParseTask { configName = name }).ToList();
-    internal void Parse(List<ProjectReferenceParseTask>? tasks)
+    internal static Slice<ProjectReferenceParseTask> CreateProjectReferenceParseTasks(List<RootedFilePath>? references) => Core.MapSlice(references, static name => new ProjectReferenceParseTask { configName = name });
+    internal void Parse(Slice<ProjectReferenceParseTask> tasks)
     {
         Start(tasks);
         workGroup.RunAndWait();
         InitMapper(tasks);
     }
-    private void Start(List<ProjectReferenceParseTask>? tasks)
+    private void Start(Slice<ProjectReferenceParseTask> tasks)
     {
-        for (int i = 0; i < (tasks?.Count ?? 0); i++)
+        for (int i = 0; i < tasks.Length; i++)
         {
-            var task = tasks![i];
+            var task = tasks[i];
             var (loadedTask, loaded) = tasksByFileName.LoadOrStore(loader.ToPath(task.configName.AsPath()), task);
             if (loaded) tasks[i] = loadedTask;
             else workGroup.Queue(() => { task.Parse(this); Start(task.subTasks); });
         }
     }
-    private void InitMapper(List<ProjectReferenceParseTask>? tasks)
+    private void InitMapper(Slice<ProjectReferenceParseTask> tasks)
     {
         var mapper = loader.projectReferences!;
         mapper.configToProjectReference = new(tasksByFileName.Size() + 1);
@@ -60,15 +60,15 @@ internal sealed class ProjectReferenceParser
         mapper.referencesInConfigFile[mapper.RootConfigPath()] = InitMapperWorker(tasks, new(ReferenceEqualityComparer.Instance));
         mapper.host = mapper.ResolutionHost(mapper.host);
     }
-    private List<PathKey>? InitMapperWorker(List<ProjectReferenceParseTask>? tasks, HashSet<ProjectReferenceParseTask> seen)
+    private Slice<PathKey> InitMapperWorker(Slice<ProjectReferenceParseTask> tasks, HashSet<ProjectReferenceParseTask> seen)
     {
-        if (tasks is null || tasks.Count == 0) return null;
+        if (tasks.Length == 0) return default;
         var mapper = loader.projectReferences!;
-        var results = new List<PathKey>(tasks.Count);
+        var results = Slice<PathKey>.Make(0, tasks.Length);
         foreach (var task in tasks)
         {
             var path = loader.ToPath(task.configName.AsPath());
-            results.Add(path);
+            results = results.Append(path);
             if (!seen.Add(task)) continue;
             mapper.configToProjectReference[path] = task.resolved;
             if (task.resolved is not null && !ReferenceEquals(mapper.config.ConfigFile, task.resolved.ConfigFile))

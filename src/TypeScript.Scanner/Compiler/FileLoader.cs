@@ -19,15 +19,15 @@ internal sealed class LibResolution
 {
     internal string libraryName = "";
     internal ResolvedModule? resolution;
-    internal List<DiagAndArgs>? trace;
+    internal Slice<DiagAndArgs> trace;
 }
 internal sealed class FileLoader
 {
     private readonly object contentMapperGate = new();
     private readonly Dictionary<Mapper, int> contentMapperFailures = new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<Mapper> contentMapperInitFailed = new(ReferenceEqualityComparer.Instance);
-    private List<Diagnostic>? contentMapperDiagnostics;
-    internal List<Diagnostic>? ContentMapperDiagnostics() => contentMapperDiagnostics;
+    private Slice<Diagnostic> contentMapperDiagnostics;
+    internal Slice<Diagnostic> ContentMapperDiagnostics() => contentMapperDiagnostics;
     private SourceFile? ParseContentMappedFile(SourceFileParseOptions parseOptions)
     {
         var mapper = opts.Config.GetContentMapperForFileName(TypedFile(parseOptions.FileName))!;
@@ -47,7 +47,7 @@ internal sealed class FileLoader
             var problem = FindError<MappingError>(error);
             var diagnostic = problem is not null ? ContentMapperMappingDiagnostic(source, label, problem) : ContentMapperTransformDiagnostic(source, label, error);
             var diagnostics = source.Diagnostics();
-            (diagnostics ??= []).Add(diagnostic);
+            diagnostics = diagnostics.Append(diagnostic);
             source.SetDiagnostics(diagnostics);
         }
         return source;
@@ -170,7 +170,7 @@ internal sealed class FileLoader
         lock (contentMapperGate)
         {
             if (!contentMapperInitFailed.Add(mapper)) return;
-            (contentMapperDiagnostics ??= []).Add(ContentMapperInitializationDiagnostic(label, error));
+            contentMapperDiagnostics = contentMapperDiagnostics.Append(ContentMapperInitializationDiagnostic(label, error));
         }
     }
     private bool RecordContentMapperFailure(Mapper mapper, string label)
@@ -180,7 +180,7 @@ internal sealed class FileLoader
             int failures = contentMapperFailures.GetValueOrDefault(mapper);
             if (failures >= 5) return false;
             contentMapperFailures[mapper] = ++failures;
-            if (failures >= 5) (contentMapperDiagnostics ??= []).Add(Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_0_failed_1_times_and_will_not_be_used, label, 5));
+            if (failures >= 5) contentMapperDiagnostics = contentMapperDiagnostics.Append(Ast.NewCompilerDiagnostic(Diagnostics.The_content_mapper_0_failed_1_times_and_will_not_be_used, label, 5));
             return true;
         }
     }
@@ -253,12 +253,12 @@ internal sealed class FileLoader
     private void AddRootTask(RootedFilePath file, LibFile lib, FileIncludeReason reason)
     {
         if (options.AllowNonTsExtensions == Tristate.True || file.HasExtension())
-            rootTasks.Add(new() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), libFile = lib, includeReason = reason });
+            rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), libFile = lib, includeReason = reason });
     }
     private void AddAutomaticTypeDirectiveTasks()
     {
         var file = opts.Config.BaseDirectory().ResolveFile(ModuleUtilities.InferredTypesContainingFile);
-        rootTasks.Add(new() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), isForAutomaticTypeDirective = true });
+        rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), isForAutomaticTypeDirective = true });
     }
     internal void ResolveAutomaticTypeDirectives(ParseTask task)
     {
@@ -269,10 +269,10 @@ internal sealed class FileLoader
         {
             var (resolved, trace) = resolver.ResolveTypeReferenceDirective(name, TypedFile(task.normalizedFilePath), ResolutionMode.None);
             task.typeResolutionsInFile![new(name, ResolutionMode.None)] = resolved;
-            if (trace is not null) (task.typeResolutionsTrace ??= []).AddRange(trace);
+            task.typeResolutionsTrace = task.typeResolutionsTrace.Append(trace);
             var reason = new FileIncludeReason { automaticTypeDirective = name, packageId = resolved?.PackageId ?? default };
             if (resolved!.IsResolved()) task.AddSubTask(resolved.ResolvedFileName.AsString(), resolved.ResolvedPath.AsString(), reason, resolved.IsExternalLibraryImport, false, resolved!.PackageId);
-            else (task.processingDiagnostics ??= []).Add(new() { diagnosticReason = reason, message = Diagnostics.Cannot_find_type_definition_file_for_0, args = [name] });
+            else task.processingDiagnostics = task.processingDiagnostics.Append(new ProcessingDiagnostic() { diagnosticReason = reason, message = Diagnostics.Cannot_find_type_definition_file_for_0, args = [name] });
         }
     }
     private void AddProjectReferenceTasks(bool singleThreaded)
@@ -281,7 +281,8 @@ internal sealed class FileLoader
         var references = opts.Config.ResolvedProjectReferencePaths();
         if (references is { Count: > 0 }) new ProjectReferenceParser(this, singleThreaded).Parse(ProjectReferenceParser.CreateProjectReferenceParseTasks(references));
     }
-    internal void SortLibs(List<SourceFile> files) => GoSlices.SortFunc(files, (a, b) => GetDefaultLibFilePriority(a).CompareTo(GetDefaultLibFilePriority(b)));
+    internal int totalFileCount, libFileCount;
+    internal void SortLibs(Slice<SourceFile> files) => GoSlices.SortFunc(files, (a, b) => GetDefaultLibFilePriority(a).CompareTo(GetDefaultLibFilePriority(b)));
     private int GetDefaultLibFilePriority(SourceFile file)
     {
         var (relative, ok) = TypedFile(file.FileNameGoBytes()).RelativeTo(defaultLibraryPath);
@@ -313,7 +314,7 @@ internal sealed class FileLoader
         }
         return pathForLibFileCache.LoadOrStore(name, new() { Name = name, path = path, pathKey = key, Replaced = replaced }).Actual;
     }
-    private (ResolvedModule? Resolution, List<DiagAndArgs>? Trace) ResolveLibrary(string libraryName, RootedFilePath resolveFrom)
+    private (ResolvedModule? Resolution, Slice<DiagAndArgs> Trace) ResolveLibrary(string libraryName, RootedFilePath resolveFrom)
     {
         var (resolved, trace, error) = resolver.ResolveModuleName(libraryName, resolveFrom, ResolutionMode.CommonJS);
         RecordModuleResolutionError(error);
@@ -333,7 +334,7 @@ internal sealed class FileLoader
         return path.ToString();
     }
     internal static RootedFilePath GetInferredLibraryNameResolveFrom(RootedDirectoryPath baseDirectory, string fileName) => baseDirectory.ResolveFile("__lib_node_modules_lookup_" + fileName + "__.ts");
-    internal readonly List<ParseTask> rootTasks = [];
+    internal Slice<ParseTask> rootTasks;
     internal readonly ProjectDiskHost? legacyHost;
     internal IResolutionHost host;
     internal IResolver resolver;
@@ -400,12 +401,12 @@ internal sealed class FileLoader
     internal void AddRootFileTask(string fileName, string referenceText, FileIncludeReason reason)
     {
         var(result, key, diagnostic) = GetSourceFileFromReference(TypedFile(fileName), PathBytes(referenceText));
-        rootTasks.Add(new ParseTask
+        rootTasks = rootTasks.Append(new ParseTask
         {
             normalizedFilePath = result != default ? FileText(result) : fileName,
             path = key != default ? KeyText(key) : KeyText(host.FS().CaseSensitivity().PathKey(TypedFile(fileName).AsPath())),
             file = embeddedFiles.GetValueOrDefault(fileName), failedLookup = diagnostic is not null, includeReason = reason,
-            processingDiagnostics = diagnostic is null ? null : [new() { diagnosticReason = reason, message = diagnostic.message, args = diagnostic.MessageArgs()?.Select(value => graph ? value : GoString.ToString(value)).ToArray() ?? [] }]
+            processingDiagnostics = diagnostic is null ? default : Slice<ProcessingDiagnostic>.FromArray([new() { diagnosticReason = reason, message = diagnostic.message, args = diagnostic.MessageArgs()?.Select(value => graph ? value : GoString.ToString(value)).ToArray() ?? [] }])
         });
     }
 
@@ -489,7 +490,7 @@ internal sealed class FileLoader
     internal void ResolveTripleslashPathReferences(ParseTask task)
     {
         SourceFile file = task.file!;
-        foreach (FileReference reference in file.ReferencedFiles ?? [])
+        foreach (FileReference reference in file.ReferencedFiles)
         {
             var reason = new FileIncludeReason { importingFile = file, reference = reference, kind = IncludeReferenceKind.Path };
             if (options.NoResolve == Tristate.True)
@@ -512,7 +513,7 @@ internal sealed class FileLoader
                 ResolvedPath = key, ProcessingDiagnostic = processing, Scheduling = processing is null ? DependencyScheduling.Scheduled : DependencyScheduling.ResolutionDiagnostic };
             (task.pathReferences ??= []).Add(edge);
             if (processing is not null)
-                (task.processingDiagnostics ??= []).Add(processing);
+                task.processingDiagnostics = task.processingDiagnostics.Append(processing);
             else
                 task.AddSubTask(FileText(resolved), KeyText(key), reason);
         }
@@ -523,7 +524,7 @@ internal sealed class FileLoader
     internal void ResolveTypeReferenceDirectives(ParseTask task)
     {
         SourceFile file = task.file!;
-        foreach (FileReference reference in file.TypeReferenceDirectives ?? [])
+        foreach (FileReference reference in file.TypeReferenceDirectives)
         {
             if (options.NoResolve == Tristate.True)
             {
@@ -533,11 +534,11 @@ internal sealed class FileLoader
             var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
             var effectiveOptions = DefaultResolver.GetCompilerOptionsWithRedirect(options, redirect);
             ResolutionMode mode = reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(TypedFile(file.FileName()), task.metadata, effectiveOptions);
-            var(result, trace) = resolver.ResolveTypeReferenceDirective(reference.FileName, containingName, mode, redirect);
+            var(result, trace) = resolver.ResolveTypeReferenceDirective(reference.FileNameValue, containingName, mode, redirect);
             if (program)
             {
-                (task.typeResolutionsInFile ??= new())[new(reference.FileName, mode)] = result;
-                if (trace is not null) (task.typeResolutionsTrace ??= []).AddRange(trace);
+                (task.typeResolutionsInFile ??= new())[new(reference.FileNameValue, mode)] = result;
+                task.typeResolutionsTrace = task.typeResolutionsTrace.Append(trace);
             }
             var edge = new ResolvedProjectTypeDirective { ImportingFile = file, Reference = reference, Mode = mode,
                 Resolution = result, Traces = trace, Scheduling = result?.IsResolved() == true ? DependencyScheduling.Scheduled : DependencyScheduling.Unresolved };
@@ -548,7 +549,7 @@ internal sealed class FileLoader
             if (result?.IsResolved() == true)
                 task.AddSubTask(FileText(result.ResolvedFileName), KeyText(result.ResolvedPath), reason, result.IsExternalLibraryImport, false, result.PackageId);
             else
-                (task.processingDiagnostics ??= []).Add(new() { kind = ProcessingDiagnosticKind.UnknownReference, diagnosticReason = reason });
+                task.processingDiagnostics = task.processingDiagnostics.Append(new ProcessingDiagnostic() { kind = ProcessingDiagnosticKind.UnknownReference, diagnosticReason = reason });
         }
     }
 
@@ -559,39 +560,41 @@ internal sealed class FileLoader
         SourceFile file = task.file!;
         var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
         CompilerOptions options = DefaultResolver.GetCompilerOptionsWithRedirect(this.options, redirect);
-        var names = new List<Node>();
+        Slice<Node> names = default;
         bool js = Ast.IsSourceFileJS(file);
         if (graph && (js || (!file.IsDeclarationFile && (options.GetIsolatedModules() || Ast.IsExternalModule(file)))) && options.ImportHelpers == Tristate.True)
-            names.Add(task.importHelpersImportSpecifier = CreateSyntheticImport("tslib", file));
+            names = names.Append(task.importHelpersImportSpecifier = CreateSyntheticImport(ByteStringValue.FromString("tslib"), file));
         if (graph && (js || file.ScriptKind == ScriptKind.TSX))
         {
-            string runtime = Ast.GetJSXRuntimeImport(Ast.GetJSXImplicitImportBase(options, file), options);
-            if (runtime != "") names.Add(task.jsxRuntimeImportSpecifier = CreateSyntheticImport(runtime, file));
+            var runtime = Ast.GetJSXRuntimeImportValue(Ast.GetJSXImplicitImportBaseValue(options, file), options);
+            if (runtime.Length != 0) names = names.Append(task.jsxRuntimeImportSpecifier = CreateSyntheticImport(runtime, file));
         }
-        int importsStart = names.Count;
-        names.AddRange(file.Imports() ?? []);
-        if (graph) names.AddRange((file.ModuleAugmentations ?? []).Where(node => node.Kind == Kind.StringLiteral));
-        if (names.Count == 0 || program && opts.SkipModuleResolution) return;
+        int importsStart = names.Length;
+        names = names.Append(file.Imports());
+        if (graph)
+            foreach (var node in file.ModuleAugmentations)
+                if (node.Kind == Kind.StringLiteral) names = names.Append(node);
+        if (names.Length == 0 || program && opts.SkipModuleResolution) return;
         task.resolutionsInFile = new();
-        for (int index = 0; index < names.Count; index++)
+        for (int index = 0; index < names.Length; index++)
         {
             Node entry = names[index];
-            string name = entry.Text();
-            if (name == "" || Ast.IsSourcePhaseImport(entry.Parent)) continue;
+            var name = entry.TextValue();
+            if (name.Length == 0 || Ast.IsSourcePhaseImport(entry.Parent)) continue;
             if (!graph)
             {
-                string unicodeName = ProjectDiskHost.DecodeModuleReference(name);
+                string unicodeName = ProjectDiskHost.DecodeModuleReference(name.Materialize()!);
                 if (!TsPath.PathIsRelative(unicodeName))
                     throw new ProjectException("moduleSpecifier", "Only relative module specifiers are supported: " + unicodeName, file.FileName());
             }
             ResolutionMode mode = graph ? GetModeForUsageLocation(TypedFile(file.FileName()), task.metadata, entry, options) : ResolutionMode.ESNext;
             ResolvedModule? value;
-            List<DiagAndArgs>? trace;
+            Slice<DiagAndArgs> trace;
             Exception? error;
             if (!graph)
             {
-                value = ((LegacyResolutionHost)host).ResolveModuleName((DefaultResolver)resolver, name, TypedFile(file.FileName()), mode);
-                trace = null;
+                value = ((LegacyResolutionHost)host).ResolveModuleName((DefaultResolver)resolver, name.Materialize()!, TypedFile(file.FileName()), mode);
+                trace = default;
                 error = null;
             }
             else
@@ -599,16 +602,16 @@ internal sealed class FileLoader
                 (value, trace, error) = resolver.ResolveModuleName(name, containingName, mode, redirect);
             }
             if (program) RecordModuleResolutionError(error);
-            if (program && trace is not null) (task.resolutionsTrace ??= []).AddRange(trace);
+            if (program) task.resolutionsTrace = task.resolutionsTrace.Append(trace);
             ResolvedModule resolved = value ?? new();
             task.resolutionsInFile[new(name, mode)] = resolved;
             int importIndex = index - importsStart;
-            var edge = new ResolvedProjectEdge { ImportingFile = file, ModuleSpecifier = entry, ModuleReference = name,
+            var edge = new ResolvedProjectEdge { ImportingFile = file, ModuleSpecifier = entry, ModuleReferenceValue = name,
                 Mode = mode, ImportIndex = importIndex, SyntheticKind = importIndex < 0 ? (ReferenceEquals(entry, task.importHelpersImportSpecifier) ? "importHelpers" : "jsxRuntime") : "",
                 Resolution = resolved, Traces = trace, Error = error, Scheduling = DependencyScheduling.Unresolved };
             (task.graphEdges ??= []).Add(edge);
             if (!graph)
-                (task.resolutionEdges ??= []).Add(new(file, entry, ProjectDiskHost.DecodeModuleReference(name), mode, resolved, null));
+                (task.resolutionEdges ??= []).Add(new(file, entry, ProjectDiskHost.DecodeModuleReference(name.Materialize()!), mode, resolved, null));
             if (!resolved.IsResolved()) continue;
             bool jsFile = !resolved.ResolvedUsingExtraExtensions && !resolved.ResolvedFileName.ExtensionIsOneOf(TsPath.SupportedTSExtensionsWithJsonFlat) && (!program || projectReferences!.GetRedirectForResolution(resolved.ResolvedFileName, resolved.ResolvedPath).Config is null);
             bool jsFromNodeModules = resolved.IsExternalLibraryImport && jsFile && resolved.ResolvedFileName.ContainsLowercaseDirectorySequence("/node_modules/");
@@ -616,7 +619,7 @@ internal sealed class FileLoader
             edge.Scheduling = diagnostic is not null ? DependencyScheduling.ResolutionDiagnostic :
                 options.NoResolve == Tristate.True ? DependencyScheduling.NoResolve :
                 jsFile && !options.GetAllowJS() ? DependencyScheduling.JavaScriptDisabled :
-                importIndex >= (file.Imports()?.Count ?? 0) ? DependencyScheduling.ModuleAugmentation :
+                importIndex >= file.Imports().Length ? DependencyScheduling.ModuleAugmentation :
                 importIndex >= 0 && !Ast.IsInJSFile(entry) && (entry.Flags & NodeFlags.JSDoc) != 0 ? DependencyScheduling.JSDocInTypeScript : DependencyScheduling.Scheduled;
             if (edge.Scheduling != DependencyScheduling.Scheduled) continue;
             task.AddSubTask(FileText(resolved.ResolvedFileName), KeyText(resolved.ResolvedPath),
@@ -626,11 +629,11 @@ internal sealed class FileLoader
     }
 
     // fileloader.go:942. The actual AST parent chain supplies synthetic usage mode.
-    private Node CreateSyntheticImport(string text, SourceFile file)
+    private Node CreateSyntheticImport(ByteStringValue text, SourceFile file)
     {
         lock (factory)
         {
-        Node specifier = factory.NewStringLiteral(text, TokenFlags.None);
+        Node specifier = factory.NewStringLiteralWithTextValue(text, TokenFlags.None);
         Node declaration = factory.NewImportDeclaration(null!, null!, specifier, null!);
         specifier.Parent = declaration;
         declaration.Parent = file.AsNode();

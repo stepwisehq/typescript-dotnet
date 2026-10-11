@@ -5,7 +5,7 @@
 namespace TypeScript.Bundled;
 public static partial class Bundled
 {
-    public static readonly List<string> LibNames =
+    public static readonly TypeScript.Scanner.Slice<string> LibNames = TypeScript.Scanner.Slice<string>.FromArray(
     [
         "lib.d.ts",
         "lib.decorators.d.ts",
@@ -122,5 +122,5 @@ public static partial class Bundled
         "lib.webworker.d.ts",
         "lib.webworker.importscripts.d.ts",
         "lib.webworker.iterable.d.ts",
-    ];
+    ]);
 }

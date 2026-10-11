@@ -9,7 +9,7 @@ public sealed class ParsedBuildCommandLine
     public BuildOptions BuildOptions = new();
     public CompilerOptions CompilerOptions = new();
     public List<string>? Projects;
-    public List<Diagnostic>? Errors;
+    public Slice<Diagnostic> Errors;
     public object? Raw;
     internal RootedDirectoryPath currentDirectory;
     private List<RootedFilePath>? resolvedProjectPaths;

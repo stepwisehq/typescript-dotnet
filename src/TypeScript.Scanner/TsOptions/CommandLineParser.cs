@@ -15,7 +15,7 @@ internal sealed class commandLineParser
     internal RootedDirectoryPath currentDirectory;
     internal OrderedMap<string, object?> options = new();
     internal List<string> fileNames = new();
-    internal List<Diagnostic> errors = new();
+    internal Slice<Diagnostic> errors = Slice<Diagnostic>.Make(0);
     internal HashSet<PathKey> responseFileStack = new();
     internal AlternateModeDiagnostics? AlternateMode() => workerDiagnostics.didYouMean.alternateMode;
     internal List<CommandLineOption> OptionsDeclarations() => workerDiagnostics.didYouMean.OptionDeclarations;
@@ -41,7 +41,7 @@ internal sealed class commandLineParser
                     if (option != null)
                         index = parseOptionValue(args, index, option, workerDiagnostics.OptionTypeMismatchDiagnostic!);
                     else
-                        errors.Add(createUnknownOptionError(name, text, null, null));
+                        errors = errors.Append(createUnknownOptionError(name, text, null, null));
                     break;
                 default:
                     fileNames.Add(text);
@@ -85,7 +85,7 @@ internal sealed class commandLineParser
                         position++;
                     }
                     else
-                        errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Unterminated_quoted_string_in_response_file_0, fileName));
+                        errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Unterminated_quoted_string_in_response_file_0, fileName));
                 }
                 else
                 {
@@ -124,12 +124,12 @@ internal sealed class commandLineParser
                 {
                     if (value == "true")
                         index++;
-                    errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_can_only_be_specified_in_tsconfig_json_file_or_set_to_false_or_null_on_command_line, option.Name));
+                    errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_can_only_be_specified_in_tsconfig_json_file_or_set_to_false_or_null_on_command_line, option.Name));
                 }
             }
             else
             {
-                errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_can_only_be_specified_in_tsconfig_json_file_or_set_to_null_on_command_line, option.Name));
+                errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_can_only_be_specified_in_tsconfig_json_file_or_set_to_null_on_command_line, option.Name));
                 if (value.Length != 0 && !value.StartsWith('-'))
                     index++;
             }
@@ -140,11 +140,11 @@ internal sealed class commandLineParser
             {
                 if (option.Kind != CommandLineOptionKind.Boolean)
                 {
-                    errors.Add(Ast.NewCompilerDiagnostic(diagnostic, option.Name, TsOptions.getCompilerOptionValueTypeString(option)));
+                    errors = errors.Append(Ast.NewCompilerDiagnostic(diagnostic, option.Name, TsOptions.getCompilerOptionValueTypeString(option)));
                     if (option.Kind == CommandLineOptionKind.List)
                         options.Set(option.Name, new List<string>());
                     else if (option.Kind == CommandLineOptionKind.Enum)
-                        errors.Add(TsOptions.createDiagnosticForInvalidEnumType(option, null, null));
+                        errors = errors.Append(TsOptions.createDiagnosticForInvalidEnumType(option, null, null));
                 }
                 else
                     options.Set(option.Name, true);
@@ -161,10 +161,10 @@ internal sealed class commandLineParser
                             if (number >= option.minValue)
                                 options.Set(option.Name, number);
                             else
-                                errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_requires_value_to_be_greater_than_1, option.Name, option.minValue.ToString(CultureInfo.InvariantCulture)));
+                                errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Option_0_requires_value_to_be_greater_than_1, option.Name, option.minValue.ToString(CultureInfo.InvariantCulture)));
                         }
                         else
-                            errors.Add(Ast.NewCompilerDiagnostic(diagnostic, option.Name, "number"));
+                            errors = errors.Append(Ast.NewCompilerDiagnostic(diagnostic, option.Name, "number"));
                         index++;
                         break;
                     case CommandLineOptionKind.Boolean:
@@ -174,18 +174,18 @@ internal sealed class commandLineParser
                         break;
                     case CommandLineOptionKind.String:
                         var(stringValue, stringErrors) = TsOptions.validateJsonOptionValue(option, args[index], null, null);
-                        if (stringErrors == null)
+                        if (stringErrors.IsNil)
                             options.Set(option.Name, stringValue);
                         else
-                            errors.AddRange(stringErrors);
+                            errors = errors.Append(stringErrors);
                         index++;
                         break;
                     case CommandLineOptionKind.List:
                         var(list, listErrors) = parseListTypeOption(option, args[index]);
                         options.Set(option.Name, list);
-                        if (listErrors != null)
-                            errors.AddRange(listErrors);
-                        if ((list?.Count ?? 0) > 0 || (listErrors?.Count ?? 0) > 0)
+                        if (!listErrors.IsNil)
+                            errors = errors.Append(listErrors);
+                        if ((list?.Count ?? 0) > 0 || listErrors.Length > 0)
                             index++;
                         break;
                     case CommandLineOptionKind.ListOrElement:
@@ -193,8 +193,8 @@ internal sealed class commandLineParser
                     default:
                         var(enumValue, enumErrors) = TsOptions.convertJsonOptionOfEnumType(option, TsOptions.trimGoRunes(args[index], StringUtil.IsWhiteSpaceLike), null, null);
                         options.Set(option.Name, enumValue);
-                        if (enumErrors != null)
-                            errors.AddRange(enumErrors);
+                        if (!enumErrors.IsNil)
+                            errors = errors.Append(enumErrors);
                         index++;
                         break;
                 }
@@ -209,7 +209,7 @@ internal sealed class commandLineParser
         return index;
     }
 
-    internal (List<object?>? Values, List<Diagnostic>? Errors) parseListTypeOption(CommandLineOption option, string value) => TsOptions.ParseListTypeOption(option, value);
+    internal (List<object?>? Values, Slice<Diagnostic> Errors) parseListTypeOption(CommandLineOption option, string value) => TsOptions.ParseListTypeOption(option, value);
 }
 
 public static partial class TsOptions
@@ -251,13 +251,13 @@ public static partial class TsOptions
         if (result.Projects.Count == 0)
             result.Projects.Add(".");
         if (result.BuildOptions.Clean == Tristate.True && result.BuildOptions.Force == Tristate.True)
-            result.Errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "force"));
+            result.Errors = result.Errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "force"));
         if (result.BuildOptions.Clean == Tristate.True && result.BuildOptions.Verbose == Tristate.True)
-            result.Errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "verbose"));
+            result.Errors = result.Errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "verbose"));
         if (result.BuildOptions.Clean == Tristate.True && result.CompilerOptions.Watch == Tristate.True)
-            result.Errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "watch"));
+            result.Errors = result.Errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "clean", "watch"));
         if (result.CompilerOptions.Watch == Tristate.True && result.BuildOptions.Dry == Tristate.True)
-            result.Errors.Add(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "watch", "dry"));
+            result.Errors = result.Errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Options_0_and_1_cannot_be_combined, "watch", "dry"));
         return result;
     }
 
@@ -283,28 +283,28 @@ public static partial class TsOptions
         return input;
     }
 
-    internal static (string Text, List<Diagnostic>? Errors) tryReadFile(RootedFilePath fileName, Func<RootedFilePath, (string Text, bool Ok)> readFile, List<Diagnostic>? errors)
+    internal static (string Text, Slice<Diagnostic> Errors) tryReadFile(RootedFilePath fileName, Func<RootedFilePath, (string Text, bool Ok)> readFile, Slice<Diagnostic> errors)
     {
         var(text, ok) = readFile(fileName);
         if (!ok)
         {
             text = "";
-            (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Cannot_read_file_0, fileName.AsString()));
+            errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Cannot_read_file_0, fileName.AsString()));
         }
 
         return (text, errors);
     }
 
-    public static (List<object?>? Values, List<Diagnostic>? Errors) ParseListTypeOption(CommandLineOption option, string value)
+    public static (List<object?>? Values, Slice<Diagnostic> Errors) ParseListTypeOption(CommandLineOption option, string value)
     {
         value = trimGoRunes(value, isGoWhiteSpace);
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         if (value.StartsWith('-'))
             return (new(), errors);
         if (option.Kind == CommandLineOptionKind.ListOrElement && !value.Contains(','))
         {
-            var(converted, conversionErrors) = validateJsonOptionValue(option, value, null, null);
-            return conversionErrors != null ? (new(), conversionErrors) : (new() { (string)converted! }, errors);
+            var(converted, conversionErrors) = validateJsonOptionValue(option, value, null, default);
+            return !conversionErrors.IsNil ? (new(), conversionErrors) : (new() { (string)converted! }, errors);
         }
 
         if (value == "")
@@ -315,25 +315,25 @@ public static partial class TsOptions
         List<object?>? result = null;
         foreach (var item in value.Split(','))
         {
-            var(converted, conversionErrors) = element.Kind == CommandLineOptionKind.String ? validateJsonOptionValue(element, item, null, null) : convertJsonOptionOfEnumType(element, trimGoRunes(item, StringUtil.IsWhiteSpaceLike), null, null);
-            if (converted is string text && (conversionErrors?.Count ?? 0) == 0 && text.Length != 0)
+            var(converted, conversionErrors) = element.Kind == CommandLineOptionKind.String ? validateJsonOptionValue(element, item, null, default) : convertJsonOptionOfEnumType(element, trimGoRunes(item, StringUtil.IsWhiteSpaceLike), null, default);
+            if (converted is string text && conversionErrors.Length == 0 && text.Length != 0)
                 (result ??= new()).Add(text);
-            else if (conversionErrors != null)
-                (errors ??= new()).AddRange(conversionErrors);
+            else if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
         }
 
         return (result, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertJsonOptionOfEnumType(CommandLineOption option, string value, Node? valueExpression, SourceFile? sourceFile)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertJsonOptionOfEnumType(CommandLineOption option, string value, Node? valueExpression, SourceFile? sourceFile)
     {
         if (value == "")
-            return (null, null);
+            return (null, default);
         var map = option.EnumMap();
         if (map == null)
-            return (null, null);
+            return (null, default);
         var(converted, ok) = map.Get(goLower(value));
-        return ok ? validateJsonOptionValue(option, converted, valueExpression, sourceFile) : (null, new() { createDiagnosticForInvalidEnumType(option, sourceFile, valueExpression) });
+        return ok ? validateJsonOptionValue(option, converted, valueExpression, sourceFile) : (null, Slice<Diagnostic>.FromArray([createDiagnosticForInvalidEnumType(option, sourceFile, valueExpression)]));
     }
 
     internal static string runesToGoString(List<int> runes, int start, int end)

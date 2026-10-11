@@ -30,6 +30,7 @@ broader rollout. Combined changes cannot establish isolated per-technique gains.
 | Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families continue in the combined rollout. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
 | Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. Earlier families qualified; apply throughout remaining connected consumers. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
 | Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST and checker Type merges are in the integration5 workload proof; mapper header/payload merging is included in integration6. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
+| Go packs records into stable arena chunks; C# currently allocates records separately | AST/Type/Mapper wrapper merging is implemented. Internal ValueSymbolLinks chunked storage and live ref consumers are implemented/source-reviewed, pending execution. The remaining 26 map-backed link stores are being converted as one connected family. Public Symbol packing remains excluded; no measured arena benefit yet. | [Arena assessment](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/arena-assessment.json), [live state](./STATE.md) |
 | Link/reference ownership adds per-record wrapper objects | Direct reference slots and opaque ownership tokens with preserved source lifetime/identity. Earlier qualified changes; no unrelated private-observer redesign. | [Link storage](#fixed-link-store-reference-slots), [ownership/reporters](#opaque-ownership-tokens-and-unbound-reporters) |
 | Scratch copies, general path work and singleton growth add avoidable work | Retain source scratch/header reuse, ASCII/path fast paths and source initial capacities. Required persistent snapshots remain detached. Broader canonical resolver/path receivers are included in the combined workload proof. | [Path/capacity work](#path-fast-paths-and-singleton-capacity), [parser scratch](#type-constituent-slices-and-parser-scratch) |
 
@@ -107,6 +108,59 @@ four internal Checker text projections, plus an Evaluator borrowed-text path, ar
 being closed using the established techniques. Their source-only changes are not
 covered by the frozen integration8 measurements; sampled attribution is not promised
 savings. Broader regression qualification is still pending.
+
+The [source-grounded arena assessment](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/arena-assessment.json)
+adds an important distinction: required logical records need not be separate CLR
+objects. Go stores Symbol and ValueSymbolLinks structs in2→256-element chunks and
+returns stable element pointers. Standard arrays of C# class references do not pack
+the objects. Internal links might admit struct chunks and ref-return access, with
+standard Memory only where locations escape; that requires connected mutation,
+null and identity review. Wider location descriptors and retained storage are costs,
+so no net benefit is assumed. Public Symbol packing requires a broader reference-model
+change and is not authorized by this assessment. No custom handle framework is being
+introduced. ValueSymbolLinks storage, its production consumers and existing observers
+are now implemented and independently source-reviewed, with runtime verification pending.
+The related 26 map-backed internal stores are authorized as one connected implementation
+family. Source-file deferred-set initialization, the embedded two-table member/export
+value, nullable JSX locations and recursive cache aliases require explicit adaptations;
+the ordinary compiler algorithms and public reference objects remain unchanged.
+
+After a VM interruption, integration9 records/snapshots were empty and remain
+unqualified. Recovery verified the reviewed source successors. Integration10 published
+Native AOT, then VS Code failed with `InvalidCastException` at the template-expression
+consumer's remaining string assertion on a byte-backed Evaluator result. The failed
+run produced no diagnostic comparison result. A finite consumer repair and independent
+review corrected this defect; the failure is not a performance result or evidence
+about the VM restart. [Failure evidence](../artifacts/vscode-allocation-rollout/integration-10/boundary-summary.json)
+is preserved. Integration11 then passed the full ten diagnostic observations under
+Native AOT: **22.03s wall, 92.84s CPU, 9,393,184 KiB peak RSS**. It used the repaired
+library81548d13 and nativec81f5d31 with no source/config/binary drift. This is a single
+observation, not a proven speedup. [Integration11 evidence](../artifacts/vscode-allocation-rollout/integration-11/boundary-summary.json)
+is saved separately. Integration8 remains the latest allocation profile; it does not
+measure these subsequent receiver changes. Broad regression acceptance remains pending.
+
+Integration12 completes the connected checker-link source rollout: all26 actual map
+owners use arena-backed value records, ValueSymbolLinks uses the source sparse-pointer
+arena, and SymbolNodeLinks uses inline page values. Required live aliases, the captured
+JSX location, deferred-set field replacement and enum-member map ownership were reviewed
+together. The production build and actual Linux x64 Native AOT VS Code comparison pass:
+**21.23s wall, 83.18s CPU, 9,367,284 KiB peak RSS**, all10 complete diagnostics and
+available pinned chains exact. This single observation is not a proven speedup.
+[Integration12 evidence](../artifacts/vscode-allocation-rollout/integration-12/boundary-summary.json)
+binds the source, compiled library and native executable. One matched managed allocation
+capture reports **11.262826 GiB** sampled allocation weight: **−3.23875%** versus
+integration8 and **−67.97394%** versus the original matched Server GC capture. All103,631
+events have typed stacks, with no loss/truncation/aggregation overflow and matching
+complete diagnostics. There is no integration11 profile, so intervening receiver and
+storage work cannot be assigned separate effects from this comparison.
+
+Packing is a measured tradeoff: named value-arena/location types rise18.14%, inline
+node-page types fall45.48%, and map-link types rise6.19%. These disjoint link buckets
+increase112.6MB combined while total sampled allocations fall404.8MB; closure/delegate
+reductions contribute to the latter. Wider standard Memory entries offset eliminated
+object headers. This does not establish either a throughput win or loss for packing.
+See the [complete profile comparison](../artifacts/vscode-allocation-rollout/integration-12/managed-profile/comparison.json).
+Broad regression and cold-observer execution remain pending.
 
 ## Workload and compiler identity
 

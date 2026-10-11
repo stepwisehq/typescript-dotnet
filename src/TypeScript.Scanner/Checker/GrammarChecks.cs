@@ -42,7 +42,7 @@ public sealed partial class Checker
 
     private bool grammarErrorOnNode(Node node, Message message, params object[] args)
     {
-        if ((Ast.GetSourceFileOfNode(node).Diagnostics()?.Count ?? 0) != 0)
+        if (Ast.GetSourceFileOfNode(node).Diagnostics().Length != 0)
             return false;
         error(node, message, args);
         return true;
@@ -51,7 +51,7 @@ public sealed partial class Checker
     private bool grammarErrorAtPos(Node node, int start, int length, Message message, params object[] args)
     {
         var file = Ast.GetSourceFileOfNode(node);
-        if ((file.Diagnostics()?.Count ?? 0) != 0)
+        if (file.Diagnostics().Length != 0)
             return false;
         diagnostics.Add(Ast.NewDiagnostic(file, new(start, start + length), message, args));
         return true;
@@ -1006,7 +1006,7 @@ public sealed partial class Checker
     {
         if (((node.Flags & NodeFlags.Ambient) != 0))
         {
-            var links = this.nodeLinks.Get(node);
+            ref var links = ref this.nodeLinks.Get(node);
             if ((!links.hasReportedStatementInAmbientContext && ((Ast.IsFunctionLike(node.Parent) || Ast.IsAccessor(node.Parent)))))
             {
                 links.hasReportedStatementInAmbientContext = this.grammarErrorOnFirstToken(node, Diagnostics.An_implementation_cannot_be_declared_in_ambient_contexts);
@@ -1015,7 +1015,7 @@ public sealed partial class Checker
 
             if ((((node.Parent.Kind == Kind.Block) || (node.Parent.Kind == Kind.ModuleBlock)) || (node.Parent.Kind == Kind.SourceFile)))
             {
-                var links2 = this.nodeLinks.Get(node.Parent);
+                ref var links2 = ref this.nodeLinks.Get(node.Parent);
                 if (!links2.hasReportedStatementInAmbientContext)
                 {
                     links2.hasReportedStatementInAmbientContext = this.grammarErrorOnFirstToken(node, Diagnostics.Statements_are_not_allowed_in_ambient_contexts);
@@ -1124,7 +1124,7 @@ public sealed partial class Checker
     {
         if (Ast.IsIdentifier(name))
         {
-            if (name.Text() == "__esModule")
+            if (name.TextEquals("__esModule"u8))
                 return grammarErrorOnNodeSkippedOnNoEmit(name, Diagnostics.Identifier_expected_esModule_is_reserved_as_an_exported_marker_when_transforming_ECMAScript_modules);
         }
         else
@@ -1140,7 +1140,7 @@ public sealed partial class Checker
     {
         if (name.Kind == Kind.Identifier)
         {
-            if (name.Text() == "let")
+            if (name.TextEquals("let"u8))
                 return grammarErrorOnNode(name, Diagnostics.X_let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations);
         }
         else
@@ -1182,12 +1182,12 @@ public sealed partial class Checker
     };
     private void checkGrammarNumericLiteral(Node node)
     {
-        var nodeText = TypeScript.Scanner.Scanner.GetTextOfNodeByteString(node);
-        bool fractional = nodeText.Contains('.');
+        var nodeText = TypeScript.Scanner.Scanner.GetTextOfNodeValue(node);
+        bool fractional = nodeText.Contains("."u8);
         bool scientific = (node.AsNumericLiteral().TokenFlags & TokenFlags.Scientific) != 0;
         if (fractional || scientific)
             return;
-        var value = JsNum.FromString(node.Text());
+        var value = JsNum.FromString(node.TextValue());
         if (value.Value <= 9007199254740991)
             return;
         // This upstream path produces a suggestion, not a file semantic error.
@@ -1201,7 +1201,7 @@ public sealed partial class Checker
 {
     private bool checkGrammarObjectLiteralExpression(Node node, bool inDestructuring = false)
     {
-        var seen = new Dictionary<string, DeclarationMeaning>();
+        var seen = new Dictionary<ByteStringKey, DeclarationMeaning>(ByteStringKey.Comparer);
         Slice<Node> properties = default;
         if ((node.PropertyList() != null))
         {
@@ -1362,10 +1362,10 @@ public sealed partial class Checker
                         continue;
                     }
 
-                    var existingKind = seen.GetValueOrDefault(effectiveName);
+                    effectiveName.TryGetValue(seen, out var existingKind);
                     if ((existingKind == 0))
                     {
-                        seen[effectiveName] = currentKind;
+                        seen[ByteStringKey.FromValue(effectiveName)] = currentKind;
                     }
                     else
                     {
@@ -1385,7 +1385,7 @@ public sealed partial class Checker
                                 {
                                     if (((existingKind != DeclarationMeaning.GetOrSetAccessor) && (currentKind != existingKind)))
                                     {
-                                        seen[effectiveName] = (currentKind | existingKind);
+                                        seen[ByteStringKey.FromValue(effectiveName)] = (currentKind | existingKind);
                                     }
                                     else
                                     {
@@ -1415,7 +1415,7 @@ public sealed partial class Checker
         }
         if (Ast.IsClassLike(node.Parent))
         {
-            if ((Ast.IsStringLiteral(propertyName) && (propertyName.Text() == "constructor")))
+            if ((Ast.IsStringLiteral(propertyName) && (propertyName.TextEquals("constructor"u8))))
             {
                 return this.grammarErrorOnNode(propertyName, Diagnostics.Classes_may_not_have_a_field_named_constructor);
             }
@@ -1569,7 +1569,7 @@ public sealed partial class Checker
     private bool grammarErrorOnFirstToken(Node node, Message message, params object[] args)
     {
         var file = Ast.GetSourceFileOfNode(node);
-        if ((file.Diagnostics()?.Count ?? 0) != 0)
+        if (file.Diagnostics().Length != 0)
             return false;
         var span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(file, node.Pos());
         addDiagnostic(Ast.NewDiagnostic(file, span, message, args));
@@ -2299,7 +2299,7 @@ public sealed partial class Checker
                 }
             }
         }
-        if ((((Ast.IsForOfStatement(asNode) && ((forInOrOfStatement.Flags & NodeFlags.AwaitContext) == 0)) && Ast.IsIdentifier(forInOrOfStatement.Initializer)) && (forInOrOfStatement.Initializer.Text() == "async")))
+        if ((((Ast.IsForOfStatement(asNode) && ((forInOrOfStatement.Flags & NodeFlags.AwaitContext) == 0)) && Ast.IsIdentifier(forInOrOfStatement.Initializer)) && (forInOrOfStatement.Initializer.TextEquals("async"u8))))
         {
             this.grammarErrorOnNode(forInOrOfStatement.Initializer, Diagnostics.The_left_hand_side_of_a_for_of_statement_may_not_be_async);
             return false;
@@ -2384,7 +2384,7 @@ public sealed partial class Checker
             switch (current.Kind)
             {
                 case Kind.LabeledStatement:
-                    if (targetLabel != null && current.Label().Text() == targetLabel.Text())
+                    if (targetLabel != null && current.Label().TextValue().EqualsValue(targetLabel.TextValue()))
                     {
                         if (node.Kind == Kind.ContinueStatement && !Ast.IsIterationStatement(current.Statement(), true))
                             return grammarErrorOnNode(node, Diagnostics.A_continue_statement_can_only_jump_to_a_label_of_an_enclosing_iteration_statement);
@@ -2819,7 +2819,7 @@ public sealed partial class Checker
                 {
                     return this.grammarErrorOnNode(name, Diagnostics.An_import_attributes_property_must_have_a_string_literal_or_identifier_name);
                 }
-                if ((name.Text() == "resolution-mode"))
+                if ((name.TextEquals("resolution-mode"u8)))
                 {
                     return this.grammarErrorOnNode(name, Diagnostics.X_0_is_not_a_valid_key_for_an_import_attributes_type, name.Text());
                 }
@@ -2838,7 +2838,7 @@ public sealed partial class Checker
     {
         checkGrammarJsxName(node.TagName());
         checkGrammarTypeArguments(node, node.TypeArgumentList());
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var seen = new HashSet<ByteStringKey>(ByteStringKey.Comparer);
         foreach (var attrNode in node.Attributes().Properties())
         {
             if (attrNode.Kind == Kind.JsxSpreadAttribute)
@@ -2846,7 +2846,7 @@ public sealed partial class Checker
             var attr = attrNode.AsJsxAttribute();
             var name = attr.Name();
             var initializer = attr.Initializer;
-            if (!seen.Add(name.Text()))
+            if (!seen.Add(ByteStringKey.FromValue(name.TextValue())))
                 return grammarErrorOnNode(name, Diagnostics.JSX_elements_cannot_have_multiple_attributes_with_the_same_name);
             if (initializer != null && initializer.Kind == Kind.JsxExpression && initializer.Expression() == null)
                 return grammarErrorOnNode(initializer, Diagnostics.JSX_attributes_must_only_be_assigned_a_non_empty_expression);
@@ -2859,7 +2859,7 @@ public sealed partial class Checker
     {
         if (Ast.IsPropertyAccessExpression(node) && Ast.IsJsxNamespacedName(node.Expression()))
             return grammarErrorOnNode(node.Expression(), Diagnostics.JSX_property_access_expressions_cannot_include_JSX_namespace_names);
-        if (Ast.IsJsxNamespacedName(node) && compilerOptions.GetJSXTransformEnabled() && !TypeScript.Scanner.Scanner.IsIntrinsicJsxName(node.AsJsxNamespacedName().Namespace.Text()))
+        if (Ast.IsJsxNamespacedName(node) && compilerOptions.GetJSXTransformEnabled() && !TypeScript.Scanner.Scanner.IsIntrinsicJsxName(node.AsJsxNamespacedName().Namespace.TextValue()))
             return grammarErrorOnNode(node, Diagnostics.React_components_cannot_include_JSX_namespace_names);
         return false;
     }

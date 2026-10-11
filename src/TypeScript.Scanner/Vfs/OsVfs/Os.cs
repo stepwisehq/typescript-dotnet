@@ -125,7 +125,7 @@ public static class OsVfs
                 return result;
             if (OperatingSystem.IsLinux())
             {
-                List<LinuxReadPaths.Entry> names;
+                Slice<LinuxReadPaths.Entry> names;
                 try
                 {
                     names = LinuxReadPaths.Entries(native);
@@ -139,15 +139,16 @@ public static class OsVfs
                     return result;
                 }
 
-                foreach (var entry in names.OrderBy(value => value.Name, StringComparer.Ordinal))
+                GoSlices.SortFunc(names, static (left, right) => string.CompareOrdinal(left.Name, right.Name));
+                foreach (var entry in names)
                 {
                     FileInfo? info = Stat(path.ResolveFile(entry.Name).AsPath());
                     if (info == null)
                         continue;
                     if (info.IsDir())
-                        (result.Directories ??= []).Add(entry.Name);
+                        result.Directories = result.Directories.Append(entry.Name);
                     else if ((info.Mode() & FileMode.Type) == FileMode.Regular)
-                        (result.Files ??= []).Add(entry.Name);
+                        result.Files = result.Files.Append(entry.Name);
                     else
                         continue;
                     if (entry.IsSymlink)
@@ -184,9 +185,9 @@ public static class OsVfs
                 if (info == null)
                     continue;
                 if (info.IsDir())
-                    (result.Directories ??= []).Add(name);
+                    result.Directories = result.Directories.Append(name);
                 else if ((info.Mode() & FileMode.Type) == FileMode.Regular)
-                    (result.Files ??= []).Add(name);
+                    result.Files = result.Files.Append(name);
                 else
                     continue;
                 if (link)

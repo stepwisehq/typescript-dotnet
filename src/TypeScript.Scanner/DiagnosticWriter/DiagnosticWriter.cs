@@ -46,7 +46,7 @@ public sealed class ASTDiagnostic : IDiagnostic
             : RootedFilePath.FromUnicode(file.FileName());
         public string Text() => file.Text();
         ByteStringView ISourceTextFileLike.TextView() => file.TextView();
-        public List<int> ECMALineMap() => file.ECMALineMap();
+        public Slice<int> ECMALineMap() => file.ECMALineMap();
     }
 
     public ASTDiagnostic(AstDiagnostic diagnostic, bool configFileNames = false)
@@ -127,6 +127,18 @@ public static class DiagnosticWriter
         diagnostics?.Select(d => WrapASTDiagnostic(d, configFileNames)).ToList() ?? [];
     public static List<IDiagnostic> FromASTDiagnostics(IReadOnlyList<AstDiagnostic>? diagnostics, bool configFileNames = false) =>
         diagnostics?.Select(d => (IDiagnostic)WrapASTDiagnostic(d, configFileNames)).ToList() ?? [];
+    public static ASTDiagnostic[] WrapASTDiagnostics(Slice<AstDiagnostic> diagnostics, bool configFileNames = false)
+    {
+        var result = new ASTDiagnostic[diagnostics.Length];
+        for (int i = 0; i < result.Length; i++) result[i] = WrapASTDiagnostic(diagnostics[i], configFileNames);
+        return result;
+    }
+    public static IDiagnostic[] FromASTDiagnostics(Slice<AstDiagnostic> diagnostics, bool configFileNames = false)
+    {
+        var result = new IDiagnostic[diagnostics.Length];
+        for (int i = 0; i < result.Length; i++) result[i] = WrapASTDiagnostic(diagnostics[i], configFileNames);
+        return result;
+    }
     public static List<IDiagnostic> ToDiagnostics<T>(IReadOnlyList<T>? diagnostics) where T : IDiagnostic =>
         diagnostics?.Select(d => (IDiagnostic)d).ToList() ?? [];
     public static int CompareASTDiagnostics(ASTDiagnostic a, ASTDiagnostic b) => Ast.CompareDiagnostics(a.diagnostic, b.diagnostic);

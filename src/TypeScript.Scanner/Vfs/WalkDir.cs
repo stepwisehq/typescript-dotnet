@@ -46,11 +46,10 @@ public static partial class Vfs
                 return null;
             RootedDirectoryPath directory = TsPath.RootedDirectoryPathFromPath(path);
             Entries entries = fileSystem.GetAccessibleEntries(directory);
-            var directories = entries.Directories == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(entries.Directories, StringComparer.Ordinal);
-            var names = entries.Directories == null ? new List<string>() : new List<string>(entries.Directories);
-            if (entries.Files != null)
-                names.AddRange(entries.Files);
-            names.Sort(StringComparer.Ordinal); // Byte strings: ordinal is Go lexical byte order.
+            var directories = new HashSet<string>(entries.Directories.Length, StringComparer.Ordinal);
+            foreach (var name in entries.Directories) directories.Add(name);
+            var names = GoSlices.Clone(entries.Directories).Append(entries.Files);
+            GoSlices.SortFunc(names, static (left, right) => string.CompareOrdinal(left, right));
             foreach (string name in names)
             {
                 FileMode mode = directories.Contains(name) ? FileMode.Dir : FileMode.Regular;

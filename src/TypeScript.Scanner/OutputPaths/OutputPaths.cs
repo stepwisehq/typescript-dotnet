@@ -52,9 +52,9 @@ public static partial class OutputPaths
         return paths;
     }
 
-    public static bool ForEachEmittedFile(IOutputPathsHost host, CompilerOptions options, Func<OutputFilePaths, SourceFile, bool> action, List<SourceFile>? sourceFiles, bool forceDtsEmit)
+    public static bool ForEachEmittedFile(IOutputPathsHost host, CompilerOptions options, Func<OutputFilePaths, SourceFile, bool> action, Slice<SourceFile> sourceFiles, bool forceDtsEmit)
     {
-        foreach (var file in sourceFiles ?? [])
+        foreach (var file in sourceFiles)
             if (action(GetOutputPathsFor(file, options, host, new() { Dts = forceDtsEmit }), file))
                 return true;
         return false;

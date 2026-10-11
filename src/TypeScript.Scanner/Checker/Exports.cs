@@ -30,12 +30,12 @@ public sealed partial class Checker
     {
         if (symbol == null)
             throw new ArgumentNullException(nameof(symbol));
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
             validateOwnedDeclaration(declaration);
         return getDeclaredTypeOfSymbol(symbol);
     }
 
-    public List<Symbol> GetPropertiesOfType(Type t)
+    public Slice<Symbol> GetPropertiesOfType(Type t)
     {
         validateOwnedType(t);
         return getPropertiesOfType(t);
@@ -56,7 +56,7 @@ public sealed partial class Checker
         if (!ReferenceEquals(symbol.authoredOwnerToken, authoredOwnershipToken))
         {
             var declarations = symbol.Declarations;
-            if (declarations == null || declarations.Count == 0)
+            if (declarations.IsNil || declarations.Count == 0)
                 throw new ArgumentException("Symbol has no owned declaration", nameof(symbol));
             foreach (var declaration in declarations)
                 validateOwnedDeclaration(declaration);
@@ -150,7 +150,7 @@ public sealed partial class Checker
         ArgumentNullException.ThrowIfNull(symbol);
         if (ReferenceEquals(symbol.authoredOwnerToken, authoredOwnershipToken))
             return;
-        if ((symbol.Flags & SymbolFlags.Transient) != 0 || symbol.Declarations == null || symbol.Declarations.Count == 0)
+        if ((symbol.Flags & SymbolFlags.Transient) != 0 || symbol.Declarations.IsNil || symbol.Declarations.Count == 0)
             throw new ArgumentException("Symbol belongs to a different checker", nameof(symbol));
         foreach (var declaration in symbol.Declarations)
             validateOwnedDeclaration(declaration);

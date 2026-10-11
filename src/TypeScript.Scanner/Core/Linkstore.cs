@@ -1,25 +1,29 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Port of tsc/internal/core/linkstore.go; managed objects replace arenas, fixed arrays retain page slots.
+// Port of tsc/internal/core/linkstore.go; fixed arrays retain page slot addresses.
 namespace TypeScript.Scanner;
 internal sealed class LinkStore<K, V>
-    where K : notnull where V : class, new()
+    where K : notnull where V : struct
 {
-    private Dictionary<K, V>? entries;
-    public V Get(K key)
+    private Dictionary<K, Memory<V>>? entries;
+    private readonly GoArena<V> arena = new();
+
+    // core/linkstore.go:10–24. Entries retain pointers into zeroed arena chunks;
+    // array-backed Memory locations preserve those pointers across map growth.
+    public ref V Get(K key)
     {
-        var value = TryGet(key);
-        if (value is not null)
-            return value;
+        var location = TryGet(key);
+        if (!location.IsEmpty)
+            return ref location.Span[0];
         entries ??= new();
-        value = new();
-        entries[key] = value;
-        return value;
+        location = arena.NewSliceHeader(1).AsWritableMemory();
+        entries[key] = location;
+        return ref location.Span[0];
     }
 
     public bool Has(K key) => entries?.ContainsKey(key) == true;
-    public V? TryGet(K key) => entries is not null && entries.TryGetValue(key, out var value) ? value : null;
+    public Memory<V> TryGet(K key) => entries is not null && entries.TryGetValue(key, out var location) ? location : default;
 
     // Authored read-only validation support: actual key snapshot, preserving
     // absent versus allocated-empty storage without Get or entity ID effects.
@@ -35,7 +39,6 @@ internal sealed class LinkCell<V>
 }
 
 internal sealed class PagedLinkStore<V>
-    where V : class
 {
     private const int pageShift = 8, pageSize = 1 << pageShift, pageMask = pageSize - 1;
     private const ulong maxPageCount = 65536;
@@ -74,8 +77,16 @@ internal sealed class PagedLinkStore<V>
     public bool TryGet(ulong key, out V? value)
     {
         var page = FindPage(key);
-        value = page is not null ? page[(int)(key & pageMask)] : null;
+        value = page is not null ? page[(int)(key & pageMask)] : default;
         return page is not null;
+    }
+
+    // A location denotes page presence even when its value is the zero record.
+    // No page or slot is initialized while looking up this managed pointer.
+    public Memory<V?> TryGetLocation(ulong key)
+    {
+        var page = FindPage(key);
+        return page is null ? default : page.AsMemory((int)(key & pageMask), 1);
     }
 
     private V?[]? FindPage(ulong key)

@@ -340,7 +340,7 @@ public sealed partial class Checker
                 if (!ReferenceEquals(data.objectType, objectType) || !ReferenceEquals(data.indexType, indexType) || (uint)data.accessFlags != (flags & (uint)TypeScript.Checking.AccessFlags.Persistent))
                     throw new InvalidOperationException("Indexed-access value contradicts its key inputs");
                 var storedAlias = value.alias;
-                if (!ReferenceEquals(storedAlias?.symbol, aliasSymbol) || (storedAlias?.typeArguments?.Count ?? 0) != (aliasArguments?.Count ?? 0))
+                if (!ReferenceEquals(storedAlias?.symbol, aliasSymbol) || (storedAlias?.typeArguments.Length ?? 0) != (aliasArguments?.Count ?? 0))
                     throw new InvalidOperationException("Indexed-access value alias contradicts its key");
                 for (int i = 0; i < (aliasArguments?.Count ?? 0); i++)
                     if (!ReferenceEquals(storedAlias.typeArguments[i], aliasArguments[i]))
@@ -385,7 +385,7 @@ public sealed partial class Checker
                 if (value == null || (value.flags & TypeFlags.TemplateLiteral) == 0)
                     throw new InvalidOperationException("Template cache has another payload");
                 var data = value.AsTemplateLiteralType();
-                if (data.texts == null || data.types.IsNil || data.types.Count == 0 || data.texts.Count != data.types.Count + 1 || data.texts.Any(text => text == null))
+                if (data.texts.IsNil || data.types.IsNil || data.types.Count == 0 || data.texts.Count != data.types.Count + 1 || Core.Some(data.texts, static text => text.IsNull))
                     throw new InvalidOperationException("Invalid retained template span shape");
                 foreach (var type in data.types)
                     if (type == null || !ReferenceEquals(resolve(type.id), type))
@@ -393,7 +393,7 @@ public sealed partial class Checker
                 var rebuilt = getTemplateTypeKey(data.texts, data.types);
                 if (rebuilt != key || !keys.Add(rebuilt) || !templateLiteralTypes.TryGetValue(rebuilt, out var found) || !ReferenceEquals(found, value))
                     throw new InvalidOperationException("Template key association mismatch");
-                entries.Add(new(value, Texts: data.texts, Types: GoSlices.ToListOrNull(data.types)));
+                entries.Add(new(value, Texts: data.Texts(), Types: GoSlices.ToListOrNull(data.types)));
             }
 
             complete(templateLiteralTypes.Count, count, keys.Count, entries.Count);

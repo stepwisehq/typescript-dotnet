@@ -4,6 +4,7 @@
 // Original selected mapper models/factories, including generic, hidden-this and
 // fixing/nonfixing inference instantiation. Checker owns the inference state.
 #nullable disable
+using TypeScript.Scanner;
 namespace TypeScript.Checking;
 internal enum TypeMapperKind : int
 {
@@ -13,7 +14,7 @@ internal enum TypeMapperKind : int
     Merged
 }
 
-internal sealed class TypeMapper
+internal class TypeMapper
 {
     internal TypeMapperData data;
     internal Type Map(Type t) => data.Map(t);
@@ -21,20 +22,16 @@ internal sealed class TypeMapper
     internal bool MapsThisOnly() => data.MapsThisOnly();
 }
 
-internal abstract class TypeMapperData
+// mapper.go:102 embeds the TypeMapper header in each mapper payload. Managed
+// inheritance retains one identity; wrapper dispatch and payload virtuals stay distinct.
+internal abstract class TypeMapperData : TypeMapper
 {
-    internal readonly TypeMapper mapper;
-    protected TypeMapperData()
-    {
-        mapper = new()
-        {
-            data = this
-        };
-    }
+    internal TypeMapper mapper => this;
+    protected TypeMapperData() => data = this;
 
-    internal abstract Type Map(Type t);
-    internal virtual TypeMapperKind Kind() => TypeMapperKind.Unknown;
-    internal virtual bool MapsThisOnly() => false;
+    internal new abstract Type Map(Type t);
+    internal new virtual TypeMapperKind Kind() => TypeMapperKind.Unknown;
+    internal new virtual bool MapsThisOnly() => false;
 }
 
 internal class TypeMapperBase : TypeMapperData
@@ -52,40 +49,40 @@ internal sealed class SimpleTypeMapper : TypeMapperBase
 
 internal sealed class ArrayTypeMapper : TypeMapperBase
 {
-    internal List<Type> sources, targets;
+    internal Slice<Type> sources, targets;
     internal override Type Map(Type t)
     {
-        for (int i = 0; i < (sources?.Count ?? 0); i++)
+        for (int i = 0; i < sources.Length; i++)
             if (t == sources[i])
                 return targets[i];
         return t;
     }
 
     internal override TypeMapperKind Kind() => TypeMapperKind.Array;
-    internal override bool MapsThisOnly() => sources?.Count == 1 && Checker.isThisTypeParameter(sources[0]);
+    internal override bool MapsThisOnly() => sources.Length == 1 && Checker.isThisTypeParameter(sources[0]);
 }
 
 internal sealed class ArrayToSingleTypeMapper : TypeMapperBase
 {
-    internal List<Type> sources;
+    internal Slice<Type> sources;
     internal Type target;
-    internal override Type Map(Type t) => sources?.Contains(t) == true ? target : t;
-    internal override bool MapsThisOnly() => sources?.Count == 1 && Checker.isThisTypeParameter(sources[0]);
+    internal override Type Map(Type t) => GoSlices.Contains(sources, t) ? target : t;
+    internal override bool MapsThisOnly() => sources.Length == 1 && Checker.isThisTypeParameter(sources[0]);
 }
 
 internal sealed class DeferredTypeMapper : TypeMapperBase
 {
-    internal List<Type> sources;
+    internal Slice<Type> sources;
     internal List<Func<Type>> targets;
     internal override Type Map(Type t)
     {
-        for (int i = 0; i < (sources?.Count ?? 0); i++)
+        for (int i = 0; i < sources.Length; i++)
             if (t == sources[i])
                 return targets[i]();
         return t;
     }
 
-    internal override bool MapsThisOnly() => sources?.Count == 1 && Checker.isThisTypeParameter(sources[0]);
+    internal override bool MapsThisOnly() => sources.Length == 1 && Checker.isThisTypeParameter(sources[0]);
 }
 
 internal sealed class FunctionTypeMapper : TypeMapperBase
@@ -123,12 +120,12 @@ public sealed partial class Checker
     {
         internal Checker checker;
         internal TypeScript.Scanner.Node parent;
-        internal List<Type> typeParameters;
+        internal Slice<Type> typeParameters;
         internal int index;
         internal Type Resolve() => checker.getEffectiveTypeArgumentAtIndex(parent, typeParameters, index);
     }
 
-    private Func<Type> newInferredConstraintDeferredTarget(TypeScript.Scanner.Node parent, List<Type> typeParameters, int index)
+    private Func<Type> newInferredConstraintDeferredTarget(TypeScript.Scanner.Node parent, Slice<Type> typeParameters, int index)
     {
         var closure = new InferredConstraintDeferredTarget
         {
@@ -144,9 +141,9 @@ public sealed partial class Checker
     {
         if (target?.Target is not InferredConstraintDeferredTarget closure || target != closure.Resolve)
             throw new InvalidOperationException("Unknown deferred target closure provenance");
-        if (!ReferenceEquals(closure.checker, this) || closure.parent == null || closure.typeParameters == null || closure.index < 0 || closure.index >= closure.typeParameters.Count)
+        if (!ReferenceEquals(closure.checker, this) || closure.parent == null || closure.typeParameters.IsNil || closure.index < 0 || closure.index >= closure.typeParameters.Count)
             throw new InvalidOperationException("Absent, foreign or inconsistent deferred target captures");
-        return (closure.parent, closure.typeParameters, closure.index);
+        return (closure.parent, GoSlices.ToListOrNull(closure.typeParameters), closure.index);
     }
 
     internal static bool isThisTypeParameter(Type t) => (t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isThisType;
@@ -157,17 +154,17 @@ public sealed partial class Checker
         source = source,
         target = target
     }.mapper;
-    private static TypeMapper newArrayTypeMapper(List<Type> sources, List<Type> targets) => new ArrayTypeMapper
+    private static TypeMapper newArrayTypeMapper(Slice<Type> sources, Slice<Type> targets) => new ArrayTypeMapper
     {
         sources = sources,
         targets = targets
     }.mapper;
-    private static TypeMapper newArrayToSingleTypeMapper(List<Type> sources, Type target) => new ArrayToSingleTypeMapper
+    private static TypeMapper newArrayToSingleTypeMapper(Slice<Type> sources, Type target) => new ArrayToSingleTypeMapper
     {
         sources = sources,
         target = target
     }.mapper;
-    private static TypeMapper newDeferredTypeMapper(List<Type> sources, List<Func<Type>> targets) => new DeferredTypeMapper
+    private static TypeMapper newDeferredTypeMapper(Slice<Type> sources, List<Func<Type>> targets) => new DeferredTypeMapper
     {
         sources = sources,
         targets = targets
@@ -187,7 +184,7 @@ public sealed partial class Checker
         m1 = m1,
         m2 = m2
     }.mapper;
-    internal static TypeMapper newTypeMapper(List<Type> sources, List<Type> targets) => sources?.Count == 1 ? newSimpleTypeMapper(sources[0], targets[0]) : newArrayTypeMapper(sources, targets);
+    internal static TypeMapper newTypeMapper(Slice<Type> sources, Slice<Type> targets) => sources.Length == 1 ? newSimpleTypeMapper(sources[0], targets[0]) : newArrayTypeMapper(sources, targets);
     internal TypeMapper combineTypeMappers(TypeMapper m1, TypeMapper m2) => m1 != null ? newCompositeTypeMapper(this, m1, m2) : m2;
     private Type mapTypeWithCompositeMapper(Type t, TypeMapper m1, TypeMapper m2)
     {
@@ -240,7 +237,7 @@ public sealed partial class Checker
     private TypeMapper newBackreferenceMapper(InferenceContext context, int index)
     {
         var forwardInferences = TypeScript.Scanner.GoRuntime.Slice(context.inferences, index);
-        var typeParameters = TypeScript.Scanner.Core.Map(forwardInferences, inference => inference.typeParameter);
+        var typeParameters = TypeScript.Scanner.Core.MapSlice(forwardInferences, inference => inference.typeParameter);
         return newArrayToSingleTypeMapper(typeParameters, unknownType);
     }
 

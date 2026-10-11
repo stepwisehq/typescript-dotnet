@@ -122,7 +122,7 @@ public partial class NameResolver
                         if ((result != null))
                         {
                             var localSymbol = GetLocalSymbolForExportDefault(result);
-                            if ((((localSymbol != null) && ((result.Flags & meaning) != 0)) && (name.EqualsString(localSymbol.Name))))
+                            if ((((localSymbol != null) && ((result.Flags & meaning) != 0)) && (name.EqualsValue(localSymbol.NameValue))))
                             {
                                 goto loopEnd;
                             }

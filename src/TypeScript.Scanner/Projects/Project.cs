@@ -16,10 +16,11 @@ public sealed class Project : ICheckerProgramHost
 
     private readonly DefaultResolver resolver = null!;
     private readonly Dictionary<string, SourceFile> filesByPath = new(StringComparer.Ordinal);
-    private readonly List<SourceFile> sourceFiles = [], roots = [], users = [];
+    private Slice<SourceFile> sourceFiles;
+    private readonly List<SourceFile> roots = [], users = [];
     private readonly List<ProjectResolutionEdge> edges = [];
-    private readonly List<Diagnostic> programDiagnostics = [];
-    private readonly List<Diagnostic> parseDiagnostics = [];
+    private Slice<Diagnostic> programDiagnostics;
+    private Slice<Diagnostic> parseDiagnostics;
     private Checker? checker;
     public string ConfigurationPath => configuration.FileName;
     public string RootDirectory => configuration.Root;
@@ -31,7 +32,7 @@ public sealed class Project : ICheckerProgramHost
     CompilerOptions ICheckerProgramHost.Options => Options;
 
     bool ICheckerProgramHost.AllowsNonRelativeModuleSpecifiers => genuineProgram is not null;
-    public IReadOnlyList<SourceFile> SourceFiles => sourceFiles.AsReadOnly();
+    public Slice<SourceFile> SourceFiles => sourceFiles;
     public IReadOnlyList<SourceFile> RootFiles => roots.AsReadOnly();
     // The normalized, deduplicated configuration filenames include missing
     // roots; RootFiles contains only their successfully parsed SourceFiles.
@@ -39,8 +40,8 @@ public sealed class Project : ICheckerProgramHost
     public IReadOnlyList<SourceFile> UserFiles => users.AsReadOnly();
     public IReadOnlyList<SourceFile> LibraryFiles { get; }
     public IReadOnlyList<ProjectResolutionEdge> ResolutionEdges => edges.AsReadOnly();
-    public IReadOnlyList<Diagnostic> ParseDiagnostics => parseDiagnostics.AsReadOnly();
-    public IReadOnlyList<Diagnostic> ProgramDiagnostics => programDiagnostics.AsReadOnly();
+    public IReadOnlyList<Diagnostic> ParseDiagnostics => parseDiagnostics.AsSpan().ToArray();
+    public IReadOnlyList<Diagnostic> ProgramDiagnostics => programDiagnostics.AsSpan().ToArray();
 
     void ICheckerProgramHost.BindSourceFiles()
     {
@@ -120,19 +121,23 @@ public sealed class Project : ICheckerProgramHost
         {
             file.SetFileNameToUnicode();
         }
-        sourceFiles.AddRange(program.SourceFiles());
+        sourceFiles = program.SourceFiles();
         foreach (var pair in program.FilesByPath())
             filesByPath.Add(pair.Key, pair.Value);
-        LibraryFiles = sourceFiles.Where(file => program.IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()))).ToArray();
-        users.AddRange(sourceFiles.Where(file => !LibraryFiles.Contains(file, ReferenceEqualityComparer.Instance)));
+        var libraries = new List<SourceFile>();
+        foreach (var file in sourceFiles)
+            if (program.IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()))) libraries.Add(file);
+        LibraryFiles = libraries.ToArray();
+        foreach (var file in sourceFiles)
+            if (!LibraryFiles.Contains(file, ReferenceEqualityComparer.Instance)) users.Add(file);
         RootFileNames = (inspection.Parsed!.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
         foreach (var root in inspection.Parsed.FileNames() ?? [])
             if (program.GetSourceFile(root) is { } file && !roots.Contains(file, ReferenceEqualityComparer.Instance))
                 roots.Add(file);
-        parseDiagnostics.AddRange(program.GetSyntacticDiagnostics() ?? []);
-        programDiagnostics.AddRange(program.GetProgramDiagnostics() ?? []);
+        parseDiagnostics = parseDiagnostics.Append(program.GetSyntacticDiagnostics());
+        programDiagnostics = programDiagnostics.Append(program.GetProgramDiagnostics());
         foreach (var file in sourceFiles)
-            foreach (var import in file.Imports() ?? [])
+            foreach (var import in file.Imports())
                 if (program.GetResolvedModuleFromModuleSpecifier(file, import) is { } resolved)
                     edges.Add(new(file, import, ProjectDiskHost.DecodeModuleReference(import.Text()),
                         program.GetModeForUsageLocation(file, import), resolved, program.GetSourceFileForResolvedModule(resolved)));
@@ -171,10 +176,10 @@ public sealed class Project : ICheckerProgramHost
 
         RootFileNames = rootNames.AsReadOnly();
         ProcessedFiles processed = FileLoader.ProcessAllProgramFiles(disk, resolutionHost, resolver, Options, LibraryFiles, rootNames, configuration);
-        sourceFiles.AddRange(processed.files);
+        sourceFiles = processed.files;
         foreach (var pair in processed.filesByPath)
             filesByPath.Add(pair.Key, pair.Value);
-        programDiagnostics.AddRange(processed.processingDiagnostics);
+        programDiagnostics = programDiagnostics.Append(processed.processingDiagnostics);
         edges.AddRange(processed.resolutionEdges);
         foreach (SourceFile source in sourceFiles)
         {
@@ -182,7 +187,7 @@ public sealed class Project : ICheckerProgramHost
                 continue;
             users.Add(source);
             if (source.Diagnostics()is { Count: > 0 } errors)
-                parseDiagnostics.AddRange(errors);
+                parseDiagnostics = parseDiagnostics.Append(errors);
         }
 
         foreach (string name in rootNames)
@@ -203,41 +208,40 @@ public sealed class Project : ICheckerProgramHost
             // compiler/program.go:GetDiagnosticsOfAnyProgram (2033). Binding is
             // performed early; its raw diagnostics are published only through
             // semantic policy (SkipTypeChecking and preceding directives).
-            var diagnostics = (genuineProgram.GetConfigFileParsingDiagnostics() ?? []).ToList();
+            var diagnostics = GoSlices.Clip(genuineProgram.GetConfigFileParsingDiagnostics());
             int configDiagnosticCount = diagnostics.Count;
             var syntactic = genuineProgram.GetSyntacticDiagnostics();
             if (syntactic is { Count: > 0 })
-                diagnostics.AddRange(genuineProgram.GetContentMapperDiagnostics() ?? []);
-            diagnostics.AddRange(syntactic ?? []);
+                diagnostics = diagnostics.Append(genuineProgram.GetContentMapperDiagnostics());
+            diagnostics = diagnostics.Append(syntactic);
             if (diagnostics.Count == configDiagnosticCount)
             {
-                diagnostics.AddRange(genuineProgram.GetProgramDiagnostics() ?? []);
+                diagnostics = diagnostics.Append(genuineProgram.GetProgramDiagnostics());
                 _ = genuineProgram.GetBindDiagnostics();
                 if (Options.ListFilesOnly != Tristate.True)
                 {
-                    diagnostics.AddRange(genuineProgram.GetGlobalDiagnostics() ?? []);
+                    diagnostics = diagnostics.Append(genuineProgram.GetGlobalDiagnostics());
                     if (diagnostics.Count == configDiagnosticCount)
                     {
-                        diagnostics.AddRange(genuineProgram.GetSemanticDiagnostics() ?? []);
-                        diagnostics.AddRange(genuineProgram.GetGlobalDiagnostics() ?? []);
+                        diagnostics = diagnostics.Append(genuineProgram.GetSemanticDiagnostics());
+                        diagnostics = diagnostics.Append(genuineProgram.GetGlobalDiagnostics());
                     }
                 }
             }
             // Declaration-output diagnostics remain outside this no-emit disk
             // adapter; this consumer does not acquire an emitter.
-            return Program.SortAndDeduplicateDiagnostics(diagnostics) ?? [];
+            return Program.SortAndDeduplicateDiagnostics(diagnostics).AsSpan().ToArray();
         }
 
-        var all = new List<Diagnostic>(programDiagnostics);
-        all.AddRange(parseDiagnostics);
+        var all = GoSlices.Clone(programDiagnostics).Append(parseDiagnostics);
         // Malformed syntax has no semantic completeness promise or checker entry.
         if (parseDiagnostics.Count != 0 || users.Count == 0)
-            return Program.SortAndDeduplicateDiagnostics(all) ?? [];
+            return Program.SortAndDeduplicateDiagnostics(all).AsSpan().ToArray();
         Checker shared = Checker;
         foreach (SourceFile file in users)
-            all.AddRange(Program.GetSemanticDiagnosticsWithChecker(file, Options, shared) ?? []);
-        all.AddRange(shared.GetGlobalDiagnostics() ?? []);
-        return Program.SortAndDeduplicateDiagnostics(all) ?? [];
+            all = all.Append(Program.GetSemanticDiagnosticsWithChecker(file, Options, shared));
+        all = all.Append(shared.GetGlobalDiagnostics());
+        return Program.SortAndDeduplicateDiagnostics(all).AsSpan().ToArray();
     }
 
     public ResolvedModule? GetResolvedModule(SourceFile importingFile, string moduleReference, ResolutionMode mode)
@@ -309,7 +313,7 @@ public sealed class Project : ICheckerProgramHost
     List<string>? TypeScript.OutputPaths.IOutputPathsHost.ContentMapperExtensions() => genuineProgram?.ContentMapperExtensions() ?? configuration.Parsed?.ContentMapperExtensions();
     CaseSensitivity TypeScript.OutputPaths.IOutputPathsHost.CaseSensitivity() => genuineProgram?.CaseSensitivity() ?? CaseSensitivity.CaseSensitive;
     SourceOutputAndProjectReference? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetProjectReferenceFromSource(PathKey path) => genuineProgram?.GetProjectReferenceFromSource(path);
-    List<RootedFilePath>? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => genuineProgram?.GetRedirectTargets(path);
+    Slice<RootedFilePath> TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => genuineProgram?.GetRedirectTargets(path) ?? default;
     RootedFilePath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file)
     {
         ValidateOwned(file);

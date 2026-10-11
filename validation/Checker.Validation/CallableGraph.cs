@@ -107,14 +107,23 @@ public sealed partial class Graph
 
         for (int id = 0; id < syntax.RawNodes.Count; id++)
         {
-            var link = checker.VerificationCallableSignatureLinks(syntax.RawNodes[id]);
-            callables.SignatureLinks.Add(new("node", id, "signatureLinks", link is not null, link is null ? [] : [F("resolvedSignature", "signature", link.resolvedSignature), F("effectsSignature", "signature", link.effectsSignature), F("decoratorSignature", "signature", link.decoratorSignature)]));
+            var location = checker.VerificationCallableSignatureLinks(syntax.RawNodes[id]);
+            if (location.IsEmpty)
+                callables.SignatureLinks.Add(new("node", id, "signatureLinks", false, []));
+            else
+            {
+                ref var link = ref location.Span[0];
+                callables.SignatureLinks.Add(new("node", id, "signatureLinks", true, [F("resolvedSignature", "signature", link.resolvedSignature), F("effectsSignature", "signature", link.effectsSignature), F("decoratorSignature", "signature", link.decoratorSignature)]));
+            }
         }
 
-        var sourceLinks = checker.VerificationCallableSourceFileLinks();
-        callables.SourceFileLinksPresent = sourceLinks is not null;
-        if (sourceLinks is not null)
-            callables.SourceFileLinks = new(0, "SourceFileLinks", [F("typeChecked", "bool", sourceLinks.typeChecked), F("unusedChecked", "bool", sourceLinks.unusedChecked), F("externalHelpersModule", "symbol", sourceLinks.externalHelpersModule), F("requestedExternalEmitHelpers", "number", sourceLinks.requestedExternalEmitHelpers), F("deferredNodes", "nodes", sourceLinks.deferredNodes.Values().ToList()), F("identifierCheckNodes", "nodes", GoSlices.ToListOrNull(sourceLinks.identifierCheckNodes)), F("localJsxNamespace", "bytes", sourceLinks.localJsxNamespace), F("localJsxFragmentNamespace", "bytes", sourceLinks.localJsxFragmentNamespace), F("localJsxFactory", "node", sourceLinks.localJsxFactory), F("localJsxFragmentFactory", "node", sourceLinks.localJsxFragmentFactory), F("jsxFragmentType", "type", sourceLinks.jsxFragmentType)]);
+        var sourceLocation = checker.VerificationCallableSourceFileLinks();
+        callables.SourceFileLinksPresent = !sourceLocation.IsEmpty;
+        if (!sourceLocation.IsEmpty)
+        {
+            ref var sourceLinks = ref sourceLocation.Span[0];
+            callables.SourceFileLinks = new(0, "SourceFileLinks", [F("typeChecked", "bool", sourceLinks.typeChecked), F("unusedChecked", "bool", sourceLinks.unusedChecked), F("externalHelpersModule", "symbol", sourceLinks.externalHelpersModule), F("requestedExternalEmitHelpers", "number", sourceLinks.requestedExternalEmitHelpers), F("deferredNodes", "nodes", sourceLinks.deferredNodes?.Values().ToList() ?? []), F("identifierCheckNodes", "nodes", GoSlices.ToListOrNull(sourceLinks.identifierCheckNodes)), F("localJsxNamespace", "bytes", sourceLinks.localJsxNamespace), F("localJsxFragmentNamespace", "bytes", sourceLinks.localJsxFragmentNamespace), F("localJsxFactory", "node", sourceLinks.localJsxFactory), F("localJsxFragmentFactory", "node", sourceLinks.localJsxFragmentFactory), F("jsxFragmentType", "type", sourceLinks.jsxFragmentType)]);
+        }
         callables.NoPredicateSentinel = Predicate(checker.VerificationCallableNoTypePredicate());
     }
 

@@ -71,7 +71,15 @@ public static partial class TsPath
     public static string TryGetExtensionFromPath(string path) => extensionsToRemove.FirstOrDefault(extension => FileExtensionIs(path, extension)) ?? "";
     public static string RemoveExtension(string path, string extension) => path[..(path.Length - extension.Length)];
     public static bool FileExtensionIs(string path, string extension) => path.Length > extension.Length && path.EndsWith(extension, StringComparison.Ordinal);
-    public static bool FileExtensionIsOneOf(string path, IEnumerable<string> extensions) => extensions.Any(extension => FileExtensionIs(path, extension));
+    // extension.go:79. Ordered synchronous traversal; preserve the public
+    // IEnumerable null-source failure inherited from Enumerable.Any.
+    public static bool FileExtensionIsOneOf(string path, IEnumerable<string> extensions)
+    {
+        if (extensions is null) throw new ArgumentNullException("source");
+        foreach (var extension in extensions)
+            if (FileExtensionIs(path, extension)) return true;
+        return false;
+    }
     public static bool ExtensionIsOneOf(string extension, IEnumerable<string> extensions) => extensions.Contains(extension);
     public static string TryExtractTSExtension(string path) => supportedTSExtensionsForExtractExtension.FirstOrDefault(extension => FileExtensionIs(path, extension)) ?? "";
     public static bool HasTSFileExtension(string path) => FileExtensionIsOneOf(path, SupportedTSExtensionsFlat);

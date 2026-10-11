@@ -38,6 +38,7 @@ public sealed partial class StoredGraph
     private readonly PassiveGraph binding;
     private readonly Encoder syntax;
     private readonly Dictionary<object, int> ids = new(ReferenceEqualityComparer.Instance);
+    private readonly Dictionary<object, int> linkLocationIds = new();
     private readonly List<object> queue = [];
     private readonly StoredGraphValue output = new();
     private readonly HashSet<object> comparerOwners = new(ReferenceEqualityComparer.Instance);
@@ -52,6 +53,18 @@ public sealed partial class StoredGraph
     {
         if (value is null)
             return null;
+        if (Checker.VerificationCollectionsTryLinkLocation(value, out bool locationEmpty))
+        {
+            if (locationEmpty)
+                return null;
+            if (linkLocationIds.TryGetValue(value, out int locationId))
+                return locationId;
+            locationId = queue.Count;
+            linkLocationIds.Add(value, locationId);
+            queue.Add(value);
+            output.Records.Add(new(locationId, "", []));
+            return locationId;
+        }
         if (ids.TryGetValue(value, out int id))
             return id;
         id = queue.Count;
@@ -87,6 +100,12 @@ public sealed partial class StoredGraph
 
     private StoredValue FieldValue(object payload, string name, object? value, string kind)
     {
+        // SourceFileLinks embeds a zero ordered set in Go. The optional managed
+        // owner is allocated on first Add; its absent owner still describes that
+        // same logical empty set at this existing named output boundary.
+        if (payload is Memory<SourceFileLinks> && name == "deferredNodes" && value is null)
+            return new StoredValue { Kind = "inline", Fields = [new("membership", new StoredValue { Kind = "list" }), new("size", Value(0)), new("values", new StoredValue { Kind = "list" })] };
+
         try
         {
             return FieldValueCore(payload, name, value, kind);
@@ -141,7 +160,7 @@ public sealed partial class StoredGraph
 
         if (payload is Type cacheOwner && name == "instantiations" && value is IDictionary { Count: > 0 })
             return (cacheOwner.objectFlags & ObjectFlags.Mapped) != 0 || cacheOwner.AsTypeReference()is { node: not null } && cacheOwner.AsInterfaceType() == null ? InstantiationCache(cacheOwner, true) : ReferenceCache(cacheOwner);
-        if (payload is TypeAliasLinks or ConditionalRoot && name == "instantiations" && value is IDictionary { Count: > 0 })
+        if (payload is Memory<TypeAliasLinks> or ConditionalRoot && name == "instantiations" && value is IDictionary { Count: > 0 })
             return InstantiationCache(payload, false);
         if (payload is Type type && (type.Flags() & TypeFlags.UniqueESSymbol) != 0 && name == "name")
         {
@@ -286,7 +305,8 @@ public sealed partial class StoredGraph
                     foreach (var member in (type.AsStructuredType().members ?? []).OrderBy(entry => entry.Key, StringComparer.Ordinal))
                     {
                         var propertySymbol = member.Value;
-                        Type? stored = propertySymbol.id == 0 ? null : checker.valueSymbolLinks.TryGet(propertySymbol)?.resolvedType;
+                        Memory<ValueSymbolLinks> location = propertySymbol.id == 0 ? default : checker.valueSymbolLinks.TryGet(propertySymbol);
+                        Type? stored = location.IsEmpty ? null : location.Span[0].resolvedType;
                         seed += "|member:" + Encoder.Bytes(member.Key) + "/" + (uint)propertySymbol.Flags + "/" + (uint)propertySymbol.CheckFlags + "/" + TypeSeed(stored, stack);
                     }
 
@@ -358,8 +378,19 @@ public sealed partial class StoredGraph
             if (symbol.id != 0 && !symbols.TryAdd(unchecked((ulong)symbol.id), symbol))
                 throw new InvalidDataException("Duplicate actual symbol ID");
         var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        var seenLinkLocations = new HashSet<object>();
         void Walk(object? value)
         {
+            // A retained link location has value-type storage but names a live
+            // record. Follow the same named fields before the generic value guard.
+            if (Checker.VerificationCollectionsTryLinkLocation(value, out bool locationEmpty))
+            {
+                if (locationEmpty || !seenLinkLocations.Add(value!))
+                    return;
+                foreach (var field in checker.VerificationCollectionsDescribe(value!).Fields)
+                    Walk(field.Value);
+                return;
+            }
             if (value is null || comparerOwners.Contains(value) || value is Node or NodeData or Symbol or SymbolTable or string or Delegate or GoOrderedNodeSet || value.GetType().IsValueType)
                 return;
             if (!seen.Add(value))
@@ -480,15 +511,19 @@ public sealed partial class StoredGraph
             return result;
         }
 
+        if (Checker.VerificationCollectionsTryLinkLocation(value, out bool locationEmpty))
+        {
+            result.Kind = locationEmpty ? nullKind ?? "null" : "reference";
+            result.Null = locationEmpty;
+            result.Ref = Reference(value);
+            return result;
+        }
+
         switch (value)
         {
             case Node node:
                 result.Kind = "node";
                 result.Ref = binding.AddNode(node);
-                break;
-            case NodeData node:
-                result.Kind = "node";
-                result.Ref = binding.AddNode(node.AsNode());
                 break;
             case FlowNode flow:
                 result.Kind = "flow";

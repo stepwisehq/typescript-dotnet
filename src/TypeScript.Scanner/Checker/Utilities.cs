@@ -10,7 +10,7 @@ public sealed partial class Checker
     // utilities.go:127/133. Const assertion names do not resolve as ordinary names.
     private static bool isConstTypeReference(Node node) => Ast.IsTypeReferenceNode(node) &&
         GoRuntime.Len(node.TypeArguments()) == 0 && Ast.IsIdentifier(node.AsTypeReferenceNode().TypeName) &&
-        node.AsTypeReferenceNode().TypeName.Text() == "const";
+        node.AsTypeReferenceNode().TypeName.TextEquals("const"u8);
 
     private static bool isConstTypeReferenceName(Node node) => node != null && Ast.IsIdentifier(node) &&
         node.Parent != null && isConstTypeReference(node.Parent) &&
@@ -64,16 +64,22 @@ public sealed partial class Checker
     // utilities.go:59 and 1264. Yield traversal excludes nested function bodies,
     // while retaining computed names evaluated in the containing generator.
     private static bool hasAsyncModifier(Node node) => Ast.HasSyntacticModifier(node, ModifierFlags.Async);
-    private static bool forEachYieldExpression(Node body, Func<Node, bool> visitor)
+    private static bool forEachYieldExpression(Node body, Func<Node, bool> visitor) =>
+        forEachYieldExpression(body, visitor, static (expression, callback) => callback(expression));
+
+    private static bool forEachYieldExpression<TState>(Node body, TState state, Func<Node, TState, bool> visitor)
     {
-        bool Traverse(Node node)
+        // utilities.go:1264. One recursive visitor belongs to this traversal;
+        // the virtual node visitor boundary retains the source callback lifetime.
+        Visitor traverse = null;
+        traverse = node =>
         {
             switch (node.Kind)
             {
                 case Kind.YieldExpression:
-                    if (visitor(node)) return true;
+                    if (visitor(node, state)) return true;
                     var operand = node.Expression();
-                    return operand != null && Traverse(operand);
+                    return operand != null && traverse(operand);
                 case Kind.EnumDeclaration:
                 case Kind.InterfaceDeclaration:
                 case Kind.ModuleDeclaration:
@@ -83,15 +89,15 @@ public sealed partial class Checker
                     if (Ast.IsFunctionLike(node))
                     {
                         if (node.Name() != null && Ast.IsComputedPropertyName(node.Name()))
-                            return Traverse(node.Name().Expression());
+                            return traverse(node.Name().Expression());
                     }
                     else if (!Ast.IsPartOfTypeNode(node))
-                        return node.ForEachChild(Traverse);
+                        return node.ForEachChild(traverse);
                     break;
             }
             return false;
-        }
-        return Traverse(body);
+        };
+        return traverse(body);
     }
 
     // utilities.go:1150. Entity-name callers supply a parent, as in the source precondition.
@@ -104,13 +110,13 @@ public sealed partial class Checker
     }
 
     // utilities.go:350. Empty input retains a nil table; duplicate names retain the last symbol.
-    private static SymbolTable createSymbolTable(List<Symbol> symbols)
+    private static SymbolTable createSymbolTable(Slice<Symbol> symbols)
     {
         if (GoRuntime.Len(symbols) == 0)
             return null;
         var result = new SymbolTable();
         foreach (var symbol in symbols)
-            result[symbol.Name] = symbol;
+            result[symbol.NameValue] = symbol;
         return result;
     }
 
@@ -502,7 +508,7 @@ public sealed partial class Checker
             case true when ((t1.flags & TypeFlags.StringLiteral) != 0):
             {
                 {
-                    var c19 = string.CompareOrdinal(((string)t1.AsLiteralType().value), ((string)t2.AsLiteralType().value));
+                    var c19 = ByteStringKey.FromValue(t1.AsLiteralType().StringValue()).CompareTo(ByteStringKey.FromValue(t2.AsLiteralType().StringValue()));
                     if ((c19 != 0))
                     {
                         return c19;
@@ -745,12 +751,12 @@ public sealed partial class Checker
         var s1 = getTypeNameSymbol(t1);
         var s2 = getTypeNameSymbol(t2);
         if (s1 == s2)
-            return compareTypeLists(t1.alias?.TypeArguments(), t2.alias?.TypeArguments());
+            return compareTypeLists(t1.alias?.TypeArguments() ?? default, t2.alias?.TypeArguments() ?? default);
         if (s1 == null)
             return 1;
         if (s2 == null)
             return -1;
-        var result = string.CompareOrdinal(s1.Name, s2.Name);
+        var result = compareSymbolNames(s1.NameValue, s2.NameValue);
         return result != 0 ? result : t1.checker.compareSymbolsWorker(s1, s2);
     }
 
@@ -781,7 +787,7 @@ public sealed partial class Checker
             return 1;
         if (right == null)
             return -1;
-        int leftCount = left.Declarations?.Count ?? 0, rightCount = right.Declarations?.Count ?? 0;
+        int leftCount = left.Declarations.Count, rightCount = right.Declarations.Count;
         if (leftCount != 0 && rightCount != 0)
         {
             int c = compareNodes(left.Declarations[0], right.Declarations[0]);
@@ -792,7 +798,9 @@ public sealed partial class Checker
             return -1;
         else if (rightCount != 0)
             return 1;
-        int result = string.CompareOrdinal(left.Name, right.Name);
+        var leftName = left.NameValue;
+        var rightName = right.NameValue;
+        int result = compareSymbolNames(leftName, rightName);
         if (result != 0)
             return result;
         return unchecked((int)(Ast.GetSymbolId(left) - Ast.GetSymbolId(right)));
@@ -823,7 +831,17 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     internal void sortSymbols(List<Symbol> symbols) => symbols.Sort(compareSymbolsForSort);
+    internal void sortSymbols(Slice<Symbol> symbols) => GoSlices.SortFunc(symbols, compareSymbolsForSort);
     internal static bool isReservedMemberName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] != '@' && name[1] != '#';
+    internal static bool isReservedMemberName(ByteStringKey name) => isReservedMemberName(name.Value);
+    internal static bool isReservedMemberName(ByteStringValue name)
+    {
+        if (name.IsNull) throw new NullReferenceException();
+        if (name.Length < 2) return false;
+        return name.IsBytes
+            ? name.ByteSpan[0] == 0xFE && name.ByteSpan[1] != (byte)'@' && name.ByteSpan[1] != (byte)'#'
+            : name.CharSpan[0] == '\u00FE' && name.CharSpan[1] != '@' && name.CharSpan[1] != '#';
+    }
 }
 
 public sealed partial class Checker
@@ -889,14 +907,15 @@ public sealed partial class Checker
 {
     // checker/utilities.go:922/929, selected static property-name types.
     private static bool isTypeUsableAsPropertyName(Type t) => (t.flags & TypeFlags.StringOrNumberLiteralOrUnique) != 0;
-    private static string getPropertyNameFromType(Type t)
+    private static string getPropertyNameFromType(Type t) => getPropertyNameValueFromType(t).Materialize();
+    internal static ByteStringValue getPropertyNameValueFromType(Type t)
     {
         if ((t.flags & TypeFlags.StringLiteral) != 0)
-            return (string)t.AsLiteralType().value;
+            return t.AsLiteralType().StringValue();
         if ((t.flags & TypeFlags.NumberLiteral) != 0)
-            return ((JsNum.Number)t.AsLiteralType().value).String();
+            return ByteStringValue.FromString(((JsNum.Number)t.AsLiteralType().value).String());
         if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
-            return t.AsUniqueESSymbolType().name;
+            return ByteStringValue.FromString(t.AsUniqueESSymbolType().name);
         throw new InvalidOperationException("Unhandled case in getPropertyNameFromType");
     }
 }
@@ -943,7 +962,11 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // checker/utilities.go:1018/1029.
-    private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.Name);
+    private static int compareSymbolNames(ByteStringValue left, ByteStringValue right) =>
+        left.IsNull ? (right.IsNull ? 0 : -1) : right.IsNull ? 1 :
+        ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right));
+
+    private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.NameValue);
     internal static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
     // utilities.go:1029. Internal symbol names are raw bytes, including 0xFE.
     internal static bool isLateBoundName(ByteStringValue name)
@@ -966,6 +989,7 @@ public sealed partial class Checker
 {
     // utilities.go:941. ECMAScript numeric property-name round trip.
     internal static bool isNumericLiteralName(string name) => JsNum.FromString(name).String() == name;
+    internal static bool isNumericLiteralName(ByteStringValue name) => name.EqualsString(JsNum.FromString(name).String());
 }
 
 public sealed partial class Checker
@@ -1477,7 +1501,7 @@ public sealed partial class Checker
 
         if (((t.flags & TypeFlags.Instantiable) != 0))
         {
-            var constraint = this.getResolvedBaseConstraint(t, null);
+            var constraint = this.getResolvedBaseConstraint(t, default);
             return ((constraint != t) && this.isJSLiteralType(constraint));
         }
 
@@ -1549,30 +1573,40 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // utilities.go:970. Numeric placeholder validation retains the actual JS-number coercion.
-    private static bool isValidNumberString(string text, bool roundTripOnly)
+    private static bool isValidNumberString(string text, bool roundTripOnly) =>
+        isValidNumberString(ByteStringValue.FromString(text), roundTripOnly);
+    private static bool isValidNumberString(ByteStringValue text, bool roundTripOnly)
     {
-        if (text == "")
+        if (!text.IsNull && text.Length == 0)
             return false;
         var number = JsNum.FromString(text);
-        return !number.IsNaN() && !number.IsInf() && (!roundTripOnly || number.String() == text);
+        return !number.IsNaN() && !number.IsInf() && (!roundTripOnly || text.EqualsString(number.String()));
     }
 
     // utilities.go:978. Validate full raw byte-string bigint spelling through the original scanner.
-    private static bool isValidBigIntString(string text, bool roundTripOnly)
+    private static bool isValidBigIntString(string text, bool roundTripOnly) =>
+        isValidBigIntString(ByteStringValue.FromString(text), roundTripOnly);
+    private static bool isValidBigIntString(ByteStringValue text, bool roundTripOnly)
     {
-        if (text == "")
+        if (!text.IsNull && text.Length == 0)
             return false;
         var scanner = new TypeScript.Scanner.Scanner();
         scanner.SetSkipTrivia(false);
         bool success = true;
         scanner.SetOnError((message, start, length, args) => success = false);
-        scanner.SetText(GoString.Bytes(text + "n"));
+        // utilities.go:978 owns text+"n". Build that required byte buffer directly;
+        // SetByteTextInternal transfers it without another public-ingress copy.
+        var bytes = new byte[text.Length + 1];
+        if (text.IsBytes) text.ByteSpan.CopyTo(bytes);
+        else System.Text.Encoding.Latin1.GetBytes(text.CharSpan, bytes);
+        bytes[^1] = (byte)'n';
+        scanner.SetByteTextInternal(ByteStringView.FromOwnedBytes(bytes));
         var result = scanner.Scan();
         bool negative = result == Kind.MinusToken;
         if (negative)
             result = scanner.Scan();
         var flags = scanner.TokenFlags();
-        return success && result == Kind.BigIntLiteral && scanner.TokenEnd() == text.Length + 1 && (flags & TokenFlags.ContainsSeparator) == 0 && (!roundTripOnly || text == pseudoBigIntToString(JsNum.NewPseudoBigInt(JsNum.ParsePseudoBigInt(GoString.FromBytes(scanner.TokenValueBytes())), negative)));
+        return success && result == Kind.BigIntLiteral && scanner.TokenEnd() == text.Length + 1 && (flags & TokenFlags.ContainsSeparator) == 0 && (!roundTripOnly || text.EqualsString(pseudoBigIntToString(JsNum.NewPseudoBigInt(JsNum.ParsePseudoBigInt(scanner.TokenValueTextValue()), negative))));
     }
 }
 
@@ -1628,7 +1662,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // utilities.go:1304.
-    private static List<Node> getDeclarationsOfKind(Symbol symbol, Kind kind) => Core.Filter(symbol.Declarations, declaration => declaration.Kind == kind);
+    private static Slice<Node> getDeclarationsOfKind(Symbol symbol, Kind kind) => Core.Filter(symbol.Declarations, declaration => declaration.Kind == kind);
 }
 
 public sealed partial class Checker
@@ -1706,12 +1740,12 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // slices.Compare adaptation: lexicographic raw-string comparison.
-    private static int compareTemplateTexts(List<string> left, List<string> right)
+    private static int compareTemplateTexts(Slice<ByteStringValue> left, Slice<ByteStringValue> right)
     {
         int count = Math.Min(GoRuntime.Len(left), GoRuntime.Len(right));
         for (int i = 0; i < count; i++)
         {
-            int result = string.CompareOrdinal(left[i], right[i]);
+            int result = compareSymbolNames(left[i], right[i]);
             if (result != 0)
                 return result;
         }
@@ -1794,10 +1828,20 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    // utilities.go:1690. Go map range + append preserve absent empty result.
-    private static List<Symbol> symbolsToArray(SymbolTable symbols)
+    // Source slices.Collect(table.Values()) retains every entry, including reserved members.
+    private static Slice<Symbol> collectSymbolValues(SymbolTable symbols)
     {
-        List<Symbol> result = null;
+        Slice<Symbol> result = default;
+        if (symbols != null)
+            foreach (var symbol in symbols.Values)
+                result = result.Append(symbol);
+        return result;
+    }
+
+    // utilities.go:1690. Go map range + append preserve absent empty result.
+    private static Slice<Symbol> symbolsToArray(SymbolTable symbols)
+    {
+        Slice<Symbol> result = default;
         if (symbols != null)
             foreach (var pair in symbols)
                 if (!isReservedMemberName(pair.Key))
@@ -1811,6 +1855,7 @@ public sealed partial class Checker
     // utilities.go:1749; printer.go:249 forwards to this same value formatter.
     internal static string ValueToString(object value) => value switch
     {
+        ByteStringValue text => ValueToString(text.Materialize()),
         string text => "\"" + TypeScript.DiagnosticPrinting.Printer.EscapeString(text, '\"') + "\"",
         JsNum.Number number => number.String(),
         bool boolean => boolean ? "true" : "false",
@@ -1840,7 +1885,7 @@ public sealed partial class Checker
     // utilities.go:1633. Declaration identity, rather than equivalent filenames.
     private static bool allDeclarationsInSameSourceFile(Symbol symbol)
     {
-        if ((symbol.Declarations?.Count ?? 0) > 1)
+        if ((symbol.Declarations.Count) > 1)
         {
             var file = Ast.GetSourceFileOfNode(symbol.Declarations[0]);
             for (int i = 1; i < symbol.Declarations.Count; i++)

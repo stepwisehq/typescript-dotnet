@@ -19,7 +19,7 @@ internal enum ResultKind : byte
 
 internal sealed class ModuleSpecifiersResult
 {
-    internal List<ModuleSpecifier>? Specifiers;
+    internal Slice<ModuleSpecifier> Specifiers;
     internal ResultKind Kind;
     internal Symbol? AmbientModuleSymbol = null;
 }
@@ -78,7 +78,7 @@ internal interface IModuleSpecifierGenerationHost : TypeScript.OutputPaths.IOutp
     RootedDirectoryPath GetGlobalTypingsCacheLocation();
     RootedDirectoryPath BaseDirectory();
     TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path);
-    List<RootedFilePath>? GetRedirectTargets(PathKey path);
+    Slice<RootedFilePath> GetRedirectTargets(PathKey path);
     RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file);
     bool FileExists(RootedFilePath path);
     RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory);

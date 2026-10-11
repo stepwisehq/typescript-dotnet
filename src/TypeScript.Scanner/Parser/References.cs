@@ -33,19 +33,19 @@ public partial class Parser
             var moduleNameExpr = Ast.GetExternalModuleName(node);
             if (((moduleNameExpr != null) && Ast.IsStringLiteral(moduleNameExpr)))
             {
-                var moduleName = moduleNameExpr.Text();
-                if (((moduleName != "") && ((!inAmbientModule || !TsPath.IsExternalModuleNameRelative(moduleName)))))
+                var moduleName = moduleNameExpr.TextValue();
+                if (((!moduleName.EqualsBytes(""u8)) && ((!inAmbientModule || !TsPath.IsExternalModuleNameRelative(moduleName)))))
                 {
                     Ast.SetImportsOfSourceFile(file, GoRuntime.Append(file.Imports(), moduleNameExpr));
                     if (((file.UsesUriStyleNodeCoreModules != Tristate.True) && !file.IsDeclarationFile))
                     {
-                        if ((GoStrings.HasPrefix(moduleName, "node:") && !Core.ExclusivelyPrefixedNodeCoreModules.Contains(moduleName)))
+                        if ((moduleName.Length >= 5 && moduleName.Slice(0, 5).EqualsBytes("node:"u8) && !Core.ContainsExclusivelyPrefixedNodeCoreModule(moduleName)))
                         {
                             file.UsesUriStyleNodeCoreModules = Tristate.True;
                         }
                         else
                         {
-                            if (((file.UsesUriStyleNodeCoreModules == Tristate.Unknown) && Core.UnprefixedNodeCoreModules.Contains(moduleName)))
+                            if (((file.UsesUriStyleNodeCoreModules == Tristate.Unknown) && Core.ContainsUnprefixedNodeCoreModule(moduleName)))
                             {
                                 file.UsesUriStyleNodeCoreModules = Tristate.False;
                             }
@@ -59,7 +59,7 @@ public partial class Parser
 
         if (((Ast.IsModuleDeclaration(node) && Ast.IsAmbientModule(node)) && (((inAmbientModule || Ast.HasSyntacticModifier(node, ModifierFlags.Ambient)) || file.IsDeclarationFile))))
         {
-            var nameText = node.AsModuleDeclaration().Name().Text();
+            var nameText = node.AsModuleDeclaration().Name().TextValue();
             if ((Ast.IsExternalModule(file) || ((inAmbientModule && !TsPath.IsExternalModuleNameRelative(nameText)))))
             {
                 file.ModuleAugmentations = GoRuntime.Append(file.ModuleAugmentations, node.AsModuleDeclaration().Name());

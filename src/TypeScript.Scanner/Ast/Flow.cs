@@ -98,7 +98,7 @@ public static partial class Ast
     }
 }
 
-public sealed partial class Node
+public partial class Node
 {
     public FlowSwitchClauseData AsFlowSwitchClauseData() => (FlowSwitchClauseData)data;
     public FlowReduceLabelData AsFlowReduceLabelData() => (FlowReduceLabelData)data;

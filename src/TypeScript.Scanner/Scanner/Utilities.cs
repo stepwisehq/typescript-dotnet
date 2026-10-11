@@ -6,7 +6,7 @@ namespace TypeScript.Scanner;
 public partial class Scanner
 {
     private static bool tokenIsIdentifierOrKeyword(Kind token) => token >= Kind.Identifier;
-    public static Kind IdentifierToKeywordKind(Identifier node) => textToKeyword.TryGetValue(node.Text, out Kind kind) ? kind : Kind.Unknown;
+    public static Kind IdentifierToKeywordKind(Identifier node) => node.TextValue.TryGetValue(textToKeyword, out Kind kind) ? kind : Kind.Unknown;
     internal static bool isJSDocTypeExpressionOrChild(Node node)
     {
         if (Ast.IsJSDocTypeExpression(node))
@@ -19,11 +19,12 @@ public partial class Scanner
         return false;
     }
 
-    internal static string normalizeJSDocTypeSourceText(ByteStringView text)
+    internal static string normalizeJSDocTypeSourceText(ByteStringView text) => normalizeJSDocTypeSourceTextValue(text).Materialize()!;
+    internal static ByteStringValue normalizeJSDocTypeSourceTextValue(ByteStringView text)
     {
         var lineStarts = Core.ComputeECMALineStarts(text);
         if (lineStarts.Count == 1)
-            return stripLeadingJSDocComment(text).Materialize();
+            return ByteStringValue.FromView(stripLeadingJSDocComment(text));
         var result = new GoBuilder();
         result.Grow(text.Length);
         for (int i = 0; i < lineStarts.Count; i++)
@@ -37,7 +38,7 @@ public partial class Scanner
             result.WriteString(stripLeadingJSDocComment(line).AsSpan());
         }
 
-        return result.String();
+        return result.Value();
     }
 
     private static ByteStringView stripLeadingJSDocComment(ByteStringView line)
@@ -51,61 +52,66 @@ public partial class Scanner
     internal static string GetTextOfNodeFromSourceTextByteString(string sourceText, Node node, bool includeTrivia)
         => GetTextOfNodeFromSourceTextByteString((ByteStringView)sourceText, node, includeTrivia);
 
-    internal static string GetTextOfNodeFromSourceTextByteString(ByteStringView sourceText, Node node, bool includeTrivia)
+    internal static string GetTextOfNodeFromSourceTextByteString(ByteStringView sourceText, Node node, bool includeTrivia) =>
+        GetTextOfNodeFromSourceTextValue(sourceText, node, includeTrivia).Materialize()!;
+    internal static ByteStringValue GetTextOfNodeFromSourceTextValue(ByteStringView sourceText, Node node, bool includeTrivia)
     {
-        if (Ast.NodeIsMissing(node))
-            return "";
+        if (Ast.NodeIsMissing(node)) return default;
         int pos = node.Pos();
-        if (!includeTrivia)
-            pos = SkipTriviaByteString(sourceText, pos);
+        if (!includeTrivia) pos = SkipTriviaByteString(sourceText, pos);
         var borrowed = sourceText.Slice(pos, node.End());
-        string text = isJSDocTypeExpressionOrChild(node)
-            ? normalizeJSDocTypeSourceText(borrowed) : borrowed.Materialize();
+        var text = isJSDocTypeExpressionOrChild(node)
+            ? normalizeJSDocTypeSourceTextValue(borrowed) : ByteStringValue.FromView(borrowed);
         if ((node.Flags & NodeFlags.ReparserTransformedLiteral) != 0)
         {
             if (Ast.IsStringLiteral(node))
-                return (node.AsStringLiteral().TokenFlags & global::TypeScript.Scanner.TokenFlags.SingleQuote) != 0 ? "'" + text + "'" : "\"" + text + "\"";
-            if (Ast.IsIdentifier(node))
-                return node.Text();
+            {
+                var builder = new GoBuilder();
+                int quote = (node.AsStringLiteral().TokenFlags & global::TypeScript.Scanner.TokenFlags.SingleQuote) != 0 ? '\'' : '"';
+                builder.WriteByte(quote);
+                builder.WriteString(text);
+                builder.WriteByte(quote);
+                return builder.Value();
+            }
+            if (Ast.IsIdentifier(node)) return node.TextValue();
             throw new InvalidOperationException("Unexpected reparser-transformed node kind: " + node.Kind);
         }
-
         return text;
     }
 
-    public static string GetTextOfNodeFromSourceText(string sourceText, Node node, bool includeTrivia) => ScannerString.ToJsString(GetTextOfNodeFromSourceTextByteString(GoString.ToUtf8(sourceText), node, includeTrivia));
-    public static byte[] GetTextOfNodeFromSourceTextBytes(byte[] sourceText, Node node, bool includeTrivia) => GoString.Bytes(GetTextOfNodeFromSourceTextByteString(GoString.FromBytes(sourceText), node, includeTrivia));
-    internal static string GetSourceTextOfNodeFromSourceFileByteString(SourceFile sourceFile, Node node, bool includeTrivia) => GetTextOfNodeFromSourceTextByteString(sourceFile.TextView(), node, includeTrivia);
-    public static string GetSourceTextOfNodeFromSourceFile(SourceFile sourceFile, Node node, bool includeTrivia) => ScannerString.ToJsString(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
-    public static byte[] GetSourceTextOfNodeFromSourceFileBytes(SourceFile sourceFile, Node node, bool includeTrivia) => GoString.Bytes(GetSourceTextOfNodeFromSourceFileByteString(sourceFile, node, includeTrivia));
-    internal static string GetTextOfNodeByteString(Node node) => GetSourceTextOfNodeFromSourceFileByteString(Ast.GetSourceFileOfNode(node), node, false);
-    internal static string GetTextOfJSDocCommentByteString(NodeList? comment)
+    private static byte[] TextBytes(ByteStringValue text) => text.IsBytes ? text.ByteSpan.ToArray() : GoString.Bytes(text.Materialize()!);
+    public static string GetTextOfNodeFromSourceText(string sourceText, Node node, bool includeTrivia) => ScannerString.ToJsString(GetTextOfNodeFromSourceTextValue(ByteStringView.FromUnicode(sourceText), node, includeTrivia));
+    public static byte[] GetTextOfNodeFromSourceTextBytes(byte[] sourceText, Node node, bool includeTrivia) => TextBytes(GetTextOfNodeFromSourceTextValue(ByteStringView.CopyFrom(sourceText), node, includeTrivia));
+    internal static ByteStringValue GetSourceTextOfNodeFromSourceFileValue(SourceFile sourceFile, Node node, bool includeTrivia) => GetTextOfNodeFromSourceTextValue(sourceFile.TextView(), node, includeTrivia);
+    internal static string GetSourceTextOfNodeFromSourceFileByteString(SourceFile sourceFile, Node node, bool includeTrivia) => GetSourceTextOfNodeFromSourceFileValue(sourceFile, node, includeTrivia).Materialize()!;
+    public static string GetSourceTextOfNodeFromSourceFile(SourceFile sourceFile, Node node, bool includeTrivia) => ScannerString.ToJsString(GetSourceTextOfNodeFromSourceFileValue(sourceFile, node, includeTrivia));
+    public static byte[] GetSourceTextOfNodeFromSourceFileBytes(SourceFile sourceFile, Node node, bool includeTrivia) => TextBytes(GetSourceTextOfNodeFromSourceFileValue(sourceFile, node, includeTrivia));
+    internal static ByteStringValue GetTextOfNodeValue(Node node) => GetSourceTextOfNodeFromSourceFileValue(Ast.GetSourceFileOfNode(node), node, false);
+    internal static string GetTextOfNodeByteString(Node node) => GetTextOfNodeValue(node).Materialize()!;
+    internal static string GetTextOfJSDocCommentByteString(NodeList? comment) => GetTextOfJSDocCommentValue(comment).Materialize()!;
+    internal static ByteStringValue GetTextOfJSDocCommentValue(NodeList? comment)
     {
-        if (comment == null)
-            return "";
+        if (comment == null) return default;
         var builder = new GoBuilder();
         foreach (Node node in comment.Nodes)
         {
             switch (node.Kind)
             {
                 case Kind.JSDocText:
-                    builder.WriteString(node.Text());
+                    builder.WriteString(node.TextValue());
                     break;
                 case Kind.JSDocLink:
                 case Kind.JSDocLinkCode:
                 case Kind.JSDocLinkPlain:
-                    builder.WriteString(GetTextOfNodeByteString(node));
+                    builder.WriteString(GetTextOfNodeValue(node));
                     break;
             }
         }
-
-        // unicode.IsSpace uses the Unicode White_Space property, distinct from
-        // ECMAScript whitespace (which also includes the BOM and zero-width space).
-        return GoStrings.TrimRightFunc(builder.String(), rune => rune is >= 0x09 and <= 0x0D or 0x20 or 0x85 or 0xA0 or 0x1680 or >= 0x2000 and <= 0x200A or 0x2028 or 0x2029 or 0x202F or 0x205F or 0x3000);
+        // unicode.IsSpace differs from ECMAScript whitespace.
+        return GoStrings.TrimRightFunc(builder.Value(), static rune => rune is >= 0x09 and <= 0x0D or 0x20 or 0x85 or 0xA0 or 0x1680 or >= 0x2000 and <= 0x200A or 0x2028 or 0x2029 or 0x202F or 0x205F or 0x3000);
     }
-
-    public static string GetTextOfJSDocComment(NodeList? comment) => ScannerString.ToJsString(GetTextOfJSDocCommentByteString(comment));
-    public static byte[] GetTextOfJSDocCommentBytes(NodeList? comment) => GoString.Bytes(GetTextOfJSDocCommentByteString(comment));
+    public static string GetTextOfJSDocComment(NodeList? comment) => ScannerString.ToJsString(GetTextOfJSDocCommentValue(comment));
+    public static byte[] GetTextOfJSDocCommentBytes(NodeList? comment) => TextBytes(GetTextOfJSDocCommentValue(comment));
     internal static string DeclarationNameToStringByteString(Node? name)
     {
         if (name == null || name.Pos() == name.End())
@@ -121,18 +127,33 @@ public partial class Scanner
 
 public partial class Scanner
 {
-    public static bool IsIdentifierText(string name, LanguageVariant languageVariant) => IsIdentifierTextByteString(GoString.ToUtf8(name), languageVariant);
-    public static bool IsIdentifierText(byte[] name, LanguageVariant languageVariant) => IsIdentifierTextByteString(GoString.FromBytes(name), languageVariant);
-    public static bool IsIntrinsicJsxName(string name) => name.Length != 0 && (name[0] is >= 'a' and <= 'z' || name.Contains('-'));
-    // utilities.go:129. Input is the scanner's internal UTF8 byte-string.
-    internal static bool IsIdentifierTextByteString(string name, LanguageVariant languageVariant)
+    public static bool IsIdentifierText(string name, LanguageVariant languageVariant) => IsIdentifierTextByteString(ByteStringValue.FromView(ByteStringView.FromUnicode(name)), languageVariant);
+    public static bool IsIdentifierText(byte[] name, LanguageVariant languageVariant) => IsIdentifierTextByteString(ByteStringValue.FromView(ByteStringView.CopyFrom(name)), languageVariant);
+    public static bool IsIntrinsicJsxName(string name)
     {
-        var(ch, size) = Utf8.DecodeRuneInString(name);
+        _ = name.Length;
+        return IsIntrinsicJsxName(ByteStringValue.FromString(name));
+    }
+    internal static bool IsIntrinsicJsxName(ByteStringValue name)
+    {
+        if (name.IsNull) throw new NullReferenceException();
+        return name.Length != 0 && (name[0] is >= 'a' and <= 'z' ||
+            (name.IsBytes ? name.ByteSpan.IndexOf((byte)'-') >= 0 : name.CharSpan.IndexOf('-') >= 0));
+    }
+    // utilities.go:129. Input is the scanner's internal UTF8 byte-string.
+    internal static bool IsIdentifierTextByteString(string name, LanguageVariant languageVariant) =>
+        IsIdentifierTextByteString(ByteStringValue.FromString(name), languageVariant);
+    internal static bool IsIdentifierTextByteString(ByteStringValue name, LanguageVariant languageVariant)
+    {
+        if (name.IsNull) throw new NullReferenceException();
+        var(ch, size) = name.IsBytes ? Utf8.DecodeRuneInString(name.ByteSpan)
+            : Utf8.DecodeRuneInString(name.CharSpan);
         if (!IsIdentifierStart(ch))
             return false;
         for (int i = size; i < name.Length;)
         {
-            (ch, size) = Utf8.DecodeRuneInString(name.AsSpan(i));
+            (ch, size) = name.IsBytes ? Utf8.DecodeRuneInString(name.ByteSpan[i..])
+                : Utf8.DecodeRuneInString(name.CharSpan[i..]);
             if (!IsIdentifierPartEx(ch, languageVariant))
                 return false;
             i += size;

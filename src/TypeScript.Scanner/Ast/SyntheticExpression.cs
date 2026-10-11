@@ -7,7 +7,7 @@
 namespace TypeScript.Scanner;
 public sealed class SyntheticExpression : NodeData, ExpressionBase
 {
-    public object Type { get; set; }
+    public new object Type { get; set; }
     public bool IsSpread { get; set; }
     public Node TupleNameSource { get; set; }
 
@@ -40,7 +40,7 @@ public sealed partial class NodeFactory
     }
 }
 
-public sealed partial class Node
+public partial class Node
 {
     public SyntheticExpression AsSyntheticExpression() => (SyntheticExpression)data;
 }

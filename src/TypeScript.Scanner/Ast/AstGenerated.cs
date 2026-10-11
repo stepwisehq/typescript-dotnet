@@ -288,8 +288,8 @@ public sealed partial class Identifier : NodeData, PrimaryExpressionBase, Member
 {
     public FlowNode FlowNode { get; set; }
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewIdentifierWithTextValue(this.TextValue), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "Identifier";
@@ -307,8 +307,8 @@ public sealed partial class Identifier : NodeData, PrimaryExpressionBase, Member
 public sealed partial class PrivateIdentifier : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewPrivateIdentifierWithTextValue(this.TextValue), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "PrivateIdentifier";
@@ -349,7 +349,7 @@ public sealed partial class QualifiedName : NodeData, FlowNodeBase
 public sealed partial class ComputedPropertyName : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewComputedPropertyName(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -369,7 +369,7 @@ public sealed partial class ComputedPropertyName : NodeData
 public sealed partial class Decorator : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewDecorator(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -407,7 +407,7 @@ public sealed partial class IfStatement : NodeData, StatementBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
     public Node ThenStatement { get; set; }
     public Node ElseStatement { get; set; }
 
@@ -432,8 +432,8 @@ public sealed partial class DoStatement : NodeData, IterationStatementBase, Stat
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Statement { get; set; }
-    public Node Expression { get; set; }
+    public new Node Statement { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Statement) || Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewDoStatement(this.Statement, this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -455,8 +455,8 @@ public sealed partial class WhileStatement : NodeData, IterationStatementBase, S
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Statement { get; set; }
-    public Node Expression { get; set; }
+    public new Node Statement { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Statement);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewWhileStatement(this.Expression, this.Statement), this.AsNode(), f.AsNodeFactory().hooks);
@@ -478,10 +478,10 @@ public sealed partial class ForStatement : NodeData, IterationStatementBase, Sta
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Statement { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Node Statement { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public Node Initializer { get; set; }
+    public new Node Initializer { get; set; }
     public Node Condition { get; set; }
     public Node Incrementor { get; set; }
 
@@ -509,12 +509,12 @@ public sealed partial class ForInOrOfStatement : NodeData, StatementBase, FlowNo
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node AwaitModifier { get; set; }
-    public Node Initializer { get; set; }
-    public Node Expression { get; set; }
-    public Node Statement { get; set; }
+    public new Node Initializer { get; set; }
+    public new Node Expression { get; set; }
+    public new Node Statement { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.AwaitModifier) || Ast.Visit(v, this.Initializer) || Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Statement);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewForInOrOfStatement(this.Kind, this.AwaitModifier, this.Initializer, this.Expression, this.Statement), this.AsNode(), f.AsNodeFactory().hooks);
@@ -539,7 +539,7 @@ public sealed partial class ForInOrOfStatement : NodeData, StatementBase, FlowNo
 public sealed partial class BreakStatement : NodeData, StatementBase, FlowNodeBase
 {
     public FlowNode FlowNode { get; set; }
-    public Node Label { get; set; }
+    public new Node Label { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Label);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewBreakStatement(this.Label), this.AsNode(), f.AsNodeFactory().hooks);
@@ -559,7 +559,7 @@ public sealed partial class BreakStatement : NodeData, StatementBase, FlowNodeBa
 public sealed partial class ContinueStatement : NodeData, StatementBase, FlowNodeBase
 {
     public FlowNode FlowNode { get; set; }
-    public Node Label { get; set; }
+    public new Node Label { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Label);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewContinueStatement(this.Label), this.AsNode(), f.AsNodeFactory().hooks);
@@ -580,7 +580,7 @@ public sealed partial class ReturnStatement : NodeData, StatementBase, FlowNodeB
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewReturnStatement(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -601,8 +601,8 @@ public sealed partial class WithStatement : NodeData, StatementBase, FlowNodeBas
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
-    public Node Statement { get; set; }
+    public new Node Expression { get; set; }
+    public new Node Statement { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Statement);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewWithStatement(this.Expression, this.Statement), this.AsNode(), f.AsNodeFactory().hooks);
@@ -624,7 +624,7 @@ public sealed partial class SwitchStatement : NodeData, StatementBase, FlowNodeB
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
     public Node CaseBlock { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.CaseBlock);
@@ -646,7 +646,7 @@ public sealed partial class SwitchStatement : NodeData, StatementBase, FlowNodeB
 public sealed partial class CaseBlock : NodeData, LocalsContainerBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public NodeList Clauses { get; set; }
 
@@ -669,8 +669,8 @@ public sealed partial class CaseBlock : NodeData, LocalsContainerBase
 public sealed partial class CaseOrDefaultClause : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node Expression { get; set; }
-    public NodeList Statements { get; set; }
+    public new Node Expression { get; set; }
+    public new NodeList Statements { get; set; }
     public FlowNode FallthroughFlowNode { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.VisitNodeList(v, this.Statements);
@@ -693,7 +693,7 @@ public sealed partial class ThrowStatement : NodeData, StatementBase, FlowNodeBa
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewThrowStatement(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -738,7 +738,7 @@ public sealed partial class TryStatement : NodeData, StatementBase, FlowNodeBase
 public sealed partial class CatchClause : NodeData, LocalsContainerBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node VariableDeclaration { get; set; }
     public Node Block { get; set; }
@@ -780,8 +780,8 @@ public sealed partial class DebuggerStatement : NodeData, StatementBase, FlowNod
 public sealed partial class LabeledStatement : NodeData, StatementBase, FlowNodeBase
 {
     public FlowNode FlowNode { get; set; }
-    public Node Label { get; set; }
-    public Node Statement { get; set; }
+    public new Node Label { get; set; }
+    public new Node Statement { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Label) || Ast.Visit(v, this.Statement);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewLabeledStatement(this.Label, this.Statement), this.AsNode(), f.AsNodeFactory().hooks);
@@ -802,7 +802,7 @@ public sealed partial class LabeledStatement : NodeData, StatementBase, FlowNode
 public sealed partial class ExpressionStatement : NodeData, StatementBase, FlowNodeBase
 {
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewExpressionStatement(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -823,9 +823,9 @@ public sealed partial class Block : NodeData, StatementBase, FlowNodeBase, Local
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList Statements { get; set; }
+    public new NodeList Statements { get; set; }
     public bool MultiLine { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Statements);
@@ -874,12 +874,12 @@ public sealed partial class VariableStatement : NodeData, StatementBase, FlowNod
 public sealed partial class VariableDeclaration : NodeData, DeclarationBase, ExportableBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public Node name { get; set; }
     public Node ExclamationToken { get; set; }
-    public Node Type { get; set; }
-    public Node Initializer { get; set; }
+    public new Node Type { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.name) || Ast.Visit(v, this.ExclamationToken) || Ast.Visit(v, this.Type) || Ast.Visit(v, this.Initializer);
@@ -924,7 +924,7 @@ public sealed partial class VariableDeclarationList : NodeData
 public sealed partial class BindingPattern : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public NodeList Elements { get; set; }
+    public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewBindingPattern(this.Kind, this.Elements), this.AsNode(), f.AsNodeFactory().hooks);
@@ -944,13 +944,13 @@ public sealed partial class BindingPattern : NodeData
 public sealed partial class ParameterDeclaration : NodeData, DeclarationBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node DotDotDotToken { get; set; }
     public Node name { get; set; }
-    public Node QuestionToken { get; set; }
-    public Node Type { get; set; }
-    public Node Initializer { get; set; }
+    public new Node QuestionToken { get; set; }
+    public new Node Type { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -978,13 +978,13 @@ public sealed partial class ParameterDeclaration : NodeData, DeclarationBase, Mo
 public sealed partial class BindingElement : NodeData, DeclarationBase, ExportableBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public FlowNode FlowNode { get; set; }
     public Node DotDotDotToken { get; set; }
-    public Node PropertyName { get; set; }
+    public new Node PropertyName { get; set; }
     public Node name { get; set; }
-    public Node Initializer { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.DotDotDotToken) || Ast.Visit(v, this.PropertyName) || Ast.Visit(v, this.name) || Ast.Visit(v, this.Initializer);
@@ -1010,7 +1010,7 @@ public sealed partial class BindingElement : NodeData, DeclarationBase, Exportab
 public sealed partial class MissingDeclaration : NodeData, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
 {
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
@@ -1035,17 +1035,17 @@ public sealed partial class FunctionDeclaration : NodeData, StatementBase, FlowN
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public Node name { get; set; }
     public FlowNode ReturnFlowNode { get; set; }
@@ -1085,15 +1085,15 @@ public sealed partial class ClassDeclaration : NodeData, StatementBase, FlowNode
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node name { get; set; }
-    public NodeList TypeParameters { get; set; }
+    public new NodeList TypeParameters { get; set; }
     public NodeList HeritageClauses { get; set; }
-    public NodeList Members { get; set; }
+    public new NodeList Members { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1124,15 +1124,15 @@ public sealed partial class ClassDeclaration : NodeData, StatementBase, FlowNode
 public sealed partial class ClassExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ClassLikeBase, ExportableBase, ModifiersBase, LocalsContainerBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node name { get; set; }
-    public NodeList TypeParameters { get; set; }
+    public new NodeList TypeParameters { get; set; }
     public NodeList HeritageClauses { get; set; }
-    public NodeList Members { get; set; }
+    public new NodeList Members { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1184,13 +1184,13 @@ public sealed partial class HeritageClause : NodeData
 public sealed partial class InterfaceDeclaration : NodeData, TypeSyntaxBase, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase
 {
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public NodeList TypeParameters { get; set; }
+    public new NodeList TypeParameters { get; set; }
     public NodeList HeritageClauses { get; set; }
-    public NodeList Members { get; set; }
+    public new NodeList Members { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1219,14 +1219,14 @@ public sealed partial class InterfaceDeclaration : NodeData, TypeSyntaxBase, Sta
 public sealed partial class TypeAliasDeclaration : NodeData, TypeSyntaxBase, StatementBase, FlowNodeBase, DeclarationBase, ExportableBase, ModifiersBase, LocalsContainerBase
 {
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node name { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new Node Type { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1268,11 +1268,11 @@ public sealed partial class TypeAliasDeclaration : NodeData, TypeSyntaxBase, Sta
 public sealed partial class EnumMember : NodeData, DeclarationBase, NamedMemberBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public Node Initializer { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1299,11 +1299,11 @@ public sealed partial class EnumDeclaration : NodeData, StatementBase, FlowNodeB
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public NodeList Members { get; set; }
+    public new NodeList Members { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1331,7 +1331,7 @@ public sealed partial class ModuleBlock : NodeData, StatementBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public NodeList Statements { get; set; }
+    public new NodeList Statements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Statements);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewModuleBlock(this.Statements), this.AsNode(), f.AsNodeFactory().hooks);
@@ -1367,7 +1367,7 @@ public sealed partial class NotEmittedStatement : NodeData, StatementBase, FlowN
 
 public sealed partial class NotEmittedTypeElement : NodeData, TypeElementBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNotEmittedTypeElement(), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "NotEmittedTypeElement";
@@ -1387,10 +1387,10 @@ public sealed partial class ImportDeclaration : NodeData, StatementBase, FlowNod
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
     public ModifierList modifiers { get; set; }
-    public Symbol Symbol { get; set; }
-    public Node ImportClause { get; set; }
-    public Node ModuleSpecifier { get; set; }
-    public Node Attributes { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Node ImportClause { get; set; }
+    public new Node ModuleSpecifier { get; set; }
+    public new Node Attributes { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
     public override void SetModifiers(ModifierList value) => modifiers = value;
@@ -1427,7 +1427,7 @@ public sealed partial class ImportDeclaration : NodeData, StatementBase, FlowNod
 
 public sealed partial class ExternalModuleReference : NodeData
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewExternalModuleReference(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -1446,8 +1446,8 @@ public sealed partial class ExternalModuleReference : NodeData
 
 public sealed partial class NamespaceImport : NodeData, DeclarationBase, ExportableBase
 {
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -1470,7 +1470,7 @@ public sealed partial class NamespaceImport : NodeData, DeclarationBase, Exporta
 public sealed partial class NamedImports : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public NodeList Elements { get; set; }
+    public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNamedImports(this.Elements), this.AsNode(), f.AsNodeFactory().hooks);
@@ -1491,11 +1491,11 @@ public sealed partial class ExportAssignment : NodeData, StatementBase, FlowNode
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public bool IsExportEquals { get; set; }
-    public Node Type { get; set; }
-    public Node Expression { get; set; }
+    public new Node Type { get; set; }
+    public new Node Expression { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
     public override void SetModifiers(ModifierList value) => modifiers = value;
@@ -1521,7 +1521,7 @@ public sealed partial class ExportAssignment : NodeData, StatementBase, FlowNode
 public sealed partial class NamespaceExportDeclaration : NodeData, TypeSyntaxBase, StatementBase, FlowNodeBase, DeclarationBase, ModifiersBase
 {
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
 
@@ -1547,7 +1547,7 @@ public sealed partial class NamespaceExportDeclaration : NodeData, TypeSyntaxBas
 
 public sealed partial class NamespaceExport : NodeData, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -1569,7 +1569,7 @@ public sealed partial class NamespaceExport : NodeData, DeclarationBase
 public sealed partial class NamedExports : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
-    public NodeList Elements { get; set; }
+    public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNamedExports(this.Elements), this.AsNode(), f.AsNodeFactory().hooks);
@@ -1589,10 +1589,10 @@ public sealed partial class NamedExports : NodeData
 public sealed partial class ExportSpecifier : NodeData, DeclarationBase, ExportableBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
-    public bool IsTypeOnly { get; set; }
-    public Node PropertyName { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
+    public new bool IsTypeOnly { get; set; }
+    public new Node PropertyName { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -1616,12 +1616,12 @@ public sealed partial class ExportSpecifier : NodeData, DeclarationBase, Exporta
 
 public sealed partial class CallSignatureDeclaration : NodeData, TypeElementBase, TypeSyntaxBase, DeclarationBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.TypeParameters) || Ast.VisitNodeList(v, this.Parameters) || Ast.Visit(v, this.Type);
@@ -1646,12 +1646,12 @@ public sealed partial class CallSignatureDeclaration : NodeData, TypeElementBase
 
 public sealed partial class ConstructSignatureDeclaration : NodeData, TypeElementBase, TypeSyntaxBase, DeclarationBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.TypeParameters) || Ast.VisitNodeList(v, this.Parameters) || Ast.Visit(v, this.Type);
@@ -1677,16 +1677,16 @@ public sealed partial class ConstructSignatureDeclaration : NodeData, TypeElemen
 public sealed partial class ConstructorDeclaration : NodeData, ClassElementBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode ReturnFlowNode { get; set; }
 
@@ -1720,18 +1720,18 @@ public sealed partial class ConstructorDeclaration : NodeData, ClassElementBase,
 public sealed partial class GetAccessorDeclaration : NodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode FlowNode { get; set; }
 
@@ -1768,18 +1768,18 @@ public sealed partial class GetAccessorDeclaration : NodeData, AccessorDeclarati
 public sealed partial class SetAccessorDeclaration : NodeData, AccessorDeclarationBase, TypeElementBase, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode FlowNode { get; set; }
 
@@ -1815,13 +1815,13 @@ public sealed partial class SetAccessorDeclaration : NodeData, AccessorDeclarati
 
 public sealed partial class IndexSignatureDeclaration : NodeData, TypeElementBase, ClassElementBase, TypeSyntaxBase, DeclarationBase, ModifiersBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
@@ -1849,15 +1849,15 @@ public sealed partial class IndexSignatureDeclaration : NodeData, TypeElementBas
 
 public sealed partial class MethodSignatureDeclaration : NodeData, TypeElementBase, TypeSyntaxBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override Node Name() => name;
@@ -1889,18 +1889,18 @@ public sealed partial class MethodSignatureDeclaration : NodeData, TypeElementBa
 public sealed partial class MethodDeclaration : NodeData, ClassElementBase, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode FlowNode { get; set; }
 
@@ -1936,12 +1936,12 @@ public sealed partial class MethodDeclaration : NodeData, ClassElementBase, Obje
 
 public sealed partial class PropertySignatureDeclaration : NodeData, TypeElementBase, TypeSyntaxBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public Node Type { get; set; }
-    public Node Initializer { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new Node Type { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1968,12 +1968,12 @@ public sealed partial class PropertySignatureDeclaration : NodeData, TypeElement
 public sealed partial class PropertyDeclaration : NodeData, ClassElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public Node Type { get; set; }
-    public Node Initializer { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new Node Type { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -1999,7 +1999,7 @@ public sealed partial class PropertyDeclaration : NodeData, ClassElementBase, De
 
 public sealed partial class SemicolonClassElement : NodeData, ClassElementBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSemicolonClassElement(), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "SemicolonClassElement";
@@ -2017,11 +2017,11 @@ public sealed partial class SemicolonClassElement : NodeData, ClassElementBase, 
 public sealed partial class ClassStaticBlockDeclaration : NodeData, ClassElementBase, DeclarationBase, ModifiersBase, LocalsContainerBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode ReturnFlowNode { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
@@ -2080,8 +2080,8 @@ public sealed partial class KeywordExpression : NodeData, ExpressionBase, FlowNo
 public sealed partial class StringLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewStringLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2101,8 +2101,8 @@ public sealed partial class StringLiteral : NodeData, LiteralExpressionBase, Pri
 public sealed partial class NumericLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNumericLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2122,8 +2122,8 @@ public sealed partial class NumericLiteral : NodeData, LiteralExpressionBase, Pr
 public sealed partial class BigIntLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewBigIntLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2143,8 +2143,8 @@ public sealed partial class BigIntLiteral : NodeData, LiteralExpressionBase, Pri
 public sealed partial class RegularExpressionLiteral : NodeData, LiteralExpressionBase, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewRegularExpressionLiteralWithTextValue(this.TextValue, this.TokenFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2164,14 +2164,14 @@ public sealed partial class RegularExpressionLiteral : NodeData, LiteralExpressi
 public sealed partial class NoSubstitutionTemplateLiteral : NodeData, ExpressionBase, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase, DeclarationBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     private ByteStringValue rawTextValue;
     internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
-    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
+    public new string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNoSubstitutionTemplateLiteralWithTextValue(this.TextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
     public override string DataType() => "NoSubstitutionTemplateLiteral";
@@ -2192,10 +2192,10 @@ public sealed partial class NoSubstitutionTemplateLiteral : NodeData, Expression
 public sealed partial class BinaryExpression : NodeData, ExpressionBase, DeclarationBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node Left { get; set; }
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
     public Node OperatorToken { get; set; }
     public Node Right { get; set; }
 
@@ -2265,7 +2265,7 @@ public sealed partial class PostfixUnaryExpression : NodeData, UpdateExpressionB
 public sealed partial class YieldExpression : NodeData, ExpressionBase
 {
     public Node AsteriskToken { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.AsteriskToken) || Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewYieldExpression(this.AsteriskToken, this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2286,16 +2286,16 @@ public sealed partial class YieldExpression : NodeData, ExpressionBase
 public sealed partial class ArrowFunction : NodeData, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode FlowNode { get; set; }
     public Node EqualsGreaterThanToken { get; set; }
@@ -2331,16 +2331,16 @@ public sealed partial class ArrowFunction : NodeData, ExpressionBase, Declaratio
 public sealed partial class FunctionExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase, ModifiersBase, FunctionLikeWithBodyBase, FunctionLikeBase, LocalsContainerBase, BodyBase, FlowNodeBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public FlowNode FlowNode { get; set; }
     public Node name { get; set; }
@@ -2378,8 +2378,8 @@ public sealed partial class FunctionExpression : NodeData, PrimaryExpressionBase
 
 public sealed partial class AsExpression : NodeData, ExpressionBase
 {
-    public Node Expression { get; set; }
-    public Node Type { get; set; }
+    public new Node Expression { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewAsExpression(this.Expression, this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2399,8 +2399,8 @@ public sealed partial class AsExpression : NodeData, ExpressionBase
 
 public sealed partial class SatisfiesExpression : NodeData, ExpressionBase
 {
-    public Node Expression { get; set; }
-    public Node Type { get; set; }
+    public new Node Expression { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSatisfiesExpression(this.Expression, this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2422,7 +2422,7 @@ public sealed partial class ConditionalExpression : NodeData, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
     public Node Condition { get; set; }
-    public Node QuestionToken { get; set; }
+    public new Node QuestionToken { get; set; }
     public Node WhenTrue { get; set; }
     public Node ColonToken { get; set; }
     public Node WhenFalse { get; set; }
@@ -2450,8 +2450,8 @@ public sealed partial class PropertyAccessExpression : NodeData, MemberExpressio
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
-    public Node QuestionDotToken { get; set; }
+    public new Node Expression { get; set; }
+    public new Node QuestionDotToken { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -2476,8 +2476,8 @@ public sealed partial class ElementAccessExpression : NodeData, MemberExpression
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Node Expression { get; set; }
-    public Node QuestionDotToken { get; set; }
+    public new Node Expression { get; set; }
+    public new Node QuestionDotToken { get; set; }
     public Node ArgumentExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.QuestionDotToken) || Ast.Visit(v, this.ArgumentExpression);
@@ -2500,11 +2500,11 @@ public sealed partial class ElementAccessExpression : NodeData, MemberExpression
 public sealed partial class CallExpression : NodeData, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Node Expression { get; set; }
-    public Node QuestionDotToken { get; set; }
-    public NodeList TypeArguments { get; set; }
-    public NodeList Arguments { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Node Expression { get; set; }
+    public new Node QuestionDotToken { get; set; }
+    public new NodeList TypeArguments { get; set; }
+    public new NodeList Arguments { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.QuestionDotToken) || Ast.VisitNodeList(v, this.TypeArguments) || Ast.VisitNodeList(v, this.Arguments);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewCallExpression(this.Expression, this.QuestionDotToken, this.TypeArguments, this.Arguments, this.Flags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2527,9 +2527,9 @@ public sealed partial class CallExpression : NodeData, LeftHandSideExpressionBas
 public sealed partial class NewExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node Expression { get; set; }
-    public NodeList TypeArguments { get; set; }
-    public NodeList Arguments { get; set; }
+    public new Node Expression { get; set; }
+    public new NodeList TypeArguments { get; set; }
+    public new NodeList Arguments { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.VisitNodeList(v, this.TypeArguments) || Ast.VisitNodeList(v, this.Arguments);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNewExpression(this.Expression, this.TypeArguments, this.Arguments), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2574,7 +2574,7 @@ public sealed partial class MetaProperty : NodeData, PrimaryExpressionBase, Memb
 
 public sealed partial class NonNullExpression : NodeData, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewNonNullExpression(this.Expression, this.Flags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2593,7 +2593,7 @@ public sealed partial class NonNullExpression : NodeData, LeftHandSideExpression
 
 public sealed partial class SpreadElement : NodeData, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSpreadElement(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2634,7 +2634,7 @@ public sealed partial class TemplateExpression : NodeData, PrimaryExpressionBase
 
 public sealed partial class TemplateSpan : NodeData
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
     public Node Literal { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.Literal);
@@ -2657,8 +2657,8 @@ public sealed partial class TaggedTemplateExpression : NodeData, MemberExpressio
 {
     internal override bool CacheSubtreeFacts => true;
     public Node Tag { get; set; }
-    public Node QuestionDotToken { get; set; }
-    public NodeList TypeArguments { get; set; }
+    public new Node QuestionDotToken { get; set; }
+    public new NodeList TypeArguments { get; set; }
     public Node Template { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Tag) || Ast.Visit(v, this.QuestionDotToken) || Ast.VisitNodeList(v, this.TypeArguments) || Ast.Visit(v, this.Template);
@@ -2681,7 +2681,7 @@ public sealed partial class TaggedTemplateExpression : NodeData, MemberExpressio
 
 public sealed partial class ParenthesizedExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewParenthesizedExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2701,7 +2701,7 @@ public sealed partial class ParenthesizedExpression : NodeData, PrimaryExpressio
 public sealed partial class ArrayLiteralExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public NodeList Elements { get; set; }
+    public new NodeList Elements { get; set; }
     public bool MultiLine { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
@@ -2723,8 +2723,8 @@ public sealed partial class ArrayLiteralExpression : NodeData, PrimaryExpression
 public sealed partial class ObjectLiteralExpression : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public NodeList Properties { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new NodeList Properties { get; set; }
     public bool MultiLine { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Properties);
@@ -2745,8 +2745,8 @@ public sealed partial class ObjectLiteralExpression : NodeData, PrimaryExpressio
 
 public sealed partial class SpreadAssignment : NodeData, ObjectLiteralElementBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
-    public Node Expression { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSpreadAssignment(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2766,12 +2766,12 @@ public sealed partial class SpreadAssignment : NodeData, ObjectLiteralElementBas
 public sealed partial class PropertyAssignment : NodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public Node Type { get; set; }
-    public Node Initializer { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new Node Type { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -2798,11 +2798,11 @@ public sealed partial class PropertyAssignment : NodeData, ObjectLiteralElementB
 public sealed partial class ShorthandPropertyAssignment : NodeData, ObjectLiteralElementBase, DeclarationBase, NamedMemberBase, ModifiersBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
-    public Node PostfixToken { get; set; }
-    public Node Type { get; set; }
+    public new Node PostfixToken { get; set; }
+    public new Node Type { get; set; }
     public Node EqualsToken { get; set; }
     public Node ObjectAssignmentInitializer { get; set; }
 
@@ -2831,7 +2831,7 @@ public sealed partial class ShorthandPropertyAssignment : NodeData, ObjectLitera
 
 public sealed partial class DeleteExpression : NodeData, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewDeleteExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2850,7 +2850,7 @@ public sealed partial class DeleteExpression : NodeData, UnaryExpressionBase, Ex
 
 public sealed partial class TypeOfExpression : NodeData, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTypeOfExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2869,7 +2869,7 @@ public sealed partial class TypeOfExpression : NodeData, UnaryExpressionBase, Ex
 
 public sealed partial class VoidExpression : NodeData, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewVoidExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2888,7 +2888,7 @@ public sealed partial class VoidExpression : NodeData, UnaryExpressionBase, Expr
 
 public sealed partial class AwaitExpression : NodeData, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewAwaitExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2907,8 +2907,8 @@ public sealed partial class AwaitExpression : NodeData, UnaryExpressionBase, Exp
 
 public sealed partial class TypeAssertion : NodeData, UnaryExpressionBase, ExpressionBase
 {
-    public Node Type { get; set; }
-    public Node Expression { get; set; }
+    public new Node Type { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type) || Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTypeAssertion(this.Type, this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -2981,7 +2981,7 @@ public sealed partial class IntersectionTypeNode : NodeData, UnionOrIntersection
 
 public sealed partial class ConditionalTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase, LocalsContainerBase
 {
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node CheckType { get; set; }
     public Node ExtendsType { get; set; }
@@ -3010,7 +3010,7 @@ public sealed partial class ConditionalTypeNode : NodeData, TypeNodeBase, TypeSy
 public sealed partial class TypeOperatorNode : NodeData, TypeNodeBase, TypeSyntaxBase
 {
     public Kind Operator { get; set; }
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTypeOperatorNode(this.Operator, this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3089,7 +3089,7 @@ public sealed partial class IndexedAccessTypeNode : NodeData, TypeNodeBase, Type
 
 public sealed partial class TypeReferenceNode : NodeData, NodeWithTypeArgumentsBase, TypeNodeBase, TypeSyntaxBase
 {
-    public NodeList TypeArguments { get; set; }
+    public new NodeList TypeArguments { get; set; }
     public Node TypeName { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TypeName) || Ast.VisitNodeList(v, this.TypeArguments);
@@ -3111,8 +3111,8 @@ public sealed partial class TypeReferenceNode : NodeData, NodeWithTypeArgumentsB
 public sealed partial class ExpressionWithTypeArguments : NodeData, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node Expression { get; set; }
-    public NodeList TypeArguments { get; set; }
+    public new Node Expression { get; set; }
+    public new NodeList TypeArguments { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.VisitNodeList(v, this.TypeArguments);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewExpressionWithTypeArguments(this.Expression, this.TypeArguments), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3168,7 +3168,7 @@ public sealed partial class TypePredicateNode : NodeData, TypeNodeBase, TypeSynt
 {
     public Node AssertsModifier { get; set; }
     public Node ParameterName { get; set; }
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.AssertsModifier) || Ast.Visit(v, this.ParameterName) || Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTypePredicateNode(this.AssertsModifier, this.ParameterName, this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3214,7 +3214,7 @@ public sealed partial class ImportAttributes : NodeData
 {
     internal override bool CacheSubtreeFacts => true;
     public Kind Token { get; set; }
-    public NodeList Attributes { get; set; }
+    public new NodeList Attributes { get; set; }
     public bool MultiLine { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Attributes);
@@ -3236,7 +3236,7 @@ public sealed partial class ImportAttributes : NodeData
 
 public sealed partial class TypeQueryNode : NodeData, NodeWithTypeArgumentsBase, TypeNodeBase, TypeSyntaxBase
 {
-    public NodeList TypeArguments { get; set; }
+    public new NodeList TypeArguments { get; set; }
     public Node ExprName { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.ExprName) || Ast.VisitNodeList(v, this.TypeArguments);
@@ -3257,15 +3257,15 @@ public sealed partial class TypeQueryNode : NodeData, NodeWithTypeArgumentsBase,
 
 public sealed partial class MappedTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase, DeclarationBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node ReadonlyToken { get; set; }
     public Node TypeParameter { get; set; }
     public Node NameType { get; set; }
-    public Node QuestionToken { get; set; }
-    public Node Type { get; set; }
-    public NodeList Members { get; set; }
+    public new Node QuestionToken { get; set; }
+    public new Node Type { get; set; }
+    public new NodeList Members { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.ReadonlyToken) || Ast.Visit(v, this.TypeParameter) || Ast.Visit(v, this.NameType) || Ast.Visit(v, this.QuestionToken) || Ast.Visit(v, this.Type) || Ast.VisitNodeList(v, this.Members);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewMappedTypeNode(this.ReadonlyToken, this.TypeParameter, this.NameType, this.QuestionToken, this.Type, this.Members), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3291,8 +3291,8 @@ public sealed partial class MappedTypeNode : NodeData, TypeNodeBase, TypeSyntaxB
 
 public sealed partial class TypeLiteralNode : NodeData, TypeNodeBase, TypeSyntaxBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
-    public NodeList Members { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new NodeList Members { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Members);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTypeLiteralNode(this.Members), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3311,7 +3311,7 @@ public sealed partial class TypeLiteralNode : NodeData, TypeNodeBase, TypeSyntax
 
 public sealed partial class TupleTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public NodeList Elements { get; set; }
+    public new NodeList Elements { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Elements);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTupleTypeNode(this.Elements), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3330,11 +3330,11 @@ public sealed partial class TupleTypeNode : NodeData, TypeNodeBase, TypeSyntaxBa
 
 public sealed partial class NamedTupleMember : NodeData, TypeNodeBase, TypeSyntaxBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public Node DotDotDotToken { get; set; }
     public Node name { get; set; }
-    public Node QuestionToken { get; set; }
-    public Node Type { get; set; }
+    public new Node QuestionToken { get; set; }
+    public new Node Type { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.DotDotDotToken) || Ast.Visit(v, this.name) || Ast.Visit(v, this.QuestionToken) || Ast.Visit(v, this.Type);
@@ -3357,7 +3357,7 @@ public sealed partial class NamedTupleMember : NodeData, TypeNodeBase, TypeSynta
 
 public sealed partial class OptionalTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewOptionalTypeNode(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3376,7 +3376,7 @@ public sealed partial class OptionalTypeNode : NodeData, TypeNodeBase, TypeSynta
 
 public sealed partial class RestTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewRestTypeNode(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3395,7 +3395,7 @@ public sealed partial class RestTypeNode : NodeData, TypeNodeBase, TypeSyntaxBas
 
 public sealed partial class ParenthesizedTypeNode : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewParenthesizedTypeNode(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3414,13 +3414,13 @@ public sealed partial class ParenthesizedTypeNode : NodeData, TypeNodeBase, Type
 
 public sealed partial class FunctionTypeNode : NodeData, FunctionOrConstructorTypeNodeBase, TypeNodeBase, TypeSyntaxBase, DeclarationBase, ModifiersBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
@@ -3448,13 +3448,13 @@ public sealed partial class FunctionTypeNode : NodeData, FunctionOrConstructorTy
 
 public sealed partial class ConstructorTypeNode : NodeData, FunctionOrConstructorTypeNodeBase, TypeNodeBase, TypeSyntaxBase, DeclarationBase, ModifiersBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
@@ -3483,12 +3483,12 @@ public sealed partial class ConstructorTypeNode : NodeData, FunctionOrConstructo
 public sealed partial class TemplateHead : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     private ByteStringValue rawTextValue;
     internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
-    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
+    public new string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateHeadWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3510,12 +3510,12 @@ public sealed partial class TemplateHead : NodeData, TemplateLiteralLikeNodeBase
 public sealed partial class TemplateMiddle : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     private ByteStringValue rawTextValue;
     internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
-    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
+    public new string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateMiddleWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3537,12 +3537,12 @@ public sealed partial class TemplateMiddle : NodeData, TemplateLiteralLikeNodeBa
 public sealed partial class TemplateTail : NodeData, TemplateLiteralLikeNodeBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     private ByteStringValue rawTextValue;
     internal ByteStringValue RawTextValue { get => rawTextValue.Snapshot(); set => rawTextValue = value; }
-    public string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
+    public new string RawText { get => rawTextValue.Project(); set => rawTextValue = ByteStringValue.FromString(value); }
     public TokenFlags TemplateFlags { get; set; }
 
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewTemplateTailWithTextValue(this.TextValue, this.RawTextValue, this.TemplateFlags), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3584,7 +3584,7 @@ public sealed partial class TemplateLiteralTypeNode : NodeData, TypeNodeBase, Ty
 
 public sealed partial class TemplateLiteralTypeSpan : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
     public Node Literal { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type) || Ast.Visit(v, this.Literal);
@@ -3605,7 +3605,7 @@ public sealed partial class TemplateLiteralTypeSpan : NodeData, TypeNodeBase, Ty
 
 public sealed partial class PartiallyEmittedExpression : NodeData, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewPartiallyEmittedExpression(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3626,7 +3626,7 @@ public sealed partial class JsxElement : NodeData, PrimaryExpressionBase, Member
 {
     internal override bool CacheSubtreeFacts => true;
     public Node OpeningElement { get; set; }
-    public NodeList Children { get; set; }
+    public new NodeList Children { get; set; }
     public Node ClosingElement { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.OpeningElement) || Ast.VisitNodeList(v, this.Children) || Ast.Visit(v, this.ClosingElement);
@@ -3649,8 +3649,8 @@ public sealed partial class JsxElement : NodeData, PrimaryExpressionBase, Member
 public sealed partial class JsxAttributes : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase, DeclarationBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public NodeList Properties { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new NodeList Properties { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.Properties);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxAttributes(this.Properties), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3693,9 +3693,9 @@ public sealed partial class JsxNamespacedName : NodeData, ExpressionBase
 public sealed partial class JsxOpeningElement : NodeData, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node TagName { get; set; }
-    public NodeList TypeArguments { get; set; }
-    public Node Attributes { get; set; }
+    public new Node TagName { get; set; }
+    public new NodeList TypeArguments { get; set; }
+    public new Node Attributes { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.TypeArguments) || Ast.Visit(v, this.Attributes);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxOpeningElement(this.TagName, this.TypeArguments, this.Attributes), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3717,9 +3717,9 @@ public sealed partial class JsxOpeningElement : NodeData, ExpressionBase
 public sealed partial class JsxSelfClosingElement : NodeData, PrimaryExpressionBase, MemberExpressionBase, LeftHandSideExpressionBase, UpdateExpressionBase, UnaryExpressionBase, ExpressionBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Node TagName { get; set; }
-    public NodeList TypeArguments { get; set; }
-    public Node Attributes { get; set; }
+    public new Node TagName { get; set; }
+    public new NodeList TypeArguments { get; set; }
+    public new Node Attributes { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.TypeArguments) || Ast.Visit(v, this.Attributes);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxSelfClosingElement(this.TagName, this.TypeArguments, this.Attributes), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3742,7 +3742,7 @@ public sealed partial class JsxFragment : NodeData, PrimaryExpressionBase, Membe
 {
     internal override bool CacheSubtreeFacts => true;
     public Node OpeningFragment { get; set; }
-    public NodeList Children { get; set; }
+    public new NodeList Children { get; set; }
     public Node ClosingFragment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.OpeningFragment) || Ast.VisitNodeList(v, this.Children) || Ast.Visit(v, this.ClosingFragment);
@@ -3795,9 +3795,9 @@ public sealed partial class JsxClosingFragment : NodeData, ExpressionBase
 public sealed partial class JsxAttribute : NodeData, DeclarationBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public Node name { get; set; }
-    public Node Initializer { get; set; }
+    public new Node Initializer { get; set; }
 
     public override Node Name() => name;
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.name) || Ast.Visit(v, this.Initializer);
@@ -3818,8 +3818,8 @@ public sealed partial class JsxAttribute : NodeData, DeclarationBase
 
 public sealed partial class JsxSpreadAttribute : NodeData, ObjectLiteralElementBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
-    public Node Expression { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxSpreadAttribute(this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3838,7 +3838,7 @@ public sealed partial class JsxSpreadAttribute : NodeData, ObjectLiteralElementB
 
 public sealed partial class JsxClosingElement : NodeData
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxClosingElement(this.TagName), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3858,7 +3858,7 @@ public sealed partial class JsxClosingElement : NodeData
 public sealed partial class JsxExpression : NodeData, ExpressionBase
 {
     public Node DotDotDotToken { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.DotDotDotToken) || Ast.Visit(v, this.Expression);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJsxExpression(this.DotDotDotToken, this.Expression), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3879,8 +3879,8 @@ public sealed partial class JsxExpression : NodeData, ExpressionBase
 public sealed partial class JsxText : NodeData, ExpressionBase, LiteralLikeNodeBase
 {
     private ByteStringValue textValue;
-    internal ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
-    public string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
+    internal new ByteStringValue TextValue { get => textValue.Snapshot(); set => textValue = value; }
+    public new string Text { get => textValue.Project(); set => textValue = ByteStringValue.FromString(value); }
     public TokenFlags TokenFlags { get; set; }
     public bool ContainsOnlyTriviaWhiteSpaces { get; set; }
 
@@ -3901,7 +3901,7 @@ public sealed partial class JsxText : NodeData, ExpressionBase, LiteralLikeNodeB
 
 public sealed partial class SyntaxList : NodeData
 {
-    public Slice<Node> Children { get; set; }
+    public new Slice<Node> Children { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodes(v, this.Children);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSyntaxList(this.Children), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3941,7 +3941,7 @@ public sealed partial class JSDoc : NodeData
 
 public sealed partial class JSDocTypeExpression : NodeData, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocTypeExpression(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3960,7 +3960,7 @@ public sealed partial class JSDocTypeExpression : NodeData, TypeNodeBase, TypeSy
 
 public sealed partial class JSDocNonNullableType : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocNonNullableType(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -3979,7 +3979,7 @@ public sealed partial class JSDocNonNullableType : NodeData, JSDocTypeBase, Type
 
 public sealed partial class JSDocNullableType : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocNullableType(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4013,7 +4013,7 @@ public sealed partial class JSDocAllType : NodeData, JSDocTypeBase, TypeNodeBase
 
 public sealed partial class JSDocVariadicType : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocVariadicType(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4032,7 +4032,7 @@ public sealed partial class JSDocVariadicType : NodeData, JSDocTypeBase, TypeNod
 
 public sealed partial class JSDocOptionalType : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase
 {
-    public Node Type { get; set; }
+    public new Node Type { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Type);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocOptionalType(this.Type), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4051,9 +4051,9 @@ public sealed partial class JSDocOptionalType : NodeData, JSDocTypeBase, TypeNod
 
 public sealed partial class JSDocTypeTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocTypeTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4074,7 +4074,7 @@ public sealed partial class JSDocTypeTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocUnknownTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4095,10 +4095,10 @@ public sealed partial class JSDocUnknownTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocTemplateTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
     public Node Constraint { get; set; }
-    public NodeList TypeParameters { get; set; }
+    public new NodeList TypeParameters { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.Constraint) || Ast.VisitNodeList(v, this.TypeParameters) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocTemplateTag(this.TagName, this.Constraint, this.TypeParameters, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4120,9 +4120,9 @@ public sealed partial class JSDocTemplateTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocReturnTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocReturnTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4143,7 +4143,7 @@ public sealed partial class JSDocReturnTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocPublicTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4164,7 +4164,7 @@ public sealed partial class JSDocPublicTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocPrivateTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4185,7 +4185,7 @@ public sealed partial class JSDocPrivateTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocProtectedTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4206,7 +4206,7 @@ public sealed partial class JSDocProtectedTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocReadonlyTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4227,7 +4227,7 @@ public sealed partial class JSDocReadonlyTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocOverrideTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4248,7 +4248,7 @@ public sealed partial class JSDocOverrideTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocDeprecatedTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.VisitNodeList(v, this.Comment);
@@ -4269,7 +4269,7 @@ public sealed partial class JSDocDeprecatedTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocSeeTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
     public Node NameExpression { get; set; }
 
@@ -4292,9 +4292,9 @@ public sealed partial class JSDocSeeTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocImplementsTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node ClassName { get; set; }
+    public new Node ClassName { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.ClassName) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocImplementsTag(this.TagName, this.ClassName, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4315,9 +4315,9 @@ public sealed partial class JSDocImplementsTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocAugmentsTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node ClassName { get; set; }
+    public new Node ClassName { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.ClassName) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocAugmentsTag(this.TagName, this.ClassName, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4338,9 +4338,9 @@ public sealed partial class JSDocAugmentsTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocSatisfiesTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocSatisfiesTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4361,9 +4361,9 @@ public sealed partial class JSDocSatisfiesTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocThrowsTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocThrowsTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4384,9 +4384,9 @@ public sealed partial class JSDocThrowsTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocThisTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocThisTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4407,11 +4407,11 @@ public sealed partial class JSDocThisTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocImportTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node ImportClause { get; set; }
-    public Node ModuleSpecifier { get; set; }
-    public Node Attributes { get; set; }
+    public new Node ImportClause { get; set; }
+    public new Node ModuleSpecifier { get; set; }
+    public new Node Attributes { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.ImportClause) || Ast.Visit(v, this.ModuleSpecifier) || Ast.Visit(v, this.Attributes) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocImportTag(this.TagName, this.ImportClause, this.ModuleSpecifier, this.Attributes, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4434,9 +4434,9 @@ public sealed partial class JSDocImportTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocCallbackTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -4460,9 +4460,9 @@ public sealed partial class JSDocCallbackTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocOverloadTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.TagName) || Ast.Visit(v, this.TypeExpression) || Ast.VisitNodeList(v, this.Comment);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocOverloadTag(this.TagName, this.TypeExpression, this.Comment), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4483,9 +4483,9 @@ public sealed partial class JSDocOverloadTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocTypedefTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -4509,12 +4509,12 @@ public sealed partial class JSDocTypedefTag : NodeData, JSDocTagBase
 
 public sealed partial class JSDocSignature : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase, DeclarationBase, FunctionLikeBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
-    public NodeList TypeParameters { get; set; }
-    public NodeList Parameters { get; set; }
-    public Node Type { get; set; }
+    public new NodeList TypeParameters { get; set; }
+    public new NodeList Parameters { get; set; }
+    public new Node Type { get; set; }
     public Node FullSignature { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, this.TypeParameters) || Ast.VisitNodeList(v, this.Parameters) || Ast.Visit(v, this.Type);
@@ -4561,17 +4561,17 @@ public sealed partial class ModuleDeclaration : NodeData, StatementBase, FlowNod
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
     public Node AsteriskToken { get; set; }
-    public Node Body { get; set; }
+    public new Node Body { get; set; }
     public FlowNode EndFlowNode { get; set; }
     public Kind Keyword { get; set; }
     public Node name { get; set; }
-    public Node Attributes { get; set; }
+    public new Node Attributes { get; set; }
 
     public override Node Name() => name;
     public override ModifierList Modifiers() => modifiers;
@@ -4605,10 +4605,10 @@ public sealed partial class ImportEqualsDeclaration : NodeData, StatementBase, F
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public bool IsTypeOnly { get; set; }
+    public new bool IsTypeOnly { get; set; }
     public Node name { get; set; }
     public Node ModuleReference { get; set; }
 
@@ -4639,12 +4639,12 @@ public sealed partial class ExportDeclaration : NodeData, StatementBase, FlowNod
 {
     internal override bool CacheSubtreeFacts => true;
     public FlowNode FlowNode { get; set; }
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
-    public bool IsTypeOnly { get; set; }
+    public new bool IsTypeOnly { get; set; }
     public Node ExportClause { get; set; }
-    public Node ModuleSpecifier { get; set; }
-    public Node Attributes { get; set; }
+    public new Node ModuleSpecifier { get; set; }
+    public new Node Attributes { get; set; }
 
     public override ModifierList Modifiers() => modifiers;
     public override void SetModifiers(ModifierList value) => modifiers = value;
@@ -4670,10 +4670,10 @@ public sealed partial class ExportDeclaration : NodeData, StatementBase, FlowNod
 
 public sealed partial class ImportTypeNode : NodeData, NodeWithTypeArgumentsBase, TypeNodeBase, TypeSyntaxBase
 {
-    public NodeList TypeArguments { get; set; }
+    public new NodeList TypeArguments { get; set; }
     public bool IsTypeOf { get; set; }
     public Node Argument { get; set; }
-    public Node Attributes { get; set; }
+    public new Node Attributes { get; set; }
     public Node Qualifier { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Argument) || Ast.Visit(v, this.Attributes) || Ast.Visit(v, this.Qualifier) || Ast.VisitNodeList(v, this.TypeArguments);
@@ -4698,8 +4698,8 @@ public sealed partial class ImportTypeNode : NodeData, NodeWithTypeArgumentsBase
 public sealed partial class ImportClause : NodeData, DeclarationBase, ExportableBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
     public Kind PhaseModifier { get; set; }
     public Node name { get; set; }
     public Node NamedBindings { get; set; }
@@ -4726,10 +4726,10 @@ public sealed partial class ImportClause : NodeData, DeclarationBase, Exportable
 public sealed partial class ImportSpecifier : NodeData, DeclarationBase, ExportableBase
 {
     internal override bool CacheSubtreeFacts => true;
-    public Symbol Symbol { get; set; }
-    public Symbol LocalSymbol { get; set; }
-    public bool IsTypeOnly { get; set; }
-    public Node PropertyName { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new Symbol LocalSymbol { get; set; }
+    public new bool IsTypeOnly { get; set; }
+    public new Node PropertyName { get; set; }
     public Node name { get; set; }
 
     public override Node Name() => name;
@@ -4868,11 +4868,11 @@ public sealed partial class JSDocLinkCode : NodeData, JSDocCommentBase
 
 public sealed partial class TypeParameterDeclaration : NodeData, TypeSyntaxBase, DeclarationBase, ModifiersBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public ModifierList modifiers { get; set; }
     public Node name { get; set; }
     public Node Constraint { get; set; }
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
     public Node DefaultType { get; set; }
 
     public override Node Name() => name;
@@ -4899,7 +4899,7 @@ public sealed partial class TypeParameterDeclaration : NodeData, TypeSyntaxBase,
 
 public sealed partial class SyntheticReferenceExpression : NodeData, ExpressionBase
 {
-    public Node Expression { get; set; }
+    public new Node Expression { get; set; }
     public Node ThisArg { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.Visit(v, this.Expression) || Ast.Visit(v, this.ThisArg);
@@ -4920,7 +4920,7 @@ public sealed partial class SyntheticReferenceExpression : NodeData, ExpressionB
 
 public sealed partial class JSDocTypeLiteral : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase, DeclarationBase
 {
-    public Symbol Symbol { get; set; }
+    public new Symbol Symbol { get; set; }
     public Slice<Node> JSDocPropertyTags { get; set; }
     public bool IsArrayType { get; set; }
 
@@ -4942,11 +4942,11 @@ public sealed partial class JSDocTypeLiteral : NodeData, JSDocTypeBase, TypeNode
 
 public sealed partial class JSDocParameterOrPropertyTag : NodeData, JSDocTagBase
 {
-    public Node TagName { get; set; }
+    public new Node TagName { get; set; }
     public NodeList Comment { get; set; }
     public Node name { get; set; }
     public bool IsBracketed { get; set; }
-    public Node TypeExpression { get; set; }
+    public new Node TypeExpression { get; set; }
     public bool IsNameFirst { get; set; }
 
     public override Node Name() => name;
@@ -8465,7 +8465,7 @@ public sealed partial class NodeFactory
     }
 }
 
-public sealed partial class Node
+public partial class Node
 {
     public Token AsToken() => (Token)data;
     public Identifier AsIdentifier() => (Identifier)data;

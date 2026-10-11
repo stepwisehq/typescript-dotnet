@@ -76,21 +76,29 @@ internal static class Evaluator
                         }
                     }
 
-                    if ((left.Value is string || left.Value is JsNum.Number) && (right.Value is string || right.Value is JsNum.Number) && op == Kind.PlusToken)
+                    bool leftIsString = TryGetStringValue(left.Value, out var leftText);
+                    bool rightIsString = TryGetStringValue(right.Value, out var rightText);
+                    if ((leftIsString || left.Value is JsNum.Number) && (rightIsString || right.Value is JsNum.Number) && op == Kind.PlusToken)
                     {
-                        string leftStr = left.Value is JsNum.Number n1 ? n1.String() : (string)left.Value;
-                        string rightStr = right.Value is JsNum.Number n2 ? n2.String() : (string)right.Value;
-                        return new(leftStr + rightStr, isSyntacticallyString, resolvedOtherFiles, hasExternalReferences);
+                        if (left.Value is JsNum.Number n1) leftText = ByteStringValue.FromString(n1.String());
+                        if (right.Value is JsNum.Number n2) rightText = ByteStringValue.FromString(n2.String());
+                        // evaluator.go:102: concatenation owns its result; string
+                        // inputs themselves retain their existing byte headers.
+                        var joined = new GoBuilder();
+                        joined.WriteString(leftText);
+                        joined.WriteString(rightText);
+                        return new(joined.Value(), isSyntacticallyString, resolvedOtherFiles, hasExternalReferences);
                     }
 
                     break;
                 case Kind.StringLiteral:
                 case Kind.NoSubstitutionTemplateLiteral:
-                    return new(expr.Text(), true, false, false);
+                    var literalText = expr.TextValue();
+                    return new(literalText.IsNull ? null : literalText, true, false, false);
                 case Kind.TemplateExpression:
                     return evaluateTemplateExpression(expr, location, evaluate);
                 case Kind.NumericLiteral:
-                    return new(JsNum.FromString(expr.Text()), false, false, false);
+                    return new(JsNum.FromString(expr.TextValue()), false, false, false);
                 case Kind.Identifier:
                     return evaluateEntity(expr, location);
                 case Kind.ElementAccessExpression:
@@ -108,8 +116,8 @@ internal static class Evaluator
     // evaluator.go:124. A nonconstant substitution discards accumulated reference flags, as upstream.
     private static Result evaluateTemplateExpression(Node expr, Node location, EvaluatorDelegate evaluate)
     {
-        var text = new System.Text.StringBuilder();
-        text.Append(expr.AsTemplateExpression().Head.Text());
+        var text = new GoBuilder();
+        text.WriteString(expr.AsTemplateExpression().Head.TextValue());
         var resolvedOtherFiles = false;
         var hasExternalReferences = false;
         foreach (var span in expr.AsTemplateExpression().TemplateSpans.Nodes)
@@ -117,23 +125,46 @@ internal static class Evaluator
             var spanResult = evaluate(span.Expression(), location);
             if (spanResult.Value == null)
                 return new(null, true, false, false);
-            text.Append(AnyToString(spanResult.Value));
-            text.Append(span.AsTemplateSpan().Literal.Text());
+            text.WriteString(AnyToStringValue(spanResult.Value));
+            text.WriteString(span.AsTemplateSpan().Literal.TextValue());
             resolvedOtherFiles |= spanResult.ResolvedOtherFiles;
             hasExternalReferences |= spanResult.HasExternalReferences;
         }
-        return new(text.ToString(), true, resolvedOtherFiles, hasExternalReferences);
+        return new(text.Value(), true, resolvedOtherFiles, hasExternalReferences);
     }
 
-    internal static string AnyToString(object value) => value switch
+    // A Go string escaping into Result.Value remains one boxed header. Legacy
+    // raw-string inputs share this exact content path; supplied null is not a string.
+    internal static bool TryGetStringValue(object value, out ByteStringValue text)
     {
-        string text => text,
-        JsNum.Number number => number.String(),
-        bool boolean => boolean ? "true" : "false",
-        JsNum.PseudoBigInt bigint => bigint.String(),
+        switch (value)
+        {
+            case ByteStringValue borrowed when !borrowed.IsNull:
+                text = borrowed;
+                return true;
+            case string owned:
+                text = ByteStringValue.FromString(owned);
+                return true;
+            default:
+                text = default;
+                return false;
+        }
+    }
+    internal static bool IsString(object value) => TryGetStringValue(value, out _);
+    // evaluator.go:144. Only actual numeric/bool/bigint formatting owns text;
+    // string values already have retained byte content and require no projection.
+    internal static ByteStringValue AnyToStringValue(object value) => value switch
+    {
+        ByteStringValue text when !text.IsNull => text,
+        string text => ByteStringValue.FromString(text),
+        JsNum.Number number => ByteStringValue.FromString(number.String()),
+        bool boolean => ByteStringValue.FromString(boolean ? "true" : "false"),
+        JsNum.PseudoBigInt bigint => ByteStringValue.FromString(bigint.String()),
         _ => throw new InvalidOperationException("Unhandled case in AnyToString")};
+    internal static string AnyToString(object value) => AnyToStringValue(value).Materialize();
     internal static bool IsTruthy(object value) => value switch
     {
+        ByteStringValue text when !text.IsNull => text.Length != 0,
         string text => text.Length != 0,
         JsNum.Number number => number.Value != 0 && !number.IsNaN(),
         bool boolean => boolean,

@@ -5,9 +5,10 @@
 namespace TypeScript.ModuleSpecifiers;
 internal static partial class ModuleSpecifiers
 {
-    internal static int CountPathComponents(string path)
+    internal static int CountPathComponents(string path) => CountPathComponents(TypeScript.Scanner.ByteStringValue.FromString(path));
+    internal static int CountPathComponents(TypeScript.Scanner.ByteStringValue path)
     {
-        int initial = path.StartsWith("./", StringComparison.Ordinal) ? 2 : 0;
+        int initial = path.StartsWith("./"u8) ? 2 : 0;
         int count = 0;
         for (int i = initial; i < path.Length; i++)
             if (path[i] == '/')

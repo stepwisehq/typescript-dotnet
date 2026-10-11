@@ -21,7 +21,7 @@ public sealed partial class Checker
         {
             if (type.alias.symbol == null || type.alias.symbol.id == 0)
                 throw new InvalidOperationException("Unallocated composite alias key symbol");
-            foreach (Type child in type.alias.typeArguments ?? [])
+            foreach (Type child in type.alias.typeArguments)
                 allocated(child);
         }
 

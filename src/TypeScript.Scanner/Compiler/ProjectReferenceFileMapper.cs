@@ -14,7 +14,7 @@ internal class ProjectReferenceFileMapper
     internal bool useSourceOfProjectReference;
     internal HashSet<PathKey> dtsDirectories = [];
     internal Dictionary<PathKey, ParsedCommandLine?> configToProjectReference = [];
-    internal Dictionary<PathKey, List<PathKey>?> referencesInConfigFile = [];
+    internal Dictionary<PathKey, Slice<PathKey>> referencesInConfigFile = [];
     internal Dictionary<PathKey, SourceOutputAndProjectReference> sourceToProjectReference = [];
     internal Dictionary<PathKey, SourceOutputAndProjectReference> outputDtsToProjectReference = [];
     internal SyncMap<PathKey, SourceOutputAndProjectReference?> realpathDtsToSource = new();
@@ -48,11 +48,11 @@ internal class ProjectReferenceFileMapper
         }
         return (default, default);
     }
-    internal List<ParsedCommandLine?>? GetResolvedProjectReferences()
+    internal Slice<ParsedCommandLine?> GetResolvedProjectReferences()
     {
-        if (!referencesInConfigFile.TryGetValue(RootConfigPath(), out var refs)) return null;
-        var result = new List<ParsedCommandLine?>(refs?.Count ?? 0);
-        foreach (var reference in refs ?? []) result.Add(configToProjectReference.GetValueOrDefault(reference));
+        if (!referencesInConfigFile.TryGetValue(RootConfigPath(), out var refs)) return default;
+        var result = Slice<ParsedCommandLine?>.Make(0, refs.Length);
+        foreach (var reference in refs) result = result.Append(configToProjectReference.GetValueOrDefault(reference));
         return result;
     }
     internal SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => sourceToProjectReference.GetValueOrDefault(path);
@@ -82,11 +82,11 @@ internal class ProjectReferenceFileMapper
         var seen = new HashSet<PathKey> { RootConfigPath() };
         return RangeResolvedReferenceWorker(referencesInConfigFile.GetValueOrDefault(RootConfigPath()), callback, config, seen);
     }
-    private bool RangeResolvedReferenceWorker(List<PathKey>? references, Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback, ParsedCommandLine parent, HashSet<PathKey> seen)
+    private bool RangeResolvedReferenceWorker(Slice<PathKey> references, Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback, ParsedCommandLine parent, HashSet<PathKey> seen)
     {
-        for (int i = 0; i < (references?.Count ?? 0); i++)
+        for (int i = 0; i < references.Length; i++)
         {
-            var path = references![i];
+            var path = references[i];
             if (!seen.Add(path)) continue;
             var child = configToProjectReference.GetValueOrDefault(path);
             if (!callback(path, child, parent, i)) return false;

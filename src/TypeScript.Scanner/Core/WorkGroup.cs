@@ -74,14 +74,14 @@ internal sealed class ParallelWorkGroup : IWorkGroup
 internal sealed class SingleThreadedWorkGroup : IWorkGroup
 {
     private readonly object gate = new();
-    private readonly List<Action> actions = [];
+    private Slice<Action?> actions;
     private int done;
     public void Queue(Action action)
     {
         if (Volatile.Read(ref done) != 0)
             throw new InvalidOperationException("Queue called after RunAndWait returned");
         lock (gate)
-            actions.Add(action);
+            actions = actions.Append(action);
     }
 
     public void RunAndWait()
@@ -101,8 +101,9 @@ internal sealed class SingleThreadedWorkGroup : IWorkGroup
             if (actions.Count == 0)
                 return null;
             int end = actions.Count - 1;
-            Action action = actions[end];
-            actions.RemoveAt(end);
+            Action action = actions[end]!;
+            actions[end] = null; // core/workgroup.go: pop releases the executed closure.
+            actions = actions.Slice2(0, end);
             return action;
         }
     }

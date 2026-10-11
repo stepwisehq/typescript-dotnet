@@ -6,44 +6,38 @@ using TypeScript.Scanner;
 
 namespace TypeScript.Checking;
 internal sealed class nodeLinkStore<V>
-    where V : class, new()
+    where V : struct
 {
     private readonly PagedLinkStore<V> store = new();
-    public V Get(Node node)
-    {
-        ref var slot = ref store.Get(Ast.GetNodeId(node));
-        return slot ??= new();
-    }
+    // checker/links.go:10–24. Small records are inline zeroed page slots.
+    public ref V Get(Node node) => ref store.Get(Ast.GetNodeId(node));
     public bool Has(Node node) => store.Has(Ast.GetNodeId(node));
-    public V? TryGet(Node node)
-    {
-        var id = Ast.GetNodeId(node);
-        if (!store.TryGet(id, out var value))
-            return null;
-        // checker/links.go:22: an existing page includes untouched zero structs.
-        // Preserve the managed V identity when materializing that zero value.
-        if (value is not null)
-            return value;
-        ref var slot = ref store.Get(id);
-        return slot ??= new();
-    }
+    public Memory<V> TryGet(Node node) => store.TryGetLocation(Ast.GetNodeId(node));
 }
 
+// checker/links.go:26–49. Large value payloads live in arena chunks; sparse
+// pages retain standard managed Memory locations rather than the payload itself.
 internal sealed class symbolArenaLinkStore<V>
-    where V : class, new()
+    where V : struct
 {
-    private readonly PagedLinkStore<V> store = new();
-    public V Get(Symbol symbol)
+    private readonly PagedLinkStore<Memory<V>> store = new();
+    private readonly GoArena<V> arena = new();
+
+    public ref V Get(Symbol symbol)
     {
-        // checker/links.go:34: populate the pointer slot once, then return V.
-        ref var slot = ref store.Get(Ast.GetSymbolId(symbol));
-        return slot ??= new();
+        ref var location = ref store.Get(Ast.GetSymbolId(symbol));
+        if (location.IsEmpty)
+            location = arena.NewSliceHeader(1).AsWritableMemory();
+        return ref location.Span[0];
     }
-    public bool Has(Symbol symbol) => TryGet(symbol)is not null;
-    public V? TryGet(Symbol symbol)
+
+    public bool Has(Symbol symbol) => !TryGet(symbol).IsEmpty;
+
+    // A present sparse page may still contain an uninitialized location. The
+    // default Memory is the nil pointer; nonempty locations keep old chunks alive.
+    public Memory<V> TryGet(Symbol symbol)
     {
-        // checker/links.go:45: a present page may still contain a nil pointer.
-        store.TryGet(Ast.GetSymbolId(symbol), out var value);
-        return value;
+        store.TryGet(Ast.GetSymbolId(symbol), out var location);
+        return location;
     }
 }

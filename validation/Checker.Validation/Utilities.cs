@@ -24,6 +24,11 @@ public static class Utilities
         public int Value { get; set; }
     }
 
+    private struct ProbeRecordValue
+    {
+        public int Value;
+    }
+
     public static List<UtilityObservation> Run()
     {
         var observations = new List<UtilityObservation>();
@@ -65,12 +70,17 @@ public static class Utilities
             right = factory.NewIdentifier("right");
         }
         while ((Ast.GetNodeId(left) >> 8) != (Ast.GetNodeId(right) >> 8));
-        var nodeStore = new nodeLinkStore<ProbeValue>();
-        Flag("node.unallocated", nodeStore.TryGet(left)is null && !nodeStore.Has(left));
-        var nodeSlot = nodeStore.Get(left);
+        var nodeStore = new nodeLinkStore<ProbeRecordValue>();
+        Flag("node.unallocated", nodeStore.TryGet(left).IsEmpty && !nodeStore.Has(left));
+        ref var nodeSlot = ref nodeStore.Get(left);
         nodeSlot.Value = 19;
-        Flag("node.same-page-zero", nodeStore.Has(right) && nodeStore.TryGet(right)is { Value: 0 });
-        Flag("node.stable-identities", ReferenceEquals(nodeStore.Get(left), nodeSlot) && ReferenceEquals(nodeStore.TryGet(right), nodeStore.Get(right)) && !ReferenceEquals(nodeStore.TryGet(right), nodeSlot));
+        var nodeLocation = nodeStore.TryGet(left);
+        var rightLocation = nodeStore.TryGet(right);
+        Flag("node.same-page-zero", nodeStore.Has(right) && !rightLocation.IsEmpty && rightLocation.Span[0].Value == 0);
+        Flag("node.stable-identities", nodeStore.TryGet(left).Equals(nodeLocation) &&
+            nodeStore.TryGet(right).Equals(rightLocation) && !rightLocation.Equals(nodeLocation) &&
+            System.Runtime.CompilerServices.Unsafe.AreSame(ref nodeStore.Get(left), ref nodeSlot) &&
+            System.Runtime.CompilerServices.Unsafe.AreSame(ref rightLocation.Span[0], ref nodeStore.Get(right)));
         Symbol a, b;
         do
         {
@@ -84,13 +94,18 @@ public static class Utilities
             };
         }
         while ((Ast.GetSymbolId(a) >> 8) != (Ast.GetSymbolId(b) >> 8));
-        var symbolStore = new symbolArenaLinkStore<ProbeValue>();
-        Flag("symbol.unallocated", symbolStore.TryGet(a)is null && !symbolStore.Has(a));
-        var symbolSlot = symbolStore.Get(a);
+        var symbolStore = new symbolArenaLinkStore<ProbeRecordValue>();
+        Flag("symbol.unallocated", symbolStore.TryGet(a).IsEmpty && !symbolStore.Has(a));
+        ref var symbolSlot = ref symbolStore.Get(a);
         symbolSlot.Value = 29;
-        Flag("symbol.same-page-still-nil", symbolStore.TryGet(b)is null && !symbolStore.Has(b));
-        var otherSymbolSlot = symbolStore.Get(b);
-        Flag("symbol.stable-distinct-identities", ReferenceEquals(symbolStore.Get(a), symbolSlot) && ReferenceEquals(symbolStore.TryGet(a), symbolSlot) && !ReferenceEquals(otherSymbolSlot, symbolSlot) && otherSymbolSlot.Value == 0);
+        var symbolLocation = symbolStore.TryGet(a);
+        Flag("symbol.same-page-still-nil", symbolStore.TryGet(b).IsEmpty && !symbolStore.Has(b));
+        ref var otherSymbolSlot = ref symbolStore.Get(b);
+        Flag("symbol.stable-distinct-identities", symbolStore.TryGet(a).Equals(symbolLocation) &&
+            !symbolStore.TryGet(b).Equals(symbolLocation) &&
+            System.Runtime.CompilerServices.Unsafe.AreSame(ref symbolStore.Get(a), ref symbolSlot) &&
+            System.Runtime.CompilerServices.Unsafe.AreSame(ref symbolLocation.Span[0], ref symbolSlot) &&
+            otherSymbolSlot.Value == 0);
         var file = Parser.ParseSourceFile(default(SourceFileParseOptions), "", ScriptKind.TS);
         var symbol = new Symbol
         {

@@ -56,7 +56,7 @@ public sealed class ModifierList : NodeList
     };
 }
 
-public sealed partial class Node
+public partial class Node
 {
     public Kind Kind;
     public NodeFlags Flags;
@@ -152,10 +152,19 @@ public sealed partial class Node
         Kind.TemplateMiddle => AsTemplateMiddle().TextValue,
         Kind.TemplateTail => AsTemplateTail().TextValue,
         Kind.MetaProperty => AsMetaProperty().Name().TextValue(),
+        Kind.JsxNamespacedName => Ast.TryGetTextValueOfPropertyName(this).Item1,
+        Kind.JSDocText => AsJSDocText().TextFragments?.JoinValue() ?? default,
+        Kind.JSDocLink => AsJSDocLink().TextFragments?.JoinValue() ?? default,
+        Kind.JSDocLinkCode => AsJSDocLinkCode().TextFragments?.JoinValue() ?? default,
+        Kind.JSDocLinkPlain => AsJSDocLinkPlain().TextFragments?.JoinValue() ?? default,
         _ => ByteStringValue.FromString(Text()),
     };
     internal bool TextEquals(ReadOnlySpan<byte> text) => TextValue().EqualsBytes(text);
-    public byte[] TextBytes() => GoString.Bytes(Text());
+    public byte[] TextBytes()
+    {
+        var text = TextValue();
+        return text.IsBytes ? text.ByteSpan.ToArray() : GoString.Bytes(text.Materialize());
+    }
     public string DecodedText() => ScannerString.ToJsString(Text());
     public bool IsJSDoc() => Kind == Kind.JSDoc;
     public Slice<Node> JSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? default : (file ?? Ast.GetSourceFileOfNode(this))?.JSDoc(this) ?? default;
@@ -164,30 +173,13 @@ public sealed partial class Node
     public Node VisitEachChild(NodeVisitor visitor) => data.VisitEachChild(visitor);
 }
 
-public abstract partial class NodeData : INodeData
+// ast.go:1210/1252 embeds the common Node header in each concrete payload.
+// CLR inheritance keeps that header and payload in one object. Node's nonvirtual
+// dispatchers still call the distinct virtual NodeData implementation surface.
+public abstract partial class NodeData : Node, INodeData
 {
-    private readonly Node node;
-    protected NodeData()
-    {
-        node = new Node
-        {
-            data = this
-        };
-    }
+    protected NodeData() => data = this;
 
-    public Node AsNode() => node;
-    public Kind Kind { get => node.Kind; set => node.Kind = value; }
-    public NodeFlags Flags { get => node.Flags; set => node.Flags = value; }
-    public TextRange Loc { get => node.Loc; set => node.Loc = value; }
-    public Node Parent { get => node.Parent; set => node.Parent = value; }
-
-    public Node AsMutable() => node;
-    public ParameterDeclaration AsParameterDeclaration() => node.AsParameterDeclaration();
-    public ClassLikeBase ClassLikeData() => this as ClassLikeBase;
-    public FunctionLikeBase FunctionLikeData() => this as FunctionLikeBase;
-    public ModifierFlags ModifierFlags() => Modifiers()?.ModifierFlags ?? TypeScript.Scanner.ModifierFlags.None;
-    public int Pos() => node.Pos();
-    public int End() => node.End();
     internal virtual uint ComputeSubtreeFacts()
     {
         // NodeDefault returns no facts; CompositeBase requires a concrete computation.
@@ -201,7 +193,7 @@ public abstract partial class NodeData : INodeData
     internal virtual bool CacheSubtreeFacts => false;
     internal uint CachedSubtreeFacts => (uint)System.Threading.Volatile.Read(ref cachedSubtreeFacts);
 
-    internal uint SubtreeFactsValue()
+    internal new uint SubtreeFactsValue()
     {
         if (!CacheSubtreeFacts)
             return ComputeSubtreeFacts();
@@ -215,23 +207,23 @@ public abstract partial class NodeData : INodeData
         return facts & ~SubtreeFactValues.FactsComputed;
     }
 
-    public virtual Node Name() => null;
-    public virtual ModifierList Modifiers() => null;
-    public virtual void SetModifiers(ModifierList value)
+    public new virtual Node Name() => null;
+    public new virtual ModifierList Modifiers() => null;
+    public new virtual void SetModifiers(ModifierList value)
     {
     }
 
-    public virtual bool ForEachChild(Visitor visitor) => false;
-    internal virtual IEnumerable<Node> IterChildren()
+    public new virtual bool ForEachChild(Visitor visitor) => false;
+    internal new virtual IEnumerable<Node> IterChildren()
     {
         yield break;
     }
 
-    public virtual Node Clone(NodeFactoryCoercible factory) => null;
-    public virtual Node VisitEachChild(NodeVisitor visitor) => AsNode();
-    public abstract string DataType();
-    public abstract IEnumerable<SyntaxField> SyntaxFields();
-    public virtual IEnumerable<SyntaxField> BoundFields()
+    public new virtual Node Clone(NodeFactoryCoercible factory) => null;
+    public new virtual Node VisitEachChild(NodeVisitor visitor) => AsNode();
+    public new abstract string DataType();
+    public new abstract IEnumerable<SyntaxField> SyntaxFields();
+    public new virtual IEnumerable<SyntaxField> BoundFields()
     {
         yield break;
     }
@@ -378,7 +370,9 @@ public sealed class CheckJsDirective
 public sealed class FileReference
 {
     public TextRange TextRange;
-    public string FileName;
+    private ByteStringValue fileNameValue = ByteStringValue.FromString(null);
+    public string FileName { get => fileNameValue.Project(); set => fileNameValue = ByteStringValue.FromString(value); }
+    internal ByteStringValue FileNameValue { get => fileNameValue.Snapshot(); set => fileNameValue = value.Snapshot(); }
     public ResolutionMode ResolutionMode;
     public bool Preserve;
     public int Pos() => TextRange.Pos();
@@ -388,7 +382,11 @@ public sealed class FileReference
 public sealed class PragmaArgument
 {
     public TextRange TextRange;
-    public string Name, Value;
+    private ByteStringValue nameValue = ByteStringValue.FromString(null), valueValue = ByteStringValue.FromString(null);
+    public string Name { get => nameValue.Project(); set => nameValue = ByteStringValue.FromString(value); }
+    public string Value { get => valueValue.Project(); set => valueValue = ByteStringValue.FromString(value); }
+    internal ByteStringValue NameValue { get => nameValue.Snapshot(); set => nameValue = value.Snapshot(); }
+    internal ByteStringValue ValueValue { get => valueValue.Snapshot(); set => valueValue = value.Snapshot(); }
     public int Pos() => TextRange.Pos();
     public int End() => TextRange.End();
 }
@@ -402,8 +400,10 @@ public sealed class Pragma
             End = value.End()
         }; }
 
-    public string Name;
-    public Dictionary<string, PragmaArgument> Args;
+    private ByteStringValue nameValue = ByteStringValue.FromString(null);
+    public string Name { get => nameValue.Project(); set => nameValue = ByteStringValue.FromString(value); }
+    internal ByteStringValue NameValue { get => nameValue.Snapshot(); set => nameValue = value.Snapshot(); }
+    public Dictionary<ByteStringKey, PragmaArgument> Args;
 }
 
 // Authored internal byte-source bridge; legacy public text-only adapters can
@@ -421,7 +421,7 @@ internal static class SourceTextViews
 public interface SourceFileLike
 {
     string Text();
-    List<int> ECMALineMap();
+    Slice<int> ECMALineMap();
 }
 
 // ast.go: SourceFileMetaData. Loader-owned file metadata, independent of checker admission.
@@ -455,8 +455,8 @@ public struct ContentMapperSourceFileInfo
     public SourceFileParseOptions ParseOptions;
     public RootedFilePath VirtualFileName;
     public TypeScript.SpanMap.SpanMap SpanMap;
-    public List<MappedDiagnosticDirective> DiagnosticDirectives;
-    public List<SourceFile> SupplementalSourceFiles;
+    public Slice<MappedDiagnosticDirective> DiagnosticDirectives;
+    public Slice<SourceFile> SupplementalSourceFiles;
     public SourceFile CanonicalSourceFile;
 }
 
@@ -484,23 +484,23 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     }
     internal ByteStringView TextView() => sourceText;
     ByteStringView ISourceTextFileLike.TextView() => sourceText;
-    public NodeList Statements;
+    public new NodeList Statements;
     public Node EndOfFileToken;
     public LanguageVariant LanguageVariant;
     public ScriptKind ScriptKind;
     public bool IsDeclarationFile;
     public Tristate UsesUriStyleNodeCoreModules;
     public int IdentifierCount, NodeCount, TextCount;
-    public List<Node> ModuleAugmentations;
+    public Slice<Node> ModuleAugmentations;
     public Slice<Node> ReparsedClones;
-    public List<string> AmbientModuleNames;
-    public List<CommentDirective> CommentDirectives;
-    public List<Pragma> Pragmas;
-    public List<FileReference> ReferencedFiles, TypeReferenceDirectives, LibReferenceDirectives;
+    public Slice<ByteStringValue> AmbientModuleNames;
+    public Slice<CommentDirective> CommentDirectives;
+    public Slice<Pragma> Pragmas;
+    public Slice<FileReference> ReferencedFiles, TypeReferenceDirectives, LibReferenceDirectives;
     public CheckJsDirective CheckJsDirective;
     public Node CommonJSModuleIndicator, ExternalModuleIndicator;
-    private List<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
-    internal List<Node> imports;
+    private Slice<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
+    internal Slice<Node> imports;
     private Dictionary<Node, Slice<Node>> jsdocCache;
     private bool hasLazyJSDoc;
     private readonly object positionMapLock = new();
@@ -529,8 +529,8 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
         if (contentMapperInfo.HasValue) throw new InvalidOperationException("content mapper source file info already set");
         contentMapperInfo = info;
     }
-    public List<MappedDiagnosticDirective> DiagnosticDirectives() => contentMapperInfo?.DiagnosticDirectives;
-    public List<SourceFile> SupplementalSourceFiles() => contentMapperInfo?.SupplementalSourceFiles;
+    public Slice<MappedDiagnosticDirective> DiagnosticDirectives() => contentMapperInfo is null ? default : contentMapperInfo.Value.DiagnosticDirectives;
+    public Slice<SourceFile> SupplementalSourceFiles() => contentMapperInfo is null ? default : contentMapperInfo.Value.SupplementalSourceFiles;
     public SourceFile CanonicalSourceFile() => contentMapperInfo?.CanonicalSourceFile;
     public bool IsContentMapperSupplemental() => CanonicalSourceFile() is not null;
 
@@ -566,16 +566,16 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
         Volatile.Write(ref fileNameByteText, new(unicode, bytes));
     }
     public string PathKey() => parseOptions.PathKey;
-    public string Text() => text;
-    public byte[] TextBytes() => sourceText.ToArray();
-    public string DecodedText() => sourceText.DecodeUnicode();
-    public List<Node> Imports() => imports;
-    public List<Diagnostic> Diagnostics() => diagnostics;
-    public List<Diagnostic> JSDiagnostics() => jsDiagnostics;
-    public List<Diagnostic> JSDocDiagnostics() => jsdocDiagnostics;
-    public void SetDiagnostics(List<Diagnostic> value) => diagnostics = value;
-    public void SetJSDiagnostics(List<Diagnostic> value) => jsDiagnostics = value;
-    public void SetJSDocDiagnostics(List<Diagnostic> value) => jsdocDiagnostics = value;
+    public new string Text() => text;
+    public new byte[] TextBytes() => sourceText.ToArray();
+    public new string DecodedText() => sourceText.DecodeUnicode();
+    public Slice<Node> Imports() => imports;
+    public Slice<Diagnostic> Diagnostics() => diagnostics;
+    public Slice<Diagnostic> JSDiagnostics() => jsDiagnostics;
+    public Slice<Diagnostic> JSDocDiagnostics() => jsdocDiagnostics;
+    public void SetDiagnostics(Slice<Diagnostic> value) => diagnostics = value;
+    public void SetJSDiagnostics(Slice<Diagnostic> value) => jsDiagnostics = value;
+    public void SetJSDocDiagnostics(Slice<Diagnostic> value) => jsdocDiagnostics = value;
     public void SetJSDocCache(Dictionary<Node, Slice<Node>> value) => jsdocCache = value;
     public void SetHasLazyJSDoc(bool value) => hasLazyJSDoc = value;
     internal Slice<Node> JSDoc(Node n)
@@ -663,7 +663,7 @@ public sealed partial class NodeFactory
 }
 
 // Binder-owned state from ast.go. Interfaces retain exact upstream embedding tests.
-public sealed partial class Node
+public partial class Node
 {
     internal long id;
     public DeclarationBase DeclarationData() => data as DeclarationBase;
@@ -676,14 +676,6 @@ public sealed partial class Node
     public IEnumerable<SyntaxField> BoundFields() => data.BoundFields();
 }
 
-public abstract partial class NodeData
-{
-    public DeclarationBase DeclarationData() => this as DeclarationBase;
-    public ExportableBase ExportableData() => this as ExportableBase;
-    public LocalsContainerBase LocalsContainerData() => this as LocalsContainerBase;
-    public FlowNodeBase FlowNodeData() => this as FlowNodeBase;
-}
-
 public sealed class PatternAmbientModule
 {
     public Pattern Pattern;
@@ -692,20 +684,20 @@ public sealed class PatternAmbientModule
 
 public sealed partial class SourceFile : DeclarationBase, LocalsContainerBase
 {
-    public Symbol Symbol { get; set; }
-    public SymbolTable Locals { get; set; }
+    public new Symbol Symbol { get; set; }
+    public new SymbolTable Locals { get; set; }
     public Node NextContainer { get; set; }
 
     public int SymbolCount;
-    public List<PatternAmbientModule> PatternAmbientModules;
+    public Slice<PatternAmbientModule> PatternAmbientModules;
     public SymbolTable GlobalExports;
-    private List<Diagnostic> bindDiagnostics;
+    private Slice<Diagnostic> bindDiagnostics;
     private readonly System.Threading.SemaphoreSlim bindMutex = new(1, 1);
     private bool bindInvoked, isBound;
     private readonly object ecmaLineMapMutex = new();
-    private List<int> ecmaLineMap;
-    public List<Diagnostic> BindDiagnostics() => bindDiagnostics;
-    public void SetBindDiagnostics(List<Diagnostic> diagnostics) => bindDiagnostics = diagnostics;
+    private Slice<int> ecmaLineMap;
+    public Slice<Diagnostic> BindDiagnostics() => bindDiagnostics;
+    public void SetBindDiagnostics(Slice<Diagnostic> diagnostics) => bindDiagnostics = diagnostics;
     public bool IsBound() => System.Threading.Volatile.Read(ref isBound);
     public void BindOnce(Action bind)
     {
@@ -726,10 +718,13 @@ public sealed partial class SourceFile : DeclarationBase, LocalsContainerBase
         }
     }
 
-    public List<int> ECMALineMap()
+    public Slice<int> ECMALineMap()
     {
         lock (ecmaLineMapMutex)
-            return ecmaLineMap ??= Core.ComputeECMALineStarts(TextView());
+        {
+            if (ecmaLineMap.IsNil) ecmaLineMap = Core.ComputeECMALineStarts(TextView());
+            return ecmaLineMap;
+        }
     }
 
     public override IEnumerable<SyntaxField> BoundFields()
@@ -2463,7 +2458,7 @@ public sealed partial class JSDocTypeLiteral
 
 // END GENERATED SUBTREE FACTS
 // BEGIN GENERATED AST ACCESSORS (tools/generate-ast-accessors.go)
-public sealed partial class Node
+public partial class Node
 {
     public Node Expression()
     {
@@ -4661,7 +4656,8 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/ast.go:3089:1.
-    public static string GetDeclarationName(Node declaration)
+    public static string GetDeclarationName(Node declaration) => GetDeclarationNameValue(declaration).Materialize();
+    internal static ByteStringValue GetDeclarationNameValue(Node declaration)
     {
         var name = GetNonAssignedNameOfDeclaration(declaration);
         if ((name != null))
@@ -4670,24 +4666,24 @@ public static partial class Ast
             {
                 if (IsStringOrNumericLiteralLike(name.Expression()))
                 {
-                    return name.Expression().Text();
+                    return name.Expression().TextValue();
                 }
 
                 if (IsPropertyAccessExpression(name.Expression()))
                 {
-                    return name.Expression().Name().Text();
+                    return name.Expression().Name().TextValue();
                 }
             }
             else
             {
                 if (IsPropertyName(name))
                 {
-                    return name.Text();
+                    return name.TextValue();
                 }
             }
         }
 
-        return "";
+        return default;
     }
 }
 
@@ -4695,13 +4691,15 @@ public sealed partial class SourceFile
 {
     private readonly object identifiersLock = new(), nameTableLock = new(), tokenCacheLock = new(), declarationMapLock = new();
     private bool identifiersInitialized, nameTableInitialized;
-    private HashSet<string> identifiers;
-    private Dictionary<string, int> nameTable;
+    private HashSet<ByteStringKey> identifiers;
+    private bool hasNullIdentifier;
+    private Dictionary<ByteStringKey, int> nameTable;
     private Dictionary<(Node Parent, TextRange Loc), Node> tokenCache;
     private NodeFactory tokenFactory;
-    private Dictionary<string, List<Node>> declarationMap;
+    private Dictionary<ByteStringKey, Slice<Node>> declarationMap;
     /// <summary>Checks a raw UTF-8 byte-string name, as returned by Node.Text().</summary>
-    public bool HasIdentifier(string name)
+    public bool HasIdentifier(string name) => HasIdentifier(ByteStringValue.FromString(name));
+    internal bool HasIdentifier(ByteStringValue name)
     {
         lock (identifiersLock)
         {
@@ -4709,7 +4707,7 @@ public sealed partial class SourceFile
             {
                 try
                 {
-                    identifiers = Ast.CollectIdentifiersForSourceFile(this);
+                    identifiers = Ast.CollectIdentifiersForSourceFile(this, out hasNullIdentifier);
                 }
                 finally
                 {
@@ -4717,11 +4715,11 @@ public sealed partial class SourceFile
                 }
             }
 
-            return identifiers?.Contains(name) ?? false;
+            return name.IsNull ? hasNullIdentifier : identifiers is not null && name.ContainsIn(identifiers);
         }
     }
 
-    public Dictionary<string, int> GetNameTable()
+    public Dictionary<ByteStringKey, int> GetNameTable()
     {
         lock (nameTableLock)
         {
@@ -4729,12 +4727,12 @@ public sealed partial class SourceFile
             {
                 try
                 {
-                    var table = new Dictionary<string, int>(IdentifierCount, StringComparer.Ordinal);
+                    var table = new Dictionary<ByteStringKey, int>(IdentifierCount, ByteStringKey.Comparer);
                     bool Walk(Node n)
                     {
-                        if (Ast.IsIdentifier(n) && !Ast.IsTagName(n) && n.Text() != "" || Ast.IsStringOrNumericLiteralLike(n) && Ast.literalIsName(n) || Ast.IsPrivateIdentifier(n))
+                        if (Ast.IsIdentifier(n) && !Ast.IsTagName(n) && !n.TextEquals(""u8) || Ast.IsStringOrNumericLiteralLike(n) && Ast.literalIsName(n) || Ast.IsPrivateIdentifier(n))
                         {
-                            var value = n.Text();
+                            var value = ByteStringKey.FromValue(n.TextValue());
                             table[value] = table.ContainsKey(value) ? -1 : n.Pos();
                         }
 
@@ -4784,29 +4782,30 @@ public sealed partial class SourceFile
     private Node createToken(Kind kind, int pos, int end, TokenFlags flags)
     {
         tokenFactory ??= new();
-        var value = text.Substring(pos, end - pos);
+        var value = ByteStringValue.FromView(sourceText.Slice(pos, end));
         return kind switch
         {
-            Kind.NumericLiteral => tokenFactory.NewNumericLiteral(value, flags),
-            Kind.BigIntLiteral => tokenFactory.NewBigIntLiteral(value, flags),
-            Kind.StringLiteral => tokenFactory.NewStringLiteral(value, flags),
-            Kind.JsxText or Kind.JsxTextAllWhiteSpaces => tokenFactory.NewJsxText(value, kind == Kind.JsxTextAllWhiteSpaces),
-            Kind.RegularExpressionLiteral => tokenFactory.NewRegularExpressionLiteral(value, flags),
-            Kind.NoSubstitutionTemplateLiteral => tokenFactory.NewNoSubstitutionTemplateLiteral(value, flags),
-            Kind.TemplateHead => tokenFactory.NewTemplateHead(value, "", flags),
-            Kind.TemplateMiddle => tokenFactory.NewTemplateMiddle(value, "", flags),
-            Kind.TemplateTail => tokenFactory.NewTemplateTail(value, "", flags),
-            Kind.Identifier => tokenFactory.NewIdentifier(value),
-            Kind.PrivateIdentifier => tokenFactory.NewPrivateIdentifier(value),
+            Kind.NumericLiteral => tokenFactory.NewNumericLiteralWithTextValue(value, flags),
+            Kind.BigIntLiteral => tokenFactory.NewBigIntLiteralWithTextValue(value, flags),
+            Kind.StringLiteral => tokenFactory.NewStringLiteralWithTextValue(value, flags),
+            Kind.JsxText or Kind.JsxTextAllWhiteSpaces => tokenFactory.NewJsxTextWithTextValue(value, kind == Kind.JsxTextAllWhiteSpaces),
+            Kind.RegularExpressionLiteral => tokenFactory.NewRegularExpressionLiteralWithTextValue(value, flags),
+            Kind.NoSubstitutionTemplateLiteral => tokenFactory.NewNoSubstitutionTemplateLiteralWithTextValue(value, flags),
+            Kind.TemplateHead => tokenFactory.NewTemplateHeadWithTextValue(value, default, flags),
+            Kind.TemplateMiddle => tokenFactory.NewTemplateMiddleWithTextValue(value, default, flags),
+            Kind.TemplateTail => tokenFactory.NewTemplateTailWithTextValue(value, default, flags),
+            Kind.Identifier => tokenFactory.NewIdentifierWithTextValue(value),
+            Kind.PrivateIdentifier => tokenFactory.NewPrivateIdentifierWithTextValue(value),
             _ => tokenFactory.NewToken(kind)};
     }
 }
 
 public static partial class Ast
 {
-    internal static HashSet<string> CollectIdentifiersForSourceFile(SourceFile sourceFile)
+    internal static HashSet<ByteStringKey> CollectIdentifiersForSourceFile(SourceFile sourceFile, out bool hasNullIdentifier)
     {
-        var identifiers = new HashSet<string>(StringComparer.Ordinal);
+        var identifiers = new HashSet<ByteStringKey>(ByteStringKey.Comparer);
+        bool containsNull = false;
         bool Collect(Node node)
         {
             switch (node.Kind)
@@ -4817,7 +4816,9 @@ public static partial class Ast
                 case Kind.NumericLiteral:
                 case Kind.BigIntLiteral:
                 case Kind.NoSubstitutionTemplateLiteral:
-                    identifiers.Add(node.Text());
+                    var text = node.TextValue();
+                    if (text.IsNull) containsNull = true;
+                    else identifiers.Add(ByteStringKey.FromValue(text));
                     break;
             }
 
@@ -4826,6 +4827,7 @@ public static partial class Ast
         }
 
         Collect(sourceFile.AsNode());
+        hasNullIdentifier = containsNull;
         return identifiers;
     }
 }
@@ -4862,23 +4864,22 @@ public sealed class PragmaSpecification
 public sealed partial class SourceFile
 {
     /// <summary>Builds the declaration-name index. Overload grouping additionally observes existing symbol identity.</summary>
-    public Dictionary<string, List<Node>> GetDeclarationMap()
+    public Dictionary<ByteStringKey, Slice<Node>> GetDeclarationMap()
     {
         lock (declarationMapLock)
             return declarationMap ??= computeDeclarationMap();
     }
 
-    private Dictionary<string, List<Node>> computeDeclarationMap()
+    private Dictionary<ByteStringKey, Slice<Node>> computeDeclarationMap()
     {
-        var result = new Dictionary<string, List<Node>>(StringComparer.Ordinal);
+        var result = new Dictionary<ByteStringKey, Slice<Node>>(ByteStringKey.Comparer);
         void AddDeclaration(Node declaration)
         {
-            var name = Ast.GetDeclarationName(declaration);
-            if (name != "")
+            var name = Ast.GetDeclarationNameValue(declaration);
+            if (!name.EqualsBytes(""u8))
             {
-                if (!result.TryGetValue(name, out var declarations))
-                    result[name] = declarations = [];
-                declarations.Add(declaration);
+                name.TryGetValue(result, out var declarations);
+                result[ByteStringKey.FromValue(name)] = declarations.Append(declaration);
             }
         }
 
@@ -4890,21 +4891,19 @@ public sealed partial class SourceFile
                 case Kind.FunctionExpression:
                 case Kind.MethodDeclaration:
                 case Kind.MethodSignature:
-                    var declarationName = Ast.GetDeclarationName(node);
-                    if (declarationName != "")
+                    var declarationName = Ast.GetDeclarationNameValue(node);
+                    if (!declarationName.EqualsBytes(""u8))
                     {
-                        result.TryGetValue(declarationName, out var declarations);
-                        var lastDeclaration = declarations is { Count: > 0 } ? declarations[^1] : null;
+                        declarationName.TryGetValue(result, out var declarations);
+                        var lastDeclaration = declarations.Length > 0 ? declarations[declarations.Length - 1] : null;
                         if (lastDeclaration is not null && node.Parent == lastDeclaration.Parent && node.Symbol() == lastDeclaration.Symbol())
                         {
                             if (node.Body()is not null && lastDeclaration.Body()is null)
-                                declarations[^1] = node;
+                                declarations[declarations.Length - 1] = node;
                         }
                         else
                         {
-                            if (declarations is null)
-                                result[declarationName] = declarations = [];
-                            declarations.Add(node);
+                            result[ByteStringKey.FromValue(declarationName)] = declarations.Append(node);
                         }
                     }
 
@@ -5019,7 +5018,7 @@ public static partial class Ast
         var attributes = node.AsImportAttributes().Attributes;
         Node attribute = null;
         foreach (var candidate in attributes.Nodes)
-            if (candidate.Name().Text() == "resolution-mode")
+            if (candidate.Name().TextValue().EqualsBytes("resolution-mode"u8))
             {
                 attribute = candidate;
                 break;
@@ -5030,13 +5029,13 @@ public static partial class Ast
         var elem = attribute.AsImportAttribute();
         if (!IsStringLiteralLike(elem.Value))
             return (ResolutionMode.None, false);
-        if (elem.Value.Text() != "import" && elem.Value.Text() != "require")
+        if (!elem.Value.TextValue().EqualsBytes("import"u8) && !elem.Value.TextValue().EqualsBytes("require"u8))
         {
             grammarErrorOnNode?.Invoke(elem.Value, Diagnostics.X_resolution_mode_should_be_either_require_or_import, []);
             return (ResolutionMode.None, false);
         }
 
-        if (elem.Value.Text() == "import")
+        if (elem.Value.TextValue().EqualsBytes("import"u8))
             return (ResolutionMode.ESNext, true);
         return (ResolutionMode.CommonJS, true);
     }

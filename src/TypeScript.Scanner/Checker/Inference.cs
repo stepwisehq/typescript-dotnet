@@ -11,7 +11,7 @@ public sealed partial class Checker
     private readonly record struct InferenceKey(uint source, uint target, InferencePriority priority, bool contravariant, bool bivariant);
     private sealed class InferenceState
     {
-        internal List<InferenceInfo> inferences;
+        internal Slice<InferenceInfo> inferences;
         internal Type originalSource, originalTarget, propagationType;
         internal InferencePriority priority, inferencePriority;
         internal bool contravariant, bivariant;
@@ -40,7 +40,7 @@ public sealed partial class Checker
     private void putInferenceState(InferenceState n)
     {
         n.visited?.Clear();
-        n.inferences = n.inferences == null ? null : [];
+        n.inferences = n.inferences.Slice2(0, 0);
         // inference.go:49/50. Reset only the headers; retain backing capacity.
         n.sourceStack = n.sourceStack.Slice2(0, 0);
         n.targetStack = n.targetStack.Slice2(0, 0);
@@ -53,7 +53,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:56:1.
-    private void inferTypes(List<InferenceInfo> inferences, Type originalSource, Type originalTarget, InferencePriority priority, bool contravariant)
+    private void inferTypes(Slice<InferenceInfo> inferences, Type originalSource, Type originalTarget, InferencePriority priority, bool contravariant)
     {
         var n = this.getInferenceState();
         n.inferences = inferences;
@@ -402,7 +402,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:295:1.
-    private void inferFromTypeArguments(InferenceState n, List<Type> sourceTypes, List<Type> targetTypes, List<VarianceFlags> variances)
+    private void inferFromTypeArguments(InferenceState n, Slice<Type> sourceTypes, Slice<Type> targetTypes, Slice<VarianceFlags> variances)
     {
         {
             foreach (var i in GoRuntime.RangeKeys(Math.Min(GoRuntime.Len(sourceTypes), GoRuntime.Len(targetTypes))))
@@ -582,17 +582,17 @@ public sealed partial class Checker
 
         if ((GoRuntime.Len(matchedSources) != 0))
         {
-            sources = Core.Filter(sources, (t4) =>
+            sources = Core.Filter(sources, matchedSources, static (t4, matched) =>
             {
-                return !GoSlices.Contains(matchedSources, t4);
+                return !GoSlices.Contains(matched, t4);
             });
         }
 
         if ((GoRuntime.Len(matchedTargets) != 0))
         {
-            targets = Core.Filter(targets, (t5) =>
+            targets = Core.Filter(targets, matchedTargets, static (t5, matched) =>
             {
-                return !GoSlices.Contains(matchedTargets, t5);
+                return !GoSlices.Contains(matched, t5);
             });
         }
 
@@ -688,7 +688,7 @@ public sealed partial class Checker
                 sources = Slice<Type>.FromArray([source]);
             }
 
-            var matched = GoRuntime.MakeSlice<bool>(GoRuntime.Len(sources));
+            var matched = Slice<bool>.Make(GoRuntime.Len(sources));
             var inferenceCircularity = false;
             {
                 foreach (var t in targets)
@@ -732,7 +732,7 @@ public sealed partial class Checker
 
             if (((typeVariableCount == 1) && !inferenceCircularity))
             {
-                List<Type> unmatched = default;
+                Slice<Type> unmatched = default;
                 {
                     foreach (var range14 in GoRuntime.Range(sources))
                     {
@@ -1067,8 +1067,8 @@ public sealed partial class Checker
         {
             foreach (var targetProp in GoRuntime.RangeValues(properties))
             {
-                var sourceProp = this.getPropertyOfType(source, targetProp.Name);
-                if (((sourceProp != null) && !Core.Some(sourceProp.Declarations, this.isSkipDirectInferenceNode)))
+                var sourceProp = this.getPropertyOfType(source, targetProp.NameValue);
+                if (((sourceProp != null) && !Core.Some(sourceProp.Declarations, this, static (declaration, checker) => checker.isSkipDirectInferenceNode(declaration))))
                 {
                     this.inferFromTypes(n, this.removeMissingType(this.getTypeOfSymbol(sourceProp), ((sourceProp.Flags & SymbolFlags.Optional) != 0)), this.removeMissingType(this.getTypeOfSymbol(targetProp), ((targetProp.Flags & SymbolFlags.Optional) != 0)));
                 }
@@ -1210,7 +1210,7 @@ public sealed partial class Checker
             {
                 foreach (var targetInfo in GoRuntime.RangeValues(indexInfos))
                 {
-                    List<Type> propTypes = default;
+                    Slice<Type> propTypes = default;
                     {
                         foreach (var range28 in GoRuntime.Range(this.getPropertiesOfType(source)))
                         {
@@ -1303,15 +1303,15 @@ public sealed partial class Checker
                 return true;
             }
 
-            var propTypes = Core.Map(this.getPropertiesOfType(source), this.getTypeOfSymbol);
-            var indexTypes = Core.Map(this.getIndexInfosOfType(source), (info) =>
+            var propTypes = Core.MapSlice(this.getPropertiesOfType(source), this, static (property, checker) => checker.getTypeOfSymbol(property));
+            var indexTypes = Core.MapSlice(this.getIndexInfosOfType(source), this, static (info, checker) =>
             {
-                if ((info != this.enumNumberIndexInfo))
+                if ((info != checker.enumNumberIndexInfo))
                 {
                     return info.valueType;
                 }
 
-                return this.neverType;
+                return checker.neverType;
             });
             this.inferFromTypes(n, this.getUnionType(Core.Concatenate(propTypes, indexTypes)), this.getTemplateTypeFromMappedType(target));
             return true;
@@ -1367,7 +1367,7 @@ public sealed partial class Checker
 
         if (isTupleType(source))
         {
-            var elementTypes = Core.Map(this.getElementTypes(source), (t) =>
+            var elementTypes = Core.MapSlice(this.getElementTypes(source), (t) =>
             {
                 return this.inferReverseMappedType(t, target, constraint);
             });
@@ -1469,7 +1469,7 @@ public sealed partial class Checker
         var typeParameter = this.getIndexedAccessType(constraint.AsIndexType().target, this.getTypeParameterFromMappedType(target));
         var templateType = this.getTemplateTypeFromMappedType(target);
         var inference = newInferenceInfo(typeParameter);
-        this.inferTypes(new List<InferenceInfo> { inference }, source, templateType, InferencePriority.None, false);
+        this.inferTypes(Slice<InferenceInfo>.FromArray([inference]), source, templateType, InferencePriority.None, false);
         return this.getWidenedType(Core.OrElse(this.getTypeFromInference(inference), this.unknownType));
     }
 
@@ -1481,13 +1481,12 @@ public sealed partial class Checker
         var modifiers = getMappedTypeModifiers(r.mappedType);
         var readonlyMask = ((modifiers & MappedTypeModifiers.IncludeReadonly) == 0);
         var optionalMask = Core.IfElse(((modifiers & MappedTypeModifiers.IncludeOptional) != 0), SymbolFlags.None, SymbolFlags.Optional);
-        List<IndexInfo> indexInfos = default;
+        Slice<IndexInfo> indexInfos = default;
         if ((indexInfo != null))
         {
-            indexInfos = new List<IndexInfo>
-            {
-                this.newIndexInfo(this.stringType, Core.OrElse(this.inferReverseMappedType(indexInfo.valueType, r.mappedType, r.constraintType), this.unknownType), (readonlyMask && indexInfo.isReadonly), null, null)
-            };
+            indexInfos = Slice<IndexInfo>.FromArray([
+                this.newIndexInfo(this.stringType, Core.OrElse(this.inferReverseMappedType(indexInfo.valueType, r.mappedType, r.constraintType), this.unknownType), (readonlyMask && indexInfo.isReadonly), null, default)
+            ]);
         }
 
         var members = new SymbolTable();
@@ -1505,10 +1504,10 @@ public sealed partial class Checker
                 }
 
                 var checkFlags = (CheckFlags.ReverseMapped | Core.IfElse((readonlyMask && this.isReadonlySymbol(prop)), CheckFlags.Readonly, CheckFlags.None));
-                var inferredProp = this.newSymbolEx((SymbolFlags.Property | (prop.Flags & optionalMask)), prop.Name, checkFlags);
+                var inferredProp = this.newSymbolEx((SymbolFlags.Property | (prop.Flags & optionalMask)), prop.NameValue, checkFlags);
                 inferredProp.Declarations = prop.Declarations;
                 this.valueSymbolLinks.Get(inferredProp).nameType = this.valueSymbolLinks.Get(prop).nameType;
-                var links = this.ReverseMappedSymbolLinks.Get(inferredProp);
+                ref var links = ref this.ReverseMappedSymbolLinks.Get(inferredProp);
                 links.propertyType = this.getTypeOfSymbol(prop);
                 var constraintTarget = r.constraintType.AsIndexType().target;
                 if (((((constraintTarget.flags & TypeFlags.IndexedAccess) != 0) && ((constraintTarget.AsIndexedAccessType().objectType.flags & TypeFlags.TypeParameter) != 0)) && ((constraintTarget.AsIndexedAccessType().indexType.flags & TypeFlags.TypeParameter) != 0)))
@@ -1524,7 +1523,7 @@ public sealed partial class Checker
                     links.constraintType = r.constraintType;
                 }
 
-                members[prop.Name] = inferredProp;
+                members[prop.NameValue] = inferredProp;
             }
         }
 
@@ -1534,10 +1533,10 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1156:1.
     private Type getTypeOfReverseMappedSymbol(Symbol symbol)
     {
-        var links = this.valueSymbolLinks.Get(symbol);
+        ref var links = ref this.valueSymbolLinks.Get(symbol);
         if ((links.resolvedType == null))
         {
-            var reverseLinks = this.ReverseMappedSymbolLinks.Get(symbol);
+            ref var reverseLinks = ref this.ReverseMappedSymbolLinks.Get(symbol);
             links.resolvedType = Core.OrElse(this.inferReverseMappedType(reverseLinks.propertyType, reverseLinks.mappedType, reverseLinks.constraintType), this.unknownType);
         }
 
@@ -1584,7 +1583,7 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1189:1.
     private Type replaceIndexedAccess(Type instantiable, Type t, Type replacement)
     {
-        return this.instantiateType(instantiable, newTypeMapper(new List<Type> { t.AsIndexedAccessType().indexType, t.AsIndexedAccessType().objectType }, new List<Type> { this.getNumberLiteralType(0), this.createTupleType(new List<Type> { replacement }) }));
+        return this.instantiateType(instantiable, newTypeMapper(Slice<Type>.FromArray([ t.AsIndexedAccessType().indexType, t.AsIndexedAccessType().objectType ]), Slice<Type>.FromArray([ this.getNumberLiteralType(0), this.createTupleType(Slice<Type>.FromArray([ replacement ])) ])));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1196:1.
@@ -1659,7 +1658,7 @@ public sealed partial class Checker
                     continue;
                 }
 
-                var name = getStringLiteralValue(t2);
+                var name = getStringLiteralValueText(t2);
                 var literalProp = this.newSymbol(SymbolFlags.Property, name);
                 this.valueSymbolLinks.Get(literalProp).resolvedType = this.anyType;
                 if ((t2.symbol != null))
@@ -1672,27 +1671,26 @@ public sealed partial class Checker
             }
         }
 
-        List<IndexInfo> indexInfos = default;
+        Slice<IndexInfo> indexInfos = default;
         if (((t.flags & TypeFlags.String) != 0))
         {
-            indexInfos = new List<IndexInfo>
-            {
-                this.newIndexInfo(this.stringType, this.emptyObjectType, false, null, null)
-            };
+            indexInfos = Slice<IndexInfo>.FromArray([
+                this.newIndexInfo(this.stringType, this.emptyObjectType, false, null, default)
+            ]);
         }
 
         return this.newAnonymousType(null, members, default, default, indexInfos);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1262:1.
-    private InferenceContext newInferenceContext(List<Type> typeParameters, Signature signature, InferenceFlags flags, TypeComparer compareTypes)
+    private InferenceContext newInferenceContext(Slice<Type> typeParameters, Signature signature, InferenceFlags flags, TypeComparer compareTypes)
     {
         if ((compareTypes == null))
         {
             compareTypes = this.compareTypesAssignable;
         }
 
-        return this.newInferenceContextWorker(Core.Map(typeParameters, newInferenceInfo), signature, flags, compareTypes);
+        return this.newInferenceContextWorker(Core.MapSlice(typeParameters, newInferenceInfo), signature, flags, compareTypes);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1269:1.
@@ -1703,7 +1701,7 @@ public sealed partial class Checker
             return null;
         }
 
-        return this.newInferenceContextWorker(Core.Map(n.inferences, cloneInferenceInfo), n.signature, (n.flags | extraFlags), n.compareTypes);
+        return this.newInferenceContextWorker(Core.MapSlice(n.inferences, cloneInferenceInfo), n.signature, (n.flags | extraFlags), n.compareTypes);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1276:1.
@@ -1715,11 +1713,11 @@ public sealed partial class Checker
             return null;
         }
 
-        return this.newInferenceContextWorker(Core.Map(inferences, cloneInferenceInfo), n.signature, n.flags, n.compareTypes);
+        return this.newInferenceContextWorker(Core.MapSlice(inferences, cloneInferenceInfo), n.signature, n.flags, n.compareTypes);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1284:1.
-    private InferenceContext newInferenceContextWorker(List<InferenceInfo> inferences, Signature signature, InferenceFlags flags, TypeComparer compareTypes)
+    private InferenceContext newInferenceContextWorker(Slice<InferenceInfo> inferences, Signature signature, InferenceFlags flags, TypeComparer compareTypes)
     {
         var n = new InferenceContext
         {
@@ -1775,7 +1773,7 @@ public sealed partial class Checker
             }
         }
 
-        n.intraExpressionInferenceSites = null;
+        n.intraExpressionInferenceSites = default;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1328:1.
@@ -1807,14 +1805,14 @@ public sealed partial class Checker
 
                 if (((inferredCovariantType != null) || (inferredContravariantType != null)))
                 {
-                    var preferCovariantType = ((inferredCovariantType != null) && (((inferredContravariantType == null) || ((((inferredCovariantType.flags & ((TypeFlags.Never | TypeFlags.Any))) == 0) && Core.Some(inference.contraCandidates, (t) =>
+                    var preferCovariantType = ((inferredCovariantType != null) && (((inferredContravariantType == null) || ((((inferredCovariantType.flags & ((TypeFlags.Never | TypeFlags.Any))) == 0) && Core.Some(inference.contraCandidates, (checker: this, inferredCovariantType), static (t, state) =>
                     {
-                        return this.isTypeAssignableTo(inferredCovariantType, t);
-                    })) && Core.Every(n.inferences, (other) =>
+                        return state.checker.isTypeAssignableTo(state.inferredCovariantType, t);
+                    })) && Core.Every(n.inferences, (checker: this, inference, inferredCovariantType), static (other, state) =>
                     {
-                        return (((other != inference) && (this.getConstraintOfTypeParameter(other.typeParameter) != inference.typeParameter)) || Core.Every(other.candidates, (t2) =>
+                        return (((other != state.inference) && (state.checker.getConstraintOfTypeParameter(other.typeParameter) != state.inference.typeParameter)) || Core.Every(other.candidates, (state.checker, state.inferredCovariantType), static (t2, context) =>
                         {
-                            return this.isTypeAssignableTo(t2, inferredCovariantType);
+                            return context.checker.isTypeAssignableTo(t2, context.inferredCovariantType);
                         }));
                     })))));
                     if (preferCovariantType)
@@ -1867,10 +1865,10 @@ public sealed partial class Checker
                         Type filteredByConstraint = default;
                         if ((inference.priority == InferencePriority.ReturnType))
                         {
-                            filteredByConstraint = this.mapType(inferredType, (t3) =>
+                            filteredByConstraint = this.mapTypeEx(inferredType, (checker: this, n, constraintWithThis), static (t3, state) =>
                             {
-                                return Core.IfElse((n.compareTypes(t3, constraintWithThis, false) != Ternary.False), t3, this.neverType);
-                            });
+                                return Core.IfElse((state.n.compareTypes(t3, state.constraintWithThis, false) != Ternary.False), t3, state.checker.neverType);
+                            }, false);
                         }
 
                         inferredType = Core.IfElse(((filteredByConstraint != null) && ((filteredByConstraint.flags & TypeFlags.Never) == 0)), filteredByConstraint, null);
@@ -1892,9 +1890,9 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1418:1.
-    private List<Type> getInferredTypes(InferenceContext n)
+    private Slice<Type> getInferredTypes(InferenceContext n)
     {
-        var result = GoRuntime.MakeSlice<Type>(GoRuntime.Len(n.inferences));
+        var result = Slice<Type>.Make(GoRuntime.Len(n.inferences));
         {
             foreach (var i in GoRuntime.RangeKeys(n.inferences))
             {
@@ -2027,9 +2025,9 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1505:1.
     private bool isTypeParameterAtTopLevel(Type t, Type tp, int depth)
     {
-        return (((t == tp) || (((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Some(t.Types(), (t2) =>
+        return (((t == tp) || (((t.flags & TypeFlags.UnionOrIntersection) != 0) && Core.Some(t.Types(), (checker: this, tp, depth), static (t2, state) =>
         {
-            return this.isTypeParameterAtTopLevel(t2, tp, depth);
+            return state.checker.isTypeParameterAtTopLevel(t2, state.tp, state.depth);
         }))) || (((depth < 3) && ((t.flags & TypeFlags.Conditional) != 0)) && ((this.isTypeParameterAtTopLevel(this.getTrueTypeFromConditionalType(t), tp, (depth + 1)) || this.isTypeParameterAtTopLevel(this.getFalseTypeFromConditionalType(t), tp, (depth + 1))))));
     }
 
@@ -2232,7 +2230,7 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1630:1.
     private bool isFromInferenceBlockedSource(Type t)
     {
-        return ((t.symbol != null) && Core.Some(t.symbol.Declarations, this.isSkipDirectInferenceNode));
+        return ((t.symbol != null) && Core.Some(t.symbol.Declarations, this, static (declaration, checker) => checker.isSkipDirectInferenceNode(declaration)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1634:1.
@@ -2270,7 +2268,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1655:1.
-    internal static void clearCachedInferences(List<InferenceInfo> inferences)
+    internal static void clearCachedInferences(Slice<InferenceInfo> inferences)
     {
         {
             foreach (var inference in GoRuntime.RangeValues(inferences))
@@ -2315,7 +2313,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1682:1.
-    private static bool hasOverlappingInferences(List<InferenceInfo> a, List<InferenceInfo> b)
+    private static bool hasOverlappingInferences(Slice<InferenceInfo> a, Slice<InferenceInfo> b)
     {
         {
             foreach (var i in GoRuntime.RangeKeys(a))
@@ -2331,7 +2329,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:1691:1.
-    private void mergeInferences(List<InferenceInfo> target, List<InferenceInfo> source)
+    private void mergeInferences(Slice<InferenceInfo> target, Slice<InferenceInfo> source)
     {
         {
             foreach (var i in GoRuntime.RangeKeys(target))
@@ -2353,7 +2351,7 @@ public sealed partial class Checker
         var types = target.types;
         if (((GoRuntime.Len(matches) != 0) || Core.Every(target.texts, (s) =>
         {
-            return (s == "");
+            return s.Length == 0;
         })))
         {
             {
@@ -2391,7 +2389,7 @@ public sealed partial class Checker
 
                                         if (((allTypeFlags & TypeFlags.String) == 0))
                                         {
-                                            var str = getStringLiteralValue(source2);
+                                            var str = getStringLiteralValueText(source2);
                                             if ((((allTypeFlags & TypeFlags.NumberLike) != 0) && !isValidNumberString(str, true)))
                                             {
                                                 allTypeFlags &= ~(TypeFlags.NumberLike);
@@ -2436,7 +2434,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when ((right.flags & TypeFlags.StringMapping) != 0 && str == applyStringMapping(right.symbol, str)):
+                                                    case true when ((right.flags & TypeFlags.StringMapping) != 0 && str.EqualsValue(applyStringMapping(right.symbol, str))):
                                                     {
                                                         return source2;
                                                     }
@@ -2446,7 +2444,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when (((right.flags & TypeFlags.StringLiteral) != 0) && (getStringLiteralValue(right) == str)):
+                                                    case true when (((right.flags & TypeFlags.StringLiteral) != 0) && (getStringLiteralValueText(right).EqualsValue(str))):
                                                     {
                                                         return right;
                                                     }
@@ -2496,7 +2494,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when (((right.flags & TypeFlags.BigIntLiteral) != 0) && (pseudoBigIntToString(getBigIntLiteralValue(right)) == str)):
+                                                    case true when (((right.flags & TypeFlags.BigIntLiteral) != 0) && (str.EqualsString(pseudoBigIntToString(getBigIntLiteralValue(right))))):
                                                     {
                                                         return right;
                                                     }
@@ -2510,12 +2508,12 @@ public sealed partial class Checker
                                                     {
                                                         switch (true)
                                                         {
-                                                            case true when (str == "true"):
+                                                            case true when (str.EqualsBytes("true"u8)):
                                                             {
                                                                 return this.trueType;
                                                             }
 
-                                                            case true when (str == "false"):
+                                                            case true when (str.EqualsBytes("false"u8)):
                                                             {
                                                                 return this.falseType;
                                                             }
@@ -2532,7 +2530,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when (((right.flags & TypeFlags.BooleanLiteral) != 0) && (Core.IfElse(getBooleanLiteralValue(right), "true", "false") == str)):
+                                                    case true when (((right.flags & TypeFlags.BooleanLiteral) != 0) && (str.EqualsString(Core.IfElse(getBooleanLiteralValue(right), "true", "false")))):
                                                     {
                                                         return right;
                                                     }
@@ -2542,7 +2540,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when (((right.flags & TypeFlags.Undefined) != 0) && (right.AsIntrinsicType().intrinsicName == str)):
+                                                    case true when (((right.flags & TypeFlags.Undefined) != 0) && (str.EqualsString(right.AsIntrinsicType().intrinsicName))):
                                                     {
                                                         return right;
                                                     }
@@ -2552,7 +2550,7 @@ public sealed partial class Checker
                                                         return left;
                                                     }
 
-                                                    case true when (((right.flags & TypeFlags.Null) != 0) && (right.AsIntrinsicType().intrinsicName == str)):
+                                                    case true when (((right.flags & TypeFlags.Null) != 0) && (str.EqualsString(right.AsIntrinsicType().intrinsicName))):
                                                     {
                                                         return right;
                                                     }

@@ -160,12 +160,12 @@ public enum NodeCheckFlags : uint
 public sealed class TypeAlias
 {
     internal Symbol symbol;
-    internal List<Type> typeArguments;
+    internal Slice<Type> typeArguments;
     public Symbol Symbol() => symbol;
-    public List<Type> TypeArguments() => typeArguments;
+    public Slice<Type> TypeArguments() => typeArguments;
 }
 
-public sealed class Type
+public class Type
 {
     internal TypeFlags flags;
     internal ObjectFlags objectFlags;
@@ -174,6 +174,7 @@ public sealed class Type
     internal TypeAlias alias;
     internal Checker checker;
     internal TypeData data;
+    internal Type() { }
     internal Type(TypeData data) => this.data = data;
     public uint Id() => id;
     public TypeFlags Flags() => flags;
@@ -288,18 +289,18 @@ public sealed class Type
     public bool IsTupleType() => (objectFlags & TypeScript.Checking.ObjectFlags.Reference) != 0 && (Target().objectFlags & TypeScript.Checking.ObjectFlags.Tuple) != 0;
 }
 
-// Go's TypeData interface/embedded TypeBase become a payload with one stable wrapper.
-public abstract class TypeData
+// types.go:685/872. Ordinary inheritance retains the embedded Go Type header
+// in its payload object. Self data preserves the source interface dispatch.
+public abstract class TypeData : Type
 {
-    private readonly Type type;
-    protected TypeData() => type = new(this);
-    public Type AsType() => type;
-    public virtual ConstrainedType AsConstrainedType() => null;
-    public virtual StructuredType AsStructuredType() => null;
-    public virtual UnionOrIntersectionType AsUnionOrIntersectionType() => null;
-    public virtual ObjectType AsObjectType() => null;
-    public virtual TypeReference AsTypeReference() => null;
-    public virtual InterfaceType AsInterfaceType() => null;
+    protected TypeData() => data = this;
+    public Type AsType() => this;
+    public new virtual ConstrainedType AsConstrainedType() => null;
+    public new virtual StructuredType AsStructuredType() => null;
+    public new virtual UnionOrIntersectionType AsUnionOrIntersectionType() => null;
+    public new virtual ObjectType AsObjectType() => null;
+    public new virtual TypeReference AsTypeReference() => null;
+    public new virtual InterfaceType AsInterfaceType() => null;
 }
 
 public class TypeBase : TypeData
@@ -316,7 +317,11 @@ public sealed class LiteralType : TypeBase
 {
     internal object value;
     internal Type freshType, regularType;
-    public object Value() => value;
+    // types.go:895 keeps one any channel. String headers box once on admission;
+    // output consumers explicitly project rather than changing the semantic owner.
+    public object Value() => value is ByteStringValue text ? text.Materialize() : value;
+    internal ByteStringValue StringValue() => value is ByteStringValue text
+        ? text : ByteStringValue.FromString((string)value);
     public Type FreshType() => freshType;
     public Type RegularType() => regularType;
     // String() belongs to the selected ValueToString/escaping dependency closure.
@@ -338,10 +343,10 @@ public class ConstrainedType : TypeBase
 public class StructuredType : ConstrainedType
 {
     internal SymbolTable members;
-    internal List<Symbol> properties;
+    internal Slice<Symbol> properties;
     internal Slice<Signature> signatures;
     internal int callSignatureCount;
-    internal List<IndexInfo> indexInfos;
+    internal Slice<IndexInfo> indexInfos;
     internal Type objectTypeWithoutAbstractConstructSignatures;
     public override StructuredType AsStructuredType() => this;
     // types.go:949/953. Preserve ordered call/construct slices and their nil state.
@@ -351,7 +356,7 @@ public class StructuredType : ConstrainedType
     public List<Signature> ConstructSignatures() => GoSlices.ToListOrNull(ConstructSignaturesSlice());
     internal Slice<Signature> CallSignaturesSlice() => signatures.Slice3(0, callSignatureCount, callSignatureCount);
     internal Slice<Signature> ConstructSignaturesSlice() => signatures.Slice3(callSignatureCount, signatures.Length, signatures.Length);
-    public List<Symbol> Properties() => properties;
+    public Slice<Symbol> Properties() => properties;
 }
 
 public class ObjectType : StructuredType
@@ -374,25 +379,25 @@ public sealed class InstantiationExpressionType : ObjectType
 public class TypeReference : ObjectType
 {
     internal Node node;
-    internal List<Type> resolvedTypeArguments;
+    internal Slice<Type> resolvedTypeArguments;
     public override TypeReference AsTypeReference() => this;
 }
 
 public class InterfaceType : TypeReference
 {
-    internal List<Type> allTypeParameters;
+    internal Slice<Type> allTypeParameters;
     internal int outerTypeParameterCount;
     internal Type thisType;
     internal bool baseTypesResolved, declaredMembersResolved;
     internal Type resolvedBaseConstructorType;
-    internal List<Type> resolvedBaseTypes;
+    internal Slice<Type> resolvedBaseTypes;
     internal SymbolTable declaredMembers;
     internal Slice<Signature> declaredCallSignatures, declaredConstructSignatures;
-    internal List<IndexInfo> declaredIndexInfos;
+    internal Slice<IndexInfo> declaredIndexInfos;
     public override InterfaceType AsInterfaceType() => this;
-    public List<Type> OuterTypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(0, outerTypeParameterCount);
-    public List<Type> LocalTypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(outerTypeParameterCount, allTypeParameters.Count - outerTypeParameterCount - 1);
-    public List<Type> TypeParameters() => allTypeParameters is not { Count: > 0 } ? null : allTypeParameters.GetRange(0, allTypeParameters.Count - 1);
+    public Slice<Type> OuterTypeParameters() => allTypeParameters.Length == 0 ? default : allTypeParameters.Slice3(0, outerTypeParameterCount, outerTypeParameterCount);
+    public Slice<Type> LocalTypeParameters() => allTypeParameters.Length == 0 ? default : allTypeParameters.Slice3(outerTypeParameterCount, allTypeParameters.Length - 1, allTypeParameters.Length - 1);
+    public Slice<Type> TypeParameters() => allTypeParameters.Length == 0 ? default : allTypeParameters.Slice3(0, allTypeParameters.Length - 1, allTypeParameters.Length - 1);
     public Type ThisType() => thisType;
 }
 
@@ -412,7 +417,7 @@ public sealed class IndexType : ConstrainedType
 {
     internal Type target;
     internal IndexFlags indexFlags;
-    public Type Target() => target;
+    public new Type Target() => target;
 }
 
 // types.go:1059/1073/1081. A tuple target is a real synthesized generic interface.
@@ -440,14 +445,20 @@ public struct TupleElementInfo
 
 public sealed class TupleType : InterfaceType
 {
-    internal List<TupleElementInfo> elementInfos;
+    internal Slice<TupleElementInfo> elementInfos;
     internal int minLength, fixedLength;
     internal ElementFlags combinedFlags;
     internal bool @readonly;
     public int FixedLength() => fixedLength;
     public bool IsReadonly() => @readonly;
-    public List<ElementFlags> ElementFlags() => elementInfos.Select(info => info.flags).ToList();
-    public List<TupleElementInfo> ElementInfos() => elementInfos;
+    // types.go:1092. This output is newly owned, even for a nil/empty input header.
+    public Slice<ElementFlags> ElementFlags()
+    {
+        var result = Slice<ElementFlags>.Make(elementInfos.Length);
+        for (int i = 0; i < elementInfos.Length; i++) result[i] = elementInfos[i].flags;
+        return result;
+    }
+    public Slice<TupleElementInfo> ElementInfos() => elementInfos;
 }
 
 // types.go:1110/1135/1144. Nullable lazy slots are distinct from resolved values.
@@ -495,7 +506,7 @@ public sealed class ConditionalRoot
     internal ConditionalTypeNode node;
     internal Type checkType, extendsType;
     internal bool isDistributive;
-    internal List<Type> inferTypeParameters, outerTypeParameters;
+    internal Slice<Type> inferTypeParameters, outerTypeParameters;
     internal Dictionary<CacheHashKey, Type> instantiations;
     internal TypeAlias alias;
 }
@@ -513,15 +524,15 @@ public class UnionOrIntersectionType : StructuredType
 {
     internal Slice<Type> types;
     internal SymbolTable propertyCache, propertyCacheWithoutFunctionPropertyAugment;
-    internal List<Symbol> resolvedProperties;
+    internal Slice<Symbol> resolvedProperties;
     public override UnionOrIntersectionType AsUnionOrIntersectionType() => this;
-    public Slice<Type> Types() => types;
+    public new Slice<Type> Types() => types;
 }
 
 public sealed class UnionType : UnionOrIntersectionType
 {
     internal Type resolvedReducedType, regularType, origin;
-    internal string keyPropertyName = "";
+    internal ByteStringValue keyPropertyName;
     internal Dictionary<Type, Type> constituentMap;
 }
 
@@ -532,34 +543,34 @@ public sealed class IntersectionType : UnionOrIntersectionType
 }
 
 // types.go:245/254. Alias and interface declaration resolution caches.
-internal sealed class TypeAliasLinks
+internal struct TypeAliasLinks
 {
     internal Type declaredType;
-    internal List<Type> typeParameters;
+    internal Slice<Type> typeParameters;
     internal Dictionary<CacheHashKey, Type> instantiations;
     internal bool isConstructorDeclaredProperty;
 }
 
-internal sealed class DeclaredTypeLinks
+internal struct DeclaredTypeLinks
 {
     internal Type declaredType;
     internal bool interfaceChecked, indexSignaturesChecked, typeParametersChecked, enumChecked;
 }
 
 // types.go:200. Deferred synthetic properties preserve their constituent graph.
-internal sealed class DeferredSymbolLinks
+internal struct DeferredSymbolLinks
 {
     internal Type parent;
-    internal List<Type> constituents, writeConstituents;
+    internal Slice<Type> constituents, writeConstituents;
 }
 
 // Referenced-symbol meanings remain distinct from type-alias resolution links.
-internal sealed class SymbolReferenceLinks
+internal struct SymbolReferenceLinks
 {
     internal SymbolFlags referenceKinds;
 }
 
-internal sealed class ValueSymbolLinks
+internal struct ValueSymbolLinks
 {
     internal bool functionOrConstructorChecked;
     internal Type resolvedType, writeType;
@@ -569,21 +580,21 @@ internal sealed class ValueSymbolLinks
 }
 
 // types.go:194. Additional links retain mapped/spread property provenance.
-internal sealed class MappedSymbolLinks
+internal struct MappedSymbolLinks
 {
     internal Type keyType;
     internal Symbol syntheticOrigin;
 }
 
 // types.go:224. Reverse inference preserves each property's original input type.
-internal sealed class ReverseMappedSymbolLinks
+internal struct ReverseMappedSymbolLinks
 {
     internal Type propertyType, mappedType, constraintType;
 }
 
 // types.go:281. Spread indices are lazily computed for an array literal.
 // types.go:300; source properties contributing to a synthetic spread member.
-internal sealed class SpreadLinks
+internal struct SpreadLinks
 {
     internal Symbol leftSpread;
     internal Symbol rightSpread;
@@ -597,29 +608,29 @@ internal enum ExhaustiveState : byte
     True
 }
 
-internal sealed class SwitchStatementLinks
+internal struct SwitchStatementLinks
 {
     internal ExhaustiveState exhaustiveState;
     internal bool switchTypesComputed, witnessesComputed;
-    internal List<Type> switchTypes;
-    internal List<string> witnesses;
+    internal Slice<Type> switchTypes;
+    internal Slice<ByteStringValue> witnesses;
 }
 
-internal sealed class ArrayLiteralLinks
+internal struct ArrayLiteralLinks
 {
     internal bool indicesComputed;
     internal int firstSpreadIndex, lastSpreadIndex;
 }
 
 // types.go:390. Nullable bool distinguishes an uncomputed name from no name.
-internal sealed class ComputedNameNodeLinks
+internal struct ComputedNameNodeLinks
 {
     internal bool? hasName;
-    internal string name;
+    internal ByteStringValue name;
 }
 
 // types.go:209. Actual import/export alias links, including pure alias cycles.
-internal sealed class AliasSymbolLinks
+internal struct AliasSymbolLinks
 {
     internal Symbol immediateTarget;
     internal Symbol aliasTarget;
@@ -628,11 +639,11 @@ internal sealed class AliasSymbolLinks
 }
 
 // types.go:218. Source module export resolution and type-only export-star state.
-internal sealed class ModuleSymbolLinks
+internal struct ModuleSymbolLinks
 {
     internal SymbolTable resolvedExports;
-    internal Dictionary<string, Node> typeOnlyExportStarMap;
-    internal bool exportsChecked = false;
+    internal Dictionary<ByteStringKey, Node> typeOnlyExportStarMap;
+    internal bool exportsChecked;
 }
 
 // types.go:290/296. Tables remain nullable independently and retain identity.
@@ -642,10 +653,28 @@ internal enum MembersOrExportsResolutionKind
     ResolvedMembers = 1,
 }
 
-internal sealed class MembersAndExportsLinks
+internal struct MembersAndExportsLinks
 {
-    private readonly SymbolTable[] tables = new SymbolTable[2];
-    internal SymbolTable this[MembersOrExportsResolutionKind kind] { get => tables[(int)kind]; set => tables[(int)kind] = value; }
+    // types.go:296. The two table references are embedded in the arena slot.
+    private SymbolTable exports, members;
+    internal SymbolTable this[MembersOrExportsResolutionKind kind]
+    {
+        readonly get => kind switch
+        {
+            MembersOrExportsResolutionKind.ResolvedExports => exports,
+            MembersOrExportsResolutionKind.ResolvedMembers => members,
+            _ => throw new IndexOutOfRangeException()
+        };
+        set
+        {
+            switch (kind)
+            {
+                case MembersOrExportsResolutionKind.ResolvedExports: exports = value; break;
+                case MembersOrExportsResolutionKind.ResolvedMembers: members = value; break;
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+    }
 }
 
 // types.go:1288. Call-chain flags are deliberately absent from PropagatingFlags.
@@ -675,8 +704,8 @@ public sealed class Signature
     internal SignatureFlags flags;
     internal int minArgumentCount, resolvedMinArgumentCount;
     internal Node declaration;
-    internal List<Type> typeParameters;
-    internal List<Symbol> parameters;
+    internal Slice<Type> typeParameters;
+    internal Slice<Symbol> parameters;
     internal Symbol thisParameter;
     internal Type resolvedReturnType, isolatedSignatureType;
     internal TypePredicate resolvedTypePredicate;
@@ -685,11 +714,11 @@ public sealed class Signature
     internal CompositeSignature composite;
     public uint Id() => id;
     public SignatureFlags Flags() => flags;
-    public List<Type> TypeParameters() => typeParameters;
+    public Slice<Type> TypeParameters() => typeParameters;
     public Node Declaration() => declaration;
     public Signature Target() => target;
     public Symbol ThisParameter() => thisParameter;
-    public List<Symbol> Parameters() => parameters;
+    public Slice<Symbol> Parameters() => parameters;
     public bool HasRestParameter() => (flags & SignatureFlags.HasRestParameter) != 0;
     public int MinArgumentCount() => minArgumentCount;
 }
@@ -723,7 +752,7 @@ public sealed class TypePredicate
 }
 
 // types.go:425. The owning store uses logical Node identity, not paged presence.
-internal sealed class SignatureLinks
+internal struct SignatureLinks
 {
     internal Signature resolvedSignature, effectsSignature, decoratorSignature;
 }
@@ -735,7 +764,7 @@ public sealed class IndexInfo
     internal bool isReadonly;
     internal Node declaration;
     internal Symbol indexSymbol;
-    internal List<Node> components;
+    internal Slice<Node> components;
     public Type KeyType() => keyType;
     public Type ValueType() => valueType;
     public bool IsReadonly() => isReadonly;
@@ -751,66 +780,69 @@ public enum Ternary : sbyte
     True = -1,
 }
 
-internal sealed class NodeLinks
+internal struct NodeLinks
 {
     internal NodeCheckFlags flags;
     internal Tristate declarationRequiresScopeChange;
     internal bool hasReportedStatementInAmbientContext;
 }
 
-internal sealed class SymbolNodeLinks
+internal struct SymbolNodeLinks
 {
     internal Symbol resolvedSymbol;
 }
 
-internal sealed class TypeNodeLinks
+internal struct TypeNodeLinks
 {
     internal Type resolvedType;
-    internal List<Type> outerTypeParameters;
+    internal Slice<Type> outerTypeParameters;
 }
 
 // Upstream checker/types.go:325; assignment-marking cache for admitted declarations.
-internal sealed class MarkedAssignmentSymbolLinks
+internal struct MarkedAssignmentSymbolLinks
 {
     internal int lastAssignmentPos;
     internal bool hasDefiniteAssignment;
 }
 
 // types.go:409. Source-file checking, unused, helper and deferred-node state.
-internal sealed class SourceFileLinks
+internal struct SourceFileLinks
 {
     internal bool typeChecked;
-    internal bool unusedChecked = false;
-    internal Symbol externalHelpersModule = null;
-    internal ExternalEmitHelpers requestedExternalEmitHelpers = 0;
-    internal GoOrderedNodeSet deferredNodes = new();
+    internal bool unusedChecked;
+    internal Symbol externalHelpersModule;
+    internal ExternalEmitHelpers requestedExternalEmitHelpers;
+    internal GoOrderedNodeSet deferredNodes;
     // checker.go:7245,7248. Per-file append header, read by the unused pass.
     internal Slice<Node> identifierCheckNodes;
-    internal string localJsxNamespace = "", localJsxFragmentNamespace = "";
-    internal Node localJsxFactory = null, localJsxFragmentFactory = null;
-    internal Type jsxFragmentType = null;
+    internal ByteStringValue localJsxNamespace, localJsxFragmentNamespace;
+    internal Node localJsxFactory, localJsxFragmentFactory;
+    internal Type jsxFragmentType;
 }
 
 // Language adapter for collections.OrderedSet[*ast.Node]: insertion order and
 // reference identity, including duplicate Add suppression, remain observable.
 internal sealed class GoOrderedNodeSet
 {
-    private readonly HashSet<Node> set = new(ReferenceEqualityComparer.Instance);
-    private readonly List<Node> values = new();
+    private HashSet<Node> set;
+    private Slice<Node> values;
     internal void Add(Node node)
     {
+        set ??= new(ReferenceEqualityComparer.Instance);
         if (set.Add(node))
-            values.Add(node);
+            values = values.Append(node);
     }
 
     // collections/ordered_set.go:23,45; membership and size of the selected
     // ordered identity set, without exposing managed backing topology.
-    internal bool Has(Node node) => set.Contains(node);
-    internal int Size() => values.Count;
+    internal bool Has(Node node) => set?.Contains(node) == true;
+    internal int Size() => values.Length;
+    internal Node GetAt(int index) => values[index];
     internal IEnumerable<Node> Values()
     {
-        // Go's iterator walks the live ordered slice, including later additions.
-        for (int i = 0; i < values.Count; i++)
+        // OrderedMap.Keys rereads the owning header each iteration so additions
+        // are visible. The optional carrier preserves this live owner identity.
+        for (int i = 0; i < values.Length; i++)
             yield return values[i];
     }
 }
@@ -850,9 +882,9 @@ public enum SignatureKind
 
 // types.go:307/311. Variance links for nongeneric reference targets; hidden
 // this arguments are compared covariantly without a declared parameter entry.
-internal sealed class VarianceLinks
+internal struct VarianceLinks
 {
-    internal List<VarianceFlags> variances;
+    internal Slice<VarianceFlags> variances;
 }
 
 [Flags]
@@ -871,12 +903,13 @@ internal enum VarianceFlags : uint
 
 // types.go:330. Scope/meaning-sensitive accessibility cache, including cached nil.
 internal readonly record struct accessibleChainCacheKey(bool useOnlyExternalAliasing, Node location, SymbolFlags meaning);
-internal sealed class ContainingSymbolLinks
+internal struct ContainingSymbolLinks
 {
-    internal Dictionary<ulong, List<Symbol>> extendedContainersByFile;
-    // A nonnull cell whose Value is null preserves Go pointer-to-nil-slice state.
-    internal LinkCell<List<Symbol>> extendedContainers;
-    internal Dictionary<accessibleChainCacheKey, List<Symbol>> accessibleChainCache;
+    internal Dictionary<ulong, Slice<Symbol>> extendedContainersByFile;
+    // Optional cached header preserves Go pointer-to-nil-slice versus no pointer.
+    // This pointer is assigned once and its header is never mutated through aliases.
+    internal Slice<Symbol>? extendedContainers;
+    internal Dictionary<accessibleChainCacheKey, Slice<Symbol>> accessibleChainCache;
 }
 
 // types.go:1444. Actual relation callback; reportErrors controls diagnostic elaboration.
@@ -927,25 +960,25 @@ internal enum ExternalEmitHelpers : uint
 // types.go:1233. Template literal text segments and placeholder types.
 public sealed class TemplateLiteralType : ConstrainedType
 {
-    internal List<string> texts;
+    internal Slice<ByteStringValue> texts;
     internal Slice<Type> types;
-    public List<string> Texts() => texts;
-    public Slice<Type> Types() => types;
+    public List<string> Texts() => Core.Map(texts, static text => text.Materialize());
+    public new Slice<Type> Types() => types;
 }
 
 // types.go:1242. Intrinsic string mappings retain the actual constrained target.
 public sealed class StringMappingType : ConstrainedType
 {
     internal Type target;
-    public Type Target() => target;
+    public new Type Target() => target;
 }
 
-internal sealed class EnumMemberLinks
+internal struct EnumMemberLinks
 {
     internal Evaluator.Result value;
 }
 
-internal sealed class LateBoundLinks
+internal struct LateBoundLinks
 {
     internal Symbol lateSymbol;
 }
@@ -954,7 +987,7 @@ internal sealed class LateBoundLinks
 internal enum MemberOverrideStatus { None, NeedsOverride, HasInvalidOverride }
 
 // checker/types.go:379. Type assertions retain the original expression type for deferred comparability.
-internal sealed class AssertionNodeLinks
+internal struct AssertionNodeLinks
 {
     internal Type exprType;
 }

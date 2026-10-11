@@ -36,54 +36,61 @@ internal static partial class JsNum
         return new(negative && value.Length != 0, value);
     }
 
-    public static PseudoBigInt ParseValidBigInt(string text)
+    public static PseudoBigInt ParseValidBigInt(string text) => ParseValidBigInt(ByteStringValue.FromString(text));
+    public static PseudoBigInt ParseValidBigInt(ByteStringValue text)
     {
-        bool negative = text.StartsWith('-');
-        if (negative)
-            text = text[1..];
+        if (text.IsNull) throw new NullReferenceException();
+        bool negative = text.Length > 0 && text[0] == '-';
+        if (negative) text = text.Slice(1);
         return NewPseudoBigInt(ParsePseudoBigInt(text), negative);
     }
 
-    public static string ParsePseudoBigInt(string stringValue)
+    public static string ParsePseudoBigInt(string stringValue) => ParsePseudoBigInt(ByteStringValue.FromString(stringValue));
+    // Parsing borrows source bytes/raw characters. Only the retained decimal
+    // output of the current PseudoBigInt model is explicitly materialized.
+    public static string ParsePseudoBigInt(ByteStringValue stringValue)
     {
-        if (stringValue.EndsWith('n'))
-            stringValue = stringValue[..^1];
-        char b1 = stringValue.Length > 1 ? stringValue[1] : '\0';
+        if (stringValue.IsNull) throw new NullReferenceException();
+        if (stringValue.Length > 0 && stringValue[stringValue.Length - 1] == 'n')
+            stringValue = stringValue.Slice(0, stringValue.Length - 1);
+        int b1 = stringValue.Length > 1 ? stringValue[1] : 0;
         int radix = b1 is 'b' or 'B' ? 2 : b1 is 'o' or 'O' ? 8 : b1 is 'x' or 'X' ? 16 : 10;
         if (radix == 10)
         {
-            stringValue = stringValue.TrimStart('0');
-            return stringValue == "" ? "0" : stringValue;
+            int start = 0;
+            while (start < stringValue.Length && stringValue[start] == '0') start++;
+            stringValue = stringValue.Slice(start);
+            return stringValue.Length == 0 ? "0" : stringValue.Materialize()!;
         }
 
         // Go big.Int.SetString(value, 0) permits underscores between digits and
         // immediately after the base prefix, but never consecutive or trailing.
         if (stringValue[0] != '0' || stringValue.Length <= 2)
-            throw new InvalidOperationException("Failed to parse big int: " + stringValue);
+            throw new InvalidOperationException("Failed to parse big int: " + stringValue.Materialize());
         BigInteger bi = 0;
         bool previousUnderscore = false;
         bool hasDigit = false;
         for (int i = 2; i < stringValue.Length; i++)
         {
-            char ch = stringValue[i];
+            int ch = stringValue[i];
             if (ch == '_')
             {
                 if (previousUnderscore || i == stringValue.Length - 1)
-                    throw new InvalidOperationException("Failed to parse big int: " + stringValue);
+                    throw new InvalidOperationException("Failed to parse big int: " + stringValue.Materialize());
                 previousUnderscore = true;
                 continue;
             }
 
             int digit = ch is >= '0' and <= '9' ? ch - '0' : ch is >= 'a' and <= 'f' ? ch - 'a' + 10 : ch is >= 'A' and <= 'F' ? ch - 'A' + 10 : -1;
             if (digit < 0 || digit >= radix)
-                throw new InvalidOperationException("Failed to parse big int: " + stringValue);
+                throw new InvalidOperationException("Failed to parse big int: " + stringValue.Materialize());
             bi = bi * radix + digit;
             previousUnderscore = false;
             hasDigit = true;
         }
 
         if (!hasDigit)
-            throw new InvalidOperationException("Failed to parse big int: " + stringValue);
+            throw new InvalidOperationException("Failed to parse big int: " + stringValue.Materialize());
         return bi.ToString(CultureInfo.InvariantCulture);
     }
 }

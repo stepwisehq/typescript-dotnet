@@ -9,7 +9,7 @@ namespace TypeScript.ContentMapper;
 public struct SourceFiles
 {
     public SourceFile? Canonical;
-    public List<SourceFile>? Supplemental;
+    public Slice<SourceFile> Supplemental;
 }
 
 public static partial class ContentMappers
@@ -54,13 +54,13 @@ public static partial class ContentMappers
         {
             foreach (var diagnostic in result.Diagnostics!)
                 diagnostic.SetFile(source);
-            source.SetDiagnostics(Core.Concatenate(source.Diagnostics(), result.Diagnostics)!);
+            source.SetDiagnostics(source.Diagnostics().Append(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(result.Diagnostics)));
         }
 
         var files = new SourceFiles
         {
             Canonical = source,
-            Supplemental = new((result.Supplemental?.Count ?? 0))
+            Supplemental = Slice<SourceFile>.Make(0, result.Supplemental?.Count ?? 0)
         };
         for (int i = 0; i < (result.Supplemental?.Count ?? 0); i++)
         {
@@ -86,16 +86,16 @@ public static partial class ContentMappers
                         Force = true
                     }
                 };
-            files.Supplemental.Add(Parser.ParseSourceFileOwned(supplementalOptions, ByteStringView.FromGoBytes(supplemental.Text), Core.GetScriptKindFromFileName(supplementalName)));
+            files.Supplemental = files.Supplemental.Append(Parser.ParseSourceFileOwned(supplementalOptions, ByteStringView.FromGoBytes(supplemental.Text), Core.GetScriptKindFromFileName(supplementalName)));
         }
 
         string mapperIdentity = mapper.Identity();
-        source.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = virtualFileName, OriginalText = content, SpanMap = result.Mappings, DiagnosticDirectives = result.DiagnosticDirectives, SupplementalSourceFiles = files.Supplemental });
+        source.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = virtualFileName, OriginalText = content, SpanMap = result.Mappings, DiagnosticDirectives = result.DiagnosticDirectives is null ? default : Slice<MappedDiagnosticDirective>.FromArray(result.DiagnosticDirectives.ToArray()), SupplementalSourceFiles = files.Supplemental });
         for (int i = 0; i < files.Supplemental.Count; i++)
         {
             var file = files.Supplemental[i];
             var supplemental = result.Supplemental![i];
-            file.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = RootedFilePath.FromGoString(file.FileNameGoBytes()), OriginalText = content, SpanMap = supplemental.Mappings, DiagnosticDirectives = supplemental.DiagnosticDirectives, CanonicalSourceFile = source });
+            file.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = RootedFilePath.FromGoString(file.FileNameGoBytes()), OriginalText = content, SpanMap = supplemental.Mappings, DiagnosticDirectives = supplemental.DiagnosticDirectives is null ? default : Slice<MappedDiagnosticDirective>.FromArray(supplemental.DiagnosticDirectives.ToArray()), CanonicalSourceFile = source });
         }
 
         return (files, null);
@@ -104,7 +104,7 @@ public static partial class ContentMappers
     internal static bool isModuleVirtualExtension(string extension) => extension is TsPath.ExtensionMts or TsPath.ExtensionCts or TsPath.ExtensionMjs or TsPath.ExtensionCjs;
     public static Exception? CheckSupplementalFileNameCollisions(SourceFiles files, Func<RootedFilePath, bool> fileExists)
     {
-        foreach (var file in files.Supplemental ?? [])
+        foreach (var file in files.Supplemental)
         {
             var filename = RootedFilePath.FromGoString(file.FileNameGoBytes());
             if (fileExists(filename))

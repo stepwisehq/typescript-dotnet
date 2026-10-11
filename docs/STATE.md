@@ -27,17 +27,108 @@ string resolution, and efficient token/rune advancement when scanning buffers.
 Preserve exact Go byte offsets, malformed UTF8/WTF8 and EOF advancement; standard
 span facilities must match those semantics. This is active scope, not a future idea.
 
+## Recovery after VM interruption (2026-10-10)
+
+VM reboot reported and current uptime confirmed restart. Working source, committed
+records, immutable snapshots and peer reviews survived. Existing Sol agents resumed
+through followup_task; no replacement implementation/re-audit needed. No live prior
+build/check processes remained. Recovery verified242 integration8 guarded inputs:
+exactly6 reviewed successor sources changed, no unexpected changes. Latest Evaluator
+consumer ACK fa3af28e/ad195c4c and owner/helper hashes survived.
+Integration9 source-hashes/build-result/logs were empty after interruption; preserve
+as interrupted/unqualified, not passed. Replacement integration10 command passed,
+zero warnings/errors/no drift;1.111s was incremental reuse, NOT fresh compilation time.
+Frozen library667d06599ae9f3a66abd8a699b9ae6954840d4440c0280cfeb7bf759fac9f581.
+Native publication10 passed9.324s consuming exact library, but actualVSCode FAILED
+exit134 after5.01s: InvalidCastException in checkTemplateExpression still casting new
+boxed evaluator descriptor to string. No diagnostics produced. Failure and full logs
+saved/fsynced in integration-10; source/config/binary guards unchanged. This source
+receiver defect is distinct from VM interruption; last successful workload remains8.
+Support finite repair e10d5f42 passed scanner whole actual Evaluator-consumer review.
+Integration11 PASSED:9.516s production command (library recompiled),0warnings/errors,
+242inputs/no drift; Nativepublish9.187s consumed exact81548d13e08910c81b0ef66eea69328a868b4c9647acb50d9f2a252322221613.
+Native c81f5d314103208e46b5e001a20c984c549aab4f38710d0e3775ca6083aeab0d;
+actualVSCode22.03wall/92.84CPU/9,393,184KiBpeak, expectedexit1/all10completeDTO+
+availablepinnedchains exact, stderrempty/allguards clean,0majorfault/swaps. Single run,
+no causal speed claim. Summary saved/fsynced under integration-11/boundary-summary.json.
+Integration12 subsequently passed for the complete link-storage family (below).
+Integration11 remains the last pre-storage workload; allocation profile8 does not
+measure subsequent receiver/storage changes. One matched integration12 capture completed; no full suites or repeated timing runs
+are queued. Current allocation evidence is summarized below.
+Internal-link arena implementation was authorized after independent feasibility review.
+ValueSymbolLinks now uses struct payloads in existing GoArena chunks with standard
+Memory locations and live ref-return consumers (75Get calls,32ref record locals).
+Storage/runtime4, productionconsumer4 and coldobserver6 source families are complete
+and independently reviewed; integration12 now covers these changes in production.
+Wider Memory page entries and chunk-tail retention have measurable allocation costs,
+recorded below; do not claim packing lowered allocated bytes for every store.
+LateBoundLinks now uses the existing Core.LinkStore<Symbol,LateBoundLinks> map,
+matching Go rather than the prior ID-indexed store; the completed map-family change
+now packs its struct payload too. No public Symbol representation change was introduced.
+The consolidated Core.LinkStore assessment initially found 25 internal map-backed
+owners; followthrough found enumMemberLinks also belongs to Go's map store, making
+26. Root authorized the whole connected family: existing Dictionary keys plus
+Memory locations into GoArena struct chunks, live ref consumers, source zero-state
+initialization, inline two-table member/export storage and existing cold observers.
+The sole genuine nodeLinkStore payload, SymbolNodeLinks, is also included: inline
+struct pages, ref Get and standard Memory TryGet preserving PAGE presence even for
+untouched zero slots. No arena indirection is introduced for those Go inline pages.
+This closes the known selected link storage ownership family before one integration.
+All selected storage, production and cold-observer source changes are now implemented
+and independently reviewed. Final owner3/consumer8/cold10 handoffs are saved under
+artifacts/vscode-map-links-packed and artifacts/vscode-value-links-packed. Source is
+paused after coordinated integration12. Production build passed10.264s,0warnings/errors,
+242guardedinputs unchanged; library98679002c013ca793b96510104f6ef850cf6aabec181bd723ff5d1d5ec010fd9.
+Nativepublish10.894s consumed that exact library; native741409c702fbc73fb43bed53e01fbb7128edb1ce708ed07bd2dfc987a0957391.
+ActualVSCode21.23wall/83.18CPU/9,367,284KiBpeak, expectedexit1/all10completeDTO+
+availablepinnedchains exact, empty stderr/guards clean,0majorfault/swaps. One observation,
+not proven speedup; broader regression acceptance remains pending. Evidence saved/fsynced
+under integration-12/boundary-summary.json. Existing cold observer adapters are reviewed
+but not exercised by the production CLI workload.
+Review found two actual lifetime joins: JSX's recursive visitor needs an escaping
+live location, and deferred iteration must reread SourceFileLinks.deferredNodes on
+each step so recursive field replacement is visible. Existing schemas stay unchanged.
+Legacy GoArena List-returning helpers have no live callers; no cleanup is needed.
+No public Symbol packing, custom handles or per-type build/test cycles. Verifier has
+standing authorization for the integration build and actual Native AOT VS Code run,
+including coordinated repair of concrete failures. Assess the integrated result
+without stopping at the handoff; full regressions remain deferred at this boundary.
+Host currently16CPUs,31GiB RAM with28GiB available,8GiB swap unused; no crash cause
+established, do not claim OOM or attribute the reboot to this task without evidence.
+
+## Integration12 allocation evidence and continuation
+
+One matched CoreCLR capture:12,093,367,752B/11.262826GiB sampled allocation weight,
+−3.23875% versus integration8 and−67.97394% versus original matched ServerGC profile.
+103,631 ticks, all typed/stacked; zero loss/truncation/aggregation overflow; exact10
+complete diagnostics and guards clean. Rawtrace/ETLX and comparison.json retained
+under integration-12/managed-profile. No profile11 exists; this comparison includes
+both receiver/callback followthrough and the current storage family, not isolated effects.
+Disjoint named link-type buckets: value arena+locations1.080→1.276GB(+18.14%);
+true node pages267.8→146.0MB(−45.48%); map links621.4→659.9MB(+6.19%). Combined
+selected link weight increases112.6MB while overall weight decreases404.8MB.
+Closures fall155.4MB and delegates146.5MB. Fewer record objects does not imply fewer
+bytes: standard Memory widens sparse page/dictionary entries. Runtime/GC throughput
+cannot be inferred from allocated-byte weights or one native timing observation.
+Scanner is assessing standard representation tradeoffs read-only; verifier classifies
+remaining measured source roles. No automatic per-type rollback or new microbenchmarks.
+All source remains paused; root preserves the integrated checkpoint before proceeding.
+Broad xUnit/Go/cold-observer regression qualification remains pending, not waived.
+
 ## Current source and execution boundary
 
 Three existing GPT-6.1 Sol agents, shared workspace with disjoint editing:
-- scanner: Parser/Ast/Runtime text and helper APIs; now also disjoint Checker/Mapper.cs.
-- support: Checker/Types/Flow/NodeBuilder retained caches and synchronous callbacks.
-- verification: Binder/Program/resolver; current Relater/Core/TsPath callback family;
-  sole coordinator-approved build/publish/workload/profile executor.
+- scanner: cold observer adapters for all selected map-backed link payloads; prior
+  ValueSymbolLinks adapters complete and peer-reviewed.
+- support: all production map-backed link consumers across Checker/Inference/Jsx/
+  Relater/Flow/NodeBuilder/SymbolAccessibility and other discovered consumers.
+- verification: Core/Linkstore generic store, Checker/Types payload definitions and
+  required Runtime support; sole coordinated build/publish/workload/profile executor.
+  Current production storage passes Native AOT VS Code; cold adapters remain unexecuted.
 Root owns scope, decisions, documents/source-map and commit/acceptance. An idle agent
 needs followup_task to restart; send_message alone does not start its next turn.
 
-**Latest broad frozen workload proof: integration8, not final regression acceptance.**
+**Latest workload and allocation profile: integration12 above/below. Prior integration8 evidence:**
 - Production build10.381s, zero warnings/errors;238 production sources plus4 generators,
   no drift. Library a745e5467f78e768c48b26a948c4a5b9b633c01675dd404dc46c56c96cd0b5c3.
 - Native AOT publish10.912s consumed that exact library; native
@@ -175,20 +266,40 @@ review found required instantiated Symbol/ValueSymbolLinks records, canonical AS
 identities, member/normalization arrays and source buffers in dominant buckets;
 no large missing storage owner was established there.
 
-**Active residual semantic receiver closure (new edits NOT covered by integration8):**
-- support: seven connected synchronous callback sites (~256.4MB disjoint sampled
+**Historical integration8→11 receiver work and initial arena assessment:**
+The receiver work below is covered by integration11. Its original feasibility-only
+arena restrictions have been superseded by the implemented connected storage family
+at the top of this file; do not treat them as the current assignment or stopping rule.
+- support source-ready/paused: seven connected synchronous callback sites (~256.4MB disjoint sampled
   attribution, NOT predicted savings) and four internal Checker Text/Name projections.
   Existing explicit-state/static callback and descriptor APIs; preserve lazy guards,
   object construction mutable state and real output/error materialization.
-- scanner: Evaluator string/numeric/template Result byte-descriptor ownership through
+- scanner source-ready/reviewed: Evaluator string/numeric/template Result byte-descriptor ownership through
   retained enum consumer; preserve real owned concatenation, coordinate Checker.cs
-  edits through support. Independently reviews support batch.
-- verifier: finish bounded existing-profile classification, then independently review
-  scanner Evaluator handoff. No further runtime commands authorized.
+  edits through support. Residual3 ACK saved; Evaluator2 enum/cache/relation consumer
+  successor source-ready, scanner reviewing. Source owner Result already value struct;
+  single any channel retains boxed descriptors. Binary builder empty-operand copy is
+  a documented unmeasured runtime difference; Go can reuse the other operand. No
+  claim every concatenation must allocate.
+- verifier: profile classification complete at integration-8/managed-profile/source-roles.json;
+  independently reviews Evaluator handoff. After that, bounded read-only assessment
+  of actual Go Symbol/ValueSymbolLinks arena storage versus CLR per-record objects.
+  Distinguish required logical identity from a required separate CLR allocation;
+  report at integration-8/managed-profile/arena-assessment.json confirms real Go
+ 2→256 chunked struct storage. Public Symbol class/ref packing needs material model
+  change; excluded. Internal ValueSymbolLinks may admit struct chunks and ref-return
+  mutation, Memory<T> only for escaping locations; no implementation authorized yet.
+  Support after evaluator closure assesses connected mutation/escape/null/identity/cold
+  observation dependencies read-only. Avoid custom handle framework and direct huge
+  sparse struct pages (source intentionally uses indirect arenas). Wider stored Memory
+  descriptors can offset savings; no promised net memory/CPU benefit. No whole AST audit.
 Keep measured raw Project-leaf total separate from selected four-site subset and use
 consistent decimal bytes/MiB. Do not claim the whole bucket removable. No microtests,
-new instrumentation/SVG or per-family build/profile cycle. Root decides next broad
-integrated boundary after complete source handoffs/reviews.
+new instrumentation/SVG or per-family build/profile cycle. Integration9 interrupted; integration10 produced concrete template-evaluator cast
+failure. See recovery section: repaired integration11 workload PASSED after independent
+consumer source review. Preserve integration8 measurement independently; no new
+profile or broad tests automatically. Internal-link arena assessment informs the next
+substantial decision after the active semantic defect is resolved.
 
 ## Retained design decisions and boundaries
 

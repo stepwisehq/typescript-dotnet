@@ -36,11 +36,11 @@ public sealed partial class Checker
     private bool isTypeDerivedFrom(Type source, Type target)
     {
         if ((source.flags & TypeFlags.Union) != 0)
-            return Core.Every(source.Types(), t => isTypeDerivedFrom(t, target));
+            return Core.Every(source.Types(), (checker: this, target), static (t, state) => state.checker.isTypeDerivedFrom(t, state.target));
         if ((target.flags & TypeFlags.Union) != 0)
-            return Core.Some(target.Types(), t => isTypeDerivedFrom(source, t));
+            return Core.Some(target.Types(), (checker: this, source), static (t, state) => state.checker.isTypeDerivedFrom(state.source, t));
         if ((source.flags & TypeFlags.Intersection) != 0)
-            return Core.Some(source.Types(), t => isTypeDerivedFrom(t, target));
+            return Core.Some(source.Types(), (checker: this, target), static (t, state) => state.checker.isTypeDerivedFrom(t, state.target));
         if ((source.flags & TypeFlags.InstantiableNonPrimitive) != 0)
             return isTypeDerivedFrom(getBaseConstraintOfType(source) ?? unknownType, target);
         if (IsEmptyAnonymousObjectType(target))
@@ -106,21 +106,21 @@ public sealed partial class Checker
 
     private readonly LinkStore<Symbol, VarianceLinks> varianceLinks = new();
     // checker.go:799; relater.go:1356/1406. Borrow stack headers, including save/nil/restore.
-    private Slice<(Symbol symbol, List<Type> typeParameters)> varianceStack;
+    private Slice<(Symbol symbol, Slice<Type> typeParameters)> varianceStack;
     // relater.go:1317/1334. Arrays/tuples use their known variances; other
     // generic declarations retain the recursive marker measurement and cache.
-    private List<VarianceFlags> getVariances(Type t)
+    private Slice<VarianceFlags> getVariances(Type t)
     {
         if (t == globalArrayType || t == globalReadonlyArrayType || (t.objectFlags & ObjectFlags.Tuple) != 0)
             return arrayVariances;
         return getVariancesWorker(t.symbol, t.AsInterfaceType().TypeParameters());
     }
 
-    private List<VarianceFlags> getAliasVariances(Symbol symbol) => getVariancesWorker(symbol, typeAliasLinks.Get(symbol).typeParameters);
-    private List<VarianceFlags> getVariancesWorker(Symbol symbol, List<Type> typeParameters)
+    private Slice<VarianceFlags> getAliasVariances(Symbol symbol) => getVariancesWorker(symbol, typeAliasLinks.Get(symbol).typeParameters);
+    private Slice<VarianceFlags> getVariancesWorker(Symbol symbol, Slice<Type> typeParameters)
     {
-        var links = varianceLinks.Get(symbol);
-        if (links.variances == null)
+        ref var links = ref varianceLinks.Get(symbol);
+        if (links.variances.IsNil)
         {
             int stackIndex = getVarianceStackIndex(symbol);
             if (stackIndex < 0)
@@ -129,7 +129,7 @@ public sealed partial class Checker
                 if (GoRuntime.Len(varianceStack) == 0)
                     resolutionStart = typeResolutions.Count;
                 varianceStack = varianceStack.Append((symbol, typeParameters));
-                var variances = GoRuntime.MakeSlice<VarianceFlags>(GoRuntime.Len(typeParameters));
+                var variances = Slice<VarianceFlags>.Make(GoRuntime.Len(typeParameters));
                 int count = GoRuntime.Len(typeParameters);
                 for (int i = 0; i < count; i++)
                 {
@@ -182,7 +182,7 @@ public sealed partial class Checker
                 }
 
                 if (GoRuntime.Len(links.variances) == 0)
-                    links.variances = new();
+                    links.variances = Slice<VarianceFlags>.Make(0);
             }
         }
 
@@ -202,7 +202,7 @@ public sealed partial class Checker
     private bool checkTypeAssignableTo(Type source, Type target, Node errorNode, Message headMessage) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, null);
     // relater.go:347. Type assertions use the actual comparable relation and diagnostics.
     private bool checkTypeComparableTo(Type source, Type target, Node errorNode, Message headMessage) => checkTypeRelatedToEx(source, target, comparableRelation, errorNode, headMessage, null);
-    private bool checkTypeAssignableToEx(Type source, Type target, Node errorNode, Message headMessage, List<Diagnostic> output) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, output);
+    private bool checkTypeAssignableToEx(Type source, Type target, Node errorNode, Message headMessage, GoRef<Slice<Diagnostic>> output) => checkTypeRelatedToEx(source, target, assignableRelation, errorNode, headMessage, output);
     private bool isTypeAssignableTo(Type source, Type target) => isTypeRelatedTo(source, target, assignableRelation);
     internal bool isTypeIdenticalTo(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation);
     internal Ternary compareTypesIdentical(Type source, Type target) => isTypeRelatedTo(source, target, identityRelation) ? Ternary.True : Ternary.False;
@@ -289,7 +289,9 @@ public sealed partial class Checker
     // equality without CLR boxed identity or Double.Equals treating NaN as equal.
     private static bool declarationConstantValuesEqual(object left, object right) =>
         left is JsNum.Number a && right is JsNum.Number b ? a.Value == b.Value :
-        left is double x && right is double y ? x == y : Equals(left, right);
+        left is double x && right is double y ? x == y :
+        left is ByteStringValue l ? right is ByteStringValue r ? l.EqualsValue(r) : right is string rs && l.EqualsString(rs) :
+        right is ByteStringValue r2 ? left is string ls && r2.EqualsString(ls) : Equals(left, right);
     // relater.go:205: primitive and enum relationships.
     private bool isSimpleTypeRelatedTo(Type source, Type target, Relation relation, ErrorReporter errorReporter = null)
     {
@@ -335,7 +337,7 @@ public sealed partial class Checker
         {
             return true;
         }
-        if ((((((s & TypeFlags.Enum) != 0) && ((t & TypeFlags.Enum) != 0)) && (source.symbol.Name == target.symbol.Name)) && this.isEnumTypeRelatedTo(source.symbol, target.symbol, errorReporter)))
+        if ((((((s & TypeFlags.Enum) != 0) && ((t & TypeFlags.Enum) != 0)) && (source.symbol.NameValue.EqualsValue(target.symbol.NameValue))) && this.isEnumTypeRelatedTo(source.symbol, target.symbol, errorReporter)))
         {
             return true;
         }
@@ -385,8 +387,8 @@ public sealed partial class Checker
     }
 
     private bool checkTypeAssignableToAndOptionallyElaborate(Type source, Type target, Node errorNode, Node expr) => checkTypeAssignableToAndOptionallyElaborate(source, target, errorNode, expr, null, null);
-    private bool checkTypeAssignableToAndOptionallyElaborate(Type source, Type target, Node errorNode, Node expr, Message headMessage, List<Diagnostic> diagnosticOutput) => checkTypeRelatedToAndOptionallyElaborate(source, target, assignableRelation, errorNode, expr, headMessage, diagnosticOutput);
-    private bool checkTypeRelatedToAndOptionallyElaborate(Type source, Type target, Relation relation, Node errorNode, Node expr, Message headMessage, List<Diagnostic> diagnosticOutput)
+    private bool checkTypeAssignableToAndOptionallyElaborate(Type source, Type target, Node errorNode, Node expr, Message headMessage, GoRef<Slice<Diagnostic>> diagnosticOutput) => checkTypeRelatedToAndOptionallyElaborate(source, target, assignableRelation, errorNode, expr, headMessage, diagnosticOutput);
+    private bool checkTypeRelatedToAndOptionallyElaborate(Type source, Type target, Relation relation, Node errorNode, Node expr, Message headMessage, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         if (isTypeRelatedTo(source, target, relation))
             return true;
@@ -397,7 +399,7 @@ public sealed partial class Checker
 
     private bool checkTypeRelatedTo(Type source, Type target, Relation relation, Node errorNode) => checkTypeRelatedToEx(source, target, relation, errorNode, null, null);
     private bool checkTypeRelatedToEx(Type source, Type target, Relation relation, Node errorNode) => checkTypeRelatedToEx(source, target, relation, errorNode, null, null);
-    private bool checkTypeRelatedToEx(Type source, Type target, Relation relation, Node errorNode, Message headMessage, List<Diagnostic> diagnosticOutput)
+    private bool checkTypeRelatedToEx(Type source, Type target, Relation relation, Node errorNode, Message headMessage, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         var r = getRelater();
         r.relation = relation;
@@ -415,7 +417,7 @@ public sealed partial class Checker
         {
             if (headMessage != null && errorNode != null && result == Ternary.False && source.symbol != null && exportTypeLinks.Has(source.symbol))
             {
-                var links = exportTypeLinks.Get(source.symbol);
+                ref var links = ref exportTypeLinks.Get(source.symbol);
                 if (links.originatingImport != null && !Ast.IsImportCall(links.originatingImport))
                 {
                     var helpfulRetry = checkTypeRelatedTo(getTypeOfSymbol(links.target), target, relation, null);
@@ -437,7 +439,7 @@ public sealed partial class Checker
         internal object[] args;
     }
 
-    private static Diagnostic createDiagnosticChainFromErrorChain(ErrorChain chain, Node errorNode, List<Diagnostic> relatedInfo)
+    private static Diagnostic createDiagnosticChainFromErrorChain(ErrorChain chain, Node errorNode, Slice<Diagnostic> relatedInfo)
     {
         while (chain != null && chain.message.ElidedInCompatibilityPyramid())
             chain = chain.next;
@@ -449,12 +451,12 @@ public sealed partial class Checker
         return Ast.NewDiagnosticChain(next, chain.message, chain.args);
     }
 
-    private void reportDiagnostic(Diagnostic diagnostic, List<Diagnostic> diagnosticOutput)
+    private void reportDiagnostic(Diagnostic diagnostic, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         if (diagnostic != null)
         {
             if (diagnosticOutput != null)
-                diagnosticOutput.Add(diagnostic);
+                diagnosticOutput.Value = diagnosticOutput.Value.Append(diagnostic);
             else
                 addDiagnostic(diagnostic);
         }
@@ -476,7 +478,7 @@ public sealed partial class Checker
         r.relation = null;
         r.errorNode = null;
         r.errorChain = null;
-        r.relatedInfo = null;
+        r.relatedInfo = default;
         r.expandingFlags = 0;
         r.overflow = false;
         r.relationCount = 0;
@@ -491,20 +493,20 @@ public sealed partial class Checker
         if (name.IsNull) throw new NullReferenceException();
         return name.IsBytes ? name.ByteSpan.Contains((byte)'-') : name.CharSpan.Contains('-');
     }
-    private static bool isIgnoredJsxProperty(Type source, Symbol property) => (source.objectFlags & ObjectFlags.JsxAttributes) != 0 && isHyphenatedJsxName(property.Name);
+    private static bool isIgnoredJsxProperty(Type source, Symbol property) => (source.objectFlags & ObjectFlags.JsxAttributes) != 0 && isHyphenatedJsxName(property.NameValue);
     // relater.go:679. Substitutions retain their base type's weak-type status.
     private bool isWeakType(Type t)
     {
         if ((t.flags & TypeFlags.Object) != 0)
         {
             var resolved = resolveStructuredTypeMembers(t);
-            return GoRuntime.Len(resolved.signatures) == 0 && (resolved.indexInfos?.Count ?? 0) == 0 && (resolved.properties?.Count ?? 0) > 0 && resolved.properties.All(p => (p.Flags & SymbolFlags.Optional) != 0);
+            return GoRuntime.Len(resolved.signatures) == 0 && (resolved.indexInfos.Length) == 0 && (resolved.properties.Length) > 0 && Core.Every(resolved.properties, static p => (p.Flags & SymbolFlags.Optional) != 0);
         }
 
         if ((t.flags & TypeFlags.Substitution) != 0)
             return isWeakType(t.AsSubstitutionType().baseType);
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return Core.Every(t.Types(), isWeakType);
+            return Core.Every(t.Types(), this, static (part, checker) => checker.isWeakType(part));
         return false;
     }
 
@@ -512,19 +514,19 @@ public sealed partial class Checker
     private bool isObjectTypeWithInferableIndex(Type t)
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return Core.Every(t.Types(), isObjectTypeWithInferableIndex);
+            return Core.Every(t.Types(), this, static (part, checker) => checker.isObjectTypeWithInferableIndex(part));
         return t.symbol != null && (t.symbol.Flags & (SymbolFlags.ObjectLiteral | SymbolFlags.TypeLiteral | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0 && (t.symbol.Flags & SymbolFlags.Class) == 0 && !typeHasCallOrConstructSignatures(t) || (t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.ObjectRestType)) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0 && isObjectTypeWithInferableIndex(t.AsReverseMappedType().source);
     }
 
     private bool hasCommonProperties(Type source, Type target, bool isComparingJsxAttributes)
     {
-        foreach (var prop in getPropertiesOfType(source) ?? [])
-            if (isKnownProperty(target, prop.Name, isComparingJsxAttributes))
+        foreach (var prop in getPropertiesOfType(source))
+            if (isKnownProperty(target, prop.NameValue, isComparingJsxAttributes))
                 return true;
         return false;
     }
 
-    private bool isKnownProperty(Type targetType, string name, bool isComparingJsxAttributes)
+    private bool isKnownProperty(Type targetType, ByteStringValue name, bool isComparingJsxAttributes)
     {
         if ((targetType.flags & TypeFlags.Object) != 0)
         {
@@ -585,7 +587,7 @@ public sealed partial class Checker
     private static bool hasMatchingRecursionIdentity(Type t, RecursionId identity)
     {
         var target = getRecursionIdentityTarget(t);
-        return (target.flags & TypeFlags.Intersection) != 0 ? Core.Some(target.Types(), part => hasMatchingRecursionIdentity(part, identity)) : getRecursionIdentityFromTarget(target) == identity;
+        return (target.flags & TypeFlags.Intersection) != 0 ? Core.Some(target.Types(), identity, static (part, recursionId) => hasMatchingRecursionIdentity(part, recursionId)) : getRecursionIdentityFromTarget(target) == identity;
     }
 
     private static RecursionId getRecursionIdentity(Type t) => getRecursionIdentityFromTarget(getRecursionIdentityTarget(t));
@@ -596,7 +598,7 @@ public sealed partial class Checker
         if ((t.objectFlags & ObjectFlags.InstantiatedMapped) == ObjectFlags.InstantiatedMapped)
         {
             var target = t.checker.getModifiersTypeFromMappedType(t);
-            if (target != null && (target.symbol != null || (target.flags & TypeFlags.Intersection) != 0 && Core.Some(target.Types(), part => part.symbol != null)))
+            if (target != null && (target.symbol != null || (target.flags & TypeFlags.Intersection) != 0 && Core.Some(target.Types(), static part => part.symbol != null)))
                 return getRecursionIdentityTarget(target);
         }
 
@@ -632,7 +634,7 @@ public sealed partial class Checker
         bool matches(int index, Type t);
     }
 
-    private sealed class TypeDiscriminator(Checker c, List<Symbol> props, Func<Type, Type, Ternary> isRelatedTo) : Discriminator
+    private sealed class TypeDiscriminator(Checker c, Slice<Symbol> props, Func<Type, Type, Ternary> isRelatedTo) : Discriminator
     {
         public int len() => props.Count;
         public string name(int index) => props[index].Name;
@@ -676,10 +678,10 @@ public sealed partial class Checker
 
         if (include.Contains(Ternary.False))
         {
-            List<Type> filteredTypes = null;
+            Slice<Type> filteredTypes = default;
             for (int i = 0; i < types.Count; i++)
                 if (include[i] == Ternary.True)
-                    (filteredTypes ??= []).Add(types[i]);
+                    filteredTypes = filteredTypes.Append(types[i]);
             var filtered = getUnionTypeEx(filteredTypes, UnionReduction.None, null, null);
             if ((filtered.flags & TypeFlags.Never) == 0)
                 return filtered;
@@ -696,7 +698,7 @@ public sealed partial class Checker
             if (match != null)
                 return match;
             var props = findDiscriminantProperties(getPropertiesOfType(source), target);
-            if ((props?.Count ?? 0) != 0)
+            if (props.Length != 0)
             {
                 var discriminated = discriminateTypeByDiscriminableItems(target, new TypeDiscriminator(this, props, isRelatedTo));
                 if (discriminated != target)
@@ -707,16 +709,17 @@ public sealed partial class Checker
         return null;
     }
 
-    private List<Symbol> findDiscriminantProperties(List<Symbol> sourceProperties, Type target)
+    private Slice<Symbol> findDiscriminantProperties(Slice<Symbol> sourceProperties, Type target)
     {
-        List<Symbol> result = null;
-        foreach (var property in sourceProperties ?? [])
-            if (isDiscriminantProperty(target, property.Name))
-                (result ??= []).Add(property);
+        Slice<Symbol> result = default;
+        foreach (var property in sourceProperties)
+            if (isDiscriminantProperty(target, property.NameValue))
+                result = result.Append(property);
         return result;
     }
 
-    private bool isDiscriminantProperty(Type t, string name)
+    private bool isDiscriminantProperty(Type t, string name) => isDiscriminantProperty(t, ByteStringValue.FromString(name));
+    private bool isDiscriminantProperty(Type t, ByteStringValue name)
     {
         if (t != null && (t.flags & TypeFlags.Union) != 0)
         {
@@ -740,18 +743,18 @@ public sealed partial class Checker
     private Type getMatchingUnionConstituentForType(Type unionType, Type t)
     {
         var name = getKeyPropertyName(unionType);
-        if (name == "")
+        if (name.Length == 0)
             return null;
         var propType = getTypeOfPropertyOfType(t, name);
         return propType == null ? null : getConstituentTypeForKeyType(unionType, propType);
     }
 
-    private string getKeyPropertyName(Type t)
+    private ByteStringValue getKeyPropertyName(Type t)
     {
         var u = t.AsUnionType();
-        if (u.keyPropertyName == "")
+        if (u.keyPropertyName.Length == 0)
             (u.keyPropertyName, u.constituentMap) = computeKeyPropertyNameAndMap(t);
-        return u.keyPropertyName == Ast.InternalSymbolNameMissing ? "" : u.keyPropertyName;
+        return u.keyPropertyName.EqualsString(Ast.InternalSymbolNameMissing) ? default : u.keyPropertyName;
     }
 
     private Type getConstituentTypeForKeyType(Type t, Type keyType)
@@ -761,30 +764,30 @@ public sealed partial class Checker
         return result != unknownType ? result : null;
     }
 
-    private (string, Dictionary<Type, Type>) computeKeyPropertyNameAndMap(Type t)
+    private (ByteStringValue, Dictionary<Type, Type>) computeKeyPropertyNameAndMap(Type t)
     {
         var types = t.Types();
         if (types.Count < 10 || (t.objectFlags & ObjectFlags.PrimitiveUnion) != 0 || Core.CountWhere(types, isObjectOrInstantiableNonPrimitive) < 10)
-            return (Ast.InternalSymbolNameMissing, null);
+            return (ByteStringValue.FromString(Ast.InternalSymbolNameMissing), null);
         var name = getKeyPropertyCandidateName(types);
-        if (name == "")
-            return (Ast.InternalSymbolNameMissing, null);
+        if (name.Length == 0)
+            return (ByteStringValue.FromString(Ast.InternalSymbolNameMissing), null);
         var map = mapTypesByKeyProperty(types, name);
-        return map == null ? (Ast.InternalSymbolNameMissing, null) : (name, map);
+        return map == null ? (ByteStringValue.FromString(Ast.InternalSymbolNameMissing), null) : (name, map);
     }
 
     private static bool isObjectOrInstantiableNonPrimitive(Type t) => (t.flags & (TypeFlags.Object | TypeFlags.InstantiableNonPrimitive)) != 0;
-    private string getKeyPropertyCandidateName(Slice<Type> types)
+    private ByteStringValue getKeyPropertyCandidateName(Slice<Type> types)
     {
         foreach (var t in types)
             if (isObjectOrInstantiableNonPrimitive(t))
-                foreach (var prop in getPropertiesOfType(t) ?? [])
+                foreach (var prop in getPropertiesOfType(t))
                     if (isUnitType(getTypeOfSymbol(prop)))
-                        return prop.Name;
-        return "";
+                        return prop.NameValue;
+        return default;
     }
 
-    private Dictionary<Type, Type> mapTypesByKeyProperty(Slice<Type> types, string name)
+    private Dictionary<Type, Type> mapTypesByKeyProperty(Slice<Type> types, ByteStringValue name)
     {
         var map = new Dictionary<Type, Type>();
         int count = 0;
@@ -827,8 +830,10 @@ public sealed partial class Checker
     }
 
     private static bool isNonPrimitiveType(Type t) => (t.flags & TypeFlags.Primitive) == 0;
-    private Type getTypeOfPropertyInTypes(Slice<Type> types, string name) => getUnionType(Core.MapSlice(types, t => getTypeOfPropertyInType(t, name)));
-    private Type getTypeOfPropertyInType(Type t, string name)
+    private Type getTypeOfPropertyInTypes(Slice<Type> types, ByteStringValue name) =>
+        getUnionType(Core.MapSlice(types, (checker: this, name),
+            static (t, state) => state.checker.getTypeOfPropertyInType(t, state.name)));
+    private Type getTypeOfPropertyInType(Type t, ByteStringValue name)
     {
         t = getApparentType(t);
         var prop = (t.flags & TypeFlags.UnionOrIntersection) != 0 ? getPropertyOfUnionOrIntersectionType(t, name, false) : getPropertyOfObjectType(t, name);
@@ -870,7 +875,7 @@ public sealed partial class Checker
     // relater.go:2315. Combined constraints preserve intersection/union reduction.
     private Type getEffectiveConstraintOfIntersection(Slice<Type> types, bool targetIsUnion)
     {
-        List<Type> constraints = null;
+        Slice<Type> constraints = default;
         bool hasDisjointDomainType = false;
         foreach (var type in types)
         {
@@ -881,21 +886,21 @@ public sealed partial class Checker
                     constraint = getConstraintOfType(constraint);
                 if (constraint != null)
                 {
-                    (constraints ??= new()).Add(constraint);
+                    constraints = constraints.Append(constraint);
                     if (targetIsUnion)
-                        constraints.Add(type);
+                        constraints = constraints.Append(type);
                 }
             }
             else if ((type.flags & TypeFlags.DisjointDomains) != 0 || IsEmptyAnonymousObjectType(type))
                 hasDisjointDomainType = true;
         }
 
-        if (constraints != null && (targetIsUnion || hasDisjointDomainType))
+        if (!constraints.IsNil && (targetIsUnion || hasDisjointDomainType))
         {
             if (hasDisjointDomainType)
                 foreach (var type in types)
                     if ((type.flags & TypeFlags.DisjointDomains) != 0 || IsEmptyAnonymousObjectType(type))
-                        constraints.Add(type);
+                        constraints = constraints.Append(type);
             return getNormalizedType(getIntersectionTypeEx(constraints, IntersectionFlags.NoConstraintReduction, null), false);
         }
 
@@ -943,14 +948,14 @@ public sealed partial class Checker
     private Type findBestTypeForInvokable(Type source, Type target, SignatureKind kind)
     {
         if (GoRuntime.Len(getSignaturesOfType(source, kind)) != 0)
-            return Core.Find(target.Types(), t => GoRuntime.Len(getSignaturesOfType(t, kind)) != 0);
+            return Core.Find(target.Types(), (checker: this, kind), static (t, state) => GoRuntime.Len(state.checker.getSignaturesOfType(t, state.kind)) != 0);
         return null;
     }
 
     private Type findBestTypeForObjectLiteral(Type source, Type target)
     {
         if ((source.objectFlags & ObjectFlags.ObjectLiteral) != 0 && someType(target, isArrayLikeType))
-            return Core.Find(target.Types(), type => !isArrayLikeType(type));
+            return Core.Find(target.Types(), this, static (type, checker) => !checker.isArrayLikeType(type));
         return null;
     }
 
@@ -963,7 +968,7 @@ public sealed partial class Checker
             foreach (var t in target.Types())
                 if ((t.flags & (TypeFlags.Primitive | TypeFlags.InstantiablePrimitive)) == 0)
                 {
-                    var overlap = getIntersectionType([getIndexType(source), getIndexType(t)]);
+                    var overlap = getIntersectionType((ReadOnlySpan<Type>)[getIndexType(source), getIndexType(t)]);
                     if ((overlap.flags & TypeFlags.Index) != 0)
                         return t;
                     if (isUnitType(overlap) || (overlap.flags & TypeFlags.Union) != 0)
@@ -982,25 +987,25 @@ public sealed partial class Checker
     }
 
     private Symbol getUnmatchedProperty(Type source, Type target, bool requireOptionalProperties, bool matchDiscriminantProperties) => getUnmatchedPropertiesWorker(source, target, requireOptionalProperties, matchDiscriminantProperties, null);
-    private List<Symbol> getUnmatchedProperties(Type source, Type target, bool requireOptionalProperties, bool matchDiscriminantProperties)
+    private Slice<Symbol> getUnmatchedProperties(Type source, Type target, bool requireOptionalProperties, bool matchDiscriminantProperties)
     {
-        // Nullable list output models Go's pointer to a nil slice separately from no output pointer.
-        List<Symbol> values = null;
-        var output = new GoRef<List<Symbol>>(() => values, value => values = value);
+        // GoRef distinguishes an output pointer holding a nil header from no output pointer.
+        Slice<Symbol> values = default;
+        var output = new GoRef<Slice<Symbol>>(() => values, value => values = value);
         getUnmatchedPropertiesWorker(source, target, requireOptionalProperties, matchDiscriminantProperties, output);
         return output.Value;
     }
 
-    private Symbol getUnmatchedPropertiesWorker(Type source, Type target, bool requireOptionalProperties, bool matchDiscriminantProperties, GoRef<List<Symbol>> propsOut)
+    private Symbol getUnmatchedPropertiesWorker(Type source, Type target, bool requireOptionalProperties, bool matchDiscriminantProperties, GoRef<Slice<Symbol>> propsOut)
     {
-        foreach (var targetProp in getPropertiesOfType(target) ?? [])
+        foreach (var targetProp in getPropertiesOfType(target))
         {
             // relater.go:981: static private names are not unmatched-property candidates.
             if (isStaticPrivateIdentifierProperty(targetProp))
                 continue;
             if (requireOptionalProperties || (targetProp.Flags & SymbolFlags.Optional) == 0 && (targetProp.CheckFlags & CheckFlags.Partial) == 0)
             {
-                var sourceProp = getPropertyOfType(source, targetProp.Name);
+                var sourceProp = getPropertyOfType(source, targetProp.NameValue);
                 bool unmatched = sourceProp == null;
                 if (!unmatched && matchDiscriminantProperties)
                 {
@@ -1016,7 +1021,7 @@ public sealed partial class Checker
                 {
                     if (propsOut == null)
                         return targetProp;
-                    (propsOut.Value ??= []).Add(targetProp);
+                    propsOut.Value = propsOut.Value.Append(targetProp);
                 }
             }
         }
@@ -1029,7 +1034,7 @@ public sealed partial class Checker
         var calls = getSignaturesOfStructuredType(source, SignatureKind.Call);
         var constructs = getSignaturesOfStructuredType(source, SignatureKind.Construct);
         var properties = getPropertiesOfObjectType(source);
-        if ((calls.Length != 0 || constructs.Length != 0) && (properties?.Count ?? 0) == 0)
+        if ((calls.Length != 0 || constructs.Length != 0) && (properties.Length) == 0)
         {
             if ((GoRuntime.Len(getSignaturesOfType(target, SignatureKind.Call)) != 0 && calls.Length != 0) || (GoRuntime.Len(getSignaturesOfType(target, SignatureKind.Construct)) != 0 && constructs.Length != 0))
                 return true;
@@ -1039,22 +1044,22 @@ public sealed partial class Checker
         return true;
     }
 
-    private static List<Symbol> excludeProperties(List<Symbol> properties, HashSet<string> excludedProperties)
+    private static Slice<Symbol> excludeProperties(Slice<Symbol> properties, HashSet<ByteStringKey> excludedProperties)
     {
-        if ((excludedProperties?.Count ?? 0) == 0 || (properties?.Count ?? 0) == 0)
+        if ((excludedProperties?.Count ?? 0) == 0 || (properties.Length) == 0)
             return properties;
-        List<Symbol> reduced = null;
+        Slice<Symbol> reduced = default;
         bool excluded = false;
         for (int i = 0; i < properties.Count; i++)
         {
-            if (!excludedProperties.Contains(properties[i].Name))
+            if (!properties[i].NameValue.ContainsIn(excludedProperties))
             {
                 if (excluded)
-                    (reduced ??= []).Add(properties[i]);
+                    reduced = reduced.Append(properties[i]);
             }
             else if (!excluded)
             {
-                reduced = properties.GetRange(0, i);
+                reduced = GoSlices.Clip(properties.Slice2(0, i));
                 excluded = true;
             }
         }
@@ -1110,7 +1115,7 @@ public sealed partial class Checker
             return Ternary.False;
         }
 
-        if (((GoRuntime.Len(source.typeParameters) != 0) && !ReferenceEquals(source.typeParameters, target.typeParameters)))
+        if (((GoRuntime.Len(source.typeParameters) != 0) && !Core.Same(source.typeParameters, target.typeParameters)))
         {
             target = getCanonicalSignature(target);
             source = instantiateSignatureInContextOf(source, target, null, compareTypes);
@@ -1443,7 +1448,7 @@ public sealed partial class Checker
                 var restType = this.getTypeOfSymbol(signature.parameters[(GoRuntime.Len(signature.parameters) - 1)]);
                 if (isTupleType(restType))
                 {
-                    var firstOptionalIndex = Core.FindIndex(restType.TargetTupleType().elementInfos, (info) =>
+                    var firstOptionalIndex = Core.FindIndex(restType.TargetTupleType().elementInfos, static (info) =>
                     {
                         return ((info.flags & ElementFlags.Required) == 0);
                     });
@@ -1480,7 +1485,7 @@ public sealed partial class Checker
                 for (; (i >= 0); i--)
                 {
                     var t = this.getTypeAtPosition(signature, i);
-                    if (!someType(t, (t2) =>
+                    if (!someType(t, static (t2) =>
                     {
                         return ((t2.flags & TypeFlags.Void) != 0);
                     }))
@@ -1616,7 +1621,7 @@ public sealed partial class Checker
     private TypePredicate getUnionOrIntersectionTypePredicate(Slice<Signature> signatures, bool isUnion)
     {
         TypePredicate last = default;
-        List<Type> types = default;
+        Slice<Type> types = default;
         {
             foreach (var sig in GoRuntime.RangeValues(signatures))
             {
@@ -1787,7 +1792,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2280:1.
-    private bool compareTypeParametersIdentical(List<Type> sourceParams, List<Type> targetParams)
+    private bool compareTypeParametersIdentical(Slice<Type> sourceParams, Slice<Type> targetParams)
     {
         if ((GoRuntime.Len(sourceParams) != GoRuntime.Len(targetParams)))
         {
@@ -1895,7 +1900,7 @@ public sealed partial class Checker
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2145:1.
     private bool isResolvingReturnTypeOfSignature(Signature signature)
     {
-        if (((signature.composite != null) && Core.Some(signature.composite.signatures, this.isResolvingReturnTypeOfSignature)))
+        if (((signature.composite != null) && Core.Some(signature.composite.signatures, this, static (part, checker) => checker.isResolvingReturnTypeOfSignature(part))))
         {
             return true;
         }
@@ -1904,7 +1909,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2152:1.
-    private Slice<Signature> findMatchingSignatures(List<Slice<Signature>> signatureLists, Signature signature, int listIndex)
+    private Slice<Signature> findMatchingSignatures(Slice<Slice<Signature>> signatureLists, Signature signature, int listIndex)
     {
         if ((GoRuntime.Len(signature.typeParameters) != 0))
         {
@@ -2020,7 +2025,7 @@ public sealed partial class Checker
         internal Relation relation;
         internal Node errorNode;
         internal ErrorChain errorChain;
-        internal List<Diagnostic> relatedInfo;
+        internal Slice<Diagnostic> relatedInfo;
         internal readonly List<CacheHashKey> maybeKeys = [];
         internal readonly HashSet<CacheHashKey> maybeKeysSet = [];
         internal readonly List<Type> sourceStack = [], targetStack = [];
@@ -2089,7 +2094,7 @@ public sealed partial class Checker
                     return Ternary.False;
                 }
 
-                bool isPerformingCommonPropertyChecks = (relation != c.comparableRelation || isUnitType(source)) && (intersectionState & IntersectionState.Target) == 0 && (source.flags & (TypeFlags.Primitive | TypeFlags.Object | TypeFlags.Intersection)) != 0 && source != c.globalObjectType && (target.flags & (TypeFlags.Object | TypeFlags.Intersection)) != 0 && c.isWeakType(target) && ((c.getPropertiesOfType(source)?.Count ?? 0) > 0 || c.typeHasCallOrConstructSignatures(source));
+                bool isPerformingCommonPropertyChecks = (relation != c.comparableRelation || isUnitType(source)) && (intersectionState & IntersectionState.Target) == 0 && (source.flags & (TypeFlags.Primitive | TypeFlags.Object | TypeFlags.Intersection)) != 0 && source != c.globalObjectType && (target.flags & (TypeFlags.Object | TypeFlags.Intersection)) != 0 && c.isWeakType(target) && ((c.getPropertiesOfType(source).Length) > 0 || c.typeHasCallOrConstructSignatures(source));
                 bool isComparingJsxAttributes = (source.objectFlags & ObjectFlags.JsxAttributes) != 0;
                 if (isPerformingCommonPropertyChecks && !c.hasCommonProperties(source, target, isComparingJsxAttributes))
                 {
@@ -2137,11 +2142,11 @@ public sealed partial class Checker
                 checkTypes = reducedTarget.Distributed();
             }
 
-            foreach (var prop in c.getPropertiesOfType(source) ?? [])
+            foreach (var prop in c.getPropertiesOfType(source))
             {
                 if (shouldCheckAsExcessProperty(prop, source.symbol) && !isIgnoredJsxProperty(source, prop))
                 {
-                    if (!c.isKnownProperty(reducedTarget, prop.Name, isComparingJsxAttributes))
+                    if (!c.isKnownProperty(reducedTarget, prop.NameValue, isComparingJsxAttributes))
                     {
                         if (reportErrors)
                         {
@@ -2161,9 +2166,9 @@ public sealed partial class Checker
                             }
                             else
                             {
-                                var objectLiteralDeclaration = source.symbol?.Declarations?.FirstOrDefault();
+                                var objectLiteralDeclaration = Core.FirstOrNil(source.symbol?.Declarations ?? default);
                                 string suggestion = "";
-                                if (prop.ValueDeclaration != null && Ast.IsObjectLiteralElement(prop.ValueDeclaration) && Ast.FindAncestor(prop.ValueDeclaration, d => d == objectLiteralDeclaration) != null && Ast.GetSourceFileOfNode(objectLiteralDeclaration) == Ast.GetSourceFileOfNode(errorNode))
+                                if (prop.ValueDeclaration != null && Ast.IsObjectLiteralElement(prop.ValueDeclaration) && Ast.FindAncestor(prop.ValueDeclaration, objectLiteralDeclaration, static (d, declaration) => d == declaration) != null && Ast.GetSourceFileOfNode(objectLiteralDeclaration) == Ast.GetSourceFileOfNode(errorNode))
                                 {
                                     var name = prop.ValueDeclaration.Name();
                                     errorNode = name;
@@ -2181,7 +2186,7 @@ public sealed partial class Checker
                         return true;
                     }
 
-                    if (!checkTypes.IsNil && isRelatedTo(c.getTypeOfSymbol(prop), c.getTypeOfPropertyInTypes(checkTypes, prop.Name), RecursionFlags.Both, reportErrors) == Ternary.False)
+                    if (!checkTypes.IsNil && isRelatedTo(c.getTypeOfSymbol(prop), c.getTypeOfPropertyInTypes(checkTypes, prop.NameValue), RecursionFlags.Both, reportErrors) == Ternary.False)
                     {
                         if (reportErrors)
                             reportError(Diagnostics.Types_of_property_0_are_incompatible, c.symbolToString(prop));
@@ -2221,7 +2226,7 @@ public sealed partial class Checker
             // primitive comparability; source parameters are excluded, implicit-this is retained.
             if (relation == c.comparableRelation && (target.flags & TypeFlags.Primitive) != 0)
             {
-                var constraints = Core.SameMap(source.Types(), t => (t.flags & TypeFlags.Instantiable) != 0 ? c.getBaseConstraintOfType(t) ?? c.unknownType : t);
+                var constraints = Core.SameMap(source.Types(), c, static (t, checker) => (t.flags & TypeFlags.Instantiable) != 0 ? checker.getBaseConstraintOfType(t) ?? checker.unknownType : t);
                 if (!Core.Same(constraints, source.Types()))
                 {
                     source = c.getIntersectionType(constraints);
@@ -2457,10 +2462,9 @@ public sealed partial class Checker
             maybeKeys.RemoveRange(maybeStart, maybeKeys.Count - maybeStart);
         }
 
-        private readonly record struct errorState(ErrorChain errorChain, List<Diagnostic> relatedInfo);
-        // Go copies slice length during speculation. A managed snapshot preserves that prefix
-        // when subsequent Add operations reuse the same list instance.
-        private errorState getErrorState() => new(errorChain, relatedInfo?.ToList());
+        private readonly record struct errorState(ErrorChain errorChain, Slice<Diagnostic> relatedInfo);
+        // relater.go:3212. Speculation copies the header, retaining the same backing slots.
+        private errorState getErrorState() => new(errorChain, relatedInfo);
         private void restoreErrorState(errorState state)
         {
             errorChain = state.errorChain;
@@ -2477,7 +2481,7 @@ public sealed partial class Checker
                 {
                     var sourceTypes = (source.flags & TypeFlags.Intersection) != 0 ? source.Types() : Slice<Type>.FromArray([source]);
                     var constraint = c.getEffectiveConstraintOfIntersection(sourceTypes, (target.flags & TypeFlags.Union) != 0);
-                    if (constraint != null && ((constraint.flags & TypeFlags.Union) != 0 ? Core.Every(constraint.Types(), part => part != source) : constraint != source))
+                    if (constraint != null && ((constraint.flags & TypeFlags.Union) != 0 ? Core.Every(constraint.Types(), source, static (part, originalSource) => part != originalSource) : constraint != source))
                         result = isRelatedToEx(constraint, target, RecursionFlags.Source, false, null, intersectionState);
                 }
 
@@ -2497,7 +2501,7 @@ public sealed partial class Checker
         }
 
         // relater.go:3287.
-        private bool isSourceIntersectionNeedingExtraCheck(Type source, Type target) => (source.flags & TypeFlags.Intersection) != 0 && (c.getApparentType(source).flags & TypeFlags.StructuredType) != 0 && !Core.Some(source.Types(), t => t == target || (t.objectFlags & ObjectFlags.NonInferrableType) != 0);
+        private bool isSourceIntersectionNeedingExtraCheck(Type source, Type target) => (source.flags & TypeFlags.Intersection) != 0 && (c.getApparentType(source).flags & TypeFlags.StructuredType) != 0 && !Core.Some(source.Types(), target, static (t, targetType) => t == targetType || (t.objectFlags & ObjectFlags.NonInferrableType) != 0);
         private Ternary structuredTypeRelatedToWorker(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
         {
             Ternary result = default;
@@ -2505,7 +2509,7 @@ public sealed partial class Checker
             ErrorChain originalErrorChain = default;
             var saveErrorState = this.getErrorState();
             // relater.go:3298: direct local calls retain this operation's shared variance/error state.
-            (Ternary, bool) relateVariances(List<Type> sourceTypeArguments, List<Type> targetTypeArguments, List<VarianceFlags> variances, IntersectionState intersectionState2)
+            (Ternary, bool) relateVariances(Slice<Type> sourceTypeArguments, Slice<Type> targetTypeArguments, Slice<VarianceFlags> variances, IntersectionState intersectionState2)
             {
                 {
                     result = this.typeArgumentsRelatedTo(sourceTypeArguments, targetTypeArguments, variances, reportErrors, intersectionState2);
@@ -2515,7 +2519,7 @@ public sealed partial class Checker
                     }
                 }
 
-                if (Core.Some(variances, (v) =>
+                if (Core.Some(variances, static (v) =>
                 {
                     return ((v & VarianceFlags.AllowsStructuralFallback) != 0);
                 }))
@@ -2529,7 +2533,7 @@ public sealed partial class Checker
                 varianceCheckFailed = !allowStructuralFallback;
                 if (((GoRuntime.Len(variances) != 0) && !allowStructuralFallback))
                 {
-                    if ((varianceCheckFailed && !((reportErrors && Core.Some(variances, (v2) =>
+                    if ((varianceCheckFailed && !((reportErrors && Core.Some(variances, static (v2) =>
                     {
                         return (((v2 & VarianceFlags.VarianceMask)) == VarianceFlags.Invariant);
                     })))))
@@ -2623,7 +2627,7 @@ public sealed partial class Checker
 
                         case true when ((source.flags & TypeFlags.TemplateLiteral) != 0):
                         {
-                            if (GoSlices.Equal(source.AsTemplateLiteralType().texts, target.AsTemplateLiteralType().texts))
+                            if (templateTextsEqual(source.AsTemplateLiteralType().texts, target.AsTemplateLiteralType().texts))
                             {
                                 result = Ternary.True;
                                 var sourceTypes = source.AsTemplateLiteralType().types;
@@ -2735,7 +2739,7 @@ public sealed partial class Checker
                     {
                         {
                             var constraint = this.c.getConstraintOfTypeParameter(source);
-                            if (((constraint != null) && someType(constraint, (c) =>
+                            if (((constraint != null) && someType(constraint, static (c) =>
                             {
                                 return ((c.flags & TypeFlags.TypeParameter) != 0);
                             })))
@@ -2853,7 +2857,7 @@ public sealed partial class Checker
                                 if (((nameType != null) && this.c.isMappedTypeWithKeyofConstraintDeclaration(targetType2)))
                                 {
                                     var mappedKeys = this.c.getApparentMappedTypeKeys(nameType, targetType2);
-                                    targetKeys = this.c.getUnionType(new List<Type> { mappedKeys, nameType });
+                                    targetKeys = this.c.getUnionType((ReadOnlySpan<Type>)[mappedKeys, nameType]);
                                 }
                                 else
                                 {
@@ -2886,7 +2890,7 @@ public sealed partial class Checker
                     }
 
                     var c2 = target.AsConditionalType();
-                    if ((((c2.root.inferTypeParameters == null) && !this.c.isDistributionDependent(c2.root)) && !((((source.flags & TypeFlags.Conditional) != 0) && (source.AsConditionalType().root == c2.root)))))
+                    if ((((c2.root.inferTypeParameters.IsNil) && !this.c.isDistributionDependent(c2.root)) && !((((source.flags & TypeFlags.Conditional) != 0) && (source.AsConditionalType().root == c2.root)))))
                     {
                         var skipTrue = !this.c.isTypeAssignableTo(this.c.getPermissiveInstantiation(c2.checkType), this.c.getPermissiveInstantiation(c2.extendsType));
                         var skipFalse = (!skipTrue && this.c.isTypeAssignableTo(this.c.getRestrictiveInstantiation(c2.checkType), this.c.getRestrictiveInstantiation(c2.extendsType)));
@@ -2999,7 +3003,7 @@ public sealed partial class Checker
 
                                         case true when (filteredByApplicability != null):
                                         {
-                                            indexingType = this.c.getIntersectionType(new List<Type> { filteredByApplicability, typeParameter });
+                                            indexingType = this.c.getIntersectionType((ReadOnlySpan<Type>)[filteredByApplicability, typeParameter]);
                                             break;
                                         }
                                     }
@@ -3353,7 +3357,7 @@ public sealed partial class Checker
 
         // relater.go:3935. Exact variance ordering; unselected source-generic
         // reliability computation is guarded before it can affect a relationship.
-        private Ternary typeArgumentsRelatedTo(List<Type> sources, List<Type> targets, List<VarianceFlags> variances, bool reportErrors, IntersectionState intersectionState)
+        private Ternary typeArgumentsRelatedTo(Slice<Type> sources, Slice<Type> targets, Slice<VarianceFlags> variances, bool reportErrors, IntersectionState intersectionState)
         {
             if (((GoRuntime.Len(sources) != GoRuntime.Len(targets)) && (this.relation == this.c.identityRelation)))
             {
@@ -3457,18 +3461,19 @@ public sealed partial class Checker
                     return Ternary.False;
             }
 
-            var sourceDiscriminantTypes = new List<Slice<Type>>();
-            HashSet<string> excludedProperties = new(StringComparer.Ordinal);
-            foreach (var property in filtered)
+            var sourceDiscriminantTypes = Slice<Slice<Type>>.Make(filtered.Length);
+            HashSet<ByteStringKey> excludedProperties = new(ByteStringKey.Comparer);
+            foreach (var item in GoRuntime.Range(filtered))
             {
-                sourceDiscriminantTypes.Add(c.getNonMissingTypeOfSymbol(property).Distributed());
-                excludedProperties.Add(property.Name);
+                var property = item.Value;
+                sourceDiscriminantTypes[item.Key] = c.getNonMissingTypeOfSymbol(property).Distributed();
+                excludedProperties.Add(ByteStringKey.FromValue(property.NameValue));
             }
 
-            var combinations = new List<List<Type>>();
+            var combinations = Slice<Slice<Type>>.Make(numCombinations);
             for (int i = 0; i < numCombinations; i++)
             {
-                var combination = new Type[sourceDiscriminantTypes.Count];
+                var combination = Slice<Type>.Make(sourceDiscriminantTypes.Length);
                 int n = i;
                 for (int j = sourceDiscriminantTypes.Count - 1; j >= 0; j--)
                 {
@@ -3477,10 +3482,10 @@ public sealed partial class Checker
                     n /= types.Count;
                 }
 
-                combinations.Add(combination.ToList());
+                combinations[i] = combination;
             }
 
-            List<Type> matchingTypes = null;
+            Slice<Type> matchingTypes = default;
             foreach (var combination in combinations)
             {
                 bool hasMatch = false;
@@ -3490,7 +3495,7 @@ public sealed partial class Checker
                     for (int i = 0; i < filtered.Count; i++)
                     {
                         var sourceProperty = filtered[i];
-                        var targetProperty = c.getPropertyOfType(type, sourceProperty.Name);
+                        var targetProperty = c.getPropertyOfType(type, sourceProperty.NameValue);
                         if (targetProperty == null)
                         {
                             matched = false;
@@ -3520,7 +3525,7 @@ public sealed partial class Checker
             }
 
             var result = Ternary.True;
-            foreach (var type in matchingTypes ?? [])
+            foreach (var type in matchingTypes)
             {
                 result &= propertiesRelatedTo(source, type, false, excludedProperties, false, IntersectionState.None);
                 if (result != Ternary.False)
@@ -3660,9 +3665,9 @@ public sealed partial class Checker
             if (relation == c.identityRelation)
                 return indexSignaturesIdenticalTo(source, target);
             var infos = c.getIndexInfosOfType(target);
-            bool hasStringIndex = infos?.Any(info => info.keyType == c.stringType) == true;
+            bool hasStringIndex = Core.Some(infos, c, static (info, checker) => info.keyType == checker.stringType);
             var result = Ternary.True;
-            foreach (var info in infos ?? [])
+            foreach (var info in infos)
             {
                 Ternary related;
                 if (relation != c.strictSubtypeRelation && !sourceIsPrimitive && hasStringIndex && (info.valueType.flags & TypeFlags.Any) != 0)
@@ -3696,7 +3701,7 @@ public sealed partial class Checker
             var result = Ternary.True;
             var keyType = targetInfo.keyType;
             var properties = (source.flags & TypeFlags.Intersection) != 0 ? c.getPropertiesOfUnionOrIntersectionType(source) : c.getPropertiesOfObjectType(source);
-            foreach (var property in properties ?? [])
+            foreach (var property in properties)
             {
                 if (isIgnoredJsxProperty(source, property))
                     continue;
@@ -3715,7 +3720,7 @@ public sealed partial class Checker
                 result &= related;
             }
 
-            foreach (var info in c.getIndexInfosOfType(source) ?? [])
+            foreach (var info in c.getIndexInfosOfType(source))
             {
                 if (!c.isApplicableIndexType(info.keyType, keyType))
                     continue;
@@ -3746,9 +3751,9 @@ public sealed partial class Checker
         {
             var sourceInfos = c.getIndexInfosOfType(source);
             var targetInfos = c.getIndexInfosOfType(target);
-            if ((sourceInfos?.Count ?? 0) != (targetInfos?.Count ?? 0))
+            if ((sourceInfos.Length) != (targetInfos.Length))
                 return Ternary.False;
-            foreach (var targetInfo in targetInfos ?? [])
+            foreach (var targetInfo in targetInfos)
             {
                 var sourceInfo = c.getIndexInfoOfType(source, targetInfo.keyType);
                 if (!(sourceInfo != null && isRelatedTo(sourceInfo.valueType, targetInfo.valueType, RecursionFlags.Both, false) != Ternary.False && sourceInfo.isReadonly == targetInfo.isReadonly))
@@ -3758,7 +3763,7 @@ public sealed partial class Checker
             return Ternary.True;
         }
 
-        private Ternary propertiesRelatedTo(Type source, Type target, bool reportErrors, HashSet<string> excludedProperties, bool optionalsOnly, IntersectionState intersectionState)
+        private Ternary propertiesRelatedTo(Type source, Type target, bool reportErrors, HashSet<ByteStringKey> excludedProperties, bool optionalsOnly, IntersectionState intersectionState)
         {
             if ((this.relation == this.c.identityRelation))
             {
@@ -3919,7 +3924,7 @@ public sealed partial class Checker
                                     canExcludeDiscriminants = false;
                                 }
 
-                                if ((canExcludeDiscriminants && excludedProperties.Contains(Strconv.Itoa(sourcePosition))))
+                                if ((canExcludeDiscriminants && ByteStringValue.FromString(Strconv.Itoa(sourcePosition)).ContainsIn(excludedProperties)))
                                 {
                                     continue;
                                 }
@@ -3985,7 +3990,7 @@ public sealed partial class Checker
                 {
                     foreach (var sourceProp in GoRuntime.RangeValues(excludeProperties(this.c.getPropertiesOfType(source), excludedProperties)))
                     {
-                        if ((this.c.getPropertyOfObjectType(target, sourceProp.Name) == null))
+                        if ((this.c.getPropertyOfObjectType(target, sourceProp.NameValue) == null))
                         {
                             if (reportErrors)
                             {
@@ -4005,8 +4010,8 @@ public sealed partial class Checker
                 {
                     var _2 = range7.Key;
                     var targetProp = range7.Value;
-                    var name = targetProp.Name;
-                    if (((((targetProp.Flags & SymbolFlags.Prototype) == 0) && (((!numericNamesOnly || isNumericLiteralName(name)) || (name == "length")))) && ((!optionalsOnly || ((targetProp.Flags & SymbolFlags.Optional) != 0)))))
+                    var name = targetProp.NameValue;
+                    if (((((targetProp.Flags & SymbolFlags.Prototype) == 0) && (((!numericNamesOnly || isNumericLiteralName(name)) || (name.EqualsBytes("length"u8))))) && ((!optionalsOnly || ((targetProp.Flags & SymbolFlags.Optional) != 0)))))
                     {
                         var sourceProp2 = this.c.getPropertyOfType(source, name);
                         if (((sourceProp2 != null) && (sourceProp2 != targetProp)))
@@ -4105,8 +4110,8 @@ public sealed partial class Checker
             if (unmatchedProperty.ValueDeclaration?.Name()?.Kind == Kind.PrivateIdentifier &&
                 source.symbol != null && (source.symbol.Flags & SymbolFlags.Class) != 0)
             {
-                var description = unmatchedProperty.ValueDeclaration.Name().Text();
-                var key = Binder.GetSymbolNameForPrivateIdentifier(source.symbol, description);
+                var description = unmatchedProperty.ValueDeclaration.Name().TextValue();
+                var key = Binder.GetSymbolNameValueForPrivateIdentifier(source.symbol, description);
                 if (c.getPropertyOfType(source, key) != null)
                 {
                     reportError(Diagnostics.Property_0_in_type_1_refers_to_a_different_member_that_cannot_be_accessed_from_within_type_2,
@@ -4120,16 +4125,16 @@ public sealed partial class Checker
                 var (sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
                 var name = c.symbolToString(unmatchedProperty);
                 reportError(Diagnostics.Property_0_is_missing_in_type_1_but_required_in_type_2, name, sourceType, targetType);
-                if ((unmatchedProperty.Declarations?.Count ?? 0) != 0)
-                    (relatedInfo ??= []).Add(NewDiagnosticForNode(unmatchedProperty.Declarations[0], Diagnostics.X_0_is_declared_here, name));
+                if ((unmatchedProperty.Declarations.Count) != 0)
+                    relatedInfo = relatedInfo.Append(NewDiagnosticForNode(unmatchedProperty.Declarations[0], Diagnostics.X_0_is_declared_here, name));
             }
             else if (tryElaborateArrayLikeErrors(source, target, false))
             {
                 var (sourceType, targetType) = c.getTypeNamesForErrorDisplay(source, target);
                 if (GoRuntime.Len(props) > 5)
-                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2_and_3_more, sourceType, targetType, string.Join(", ", props.Take(4).Select(c.symbolToString)), props.Count - 4);
+                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2_and_3_more, sourceType, targetType, string.Join(", ", Core.Map(props.Slice2(0, 4), c.symbolToString)), props.Count - 4);
                 else
-                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, sourceType, targetType, string.Join(", ", (props ?? []).Select(c.symbolToString)));
+                    reportError(Diagnostics.Type_0_is_missing_the_following_properties_from_type_1_Colon_2, sourceType, targetType, string.Join(", ", Core.Map(props, c.symbolToString)));
             }
         }
 
@@ -4174,18 +4179,18 @@ public sealed partial class Checker
                 reportError(Diagnostics.X_0_is_a_primitive_but_1_is_a_wrapper_object_Prefer_using_0_when_possible, c.typeToStringByteString(target), c.typeToStringByteString(source));
         }
 
-        private Ternary propertiesIdenticalTo(Type source, Type target, HashSet<string> excludedProperties)
+        private Ternary propertiesIdenticalTo(Type source, Type target, HashSet<ByteStringKey> excludedProperties)
         {
             if ((source.flags & target.flags & TypeFlags.Object) == 0)
                 return Ternary.False;
             var sourceProps = excludeProperties(c.getPropertiesOfObjectType(source), excludedProperties);
             var targetProps = excludeProperties(c.getPropertiesOfObjectType(target), excludedProperties);
-            if ((sourceProps?.Count ?? 0) != (targetProps?.Count ?? 0))
+            if ((sourceProps.Length) != (targetProps.Length))
                 return Ternary.False;
             var result = Ternary.True;
-            foreach (var sourceProp in sourceProps ?? [])
+            foreach (var sourceProp in sourceProps)
             {
-                var targetProp = c.getPropertyOfObjectType(target, sourceProp.Name);
+                var targetProp = c.getPropertyOfObjectType(target, sourceProp.NameValue);
                 if (targetProp == null)
                     return Ternary.False;
                 var related = c.compareProperties(sourceProp, targetProp, isRelatedToSimple);
@@ -4222,7 +4227,7 @@ public sealed partial class Checker
             else if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
             {
                 var message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_has_conflicting_types_in_some_constituents;
-                var property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), c.isDiscriminantWithNeverType);
+                var property = Core.Find(c.getPropertiesOfUnionOrIntersectionType(originalTarget), c, static (property, checker) => checker.isDiscriminantWithNeverType(property));
                 if (property == null)
                 {
                     message = Diagnostics.The_intersection_0_was_reduced_to_never_because_property_1_exists_in_multiple_constituents_and_is_private_in_some;
@@ -4442,7 +4447,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Boolean) != 0)
             return false;
         if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-            return Core.Some(t.Types(), typeCouldHaveTopLevelSingletonTypes);
+            return Core.Some(t.Types(), this, static (part, checker) => checker.typeCouldHaveTopLevelSingletonTypes(part));
         if ((t.flags & TypeFlags.Instantiable) != 0)
         {
             var constraint = getConstraintOfType(t);
@@ -4453,8 +4458,8 @@ public sealed partial class Checker
         return isUnitType(t) || (t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0;
     }
 
-    private bool isOrHasGenericConditional(Type t) => (t.flags & TypeFlags.Conditional) != 0 || (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), isOrHasGenericConditional);
-    private bool elaborateError(Node node, Type source, Type target, Relation relation, Message headMessage, List<Diagnostic> diagnosticOutput)
+    private bool isOrHasGenericConditional(Type t) => (t.flags & TypeFlags.Conditional) != 0 || (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), this, static (part, checker) => checker.isOrHasGenericConditional(part));
+    private bool elaborateError(Node node, Type source, Type target, Relation relation, Message headMessage, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         if (node == null || isOrHasGenericConditional(target))
             return false;
@@ -4490,7 +4495,7 @@ public sealed partial class Checker
 
     // relater.go:520. Recheck an array against the target as a tuple so errors
     // retain the original failing element and contextual type.
-    private bool elaborateArrayLiteral(Node node, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    private bool elaborateArrayLiteral(Node node, Type source, Type target, Relation relation, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         if ((target.flags & (TypeFlags.Primitive | TypeFlags.Never)) != 0)
             return false;
@@ -4519,19 +4524,19 @@ public sealed partial class Checker
         return reportedError;
     }
 
-    private bool elaborateDidYouMeanToCallOrConstruct(Node node, Type source, Type target, Relation relation, SignatureKind kind, Message headMessage, List<Diagnostic> diagnosticOutput)
+    private bool elaborateDidYouMeanToCallOrConstruct(Node node, Type source, Type target, Relation relation, SignatureKind kind, Message headMessage, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
-        if (Core.Some(getSignaturesOfType(source, kind), signature =>
+        if (Core.Some(getSignaturesOfType(source, kind), (checker: this, target, relation), static (signature, state) =>
         {
-            var returnType = getReturnTypeOfSignature(signature);
-            return (returnType.flags & (TypeFlags.Any | TypeFlags.Never)) == 0 && checkTypeRelatedTo(returnType, target, relation, null);
+            var returnType = state.checker.getReturnTypeOfSignature(signature);
+            return (returnType.flags & (TypeFlags.Any | TypeFlags.Never)) == 0 && state.checker.checkTypeRelatedTo(returnType, state.target, state.relation, null);
         }))
         {
-            var diags = new List<Diagnostic>();
+            var diags = new GoRef<Slice<Diagnostic>>(default);
             if (!checkTypeRelatedToEx(source, target, relation, node, headMessage, diags))
             {
                 var message = kind == SignatureKind.Construct ? Diagnostics.Did_you_mean_to_use_new_with_this_expression : Diagnostics.Did_you_mean_to_call_this_expression;
-                reportDiagnostic(diags[0].AddRelatedInfo(createDiagnosticForNode(node, message)), diagnosticOutput);
+                reportDiagnostic(diags.Value[0].AddRelatedInfo(createDiagnosticForNode(node, message)), diagnosticOutput);
                 return true;
             }
         }
@@ -4540,9 +4545,9 @@ public sealed partial class Checker
     }
 
     // relater.go:639. Elaborate expression-bodied arrow return mismatches.
-    private bool elaborateArrowFunction(Node node, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    private bool elaborateArrowFunction(Node node, Type source, Type target, Relation relation, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
-        if (Ast.IsBlock(node.Body()) || Core.Some(node.Parameters(), parameter => parameter.Type() != null))
+        if (Ast.IsBlock(node.Body()) || Core.Some(node.Parameters(), static parameter => parameter.Type() != null))
             return false;
         var sourceSig = getSingleCallSignature(source);
         if (sourceSig == null)
@@ -4552,16 +4557,16 @@ public sealed partial class Checker
             return false;
         var returnExpression = node.Body();
         var sourceReturn = getReturnTypeOfSignature(sourceSig);
-        var targetReturn = getUnionType(Core.Map(targetSignatures, getReturnTypeOfSignature));
+        var targetReturn = getUnionType(Core.MapSlice(targetSignatures, getReturnTypeOfSignature));
         if (checkTypeRelatedTo(sourceReturn, targetReturn, relation, null))
             return false;
         if (returnExpression != null && elaborateError(returnExpression, sourceReturn, targetReturn, relation, null, diagnosticOutput))
             return true;
-        var diags = new List<Diagnostic>();
+        var diags = new GoRef<Slice<Diagnostic>>(default);
         checkTypeRelatedToEx(sourceReturn, targetReturn, relation, returnExpression, null, diags);
-        if (diags.Count != 0)
+        if (diags.Value.Length != 0)
         {
-            var diagnostic = diags[0];
+            var diagnostic = diags.Value[0];
             if (target.symbol != null && GoRuntime.Len(target.symbol.Declarations) != 0)
             {
                 var declaration = target.symbol.Declarations[0];
@@ -4577,7 +4582,7 @@ public sealed partial class Checker
         return false;
     }
 
-    private bool elaborateObjectLiteral(Node node, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    private bool elaborateObjectLiteral(Node node, Type source, Type target, Relation relation, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         if ((target.flags & (TypeFlags.Primitive | TypeFlags.Never)) != 0)
             return false;
@@ -4607,7 +4612,7 @@ public sealed partial class Checker
         return reportedError;
     }
 
-    private bool elaborateElement(Type source, Type target, Relation relation, Node prop, Node next, Type nameType, Message errorMessage, Func<Node, Diagnostic> diagnosticFactory, List<Diagnostic> diagnosticOutput)
+    private bool elaborateElement(Type source, Type target, Relation relation, Node prop, Node next, Type nameType, Message errorMessage, Func<Node, Diagnostic> diagnosticFactory, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         var targetPropType = getBestMatchIndexedAccessTypeOrUndefined(source, target, nameType);
         if (targetPropType == null || (targetPropType.flags & TypeFlags.IndexedAccess) != 0)
@@ -4617,14 +4622,14 @@ public sealed partial class Checker
             return false;
         if (next != null && elaborateError(next, sourcePropType, targetPropType, relation, null, diagnosticOutput))
             return true;
-        var diags = new List<Diagnostic>();
+        var diags = new GoRef<Slice<Diagnostic>>(default);
         var specificSource = sourcePropType;
         if (next != null)
             specificSource = checkExpressionForMutableLocationWithContextualType(next, sourcePropType);
         if (diagnosticFactory != null)
-            diags.Add(diagnosticFactory(prop));
+            diags.Value = diags.Value.Append(diagnosticFactory(prop));
         else if (exactOptionalPropertyTypes && isExactOptionalPropertyMismatch(specificSource, targetPropType))
-            diags.Add(NewDiagnosticForNode(prop, Diagnostics.Type_0_is_not_assignable_to_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_type_of_the_target, typeToStringByteString(specificSource), typeToStringByteString(targetPropType)));
+            diags.Value = diags.Value.Append(NewDiagnosticForNode(prop, Diagnostics.Type_0_is_not_assignable_to_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_type_of_the_target, typeToStringByteString(specificSource), typeToStringByteString(targetPropType)));
         else
         {
             var propName = getPropertyNameFromIndex(nameType, null);
@@ -4637,9 +4642,9 @@ public sealed partial class Checker
                 checkTypeRelatedToEx(sourcePropType, targetPropType, relation, prop, errorMessage, diags);
         }
 
-        if (diags.Count == 0)
+        if (diags.Value.Length == 0)
             return false;
-        var diagnostic = diags[0];
+        var diagnostic = diags.Value[0];
         string propertyName = "";
         Symbol targetProp = null;
         if (isTypeUsableAsPropertyName(nameType))
@@ -4659,9 +4664,9 @@ public sealed partial class Checker
             }
         }
 
-        if (!issuedElaboration && ((targetProp?.Declarations?.Count ?? 0) != 0 || (target.symbol?.Declarations?.Count ?? 0) != 0))
+        if (!issuedElaboration && ((targetProp?.Declarations.Count ?? 0) != 0 || (target.symbol?.Declarations.Count ?? 0) != 0))
         {
-            var targetNode = (targetProp?.Declarations?.Count ?? 0) != 0 ? targetProp.Declarations[0] : target.symbol.Declarations[0];
+            var targetNode = (targetProp?.Declarations.Count ?? 0) != 0 ? targetProp.Declarations[0] : target.symbol.Declarations[0];
             if (propertyName == "" || (nameType.flags & TypeFlags.UniqueESSymbol) != 0)
                 propertyName = typeToStringByteString(nameType);
             if (!isSourceFileDefaultLibrary(Ast.GetSourceFileOfNode(targetNode)))
@@ -4743,7 +4748,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool hasCovariantVoidArgument(List<Type> typeArguments, List<VarianceFlags> variances)
+    private bool hasCovariantVoidArgument(Slice<Type> typeArguments, Slice<VarianceFlags> variances)
     {
         {
             foreach (var range2 in GoRuntime.Range(variances))
@@ -4803,11 +4808,11 @@ public sealed partial class Checker
         var length = (parameterCount - pos);
         if ((length <= 0))
         {
-            return this.createTupleTypeEx(null, null, @readonly);
+            return this.createTupleTypeEx(default, default, @readonly);
         }
 
-        var types = GoRuntime.MakeSlice<Type>(length);
-        var infos = GoRuntime.MakeSlice<TupleElementInfo>(length);
+        var types = Slice<Type>.Make(length);
+        var infos = Slice<TupleElementInfo>.Make(length);
         {
             foreach (var i in GoRuntime.RangeKeys(types))
             {
@@ -4901,12 +4906,12 @@ public sealed partial class Checker
                 }
             }
 
-            return this.createTupleType(null);
+            return this.createTupleType(default);
         }
 
         if ((index >= endIndex))
         {
-            return this.createTupleType(null);
+            return this.createTupleType(default);
         }
 
         return this.createTupleTypeEx(GoRuntime.Slice(this.getTypeArguments(t), index, endIndex), GoRuntime.Slice(target.elementInfos, index, endIndex), false);
@@ -4918,7 +4923,7 @@ public sealed partial class Checker
     private Type getKnownKeysOfTupleType(Type t)
     {
         var fixedLength = t.TargetTupleType().fixedLength;
-        var keys = GoRuntime.MakeSlice<Type>((fixedLength + 1));
+        var keys = Slice<Type>.Make((fixedLength + 1));
         {
             foreach (var i in GoRuntime.RangeKeys(fixedLength))
             {
@@ -5056,12 +5061,12 @@ public sealed partial class Checker
         }
 
         var kind2 = Core.IfElse((predicateNode.AssertsModifier != null), TypePredicateKind.AssertsIdentifier, TypePredicateKind.Identifier);
-        var name = predicateNode.ParameterName.Text();
-        var index = Core.FindIndex(signature.parameters, (p) =>
+        var name = predicateNode.ParameterName.TextValue();
+        var index = Core.FindIndex(signature.parameters, name, static (p, parameterName) =>
         {
-            return (p.Name == name);
+            return p.NameValue.EqualsValue(parameterName);
         });
-        return this.newTypePredicate(kind2, name, (int)(index), t);
+        return this.newTypePredicate(kind2, name.Materialize(), (int)(index), t);
     }
 }
 
@@ -5143,6 +5148,14 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2354:1.
+    private static bool templateTextsEqual(Slice<ByteStringValue> left, Slice<ByteStringValue> right)
+    {
+        if (left.Length != right.Length) return false;
+        for (int i = 0; i < left.Length; i++)
+            if (!left[i].EqualsValue(right[i])) return false;
+        return true;
+    }
+
     private bool templateLiteralTypesDefinitelyUnrelated(TemplateLiteralType source, TemplateLiteralType target)
     {
         var sourceStart = source.texts[0];
@@ -5152,15 +5165,15 @@ public sealed partial class Checker
         var startLen = Math.Min(GoRuntime.Len(sourceStart), GoRuntime.Len(targetStart));
         var endLen = Math.Min(GoRuntime.Len(sourceEnd), GoRuntime.Len(targetEnd));
         // relater.go:2354. Go bounded string comparisons borrow their bytes.
-        return !sourceStart.AsSpan(0, startLen).SequenceEqual(targetStart.AsSpan(0, startLen)) ||
-            !sourceEnd.AsSpan(GoRuntime.Len(sourceEnd) - endLen).SequenceEqual(targetEnd.AsSpan(GoRuntime.Len(targetEnd) - endLen));
+        return !sourceStart.Slice(0, startLen).EqualsValue(targetStart.Slice(0, startLen)) ||
+            !sourceEnd.Slice(sourceEnd.Length - endLen).EqualsValue(targetEnd.Slice(targetEnd.Length - endLen));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2365:1.
     private bool isTypeMatchedByTemplateLiteralType(Type source, TemplateLiteralType target, TypeComparer compareTypes)
     {
         var inferences = this.inferTypesFromTemplateLiteralType(source, target, compareTypes);
-        if ((inferences != null))
+        if ((!inferences.IsNil))
         {
             {
                 foreach (var range1 in GoRuntime.Range(inferences))
@@ -5181,27 +5194,27 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2378:1.
-    internal List<Type> inferTypesFromTemplateLiteralType(Type source, TemplateLiteralType target, TypeComparer compareTypes)
+    internal Slice<Type> inferTypesFromTemplateLiteralType(Type source, TemplateLiteralType target, TypeComparer compareTypes)
     {
         switch (true)
         {
             case true when ((source.flags & TypeFlags.StringLiteral) != 0):
             {
-                return this.inferFromLiteralPartsToTemplateLiteral(new List<string> { getStringLiteralValue(source) }, default, target);
+                return this.inferFromLiteralPartsToTemplateLiteral(Slice<ByteStringValue>.FromArray([getStringLiteralValueText(source)]), default, target);
             }
 
             case true when ((source.flags & TypeFlags.TemplateLiteral) != 0):
             {
-                if (GoSlices.Equal(source.AsTemplateLiteralType().texts, target.texts))
+                if (templateTextsEqual(source.AsTemplateLiteralType().texts, target.texts))
                 {
-                    return Core.MapIndex(source.AsTemplateLiteralType().types, (s, i) =>
+                    return Core.MapIndexSlice(source.AsTemplateLiteralType().types, (checker: this, target, compareTypes), static (s, i, state) =>
                     {
-                        if ((compareTypes(this.getBaseConstraintOrType(s), this.getBaseConstraintOrType(target.types[i]), false) != Ternary.False))
+                        if ((state.compareTypes(state.checker.getBaseConstraintOrType(s), state.checker.getBaseConstraintOrType(state.target.types[i]), false) != Ternary.False))
                         {
                             return s;
                         }
 
-                        return this.getStringLikeTypeForType(s);
+                        return state.checker.getStringLikeTypeForType(s);
                     });
                 }
 
@@ -5210,7 +5223,7 @@ public sealed partial class Checker
 
             default:
             {
-                return null;
+                return default;
             }
         }
     }
@@ -5237,7 +5250,7 @@ public sealed partial class Checker
     // the first inference is the template literal type `<${string}>`. The remainder of the source makes up the second
     // inference, the template literal type `<${number}-${number}>`.
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2418:1.
-    private List<Type> inferFromLiteralPartsToTemplateLiteral(List<string> sourceTexts, Slice<Type> sourceTypes, TemplateLiteralType target)
+    private Slice<Type> inferFromLiteralPartsToTemplateLiteral(Slice<ByteStringValue> sourceTexts, Slice<Type> sourceTypes, TemplateLiteralType target)
     {
         var lastSourceIndex = (GoRuntime.Len(sourceTexts) - 1);
         var sourceStartText = sourceTexts[0];
@@ -5246,41 +5259,39 @@ public sealed partial class Checker
         var lastTargetIndex = (GoRuntime.Len(targetTexts) - 1);
         var targetStartText = targetTexts[0];
         var targetEndText = targetTexts[lastTargetIndex];
-        if (((((lastSourceIndex == 0) && (GoRuntime.Len(sourceStartText) < (GoRuntime.Len(targetStartText) + GoRuntime.Len(targetEndText)))) || !GoStrings.HasPrefix(sourceStartText, targetStartText)) || !GoStrings.HasSuffix(sourceEndText, targetEndText)))
+        if (((((lastSourceIndex == 0) && (GoRuntime.Len(sourceStartText) < (GoRuntime.Len(targetStartText) + GoRuntime.Len(targetEndText)))) || !sourceStartText.StartsWith(targetStartText)) || !sourceEndText.EndsWith(targetEndText)))
         {
-            return null;
+            return default;
         }
 
-        // relater.go:2429. Borrow raw byte-character spans for temporary Go string slices;
-        // materialize only retained literal/template text at the original output boundary.
+        // relater.go:2429. Temporary and retained Go strings both carry borrowed immutable headers.
         var remainingEndLength = GoRuntime.Len(sourceEndText) - GoRuntime.Len(targetEndText);
         var seg = 0;
         var pos = GoRuntime.Len(targetStartText);
-        List<Type> matches = default;
+        Slice<Type> matches = default;
         // relater.go:2433/2439. Direct local calls preserve shared operation state without delegate conversion.
-        ReadOnlySpan<char> getSourceText(int index)
+        ByteStringValue getSourceText(int index)
         {
             if ((index < lastSourceIndex))
             {
-                return sourceTexts[index].AsSpan();
+                return sourceTexts[index];
             }
 
-            return sourceEndText.AsSpan(0, remainingEndLength);
+            return sourceEndText.Slice(0, remainingEndLength);
         }
         void addMatch(int s, int p)
         {
             Type matchType = default;
             if ((s == seg))
             {
-                matchType = this.getStringLiteralType(StringUtil.CombineSurrogatePairs(getSourceText(s).Slice(pos, p - pos).ToString()));
+                matchType = this.getStringLiteralType(StringUtil.CombineSurrogatePairs(getSourceText(s).Slice(pos, p)));
             }
             else
             {
-                var matchTexts = GoRuntime.MakeSlice<string>(((s - seg) + 1));
+                var matchTexts = Slice<ByteStringValue>.Make(((s - seg) + 1));
                 matchTexts[0] = GoRuntime.Slice(sourceTexts[seg], pos);
-                for (int copyIndex = seg + 1; copyIndex < s; copyIndex++)
-                    matchTexts[copyIndex - seg] = sourceTexts[copyIndex];
-                matchTexts[(s - seg)] = getSourceText(s).Slice(0, p).ToString();
+                sourceTexts.Slice2(seg + 1, s).AsSpan().CopyTo(matchTexts.AsSpan().Slice(1));
+                matchTexts[(s - seg)] = getSourceText(s).Slice(0, p);
                 matchType = this.getTemplateLiteralType(matchTexts, GoRuntime.Slice(sourceTypes, seg, s));
             }
 
@@ -5299,7 +5310,7 @@ public sealed partial class Checker
                     var p2 = pos;
                     while (true)
                     {
-                        var d = getSourceText(s2).Slice(p2).IndexOf(delim.AsSpan(), StringComparison.Ordinal);
+                        var d = getSourceText(s2).Slice(p2).IndexOf(delim);
                         if ((d >= 0))
                         {
                             p2 += d;
@@ -5309,7 +5320,7 @@ public sealed partial class Checker
                         s2++;
                         if ((s2 == GoRuntime.Len(sourceTexts)))
                         {
-                            return null;
+                            return default;
                         }
 
                         p2 = 0;
@@ -5336,7 +5347,7 @@ public sealed partial class Checker
                             }
                             else
                             {
-                                return null;
+                                return default;
                             }
                         }
                     }
@@ -5356,7 +5367,7 @@ public sealed partial class Checker
             return t;
         }
 
-        return this.getTemplateLiteralType(new List<string> { "", "" }, Slice<Type>.FromArray([t]));
+        return this.getTemplateLiteralType(Slice<ByteStringValue>.FromArray([default, default]), Slice<Type>.FromArray([t]));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2509:1.
@@ -5366,9 +5377,9 @@ public sealed partial class Checker
         {
             case true when ((target.flags & TypeFlags.Intersection) != 0):
             {
-                return Core.Every(target.Types(), (t) =>
+                return Core.Every(target.Types(), (checker: this, source, compareTypes), static (t, state) =>
                 {
-                    return ((t == this.emptyTypeLiteralType) || this.isValidTypeForTemplateLiteralPlaceholder(source, t, compareTypes));
+                    return ((t == state.checker.emptyTypeLiteralType) || state.checker.isValidTypeForTemplateLiteralPlaceholder(state.source, t, state.compareTypes));
                 });
             }
 
@@ -5379,14 +5390,14 @@ public sealed partial class Checker
 
             case true when ((source.flags & TypeFlags.StringLiteral) != 0):
             {
-                var value = getStringLiteralValue(source);
-                return (((((((target.flags & TypeFlags.Number) != 0) && isValidNumberString(value, false)) || (((target.flags & TypeFlags.BigInt) != 0) && isValidBigIntString(value, false))) || (((target.flags & ((TypeFlags.BooleanLiteral | TypeFlags.Nullable))) != 0) && (value == target.AsIntrinsicType().intrinsicName))) || (((target.flags & TypeFlags.StringMapping) != 0) && isMemberOfStringMapping(source, target))) || (((target.flags & TypeFlags.TemplateLiteral) != 0) && this.isTypeMatchedByTemplateLiteralType(source, target.AsTemplateLiteralType(), compareTypes)));
+                var value = getStringLiteralValueText(source);
+                return (((((((target.flags & TypeFlags.Number) != 0) && isValidNumberString(value, false)) || (((target.flags & TypeFlags.BigInt) != 0) && isValidBigIntString(value, false))) || (((target.flags & ((TypeFlags.BooleanLiteral | TypeFlags.Nullable))) != 0) && (value.EqualsString(target.AsIntrinsicType().intrinsicName)))) || (((target.flags & TypeFlags.StringMapping) != 0) && isMemberOfStringMapping(source, target))) || (((target.flags & TypeFlags.TemplateLiteral) != 0) && this.isTypeMatchedByTemplateLiteralType(source, target.AsTemplateLiteralType(), compareTypes)));
             }
 
             case true when ((source.flags & TypeFlags.TemplateLiteral) != 0):
             {
                 var texts = source.AsTemplateLiteralType().texts;
-                return ((((GoRuntime.Len(texts) == 2) && (texts[0] == "")) && (texts[1] == "")) && (compareTypes(source.AsTemplateLiteralType().types[0], target, false) != Ternary.False));
+                return ((((GoRuntime.Len(texts) == 2) && (texts[0].Length == 0)) && (texts[1].Length == 0)) && (compareTypes(source.AsTemplateLiteralType().types[0], target, false) != Ternary.False));
             }
         }
 
@@ -5429,7 +5440,7 @@ public sealed partial class Checker
         {
             return true;
         }
-        if ((((sourceSymbol.Name != targetSymbol.Name) || ((sourceSymbol.Flags & SymbolFlags.RegularEnum) == 0)) || ((targetSymbol.Flags & SymbolFlags.RegularEnum) == 0)))
+        if ((((!sourceSymbol.NameValue.EqualsValue(targetSymbol.NameValue)) || ((sourceSymbol.Flags & SymbolFlags.RegularEnum) == 0)) || ((targetSymbol.Flags & SymbolFlags.RegularEnum) == 0)))
         {
             return false;
         }
@@ -5447,7 +5458,7 @@ public sealed partial class Checker
             {
                 if (((sourceProperty.Flags & SymbolFlags.EnumMember) != 0))
                 {
-                    var targetProperty = this.getPropertyOfType(targetEnumType, sourceProperty.Name);
+                    var targetProperty = this.getPropertyOfType(targetEnumType, sourceProperty.NameValue);
                     if (((targetProperty == null) || ((targetProperty.Flags & SymbolFlags.EnumMember) == 0)))
                     {
                         if ((errorReporter != null))
@@ -5470,8 +5481,8 @@ public sealed partial class Checker
                             this.enumRelation[key] = RelationComparisonResult.Failed;
                             return false;
                         }
-                        var _2 = sourceValue as string; var sourceIsString = _2 != null;
-                        var _3 = targetValue as string; var targetIsString = _3 != null;
+                        var sourceIsString = Evaluator.IsString(sourceValue);
+                        var targetIsString = Evaluator.IsString(targetValue);
                         if ((sourceIsString || targetIsString))
                         {
                             if ((errorReporter != null))

@@ -216,7 +216,7 @@ internal sealed class CheckerPool : ICheckerPool
                 if (file.IsDeclarationFile)
                     declarationBaseWeight = unchecked(declarationBaseWeight + weight);
                 baseWeights.Add(weight);
-                importCounts.Add(file.Imports()?.Count ?? 0);
+                importCounts.Add(file.Imports().Length);
                 declarations.Add(file.IsDeclarationFile);
             }
 
@@ -284,20 +284,20 @@ internal sealed class CheckerPool : ICheckerPool
         work.RunAndWait();
     }
 
-    internal List<Diagnostic>? GetGlobalDiagnostics()
+    internal Slice<Diagnostic> GetGlobalDiagnostics()
     {
         createCheckers();
-        var diagnostics = new List<Diagnostic>? [checkers.Length];
+        var diagnostics = Slice<Slice<Diagnostic>>.Make(checkers.Length);
         forEachCheckerParallel((index, checker) => diagnostics[index] = checker.GetGlobalDiagnostics());
-        // slices.Concat returns nil when the total length is zero.
-        List<Diagnostic>? combined = null;
-        foreach (var list in diagnostics)
-            if (list is { Count: > 0 })
-                (combined ??= []).AddRange(list);
+        int count = 0;
+        foreach (var list in diagnostics) count = checked(count + list.Length);
+        Slice<Diagnostic> combined = count == 0 ? default : Slice<Diagnostic>.Make(count);
+        int offset = 0;
+        foreach (var list in diagnostics) { list.AsSpan().CopyTo(combined.AsSpan().Slice(offset)); offset += list.Length; }
         return Program.SortAndDeduplicateDiagnostics(combined);
     }
 
-    internal void forEachCheckerGroupDo(CancellationToken context, List<SourceFile> files, bool singleThreaded, Action<Checker, int, SourceFile> callback)
+    internal void forEachCheckerGroupDo(CancellationToken context, Slice<SourceFile> files, bool singleThreaded, Action<Checker, int, SourceFile> callback)
     {
         createCheckers();
         var work = Core.NewWorkGroup(singleThreaded);

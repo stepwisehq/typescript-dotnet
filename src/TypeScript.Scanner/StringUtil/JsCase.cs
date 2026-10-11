@@ -6,8 +6,10 @@ namespace TypeScript.Scanner;
 
 internal static partial class StringUtil
 {
-    public static string ToLowerJS(string str)
+    public static string ToLowerJS(string str) => ToLowerJS(ByteStringValue.FromString(str)).Materialize()!;
+    internal static ByteStringValue ToLowerJS(ByteStringValue str)
     {
+        if (str.IsNull) throw new NullReferenceException();
         var (ascii, ok) = toLowerASCII(str);
         if (ok)
             return ascii;
@@ -18,12 +20,12 @@ internal static partial class StringUtil
         var casedBefore = false;
         for (var i = 0; i < str.Length;)
         {
-            var (r, size) = DecodeJSStringRune(str.AsSpan(i));
+            var (r, size) = DecodeJSStringRune(str.Slice(i));
             i += size;
             if (IsSurrogate(r))
             {
                 // WriteRune would replace a lone surrogate; restore its sentinel.
-                builder.WriteString(EncodeJSStringRune(r));
+                builder.WriteJSStringRune(r);
             }
             else if (specialCasingMappings.TryGetValue(r, out var mapping))
             {
@@ -39,11 +41,13 @@ internal static partial class StringUtil
             if (!isUnicodeCaseIgnorable(r))
                 casedBefore = isSigmaCased(r);
         }
-        return builder.String();
+        return builder.Value();
     }
 
-    public static string ToUpperJS(string str)
+    public static string ToUpperJS(string str) => ToUpperJS(ByteStringValue.FromString(str)).Materialize()!;
+    internal static ByteStringValue ToUpperJS(ByteStringValue str)
     {
+        if (str.IsNull) throw new NullReferenceException();
         var (ascii, ok) = toUpperASCII(str);
         if (ok)
             return ascii;
@@ -52,66 +56,70 @@ internal static partial class StringUtil
         builder.Grow(str.Length);
         for (var i = 0; i < str.Length;)
         {
-            var (r, size) = DecodeJSStringRune(str.AsSpan(i));
+            var (r, size) = DecodeJSStringRune(str.Slice(i));
             if (IsSurrogate(r))
-                builder.WriteString(str[i..(i + size)]);
+                builder.WriteString(str.Slice(i, i + size));
             else if (specialCasingMappings.TryGetValue(r, out var mapping))
                 builder.WriteString(mapping.Upper);
             else
                 builder.WriteRune(r);
             i += size;
         }
-        return builder.String();
+        return builder.Value();
     }
 
-    private static (string Value, bool Ok) toLowerASCII(string str)
+    private static (ByteStringValue Value, bool Ok) toLowerASCII(ByteStringValue str)
     {
         var needsMapping = false;
         for (var i = 0; i < str.Length; i++)
         {
             var ch = str[i];
             if (ch >= 0x80)
-                return ("", false);
+                return (default, false);
             needsMapping |= 'A' <= ch && ch <= 'Z';
         }
         if (!needsMapping)
             return (str, true);
 
-        var buffer = str.ToCharArray();
+        var buffer = new byte[str.Length];
+        if (str.IsBytes) str.ByteSpan.CopyTo(buffer);
+        else System.Text.Encoding.Latin1.GetBytes(str.CharSpan, buffer);
         for (var i = 0; i < buffer.Length; i++)
             if ('A' <= buffer[i] && buffer[i] <= 'Z')
-                buffer[i] = (char)(buffer[i] + ('a' - 'A'));
-        return (new string(buffer), true);
+                buffer[i] = (byte)(buffer[i] + ('a' - 'A'));
+        return (ByteStringValue.FromView(ByteStringView.FromOwnedBytes(buffer)), true);
     }
 
-    private static (string Value, bool Ok) toUpperASCII(string str)
+    private static (ByteStringValue Value, bool Ok) toUpperASCII(ByteStringValue str)
     {
         var needsMapping = false;
         for (var i = 0; i < str.Length; i++)
         {
             var ch = str[i];
             if (ch >= 0x80)
-                return ("", false);
+                return (default, false);
             needsMapping |= 'a' <= ch && ch <= 'z';
         }
         if (!needsMapping)
             return (str, true);
 
-        var buffer = str.ToCharArray();
+        var buffer = new byte[str.Length];
+        if (str.IsBytes) str.ByteSpan.CopyTo(buffer);
+        else System.Text.Encoding.Latin1.GetBytes(str.CharSpan, buffer);
         for (var i = 0; i < buffer.Length; i++)
             if ('a' <= buffer[i] && buffer[i] <= 'z')
-                buffer[i] = (char)(buffer[i] - ('a' - 'A'));
-        return (new string(buffer), true);
+                buffer[i] = (byte)(buffer[i] - ('a' - 'A'));
+        return (ByteStringValue.FromView(ByteStringView.FromOwnedBytes(buffer)), true);
     }
 
-    private static bool isFinalSigmaContext(bool casedBefore, string str, int afterOffset)
+    private static bool isFinalSigmaContext(bool casedBefore, ByteStringValue str, int afterOffset)
         => casedBefore && !hasSigmaCasedAfter(str, afterOffset);
 
-    private static bool hasSigmaCasedAfter(string str, int start)
+    private static bool hasSigmaCasedAfter(ByteStringValue str, int start)
     {
         for (var i = start; i < str.Length;)
         {
-            var (r, size) = DecodeJSStringRune(str.AsSpan(i));
+            var (r, size) = DecodeJSStringRune(str.Slice(i));
             i += size;
             if (isUnicodeCaseIgnorable(r))
                 continue;

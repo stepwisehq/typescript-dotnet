@@ -6,13 +6,25 @@ using System.Text;
 namespace TypeScript.Scanner;
 internal static class GoString
 {
-    public static string FromRune(int rune)
+    internal static int EncodeRune(int rune, Span<byte> bytes)
     {
         if (rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF)
-            rune = 0xFFFD;
+            rune = Utf8.RuneError;
+        return new Rune(rune).EncodeToUtf8(bytes);
+    }
+    public static string FromRune(int rune)
+    {
         Span<byte> bytes = stackalloc byte[4];
-        int size = new Rune(rune).EncodeToUtf8(bytes);
+        int size = EncodeRune(rune, bytes);
         return Encoding.Latin1.GetString(bytes[..size]);
+    }
+    // string(rune) owns its encoded result. Internal consumers retain those
+    // bytes directly; the raw CLR string is only an explicit output boundary.
+    public static ByteStringValue FromRuneValue(int rune)
+    {
+        Span<byte> bytes = stackalloc byte[4];
+        int size = EncodeRune(rune, bytes);
+        return ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes[..size].ToArray()));
     }
 
     public static string FromBytes(ReadOnlySpan<byte> bytes) => Encoding.Latin1.GetString(bytes);
@@ -21,6 +33,7 @@ internal static class GoString
     public static byte[] Bytes(string bytes) => Encoding.Latin1.GetBytes(bytes);
     // Go range reads an immutable UTF-8 string without owning a rune array.
     public static GoRuneRange EnumerateRunes(string bytes) => new(bytes);
+    public static GoRuneRange EnumerateRunes(ByteStringValue bytes) => new(bytes);
     public static int CountRunes(string bytes)
     {
         int count = 0;
@@ -47,11 +60,17 @@ internal static class GoString
 // Explicit enumerable interfaces box only at the requested interface boundary.
 internal readonly struct GoRuneRange : IEnumerable<int>
 {
-    private readonly string source;
+    private readonly ByteStringValue source;
     private readonly int length;
     internal GoRuneRange(string source)
     {
-        this.source = source;
+        this.source = ByteStringValue.FromString(source);
+        length = source.Length;
+    }
+    internal GoRuneRange(ByteStringValue source)
+    {
+        if (source.IsNull) throw new NullReferenceException();
+        this.source = source.Snapshot();
         length = source.Length;
     }
     public Enumerator GetEnumerator() => new(source, length);
@@ -60,28 +79,43 @@ internal readonly struct GoRuneRange : IEnumerable<int>
 
     public struct Enumerator : IEnumerator<int>
     {
-        private readonly string source;
+        private readonly ByteStringValue source;
         private readonly int length;
         private int offset;
         public int Current { get; private set; }
+        internal int ByteIndex { get; private set; }
         object System.Collections.IEnumerator.Current => Current;
-        internal Enumerator(string source, int length)
+        internal Enumerator(ByteStringValue source, int length)
         {
             this.source = source;
             this.length = length;
             offset = 0;
             Current = default;
+            ByteIndex = default;
         }
         public bool MoveNext()
         {
             if (offset >= length) return false;
-            var (rune, size) = Utf8.DecodeRuneInString(source.AsSpan(offset, length - offset));
+            var (rune, size) = source.IsBytes ? Utf8.DecodeRuneInString(source.ByteSpan.Slice(offset, length - offset))
+                : Utf8.DecodeRuneInString(source.CharSpan.Slice(offset, length - offset));
+            ByteIndex = offset;
             Current = rune;
             offset += size;
             return true;
         }
         public void Dispose() { }
         public void Reset() => throw new NotSupportedException();
+    }
+}
+
+// Indexed Go range shares the same decoder/immutable source header.
+internal readonly struct GoRuneIndexRange(ByteStringValue source)
+{
+    public Enumerator GetEnumerator() => new(new GoRuneRange(source).GetEnumerator());
+    public struct Enumerator(GoRuneRange.Enumerator runes)
+    {
+        public KeyValuePair<int, int> Current => new(runes.ByteIndex, runes.Current);
+        public bool MoveNext() => runes.MoveNext();
     }
 }
 
@@ -212,31 +246,84 @@ internal static class Utf8
     public static int RuneLen(int rune) => rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF ? -1 : rune < 0x80 ? 1 : rune < 0x800 ? 2 : rune < 0x10000 ? 3 : 4;
 }
 
+// strings/builder.go: retain one byte-slice field, sharing immutable published
+// prefixes. Reference-type API prevents copying a nonzero builder. CLR arrays
+// omit Go allocator size-class rounding; Grow retains its 2*cap+n rule.
 internal sealed class GoBuilder
 {
-    private readonly StringBuilder value = new();
-    public void Grow(int capacity) => value.EnsureCapacity(value.Length + capacity);
-    public void WriteString(string bytes) => value.Append(bytes);
-    // Go strings.Builder.WriteString accepts a shared substring without copying
-    // an intermediate string. The builder still owns its constructed output.
-    public void WriteString(ReadOnlySpan<char> bytes) => value.Append(bytes);
+    private Slice<byte> buffer;
+    // Only legacy callers supplying non-byte UTF16 text require this fallback.
+    // Ordinary Go-byte writes never create a second builder/backing object.
+    private StringBuilder? legacy;
+    public void Grow(int count)
+    {
+        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if (legacy is not null) { legacy.EnsureCapacity(checked(legacy.Length + count)); return; }
+        if (buffer.Capacity - buffer.Length >= count) return;
+        var grown = Slice<byte>.Make(buffer.Length, checked(2 * buffer.Capacity + count));
+        grown.CopyFrom(buffer);
+        buffer = grown;
+    }
+    public void Reset() { buffer = default; legacy = null; }
+    public void WriteString(string bytes) => WriteString(bytes.AsSpan());
+    public void WriteString(ReadOnlySpan<char> bytes)
+    {
+        if (legacy is not null) { legacy.Append(bytes); return; }
+        if (bytes.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        {
+            UseLegacy().Append(bytes);
+            return;
+        }
+        int start = buffer.Length;
+        buffer = buffer.Grow(bytes.Length).Slice2(0, checked(start + bytes.Length));
+        Encoding.Latin1.GetBytes(bytes, buffer.AsSpan()[start..]);
+    }
+    public void WriteString(ByteStringValue bytes)
+    {
+        if (bytes.IsBytes) WriteString(bytes.ByteSpan);
+        else WriteString(bytes.CharSpan);
+    }
     public void WriteString(ReadOnlySpan<byte> bytes)
     {
-        // Existing builder output is a raw Go string, one char per byte. Only
-        // this constructed output crosses that compatibility boundary.
-        foreach (byte b in bytes) value.Append((char)b);
+        if (legacy is null) { buffer = buffer.Append(bytes); return; }
+        Span<char> chars = stackalloc char[256];
+        while (!bytes.IsEmpty)
+        {
+            int count = Math.Min(bytes.Length, chars.Length);
+            Encoding.Latin1.GetChars(bytes[..count], chars);
+            legacy.Append(chars[..count]);
+            bytes = bytes[count..];
+        }
     }
-    // strings.Builder.WriteRune owns only the encoded output; preserve FromRune's
-    // invalid-scalar replacement without materializing an intermediate raw string.
+    private StringBuilder UseLegacy()
+    {
+        legacy = new StringBuilder(buffer.Length);
+        WriteString(buffer.AsSpan());
+        buffer = default;
+        return legacy;
+    }
     public void WriteRune(int rune)
     {
-        if (rune < 0 || rune > 0x10FFFF || rune is >= 0xD800 and <= 0xDFFF)
-            rune = 0xFFFD;
         Span<byte> bytes = stackalloc byte[4];
-        int size = new Rune(rune).EncodeToUtf8(bytes);
+        int size = GoString.EncodeRune(rune, bytes);
         WriteString(bytes[..size]);
     }
-    public void WriteByte(int b) => value.Append((char)b);
-    public string String() => value.ToString();
-    public int Len() => value.Length;
+    internal void WriteJSStringRune(int rune)
+    {
+        Span<byte> bytes = stackalloc byte[4];
+        int size = StringUtil.EncodeJSStringRune(rune, bytes);
+        WriteString(bytes[..size]);
+    }
+    public void WriteByte(int b)
+    {
+        char ch = unchecked((char)b);
+        if (legacy is not null) legacy.Append(ch);
+        else if (ch <= 0xFF) buffer = buffer.Append((byte)ch);
+        else UseLegacy().Append(ch);
+    }
+    public ByteStringValue Value() => legacy is not null
+        ? ByteStringValue.FromString(legacy.ToString())
+        : ByteStringValue.FromView(ByteStringView.FromBuilderSlice(buffer));
+    public string String() => legacy is not null ? legacy.ToString() : GoString.FromBytes(buffer.AsSpan());
+    public int Len() => legacy?.Length ?? buffer.Length;
 }

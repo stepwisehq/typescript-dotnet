@@ -50,20 +50,20 @@ public sealed class FileIncludeReason
             if (syntheticKind != "") node = specifier!;
             else
             {
-                int index = original.Imports()?.IndexOf(specifier!) ?? -1;
-                if (index >= 0) node = file.Imports()![index];
+                int index = GoSlices.Index(original.Imports(), specifier!);
+                if (index >= 0) node = file.Imports()[index];
                 else
                 {
-                    var originals = (original.ModuleAugmentations ?? []).Where(item => item.Kind == TypeScript.Scanner.Kind.StringLiteral).ToList();
-                    int augmentation = originals.IndexOf(specifier!);
-                    node = (file.ModuleAugmentations ?? []).Where(item => item.Kind == TypeScript.Scanner.Kind.StringLiteral).ElementAt(augmentation);
+                    var originals = Core.Filter(original.ModuleAugmentations, static item => item.Kind == TypeScript.Scanner.Kind.StringLiteral);
+                    int augmentation = GoSlices.Index(originals, specifier!);
+                    node = Core.Filter(file.ModuleAugmentations, static item => item.Kind == TypeScript.Scanner.Kind.StringLiteral)[augmentation];
                 }
             }
             return new() { file = file, node = node, packageId = program.GetResolvedModuleFromModuleSpecifier(file, node)!.PackageId, isSynthetic = syntheticKind != "" };
         }
         var originalRefs = kind switch { IncludeReferenceKind.Path => original.ReferencedFiles, IncludeReferenceKind.Type => original.TypeReferenceDirectives, _ => original.LibReferenceDirectives };
         var currentRefs = kind switch { IncludeReferenceKind.Path => file.ReferencedFiles, IncludeReferenceKind.Type => file.TypeReferenceDirectives, _ => file.LibReferenceDirectives };
-        return new() { file = file, reference = currentRefs![originalRefs!.IndexOf(reference!)] };
+        return new() { file = file, reference = currentRefs[GoSlices.Index(originalRefs, reference!)] };
     }
     internal ReferenceFileLocation LegacyReferencedLocation() => new() { file = importingFile!, node = specifier, reference = reference, packageId = packageId, isSynthetic = syntheticKind != "" };
     internal Diagnostic ToDiagnostic(Program program, bool relativeFileName, RootedDirectoryPath relativeTo) => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo.AsString());

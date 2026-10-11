@@ -6,7 +6,7 @@ using TypeScript.PackageJson;
 using TypeScript.Scanner;
 
 namespace TypeScript.Modules;
-internal readonly record struct ModuleResolutionCacheKey(RootedDirectoryPath ContainingDirectory, string ModuleName, ResolutionMode ResolutionMode, RootedFilePath RedirectConfigName);
+internal readonly record struct ModuleResolutionCacheKey(RootedDirectoryPath ContainingDirectory, ModeAwareCacheKey NameAndMode, RootedFilePath RedirectConfigName);
 internal sealed class ModuleResolutionCache
 {
     private readonly Dictionary<ModuleResolutionCacheKey, ResolvedModule?> cache = new();
@@ -34,7 +34,7 @@ internal sealed class ModuleResolutionCache
     }
 }
 
-internal readonly record struct TypeRefDirectiveResolutionCacheKey(RootedDirectoryPath ContainingDirectory, string TypeReferenceName, ResolutionMode ResolutionMode, RootedFilePath RedirectConfigName, bool FromInferredTypesContainingFile);
+internal readonly record struct TypeRefDirectiveResolutionCacheKey(RootedDirectoryPath ContainingDirectory, ModeAwareCacheKey NameAndMode, RootedFilePath RedirectConfigName, bool FromInferredTypesContainingFile);
 internal sealed class TypeRefDirectiveResolutionCache
 {
     private readonly Dictionary<TypeRefDirectiveResolutionCacheKey, ResolvedTypeReferenceDirective?> cache = new();

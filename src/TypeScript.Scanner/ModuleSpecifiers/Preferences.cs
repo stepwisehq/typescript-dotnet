@@ -52,7 +52,7 @@ internal static partial class ModuleSpecifiers
     private static ModuleSpecifierEnding inferPreference(ResolutionMode resolutionMode, SourceFile sourceFile, bool moduleResolutionIsNodeNext)
     {
         var usesJsExtensions = false;
-        List<Node> specifiers = default;
+        Slice<Node> specifiers = default;
         if (((sourceFile != null) && (GoRuntime.Len(sourceFile.Imports()) > 0)))
         {
             specifiers = sourceFile.Imports();

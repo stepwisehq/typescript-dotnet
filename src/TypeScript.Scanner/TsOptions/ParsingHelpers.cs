@@ -171,28 +171,28 @@ public static partial class TsOptions
         return result;
     }
 
-    internal static (TypeScript.ContentMapper.Mapper? Mapper, List<Diagnostic>? Errors) parseContentMapper(object? value)
+    internal static (TypeScript.ContentMapper.Mapper? Mapper, Slice<Diagnostic> Errors) parseContentMapper(object? value)
     {
         if (value is not OrderedMap<string, object?> map)
-            return (null, null);
-        List<Diagnostic>? errors = null;
+            return (null, default);
+        Slice<Diagnostic> errors = default;
         var mapper = new TypeScript.ContentMapper.Mapper();
         var(package, hasPackage) = map.Get("package");
         if (hasPackage && package is string text && text != "")
             mapper.Package = text;
         else
-            (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.package", "string"));
+            errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.package", "string"));
         var(extensions, hasExtensions) = map.Get("extensions");
         var(strings, isStringArray) = parseStringArrayStrict(extensions);
         if (hasExtensions && isStringArray)
             mapper.Extensions = strings;
         else
-            (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.extensions", "string[]"));
+            errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.extensions", "string[]"));
         var(options, hasOptions) = map.Get("options");
         if (hasOptions)
         {
             if (options is not OrderedMap<string, object?>)
-                (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.options", "object"));
+                errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "contentMapper.options", "object"));
             else
             {
                 var(encoded, _) = TypeScript.Json.JsonCodec.TryMarshal(options);
@@ -201,7 +201,7 @@ public static partial class TsOptions
             }
         }
 
-        return errors is { Count: > 0 } ? (null, errors) : (mapper, errors);
+        return errors is { Length: > 0 } ? (null, errors) : (mapper, errors);
     }
 
     internal static bool compilerOptionContainsConfigDirTemplate(string key, object? value)

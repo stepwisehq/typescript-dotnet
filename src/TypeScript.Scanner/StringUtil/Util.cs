@@ -17,7 +17,28 @@ internal static partial class StringUtil
     public static bool IsLowSurrogate(int ch) => ch is >= 0xDC00 and <= 0xDFFF;
     public static int SurrogatePairToCodePoint(int high, int low) => IsHighSurrogate(high) && IsLowSurrogate(low) ? ((high - 0xD800) << 10) + low - 0xDC00 + 0x10000 : Utf8.RuneError;
     public static (int High, int Low) CodePointToSurrogatePair(int ch) => ch is >= 0x10000 and <= 0x10FFFF ? (0xD800 + ((ch - 0x10000) >> 10), 0xDC00 + ((ch - 0x10000) & 0x3FF)) : (Utf8.RuneError, Utf8.RuneError);
-    public static string EncodeJSStringRune(int ch) => IsSurrogate(ch) ? new string ([(char)0xED, (char)(0x80 | ((ch >> 6) & 0x3F)), (char)(0x80 | (ch & 0x3F))]) : GoString.FromRune(ch);
+    internal static int EncodeJSStringRune(int ch, Span<byte> bytes)
+    {
+        if (!IsSurrogate(ch)) return GoString.EncodeRune(ch, bytes);
+        bytes[0] = 0xED;
+        bytes[1] = (byte)(0x80 | ((ch >> 6) & 0x3F));
+        bytes[2] = (byte)(0x80 | (ch & 0x3F));
+        return 3;
+    }
+    public static string EncodeJSStringRune(int ch)
+    {
+        Span<byte> bytes = stackalloc byte[4];
+        int size = EncodeJSStringRune(ch, bytes);
+        return GoString.FromBytes(bytes[..size]);
+    }
+    internal static ByteStringValue EncodeJSStringRuneValue(int ch)
+    {
+        Span<byte> bytes = stackalloc byte[4];
+        int size = EncodeJSStringRune(ch, bytes);
+        return ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes[..size].ToArray()));
+    }
+    internal static (int Rune, int Size) DecodeJSStringRune(ByteStringValue s) =>
+        s.IsBytes ? DecodeJSStringRune(s.ByteSpan) : DecodeJSStringRune(s.CharSpan);
     public static (int Rune, int Size) DecodeJSStringRune(string s) => DecodeJSStringRune(s.AsSpan());
     public static (int Rune, int Size) DecodeJSStringRune(ReadOnlySpan<char> s)
     {
@@ -33,18 +54,20 @@ internal static partial class StringUtil
         return Utf8.DecodeRuneInString(s);
     }
 
-    public static string CombineSurrogatePairs(string s)
+    public static string CombineSurrogatePairs(string s) =>
+        CombineSurrogatePairs(ByteStringValue.FromString(s)).Materialize()!;
+
+    internal static ByteStringValue CombineSurrogatePairs(ByteStringValue s)
     {
-        if (!s.Contains((char)0xED))
-            return s;
+        if (!s.Contains(0xED)) return s;
         var b = new GoBuilder();
         b.Grow(s.Length);
         for (int i = 0; i < s.Length;)
         {
-            var(r, size) = DecodeJSStringRune(s.AsSpan(i));
+            var(r, size) = DecodeJSStringRune(s.Slice(i));
             if (IsHighSurrogate(r))
             {
-                var(low, lowSize) = DecodeJSStringRune(s.AsSpan(i + size));
+                var(low, lowSize) = DecodeJSStringRune(s.Slice(i + size));
                 if (IsLowSurrogate(low))
                 {
                     b.WriteRune(SurrogatePairToCodePoint(r, low));
@@ -53,11 +76,11 @@ internal static partial class StringUtil
                 }
             }
 
-            b.WriteString(s[i..(i + size)]);
+            b.WriteString(s.Slice(i, i + size));
             i += size;
         }
 
-        return b.String();
+        return b.Value();
     }
 }
 
@@ -65,20 +88,25 @@ internal static partial class StringUtil
 {
     // stringutil/util.go:240. Original strips quote delimiters and removes a
     // backslash before any non-newline rune; it is not a JS escape decoder.
-    internal static string UnquoteString(string text)
+    internal static string UnquoteString(string text) =>
+        UnquoteString(ByteStringValue.FromString(text)).Materialize()!;
+
+    internal static ByteStringValue UnquoteString(ByteStringValue text)
     {
-        if (text.Length >= 2 && ((text[0] == '\"' && text[^1] == '\"') || (text[0] == '\'' && text[^1] == '\'') || (text[0] == '`' && text[^1] == '`')))
-            text = text[1..^1];
+        if (text.IsNull) throw new NullReferenceException();
+        if (text.Length >= 2 && ((text[0] == '"' && text[text.Length - 1] == '"') || (text[0] == '\'' && text[text.Length - 1] == '\'') || (text[0] == '`' && text[text.Length - 1] == '`')))
+            text = text.Slice(1, text.Length - 1);
         var result = new GoBuilder();
         for (var index = 0; index < text.Length;)
         {
             if (text[index] == '\\' && index + 1 < text.Length && text[index + 1] != '\n')
                 index++;
-            var(_, size) = Utf8.DecodeRuneInString(text.AsSpan(index));
-            result.WriteString(text[index..(index + size)]);
+            var tail = text.Slice(index);
+            var(_, size) = tail.IsBytes ? Utf8.DecodeRuneInString(tail.ByteSpan) : Utf8.DecodeRuneInString(tail.CharSpan);
+            result.WriteString(text.Slice(index, index + size));
             index += size;
         }
 
-        return result.String();
+        return result.Value();
     }
 }

@@ -9,7 +9,7 @@ internal sealed class ProcessingDiagnostic
 {
     internal ProcessingDiagnosticKind kind = ProcessingDiagnosticKind.ExplainingFileInclude;
     internal string file = "";
-    internal FileIncludeReason diagnosticReason = null!;
+    internal FileIncludeReason? diagnosticReason;
     internal Message message = null!;
     internal string[] args = [];
     // processingDiagnostic.go:43. Explicit type-reference failure owns its
@@ -18,15 +18,17 @@ internal sealed class ProcessingDiagnostic
     {
         if (kind == ProcessingDiagnosticKind.UnknownReference)
         {
-            if (diagnosticReason.kind == IncludeReferenceKind.Type)
-                return diagnosticReason.DiagnosticAt(processor, Diagnostics.Cannot_find_type_definition_file_for_0, diagnosticReason.reference!.FileName);
-            if (diagnosticReason.kind == IncludeReferenceKind.Lib)
+            // A true unknown-reference diagnostic requires its source reason pointer.
+            var reason = diagnosticReason!;
+            if (reason.kind == IncludeReferenceKind.Type)
+                return reason.DiagnosticAt(processor, Diagnostics.Cannot_find_type_definition_file_for_0, reason.reference!.FileName);
+            if (reason.kind == IncludeReferenceKind.Lib)
             {
-                string name = CaseSensitivity.CaseInsensitive.Canonicalize(diagnosticReason.reference!.FileName);
+                string name = CaseSensitivity.CaseInsensitive.Canonicalize(reason.reference!.FileName);
                 string unqualified = name.StartsWith("lib.", StringComparison.Ordinal) ? name[4..] : name;
                 if (unqualified.EndsWith(".d.ts", StringComparison.Ordinal)) unqualified = unqualified[..^5];
                 string suggestion = Core.GetSpellingSuggestionForStrings(unqualified, TypeScript.TsOptions.TsOptions.Libs);
-                return diagnosticReason.DiagnosticAt(processor, suggestion != "" ? Diagnostics.Cannot_find_lib_definition_for_0_Did_you_mean_1 : Diagnostics.Cannot_find_lib_definition_for_0, name, suggestion);
+                return reason.DiagnosticAt(processor, suggestion != "" ? Diagnostics.Cannot_find_lib_definition_for_0_Did_you_mean_1 : Diagnostics.Cannot_find_lib_definition_for_0, name, suggestion);
             }
             throw new InvalidOperationException("unknown include kind");
         }
@@ -34,38 +36,38 @@ internal sealed class ProcessingDiagnostic
     }
     internal Diagnostic CreateDiagnosticExplainingFile(IncludeProcessor processor)
     {
-        List<Diagnostic>? includeDetails = null, relatedInfo = null;
+        Slice<Diagnostic> includeDetails = default, relatedInfo = default;
         FileIncludeReason? preferred = diagnosticReason is not null && diagnosticReason.IsReferencedFile() && diagnosticReason.syntheticKind == "" ? diagnosticReason : null;
         var seen = new HashSet<FileIncludeReason>(ReferenceEqualityComparer.Instance);
         void ProcessInclude(FileIncludeReason reason)
         {
             if (!seen.Add(reason))
                 return;
-            (includeDetails ??= []).Add(reason.ToDiagnostic(processor));
+            includeDetails = includeDetails.Append(reason.ToDiagnostic(processor));
             if (preferred is null && reason.IsReferencedFile() && reason.syntheticKind == "")
                 preferred = reason;
             else if (!ReferenceEquals(preferred, reason) && reason.ToRelatedInfo(processor)is Diagnostic info)
-                (relatedInfo ??= []).Add(info);
+                relatedInfo = relatedInfo.Append(info);
         }
 
         if (file != "")
         {
-            includeDetails = [];
-            if (processor.fileIncludeReasons.TryGetValue(file, out List<FileIncludeReason>? reasons))
+            includeDetails = Slice<Diagnostic>.Make(0);
+            if (processor.fileIncludeReasons.TryGetValue(file, out Slice<FileIncludeReason> reasons))
                 foreach (FileIncludeReason reason in reasons)
                     ProcessInclude(reason);
         }
         if (diagnosticReason is not null) ProcessInclude(diagnosticReason);
-        List<Diagnostic>? chain = null;
-        if (includeDetails is not null && (preferred is null || seen.Count != 1))
-            chain = [Ast.NewCompilerDiagnostic(Diagnostics.The_file_is_in_the_program_because_Colon).SetMessageChain(includeDetails)];
+        Slice<Diagnostic> chain = default;
+        if (!includeDetails.IsNil && (preferred is null || seen.Count != 1))
+            chain = chain.Append(Ast.NewCompilerDiagnostic(Diagnostics.The_file_is_in_the_program_because_Colon).SetMessageChain(includeDetails));
         if (file != "" && processor.ExplainRedirectAndImpliedFormat(file) is { } redirectInfo)
-            (chain ??= []).AddRange(redirectInfo);
+            chain = chain.Append(redirectInfo);
         object[] values = args.Select(value => (object)(processor.pathValuesAreRaw ? value : GoString.ToUtf8(value))).ToArray();
         Diagnostic result = preferred is null ? Ast.NewCompilerDiagnostic(message, values) : preferred.DiagnosticAt(processor, message, values);
-        if (chain is not null)
+        if (!chain.IsNil)
             result.SetMessageChain(chain);
-        if (relatedInfo is not null)
+        if (!relatedInfo.IsNil)
             result.SetRelatedInfo(relatedInfo);
         return result;
     }

@@ -18,11 +18,11 @@ public sealed class RawCompilerOptions
     }
 
     public Exception? UnmarshalJSON(byte[] bytes) => UnmarshalJSON(GoString.FromBytes(bytes));
-    public (CompilerOptions Options, List<Diagnostic>? Diagnostics) Finalize(RootedDirectoryPath basePath)
+    public (CompilerOptions Options, Slice<Diagnostic> Diagnostics) Finalize(RootedDirectoryPath basePath)
     {
         var options = new CompilerOptions();
         if (values == null)
-            return (options, null);
+            return (options, default);
         foreach (var(key, item)in values.Entries())
         {
             var option = TsOptions.CommandLineCompilerOptionsMap.Get(key);
@@ -51,6 +51,6 @@ public sealed class RawCompilerOptions
             TsOptions.ParseCompilerOptions(key, value, options);
         }
 
-        return (options, null);
+        return (options, default);
     }
 }

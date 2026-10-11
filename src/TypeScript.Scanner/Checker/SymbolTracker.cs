@@ -39,7 +39,7 @@ internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
             }
 
             if ((symbol.Flags & SymbolFlags.TypeParameter) == 0)
-                (context.trackedSymbols ??= new()).Add(new(symbol, enclosingDeclaration, meaning));
+                context.trackedSymbols = context.trackedSymbols.Append(new NodeBuilderImpl.TrackedSymbolArgs(symbol, enclosingDeclaration, meaning));
         }
 
         return false;

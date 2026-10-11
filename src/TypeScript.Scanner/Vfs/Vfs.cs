@@ -35,10 +35,10 @@ internal static class SourceTextReaders
     }
 }
 
-public sealed class Entries
+public struct Entries
 {
-    public List<string>? Files;
-    public List<string>? Directories;
+    public Slice<string> Files;
+    public Slice<string> Directories;
     // Null means unavailable metadata; allocated-empty means known no links.
     public HashSet<string>? Symlinks;
 }

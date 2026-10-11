@@ -32,7 +32,7 @@ public sealed class ConfigurationInspection
         configFileName = file;
         var(parsed, errors) = ConfigParser.GetParsedCommandLineOfConfigFile(file, existingOptions, null, OsVfs.FS());
         Parsed = parsed;
-        Diagnostics = (parsed?.GetConfigFileParsingDiagnostics() ?? errors ?? []).AsReadOnly();
+        Diagnostics = (parsed?.GetConfigFileParsingDiagnostics() ?? errors).AsSpan().ToArray();
     }
 
     // Read-only virtual graph seam: parsed config identity and byte paths are
@@ -42,7 +42,7 @@ public sealed class ConfigurationInspection
         Parsed = parsed;
         configFileName = parsed.ConfigName();
         ConfigurationPath = configFileName.AsString();
-        Diagnostics = (parsed.GetConfigFileParsingDiagnostics() ?? []).AsReadOnly();
+        Diagnostics = parsed.GetConfigFileParsingDiagnostics().AsSpan().ToArray();
     }
 
     // This is the original show-config projection, not a reconstruction of raw

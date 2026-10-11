@@ -8,7 +8,7 @@ internal static partial class Core
     // core.go:714. The source caller supplies a valid byte offset.
     public static int IndexAfter(string s, string pattern, int startIndex)
     {
-        int matched = s[startIndex..].IndexOf(pattern, StringComparison.Ordinal);
+        int matched = s.AsSpan(startIndex).IndexOf(pattern.AsSpan(), StringComparison.Ordinal);
         return matched == -1 ? -1 : matched + startIndex;
     }
 
@@ -20,12 +20,16 @@ internal static partial class Core
         compilerOptions.RewriteRelativeImportExtensions == Tristate.True &&
         TsPath.PathIsRelative(specifier) && !TsPath.IsDeclarationFileName(specifier) && TsPath.HasTSFileExtension(specifier);
 
+    public static bool ShouldRewriteModuleSpecifier(ByteStringValue specifier, CompilerOptions compilerOptions) =>
+        compilerOptions.RewriteRelativeImportExtensions == Tristate.True &&
+        TsPath.PathIsRelative(specifier) && !TsPath.IsDeclarationFileName(specifier) && TsPath.HasTSFileExtension(specifier);
+
     // core.go:828. Preserve the source list unless a duplicate requires a copy.
     public static List<T>? Deduplicate<T>(List<T>? values)
     {
         if (values is { Count: > 1 })
             for (int i = 0; i < values.Count; i++)
-                if (values.Take(i).Contains(values[i]))
+                if (containsPrefix(values, i, values[i]))
                 {
                     var result = values.GetRange(0, i);
                     for (i++; i < values.Count; i++)
@@ -34,6 +38,34 @@ internal static partial class Core
                     return result;
                 }
 
+        return values;
+    }
+
+    private static bool containsPrefix<T>(List<T> values, int end, T value)
+    {
+        var comparer = EqualityComparer<T>.Default;
+        for (int i = 0; i < end; i++)
+            if (comparer.Equals(values[i], value)) return true;
+        return false;
+    }
+
+    // core.go:828. Clone only after the first duplicate; unchanged input keeps
+    // its nil/empty and shared backing header, exactly like slices.Clone.
+    public static Slice<T> Deduplicate<T>(Slice<T> values)
+    {
+        if (values.Length > 1)
+            for (int i = 0; i < values.Length; i++)
+            {
+                var value = values[i];
+                if (!GoSlices.Contains(values.Slice2(0, i), value)) continue;
+                var result = GoSlices.Clone(values.Slice2(0, i));
+                for (i++; i < values.Length; i++)
+                {
+                    value = values[i];
+                    if (!GoSlices.Contains(result, value)) result = result.Append(value);
+                }
+                return result;
+            }
         return values;
     }
 
@@ -115,21 +147,27 @@ internal static partial class Core
     // core.go:183/192/199 and ordered slice search helpers. Descriptor copies
     // capture the length while element reads retain the shared backing store.
     public static bool Same<T>(Slice<T> left, Slice<T> right) => left.SameStorageRange(right);
-    public static bool Some<T>(Slice<T> values, Func<T, bool> predicate)
+    public static bool Some<T>(Slice<T> values, Func<T, bool> predicate) =>
+        Some(values, predicate, static (value, callback) => callback(value));
+    public static bool Some<T, TState>(Slice<T> values, TState state, Func<T, TState, bool> predicate)
     {
-        foreach (var value in values) if (predicate(value)) return true;
+        foreach (var value in values) if (predicate(value, state)) return true;
         return false;
     }
-    public static bool Every<T>(Slice<T> values, Func<T, bool> predicate)
+    public static bool Every<T>(Slice<T> values, Func<T, bool> predicate) =>
+        Every(values, predicate, static (value, callback) => callback(value));
+    public static bool Every<T, TState>(Slice<T> values, TState state, Func<T, TState, bool> predicate)
     {
-        foreach (var value in values) if (!predicate(value)) return false;
+        foreach (var value in values) if (!predicate(value, state)) return false;
         return true;
     }
     public static T? FirstOrNil<T>(Slice<T> values) => values.Length == 0 ? default : values[0];
     public static T? LastOrNil<T>(Slice<T> values) => values.Length == 0 ? default : values[values.Length - 1];
-    public static T? Find<T>(Slice<T> values, Func<T, bool> predicate)
+    public static T? Find<T>(Slice<T> values, Func<T, bool> predicate) =>
+        Find(values, predicate, static (value, callback) => callback(value));
+    public static T? Find<T, TState>(Slice<T> values, TState state, Func<T, TState, bool> predicate)
     {
-        foreach (var value in values) if (predicate(value)) return value;
+        foreach (var value in values) if (predicate(value, state)) return value;
         return typeof(T) == typeof(string) ? (T)(object)"" : default;
     }
     public static TOut? FirstNonNil<TIn, TOut>(Slice<TIn> values, Func<TIn, TOut?> map) where TOut : class
@@ -141,9 +179,11 @@ internal static partial class Core
         }
         return null;
     }
-    public static int FindIndex<T>(Slice<T> values, Func<T, bool> predicate)
+    public static int FindIndex<T>(Slice<T> values, Func<T, bool> predicate) =>
+        FindIndex(values, predicate, static (value, callback) => callback(value));
+    public static int FindIndex<T, TState>(Slice<T> values, TState state, Func<T, TState, bool> predicate)
     {
-        for (int i = 0; i < values.Length; i++) if (predicate(values[i])) return i;
+        for (int i = 0; i < values.Length; i++) if (predicate(values[i], state)) return i;
         return -1;
     }
     public static int FindLastIndex<T>(Slice<T> values, Func<T, bool> predicate)
@@ -171,17 +211,19 @@ internal static partial class Core
         GoSlices.Contains(values, element) ? values : values.Append(element);
 
     // core.go:36: return the original header unless the first exclusion occurs.
-    public static Slice<T> Filter<T>(Slice<T> values, Func<T, bool> predicate)
+    public static Slice<T> Filter<T>(Slice<T> values, Func<T, bool> predicate) =>
+        Filter(values, predicate, static (value, callback) => callback(value));
+    public static Slice<T> Filter<T, TState>(Slice<T> values, TState state, Func<T, TState, bool> predicate)
     {
         for (int i = 0; i < values.Length; i++)
         {
-            if (!predicate(values[i]))
+            if (!predicate(values[i], state))
             {
                 var result = GoSlices.Clone(values.Slice2(0, i));
                 for (i++; i < values.Length; i++)
                 {
                     var value = values[i];
-                    if (predicate(value)) result = result.Append(value);
+                    if (predicate(value, state)) result = result.Append(value);
                 }
                 return result;
             }
@@ -192,18 +234,22 @@ internal static partial class Core
     public static Slice<T> SameMap<T>(Slice<T> values, Func<T, T> map) =>
         SameMap(values, map, static (value, callback) => callback(value));
 
-    public static Slice<T> SameMap<T, TState>(Slice<T> values, TState state, Func<T, TState, T> map)
+    public static Slice<T> SameMap<T, TState>(Slice<T> values, TState state, Func<T, TState, T> map) =>
+        sameMapIndex(values, (State: state, Map: map), static (value, _, context) => context.Map(value, context.State));
+    public static Slice<T> SameMapIndex<T>(Slice<T> values, Func<T, int, T> map) =>
+        sameMapIndex(values, map, static (value, index, callback) => callback(value, index));
+    private static Slice<T> sameMapIndex<T, TState>(Slice<T> values, TState state, Func<T, int, TState, T> map)
     {
         for (int i = 0; i < values.Length; i++)
         {
             var value = values[i];
-            var mapped = map(value, state);
+            var mapped = map(value, i, state);
             if (!EqualityComparer<T>.Default.Equals(mapped, value))
             {
                 var result = Slice<T>.Make(values.Length);
                 values.AsSpan().Slice(0, i).CopyTo(result.AsSpan());
                 result[i] = mapped;
-                for (int j = i + 1; j < values.Length; j++) result[j] = map(values[j], state);
+                for (int j = i + 1; j < values.Length; j++) result[j] = map(values[j], j, state);
                 return result;
             }
         }
@@ -238,21 +284,25 @@ internal static partial class Core
         return result;
     }
     // core.go:106. Borrow the captured input header; only mapped output escapes.
-    public static Slice<U> MapIndexSlice<T, U>(List<T>? values, Func<T, int, U> map)
+    public static Slice<U> MapIndexSlice<T, U>(List<T>? values, Func<T, int, U> map) =>
+        MapIndexSlice(values, map, static (value, index, callback) => callback(value, index));
+    public static Slice<U> MapIndexSlice<T, U, TState>(List<T>? values, TState state, Func<T, int, TState, U> map)
     {
         if (values is null) return default;
         ReadOnlySpan<T> input = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(values);
-        return MapIndexSlice<T, U>(input, map);
+        return mapIndexSlice(input, state, map);
     }
-    public static Slice<U> MapIndexSlice<T, U>(Slice<T> values, Func<T, int, U> map)
+    public static Slice<U> MapIndexSlice<T, U>(Slice<T> values, Func<T, int, U> map) =>
+        MapIndexSlice(values, map, static (value, index, callback) => callback(value, index));
+    public static Slice<U> MapIndexSlice<T, U, TState>(Slice<T> values, TState state, Func<T, int, TState, U> map)
     {
         if (values.IsNil) return default;
-        return MapIndexSlice<T, U>(values.AsSpan(), map);
+        return mapIndexSlice(values.AsSpan(), state, map);
     }
-    private static Slice<U> MapIndexSlice<T, U>(ReadOnlySpan<T> input, Func<T, int, U> map)
+    private static Slice<U> mapIndexSlice<T, U, TState>(ReadOnlySpan<T> input, TState state, Func<T, int, TState, U> map)
     {
         var result = Slice<U>.Make(input.Length);
-        for (int i = 0; i < input.Length; i++) result[i] = map(input[i], i);
+        for (int i = 0; i < input.Length; i++) result[i] = map(input[i], i, state);
         return result;
     }
     public static List<U>? Map<T, U>(Slice<T> values, Func<T, U> map)
@@ -271,6 +321,19 @@ internal static partial class Core
         {
             var mapped = map(value);
             if (!EqualityComparer<U>.Default.Equals(mapped, zero)) (result ??= new()).Add(mapped);
+        }
+        return result;
+    }
+
+    // core.go:117. Map only nonzero results into the retained Go header.
+    public static Slice<U> MapNonNilSlice<T, U>(Slice<T> values, Func<T, U> map)
+    {
+        Slice<U> result = default;
+        U zero = typeof(U) == typeof(string) ? (U)(object)string.Empty : default!;
+        foreach (var value in values)
+        {
+            var mapped = map(value);
+            if (!EqualityComparer<U>.Default.Equals(mapped, zero)) result = result.Append(mapped);
         }
         return result;
     }
@@ -316,19 +379,22 @@ internal static partial class Core
         return result;
     }
 
-    public static List<T>? SameMapIndex<T>(List<T>? values, Func<T, int, T> map)
+    public static List<T>? SameMapIndex<T>(List<T>? values, Func<T, int, T> map) =>
+        sameMapIndex(values, map, static (value, index, callback) => callback(value, index));
+
+    private static List<T>? sameMapIndex<T, TState>(List<T>? values, TState state, Func<T, int, TState, T> map)
     {
         int count = values?.Count ?? 0;
         for (int i = 0; i < count; i++)
         {
             T value = values![i];
-            T mapped = map(value, i);
+            T mapped = map(value, i, state);
             if (!EqualityComparer<T>.Default.Equals(mapped, value))
             {
                 var result = values.GetRange(0, i);
                 result.Add(mapped);
                 for (int j = i + 1; j < count; j++)
-                    result.Add(map(values[j], j));
+                    result.Add(map(values[j], j, state));
                 return result;
             }
         }
@@ -336,7 +402,10 @@ internal static partial class Core
         return values is not null && values.Count != count ? values.GetRange(0, count) : values;
     }
 
-    public static List<T>? SameMap<T>(List<T>? values, Func<T, T> map) => SameMapIndex(values, (value, _) => map(value));
+    public static List<T>? SameMap<T>(List<T>? values, Func<T, T> map) =>
+        SameMap(values, map, static (value, callback) => callback(value));
+    public static List<T>? SameMap<T, TState>(List<T>? values, TState state, Func<T, TState, T> map) =>
+        sameMapIndex(values, (State: state, Map: map), static (value, _, context) => context.Map(value, context.State));
     // Go compares slice length and the address of the first element; empty
     // slices compare alike. Managed slices retain their owning list identity.
     public static bool Same<T>(List<T>? left, List<T>? right) => (left?.Count ?? 0) == (right?.Count ?? 0) && ((left?.Count ?? 0) == 0 || ReferenceEquals(left, right));
@@ -378,18 +447,15 @@ internal static partial class Core
     // the legacy Unicode overload below retains its established public role.
     public static ScriptKind GetScriptKindFromFileName(RootedFilePath fileName)
     {
-        var lowered = new GoBuilder();
-        foreach (int rune in GoString.EnumerateRunes(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive))) lowered.WriteRune(UnicodeCase.ToLower(rune));
-        string extension = lowered.String();
-        return extension switch
-        {
-            TsPath.ExtensionJs or TsPath.ExtensionCjs or TsPath.ExtensionMjs => ScriptKind.JS,
-            TsPath.ExtensionJsx => ScriptKind.JSX,
-            TsPath.ExtensionTs or TsPath.ExtensionCts or TsPath.ExtensionMts => ScriptKind.TS,
-            TsPath.ExtensionTsx => ScriptKind.TSX,
-            TsPath.ExtensionJson => ScriptKind.JSON,
-            _ => ScriptKind.Unknown
-        };
+        var extension = ByteStringValue.FromString(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive));
+        if (extension.Length == 0) return ScriptKind.Unknown;
+        extension = GoStrings.ToLower(extension);
+        if (extension.EqualsBytes(".js"u8) || extension.EqualsBytes(".cjs"u8) || extension.EqualsBytes(".mjs"u8)) return ScriptKind.JS;
+        if (extension.EqualsBytes(".jsx"u8)) return ScriptKind.JSX;
+        if (extension.EqualsBytes(".ts"u8) || extension.EqualsBytes(".cts"u8) || extension.EqualsBytes(".mts"u8)) return ScriptKind.TS;
+        if (extension.EqualsBytes(".tsx"u8)) return ScriptKind.TSX;
+        if (extension.EqualsBytes(".json"u8)) return ScriptKind.JSON;
+        return ScriptKind.Unknown;
     }
     public static ScriptKind EnsureScriptKindFromFileName(RootedFilePath fileName)
     {
@@ -410,10 +476,41 @@ internal static partial class Core
 
 internal static partial class Core
 {
-    public static List<int> ComputeECMALineStarts(string text) => ComputeECMALineStartsSeq(text).ToList();
+    public static Slice<int> ComputeECMALineStarts(string text) => ComputeECMALineStarts(ByteStringValue.FromString(text));
     // Same core.go line-start algorithm; a borrowed byte-text descriptor avoids
     // materializing a JSDoc node's bounded source before normalization.
-    public static List<int> ComputeECMALineStarts(ByteStringView text) => ComputeECMALineStartsSeq(text).ToList();
+    public static Slice<int> ComputeECMALineStarts(ByteStringView text) => ComputeECMALineStarts(ByteStringValue.FromView(text));
+    private static Slice<int> ComputeECMALineStarts(ByteStringValue text)
+    {
+        if (text.IsNull) throw new NullReferenceException();
+        int textLen = text.Length, pos = 0, lineStart = 0;
+        // core.go:429 specifies this initial capacity, rather than a guessed hint.
+        int capacity = checked((text.IsBytes ? text.ByteSpan.Count((byte)'\n') : text.CharSpan.Count('\n')) + 1);
+        var result = Slice<int>.Make(0, capacity);
+        while (pos < textLen)
+        {
+            int b = text[pos];
+            if (b < Utf8.RuneSelf)
+            {
+                pos++;
+                switch (b)
+                {
+                    case '\r':
+                        if (pos < textLen && text[pos] == '\n') pos++;
+                        goto case '\n';
+                    case '\n':
+                        result = result.Append(lineStart); lineStart = pos; break;
+                }
+            }
+            else
+            {
+                var (ch, size) = text.IsBytes ? Utf8.DecodeRuneInString(text.ByteSpan[pos..]) : Utf8.DecodeRuneInString(text.CharSpan[pos..]);
+                pos += size;
+                if (StringUtil.IsLineBreak(ch)) { result = result.Append(lineStart); lineStart = pos; }
+            }
+        }
+        return result.Append(lineStart);
+    }
     public static IEnumerable<int> ComputeECMALineStartsSeq(string text)
     {
         int textLen = text.Length, pos = 0, lineStart = 0;
@@ -697,6 +794,16 @@ internal static partial class Core
 internal static partial class Core
 {
     // core.go:228. slices.Backward captures the original slice-header length.
+    internal static T? FindLast<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        for (int i = values.Length - 1; i >= 0; i--)
+        {
+            var value = values[i];
+            if (predicate(value)) return value;
+        }
+        return typeof(T) == typeof(string) ? (T)(object)"" : default;
+    }
+
     internal static T? FindLast<T>(List<T>? values, Func<T, bool> predicate)
     {
         for (int i = (values?.Count ?? 0) - 1; i >= 0; i--)

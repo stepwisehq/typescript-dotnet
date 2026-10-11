@@ -46,7 +46,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
 {
     public ParsedOptions ParsedConfig = null!;
     public TsConfigSourceFile? ConfigFile;
-    public List<Diagnostic>? Errors;
+    public Slice<Diagnostic> Errors;
     public object? Raw;
     public StrongBox<bool>? CompileOnSave;
     internal configFileSpecs? configFileSpecs;
@@ -160,7 +160,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
             {
                 if (caseSensitivity.ContainsFilePath(rootDirectory, file))
                     continue;
-                (Errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.File_0_is_not_under_rootDir_1_rootDir_is_expected_to_contain_all_source_files, caseSensitivity.PathKey(file.AsPath()), rootDirectory));
+                Errors = Errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.File_0_is_not_under_rootDir_1_rootDir_is_expected_to_contain_all_source_files, caseSensitivity.PathKey(file.AsPath()), rootDirectory));
                 allBelong = false;
             }
 
@@ -293,7 +293,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
     }
 
     public List<RootedFilePath>? ExtendedSourceFiles() => ConfigFile?.ExtendedSourceFiles;
-    public List<Diagnostic>? GetConfigFileParsingDiagnostics() => ConfigFile != null ? Core.Concatenate(ConfigFile.SourceFile.Diagnostics(), Errors) : Errors;
+    public Slice<Diagnostic> GetConfigFileParsingDiagnostics() => ConfigFile != null ? GoSlices.Concat(ConfigFile.SourceFile.Diagnostics(), Errors) : Errors;
     public bool PossiblyMatchesFileName(RootedFilePath file)
     {
         var path = caseSensitivity.PathKey(file.AsPath());

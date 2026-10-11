@@ -66,10 +66,7 @@ internal static partial class ModuleSpecifiers
 
             return new ModuleSpecifiersResult
             {
-                Specifiers = new List<ModuleSpecifier>
-                {
-                    ambient.name
-                },
+                Specifiers = Slice<ModuleSpecifier>.FromArray([ambient.name]),
                 Kind = ResultKind.Ambient,
                 AmbientModuleSymbol = ambient.symbol
             };
@@ -95,7 +92,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:79:1.
-    public static (List<ModuleSpecifier>, ResultKind) GetModuleSpecifiersForFileWithInfo(SourceFile importingSourceFile, RootedFilePath moduleFileName, CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host, UserPreferences userPreferences, ModuleSpecifierOptions options, bool forAutoImports)
+    public static (Slice<ModuleSpecifier>, ResultKind) GetModuleSpecifiersForFileWithInfo(SourceFile importingSourceFile, RootedFilePath moduleFileName, CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host, UserPreferences userPreferences, ModuleSpecifierOptions options, bool forAutoImports)
     {
         var modulePaths = getAllModulePathsWorker(getInfo(host.GetSourceOfProjectReferenceIfOutputIncluded(importingSourceFile), host), moduleFileName, host, compilerOptions, options);
         return computeModuleSpecifiers(modulePaths, compilerOptions, importingSourceFile, host, userPreferences, options, forAutoImports);
@@ -185,14 +182,14 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:179:1.
-    private static List<ModulePath> getAllModulePaths(Info info, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, UserPreferences preferences, ModuleSpecifierOptions options)
+    private static Slice<ModulePath> getAllModulePaths(Info info, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, UserPreferences preferences, ModuleSpecifierOptions options)
     {
         var modulePaths = getAllModulePathsWorker(info, importedFileName, host, compilerOptions, options);
         return modulePaths;
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:202:1.
-    private static List<ModulePath> getAllModulePathsWorker(Info info, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, ModuleSpecifierOptions options)
+    private static Slice<ModulePath> getAllModulePathsWorker(Info info, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, ModuleSpecifierOptions options)
     {
         var allFileNames = new Dictionary<RootedFilePath, ModulePath>();
         var paths = GetEachFileNameOfModule(info.ImportingSourceFileName, importedFileName, host, true);
@@ -208,12 +205,12 @@ internal static partial class ModuleSpecifiers
         {
             return comparePathsByRedirect(a, b, caseSensitivity);
         };
-        var sortedPaths = GoRuntime.MakeSlice<ModulePath>(0);
+        var sortedPaths = Slice<ModulePath>.Make(0, paths.Length);
         {
             var directory = info.SourceDirectory;
             while ((GoRuntime.Len(allFileNames) != 0))
             {
-                List<ModulePath> pathsInDirectory = default;
+                Slice<ModulePath> pathsInDirectory = default;
                 {
                     foreach (var range2 in GoRuntime.Range(allFileNames))
                     {
@@ -221,7 +218,7 @@ internal static partial class ModuleSpecifiers
                         var p2 = range2.Value;
                         if (caseSensitivity.StartsWithDirectory(fileName, directory))
                         {
-                            pathsInDirectory = GoRuntime.Append(pathsInDirectory, p2);
+                            pathsInDirectory = pathsInDirectory.Append(p2);
                             allFileNames.Remove(fileName);
                         }
                     }
@@ -230,7 +227,7 @@ internal static partial class ModuleSpecifiers
                 if ((GoRuntime.Len(pathsInDirectory) > 0))
                 {
                     GoSlices.SortFunc(pathsInDirectory, comparePaths);
-                    sortedPaths = GoRuntime.Append(sortedPaths, pathsInDirectory);
+                    sortedPaths = sortedPaths.Append(pathsInDirectory);
                 }
 
                 var newDirectory = directory.AsPath().Directory();
@@ -245,9 +242,10 @@ internal static partial class ModuleSpecifiers
 
         if ((GoRuntime.Len(allFileNames) > 0))
         {
-            var remainingPaths = allFileNames.Values.ToList();
+            var remainingPaths = Slice<ModulePath>.Make(0, allFileNames.Count);
+            foreach (var remaining in allFileNames.Values) remainingPaths = remainingPaths.Append(remaining);
             GoSlices.SortFunc(remainingPaths, comparePaths);
-            sortedPaths = GoRuntime.Append(sortedPaths, remainingPaths);
+            sortedPaths = sortedPaths.Append(remainingPaths);
         }
 
         return sortedPaths;
@@ -270,7 +268,7 @@ internal static partial class ModuleSpecifiers
     // GetEachFileNameOfModule returns all possible file paths for a module, including symlink alternatives.
     // This function handles symlink resolution and provides multiple path options for module resolution.
     // Upstream tsc/internal/modulespecifiers/specifiers.go:262:1.
-    public static List<ModulePath> GetEachFileNameOfModule(RootedFilePath importingFileName, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, bool preferSymlinks)
+    public static Slice<ModulePath> GetEachFileNameOfModule(RootedFilePath importingFileName, RootedFilePath importedFileName, IModuleSpecifierGenerationHost host, bool preferSymlinks)
     {
         var caseSensitivity = host.CaseSensitivity();
         var importedPath = caseSensitivity.PathKey(importedFileName.AsPath());
@@ -282,17 +280,17 @@ internal static partial class ModuleSpecifiers
         }
 
         var redirects = host.GetRedirectTargets(importedPath);
-        var importedFileNames = GoRuntime.MakeSlice<RootedFilePath>(0);
+        var importedFileNames = Slice<RootedFilePath>.Make(0);
         if ((referenceRedirect != default))
         {
-            importedFileNames = GoRuntime.Append(importedFileNames, referenceRedirect);
+            importedFileNames = importedFileNames.Append(referenceRedirect);
         }
 
-        importedFileNames = GoRuntime.Append(importedFileNames, importedFileName);
-        importedFileNames = GoRuntime.Append(importedFileNames, redirects);
+        importedFileNames = importedFileNames.Append(importedFileName);
+        importedFileNames = importedFileNames.Append(redirects);
         var targets = importedFileNames;
         var shouldFilterIgnoredPaths = !Core.Every(targets, containsIgnoredPath);
-        var results = GoRuntime.MakeSlice<ModulePath>(0);
+        var results = Slice<ModulePath>.Make(0, 2);
         if (!preferSymlinks)
         {
             {
@@ -300,7 +298,7 @@ internal static partial class ModuleSpecifiers
                 {
                     if (!((shouldFilterIgnoredPaths && containsIgnoredPath(p))))
                     {
-                        results = GoRuntime.Append(results, new ModulePath { FileName = p, IsInNodeModules = p.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (referenceRedirect == p) });
+                        results = results.Append(new ModulePath { FileName = p, IsInNodeModules = p.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (referenceRedirect == p) });
                     }
                 }
             }
@@ -340,7 +338,7 @@ internal static partial class ModuleSpecifiers
                         symlinkSet.Range((symlinkDirectory) =>
                         {
                             var option = symlinkDirectory.ResolveRelativeFile(relative);
-                            results = GoRuntime.Append(results, new ModulePath { FileName = option, IsInNodeModules = option.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (target == referenceRedirect) });
+                            results = results.Append(new ModulePath { FileName = option, IsInNodeModules = option.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (target == referenceRedirect) });
                             shouldFilterIgnoredPaths = true;
                             return true;
                         });
@@ -360,7 +358,7 @@ internal static partial class ModuleSpecifiers
                     var p2 = range5.Value;
                     if (!((shouldFilterIgnoredPaths && containsIgnoredPath(p2))))
                     {
-                        results = GoRuntime.Append(results, new ModulePath { FileName = p2, IsInNodeModules = p2.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (referenceRedirect == p2) });
+                        results = results.Append(new ModulePath { FileName = p2, IsInNodeModules = p2.ContainsLowercaseDirectorySequence("/node_modules/"), IsRedirect = (referenceRedirect == p2) });
                     }
                 }
             }
@@ -370,7 +368,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:352:1.
-    private static (List<ModuleSpecifier>, ResultKind) computeModuleSpecifiers(List<ModulePath> modulePaths, CompilerOptions compilerOptions, SourceFile importingSourceFile, IModuleSpecifierGenerationHost host, UserPreferences userPreferences, ModuleSpecifierOptions options, bool forAutoImport)
+    private static (Slice<ModuleSpecifier>, ResultKind) computeModuleSpecifiers(Slice<ModulePath> modulePaths, CompilerOptions compilerOptions, SourceFile importingSourceFile, IModuleSpecifierGenerationHost host, UserPreferences userPreferences, ModuleSpecifierOptions options, bool forAutoImport)
     {
         var info = getInfo(RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()), host);
         var preferences = getModuleSpecifierPreferences(userPreferences, host, compilerOptions, importingSourceFile, "");
@@ -422,17 +420,17 @@ internal static partial class ModuleSpecifiers
 
         if ((existingSpecifier != default))
         {
-            return (new List<ModuleSpecifier> { existingSpecifier }, ResultKind.None);
+            return (Slice<ModuleSpecifier>.FromArray([existingSpecifier]), ResultKind.None);
         }
 
         var importedFileIsInNodeModules = Core.Some(modulePaths, (p) =>
         {
             return p.IsInNodeModules;
         });
-        List<ModuleSpecifier> pathsSpecifiers = default;
-        List<ModuleSpecifier> redirectPathsSpecifiers = default;
-        List<ModuleSpecifier> nodeModulesSpecifiers = default;
-        List<ModuleSpecifier> relativeSpecifiers = default;
+        Slice<ModuleSpecifier> pathsSpecifiers = default;
+        Slice<ModuleSpecifier> redirectPathsSpecifiers = default;
+        Slice<ModuleSpecifier> nodeModulesSpecifiers = default;
+        Slice<ModuleSpecifier> relativeSpecifiers = default;
         {
             foreach (var range3 in GoRuntime.Range(modulePaths))
             {
@@ -446,7 +444,7 @@ internal static partial class ModuleSpecifiers
 
                 if (((specifier.AsString().Length > 0) && !((forAutoImport && IsExcludedByRegex(specifier.AsString(), preferences.excludeRegexes)))))
                 {
-                    nodeModulesSpecifiers = GoRuntime.Append(nodeModulesSpecifiers, specifier);
+                    nodeModulesSpecifiers = nodeModulesSpecifiers.Append(specifier);
                     if (modulePath2.IsRedirect)
                     {
                         return (nodeModulesSpecifiers, ResultKind.NodeModules);
@@ -467,7 +465,7 @@ internal static partial class ModuleSpecifiers
 
                 if (modulePath2.IsRedirect)
                 {
-                    redirectPathsSpecifiers = GoRuntime.Append(redirectPathsSpecifiers, local);
+                    redirectPathsSpecifiers = redirectPathsSpecifiers.Append(local);
                 }
                 else
                 {
@@ -475,18 +473,18 @@ internal static partial class ModuleSpecifiers
                     {
                         if (moduleSpecifierContainsNodeModules(local))
                         {
-                            relativeSpecifiers = GoRuntime.Append(relativeSpecifiers, local);
+                            relativeSpecifiers = relativeSpecifiers.Append(local);
                         }
                         else
                         {
-                            pathsSpecifiers = GoRuntime.Append(pathsSpecifiers, local);
+                            pathsSpecifiers = pathsSpecifiers.Append(local);
                         }
                     }
                     else
                     {
                         if (((forAutoImport || !importedFileIsInNodeModules) || modulePath2.IsInNodeModules))
                         {
-                            relativeSpecifiers = GoRuntime.Append(relativeSpecifiers, local);
+                            relativeSpecifiers = relativeSpecifiers.Append(local);
                         }
                     }
                 }
@@ -1077,7 +1075,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1003:1.
-    private static ModuleSpecifier tryGetModuleNameFromExports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, string packageName, ExportsOrImports exports, List<string> conditions)
+    private static ModuleSpecifier tryGetModuleNameFromExports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, string packageName, ExportsOrImports exports, Slice<string> conditions)
     {
         if (exports.IsSubpaths())
         {
@@ -1277,7 +1275,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1230:1.
-    private static string tryGetModuleNameFromExportsOrImports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, string packageName, ExportsOrImports exports, List<string> conditions, MatchingMode mode, bool isImports, bool preferTsExtension)
+    private static string tryGetModuleNameFromExportsOrImports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, string packageName, ExportsOrImports exports, Slice<string> conditions, MatchingMode mode, bool isImports, bool preferTsExtension)
     {
         var packageSpecifier = TsPath.ToModuleSpecifier(packageName);
         switch (exports.Type)

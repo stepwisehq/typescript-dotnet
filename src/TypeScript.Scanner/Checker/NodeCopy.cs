@@ -60,26 +60,24 @@ internal sealed partial class NodeBuilderImpl
     {
         internal NodeBuilderContext ctx;
         internal bool hadError;
-        internal List<Action> deferredReports;
+        internal Slice<Action> deferredReports;
         internal SymbolTrackerImpl oldTracker;
-        internal List<TrackedSymbolArgs> oldTrackedSymbols, trackedSymbols;
+        internal Slice<TrackedSymbolArgs> oldTrackedSymbols, trackedSymbols;
         internal bool oldEncounteredError;
         internal int oldApproximateLength;
-        internal originalRecoveryScopeState startRecoveryScope() => new(ctx.trackedSymbols?.Count ?? 0, deferredReports?.Count ?? 0, hadError);
+        internal originalRecoveryScopeState startRecoveryScope() => new(ctx.trackedSymbols.Length, deferredReports.Length, hadError);
         internal void endRecoveryScope(originalRecoveryScopeState state)
         {
             hadError = state.hadError;
-            if (ctx.trackedSymbols != null)
-                ctx.trackedSymbols.RemoveRange(state.trackedSymbolsTop, ctx.trackedSymbols.Count - state.trackedSymbolsTop);
-            if (deferredReports != null)
-                deferredReports.RemoveRange(state.unreportedErrorsTop, deferredReports.Count - state.unreportedErrorsTop);
+            ctx.trackedSymbols = ctx.trackedSymbols.Slice2(0, state.trackedSymbolsTop);
+            deferredReports = deferredReports.Slice2(0, state.unreportedErrorsTop);
         }
 
         internal void markError(Action callback)
         {
             hadError = true;
             if (callback != null)
-                (deferredReports ??= new()).Add(callback);
+                deferredReports = deferredReports.Append(callback);
         }
     }
 
@@ -88,7 +86,7 @@ internal sealed partial class NodeBuilderImpl
     {
         public bool TrackSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
         {
-            (bound.trackedSymbols ??= new()).Add(new(symbol, enclosingDeclaration, meaning));
+            bound.trackedSymbols = bound.trackedSymbols.Append(new TrackedSymbolArgs(symbol, enclosingDeclaration, meaning));
             return false;
         }
 
@@ -112,7 +110,7 @@ internal sealed partial class NodeBuilderImpl
             oldApproximateLength = approximateLength
         };
         ctx.tracker = SymbolTrackerImpl.NewSymbolTrackerImpl(ctx, new wrappingTracker(ctx.tracker, bound));
-        ctx.trackedSymbols = null;
+        ctx.trackedSymbols = default;
         return bound;
     }
 
@@ -122,11 +120,11 @@ internal sealed partial class NodeBuilderImpl
         ctx.trackedSymbols = bound.oldTrackedSymbols;
         encounteredError = bound.oldEncounteredError;
         approximateLength = bound.oldApproximateLength;
-        foreach (var callback in bound.deferredReports ?? [])
+        foreach (var callback in bound.deferredReports)
             callback();
         if (bound.hadError)
             return false;
-        foreach (var argument in bound.trackedSymbols ?? [])
+        foreach (var argument in bound.trackedSymbols)
             ctx.tracker.TrackSymbol(argument.symbol, argument.enclosingDeclaration, argument.meaning);
         return true;
     }
@@ -143,7 +141,7 @@ internal sealed partial class NodeBuilderImpl
     }
 
     // nodecopy.go:234–278. Reused import types are rewritten through real module naming.
-    private string getModuleSpecifierOverride(Node parent, Node literal)
+    private ByteStringValue getModuleSpecifierOverride(Node parent, Node literal)
     {
         if (ctx.enclosingFile != Ast.GetSourceFileOfNode(literal))
         {
@@ -151,7 +149,7 @@ internal sealed partial class NodeBuilderImpl
             var mode = ResolutionMode.None;
             if (import.Attributes != null)
                 (mode, _) = import.Attributes.GetResolutionModeOverride(null);
-            var name = literal.Text();
+            var name = literal.TextValue();
             var originalName = name;
             var nodeSymbol = tryGetResolvedSymbolFromTypeNode(parent);
             var meaning = import.IsTypeOf ? SymbolFlags.Value : SymbolFlags.Type;
@@ -167,17 +165,17 @@ internal sealed partial class NodeBuilderImpl
                     name = getSpecifierForModuleSymbol(file.Symbol, mode).specifier;
             }
 
-            if (name.Length > 0 && name.Contains("/node_modules/", StringComparison.Ordinal))
+            if (name.Length > 0 && name.Contains("/node_modules/"u8))
             {
                 ctx.encounteredError = true;
-                ctx.tracker.ReportLikelyUnsafeImportRequiredError(name, "");
+                ctx.tracker.ReportLikelyUnsafeImportRequiredError(name.Materialize(), "");
             }
 
-            if (name != originalName)
+            if (!name.EqualsValue(originalName))
                 return name;
         }
 
-        return "";
+        return default;
     }
 
     private Node rewriteModuleSpecifier(Node parent, Node literal)
@@ -185,7 +183,7 @@ internal sealed partial class NodeBuilderImpl
         var name = getModuleSpecifierOverride(parent, literal);
         if (name.Length == 0)
             return literal;
-        var result = f.NewStringLiteral(name, TokenFlags.None);
+        var result = f.NewStringLiteralWithTextValue(name, TokenFlags.None);
         e.SetOriginal(result, literal);
         return result;
     }
@@ -487,7 +485,7 @@ internal sealed partial class NodeBuilderImpl
             {
                 var conditional = node.AsConditionalTypeNode();
                 var check = visitor.VisitNode(conditional.CheckType);
-                var dispose = enterNewScope(node, null, ch.getInferTypeParameters(node), null, null);
+                var dispose = enterNewScope(node, default, ch.getInferTypeParameters(node), default, null);
                 var extendsType = visitor.VisitNode(conditional.ExtendsType);
                 var trueType = visitor.VisitNode(conditional.TrueType);
                 dispose();
@@ -555,7 +553,7 @@ internal sealed partial class NodeBuilderImpl
                 return node;
             if (node.Kind == Kind.TypeReference)
             {
-                if (node.AsTypeReferenceNode().TypeName.Kind == Kind.Identifier && node.AsTypeReferenceNode().TypeName.Text() == "")
+                if (node.AsTypeReferenceNode().TypeName.Kind == Kind.Identifier && node.AsTypeReferenceNode().TypeName.TextValue().Length == 0)
                 {
                     var replacement = f.NewKeywordTypeNode(Kind.AnyKeyword);
                     e.SetOriginal(replacement, node);
@@ -582,8 +580,8 @@ internal sealed partial class NodeBuilderImpl
             Action exit = null;
             if (Ast.IsFunctionLike(node) || Ast.IsMappedTypeNode(node))
             {
-                List<Symbol> parameters = null;
-                List<Type> typeParameters;
+                Slice<Symbol> parameters = default;
+                Slice<Type> typeParameters;
                 if (Ast.IsFunctionLike(node))
                 {
                     var signature = ch.getSignatureFromDeclaration(node);
@@ -591,8 +589,8 @@ internal sealed partial class NodeBuilderImpl
                     typeParameters = signature.typeParameters;
                 }
                 else
-                    typeParameters = [ch.getDeclaredTypeOfTypeParameter(ch.getSymbolOfDeclaration(node.AsMappedTypeNode().TypeParameter))];
-                exit = enterNewScope(node, parameters, typeParameters, null, null);
+                    typeParameters = Slice<Type>.FromArray([ch.getDeclaredTypeOfTypeParameter(ch.getSymbolOfDeclaration(node.AsMappedTypeNode().TypeParameter))]);
+                exit = enterNewScope(node, parameters, typeParameters, default, null);
             }
 
             var result = worker(node);

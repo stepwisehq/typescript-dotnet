@@ -313,19 +313,63 @@ public sealed partial class Graph
         return fields;
     }
 
-    private List<(string Name, object? Data)> SymbolLinks(Symbol symbol) => [("valueSymbolLinks", checker.valueSymbolLinks.TryGet(symbol)), ("typeAliasLinks", checker.typeAliasLinks.TryGet(symbol)), ("declaredTypeLinks", checker.declaredTypeLinks.TryGet(symbol)), ("deferredSymbolLinks", checker.deferredSymbolLinks.TryGet(symbol)), ("mappedSymbolLinks", checker.mappedSymbolLinks.TryGet(symbol)), ("symbolReferenceLinks", checker.symbolReferenceLinks.TryGet(symbol)), ("moduleSymbolLinks", checker.VerificationDataModuleSymbolLinks(symbol))];
-    private List<DataField> LinkFields(object payload) => payload switch
+    private List<(string Name, object? Data)> SymbolLinks(Symbol symbol)
     {
-        ValueSymbolLinks l => [F("resolvedType", "type", l.resolvedType), F("writeType", "type", l.writeType), F("target", "symbol", l.target), F("mapper", "mapper", l.mapper), F("nameType", "type", l.nameType), F("containingType", "type", l.containingType), F("functionOrConstructorChecked", "bool", l.functionOrConstructorChecked)],
-        TypeAliasLinks l => [F("declaredType", "type", l.declaredType), F("typeParameters", "types", l.typeParameters), F("instantiations", "instantiations", l.instantiations), F("isConstructorDeclaredProperty", "bool", l.isConstructorDeclaredProperty)],
-        DeclaredTypeLinks l => [F("declaredType", "type", l.declaredType), F("interfaceChecked", "bool", l.interfaceChecked), F("indexSignaturesChecked", "bool", l.indexSignaturesChecked), F("typeParametersChecked", "bool", l.typeParametersChecked), F("enumChecked", "bool", l.enumChecked)],
-        DeferredSymbolLinks l => [F("parent", "type", l.parent), F("constituents", "types", l.constituents), F("writeConstituents", "types", l.writeConstituents)],
-        SymbolReferenceLinks l => [F("referenceKinds", "number", l.referenceKinds)],
-        MappedSymbolLinks l => [F("keyType", "type", l.keyType), F("syntheticOrigin", "symbol", l.syntheticOrigin)],
-        ModuleSymbolLinks l => [F("resolvedExports", "table", l.resolvedExports), F("typeOnlyExportStarMap", "node-map", l.typeOnlyExportStarMap), F("exportsChecked", "bool", l.exportsChecked)],
-        NodeLinks l => [F("flags", "number", l.flags), F("declarationRequiresScopeChange", "number", l.declarationRequiresScopeChange), F("hasReportedStatementInAmbientContext", "bool", l.hasReportedStatementInAmbientContext)],
-        TypeNodeLinks l => [F("resolvedType", "type", l.resolvedType), F("outerTypeParameters", "types", l.outerTypeParameters)],
-        _ => throw new InvalidDataException("Unobserved private symbol link")};
+        var location = checker.valueSymbolLinks.TryGet(symbol);
+        object? valueLinks = location.IsEmpty ? null : location;
+        return [("valueSymbolLinks", valueLinks), ("typeAliasLinks", Checker.VerificationLinkLocation(checker.typeAliasLinks.TryGet(symbol))), ("declaredTypeLinks", Checker.VerificationLinkLocation(checker.declaredTypeLinks.TryGet(symbol))), ("deferredSymbolLinks", Checker.VerificationLinkLocation(checker.deferredSymbolLinks.TryGet(symbol))), ("mappedSymbolLinks", Checker.VerificationLinkLocation(checker.mappedSymbolLinks.TryGet(symbol))), ("symbolReferenceLinks", Checker.VerificationLinkLocation(checker.symbolReferenceLinks.TryGet(symbol))), ("moduleSymbolLinks", checker.VerificationDataModuleSymbolLinks(symbol))];
+    }
+
+    private List<DataField> LinkFields(object payload)
+    {
+        if (payload is Memory<ValueSymbolLinks> location)
+        {
+            ref var l = ref location.Span[0];
+            return [F("resolvedType", "type", l.resolvedType), F("writeType", "type", l.writeType), F("target", "symbol", l.target), F("mapper", "mapper", l.mapper), F("nameType", "type", l.nameType), F("containingType", "type", l.containingType), F("functionOrConstructorChecked", "bool", l.functionOrConstructorChecked)];
+        }
+
+        if (payload is Memory<TypeAliasLinks> typeAliasLinksLocation)
+        {
+            ref var l = ref typeAliasLinksLocation.Span[0];
+            return [F("declaredType", "type", l.declaredType), F("typeParameters", "types", l.typeParameters), F("instantiations", "instantiations", l.instantiations), F("isConstructorDeclaredProperty", "bool", l.isConstructorDeclaredProperty)];
+        }
+        if (payload is Memory<DeclaredTypeLinks> declaredTypeLinksLocation)
+        {
+            ref var l = ref declaredTypeLinksLocation.Span[0];
+            return [F("declaredType", "type", l.declaredType), F("interfaceChecked", "bool", l.interfaceChecked), F("indexSignaturesChecked", "bool", l.indexSignaturesChecked), F("typeParametersChecked", "bool", l.typeParametersChecked), F("enumChecked", "bool", l.enumChecked)];
+        }
+        if (payload is Memory<DeferredSymbolLinks> deferredSymbolLinksLocation)
+        {
+            ref var l = ref deferredSymbolLinksLocation.Span[0];
+            return [F("parent", "type", l.parent), F("constituents", "types", l.constituents), F("writeConstituents", "types", l.writeConstituents)];
+        }
+        if (payload is Memory<SymbolReferenceLinks> symbolReferenceLinksLocation)
+        {
+            ref var l = ref symbolReferenceLinksLocation.Span[0];
+            return [F("referenceKinds", "number", l.referenceKinds)];
+        }
+        if (payload is Memory<MappedSymbolLinks> mappedSymbolLinksLocation)
+        {
+            ref var l = ref mappedSymbolLinksLocation.Span[0];
+            return [F("keyType", "type", l.keyType), F("syntheticOrigin", "symbol", l.syntheticOrigin)];
+        }
+        if (payload is Memory<ModuleSymbolLinks> moduleSymbolLinksLocation)
+        {
+            ref var l = ref moduleSymbolLinksLocation.Span[0];
+            return [F("resolvedExports", "table", l.resolvedExports), F("typeOnlyExportStarMap", "node-map", l.typeOnlyExportStarMap), F("exportsChecked", "bool", l.exportsChecked)];
+        }
+        if (payload is Memory<NodeLinks> nodeLinksLocation)
+        {
+            ref var l = ref nodeLinksLocation.Span[0];
+            return [F("flags", "number", l.flags), F("declarationRequiresScopeChange", "number", l.declarationRequiresScopeChange), F("hasReportedStatementInAmbientContext", "bool", l.hasReportedStatementInAmbientContext)];
+        }
+        if (payload is Memory<TypeNodeLinks> typeNodeLinksLocation)
+        {
+            ref var l = ref typeNodeLinksLocation.Span[0];
+            return [F("resolvedType", "type", l.resolvedType), F("outerTypeParameters", "types", l.outerTypeParameters)];
+        }
+        throw new InvalidDataException("Unobserved private symbol link");
+    }
     public DataGraphValue Data(Request request, Dictionary<int, CheckType> queried)
     {
         data = new();
@@ -352,13 +396,14 @@ public sealed partial class Graph
             var node = syntax.RawNodes[id];
             foreach (var link in new List<(string Name, object? Data)>
             {
-                ("nodeLinks", checker.nodeLinks.TryGet(node)),
-                ("typeNodeLinks", checker.typeNodeLinks.TryGet(node))
+                ("nodeLinks", Checker.VerificationLinkLocation(checker.nodeLinks.TryGet(node))),
+                ("typeNodeLinks", Checker.VerificationLinkLocation(checker.typeNodeLinks.TryGet(node)))
             }
 
             )
                 data.Links.Add(new("node", id, link.Name, link.Data is not null, link.Data is null ? [] : LinkFields(link.Data)));
-            data.ResolvedSymbols.Add(new(id, Symbol(checker.symbolNodeLinks.TryGet(node)?.resolvedSymbol)));
+            var symbolLocation = checker.symbolNodeLinks.TryGet(node);
+            data.ResolvedSymbols.Add(new(id, Symbol(symbolLocation.IsEmpty ? null : symbolLocation.Span[0].resolvedSymbol)));
         }
 
         int cursor = 0, linkCursor = 0;

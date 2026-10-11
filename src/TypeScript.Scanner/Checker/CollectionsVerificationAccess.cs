@@ -14,15 +14,22 @@ public sealed partial class Checker
                 result.Add((name, value));
         }
 
-        Add("arrayLiteralLinks", arrayLiteralLinks.TryGet(node));
-        Add("nodeLinks", nodeLinks.TryGet(node));
-        Add("signatureLinks", signatureLinks.TryGet(node));
+        void AddLocation<T>(string name, Memory<T> location) where T : struct
+        {
+            if (!location.IsEmpty)
+                result.Add((name, location));
+        }
+
+        AddLocation("arrayLiteralLinks", arrayLiteralLinks.TryGet(node));
+        AddLocation("nodeLinks", nodeLinks.TryGet(node));
+        AddLocation("signatureLinks", signatureLinks.TryGet(node));
         if (node.Kind == TypeScript.Scanner.Kind.SourceFile)
-            Add("sourceFileLinks", sourceFileLinks.TryGet(node));
+            AddLocation("sourceFileLinks", sourceFileLinks.TryGet(node));
         // Physical untouched-page presence is process-AST-ID-dependent; only
         // the actual resolvedSymbol is a selected semantic state.
-        Add("symbolNodeLinks.resolvedSymbol", symbolNodeLinks.TryGet(node)?.resolvedSymbol);
-        Add("typeNodeLinks", typeNodeLinks.TryGet(node));
+        var symbolLocation = symbolNodeLinks.TryGet(node);
+        Add("symbolNodeLinks.resolvedSymbol", symbolLocation.IsEmpty ? null : symbolLocation.Span[0].resolvedSymbol);
+        AddLocation("typeNodeLinks", typeNodeLinks.TryGet(node));
         return result;
     }
 
@@ -35,19 +42,27 @@ public sealed partial class Checker
                 result.Add((name, value));
         }
 
-        Add("ReverseMappedSymbolLinks", ReverseMappedSymbolLinks.TryGet(symbol));
-        Add("declaredTypeLinks", declaredTypeLinks.TryGet(symbol));
-        Add("deferredSymbolLinks", deferredSymbolLinks.TryGet(symbol));
-        Add("exportTypeLinks", exportTypeLinks.TryGet(symbol));
-        Add("mappedSymbolLinks", mappedSymbolLinks.TryGet(symbol));
-        Add("markedAssignmentSymbolLinks", markedAssignmentSymbolLinks.TryGet(symbol));
-        Add("membersAndExportsLinks", membersAndExportsLinks.TryGet(symbol));
-        Add("moduleSymbolLinks", moduleSymbolLinks.TryGet(symbol));
-        Add("symbolReferenceLinks", symbolReferenceLinks.TryGet(symbol));
-        Add("symbolContainerLinks", symbolContainerLinks.TryGet(symbol));
-        Add("typeAliasLinks", typeAliasLinks.TryGet(symbol));
-        Add("valueSymbolLinks", valueSymbolLinks.TryGet(symbol));
-        Add("varianceLinks", varianceLinks.TryGet(symbol));
+        void AddLocation<T>(string name, Memory<T> location) where T : struct
+        {
+            if (!location.IsEmpty)
+                result.Add((name, location));
+        }
+
+        AddLocation("ReverseMappedSymbolLinks", ReverseMappedSymbolLinks.TryGet(symbol));
+        AddLocation("declaredTypeLinks", declaredTypeLinks.TryGet(symbol));
+        AddLocation("deferredSymbolLinks", deferredSymbolLinks.TryGet(symbol));
+        AddLocation("exportTypeLinks", exportTypeLinks.TryGet(symbol));
+        AddLocation("mappedSymbolLinks", mappedSymbolLinks.TryGet(symbol));
+        AddLocation("markedAssignmentSymbolLinks", markedAssignmentSymbolLinks.TryGet(symbol));
+        AddLocation("membersAndExportsLinks", membersAndExportsLinks.TryGet(symbol));
+        AddLocation("moduleSymbolLinks", moduleSymbolLinks.TryGet(symbol));
+        AddLocation("symbolReferenceLinks", symbolReferenceLinks.TryGet(symbol));
+        AddLocation("symbolContainerLinks", symbolContainerLinks.TryGet(symbol));
+        AddLocation("typeAliasLinks", typeAliasLinks.TryGet(symbol));
+        var valueLocation = valueSymbolLinks.TryGet(symbol);
+        if (!valueLocation.IsEmpty)
+            Add("valueSymbolLinks", valueLocation);
+        AddLocation("varianceLinks", varianceLinks.TryGet(symbol));
         return result;
     }
 

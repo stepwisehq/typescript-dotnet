@@ -140,7 +140,7 @@ public sealed partial class Checker
             emitResolverLinks.Get(declaration).isVisible = Tristate.True;
             (aliasesToMakeVisible ??= new())[declaration] = aliasingStatement;
         }
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
         {
             if (Ast.IsIdentifier(declaration))
                 continue;

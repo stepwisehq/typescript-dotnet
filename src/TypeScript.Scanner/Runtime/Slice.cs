@@ -60,6 +60,11 @@ public readonly struct Slice<T>
     }
 
     public Span<T> AsSpan() => storage.AsSpan(offset, Length);
+    internal ReadOnlyMemory<T> AsMemory() => storage.AsMemory(offset, Length);
+    // Arena-owned slots retain writable array locations without copying payloads.
+    internal Memory<T> AsWritableMemory() => storage.AsMemory(offset, Length);
+    // Capacity growth preserves the logical length and every existing prefix.
+    internal Slice<T> Grow(int additional) => WithCapacity(AppendedLength(additional));
 
     // Go's two-index slice permits high beyond len up to cap. An omitted high
     // uses the current length; slicing adjusts capacity relative to the new low.

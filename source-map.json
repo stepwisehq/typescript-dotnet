@@ -1343,7 +1343,8 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Embedded Type payloads share one managed object. Generic/member/tuple/variance owner fields use Go-shaped headers; target retention and allocated-empty distinctions preserved. Tuples retain actual transformation copies and returned element-flag buffers. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Embedded Type payloads share one managed object. Generic/member/tuple/variance owner fields use Go-shaped headers; target retention and allocated-empty distinctions preserved. Tuples retain actual transformation copies and returned element-flag buffers. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
+      "arenaStorageRolloutAdaptation": "In progress: internal link records use arena-backed value payloads; MembersAndExports embeds two table slots. SourceFileLinks retains a lazy ordered-set carrier to preserve live iterator ownership, with lazy membership and Slice keys. Public Symbol/Node/Type identity unchanged. Combined build/Native AOT and regression qualification pending; see docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -1363,7 +1364,8 @@
         "focusedEvidence": "artifacts/vscode-link-slots/focused/report.json",
         "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
         "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
-      }
+      },
+      "arenaStorageRolloutAdaptation": "ValueSymbolLinks arena chunks, sparse Memory locations and live ref consumers are implemented and independently source-reviewed; runtime acceptance pending. The remaining genuine SymbolNodeLinks node adapter is being converted to inline struct pages with page-presence Memory locations, including zero slots. Standard location descriptors preserve stable managed storage without a custom handle system; wider entries and chunk retention are unmeasured costs."
     },
     {
       "upstream": "tsc/internal/checker/relater.go",
@@ -1690,7 +1692,8 @@
         "focusedEvidence": "artifacts/vscode-link-slots/focused/report.json",
         "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
         "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
-      }
+      },
+      "arenaStorageRolloutAdaptation": "In progress: map-backed LinkStore payloads move from individually allocated classes to zeroed GoArena struct chunks, standard Memory locations and live ref returns. Preserve lazy map allocation, key identity and missing entries. PagedLinkStore supports value locations while retaining existing class/page-presence behavior. Complete 26-owner consumer and existing observer conversion underway; execution pending."
     },
     {
       "upstream": null,

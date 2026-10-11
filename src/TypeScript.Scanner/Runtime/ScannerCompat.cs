@@ -49,6 +49,58 @@ internal static partial class GoStrings
     public static bool Contains(string value, string text) => value.Contains(text, StringComparison.Ordinal);
     public static string ReplaceAll(string value, string oldValue, string newValue) => value.Replace(oldValue, newValue, StringComparison.Ordinal);
     public static string ToLower(string value) => value.ToLowerInvariant();
+    // Go strings.go:708 ToLower and Map: share unchanged input; allocate only
+    // at the first mapped rune/invalid UTF8 byte, preserving consume-one errors.
+    public static ByteStringValue ToLower(ByteStringValue value)
+    {
+        if (value.IsNull) throw new NullReferenceException();
+        bool isAscii = true, hasUpper = false;
+        for (int i = 0; i < value.Length; i++)
+        {
+            int c = value[i];
+            if (c >= Utf8.RuneSelf) { isAscii = false; break; }
+            hasUpper |= c is >= 'A' and <= 'Z';
+        }
+        if (isAscii)
+        {
+            if (!hasUpper) return value;
+            var builder = new GoBuilder();
+            builder.Grow(value.Length);
+            int pos = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                int c = value[i];
+                if (c is >= 'A' and <= 'Z')
+                {
+                    if (pos < i) builder.WriteString(value.Slice(pos, i));
+                    builder.WriteByte(c + 'a' - 'A');
+                    pos = i + 1;
+                }
+            }
+            if (pos < value.Length) builder.WriteString(value.Slice(pos));
+            return builder.Value();
+        }
+        GoBuilder? output = null;
+        for (int i = 0; i < value.Length;)
+        {
+            var (rune, width) = value.IsBytes ? Utf8.DecodeRuneInString(value.ByteSpan[i..])
+                : Utf8.DecodeRuneInString(value.CharSpan[i..]);
+            int mapped = UnicodeCase.ToLower(rune);
+            if (output is null && (mapped != rune || rune == Utf8.RuneError && width == 1))
+            {
+                output = new GoBuilder();
+                output.Grow(checked(value.Length + 4));
+                output.WriteString(value.Slice(0, i));
+            }
+            if (output is not null)
+            {
+                if (mapped < Utf8.RuneSelf) output.WriteByte(mapped);
+                else output.WriteRune(mapped);
+            }
+            i += width;
+        }
+        return output is null ? value : output.Value();
+    }
     public static string Join(IEnumerable<string> values, string separator) => string.Join(separator, values);
     public static int Compare(string left, string right) => string.CompareOrdinal(left, right);
     public static string TrimLeft(string value, string cutset) => value.TrimStart(cutset.ToCharArray());
@@ -58,11 +110,24 @@ internal static partial class Strconv
 {
     public static (long Value, bool Error) ParseInt(string value, int radix, int bitSize)
     {
-        if (value.Length == 0)
+        _ = value.Length; // Preserve the public raw-string null failure.
+        return ParseInt(value.AsSpan(), radix, bitSize);
+    }
+    public static (long Value, bool Error) ParseInt(ReadOnlySpan<char> value, int radix, int bitSize) =>
+        parseInt(value.Length, value, default, false, radix, bitSize);
+    public static (long Value, bool Error) ParseInt(ReadOnlySpan<byte> value, int radix, int bitSize) =>
+        parseInt(value.Length, default, value, true, radix, bitSize);
+    public static (long Value, bool Error) ParseInt(ByteStringValue value, int radix, int bitSize) =>
+        value.IsBytes ? ParseInt(value.ByteSpan, radix, bitSize) : ParseInt(value.CharSpan, radix, bitSize);
+    private static (long Value, bool Error) parseInt(int length, ReadOnlySpan<char> chars,
+        ReadOnlySpan<byte> bytes, bool isBytes, int radix, int bitSize)
+    {
+        if (length == 0)
             return (0, true);
         BigInteger result = 0;
-        foreach (char c in value)
+        for (int i = 0; i < length; i++)
         {
+            int c = isBytes ? bytes[i] : chars[i];
             int digit = c is >= '0' and <= '9' ? c - '0' : c is >= 'a' and <= 'z' ? c - 'a' + 10 : c is >= 'A' and <= 'Z' ? c - 'A' + 10 : -1;
             if (digit < 0 || digit >= radix)
                 return (0, true);
@@ -142,17 +207,22 @@ internal static class ScannerString
     // Go stores isolated JavaScript surrogates in CESU-8; preserve them in .NET UTF-16.
     public static string ToJsString(string bytes)
     {
+        _ = bytes.Length;
+        return ToJsString(ByteStringValue.FromString(bytes));
+    }
+    public static string ToJsString(ByteStringValue bytes)
+    {
+        if (bytes.IsNull) throw new NullReferenceException();
         var value = new System.Text.StringBuilder();
         for (int i = 0; i < bytes.Length;)
         {
-            var(rune, size) = StringUtil.DecodeJSStringRune(bytes.AsSpan(i));
-            if (rune <= 0xFFFF)
-                value.Append((char)rune);
-            else
-                value.Append(char.ConvertFromUtf32(rune));
+            var (rune, size) = bytes.IsBytes ? StringUtil.DecodeJSStringRune(bytes.ByteSpan[i..])
+                : StringUtil.DecodeJSStringRune(bytes.CharSpan[i..]);
+            if (rune <= 0xFFFF) value.Append((char)rune);
+            else value.Append(char.ConvertFromUtf32(rune));
             i += size;
         }
-
         return value.ToString();
     }
+
 }

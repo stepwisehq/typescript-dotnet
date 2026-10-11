@@ -2,7 +2,7 @@
 namespace TypeScript.Checking;
 public sealed partial class Checker
 {
-    internal object? VerificationDataModuleSymbolLinks(TypeScript.Scanner.Symbol symbol) => moduleSymbolLinks.TryGet(symbol);
+    internal object? VerificationDataModuleSymbolLinks(TypeScript.Scanner.Symbol symbol) => VerificationLinkLocation(moduleSymbolLinks.TryGet(symbol));
     internal bool VerificationDataPropertiesTypesNil() => propertiesTypes is null;
     internal List<(uint Include, bool IncludeOrigin, Type? Value)> VerificationDataPropertiesTypes(Type type) => propertiesTypes.Where(p => p.Key.typeId == type.id).OrderBy(p => (uint)p.Key.include).ThenBy(p => p.Key.includeOrigin).Select(p => ((uint)p.Key.include, p.Key.includeOrigin, (Type? )p.Value)).ToList();
     internal List<(string Name, bool BoolValue)> VerificationDataReferenceKeys(Type type)
@@ -22,7 +22,7 @@ public sealed partial class Checker
 
     internal (List<Type> Arguments, TypeAlias? Alias, bool SingleSignature, string Family, bool Membership) VerificationDataInstantiation(Type owner, Type value)
     {
-        List<Type> arguments;
+        TypeScript.Scanner.Slice<Type> arguments;
         TypeAlias? alias;
         bool single;
         string family;
@@ -37,11 +37,12 @@ public sealed partial class Checker
         }
         else if ((owner.ObjectFlags() & ObjectFlags.Anonymous) != 0)
         {
-            var declarations = owner.Symbol()?.Declarations;
-            if (declarations is null || declarations.Count == 0)
+            var declarations = owner.Symbol()?.Declarations ?? default;
+            if (declarations.Length == 0)
                 throw new InvalidDataException("Anonymous cache owner has no declaration");
-            var parameters = typeNodeLinks.TryGet(declarations[0])?.outerTypeParameters;
-            if (parameters is null || parameters.Count == 0)
+            var parameterLocation = typeNodeLinks.TryGet(declarations[0]);
+            var parameters = parameterLocation.IsEmpty ? default : parameterLocation.Span[0].outerTypeParameters;
+            if (parameters.Length == 0)
                 throw new InvalidDataException("Anonymous cache has no stored outer parameters");
             family = "anonymous";
             if (ReferenceEquals(owner, value))
@@ -60,8 +61,8 @@ public sealed partial class Checker
                     mapper = composite.m1; // Original combines extra mapper after key arguments.
                 arguments = mapper?.data switch
                 {
-                    SimpleTypeMapper m when parameters.Count == 1 && ReferenceEquals(m.source, parameters[0]) => [m.target],
-                    ArrayTypeMapper m when (m.sources ?? []).SequenceEqual(parameters) && m.targets?.Count == parameters.Count => m.targets,
+                    SimpleTypeMapper m when parameters.Count == 1 && ReferenceEquals(m.source, parameters[0]) => TypeScript.Scanner.Slice<Type>.FromArray([m.target]),
+                    ArrayTypeMapper m when TypeScript.Scanner.GoSlices.Equal(m.sources, parameters) && m.targets.Length == parameters.Length => m.targets,
                     _ => throw new InvalidDataException("Unknown stored anonymous key mapper")};
                 alias = value.alias;
             }
@@ -71,7 +72,7 @@ public sealed partial class Checker
         else
             throw new InvalidDataException("Unknown instantiated-object key family");
         bool membership = owner.AsObjectType().instantiations.TryGetValue(key, out var found) && ReferenceEquals(found, value);
-        return (arguments, alias, single, family, membership);
+        return (TypeScript.Scanner.GoSlices.ToListOrNull(arguments), alias, single, family, membership);
     }
 
     internal bool VerificationDataCacheAssociation(Type type)

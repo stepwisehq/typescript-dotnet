@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace TypeScript.Scanner;
 public partial class Scanner
 {
-    // Existing one-char-per-byte text; slices share storage and bound scanning.
+    // Immutable UTF8/WTF8 source bytes; slices share storage and bound scanning.
     private ByteStringView text = "";
     private int end, pos, fullStartPos, tokenStart, skipJSDocLeadingAsterisks;
     private LanguageVariant languageVariant;
@@ -17,7 +17,7 @@ public partial class Scanner
     private Kind token;
     private global::TypeScript.Scanner.TokenFlags tokenFlags;
     // scanner.go tokenValue is a string descriptor. Unchanged token text borrows
-    // source bytes; decoded output owns a string. Legacy raw string projection is
+    // source bytes; decoded output owns immutable builder bytes. Legacy raw string projection is
     // cached on first access, without replacing the borrowed descriptor.
     private string? tokenValueString = "";
     private ByteStringView tokenValueView;
@@ -33,99 +33,104 @@ public partial class Scanner
         tokenValueView = value;
         tokenValueIsView = true;
     }
-    private Slice<CommentDirective> commentDirectives;
-    private Dictionary<string, string>? numberCache, hexNumberCache, hexDigitCache;
-    private const int mergeConflictMarkerLength = 7, maxAsciiCharacter = 127;
-    private static readonly Dictionary<string, Kind> textToKeyword = new(StringComparer.Ordinal)
+    private void setTokenValue(ByteStringValue value)
     {
-        ["abstract"] = Kind.AbstractKeyword,
-        ["accessor"] = Kind.AccessorKeyword,
-        ["any"] = Kind.AnyKeyword,
-        ["as"] = Kind.AsKeyword,
-        ["asserts"] = Kind.AssertsKeyword,
-        ["assert"] = Kind.AssertKeyword,
-        ["bigint"] = Kind.BigIntKeyword,
-        ["boolean"] = Kind.BooleanKeyword,
-        ["break"] = Kind.BreakKeyword,
-        ["case"] = Kind.CaseKeyword,
-        ["catch"] = Kind.CatchKeyword,
-        ["class"] = Kind.ClassKeyword,
-        ["continue"] = Kind.ContinueKeyword,
-        ["const"] = Kind.ConstKeyword,
-        ["constructor"] = Kind.ConstructorKeyword,
-        ["debugger"] = Kind.DebuggerKeyword,
-        ["declare"] = Kind.DeclareKeyword,
-        ["default"] = Kind.DefaultKeyword,
-        ["defer"] = Kind.DeferKeyword,
-        ["delete"] = Kind.DeleteKeyword,
-        ["do"] = Kind.DoKeyword,
-        ["else"] = Kind.ElseKeyword,
-        ["enum"] = Kind.EnumKeyword,
-        ["export"] = Kind.ExportKeyword,
-        ["extends"] = Kind.ExtendsKeyword,
-        ["false"] = Kind.FalseKeyword,
-        ["finally"] = Kind.FinallyKeyword,
-        ["for"] = Kind.ForKeyword,
-        ["from"] = Kind.FromKeyword,
-        ["function"] = Kind.FunctionKeyword,
-        ["get"] = Kind.GetKeyword,
-        ["if"] = Kind.IfKeyword,
-        ["immediate"] = Kind.ImmediateKeyword,
-        ["implements"] = Kind.ImplementsKeyword,
-        ["import"] = Kind.ImportKeyword,
-        ["in"] = Kind.InKeyword,
-        ["infer"] = Kind.InferKeyword,
-        ["instanceof"] = Kind.InstanceOfKeyword,
-        ["interface"] = Kind.InterfaceKeyword,
-        ["intrinsic"] = Kind.IntrinsicKeyword,
-        ["is"] = Kind.IsKeyword,
-        ["keyof"] = Kind.KeyOfKeyword,
-        ["let"] = Kind.LetKeyword,
-        ["module"] = Kind.ModuleKeyword,
-        ["namespace"] = Kind.NamespaceKeyword,
-        ["never"] = Kind.NeverKeyword,
-        ["new"] = Kind.NewKeyword,
-        ["null"] = Kind.NullKeyword,
-        ["number"] = Kind.NumberKeyword,
-        ["object"] = Kind.ObjectKeyword,
-        ["package"] = Kind.PackageKeyword,
-        ["private"] = Kind.PrivateKeyword,
-        ["protected"] = Kind.ProtectedKeyword,
-        ["public"] = Kind.PublicKeyword,
-        ["override"] = Kind.OverrideKeyword,
-        ["out"] = Kind.OutKeyword,
-        ["readonly"] = Kind.ReadonlyKeyword,
-        ["require"] = Kind.RequireKeyword,
-        ["global"] = Kind.GlobalKeyword,
-        ["return"] = Kind.ReturnKeyword,
-        ["satisfies"] = Kind.SatisfiesKeyword,
-        ["set"] = Kind.SetKeyword,
-        ["source"] = Kind.SourceKeyword,
-        ["static"] = Kind.StaticKeyword,
-        ["string"] = Kind.StringKeyword,
-        ["super"] = Kind.SuperKeyword,
-        ["switch"] = Kind.SwitchKeyword,
-        ["symbol"] = Kind.SymbolKeyword,
-        ["this"] = Kind.ThisKeyword,
-        ["throw"] = Kind.ThrowKeyword,
-        ["true"] = Kind.TrueKeyword,
-        ["try"] = Kind.TryKeyword,
-        ["type"] = Kind.TypeKeyword,
-        ["typeof"] = Kind.TypeOfKeyword,
-        ["undefined"] = Kind.UndefinedKeyword,
-        ["unique"] = Kind.UniqueKeyword,
-        ["unknown"] = Kind.UnknownKeyword,
-        ["using"] = Kind.UsingKeyword,
-        ["var"] = Kind.VarKeyword,
-        ["void"] = Kind.VoidKeyword,
-        ["while"] = Kind.WhileKeyword,
-        ["with"] = Kind.WithKeyword,
-        ["yield"] = Kind.YieldKeyword,
-        ["async"] = Kind.AsyncKeyword,
-        ["await"] = Kind.AwaitKeyword,
-        ["of"] = Kind.OfKeyword,
+        if (value.IsBytes) setTokenValueView(value.ByteView);
+        else tokenValue = value.Materialize()!;
+    }
+    private Slice<CommentDirective> commentDirectives;
+    private Dictionary<ByteStringKey, ByteStringValue>? numberCache, hexNumberCache, hexDigitCache;
+    private const int mergeConflictMarkerLength = 7, maxAsciiCharacter = 127;
+    private static readonly Dictionary<ByteStringKey, Kind> textToKeyword = new(ByteStringKey.Comparer)
+    {
+        [ByteStringKey.FromString("abstract")] = Kind.AbstractKeyword,
+        [ByteStringKey.FromString("accessor")] = Kind.AccessorKeyword,
+        [ByteStringKey.FromString("any")] = Kind.AnyKeyword,
+        [ByteStringKey.FromString("as")] = Kind.AsKeyword,
+        [ByteStringKey.FromString("asserts")] = Kind.AssertsKeyword,
+        [ByteStringKey.FromString("assert")] = Kind.AssertKeyword,
+        [ByteStringKey.FromString("bigint")] = Kind.BigIntKeyword,
+        [ByteStringKey.FromString("boolean")] = Kind.BooleanKeyword,
+        [ByteStringKey.FromString("break")] = Kind.BreakKeyword,
+        [ByteStringKey.FromString("case")] = Kind.CaseKeyword,
+        [ByteStringKey.FromString("catch")] = Kind.CatchKeyword,
+        [ByteStringKey.FromString("class")] = Kind.ClassKeyword,
+        [ByteStringKey.FromString("continue")] = Kind.ContinueKeyword,
+        [ByteStringKey.FromString("const")] = Kind.ConstKeyword,
+        [ByteStringKey.FromString("constructor")] = Kind.ConstructorKeyword,
+        [ByteStringKey.FromString("debugger")] = Kind.DebuggerKeyword,
+        [ByteStringKey.FromString("declare")] = Kind.DeclareKeyword,
+        [ByteStringKey.FromString("default")] = Kind.DefaultKeyword,
+        [ByteStringKey.FromString("defer")] = Kind.DeferKeyword,
+        [ByteStringKey.FromString("delete")] = Kind.DeleteKeyword,
+        [ByteStringKey.FromString("do")] = Kind.DoKeyword,
+        [ByteStringKey.FromString("else")] = Kind.ElseKeyword,
+        [ByteStringKey.FromString("enum")] = Kind.EnumKeyword,
+        [ByteStringKey.FromString("export")] = Kind.ExportKeyword,
+        [ByteStringKey.FromString("extends")] = Kind.ExtendsKeyword,
+        [ByteStringKey.FromString("false")] = Kind.FalseKeyword,
+        [ByteStringKey.FromString("finally")] = Kind.FinallyKeyword,
+        [ByteStringKey.FromString("for")] = Kind.ForKeyword,
+        [ByteStringKey.FromString("from")] = Kind.FromKeyword,
+        [ByteStringKey.FromString("function")] = Kind.FunctionKeyword,
+        [ByteStringKey.FromString("get")] = Kind.GetKeyword,
+        [ByteStringKey.FromString("if")] = Kind.IfKeyword,
+        [ByteStringKey.FromString("immediate")] = Kind.ImmediateKeyword,
+        [ByteStringKey.FromString("implements")] = Kind.ImplementsKeyword,
+        [ByteStringKey.FromString("import")] = Kind.ImportKeyword,
+        [ByteStringKey.FromString("in")] = Kind.InKeyword,
+        [ByteStringKey.FromString("infer")] = Kind.InferKeyword,
+        [ByteStringKey.FromString("instanceof")] = Kind.InstanceOfKeyword,
+        [ByteStringKey.FromString("interface")] = Kind.InterfaceKeyword,
+        [ByteStringKey.FromString("intrinsic")] = Kind.IntrinsicKeyword,
+        [ByteStringKey.FromString("is")] = Kind.IsKeyword,
+        [ByteStringKey.FromString("keyof")] = Kind.KeyOfKeyword,
+        [ByteStringKey.FromString("let")] = Kind.LetKeyword,
+        [ByteStringKey.FromString("module")] = Kind.ModuleKeyword,
+        [ByteStringKey.FromString("namespace")] = Kind.NamespaceKeyword,
+        [ByteStringKey.FromString("never")] = Kind.NeverKeyword,
+        [ByteStringKey.FromString("new")] = Kind.NewKeyword,
+        [ByteStringKey.FromString("null")] = Kind.NullKeyword,
+        [ByteStringKey.FromString("number")] = Kind.NumberKeyword,
+        [ByteStringKey.FromString("object")] = Kind.ObjectKeyword,
+        [ByteStringKey.FromString("package")] = Kind.PackageKeyword,
+        [ByteStringKey.FromString("private")] = Kind.PrivateKeyword,
+        [ByteStringKey.FromString("protected")] = Kind.ProtectedKeyword,
+        [ByteStringKey.FromString("public")] = Kind.PublicKeyword,
+        [ByteStringKey.FromString("override")] = Kind.OverrideKeyword,
+        [ByteStringKey.FromString("out")] = Kind.OutKeyword,
+        [ByteStringKey.FromString("readonly")] = Kind.ReadonlyKeyword,
+        [ByteStringKey.FromString("require")] = Kind.RequireKeyword,
+        [ByteStringKey.FromString("global")] = Kind.GlobalKeyword,
+        [ByteStringKey.FromString("return")] = Kind.ReturnKeyword,
+        [ByteStringKey.FromString("satisfies")] = Kind.SatisfiesKeyword,
+        [ByteStringKey.FromString("set")] = Kind.SetKeyword,
+        [ByteStringKey.FromString("source")] = Kind.SourceKeyword,
+        [ByteStringKey.FromString("static")] = Kind.StaticKeyword,
+        [ByteStringKey.FromString("string")] = Kind.StringKeyword,
+        [ByteStringKey.FromString("super")] = Kind.SuperKeyword,
+        [ByteStringKey.FromString("switch")] = Kind.SwitchKeyword,
+        [ByteStringKey.FromString("symbol")] = Kind.SymbolKeyword,
+        [ByteStringKey.FromString("this")] = Kind.ThisKeyword,
+        [ByteStringKey.FromString("throw")] = Kind.ThrowKeyword,
+        [ByteStringKey.FromString("true")] = Kind.TrueKeyword,
+        [ByteStringKey.FromString("try")] = Kind.TryKeyword,
+        [ByteStringKey.FromString("type")] = Kind.TypeKeyword,
+        [ByteStringKey.FromString("typeof")] = Kind.TypeOfKeyword,
+        [ByteStringKey.FromString("undefined")] = Kind.UndefinedKeyword,
+        [ByteStringKey.FromString("unique")] = Kind.UniqueKeyword,
+        [ByteStringKey.FromString("unknown")] = Kind.UnknownKeyword,
+        [ByteStringKey.FromString("using")] = Kind.UsingKeyword,
+        [ByteStringKey.FromString("var")] = Kind.VarKeyword,
+        [ByteStringKey.FromString("void")] = Kind.VoidKeyword,
+        [ByteStringKey.FromString("while")] = Kind.WhileKeyword,
+        [ByteStringKey.FromString("with")] = Kind.WithKeyword,
+        [ByteStringKey.FromString("yield")] = Kind.YieldKeyword,
+        [ByteStringKey.FromString("async")] = Kind.AsyncKeyword,
+        [ByteStringKey.FromString("await")] = Kind.AwaitKeyword,
+        [ByteStringKey.FromString("of")] = Kind.OfKeyword,
     };
-    private static readonly Dictionary<string, Kind> textToToken = CreateTextToToken();
+    private static readonly Dictionary<ByteStringKey, Kind> textToToken = CreateTextToToken();
     private static readonly string[] tokenToText = CreateTokenToText();
     public Kind Token()
     {
@@ -156,6 +161,10 @@ public partial class Scanner
     {
         return new TextRange(this.tokenStart, this.pos);
     }
+
+    // SourceFile publication keeps the Go header. The array accessor below is
+    // only the explicit .NET compatibility boundary.
+    internal Slice<CommentDirective> CommentDirectivesHeader() => this.commentDirectives;
 
     public CommentDirective[]? CommentDirectives()
     {
@@ -362,25 +371,37 @@ public partial class Scanner
         return Utf8.DecodeRuneInString(this.text.AsSpan(this.pos));
     }
 
-    // scanASCIIWhile advances s.pos over the longest run of ASCII bytes for which
-    // pred returns true. It stops at end-of-text, the first non-ASCII byte, or the
-    // first byte where pred is false.
-    private void scanASCIIWhile(Func<int, bool> pred)
+    // These are the six scanner.go ASCII predicates. The standard search sets
+    // contain only bytes below RuneSelf, leaving every non-ASCII byte to the
+    // original Go UTF8/WTF8 advancement and error handling at each call site.
+    private static System.Buffers.SearchValues<byte> asciiValues(Func<int, bool> predicate)
+    {
+        Span<byte> values = stackalloc byte[Utf8.RuneSelf];
+        int length = 0;
+        for (int b = 0; b < Utf8.RuneSelf; b++)
+            if (predicate(b)) values[length++] = (byte)b;
+        return System.Buffers.SearchValues.Create(values[..length]);
+    }
+    private static readonly System.Buffers.SearchValues<byte> asciiWhitespace =
+        asciiValues(static b => b == ' ' || b >= '\t' && b <= '\r');
+    private static readonly System.Buffers.SearchValues<byte> asciiSingleLineComment =
+        asciiValues(static b => b != '\n' && b != '\r');
+    private static readonly System.Buffers.SearchValues<byte> asciiMultiLineComment =
+        asciiValues(static b => b != '*' && b != '\n' && b != '\r');
+    private static readonly System.Buffers.SearchValues<byte> asciiIdentifier =
+        asciiValues(static b => b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '$');
+    private static readonly System.Buffers.SearchValues<byte> asciiTemplate =
+        asciiValues(static b => b != '`' && b != '$' && b != '\\' && b != '\r');
+    private static readonly System.Buffers.SearchValues<byte> asciiDigits =
+        asciiValues(static b => b >= '0' && b <= '9');
+
+    // Advance over the longest allowed ASCII prefix, retaining the same source
+    // byte offsets and logical EOF as the original scalar predicate loop.
+    private void scanASCIIWhile(System.Buffers.SearchValues<byte> values)
     {
         var text = this.text.AsSpan(this.pos, this.end - this.pos);
-        var i = 0;
-        while (i < text.Length)
-        {
-            int b = text[i];
-            if (b >= Utf8.RuneSelf || !pred(b))
-            {
-                break;
-            }
-
-            i++;
-        }
-
-        this.pos += i;
+        int stop = text.IndexOfAnyExcept(values);
+        this.pos += stop < 0 ? text.Length : stop;
     }
 
     public Kind Scan()
@@ -426,10 +447,7 @@ public partial class Scanner
                     if (this.skipTrivia)
                     {
                         this.pos++;
-                        this.scanASCIIWhile((b) =>
-                        {
-                            return b == ' ' || b >= '\t' && b <= '\r';
-                        });
+                        this.scanASCIIWhile(asciiWhitespace);
                         continue;
                     }
 
@@ -674,10 +692,7 @@ public partial class Scanner
                         this.pos += 2;
                         while (true)
                         {
-                            this.scanASCIIWhile((b) =>
-                            {
-                                return b != '\n' && b != '\r';
-                            });
+                            this.scanASCIIWhile(asciiSingleLineComment);
                             var(ch1, size) = this.charAndSize();
                             if (size == 0 || StringUtil.IsLineBreak(ch1))
                             {
@@ -705,10 +720,7 @@ public partial class Scanner
                         var lastLineStart = this.tokenStart;
                         while (true)
                         {
-                            this.scanASCIIWhile((b) =>
-                            {
-                                return b != '*' && b != '\n' && b != '\r';
-                            });
+                            this.scanASCIIWhile(asciiMultiLineComment);
                             var(ch1, size) = this.charAndSize();
                             if (size == 0)
                             {
@@ -777,37 +789,40 @@ public partial class Scanner
                         var start = this.pos;
                         this.pos += 2;
                         var digits = this.scanHexDigits(1, true, true);
-                        if (digits == "")
+                        if (digits.Length == 0)
                         {
                             this.error(Diagnostics.Hexadecimal_digit_expected);
-                            digits = "0";
+                            digits = ByteStringValue.FromString("0");
                         }
 
                         if (this.hexNumberCache == null)
                         {
-                            this.hexNumberCache = new Dictionary<string, string>();
+                            this.hexNumberCache = new Dictionary<ByteStringKey, ByteStringValue>(ByteStringKey.Comparer);
                         }
 
                         {
-                            var ok = this.hexNumberCache.TryGetValue(digits, out var cachedValue);
+                            var ok = digits.TryGetValue(this.hexNumberCache, out var cachedValue);
                             if (ok)
                             {
-                                this.tokenValue = cachedValue!;
+                                this.setTokenValue(cachedValue);
                             }
                             else
                             {
                                 // Go scanner.go:721–727: borrow the comparison slices; retain only the selected token value.
                                 var rawText = this.text.Slice(start, this.pos);
-                                if (GoStrings.HasPrefix(rawText.AsSpan(), "0x"u8) && rawText.Length - 2 == digits.Length && GoStrings.HasPrefix(rawText.AsSpan(2), digits))
+                                if (GoStrings.HasPrefix(rawText.AsSpan(), "0x"u8) && rawText.Length - 2 == digits.Length && digits.EqualsBytes(rawText.AsSpan(2)))
                                 {
-                                    this.tokenValue = rawText.Materialize();
+                                    this.setTokenValueView(rawText);
                                 }
                                 else
                                 {
-                                    this.tokenValue = "0x" + digits;
+                                    var builder = new GoBuilder();
+                                    builder.WriteString("0x");
+                                    builder.WriteString(digits);
+                                    this.setTokenValue(builder.Value());
                                 }
 
-                                this.hexNumberCache[digits] = this.tokenValue;
+                                this.hexNumberCache[ByteStringKey.FromValue(digits)] = this.TokenValueTextValue();
                             }
                         }
 
@@ -820,13 +835,16 @@ public partial class Scanner
                     {
                         this.pos += 2;
                         var digits = this.scanBinaryOrOctalDigits(2);
-                        if (digits == "")
+                        if (digits.Length == 0)
                         {
                             this.error(Diagnostics.Binary_digit_expected);
-                            digits = "0";
+                            digits = ByteStringValue.FromString("0");
                         }
 
-                        this.tokenValue = "0b" + digits;
+                        var builder = new GoBuilder();
+                        builder.WriteString("0b");
+                        builder.WriteString(digits);
+                        this.setTokenValue(builder.Value());
                         this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.BinarySpecifier;
                         this.token = this.scanBigIntSuffix();
                         break;
@@ -836,13 +854,16 @@ public partial class Scanner
                     {
                         this.pos += 2;
                         var digits = this.scanBinaryOrOctalDigits(8);
-                        if (digits == "")
+                        if (digits.Length == 0)
                         {
                             this.error(Diagnostics.Octal_digit_expected);
-                            digits = "0";
+                            digits = ByteStringValue.FromString("0");
                         }
 
-                        this.tokenValue = "0o" + digits;
+                        var builder = new GoBuilder();
+                        builder.WriteString("0o");
+                        builder.WriteString(digits);
+                        this.setTokenValue(builder.Value());
                         this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.OctalSpecifier;
                         this.token = this.scanBigIntSuffix();
                         break;
@@ -1610,7 +1631,7 @@ public partial class Scanner
                         unicodeSetsMode = (regExpFlags & regularExpressionFlags.UnicodeSets) != 0,
                         annexB = true,
                         namedCaptureGroups = namedCaptureGroups,
-                        groupSpecifiers = new Dictionary<string, bool>()
+                        groupSpecifiers = new Dictionary<ByteStringKey, bool>(ByteStringKey.Comparer)
                     };
                     parser.run();
                     this.end = saveEnd;
@@ -1780,7 +1801,10 @@ public partial class Scanner
     {
         if (tokenIsIdentifierOrKeyword(this.token))
         {
-            this.tokenValue += this.scanIdentifierParts(identifierVariant.JSX);
+            var builder = new GoBuilder();
+            builder.WriteString(this.TokenValueTextValue());
+            this.scanIdentifierParts(identifierVariant.JSX, builder);
+            this.setTokenValue(builder.Value());
             this.token = this.getIdentifierToken();
         }
 
@@ -2051,10 +2075,7 @@ public partial class Scanner
         if (variant != identifierVariant.JSX && (StringUtil.IsASCIILetter(ch) || ch == '_' || ch == '$'))
         {
             this.pos++;
-            this.scanASCIIWhile((b) =>
-            {
-                return b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '$';
-            });
+            this.scanASCIIWhile(asciiIdentifier);
             ch = this.charCode();
             if (ch < Utf8.RuneSelf && ch != '\\')
             {
@@ -2091,7 +2112,7 @@ public partial class Scanner
                 var builder = new GoBuilder();
                 builder.WriteString(this.text.AsSpan(start, this.pos - start));
                 this.scanIdentifierParts(variant, builder);
-                this.tokenValue = builder.String();
+                this.setTokenValue(builder.Value());
             }
 
             return true;
@@ -2107,7 +2128,7 @@ public partial class Scanner
                     builder.WriteString(this.text.AsSpan(start, identifierStart - start));
                     builder.WriteRune(escaped);
                     this.scanIdentifierParts(variant, builder);
-                    this.tokenValue = builder.String();
+                    this.setTokenValue(builder.Value());
                     return true;
                 }
             }
@@ -2116,11 +2137,11 @@ public partial class Scanner
         return false;
     }
 
-    private string scanIdentifierParts(identifierVariant variant)
+    private ByteStringValue scanIdentifierParts(identifierVariant variant)
     {
         var sb = new GoBuilder();
         this.scanIdentifierParts(variant, sb);
-        return sb.String();
+        return sb.Value();
     }
 
     // scanner.go:1529: reuse the same traversal when an identifier prefix and
@@ -2147,10 +2168,8 @@ public partial class Scanner
             {
                 var escapeStart = this.pos;
                 {
-                    var(escaped, ok) = this.scanIdentifierEscape((ch) =>
-                    {
-                        return IsIdentifierPartEx(ch, languageVariant);
-                    }, variant == identifierVariant.RegExpGroupName);
+                    var(escaped, ok) = this.scanIdentifierEscape(languageVariant, static (ch, variant) =>
+                        IsIdentifierPartEx(ch, variant), variant == identifierVariant.RegExpGroupName);
                     if (ok)
                     {
                         sb.WriteString(this.text.AsSpan(start, escapeStart - start));
@@ -2167,10 +2186,15 @@ public partial class Scanner
         sb.WriteString(this.text.AsSpan(start, this.pos - start));
     }
 
-    private (int, bool) scanIdentifierEscape(Func<int, bool> isValid, bool allowSurrogatePairEscape)
+    private (int, bool) scanIdentifierEscape(Func<int, bool> isValid, bool allowSurrogatePairEscape) =>
+        scanIdentifierEscape(isValid, static (ch, predicate) => predicate(ch), allowSurrogatePairEscape);
+    // scanner.go:1556: the predicate's invocation-local state is explicit in
+    // .NET; the validation/surrogate/rewind algorithm remains shared and lazy.
+    private (int, bool) scanIdentifierEscape<TState>(TState state,
+        Func<int, TState, bool> isValid, bool allowSurrogatePairEscape)
     {
         var escaped = this.peekUnicodeEscape();
-        if (escaped >= 0 && isValid(escaped))
+        if (escaped >= 0 && isValid(escaped, state))
         {
             return (this.scanUnicodeEscape(true), true);
         }
@@ -2184,7 +2208,7 @@ public partial class Scanner
             {
                 {
                     var(codePoint, ok) = this.scanLowSurrogateEscape(escaped);
-                    if (ok && isValid(codePoint))
+                    if (ok && isValid(codePoint, state))
                     {
                         return (codePoint, true);
                     }
@@ -2277,7 +2301,7 @@ public partial class Scanner
         if (sb is null)
             this.setTokenValueView(this.text.Slice(valueStart, valueEnd));
         else
-            this.tokenValue = sb.String();
+            this.setTokenValue(sb.Value());
     }
 
     private Kind scanTemplateAndSetTokenValue(bool shouldEmitInvalidEscapeError)
@@ -2293,10 +2317,7 @@ public partial class Scanner
         Kind token = default;
         while (true)
         {
-            this.scanASCIIWhile((b) =>
-            {
-                return b != '`' && b != '$' && b != '\\' && b != '\r';
-            });
+            this.scanASCIIWhile(asciiTemplate);
             var ch = this.charCode();
             if (ch < 0 || ch == '`')
             {
@@ -2355,11 +2376,11 @@ public partial class Scanner
         if (builder is null)
             this.setTokenValueView(this.text.Slice(valueStart, valueEnd));
         else
-            this.tokenValue = builder.String();
+            this.setTokenValue(builder.Value());
         return token;
     }
 
-    private string scanEscapeSequence(EscapeSequenceScanningFlags flags)
+    private ByteStringValue scanEscapeSequence(EscapeSequenceScanningFlags flags)
     {
         var start = this.pos;
         this.pos++;
@@ -2367,7 +2388,7 @@ public partial class Scanner
         if (ch < 0)
         {
             this.error(Diagnostics.Unexpected_end_of_text);
-            return "";
+            return ByteStringValue.FromString("");
         }
 
         this.pos++;
@@ -2377,7 +2398,7 @@ public partial class Scanner
             {
                 if (!StringUtil.IsDigit(this.charCode()))
                 {
-                    return "\x00";
+                    return ByteStringValue.FromString("\x00");
                 }
 
                 goto case '1';
@@ -2408,7 +2429,7 @@ public partial class Scanner
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
                 if ((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0)
                 {
-                    var(code, _) = Strconv.ParseInt(this.text.Substring(start + 1, this.pos - (start + 1)), 8, 32);
+                    var(code, _) = Strconv.ParseInt(this.text.AsSpan(start + 1, this.pos - (start + 1)), 8, 32);
                     if ((flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AtomEscape) == 0 && ch != '0')
                     {
                         this.errorAt(Diagnostics.Octal_escape_sequences_and_backreferences_are_not_allowed_in_a_character_class_If_this_was_intended_as_an_escape_sequence_use_the_syntax_0_instead, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
@@ -2418,10 +2439,10 @@ public partial class Scanner
                         this.errorAt(Diagnostics.Octal_escape_sequences_are_not_allowed_Use_the_syntax_0, start, this.pos - start, Fmt.Sprintf("\\x%02x", code));
                     }
 
-                    return GoString.FromRune((int)code);
+                    return GoString.FromRuneValue((int)code);
                 }
 
-                return this.text.Substring(start, this.pos - start);
+                return ByteStringValue.FromView(this.text.Slice(start, this.pos));
             }
 
             case '8':
@@ -2439,50 +2460,50 @@ public partial class Scanner
                         this.errorAt(Diagnostics.Escape_sequence_0_is_not_allowed, start, this.pos - start, this.text.Substring(start, this.pos - start));
                     }
 
-                    return GoString.FromRune(ch);
+                    return GoString.FromRuneValue(ch);
                 }
 
-                return this.text.Substring(start, this.pos - start);
+                return ByteStringValue.FromView(this.text.Slice(start, this.pos));
             }
 
             case 'b':
             {
-                return "\b";
+                return ByteStringValue.FromString("\b");
             }
 
             case 't':
             {
-                return "\t";
+                return ByteStringValue.FromString("\t");
             }
 
             case 'n':
             {
-                return "\n";
+                return ByteStringValue.FromString("\n");
             }
 
             case 'v':
             {
-                return "\v";
+                return ByteStringValue.FromString("\v");
             }
 
             case 'f':
             {
-                return "\f";
+                return ByteStringValue.FromString("\f");
             }
 
             case 'r':
             {
-                return "\r";
+                return ByteStringValue.FromString("\r");
             }
 
             case '\'':
             {
-                return "'";
+                return ByteStringValue.FromString("'");
             }
 
             case '"':
             {
-                return "\"";
+                return ByteStringValue.FromString("\"");
             }
 
             case 'u':
@@ -2503,7 +2524,7 @@ public partial class Scanner
 
                     if (codePoint < 0)
                     {
-                        return this.text.Substring(start, this.pos - start);
+                        return ByteStringValue.FromView(this.text.Slice(start, this.pos));
                     }
 
                     if ((flags & EscapeSequenceScanningFlags.RegularExpression) == 0 && StringUtil.IsHighSurrogate(codePoint))
@@ -2512,17 +2533,17 @@ public partial class Scanner
                             var(combined, ok) = this.scanLowSurrogateEscape(codePoint);
                             if (ok)
                             {
-                                return GoString.FromRune(combined);
+                                return GoString.FromRuneValue(combined);
                             }
                         }
                     }
 
-                    return StringUtil.EncodeJSStringRune(codePoint);
+                    return StringUtil.EncodeJSStringRuneValue(codePoint);
                 }
 
                 if (codePoint < 0)
                 {
-                    return this.text.Substring(start, this.pos - start);
+                    return ByteStringValue.FromView(this.text.Slice(start, this.pos));
                 }
                 else
                 {
@@ -2534,7 +2555,7 @@ public partial class Scanner
                                 var(combined, ok) = this.scanLowSurrogateEscape(codePoint);
                                 if (ok)
                                 {
-                                    return GoString.FromRune(combined);
+                                    return GoString.FromRuneValue(combined);
                                 }
                             }
                         }
@@ -2546,7 +2567,7 @@ public partial class Scanner
                                 var nextCodePoint = this.scanUnicodeEscape((flags & EscapeSequenceScanningFlags.ReportInvalidEscapeErrors) != 0);
                                 if (StringUtil.IsLowSurrogate(nextCodePoint))
                                 {
-                                    return GoString.FromRune(StringUtil.SurrogatePairToCodePoint(codePoint, nextCodePoint));
+                                    return GoString.FromRuneValue(StringUtil.SurrogatePairToCodePoint(codePoint, nextCodePoint));
                                 }
 
                                 this.pos = savedPos;
@@ -2555,7 +2576,7 @@ public partial class Scanner
                     }
                 }
 
-                return StringUtil.EncodeJSStringRune(codePoint);
+                return StringUtil.EncodeJSStringRuneValue(codePoint);
             }
 
             case 'x':
@@ -2570,13 +2591,13 @@ public partial class Scanner
                             this.error(Diagnostics.Hexadecimal_digit_expected);
                         }
 
-                        return this.text.Substring(start, this.pos - start);
+                        return ByteStringValue.FromView(this.text.Slice(start, this.pos));
                     }
                 }
 
                 this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.HexEscape;
-                var(escapedValue, _) = Strconv.ParseInt(this.text.Substring(start + 2, this.pos - (start + 2)), 16, 32);
-                return GoString.FromRune((int)escapedValue);
+                var(escapedValue, _) = Strconv.ParseInt(this.text.AsSpan(start + 2, this.pos - (start + 2)), 16, 32);
+                return GoString.FromRuneValue((int)escapedValue);
             }
 
             case '\r':
@@ -2591,7 +2612,7 @@ public partial class Scanner
 
             case '\n':
             {
-                return "";
+                return ByteStringValue.FromString("");
             }
 
             default:
@@ -2606,7 +2627,7 @@ public partial class Scanner
 
                 if (ch == '\u2028' || ch == '\u2029')
                 {
-                    return "";
+                    return ByteStringValue.FromString("");
                 }
 
                 if ((flags & EscapeSequenceScanningFlags.AnyUnicodeMode) != 0 || (flags & EscapeSequenceScanningFlags.RegularExpression) != 0 && (flags & EscapeSequenceScanningFlags.AnnexB) == 0 && IsIdentifierPart(ch))
@@ -2614,7 +2635,7 @@ public partial class Scanner
                     this.errorAt(Diagnostics.This_character_cannot_be_escaped_in_a_regular_expression, start, this.pos - start);
                 }
 
-                return GoString.FromRune(ch);
+                return GoString.FromRuneValue(ch);
             }
         }
     }
@@ -2625,7 +2646,7 @@ public partial class Scanner
         this.pos += 2;
         var start = this.pos;
         var extended = this.charCode() == '{';
-        string hexDigits = "";
+        ByteStringValue hexDigits = default;
         if (extended)
         {
             this.pos++;
@@ -2637,7 +2658,7 @@ public partial class Scanner
             hexDigits = this.scanHexDigits(4, false, false);
         }
 
-        if (hexDigits == "")
+        if (hexDigits.Length == 0)
         {
             this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsInvalidEscape;
             if (shouldEmitInvalidEscapeError)
@@ -2747,7 +2768,7 @@ public partial class Scanner
     private Kind scanNumber()
     {
         var start = this.pos;
-        string fixedPart = "";
+        ByteStringValue fixedPart = default;
         if (this.charCode() == '0')
         {
             this.pos++;
@@ -2761,9 +2782,9 @@ public partial class Scanner
             else
             {
                 var(digits, isOctal) = this.scanDigits();
-                if (digits == "")
+                if (digits.Length == 0)
                 {
-                    fixedPart = "0";
+                    fixedPart = ByteStringValue.FromString("0");
                 }
                 else
                 {
@@ -2796,9 +2817,9 @@ public partial class Scanner
         }
 
         var fixedPartEnd = this.pos;
-        var fractionalPart = "";
-        var exponentPreamble = "";
-        var exponentPart = "";
+        ByteStringValue fractionalPart = default;
+        ByteStringValue exponentPreamble = default;
+        ByteStringValue exponentPart = default;
         if (this.charCode() == '.')
         {
             this.pos++;
@@ -2817,29 +2838,33 @@ public partial class Scanner
 
             var startNumericPart = this.pos;
             exponentPart = this.scanNumberFragment();
-            if (exponentPart == "")
+            if (exponentPart.Length == 0)
             {
                 this.error(Diagnostics.Digit_expected);
             }
             else
             {
-                exponentPreamble = this.text.Substring(end, startNumericPart - end);
+                exponentPreamble = ByteStringValue.FromView(this.text.Slice(end, startNumericPart));
                 end = this.pos;
             }
         }
 
         if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.ContainsSeparator) != 0)
         {
-            this.tokenValue = fixedPart;
-            if (fractionalPart != "")
+            var builder = new GoBuilder();
+            builder.WriteString(fixedPart);
+            if (fractionalPart.Length != 0)
             {
-                this.tokenValue += "." + fractionalPart;
+                builder.WriteByte('.');
+                builder.WriteString(fractionalPart);
             }
 
-            if (exponentPart != "")
+            if (exponentPart.Length != 0)
             {
-                this.tokenValue += exponentPreamble + exponentPart;
+                builder.WriteString(exponentPreamble);
+                builder.WriteString(exponentPart);
             }
+            this.setTokenValue(builder.Value());
         }
         else
         {
@@ -2849,7 +2874,7 @@ public partial class Scanner
         if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.ContainsLeadingZero) != 0)
         {
             this.errorAt(Diagnostics.Decimals_with_leading_zeros_are_not_allowed, start, this.pos - start);
-            this.tokenValue = JsNum.FromString(this.tokenValue).String();
+            this.tokenValue = JsNum.FromString(this.TokenValueTextValue()).String();
             return Kind.NumericLiteral;
         }
 
@@ -2860,7 +2885,7 @@ public partial class Scanner
         }
         else
         {
-            this.tokenValue = JsNum.FromString(this.tokenValue).String();
+            this.tokenValue = JsNum.FromString(this.TokenValueTextValue()).String();
             result = Kind.NumericLiteral;
         }
 
@@ -2891,19 +2916,16 @@ public partial class Scanner
         return result;
     }
 
-    private string scanNumberFragment()
+    private ByteStringValue scanNumberFragment()
     {
         var start = this.pos;
         var allowSeparator = false;
         var isPreviousTokenSeparator = false;
-        GoBuilder result = new GoBuilder();
+        GoBuilder? result = null;
         while (true)
         {
             var before = this.pos;
-            this.scanASCIIWhile((b) =>
-            {
-                return b >= '0' && b <= '9';
-            });
+            this.scanASCIIWhile(asciiDigits);
             if (this.pos > before)
             {
                 allowSeparator = true;
@@ -2919,7 +2941,7 @@ public partial class Scanner
                     allowSeparator = false;
                     isPreviousTokenSeparator = true;
                     // scanner.go:2044. Builder consumes the source slice without an intermediate string.
-                    result.WriteString(this.text.AsSpan(start, this.pos - start));
+                    (result ??= new GoBuilder()).WriteString(this.text.AsSpan(start, this.pos - start));
                 }
                 else
                 {
@@ -2948,16 +2970,16 @@ public partial class Scanner
             this.errorAt(Diagnostics.Numeric_separators_are_not_allowed_here, this.pos - 1, 1);
         }
 
-        if (result.Len() == 0)
+        if (result is null || result.Len() == 0)
         {
-            return this.text.Substring(start, this.pos - start);
+            return ByteStringValue.FromView(this.text.Slice(start, this.pos));
         }
 
         result.WriteString(this.text.AsSpan(start, this.pos - start));
-        return result.String();
+        return result.Value();
     }
 
-    private (string, bool) scanDigits()
+    private (ByteStringValue, bool) scanDigits()
     {
         var start = this.pos;
         var isOctal = true;
@@ -2971,10 +2993,10 @@ public partial class Scanner
             this.pos++;
         }
 
-        return (this.text.Substring(start, this.pos - start), isOctal);
+        return (ByteStringValue.FromView(this.text.Slice(start, this.pos)), isOctal);
     }
 
-    private string scanHexDigits(int minCount, bool scanAsManyAsPossible, bool canHaveSeparators)
+    private ByteStringValue scanHexDigits(int minCount, bool scanAsManyAsPossible, bool canHaveSeparators)
     {
         var digitCount = 0;
         var start = this.pos;
@@ -3027,17 +3049,17 @@ public partial class Scanner
 
         if (digitCount < minCount)
         {
-            return "";
+            return default;
         }
 
-        var digits = this.text.Substring(start, this.pos - start);
+        var digits = ByteStringValue.FromView(this.text.Slice(start, this.pos));
         if (this.hexDigitCache == null)
         {
-            this.hexDigitCache = new Dictionary<string, string>(StringComparer.Ordinal);
+            this.hexDigitCache = new Dictionary<ByteStringKey, ByteStringValue>(ByteStringKey.Comparer);
         }
 
         {
-            var ok = this.hexDigitCache.TryGetValue(digits, out var cached);
+            var ok = digits.TryGetValue(this.hexDigitCache, out var cached);
             if (ok)
             {
                 return cached!;
@@ -3045,21 +3067,26 @@ public partial class Scanner
             else
             {
                 var original = digits;
-                if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.ContainsSeparator) != 0)
+                var bytes = digits.ByteSpan;
+                // The normalized output is owned only when case/separators
+                // actually change; unchanged Go text keeps the source header.
+                if (bytes.IndexOfAnyInRange((byte)'A', (byte)'F') >= 0 || bytes.IndexOf((byte)'_') >= 0)
                 {
-                    digits = GoStrings.ReplaceAll(digits, "_", "");
+                    var builder = new GoBuilder();
+                    foreach (byte digit in bytes)
+                        if (digit != '_') builder.WriteByte(digit is >= (byte)'A' and <= (byte)'F' ? digit + ('a' - 'A') : digit);
+                    digits = builder.Value();
                 }
-
-                digits = GoStrings.ToLower(digits);
-                this.hexDigitCache[original] = digits;
+                this.hexDigitCache[ByteStringKey.FromValue(original)] = digits;
                 return digits;
             }
         }
     }
 
-    private string scanBinaryOrOctalDigits(int radix)
+    private ByteStringValue scanBinaryOrOctalDigits(int radix)
     {
-        GoBuilder sb = new GoBuilder();
+        GoBuilder? sb = null;
+        var start = this.pos;
         var allowSeparator = false;
         var isPreviousTokenSeparator = false;
         while (true)
@@ -3067,7 +3094,6 @@ public partial class Scanner
             var ch = this.charCode();
             if (StringUtil.IsDigit(ch) && ch - '0' < radix)
             {
-                sb.WriteByte((int)ch);
                 allowSeparator = true;
                 isPreviousTokenSeparator = false;
             }
@@ -3075,6 +3101,8 @@ public partial class Scanner
             {
                 if (ch == '_')
                 {
+                    (sb ??= new GoBuilder()).WriteString(this.text.AsSpan(start, this.pos - start));
+                    start = this.pos + 1;
                     this.tokenFlags |= global::TypeScript.Scanner.TokenFlags.ContainsSeparator;
                     if (allowSeparator)
                     {
@@ -3107,17 +3135,22 @@ public partial class Scanner
             this.errorAt(Diagnostics.Numeric_separators_are_not_allowed_here, this.pos - 1, 1);
         }
 
-        return sb.String();
+        if (sb is null) return ByteStringValue.FromView(this.text.Slice(start, this.pos));
+        sb.WriteString(this.text.AsSpan(start, this.pos - start));
+        return sb.Value();
     }
 
     private Kind scanBigIntSuffix()
     {
         if (this.charCode() == 'n')
         {
-            this.tokenValue += "n";
+            var builder = new GoBuilder();
+            builder.WriteString(this.TokenValueTextValue());
+            builder.WriteByte('n');
+            this.setTokenValue(builder.Value());
             if ((this.tokenFlags & global::TypeScript.Scanner.TokenFlags.BinaryOrOctalSpecifier) != 0)
             {
-                this.tokenValue = JsNum.ParsePseudoBigInt(this.tokenValue) + "n";
+                this.tokenValue = JsNum.ParsePseudoBigInt(this.TokenValueTextValue()) + "n";
             }
 
             this.pos++;
@@ -3126,25 +3159,26 @@ public partial class Scanner
 
         if (this.numberCache == null)
         {
-            this.numberCache = new Dictionary<string, string>();
+            this.numberCache = new Dictionary<ByteStringKey, ByteStringValue>(ByteStringKey.Comparer);
         }
 
         {
-            var ok = this.numberCache.TryGetValue(this.tokenValue, out var cached);
+            var ok = this.TokenValueTextValue().TryGetValue(this.numberCache, out var cached);
             if (ok)
             {
-                this.tokenValue = cached!;
+                this.setTokenValue(cached);
             }
             else
             {
-                var tokenValue = JsNum.FromString(this.tokenValue).String();
-                if (tokenValue == this.tokenValue)
+                var original = this.TokenValueTextValue();
+                var tokenValue = ByteStringValue.FromString(JsNum.FromString(original).String());
+                if (tokenValue.EqualsValue(original))
                 {
-                    tokenValue = this.tokenValue;
+                    tokenValue = original;
                 }
 
-                this.numberCache[this.tokenValue] = tokenValue;
-                this.tokenValue = tokenValue;
+                this.numberCache[ByteStringKey.FromValue(original)] = tokenValue;
+                this.setTokenValue(tokenValue);
             }
         }
 
@@ -3216,7 +3250,7 @@ public partial class Scanner
 
     public static int SkipTrivia(string text, int pos)
     {
-        return skipTriviaEx(GoString.ToUtf8(text), pos, null);
+        return skipTriviaEx(ByteStringView.FromUnicode(text), pos, null);
     }
 
     private static int skipTriviaEx(ByteStringView text, int pos, SkipTriviaOptions? options)
@@ -3489,18 +3523,27 @@ public partial class Scanner
         return pos;
     }
 
-    private static string getShebang(string text)
+    private static ByteStringView getShebang(ByteStringView text)
     {
         if (!isShebangTrivia(text, 0))
         {
-            return "";
+            return default;
         }
 
         var end = scanShebangTrivia(text, 0);
-        return text.Substring(0, end - 0);
+        return text.Slice(0, end);
     }
 
     public static int ComputeLineOfPosition(int[] lineStarts, int pos)
+    {
+        _ = lineStarts.Length; // Preserve the public array's original null failure.
+        return computeLineOfPosition(lineStarts, pos);
+    }
+
+    public static int ComputeLineOfPosition(ReadOnlySpan<int> lineStarts, int pos) => computeLineOfPosition(lineStarts, pos);
+
+    // scanner.go:2656. Source line maps are borrowed slice headers during lookup.
+    private static int computeLineOfPosition(ReadOnlySpan<int> lineStarts, int pos)
     {
         var low = 0;
         var high = lineStarts.Length - 1;
@@ -3532,6 +3575,12 @@ public partial class Scanner
     // raw byte offset from the line start. This is a simple addition with validation.
     public static int ComputePositionOfLineAndByteOffset(int[] lineStarts, int line, int byteOffset)
     {
+        _ = lineStarts.Length;
+        return computePositionOfLineAndByteOffset(lineStarts, line, byteOffset);
+    }
+
+    private static int computePositionOfLineAndByteOffset(ReadOnlySpan<int> lineStarts, int line, int byteOffset)
+    {
         if (line < 0 || line >= lineStarts.Length)
         {
             throw new InvalidOperationException(Fmt.Sprintf("Bad line number. Line: %d, lineStarts.length: %d.", line, lineStarts.Length));
@@ -3545,6 +3594,12 @@ public partial class Scanner
     // It scans from the line start to correctly handle multi-byte characters.
     // When allowEdits is true, out-of-range values are clamped instead of panicking.
     private static int computePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, ByteStringView text, bool allowEdits)
+    {
+        _ = lineStarts.Length;
+        return computePositionOfLineAndUTF16Character((ReadOnlySpan<int>)lineStarts, line, character, text, allowEdits);
+    }
+
+    private static int computePositionOfLineAndUTF16Character(ReadOnlySpan<int> lineStarts, int line, int character, ByteStringView text, bool allowEdits)
     {
         if (line < 0 || line >= lineStarts.Length)
         {
@@ -3625,14 +3680,14 @@ public partial class Scanner
         return res;
     }
 
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(string text, int pos) => iterateCommentRanges(null, GoString.ToUtf8(text), pos, false);
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, GoString.FromBytes(text), pos, false);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(string text, int pos) => iterateCommentRanges(null, GoString.ToUtf8(text), pos, true);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, GoString.FromBytes(text), pos, true);
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, GoString.ToUtf8(text), pos, false);
-    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, GoString.FromBytes(text), pos, false);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, GoString.ToUtf8(text), pos, true);
-    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, GoString.FromBytes(text), pos, true);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(string text, int pos) => iterateCommentRanges(null, ByteStringView.FromUnicode(text), pos, false);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, ByteStringView.CopyFrom(text), pos, false);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(string text, int pos) => iterateCommentRanges(null, ByteStringView.FromUnicode(text), pos, true);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(byte[] text, int pos) => iterateCommentRanges(null, ByteStringView.CopyFrom(text), pos, true);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, ByteStringView.FromUnicode(text), pos, false);
+    public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, ByteStringView.CopyFrom(text), pos, false);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, ByteStringView.FromUnicode(text), pos, true);
+    public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, ByteStringView.CopyFrom(text), pos, true);
     // ast.CommentRange is a value struct; NewCommentRange has no node hooks/identity.
     private static IEnumerable<CommentRange> iterateCommentRanges(NodeFactory? factory, ByteStringView text, int pos, bool trailing)
     {
@@ -3762,7 +3817,7 @@ public partial class Scanner
     public byte[] TextBytes() => text.ToArray();
     public string TokenText() => text.Slice(tokenStart, pos).DecodeUnicode();
     public byte[] TokenTextBytes() => text.Slice(tokenStart, pos).ToArray();
-    public string TokenValue() => ScannerString.ToJsString(tokenValue);
+    public string TokenValue() => ScannerString.ToJsString(TokenValueTextValue());
     public byte[] TokenValueBytes() => tokenValueIsView ? tokenValueView.ToArray() : GoString.Bytes(tokenValue);
     public void SetText(string value) => SetByteText(ByteStringView.FromUnicode(value));
     public void SetText(byte[] value) => SetByteText(ByteStringView.CopyFrom(value));
@@ -3805,12 +3860,12 @@ public partial class Scanner
         skipJSDocLeadingAsterisks = state.skipJSDocLeadingAsterisks;
     }
 
-    public static int SkipTriviaEx(string text, int pos, SkipTriviaOptions? options) => skipTriviaEx(GoString.ToUtf8(text), pos, options!);
-    public static int SkipTriviaEx(byte[] text, int pos, SkipTriviaOptions? options) => skipTriviaEx(GoString.FromBytes(text), pos, options!);
-    public static int SkipTrivia(byte[] text, int pos) => skipTriviaEx(GoString.FromBytes(text), pos, null!);
-    public static string GetShebang(string text) => GoString.ToString(getShebang(GoString.ToUtf8(text)));
-    public static byte[] GetShebang(byte[] text) => GoString.Bytes(getShebang(GoString.FromBytes(text)));
-    public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, GoString.ToUtf8(text), allowEdits);
+    public static int SkipTriviaEx(string text, int pos, SkipTriviaOptions? options) => skipTriviaEx(ByteStringView.FromUnicode(text), pos, options!);
+    public static int SkipTriviaEx(byte[] text, int pos, SkipTriviaOptions? options) => skipTriviaEx(ByteStringView.CopyFrom(text), pos, options!);
+    public static int SkipTrivia(byte[] text, int pos) => skipTriviaEx(ByteStringView.CopyFrom(text), pos, null!);
+    public static string GetShebang(string text) => getShebang(ByteStringView.FromUnicode(text)).DecodeUnicode();
+    public static byte[] GetShebang(byte[] text) => getShebang(ByteStringView.CopyFrom(text)).ToArray();
+    public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.FromUnicode(text), allowEdits);
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, byte[] text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.CopyFrom(text), allowEdits);
     // scanner.go getIdentifierToken: the keyword table uses raw byte strings.
     // Its bounded keys can use .NET's ordinal alternate lookup without owning
@@ -3818,35 +3873,26 @@ public partial class Scanner
     private Kind getIdentifierToken() => GetIdentifierToken(TokenValueTextValue());
     internal static Kind GetIdentifierToken(ByteStringValue text)
     {
-        if (!text.IsBytes)
-            return GetIdentifierToken(text.Materialize()!);
-        var bytes = text.ByteSpan;
-        if (bytes.Length < 2 || bytes.Length > 12 || bytes[0] < 'a' || bytes[0] > 'z')
-            return Kind.Identifier;
-        Span<char> chars = stackalloc char[12];
-        for (int i = 0; i < bytes.Length; i++)
-            chars[i] = (char)bytes[i];
-        return textToKeyword.GetAlternateLookup<ReadOnlySpan<char>>().TryGetValue(chars[..bytes.Length], out var keyword)
-            ? keyword : Kind.Identifier;
+        if (text.IsNull) throw new NullReferenceException();
+        if (text.Length < 2 || text.Length > 12) return Kind.Identifier;
+        int first = text.IsBytes ? text.ByteSpan[0] : text.CharSpan[0];
+        if (first < 'a' || first > 'z') return Kind.Identifier;
+        return text.TryGetValue(textToKeyword, out var keyword) ? keyword : Kind.Identifier;
     }
+    public static Kind GetIdentifierToken(string str) => GetIdentifierToken(ByteStringValue.FromString(str));
 
-    public static Kind GetIdentifierToken(string str)
-    {
-        if (str.Length >= 2 && str.Length <= 12 && str[0] >= 'a' && str[0] <= 'z' && textToKeyword.TryGetValue(str, out var keyword))
-            return keyword;
-        return Kind.Identifier;
-    }
-
-    public static bool IsValidIdentifier(string value) => isValidIdentifier(GoString.ToUtf8(value));
-    public static bool IsValidIdentifier(byte[] value) => isValidIdentifier(GoString.FromBytes(value));
+    public static bool IsValidIdentifier(string value) => isValidIdentifier(ByteStringValue.FromView(ByteStringView.FromUnicode(value)));
+    public static bool IsValidIdentifier(byte[] value) => isValidIdentifier(ByteStringValue.FromView(ByteStringView.CopyFrom(value)));
     // scanner.go:2224 range decodes the shared byte-string suffix without copying it.
-    private static bool isValidIdentifier(string value)
+    private static bool isValidIdentifier(ByteStringValue value)
     {
+        if (value.IsNull) throw new NullReferenceException();
         if (value.Length == 0)
             return false;
         for (int i = 0; i < value.Length;)
         {
-            var(ch, size) = Utf8.DecodeRuneInString(value.AsSpan(i));
+            var(ch, size) = value.IsBytes ? Utf8.DecodeRuneInString(value.ByteSpan[i..])
+                : Utf8.DecodeRuneInString(value.CharSpan[i..]);
             if (i == 0 && !IsIdentifierStart(ch) || i != 0 && !IsIdentifierPart(ch))
                 return false;
             i += size;
@@ -3856,83 +3902,83 @@ public partial class Scanner
     }
 
     public static string TokenToString(Kind token) => tokenToText[(int)token];
-    public static Kind StringToToken(string s) => textToToken.GetValueOrDefault(s);
-    public static string[] GetViableKeywordSuggestions() => textToKeyword.Keys.Where(x => x.Length > 2).ToArray();
+    public static Kind StringToToken(string s) => ByteStringValue.FromString(s).TryGetValue(textToToken, out var token) ? token : default;
+    public static string[] GetViableKeywordSuggestions() => textToKeyword.Keys.Where(x => x.Value.Length > 2).Select(x => x.ToString()).ToArray();
     // scanner.go:2255. The Go fixed-size array preserves bounds failures for invalid kinds.
     private static string[] CreateTokenToText()
     {
         var result = new string[(int)Kind.Count];
         Array.Fill(result, "");
         foreach (var entry in textToToken)
-            result[(int)entry.Value] = entry.Key;
+            result[(int)entry.Value] = entry.Key.ToString();
         return result;
     }
 
-    private static Dictionary<string, Kind> CreateTextToToken()
+    private static Dictionary<ByteStringKey, Kind> CreateTextToToken()
     {
-        var result = new Dictionary<string, Kind>(textToKeyword, StringComparer.Ordinal)
+        var result = new Dictionary<ByteStringKey, Kind>(textToKeyword, ByteStringKey.Comparer)
         {
-            ["{"] = Kind.OpenBraceToken,
-            ["}"] = Kind.CloseBraceToken,
-            ["("] = Kind.OpenParenToken,
-            [")"] = Kind.CloseParenToken,
-            ["["] = Kind.OpenBracketToken,
-            ["]"] = Kind.CloseBracketToken,
-            ["."] = Kind.DotToken,
-            ["..."] = Kind.DotDotDotToken,
-            [";"] = Kind.SemicolonToken,
-            [","] = Kind.CommaToken,
-            ["<"] = Kind.LessThanToken,
-            [">"] = Kind.GreaterThanToken,
-            ["<="] = Kind.LessThanEqualsToken,
-            [">="] = Kind.GreaterThanEqualsToken,
-            ["=="] = Kind.EqualsEqualsToken,
-            ["!="] = Kind.ExclamationEqualsToken,
-            ["==="] = Kind.EqualsEqualsEqualsToken,
-            ["!=="] = Kind.ExclamationEqualsEqualsToken,
-            ["=>"] = Kind.EqualsGreaterThanToken,
-            ["+"] = Kind.PlusToken,
-            ["-"] = Kind.MinusToken,
-            ["**"] = Kind.AsteriskAsteriskToken,
-            ["*"] = Kind.AsteriskToken,
-            ["/"] = Kind.SlashToken,
-            ["%"] = Kind.PercentToken,
-            ["++"] = Kind.PlusPlusToken,
-            ["--"] = Kind.MinusMinusToken,
-            ["<<"] = Kind.LessThanLessThanToken,
-            ["</"] = Kind.LessThanSlashToken,
-            [">>"] = Kind.GreaterThanGreaterThanToken,
-            [">>>"] = Kind.GreaterThanGreaterThanGreaterThanToken,
-            ["&"] = Kind.AmpersandToken,
-            ["|"] = Kind.BarToken,
-            ["^"] = Kind.CaretToken,
-            ["!"] = Kind.ExclamationToken,
-            ["~"] = Kind.TildeToken,
-            ["&&"] = Kind.AmpersandAmpersandToken,
-            ["||"] = Kind.BarBarToken,
-            ["?"] = Kind.QuestionToken,
-            ["??"] = Kind.QuestionQuestionToken,
-            ["?."] = Kind.QuestionDotToken,
-            [":"] = Kind.ColonToken,
-            ["="] = Kind.EqualsToken,
-            ["+="] = Kind.PlusEqualsToken,
-            ["-="] = Kind.MinusEqualsToken,
-            ["*="] = Kind.AsteriskEqualsToken,
-            ["**="] = Kind.AsteriskAsteriskEqualsToken,
-            ["/="] = Kind.SlashEqualsToken,
-            ["%="] = Kind.PercentEqualsToken,
-            ["<<="] = Kind.LessThanLessThanEqualsToken,
-            [">>="] = Kind.GreaterThanGreaterThanEqualsToken,
-            [">>>="] = Kind.GreaterThanGreaterThanGreaterThanEqualsToken,
-            ["&="] = Kind.AmpersandEqualsToken,
-            ["|="] = Kind.BarEqualsToken,
-            ["^="] = Kind.CaretEqualsToken,
-            ["||="] = Kind.BarBarEqualsToken,
-            ["&&="] = Kind.AmpersandAmpersandEqualsToken,
-            ["??="] = Kind.QuestionQuestionEqualsToken,
-            ["@"] = Kind.AtToken,
-            ["#"] = Kind.HashToken,
-            ["`"] = Kind.BacktickToken,
+            [ByteStringKey.FromString("{")] = Kind.OpenBraceToken,
+            [ByteStringKey.FromString("}")] = Kind.CloseBraceToken,
+            [ByteStringKey.FromString("(")] = Kind.OpenParenToken,
+            [ByteStringKey.FromString(")")] = Kind.CloseParenToken,
+            [ByteStringKey.FromString("[")] = Kind.OpenBracketToken,
+            [ByteStringKey.FromString("]")] = Kind.CloseBracketToken,
+            [ByteStringKey.FromString(".")] = Kind.DotToken,
+            [ByteStringKey.FromString("...")] = Kind.DotDotDotToken,
+            [ByteStringKey.FromString(";")] = Kind.SemicolonToken,
+            [ByteStringKey.FromString(",")] = Kind.CommaToken,
+            [ByteStringKey.FromString("<")] = Kind.LessThanToken,
+            [ByteStringKey.FromString(">")] = Kind.GreaterThanToken,
+            [ByteStringKey.FromString("<=")] = Kind.LessThanEqualsToken,
+            [ByteStringKey.FromString(">=")] = Kind.GreaterThanEqualsToken,
+            [ByteStringKey.FromString("==")] = Kind.EqualsEqualsToken,
+            [ByteStringKey.FromString("!=")] = Kind.ExclamationEqualsToken,
+            [ByteStringKey.FromString("===")] = Kind.EqualsEqualsEqualsToken,
+            [ByteStringKey.FromString("!==")] = Kind.ExclamationEqualsEqualsToken,
+            [ByteStringKey.FromString("=>")] = Kind.EqualsGreaterThanToken,
+            [ByteStringKey.FromString("+")] = Kind.PlusToken,
+            [ByteStringKey.FromString("-")] = Kind.MinusToken,
+            [ByteStringKey.FromString("**")] = Kind.AsteriskAsteriskToken,
+            [ByteStringKey.FromString("*")] = Kind.AsteriskToken,
+            [ByteStringKey.FromString("/")] = Kind.SlashToken,
+            [ByteStringKey.FromString("%")] = Kind.PercentToken,
+            [ByteStringKey.FromString("++")] = Kind.PlusPlusToken,
+            [ByteStringKey.FromString("--")] = Kind.MinusMinusToken,
+            [ByteStringKey.FromString("<<")] = Kind.LessThanLessThanToken,
+            [ByteStringKey.FromString("</")] = Kind.LessThanSlashToken,
+            [ByteStringKey.FromString(">>")] = Kind.GreaterThanGreaterThanToken,
+            [ByteStringKey.FromString(">>>")] = Kind.GreaterThanGreaterThanGreaterThanToken,
+            [ByteStringKey.FromString("&")] = Kind.AmpersandToken,
+            [ByteStringKey.FromString("|")] = Kind.BarToken,
+            [ByteStringKey.FromString("^")] = Kind.CaretToken,
+            [ByteStringKey.FromString("!")] = Kind.ExclamationToken,
+            [ByteStringKey.FromString("~")] = Kind.TildeToken,
+            [ByteStringKey.FromString("&&")] = Kind.AmpersandAmpersandToken,
+            [ByteStringKey.FromString("||")] = Kind.BarBarToken,
+            [ByteStringKey.FromString("?")] = Kind.QuestionToken,
+            [ByteStringKey.FromString("??")] = Kind.QuestionQuestionToken,
+            [ByteStringKey.FromString("?.")] = Kind.QuestionDotToken,
+            [ByteStringKey.FromString(":")] = Kind.ColonToken,
+            [ByteStringKey.FromString("=")] = Kind.EqualsToken,
+            [ByteStringKey.FromString("+=")] = Kind.PlusEqualsToken,
+            [ByteStringKey.FromString("-=")] = Kind.MinusEqualsToken,
+            [ByteStringKey.FromString("*=")] = Kind.AsteriskEqualsToken,
+            [ByteStringKey.FromString("**=")] = Kind.AsteriskAsteriskEqualsToken,
+            [ByteStringKey.FromString("/=")] = Kind.SlashEqualsToken,
+            [ByteStringKey.FromString("%=")] = Kind.PercentEqualsToken,
+            [ByteStringKey.FromString("<<=")] = Kind.LessThanLessThanEqualsToken,
+            [ByteStringKey.FromString(">>=")] = Kind.GreaterThanGreaterThanEqualsToken,
+            [ByteStringKey.FromString(">>>=")] = Kind.GreaterThanGreaterThanGreaterThanEqualsToken,
+            [ByteStringKey.FromString("&=")] = Kind.AmpersandEqualsToken,
+            [ByteStringKey.FromString("|=")] = Kind.BarEqualsToken,
+            [ByteStringKey.FromString("^=")] = Kind.CaretEqualsToken,
+            [ByteStringKey.FromString("||=")] = Kind.BarBarEqualsToken,
+            [ByteStringKey.FromString("&&=")] = Kind.AmpersandAmpersandEqualsToken,
+            [ByteStringKey.FromString("??=")] = Kind.QuestionQuestionEqualsToken,
+            [ByteStringKey.FromString("@")] = Kind.AtToken,
+            [ByteStringKey.FromString("#")] = Kind.HashToken,
+            [ByteStringKey.FromString("`")] = Kind.BacktickToken,
         };
         return result;
     }
@@ -3956,13 +4002,13 @@ public partial class Scanner
         return Core.NewTextRange(scanner.tokenStart, scanner.pos);
     }
 
-    public static List<int> GetECMALineStarts(SourceFileLike sourceFile) => sourceFile.ECMALineMap();
-    public static int GetECMALineOfPosition(SourceFileLike sourceFile, int pos) => ComputeLineOfPosition(GetECMALineStarts(sourceFile).ToArray(), pos);
+    public static Slice<int> GetECMALineStarts(SourceFileLike sourceFile) => sourceFile.ECMALineMap();
+    public static int GetECMALineOfPosition(SourceFileLike sourceFile, int pos) => computeLineOfPosition(GetECMALineStarts(sourceFile).AsSpan(), pos);
     // scanner.go:2685-2701. Positions are UTF8 byte offsets; characters are UTF16 code units.
     public static (int Line, int Character) GetECMALineAndUTF16CharacterOfPosition(SourceFileLike sourceFile, int pos)
     {
         var lineMap = GetECMALineStarts(sourceFile);
-        int line = ComputeLineOfPosition(lineMap.ToArray(), pos);
+        int line = computeLineOfPosition(lineMap.AsSpan(), pos);
         int character = Core.UTF16Len(sourceFile.TextView().Slice(lineMap[line], pos));
         return (line, character);
     }
@@ -3970,13 +4016,13 @@ public partial class Scanner
     public static (int Line, int ByteOffset) GetECMALineAndByteOffsetOfPosition(SourceFileLike sourceFile, int pos)
     {
         var lineMap = GetECMALineStarts(sourceFile);
-        int line = ComputeLineOfPosition(lineMap.ToArray(), pos);
+        int line = computeLineOfPosition(lineMap.AsSpan(), pos);
         return (line, pos - lineMap[line]);
     }
 
     // scanner.go:2717-2728. Use the internal byte-string directly (no second UTF8 encoding).
-    public static int GetECMAPositionOfLineAndUTF16Character(SourceFileLike sourceFile, int line, int character) => computePositionOfLineAndUTF16Character(GetECMALineStarts(sourceFile).ToArray(), line, character, sourceFile.TextView(), false);
-    public static int GetECMAPositionOfLineAndByteOffset(SourceFileLike sourceFile, int line, int byteOffset) => ComputePositionOfLineAndByteOffset(GetECMALineStarts(sourceFile).ToArray(), line, byteOffset);
+    public static int GetECMAPositionOfLineAndUTF16Character(SourceFileLike sourceFile, int line, int character) => computePositionOfLineAndUTF16Character(GetECMALineStarts(sourceFile).AsSpan(), line, character, sourceFile.TextView(), false);
+    public static int GetECMAPositionOfLineAndByteOffset(SourceFileLike sourceFile, int line, int byteOffset) => computePositionOfLineAndByteOffset(GetECMALineStarts(sourceFile).AsSpan(), line, byteOffset);
     public static int GetECMAEndLinePosition(SourceFile sourceFile, int line)
     {
         int pos = GetECMALineStarts(sourceFile)[line];

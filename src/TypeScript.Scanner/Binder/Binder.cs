@@ -30,12 +30,14 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:131:1.
-    private Symbol newSymbol(SymbolFlags flags, string name)
+    private Symbol newSymbol(SymbolFlags flags, string name) => newSymbol(flags, ByteStringValue.FromString(name));
+
+    private Symbol newSymbol(SymbolFlags flags, ByteStringValue name)
     {
         this.symbolCount++;
-        var result = this.symbolArena.New();
+        var result = new Symbol();
         result.Flags = flags;
-        result.Name = name;
+        result.NameValue = name;
         return result;
     }
 
@@ -81,10 +83,10 @@ public partial class Binder
         }
 
         Symbol symbol = default;
-        string name;
+        ByteStringValue name;
         if (nameValue.EqualsString(Ast.InternalSymbolNameMissing))
         {
-            name = Ast.InternalSymbolNameMissing;
+            name = ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
             symbol = this.newSymbol(SymbolFlags.None, Ast.InternalSymbolNameMissing);
         }
         else
@@ -94,7 +96,7 @@ public partial class Binder
             symbolTable.TryGetValue(nameValue, out name, out symbol);
             if ((symbol == null))
             {
-                name = nameValue.Materialize();
+                name = nameValue;
                 symbol = this.newSymbol(SymbolFlags.None, name);
                 symbolTable[name] = symbol;
                 if (isReplaceableByMethod)
@@ -249,7 +251,7 @@ public partial class Binder
     private string getDeclarationName(Node node) => getDeclarationNameValue(node).Materialize();
 
     // binder.go:300. Borrow ordinary declaration names; only constructed names
-    // and inserted persistent symbol keys require owned raw strings.
+    // require owned byte values; ordinary symbol keys retain byte descriptors.
     private ByteStringValue getDeclarationNameValue(Node node)
     {
         if (Ast.IsExportAssignment(node))
@@ -262,7 +264,7 @@ public partial class Binder
         {
             if (Ast.IsAmbientModule(node))
             {
-                var moduleName = name.Text();
+                var moduleName = name.TextValue();
                 if (Ast.IsGlobalScopeAugmentation(node))
                 {
                     return ByteStringValue.FromString(Ast.InternalSymbolNameGlobal);
@@ -276,13 +278,25 @@ public partial class Binder
                             var attributes = node.AsModuleDeclaration().Attributes;
                             if ((attributes != null))
                             {
-                                return ByteStringValue.FromString(((((Ast.InternalSymbolNamePrefix + "\"") + moduleName) + "\"pattern@") + Strconv.FormatUint((ulong)(Ast.GetNodeId(attributes)), 10)));
+                                var builder = new GoBuilder();
+                                builder.WriteString(Ast.InternalSymbolNamePrefix);
+                                builder.WriteString("\""u8);
+                                builder.WriteString(moduleName);
+                                builder.WriteString("\"pattern@"u8);
+                                Span<char> id = stackalloc char[20];
+                                ((ulong)Ast.GetNodeId(attributes)).TryFormat(id, out var written, provider: System.Globalization.CultureInfo.InvariantCulture);
+                                builder.WriteString(id[..written]);
+                                return builder.Value();
                             }
                         }
                     }
                 }
 
-                return ByteStringValue.FromString((("\"" + moduleName) + "\""));
+                var quotedName = new GoBuilder();
+                quotedName.WriteString("\""u8);
+                quotedName.WriteString(moduleName);
+                quotedName.WriteString("\""u8);
+                return quotedName.Value();
             }
 
             if (Ast.IsPrivateIdentifier(name))
@@ -293,7 +307,7 @@ public partial class Binder
                     return ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
                 }
 
-                return ByteStringValue.FromString(GetSymbolNameForPrivateIdentifier(containingClass.Symbol(), name.Text()));
+                return GetSymbolNameValueForPrivateIdentifier(containingClass.Symbol(), name.TextValue());
             }
 
             if ((Ast.IsPropertyNameLiteral(name) || Ast.IsJsxNamespacedName(name)))
@@ -312,7 +326,10 @@ public partial class Binder
                 if (Ast.IsSignedNumericLiteral(nameExpression))
                 {
                     var unaryExpression = nameExpression.AsPrefixUnaryExpression();
-                    return ByteStringValue.FromString((Scanner.TokenToString(unaryExpression.Operator) + unaryExpression.Operand.Text()));
+                    var signedName = new GoBuilder();
+                    signedName.WriteString(Scanner.TokenToString(unaryExpression.Operator));
+                    signedName.WriteString(unaryExpression.Operand.TextValue());
+                    return signedName.Value();
                 }
 
                 throw new InvalidOperationException("Only computed properties with literal names have declaration names");
@@ -379,9 +396,20 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:373:1.
-    public static string GetSymbolNameForPrivateIdentifier(Symbol containingClassSymbol, string description)
+    public static string GetSymbolNameForPrivateIdentifier(Symbol containingClassSymbol, string description) =>
+        GetSymbolNameValueForPrivateIdentifier(containingClassSymbol, ByteStringValue.FromString(description)).Materialize();
+
+    internal static ByteStringValue GetSymbolNameValueForPrivateIdentifier(Symbol containingClassSymbol, ByteStringValue description)
     {
-        return ((((Ast.InternalSymbolNamePrefix + "#") + Strconv.Itoa(unchecked((long)Ast.GetSymbolId(containingClassSymbol)))) + "@") + description);
+        var builder = new GoBuilder();
+        builder.WriteString(Ast.InternalSymbolNamePrefix);
+        builder.WriteString("#"u8);
+        Span<char> id = stackalloc char[20];
+        unchecked((long)Ast.GetSymbolId(containingClassSymbol)).TryFormat(id, out var written, provider: System.Globalization.CultureInfo.InvariantCulture);
+        builder.WriteString(id[..written]);
+        builder.WriteString("@"u8);
+        builder.WriteString(description);
+        return builder.Value();
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:377:1.
@@ -401,7 +429,7 @@ public partial class Binder
 
         if ((!Ast.IsAmbientModule(node) && ((hasExportModifier || ((container.Flags & NodeFlags.ExportContext) != 0)))))
         {
-            if ((!Ast.IsLocalsContainer(container) || ((Ast.HasSyntacticModifier(node, ModifierFlags.Default) && (this.getDeclarationName(node) == Ast.InternalSymbolNameMissing)))))
+            if ((!Ast.IsLocalsContainer(container) || ((Ast.HasSyntacticModifier(node, ModifierFlags.Default) && (this.getDeclarationNameValue(node).EqualsString(Ast.InternalSymbolNameMissing))))))
             {
                 return this.declareSymbol(Ast.GetExports(container.Symbol()), container.Symbol(), node, symbolFlags, symbolExcludes);
             }
@@ -505,7 +533,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:453:1.
     private FlowNode newFlowNode(FlowFlags flags)
     {
-        var result = this.flowNodeArena.New();
+        var result = new FlowNode();
         result.Flags = flags;
         return result;
     }
@@ -601,7 +629,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:519:1.
     private FlowList newFlowList(FlowNode head, FlowList tail)
     {
-        var result = this.flowListArena.New();
+        var result = new FlowList();
         result.Flow = head;
         result.Next = tail;
         return result;
@@ -619,9 +647,9 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:533:1.
-    private List<Node> newSingleDeclaration(Node declaration)
+    private Slice<Node> newSingleDeclaration(Node declaration)
     {
-        return this.singleDeclarationsArena.NewSlice1(declaration);
+        return this.singleDeclarationsArena.NewSlice1Header(declaration);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:537:1.
@@ -1108,7 +1136,7 @@ public partial class Binder
             {
                 this.bindSourceFileAsExternalModule();
                 var originalSymbol = this.file.Symbol;
-                this.declareSymbol(Ast.GetSymbolTable(new GoRef<SymbolTable>(() => this.file.Symbol.Exports, value => this.file.Symbol.Exports = value)), this.file.Symbol, this.file.AsNode(), SymbolFlags.Property, SymbolFlags.All);
+                this.declareSymbol(Ast.GetSymbolTable(ref this.file.Symbol.Exports), this.file.Symbol, this.file.AsNode(), SymbolFlags.Property, SymbolFlags.All);
                 this.file.Symbol = originalSymbol;
             }
         }
@@ -1117,7 +1145,11 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:771:1.
     private void bindSourceFileAsExternalModule()
     {
-        this.bindAnonymousDeclaration(this.file.AsNode(), SymbolFlags.ValueModule, (("\"" + TsPath.RemoveFileExtension(this.file.FileNameGoBytes())) + "\""));
+        var moduleName = new GoBuilder();
+        moduleName.WriteString("\""u8);
+        moduleName.WriteString(TsPath.RemoveFileExtension(this.file.FileNameGoBytes()));
+        moduleName.WriteString("\""u8);
+        this.bindAnonymousDeclaration(this.file.AsNode(), SymbolFlags.ValueModule, moduleName.Value());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:775:1.
@@ -1142,7 +1174,7 @@ public partial class Binder
                 if (Ast.IsStringLiteral(name))
                 {
                     var attributes = node.AsModuleDeclaration().Attributes;
-                    var pattern = Core.TryParsePattern(name.Text());
+                    var pattern = Core.TryParsePattern(name.TextValue());
                     if (!pattern.IsValid())
                     {
                         this.errorOnFirstToken(name, Diagnostics.Pattern_0_can_have_at_most_one_Asterisk_character, name.Text());
@@ -1223,7 +1255,7 @@ public partial class Binder
 
             default:
             {
-                this.declareSymbol(Ast.GetSymbolTable(new GoRef<SymbolTable>(() => this.file.GlobalExports, value => this.file.GlobalExports = value)), this.file.Symbol, node, SymbolFlags.Alias, SymbolFlags.AliasExcludes);
+                this.declareSymbol(Ast.GetSymbolTable(ref this.file.GlobalExports), this.file.Symbol, node, SymbolFlags.Alias, SymbolFlags.AliasExcludes);
                 break;
             }
         }
@@ -1244,7 +1276,7 @@ public partial class Binder
         var decl = node.AsExportDeclaration();
         if ((this.container.Symbol() == null))
         {
-            this.bindAnonymousDeclaration(node, SymbolFlags.ExportStar, this.getDeclarationName(node));
+            this.bindAnonymousDeclaration(node, SymbolFlags.ExportStar, this.getDeclarationNameValue(node));
         }
         else
         {
@@ -1268,7 +1300,7 @@ public partial class Binder
         var container = this.container;
         if (((container.Symbol() == null) && Ast.IsExportAssignment(node)))
         {
-            this.bindAnonymousDeclaration(node, SymbolFlags.Value, this.getDeclarationName(node));
+            this.bindAnonymousDeclaration(node, SymbolFlags.Value, this.getDeclarationNameValue(node));
         }
         else
         {
@@ -1345,11 +1377,11 @@ public partial class Binder
         }
 
         setFlowNode(node, this.currentFlow);
-        var bindingName = Ast.InternalSymbolNameFunction;
+        var bindingName = ByteStringValue.FromString(Ast.InternalSymbolNameFunction);
         if ((Ast.IsFunctionExpression(node) && (node.AsFunctionExpression().Name() != null)))
         {
             this.checkStrictModeFunctionName(node);
-            bindingName = node.AsFunctionExpression().Name().Text();
+            bindingName = node.AsFunctionExpression().Name().TextValue();
         }
 
         this.bindAnonymousDeclaration(node, SymbolFlags.Function, bindingName);
@@ -1398,10 +1430,10 @@ public partial class Binder
 
             case Kind.ClassExpression:
             {
-                var nameText = Ast.InternalSymbolNameClass;
+                var nameText = ByteStringValue.FromString(Ast.InternalSymbolNameClass);
                 if ((name != null))
                 {
-                    nameText = name.Text();
+                    nameText = name.TextValue();
                 }
 
                 this.bindAnonymousDeclaration(node, SymbolFlags.Class, nameText);
@@ -1411,13 +1443,13 @@ public partial class Binder
 
         var symbol = node.Symbol();
         var prototypeSymbol = this.newSymbol((SymbolFlags.Property | SymbolFlags.Prototype), "prototype");
-        var symbolExport = Ast.GetExports(symbol)[prototypeSymbol.Name];
+        var symbolExport = Ast.GetExports(symbol)[prototypeSymbol.NameValue];
         if ((symbolExport != null))
         {
             this.errorOnNode(symbolExport.Declarations[0], Diagnostics.Duplicate_identifier_0, Ast.SymbolName(prototypeSymbol));
         }
 
-        Ast.GetExports(symbol)[prototypeSymbol.Name] = prototypeSymbol;
+        Ast.GetExports(symbol)[prototypeSymbol.NameValue] = prototypeSymbol;
         prototypeSymbol.Parent = symbol;
     }
 
@@ -1447,12 +1479,12 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:992:1.
     private void bindFunctionOrConstructorType(Node node)
     {
-        var symbol = this.newSymbol(SymbolFlags.Signature, this.getDeclarationName(node));
+        var symbol = this.newSymbol(SymbolFlags.Signature, this.getDeclarationNameValue(node));
         this.addDeclarationToSymbol(symbol, node, SymbolFlags.Signature);
         var typeLiteralSymbol = this.newSymbol(SymbolFlags.TypeLiteral, Ast.InternalSymbolNameType);
         this.addDeclarationToSymbol(typeLiteralSymbol, node, SymbolFlags.TypeLiteral);
         typeLiteralSymbol.Members = new SymbolTable();
-        typeLiteralSymbol.Members[symbol.Name] = symbol;
+        typeLiteralSymbol.Members[symbol.NameValue] = symbol;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1007:1.
@@ -1484,14 +1516,14 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1026:1.
     private void bindExpandoPropertyAssignment(Node node)
     {
-        this.expandoAssignments = GoRuntime.Append(this.expandoAssignments, new ExpandoAssignmentInfo { node = node, container = this.container, blockScopeContainer = this.blockScopeContainer });
+        this.expandoAssignments = this.expandoAssignments.Append(new ExpandoAssignmentInfo { node = node, container = this.container, blockScopeContainer = this.blockScopeContainer });
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1034:1.
     private void bindDeferredExpandoAssignments()
     {
         {
-            foreach (var info in GoRuntime.RangeValues(this.expandoAssignments))
+            foreach (var info in this.expandoAssignments)
             {
                 this.container = info.container;
                 this.blockScopeContainer = info.blockScopeContainer;
@@ -1514,9 +1546,9 @@ public partial class Binder
                 {
                     foreach (var symbol in GoRuntime.RangeValues(moduleExports))
                     {
-                        if (((symbol.Name != Ast.InternalSymbolNameExportEquals) && ((symbol.Flags & ((SymbolFlags.Type | SymbolFlags.Namespace))) != 0)))
+                        if (((!symbol.NameValue.EqualsString(Ast.InternalSymbolNameExportEquals)) && ((symbol.Flags & ((SymbolFlags.Type | SymbolFlags.Namespace))) != 0)))
                         {
-                            Ast.GetExports(exportEquals)[symbol.Name] = symbol;
+                            Ast.GetExports(exportEquals)[symbol.NameValue] = symbol;
                             exportEquals.Flags |= SymbolFlags.NamespaceModule;
                         }
                     }
@@ -1548,7 +1580,7 @@ public partial class Binder
                 {
                     var exports = Ast.GetExports(symbol);
                     {
-                        var existing = exports[this.getDeclarationName(node)];
+                        var existing = exports[this.getDeclarationNameValue(node)];
                         if (((existing == null) || ((existing.Flags & SymbolFlags.Assignment) != 0)))
                         {
                             this.declareSymbol(exports, symbol, node, (SymbolFlags.Property | SymbolFlags.Assignment), SymbolFlags.PropertyExcludes);
@@ -1820,7 +1852,10 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1237:1.
-    private void bindAnonymousDeclaration(Node node, SymbolFlags symbolFlags, string name)
+    private void bindAnonymousDeclaration(Node node, SymbolFlags symbolFlags, string name) =>
+        bindAnonymousDeclaration(node, symbolFlags, ByteStringValue.FromString(name));
+
+    private void bindAnonymousDeclaration(Node node, SymbolFlags symbolFlags, ByteStringValue name)
     {
         var symbol = this.newSymbol(symbolFlags, name);
         if (((symbolFlags & ((SymbolFlags.EnumMember | SymbolFlags.ClassMember))) != 0))
@@ -1873,7 +1908,7 @@ public partial class Binder
             }
             else
             {
-                this.bindAnonymousDeclaration(node, SymbolFlags.TypeParameter, this.getDeclarationName(node));
+                this.bindAnonymousDeclaration(node, SymbolFlags.TypeParameter, this.getDeclarationNameValue(node));
             }
         }
         else
@@ -2713,7 +2748,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1799:1.
     private void bindCondition(Node node, FlowNode trueTarget, FlowNode falseTarget)
     {
-        this.doWithConditionalBranches((binderCallback, argnode) => binderCallback.bind(argnode), node, trueTarget, falseTarget);
+        this.doWithConditionalBranches(static (binderCallback, argnode) => binderCallback.bind(argnode), node, trueTarget, falseTarget);
         if (((node == null) || ((!isLogicalAssignmentExpression(node) && !Ast.IsLogicalExpression(node)) && !((Ast.IsOptionalChain(node) && Ast.IsOutermostOptionalChain(node))))))
         {
             this.addAntecedent(trueTarget, this.createFlowCondition(FlowFlags.TrueCondition, this.currentFlow, node));
@@ -2957,13 +2992,13 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1976:1.
     private void bindBreakStatement(Node node)
     {
-        this.bindBreakOrContinueStatement(node.Label(), this.currentBreakTarget, (binderCallback) => binderCallback.BreakTarget());
+        this.bindBreakOrContinueStatement(node.Label(), this.currentBreakTarget, static (binderCallback) => binderCallback.BreakTarget());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1980:1.
     private void bindContinueStatement(Node node)
     {
-        this.bindBreakOrContinueStatement(node.Label(), this.currentContinueTarget, (binderCallback) => binderCallback.ContinueTarget());
+        this.bindBreakOrContinueStatement(node.Label(), this.currentContinueTarget, static (binderCallback) => binderCallback.ContinueTarget());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1984:1.
@@ -2972,7 +3007,7 @@ public partial class Binder
         this.bind(label);
         if ((label != null))
         {
-            var activeLabel = this.findActiveLabel(label.Text());
+            var activeLabel = this.findActiveLabel(label.TextValue());
             if ((activeLabel != null))
             {
                 activeLabel.referenced = true;
@@ -2986,13 +3021,13 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1997:1.
-    private ActiveLabel findActiveLabel(string name)
+    private ActiveLabel findActiveLabel(ByteStringValue name)
     {
         {
             var label = this.activeLabelList;
             for (; (label != null); label = label.next)
             {
-                if ((label.name == name))
+                if ((label.name.EqualsValue(name)))
                 {
                     return label;
                 }
@@ -3194,7 +3229,7 @@ public partial class Binder
         this.activeLabelList = new ActiveLabel
         {
             next = this.activeLabelList,
-            name = stmt.Label.Text(),
+            name = stmt.Label.TextValue(),
             breakTarget = postStatementLabel,
             continueTarget = null,
             referenced = false
@@ -3350,7 +3385,7 @@ public partial class Binder
         this.bind(expr.OperatorToken);
         if (Ast.IsLogicalOrCoalescingAssignmentOperator(expr.OperatorToken.Kind))
         {
-            this.doWithConditionalBranches((binderCallback, argnode) => binderCallback.bind(argnode), expr.Right, trueTarget, falseTarget);
+            this.doWithConditionalBranches(static (binderCallback, argnode) => binderCallback.bind(argnode), expr.Right, trueTarget, falseTarget);
             this.bindAssignmentTargetFlow(expr.Left);
             this.addAntecedent(trueTarget, this.createFlowCondition(FlowFlags.TrueCondition, this.currentFlow, node));
             this.addAntecedent(falseTarget, this.createFlowCondition(FlowFlags.FalseCondition, this.currentFlow, node));
@@ -3501,7 +3536,7 @@ public partial class Binder
             this.currentFlow = this.finishFlowLabel(preChainLabel);
         }
 
-        this.doWithConditionalBranches((binderCallback, argnode) => binderCallback.bindOptionalChainRest(argnode), node, trueTarget, falseTarget);
+        this.doWithConditionalBranches(static (binderCallback, argnode) => binderCallback.bindOptionalChainRest(argnode), node, trueTarget, falseTarget);
         if (Ast.IsOutermostOptionalChain(node))
         {
             this.addAntecedent(trueTarget, this.createFlowCondition(FlowFlags.TrueCondition, this.currentFlow, node));
@@ -3512,7 +3547,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:2411:1.
     private void bindOptionalExpression(Node node, FlowNode trueTarget, FlowNode falseTarget)
     {
-        this.doWithConditionalBranches((binderCallback, argnode) => binderCallback.bind(argnode), node, trueTarget, falseTarget);
+        this.doWithConditionalBranches(static (binderCallback, argnode) => binderCallback.bind(argnode), node, trueTarget, falseTarget);
         if ((!Ast.IsOptionalChain(node) || Ast.IsOutermostOptionalChain(node)))
         {
             this.addAntecedent(trueTarget, this.createFlowCondition(FlowFlags.TrueCondition, this.currentFlow, node));
@@ -3708,7 +3743,7 @@ public partial class Binder
     {
         symbol.Flags |= symbolFlags;
         node.DeclarationData().Symbol = symbol;
-        if ((symbol.Declarations == null))
+        if ((symbol.Declarations.IsNil))
         {
             symbol.Declarations = this.newSingleDeclaration(node);
         }
@@ -4207,7 +4242,7 @@ public partial class Binder
     {
         public ActiveLabel next;
         public FlowNode breakTarget, continueTarget;
-        public string name;
+        public ByteStringValue name;
         public bool referenced;
         public FlowNode BreakTarget() => breakTarget;
         public FlowNode ContinueTarget() => continueTarget;
@@ -4229,11 +4264,8 @@ public partial class Binder
     private bool seenThisKeyword, hasExplicitReturn, hasFlowEffects, inAssignmentPattern, seenParseError;
     private int symbolCount;
     private readonly HashSet<Symbol> notConstEnumOnlyModules = new();
-    private readonly GoObjectArena<Symbol> symbolArena = new();
-    private readonly GoObjectArena<FlowNode> flowNodeArena = new();
-    private readonly GoObjectArena<FlowList> flowListArena = new();
     private readonly GoArena<Node> singleDeclarationsArena = new();
-    private List<ExpandoAssignmentInfo> expandoAssignments;
+    private Slice<ExpandoAssignmentInfo> expandoAssignments;
     private Binder() => bindFunc = bind;
     // getBinder/putBinder adaptation: preserve isolated binding state and arena-owned identity,
     // replacing sync.Pool with one fresh managed Binder per file. No checker state is imported.

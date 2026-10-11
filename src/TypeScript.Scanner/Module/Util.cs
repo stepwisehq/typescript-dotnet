@@ -42,16 +42,19 @@ public static class ModuleUtilities
 
     public static (string PackageName, string Remaining) ParsePackageName(string name)
     {
+        var (package, remaining) = ParsePackageName(ByteStringValue.FromString(name));
+        return (package.Materialize()!, remaining.Materialize()!);
+    }
+    internal static (ByteStringValue PackageName, ByteStringValue Remaining) ParsePackageName(ByteStringValue name)
+    {
         int index = name.IndexOf('/');
-        if (name.StartsWith('@'))
+        if (name.StartsWith("@"u8))
         {
             int offset = index + 1;
-            index = name[offset..].IndexOf('/');
-            if (index >= 0)
-                index += offset;
+            index = name.Slice(offset).IndexOf('/');
+            if (index >= 0) index += offset;
         }
-
-        return index < 0 ? (name, "") : (name[..index], name[(index + 1)..]);
+        return index < 0 ? (name, default) : (name.Slice(0, index), name.Slice(index + 1));
     }
 
     public static int ComparePatternKeys(string a, string b)
@@ -83,12 +86,15 @@ public static class ModuleUtilities
         return TsPath.RootedDirectoryPathFromAbsolute(path[..end]);
     }
 
-    public static string MangleScopedPackageName(string name)
+    public static string MangleScopedPackageName(string name) => MangleScopedPackageName(ByteStringValue.FromString(name)).Materialize()!;
+    internal static ByteStringValue MangleScopedPackageName(ByteStringValue name)
     {
-        if (!name.StartsWith('@'))
-            return name;
+        if (!name.StartsWith("@"u8)) return name;
         int separator = name.IndexOf('/');
-        return separator < 0 ? name : name[1..separator] + "__" + name[(separator + 1)..];
+        if (separator < 0) return name;
+        var builder = new GoBuilder();
+        builder.WriteString(name.Slice(1, separator)); builder.WriteString("__"); builder.WriteString(name.Slice(separator + 1));
+        return builder.Value();
     }
 
     public static string UnmangleScopedPackageName(string name)

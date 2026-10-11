@@ -24,7 +24,7 @@ internal enum JsxReferenceKind
 
 public sealed partial class Checker
 {
-    internal sealed class JsxElementLinks
+    internal struct JsxElementLinks
     {
         internal JsxFlags jsxFlags;
         internal Type resolvedJsxElementAttributesType;
@@ -158,10 +158,10 @@ public sealed partial class Checker
                     tagType = this.checkExpression(tagName);
                 }
 
-                List<Diagnostic> diags = new();
+                var diags = new GoRef<Slice<Diagnostic>>(default);
                 if (!this.checkTypeRelatedToEx(tagType, elementTypeConstraint, this.assignableRelation, tagName, Diagnostics.Its_type_0_is_not_a_valid_JSX_element_type, diags))
                 {
-                    this.addDiagnostic(Ast.NewDiagnosticChain(diags[0], Diagnostics.X_0_cannot_be_used_as_a_JSX_component, TypeScript.Scanner.Scanner.GetTextOfNodeByteString(tagName)));
+                    this.addDiagnostic(Ast.NewDiagnosticChain(diags.Value[0], Diagnostics.X_0_cannot_be_used_as_a_JSX_component, TypeScript.Scanner.Scanner.GetTextOfNodeByteString(tagName)));
                 }
             }
             else
@@ -188,7 +188,7 @@ public sealed partial class Checker
     // Upstream tsc/internal/checker/jsx.go:170:1.
     private void checkJsxReturnAssignableToAppropriateBound(JsxReferenceKind refKind, Type elemInstanceType, Node openingLikeElement)
     {
-        List<Diagnostic> diags = new();
+        var diags = new GoRef<Slice<Diagnostic>>(default);
         switch (refKind)
         {
             case JsxReferenceKind.Function:
@@ -222,20 +222,20 @@ public sealed partial class Checker
                     return;
                 }
 
-                var combined = this.getUnionType(new List<Type> { sfcReturnConstraint2, classConstraint2 });
+                var combined = this.getUnionType((ReadOnlySpan<Type>)[sfcReturnConstraint2, classConstraint2]);
                 this.checkTypeRelatedToEx(elemInstanceType, combined, this.assignableRelation, openingLikeElement.TagName(), Diagnostics.Its_element_type_0_is_not_a_valid_JSX_element, diags);
                 break;
             }
         }
 
-        if ((GoRuntime.Len(diags) != 0))
+        if ((GoRuntime.Len(diags.Value) != 0))
         {
-            this.addDiagnostic(Ast.NewDiagnosticChain(diags[0], Diagnostics.X_0_cannot_be_used_as_a_JSX_component, TypeScript.Scanner.Scanner.GetTextOfNodeByteString(openingLikeElement.TagName())));
+            this.addDiagnostic(Ast.NewDiagnosticChain(diags.Value[0], Diagnostics.X_0_cannot_be_used_as_a_JSX_component, TypeScript.Scanner.Scanner.GetTextOfNodeByteString(openingLikeElement.TagName())));
         }
     }
 
     // Upstream tsc/internal/checker/jsx.go:198:1.
-    private List<Type> inferJsxTypeArguments(Node node, Signature signature, CheckMode checkMode, InferenceContext context)
+    private Slice<Type> inferJsxTypeArguments(Node node, Signature signature, CheckMode checkMode, InferenceContext context)
     {
         var paramType = this.getEffectiveFirstArgumentForJsxSignature(signature, node);
         var checkAttrType = this.checkExpressionWithContextualType(node.Attributes(), paramType, context, checkMode);
@@ -299,7 +299,7 @@ public sealed partial class Checker
     {
         var attributesType = this.getApparentTypeOfContextualType(node.AsJsxElement().OpeningElement.Attributes(), contextFlags);
         var jsxChildrenPropertyName = this.getJsxElementChildrenPropertyName(this.getJsxNamespaceAt(node));
-        if (!(((((attributesType != null) && !IsTypeAny(attributesType)) && (jsxChildrenPropertyName != Ast.InternalSymbolNameMissing)) && (jsxChildrenPropertyName != ""))))
+        if (!(((((attributesType != null) && !IsTypeAny(attributesType)) && (!jsxChildrenPropertyName.EqualsString(Ast.InternalSymbolNameMissing))) && (jsxChildrenPropertyName.Length != 0))))
         {
             return null;
         }
@@ -354,7 +354,7 @@ public sealed partial class Checker
             }
 
             var initializer = p.Initializer();
-            return ((((initializer == null) || this.isPossiblyDiscriminantValue(initializer))) && this.isDiscriminantProperty(contextualType, symbol.Name));
+            return ((((initializer == null) || this.isPossiblyDiscriminantValue(initializer))) && this.isDiscriminantProperty(contextualType, symbol.NameValue));
         });
         var discriminantMembers = Core.Filter(this.getPropertiesOfType(contextualType), (s) =>
         {
@@ -364,12 +364,12 @@ public sealed partial class Checker
             }
 
             var element = node.Parent.Parent;
-            if ((((s.Name == jsxChildrenPropertyName) && Ast.IsJsxElement(element)) && (GoRuntime.Len(Ast.GetSemanticJsxChildren(element.Children().Nodes)) != 0)))
+            if ((((s.NameValue.EqualsValue(jsxChildrenPropertyName)) && Ast.IsJsxElement(element)) && (GoRuntime.Len(Ast.GetSemanticJsxChildren(element.Children().Nodes)) != 0)))
             {
                 return false;
             }
 
-            return ((node.Symbol().Members?[s.Name] == null) && this.isDiscriminantProperty(contextualType, s.Name));
+            return ((node.Symbol().Members?[s.NameValue] == null) && this.isDiscriminantProperty(contextualType, s.NameValue));
         });
         var discriminator = new ObjectLiteralDiscriminator(this, discriminantProperties, discriminantMembers);
         var discriminated2 = this.discriminateTypeByDiscriminableItems(contextualType, discriminator);
@@ -378,7 +378,7 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:296:1.
-    private bool elaborateJsxComponents(Node node, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    private bool elaborateJsxComponents(Node node, Type source, Type target, Relation relation, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         var reportedError = false;
         {
@@ -399,9 +399,9 @@ public sealed partial class Checker
         {
             var containingElement = node.Parent.Parent;
             var childrenPropName = this.getJsxElementChildrenPropertyName(this.getJsxNamespaceAt(node));
-            if ((childrenPropName == Ast.InternalSymbolNameMissing))
+            if ((childrenPropName.EqualsString(Ast.InternalSymbolNameMissing)))
             {
-                childrenPropName = "children";
+                childrenPropName = ByteStringValue.FromString("children");
             }
 
             var childrenNameType = this.getStringLiteralType(childrenPropName);
@@ -448,7 +448,7 @@ public sealed partial class Checker
                     invalidTextDiagnosticArgs = new List<object>
                     {
                         tagNameText,
-                        childrenPropName,
+                        childrenPropName.Materialize(),
                         this.typeToStringByteString(childrenTargetType)
                     };
                 }
@@ -467,7 +467,7 @@ public sealed partial class Checker
                 {
                     if (!this.isTypeRelatedTo(this.getIndexedAccessType(source, childrenNameType), childrenTargetType, relation))
                     {
-                        var diag = this.error(containingElement.AsJsxElement().OpeningElement.TagName(), Diagnostics.This_JSX_tag_s_0_prop_expects_a_single_child_of_type_1_but_multiple_children_were_provided, childrenPropName, this.typeToStringByteString(childrenTargetType));
+                        var diag = this.error(containingElement.AsJsxElement().OpeningElement.TagName(), Diagnostics.This_JSX_tag_s_0_prop_expects_a_single_child_of_type_1_but_multiple_children_were_provided, childrenPropName.Materialize(), this.typeToStringByteString(childrenTargetType));
                         this.reportDiagnostic(diag, diagnosticOutput);
                         reportedError = true;
                     }
@@ -488,7 +488,7 @@ public sealed partial class Checker
                 {
                     if (!this.isTypeRelatedTo(this.getIndexedAccessType(source, childrenNameType), childrenTargetType, relation))
                     {
-                        var diag2 = this.error(containingElement.AsJsxElement().OpeningElement.TagName(), Diagnostics.This_JSX_tag_s_0_prop_expects_type_1_which_requires_multiple_children_but_only_a_single_child_was_provided, childrenPropName, this.typeToStringByteString(childrenTargetType));
+                        var diag2 = this.error(containingElement.AsJsxElement().OpeningElement.TagName(), Diagnostics.This_JSX_tag_s_0_prop_expects_type_1_which_requires_multiple_children_but_only_a_single_child_was_provided, childrenPropName.Materialize(), this.typeToStringByteString(childrenTargetType));
                         this.reportDiagnostic(diag2, diagnosticOutput);
                         reportedError = true;
                     }
@@ -571,7 +571,7 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:420:1.
-    private bool elaborateIterableOrArrayLikeTargetElementwise(IEnumerable<JsxElaborationElement> iterator, Type source, Type target, Relation relation, List<Diagnostic> diagnosticOutput)
+    private bool elaborateIterableOrArrayLikeTargetElementwise(IEnumerable<JsxElaborationElement> iterator, Type source, Type target, Relation relation, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         var tupleOrArrayLikeTargetParts = this.filterType(target, this.isArrayOrTupleLikeType);
         var nonTupleOrArrayLikeTargetParts = this.filterType(target, (t) =>
@@ -602,7 +602,7 @@ public sealed partial class Checker
                 {
                     if ((iterationType != null))
                     {
-                        targetPropType = this.getUnionType(new List<Type> { iterationType, targetIndexedPropType });
+                        targetPropType = this.getUnionType((ReadOnlySpan<Type>)[iterationType, targetIndexedPropType]);
                     }
                     else
                     {
@@ -677,7 +677,7 @@ public sealed partial class Checker
             {
                 jsxSpecific = Core.Find(properties, (x) =>
                 {
-                    return (Ast.SymbolName(x) == "htmlFor");
+                    return (Ast.SymbolNameValue(x).EqualsBytes("htmlFor"u8));
                 });
                 break;
             }
@@ -686,7 +686,7 @@ public sealed partial class Checker
             {
                 jsxSpecific = Core.Find(properties, (x2) =>
                 {
-                    return (Ast.SymbolName(x2) == "className");
+                    return (Ast.SymbolNameValue(x2).EqualsBytes("className"u8));
                 });
                 break;
             }
@@ -697,20 +697,20 @@ public sealed partial class Checker
             return jsxSpecific;
         }
 
-        return this.getSpellingSuggestionForName(name, properties ?? [], SymbolFlags.Value);
+        return this.getSpellingSuggestionForName(name, GoSlices.Values(properties), SymbolFlags.Value);
     }
 
     // Upstream tsc/internal/checker/jsx.go:500:1.
     private Type getJSXFragmentType(Node node)
     {
-        var links = this.sourceFileLinks.Get(Ast.GetSourceFileOfNode(node).AsNode());
+        ref var links = ref this.sourceFileLinks.Get(Ast.GetSourceFileOfNode(node).AsNode());
         if ((links.jsxFragmentType != null))
         {
             return links.jsxFragmentType;
         }
 
         var jsxFragmentFactoryName = this.getJsxNamespace(node);
-        var shouldResolveFactoryReference = ((((this.compilerOptions.Jsx == JsxEmit.React) || (this.compilerOptions.JsxFragmentFactory != ""))) && (jsxFragmentFactoryName != "null"));
+        var shouldResolveFactoryReference = ((((this.compilerOptions.Jsx == JsxEmit.React) || (this.compilerOptions.JsxFragmentFactory != ""))) && (!jsxFragmentFactoryName.EqualsBytes("null"u8)));
         if (!shouldResolveFactoryReference)
         {
             links.jsxFragmentType = this.anyType;
@@ -736,7 +736,7 @@ public sealed partial class Checker
             return links.jsxFragmentType;
         }
 
-        if ((jsxFactorySymbol.Name == ReactNames.Fragment))
+        if ((jsxFactorySymbol.NameValue.EqualsString(ReactNames.Fragment)))
         {
             links.jsxFragmentType = this.getTypeOfSymbol(jsxFactorySymbol);
             return links.jsxFragmentType;
@@ -828,7 +828,7 @@ public sealed partial class Checker
     // @param signature a candidate signature we are trying whether it is a call signature
     // @param relation a relationship to check parameter and argument type
     // Upstream tsc/internal/checker/jsx.go:591:1.
-    private bool checkApplicableSignatureForJsxCallLikeElement(Node node, Signature signature, Relation relation, CheckMode checkMode, bool reportErrors, List<Diagnostic> diagnosticOutput)
+    private bool checkApplicableSignatureForJsxCallLikeElement(Node node, Signature signature, Relation relation, CheckMode checkMode, bool reportErrors, GoRef<Slice<Diagnostic>> diagnosticOutput)
     {
         var paramType = this.getEffectiveFirstArgumentForJsxSignature(signature, node);
         Type attributesType = default;
@@ -1020,7 +1020,7 @@ public sealed partial class Checker
         Func<Type> createJsxAttributesType = () =>
         {
             objectFlags |= ObjectFlags.FreshLiteral;
-            var result = this.newAnonymousType(attributesSymbol, attributesTable, default, default, null);
+            var result = this.newAnonymousType(attributesSymbol, attributesTable, default, default, default);
             result.objectFlags |= ((objectFlags | ObjectFlags.ObjectLiteral) | ObjectFlags.ContainsObjectOrArrayLiteral);
             return result;
         };
@@ -1040,7 +1040,7 @@ public sealed partial class Checker
                     {
                         var exprType = this.checkJsxAttribute(attributeDecl, checkMode);
                         objectFlags |= (exprType.objectFlags & ObjectFlags.PropagatingFlags);
-                        var attributeSymbol = this.newSymbol((SymbolFlags.Property | member.Flags), member.Name);
+                        var attributeSymbol = this.newSymbol((SymbolFlags.Property | member.Flags), member.NameValue);
                         attributeSymbol.Declarations = member.Declarations;
                         attributeSymbol.Parent = member.Parent;
                         if ((member.ValueDeclaration != null))
@@ -1048,16 +1048,16 @@ public sealed partial class Checker
                             attributeSymbol.ValueDeclaration = member.ValueDeclaration;
                         }
 
-                        var links = this.valueSymbolLinks.Get(attributeSymbol);
+                        ref var links = ref this.valueSymbolLinks.Get(attributeSymbol);
                         links.resolvedType = exprType;
                         links.target = member;
-                        attributesTable[attributeSymbol.Name] = attributeSymbol;
+                        attributesTable[attributeSymbol.NameValue] = attributeSymbol;
                         if ((allAttributesTable != null))
                         {
-                            allAttributesTable[attributeSymbol.Name] = attributeSymbol;
+                            allAttributesTable[attributeSymbol.NameValue] = attributeSymbol;
                         }
 
-                        if ((attributeDecl.Name().TextValue().EqualsString(jsxChildrenPropertyName)))
+                        if ((attributeDecl.Name().TextValue().EqualsValue(jsxChildrenPropertyName)))
                         {
                             explicitlySpecifyChildrenAttribute = true;
                         }
@@ -1098,7 +1098,7 @@ public sealed partial class Checker
                             this.error(attributeDecl.Expression(), Diagnostics.Spread_types_may_only_be_created_from_object_types);
                             if ((typeToIntersect != null))
                             {
-                                typeToIntersect = this.getIntersectionType(new List<Type> { typeToIntersect, exprType2 });
+                                typeToIntersect = this.getIntersectionType((ReadOnlySpan<Type>)[typeToIntersect, exprType2]);
                             }
                             else
                             {
@@ -1154,12 +1154,12 @@ public sealed partial class Checker
         };
         if (parentHasSemanticJsxChildren(openingLikeElement))
         {
-            List<Type> childTypes = this.checkJsxChildren(openingLikeElement.Parent, checkMode);
-            if (((!hasSpreadAnyType && (jsxChildrenPropertyName != Ast.InternalSymbolNameMissing)) && (jsxChildrenPropertyName != "")))
+            Slice<Type> childTypes = this.checkJsxChildren(openingLikeElement.Parent, checkMode);
+            if (((!hasSpreadAnyType && (!jsxChildrenPropertyName.EqualsString(Ast.InternalSymbolNameMissing))) && (jsxChildrenPropertyName.Length != 0)))
             {
                 if (explicitlySpecifyChildrenAttribute)
                 {
-                    this.error(attributeParent, Diagnostics.X_0_are_specified_twice_The_attribute_named_0_will_be_overwritten, jsxChildrenPropertyName);
+                    this.error(attributeParent, Diagnostics.X_0_are_specified_twice_The_attribute_named_0_will_be_overwritten, jsxChildrenPropertyName.Materialize());
                 }
 
                 Type childrenContextualType = default;
@@ -1175,7 +1175,7 @@ public sealed partial class Checker
                 }
 
                 var childrenPropSymbol = this.newSymbol(SymbolFlags.Property, jsxChildrenPropertyName);
-                var links2 = this.valueSymbolLinks.Get(childrenPropSymbol);
+                ref var links2 = ref this.valueSymbolLinks.Get(childrenPropSymbol);
                 switch (true)
                 {
                     case true when (GoRuntime.Len(childTypes) == 1):
@@ -1197,12 +1197,12 @@ public sealed partial class Checker
                     }
                 }
 
-                childrenPropSymbol.ValueDeclaration = this.factory.NewPropertySignatureDeclaration(null, this.factory.NewIdentifier(jsxChildrenPropertyName), null, null, null);
+                childrenPropSymbol.ValueDeclaration = this.factory.NewPropertySignatureDeclaration(null, this.factory.NewIdentifierWithTextValue(jsxChildrenPropertyName), null, null, null);
                 childrenPropSymbol.ValueDeclaration.Parent = attributeParent;
                 childrenPropSymbol.ValueDeclaration.AsPropertySignatureDeclaration().Symbol = childrenPropSymbol;
                 var childPropMap = new SymbolTable();
                 childPropMap[jsxChildrenPropertyName] = childrenPropSymbol;
-                spread = this.getSpreadType(spread, this.newAnonymousType(attributesSymbol, childPropMap, default, default, null), attributesSymbol, (objectFlags | this.getPropagatingFlagsOfTypes(childTypes, TypeFlags.None)), false);
+                spread = this.getSpreadType(spread, this.newAnonymousType(attributesSymbol, childPropMap, default, default, default), attributesSymbol, (objectFlags | this.getPropagatingFlagsOfTypes(childTypes, TypeFlags.None)), false);
             }
         }
 
@@ -1215,7 +1215,7 @@ public sealed partial class Checker
         {
             if ((spread != this.emptyJsxObjectType))
             {
-                return this.getIntersectionType(new List<Type> { typeToIntersect, spread });
+                return this.getIntersectionType((ReadOnlySpan<Type>)[typeToIntersect, spread]);
             }
 
             return typeToIntersect;
@@ -1241,9 +1241,9 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:877:1.
-    private List<Type> checkJsxChildren(Node node, CheckMode checkMode)
+    private Slice<Type> checkJsxChildren(Node node, CheckMode checkMode)
     {
-        List<Type> childTypes = default;
+        Slice<Type> childTypes = default;
         {
             foreach (var child in GoRuntime.RangeValues(node.Children().Nodes))
             {
@@ -1301,7 +1301,7 @@ public sealed partial class Checker
 
         if (((GoRuntime.Len(signatures) == 0) && ((apparentElemType.flags & TypeFlags.Union) != 0)))
         {
-            signatures = this.getUnionSignatures(Core.Map(apparentElemType.Types(), (t) =>
+            signatures = this.getUnionSignatures(Core.MapSlice(apparentElemType.Types(), (t) =>
             {
                 return this.getUninstantiatedJsxSignaturesOfType(t, caller);
             }));
@@ -1341,15 +1341,15 @@ public sealed partial class Checker
         var ns = this.getJsxNamespaceAt(context);
         var forcedLookupLocation = this.getJsxElementPropertiesName(ns);
         Type attributesType = default;
-        switch (forcedLookupLocation)
+        switch (true)
         {
-            case Ast.InternalSymbolNameMissing:
+            case true when forcedLookupLocation.EqualsString(Ast.InternalSymbolNameMissing):
             {
                 attributesType = this.getTypeOfFirstParameterOfSignatureWithFallback(sig, this.unknownType);
                 break;
             }
 
-            case "":
+            case true when forcedLookupLocation.Length == 0:
             {
                 attributesType = this.getReturnTypeOfSignature(sig);
                 break;
@@ -1360,7 +1360,7 @@ public sealed partial class Checker
                 attributesType = this.getJsxPropsTypeForSignatureFromMember(sig, forcedLookupLocation);
                 if (((attributesType == null) && (GoRuntime.Len(context.Attributes().Properties()) != 0)))
                 {
-                    this.error(context, Diagnostics.JSX_element_class_does_not_support_attributes_because_it_does_not_have_a_0_property, forcedLookupLocation);
+                    this.error(context, Diagnostics.JSX_element_class_does_not_support_attributes_because_it_does_not_have_a_0_property, forcedLookupLocation.Materialize());
                 }
 
                 break;
@@ -1385,9 +1385,9 @@ public sealed partial class Checker
             var typeParams = this.getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(intrinsicClassAttribs.symbol);
             var hostClassType = this.getReturnTypeOfSignature(sig);
             Type libraryManagedAttributeType = default;
-            if ((typeParams != null))
+            if ((!typeParams.IsNil))
             {
-                var inferredArgs = this.fillMissingTypeArguments(new List<Type> { hostClassType }, typeParams, this.getMinTypeArgumentCount(typeParams), Ast.IsInJSFile(context));
+                var inferredArgs = this.fillMissingTypeArguments(Slice<Type>.FromArray([hostClassType]), typeParams, this.getMinTypeArgumentCount(typeParams), Ast.IsInJSFile(context));
                 libraryManagedAttributeType = this.instantiateType(intrinsicClassAttribs, newTypeMapper(typeParams, inferredArgs));
             }
             else
@@ -1408,11 +1408,11 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:989:1.
-    private Type getJsxPropsTypeForSignatureFromMember(Signature sig, string forcedLookupLocation)
+    private Type getJsxPropsTypeForSignatureFromMember(Signature sig, ByteStringValue forcedLookupLocation)
     {
         if ((sig.composite != null))
         {
-            List<Type> results = default;
+            Slice<Type> results = default;
             {
                 foreach (var signature in GoRuntime.RangeValues(sig.composite.signatures))
                 {
@@ -1451,7 +1451,7 @@ public sealed partial class Checker
         if ((managedSym != null))
         {
             var ctorType = this.getStaticTypeOfReferencedJsxConstructor(context);
-            var result = this.instantiateAliasOrInterfaceWithDefaults(managedSym, new List<Type> { ctorType, attributesType }, Ast.IsInJSFile(context));
+            var result = this.instantiateAliasOrInterfaceWithDefaults(managedSym, Slice<Type>.FromArray([ctorType, attributesType]), Ast.IsInJSFile(context));
             if ((result != null))
             {
                 return result;
@@ -1462,7 +1462,7 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:1030:1.
-    private Type instantiateAliasOrInterfaceWithDefaults(Symbol managedSym, List<Type> typeArguments, bool inJavaScript)
+    private Type instantiateAliasOrInterfaceWithDefaults(Symbol managedSym, Slice<Type> typeArguments, bool inJavaScript)
     {
         var declaredManagedType = this.getDeclaredTypeOfSymbol(managedSym);
         if (((managedSym.Flags & SymbolFlags.TypeAlias) != 0))
@@ -1520,17 +1520,17 @@ public sealed partial class Checker
     //
     //	non-intrinsic elements' attributes type is the element instance type)
     // Upstream tsc/internal/checker/jsx.go:1073:1.
-    private string getJsxElementPropertiesName(Symbol jsxNamespace)
+    private ByteStringValue getJsxElementPropertiesName(Symbol jsxNamespace)
     {
         return this.getNameFromJsxElementAttributesContainer(JsxNames.ElementAttributesPropertyNameContainer, jsxNamespace);
     }
 
     // Upstream tsc/internal/checker/jsx.go:1077:1.
-    private string getJsxElementChildrenPropertyName(Symbol jsxNamespace)
+    private ByteStringValue getJsxElementChildrenPropertyName(Symbol jsxNamespace)
     {
         if (((this.compilerOptions.Jsx == JsxEmit.ReactJSX) || (this.compilerOptions.Jsx == JsxEmit.ReactJSXDev)))
         {
-            return "children";
+            return ByteStringValue.FromString("children");
         }
 
         return this.getNameFromJsxElementAttributesContainer(JsxNames.ElementChildrenAttributeNameContainer, jsxNamespace);
@@ -1543,7 +1543,7 @@ public sealed partial class Checker
     //
     //	if other string is given or the container doesn't exist, return undefined.
     // Upstream tsc/internal/checker/jsx.go:1091:1.
-    private string getNameFromJsxElementAttributesContainer(string nameOfAttribPropContainer, Symbol jsxNamespace)
+    private ByteStringValue getNameFromJsxElementAttributesContainer(string nameOfAttribPropContainer, Symbol jsxNamespace)
     {
         if ((jsxNamespace != null))
         {
@@ -1554,12 +1554,12 @@ public sealed partial class Checker
                 var propertiesOfJsxElementAttribPropInterface = this.getPropertiesOfType(jsxElementAttribPropInterfaceType);
                 if ((GoRuntime.Len(propertiesOfJsxElementAttribPropInterface) == 0))
                 {
-                    return "";
+                    return default;
                 }
 
                 if ((GoRuntime.Len(propertiesOfJsxElementAttribPropInterface) == 1))
                 {
-                    return propertiesOfJsxElementAttribPropInterface[0].Name;
+                    return propertiesOfJsxElementAttribPropInterface[0].NameValue;
                 }
 
                 if (((GoRuntime.Len(propertiesOfJsxElementAttribPropInterface) > 1) && (GoRuntime.Len(jsxElementAttribPropInterfaceSym.Declarations) != 0)))
@@ -1569,7 +1569,7 @@ public sealed partial class Checker
             }
         }
 
-        return Ast.InternalSymbolNameMissing;
+        return ByteStringValue.FromString(Ast.InternalSymbolNameMissing);
     }
 
     // Upstream tsc/internal/checker/jsx.go:1114:1.
@@ -1609,7 +1609,7 @@ public sealed partial class Checker
         var intrinsicElementsType = this.getJsxType(JsxNames.IntrinsicElements, location);
         if (!this.isErrorType(intrinsicElementsType))
         {
-            var stringLiteralTypeName = getStringLiteralValue(t);
+            var stringLiteralTypeName = getStringLiteralValueText(t);
             var intrinsicProp = this.getPropertyOfType(intrinsicElementsType, stringLiteralTypeName);
             if ((intrinsicProp != null))
             {
@@ -1670,7 +1670,7 @@ public sealed partial class Checker
 
         var parameterSymbol = this.newSymbol(SymbolFlags.FunctionScopedVariable, "props");
         this.valueSymbolLinks.Get(parameterSymbol).resolvedType = result;
-        return this.newSignature(SignatureFlags.None, null, null, null, new List<Symbol> { parameterSymbol }, elementType, null, 1);
+        return this.newSignature(SignatureFlags.None, null, default, null, Slice<Symbol>.FromArray([parameterSymbol]), elementType, null, 1);
     }
 
     // Get attributes type of the given intrinsic opening-like Jsx element by resolving the tag name.
@@ -1680,7 +1680,7 @@ public sealed partial class Checker
     private Type getIntrinsicAttributesTypeFromJsxOpeningLikeElement(Node node)
     {
         TypeScript.Scanner.Debug.Assert(isJsxIntrinsicTagName(node.TagName()));
-        var links = this.jsxElementLinks.Get(node);
+        ref var links = ref this.jsxElementLinks.Get(node);
         if ((links.resolvedJsxElementAttributesType != null))
         {
             return links.resolvedJsxElementAttributesType;
@@ -1714,7 +1714,7 @@ public sealed partial class Checker
     // Upstream tsc/internal/checker/jsx.go:1214:1.
     private Symbol getIntrinsicTagSymbol(Node node)
     {
-        var links = this.symbolNodeLinks.Get(node);
+        ref var links = ref this.symbolNodeLinks.Get(node);
         if ((links.resolvedSymbol != null))
         {
             return links.resolvedSymbol;
@@ -1776,7 +1776,7 @@ public sealed partial class Checker
             return null;
         }
 
-        return this.getUnionType(new List<Type> { jsxElementType, this.nullType });
+        return this.getUnionType((ReadOnlySpan<Type>)[jsxElementType, this.nullType]);
     }
 
     // Upstream tsc/internal/checker/jsx.go:1265:1.
@@ -1812,7 +1812,7 @@ public sealed partial class Checker
             return null;
         }
 
-        var t = this.instantiateAliasOrInterfaceWithDefaults(sym, null, Ast.IsInJSFile(location));
+        var t = this.instantiateAliasOrInterfaceWithDefaults(sym, default, Ast.IsInJSFile(location));
         if (((t == null) || this.isErrorType(t)))
         {
             return null;
@@ -1850,18 +1850,18 @@ public sealed partial class Checker
     // Upstream tsc/internal/checker/jsx.go:1304:1.
     private Symbol getJsxNamespaceAt(Node location)
     {
-        JsxElementLinks links = default;
+        Span<JsxElementLinks> links = default;
         if ((location != null))
         {
-            links = this.jsxElementLinks.Get(location);
+            links = System.Runtime.InteropServices.MemoryMarshal.CreateSpan(ref this.jsxElementLinks.Get(location), 1);
         }
 
-        if ((((links != null) && (links.jsxNamespace != null)) && (links.jsxNamespace != this.unknownSymbol)))
+        if ((((!links.IsEmpty) && (links[0].jsxNamespace != null)) && (links[0].jsxNamespace != this.unknownSymbol)))
         {
-            return links.jsxNamespace;
+            return links[0].jsxNamespace;
         }
 
-        if (((links == null) || (links.jsxNamespace != this.unknownSymbol)))
+        if (((links.IsEmpty) || (links[0].jsxNamespace != this.unknownSymbol)))
         {
             var resolvedNamespace = this.getJsxNamespaceContainerForImplicitImport(location);
             if (((resolvedNamespace == null) || (resolvedNamespace == this.unknownSymbol)))
@@ -1875,18 +1875,18 @@ public sealed partial class Checker
                 var candidate = this.resolveSymbol(this.getSymbol(this.getExportsOfSymbol(this.resolveSymbol(resolvedNamespace)), JsxNames.JSX, SymbolFlags.Namespace));
                 if (((candidate != null) && (candidate != this.unknownSymbol)))
                 {
-                    if ((links != null))
+                    if ((!links.IsEmpty))
                     {
-                        links.jsxNamespace = candidate;
+                        links[0].jsxNamespace = candidate;
                     }
 
                     return candidate;
                 }
             }
 
-            if ((links != null))
+            if ((!links.IsEmpty))
             {
-                links.jsxNamespace = this.unknownSymbol;
+                links[0].jsxNamespace = this.unknownSymbol;
             }
         }
 
@@ -1900,17 +1900,17 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:1339:1.
-    private string getJsxNamespace(Node location)
+    private ByteStringValue getJsxNamespace(Node location)
     {
         if ((location != null))
         {
             var file = Ast.GetSourceFileOfNode(location);
             if ((file != null))
             {
-                var links = this.sourceFileLinks.Get(file.AsNode());
+                ref var links = ref this.sourceFileLinks.Get(file.AsNode());
                 if (Ast.IsJsxOpeningFragment(location))
                 {
-                    if ((links.localJsxFragmentNamespace != ""))
+                    if ((links.localJsxFragmentNamespace.Length != 0))
                     {
                         return links.localJsxFragmentNamespace;
                     }
@@ -1918,10 +1918,10 @@ public sealed partial class Checker
                     var jsxFragmentPragma = Ast.GetPragmaFromSourceFile(file, "jsxfrag");
                     if ((jsxFragmentPragma != null))
                     {
-                        links.localJsxFragmentFactory = this.parseIsolatedEntityName(jsxFragmentPragma.Args["factory"].Value);
+                        links.localJsxFragmentFactory = this.parseIsolatedEntityName(Ast.GetPragmaArgumentValue(jsxFragmentPragma, ByteStringValue.FromString("factory")));
                         if ((links.localJsxFragmentFactory != null))
                         {
-                            links.localJsxFragmentNamespace = Ast.GetFirstIdentifier(links.localJsxFragmentFactory).Text();
+                            links.localJsxFragmentNamespace = Ast.GetFirstIdentifier(links.localJsxFragmentFactory).TextValue();
                             return links.localJsxFragmentNamespace;
                         }
                     }
@@ -1930,14 +1930,14 @@ public sealed partial class Checker
                     if ((entity != null))
                     {
                         links.localJsxFragmentFactory = entity;
-                        links.localJsxFragmentNamespace = Ast.GetFirstIdentifier(entity).Text();
+                        links.localJsxFragmentNamespace = Ast.GetFirstIdentifier(entity).TextValue();
                         return links.localJsxFragmentNamespace;
                     }
                 }
                 else
                 {
                     var localJsxNamespace = this.getLocalJsxNamespace(file);
-                    if ((localJsxNamespace != ""))
+                    if ((localJsxNamespace.Length != 0))
                     {
                         links.localJsxNamespace = localJsxNamespace;
                         return links.localJsxNamespace;
@@ -1946,39 +1946,39 @@ public sealed partial class Checker
             }
         }
 
-        if ((this._jsxNamespace == ""))
+        if ((this._jsxNamespace.Length == 0))
         {
-            this._jsxNamespace = "React";
+            this._jsxNamespace = ByteStringValue.FromString("React");
             if ((this.compilerOptions.JsxFactory != ""))
             {
                 this._jsxFactoryEntity = this.parseIsolatedEntityName(this.compilerOptions.JsxFactory);
                 if ((this._jsxFactoryEntity != null))
                 {
-                    this._jsxNamespace = Ast.GetFirstIdentifier(this._jsxFactoryEntity).Text();
+                    this._jsxNamespace = Ast.GetFirstIdentifier(this._jsxFactoryEntity).TextValue();
                 }
             }
             else
             {
                 if ((this.compilerOptions.ReactNamespace != ""))
                 {
-                    this._jsxNamespace = this.compilerOptions.ReactNamespace;
+                    this._jsxNamespace = ByteStringValue.FromString(this.compilerOptions.ReactNamespace);
                 }
             }
         }
 
         if ((this._jsxFactoryEntity == null))
         {
-            this._jsxFactoryEntity = this.factory.NewQualifiedName(this.factory.NewIdentifier(this._jsxNamespace), this.factory.NewIdentifier("createElement"));
+            this._jsxFactoryEntity = this.factory.NewQualifiedName(this.factory.NewIdentifierWithTextValue(this._jsxNamespace), this.factory.NewIdentifier("createElement"));
         }
 
         return this._jsxNamespace;
     }
 
     // Upstream tsc/internal/checker/jsx.go:1388:1.
-    private string getLocalJsxNamespace(SourceFile file)
+    private ByteStringValue getLocalJsxNamespace(SourceFile file)
     {
-        var links = this.sourceFileLinks.Get(file.AsNode());
-        if ((links.localJsxNamespace != ""))
+        ref var links = ref this.sourceFileLinks.Get(file.AsNode());
+        if ((links.localJsxNamespace.Length != 0))
         {
             return links.localJsxNamespace;
         }
@@ -1986,15 +1986,15 @@ public sealed partial class Checker
         var jsxPragma = Ast.GetPragmaFromSourceFile(file, "jsx");
         if ((jsxPragma != null))
         {
-            links.localJsxFactory = this.parseIsolatedEntityName(jsxPragma.Args["factory"].Value);
+            links.localJsxFactory = this.parseIsolatedEntityName(Ast.GetPragmaArgumentValue(jsxPragma, ByteStringValue.FromString("factory")));
             if ((links.localJsxFactory != null))
             {
-                links.localJsxNamespace = Ast.GetFirstIdentifier(links.localJsxFactory).Text();
+                links.localJsxNamespace = Ast.GetFirstIdentifier(links.localJsxFactory).TextValue();
                 return links.localJsxNamespace;
             }
         }
 
-        return "";
+        return default;
     }
 
     // Upstream tsc/internal/checker/jsx.go:1404:1.
@@ -2023,7 +2023,7 @@ public sealed partial class Checker
             var file = Ast.GetSourceFileOfNode(location);
             if ((file != null))
             {
-                var links = this.sourceFileLinks.Get(file.AsNode());
+                ref var links = ref this.sourceFileLinks.Get(file.AsNode());
                 if ((links.localJsxFragmentFactory != null))
                 {
                     return links.localJsxFragmentFactory;
@@ -2032,7 +2032,7 @@ public sealed partial class Checker
                 var jsxFragPragma = Ast.GetPragmaFromSourceFile(file, "jsxfrag");
                 if ((jsxFragPragma != null))
                 {
-                    links.localJsxFragmentFactory = this.parseIsolatedEntityName(jsxFragPragma.Args["factory"].Value);
+                    links.localJsxFragmentFactory = this.parseIsolatedEntityName(Ast.GetPragmaArgumentValue(jsxFragPragma, ByteStringValue.FromString("factory")));
                     return links.localJsxFragmentFactory;
                 }
             }
@@ -2047,9 +2047,11 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:1435:1.
-    private Node parseIsolatedEntityName(string name)
+    private Node parseIsolatedEntityName(string name) => parseIsolatedEntityName(ByteStringValue.FromString(name));
+
+    private Node parseIsolatedEntityName(ByteStringValue name)
     {
-        var result = Parser.ParseIsolatedEntityName(GoString.Bytes(name));
+        var result = Parser.ParseIsolatedEntityName(name);
         if ((result != null))
         {
             markAsSynthetic(result);
@@ -2070,7 +2072,7 @@ public sealed partial class Checker
     private Symbol getJsxNamespaceContainerForImplicitImport(Node location)
     {
         var file = Ast.GetSourceFileOfNode(location);
-        var links = this.jsxElementLinks.Get(file.AsNode());
+        ref var links = ref this.jsxElementLinks.Get(file.AsNode());
         if ((links.jsxImplicitImportContainer != null))
         {
             return Core.IfElse((links.jsxImplicitImportContainer == this.unknownSymbol), null, links.jsxImplicitImportContainer);
@@ -2079,18 +2081,20 @@ public sealed partial class Checker
         var canonicalErrorTag = links.firstJSXTagInFile;
         if ((canonicalErrorTag == null))
         {
+            // The recursive visitor retains the live arena location, not a copy of its payload.
+            var linksLocation = this.jsxElementLinks.TryGet(file.AsNode());
             Visitor visit = default;
             visit = (node) =>
             {
                 if ((Ast.IsJsxElement(node) || Ast.IsJsxSelfClosingElement(node)))
                 {
-                    links.firstJSXTagInFile = node;
+                    linksLocation.Span[0].firstJSXTagInFile = node;
                     return true;
                 }
 
                 if (Ast.IsJsxFragment(node))
                 {
-                    links.firstJSXTagInFile = node.AsJsxFragment().OpeningFragment;
+                    linksLocation.Span[0].firstJSXTagInFile = node.AsJsxFragment().OpeningFragment;
                     return true;
                 }
 
@@ -2103,7 +2107,7 @@ public sealed partial class Checker
         var tuple1 = this.getJSXRuntimeImportSpecifier(file);
         var moduleReference = tuple1.Item1;
         var specifier = tuple1.Item2;
-        if ((moduleReference == ""))
+        if ((moduleReference.Length == 0))
         {
             return null;
         }
@@ -2121,8 +2125,8 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:1486:1.
-    private (string, Node) getJSXRuntimeImportSpecifier(SourceFile file)
+    private (ByteStringValue, Node) getJSXRuntimeImportSpecifier(SourceFile file)
     {
-        return this.program.GetJSXRuntimeImportSpecifier(PathKey.FromGoString(file.PathKey()));
+        return this.program.GetJSXRuntimeImportSpecifierValue(PathKey.FromGoString(file.PathKey()));
     }
 }

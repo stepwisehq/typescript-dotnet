@@ -24,14 +24,14 @@ public static partial class TsOptions
     private readonly record struct propOfRaw(List<object?>? sliceValue, string wrongValue = "");
     public static ParsedCommandLine ParseJsonSourceFileConfigFileContent(TsConfigSourceFile sourceFile, IFS fs, RootedDirectoryPath basePath, CompilerOptions? existingOptions = null, OrderedMap<string, object?>? existingOptionsRaw = null, List<PathKey>? resolutionStack = null, IExtendedConfigCache? extendedConfigCache = null) => parseJsonConfigFileContentWorker(null, sourceFile, fs, basePath, existingOptions, existingOptionsRaw, sourceFile.FileName(), resolutionStack, extendedConfigCache);
     public static ParsedCommandLine ParseJsonConfigFileContent(object? json, IFS fs, RootedDirectoryPath basePath, CompilerOptions? existingOptions = null, RootedFilePath configFileName = default, List<PathKey>? resolutionStack = null, IExtendedConfigCache? extendedConfigCache = null) => parseJsonConfigFileContentWorker(normalizeJsonValue(json) as OrderedMap<string, object?> ?? new(), null, fs, basePath, existingOptions, null, configFileName, resolutionStack, extendedConfigCache);
-    public static (ParsedCommandLine? Parsed, List<Diagnostic>? Errors) GetParsedCommandLineOfConfigFile(RootedFilePath fileName, CompilerOptions? options, OrderedMap<string, object?>? rawOptions, IFS fs, IExtendedConfigCache? cache = null) => GetParsedCommandLineOfConfigFilePath(fileName, fs.CaseSensitivity().PathKey(fileName.AsPath()), options, rawOptions, fs, cache);
-    public static (ParsedCommandLine? Parsed, List<Diagnostic>? Errors) GetParsedCommandLineOfConfigFilePath(RootedFilePath fileName, PathKey path, CompilerOptions? options, OrderedMap<string, object?>? rawOptions, IFS fs, IExtendedConfigCache? cache = null)
+    public static (ParsedCommandLine? Parsed, Slice<Diagnostic> Errors) GetParsedCommandLineOfConfigFile(RootedFilePath fileName, CompilerOptions? options, OrderedMap<string, object?>? rawOptions, IFS fs, IExtendedConfigCache? cache = null) => GetParsedCommandLineOfConfigFilePath(fileName, fs.CaseSensitivity().PathKey(fileName.AsPath()), options, rawOptions, fs, cache);
+    public static (ParsedCommandLine? Parsed, Slice<Diagnostic> Errors) GetParsedCommandLineOfConfigFilePath(RootedFilePath fileName, PathKey path, CompilerOptions? options, OrderedMap<string, object?>? rawOptions, IFS fs, IExtendedConfigCache? cache = null)
     {
-        var(text, errors) = tryReadFile(fileName, fs.ReadFile, new());
-        if (errors is { Count: > 0 })
+        var(text, errors) = tryReadFile(fileName, fs.ReadFile, Slice<Diagnostic>.Make(0));
+        if (errors is { Length: > 0 })
             return (null, errors);
         var source = NewTsconfigSourceFileFromFilePath(fileName, path, text);
-        return (ParseJsonSourceFileConfigFileContent(source, fs, fileName.Directory(), options, rawOptions, null, cache), null);
+        return (ParseJsonSourceFileConfigFileContent(source, fs, fileName.Directory(), options, rawOptions, null, cache), default);
     }
 
     internal static ParsedCommandLine parseJsonConfigFileContentWorker(OrderedMap<string, object?>? json, TsConfigSourceFile? sourceFile, IFS fs, RootedDirectoryPath basePath, CompilerOptions? existingOptions, OrderedMap<string, object?>? existingOptionsRaw, RootedFilePath configFileName, List<PathKey>? resolutionStack, IExtendedConfigCache? cache)
@@ -53,13 +53,13 @@ public static partial class TsOptions
                 if (value is List<object?> values)
                 {
                     if (sourceFile == null && !Core.Every(values, validateElement))
-                        (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, name, elementType));
+                        errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, name, elementType));
                     return new(values);
                 }
 
                 if (sourceFile == null)
                 {
-                    (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, name, "Array"));
+                    errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Compiler_option_0_requires_a_value_of_type_1, name, "Array"));
                     return new(null, "not-array");
                 }
             }
@@ -78,10 +78,10 @@ public static partial class TsOptions
                 {
                     string name = configFileName.AsString() != "" ? configFileName.AsString() : "tsconfig.json";
                     var node = ForEachTsConfigPropArray(sourceFile.SourceFile, "files", property => property.Initializer);
-                    (errors ??= new()).Add(CreateDiagnosticForNodeInSourceFile(sourceFile.SourceFile, node!, Diagnostics.The_files_list_in_config_file_0_is_empty, name));
+                    errors = errors.Append(CreateDiagnosticForNodeInSourceFile(sourceFile.SourceFile, node!, Diagnostics.The_files_list_in_config_file_0_is_empty, name));
                 }
                 else
-                    (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.The_files_list_in_config_file_0_is_empty, configFileName));
+                    errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.The_files_list_in_config_file_0_is_empty, configFileName));
             }
         }
 
@@ -115,8 +115,8 @@ public static partial class TsOptions
         {
             var(validated, validationErrors) = validateSpecs(includesOfRaw.sliceValue, true, tsconfigToSourceFile(sourceFile), "include");
             includesBefore = validated;
-            if (validationErrors != null)
-                (errors ??= new()).AddRange(validationErrors);
+            if (!validationErrors.IsNil)
+                errors = errors.Append(validationErrors);
             includes = substitutePatterns(includesBefore, namesBase) ?? includesBefore;
         }
 
@@ -124,8 +124,8 @@ public static partial class TsOptions
         {
             var(validated, validationErrors) = validateSpecs(excludesOfRaw.sliceValue, false, tsconfigToSourceFile(sourceFile), "exclude");
             excludes = validated;
-            if (validationErrors != null)
-                (errors ??= new()).AddRange(validationErrors);
+            if (!validationErrors.IsNil)
+                errors = errors.Append(validationErrors);
             excludes = substitutePatterns(excludes, namesBase) ?? excludes;
         }
 
@@ -170,9 +170,9 @@ public static partial class TsOptions
         for (int i = 0; i < (mappersOfRaw.sliceValue?.Count ?? 0); i++)
         {
             var(mapper, mapperErrors) = parseContentMapper(mappersOfRaw.sliceValue![i]);
-            if (mapperErrors != null)
+            if (!mapperErrors.IsNil)
                 foreach (var error in mapperErrors)
-                    (errors ??= new()).Add(setContentMapperDiagnosticLocation(error, mapperSource, getContentMapperSyntax(mapperSource, i, "")));
+                    errors = errors.Append(setContentMapperDiagnosticLocation(error, mapperSource, getContentMapperSyntax(mapperSource, i, "")));
             if (mapper != null)
             {
                 (mappers ??= new()).Add(mapper);
@@ -197,7 +197,7 @@ public static partial class TsOptions
                     if (message == null && !seenExtensions.Add(canonical))
                         message = Diagnostics.Content_mapper_file_extension_0_is_registered_by_more_than_one_content_mapper;
                     if (message != null)
-                        (errors ??= new()).Add(setContentMapperDiagnosticLocation(Ast.NewCompilerDiagnostic(message, extension), mapperSource, node));
+                        errors = errors.Append(setContentMapperDiagnosticLocation(Ast.NewCompilerDiagnostic(message, extension), mapperSource, node));
                     else
                     {
                         mapperExtensions.Add(extension);
@@ -210,7 +210,7 @@ public static partial class TsOptions
 
         if ((mappers?.Count ?? 0) > 0 && parsed.options?.CompilerOptions.RunExternalCode != Tristate.True)
         {
-            (errors ??= new()).Add(setContentMapperDiagnosticLocation(Ast.NewCompilerDiagnostic(Diagnostics.Content_mappers_require_the_runExternalCode_command_line_flag_to_be_enabled), mapperSource, getContentMappersKeySyntax(mapperSource)));
+            errors = errors.Append(setContentMapperDiagnosticLocation(Ast.NewCompilerDiagnostic(Diagnostics.Content_mappers_require_the_runExternalCode_command_line_flag_to_be_enabled), mapperSource, getContentMappersKeySyntax(mapperSource)));
             mappers = null;
             mapperExtensions = null;
         }
@@ -225,7 +225,7 @@ public static partial class TsOptions
                 mapper.PackageDirectory = directory;
                 if (error != null)
                 {
-                    (errors ??= new()).Add(setContentMapperDiagnosticLocation(error, mapperSource, getContentMapperSyntax(mapperSource, mapperIndices![i], "package")));
+                    errors = errors.Append(setContentMapperDiagnosticLocation(error, mapperSource, getContentMapperSyntax(mapperSource, mapperIndices![i], "package")));
                     continue;
                 }
 
@@ -244,7 +244,7 @@ public static partial class TsOptions
         {
             var result = getFileNamesFromConfigSpecs(specs, directory, parsed.options!.CompilerOptions, fs, mapperExtensions);
             if (shouldReportNoInputFiles(result.Files, canJsonReportNoInputFiles(raw), resolutionStack))
-                (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.No_inputs_were_found_in_config_file_0_Specified_include_paths_were_1_and_exclude_paths_were_2, configFileName, TypeScript.Json.JsonCodec.MarshalString(specs.includeSpecs ?? new List<string>()), TypeScript.Json.JsonCodec.MarshalString(specs.excludeSpecs ?? new List<string>())));
+                errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.No_inputs_were_found_in_config_file_0_Specified_include_paths_were_1_and_exclude_paths_were_2, configFileName, TypeScript.Json.JsonCodec.MarshalString(specs.includeSpecs ?? new List<string>()), TypeScript.Json.JsonCodec.MarshalString(specs.excludeSpecs ?? new List<string>())));
             return result;
         }
 
@@ -262,18 +262,18 @@ public static partial class TsOptions
                     continue;
                 if (!reference.hasPath || !reference.pathValid)
                 {
-                    (errors ??= new()).Add(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "path", Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "reference.path", "string"));
+                    errors = errors.Append(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "path", Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "reference.path", "string"));
                     continue;
                 }
 
                 if (reference.path == "")
                 {
-                    (errors ??= new()).Add(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "path", Diagnostics.Compiler_option_0_cannot_be_given_an_empty_string, "reference.path"));
+                    errors = errors.Append(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "path", Diagnostics.Compiler_option_0_cannot_be_given_an_empty_string, "reference.path"));
                     continue;
                 }
 
                 if (reference.hasCircular && !reference.circularValid)
-                    (errors ??= new()).Add(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "circular", Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "reference.circular", "boolean"));
+                    errors = errors.Append(createDiagnosticAtProjectReferenceProperty(sourceFile, i, "circular", Diagnostics.Compiler_option_0_requires_a_value_of_type_1, "reference.circular", "boolean"));
                 result.Add(new() { Path = TsPath.ToRootedPath(reference.path, directory), OriginalPath = reference.path, Circular = reference.reference.Circular });
             }
 
@@ -451,17 +451,17 @@ public static partial class TsOptions
     }
 
     internal static Message? specToDiagnostic(string spec, bool disallowTrailingRecursion) => disallowTrailingRecursion && invalidTrailingRecursion(spec) ? Diagnostics.File_specification_cannot_end_in_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : invalidDotDotAfterRecursiveWildcard(spec) ? Diagnostics.File_specification_cannot_contain_a_parent_directory_that_appears_after_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : null;
-    internal static (List<PathPattern>? Specs, List<Diagnostic>? Errors) validateSpecs(object specs, bool disallowTrailingRecursion, SourceFile? sourceFile, string key)
+    internal static (List<PathPattern>? Specs, Slice<Diagnostic> Errors) validateSpecs(object specs, bool disallowTrailingRecursion, SourceFile? sourceFile, string key)
     {
         List<PathPattern>? final = null;
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         foreach (var value in (List<object?>)specs)
         {
             if (value is not string spec)
                 continue;
             var message = specToDiagnostic(spec, disallowTrailingRecursion);
             if (message != null)
-                (errors ??= new()).Add(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, GetTsConfigPropArrayElementValue(sourceFile, key, spec)?.AsNode(), message, spec));
+                errors = errors.Append(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, GetTsConfigPropArrayElementValue(sourceFile, key, spec)?.AsNode(), message, spec));
             else
                 (final ??= new()).Add(TsPath.ToPathPattern(spec));
         }
@@ -472,15 +472,15 @@ public static partial class TsOptions
     internal static bool canJsonReportNoInputFiles(OrderedMap<string, object?> raw) => !raw.Has("files") && !raw.Has("references");
     internal static bool shouldReportNoInputFiles(List<RootedFilePath>? files, bool canReport, List<PathKey>? stack) => (files?.Count ?? 0) == 0 && canReport && (stack?.Count ?? 0) == 0;
     internal static bool isStringValue(object? value) => value is string;
-    internal static (parsedTsconfig Config, List<Diagnostic>? Errors) parseOwnConfigOfJsonSourceFile(SourceFile sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath configFileName)
+    internal static (parsedTsconfig Config, Slice<Diagnostic> Errors) parseOwnConfigOfJsonSourceFile(SourceFile sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath configFileName)
     {
         var compilerOptions = getDefaultCompilerOptions(configFileName);
         var acquisition = getDefaultTypeAcquisition(configFileName);
         List<RootedFilePath>? extendedPaths = null;
         List<Node>? rootCompilerOptions = null;
-        (object? , List<Diagnostic>? ) onPropertySet(string key, object? value, PropertyAssignment assignment, CommandLineOption? parent, CommandLineOption? option)
+        (object? , Slice<Diagnostic> ) onPropertySet(string key, object? value, PropertyAssignment assignment, CommandLineOption? parent, CommandLineOption? option)
         {
-            List<Diagnostic>? errors = null;
+            Slice<Diagnostic> errors = default;
             if (option != null && !ReferenceEquals(option, extendsOptionDeclaration))
                 (value, errors) = convertJsonOption(option, value, basePath, assignment, assignment.Initializer, sourceFile);
             if (parent != null && parent.Name != "undefined" && value != null)
@@ -500,7 +500,7 @@ public static partial class TsOptions
                 else if (key != "" && extraKeyDiagnostics(parent.Name) != null && parent.ElementOptions != null)
                 {
                     var possible = parent.ElementOptions.Get(key) ?? parent.ElementOptions.GetSpellingSuggestion(key);
-                    (errors ??= new()).Add(possible != null && possible.Name != key ? CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, assignment.AsNode().Name(), extraKeyDidYouMeanDiagnostics(parent.Name)!, key, possible.Name) : createUnknownOptionError(key, extraKeyDiagnostics(parent.Name)!, "", assignment.AsNode().Name(), sourceFile, null, null, null));
+                    errors = errors.Append(possible != null && possible.Name != key ? CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, assignment.AsNode().Name(), extraKeyDidYouMeanDiagnostics(parent.Name)!, key, possible.Name) : createUnknownOptionError(key, extraKeyDiagnostics(parent.Name)!, "", assignment.AsNode().Name(), sourceFile, null, null, null));
                 }
             }
             else if (ReferenceEquals(parent, tsconfigRootOptionsMap))
@@ -509,13 +509,13 @@ public static partial class TsOptions
                 {
                     var(paths, pathErrors) = getExtendsConfigPathOrArray(value, fs, basePath, configFileName, assignment, assignment.Initializer, sourceFile);
                     extendedPaths = paths;
-                    if (pathErrors != null)
-                        (errors ??= new()).AddRange(pathErrors);
+                    if (!pathErrors.IsNil)
+                        errors = errors.Append(pathErrors);
                 }
                 else if (option == null)
                 {
                     if (key == "excludes")
-                        (errors ??= new()).Add(CreateDiagnosticForNodeInSourceFile(sourceFile, assignment.AsNode().Name(), Diagnostics.Unknown_option_excludes_Did_you_mean_exclude));
+                        errors = errors.Append(CreateDiagnosticForNodeInSourceFile(sourceFile, assignment.AsNode().Name(), Diagnostics.Unknown_option_excludes_Did_you_mean_exclude));
                     if (Core.Find(optionsForCompiler, option => option.Name == key) != null)
                         (rootCompilerOptions ??= new()).Add(assignment.AsNode().Name());
                 }
@@ -526,13 +526,13 @@ public static partial class TsOptions
 
         var(raw, allErrors) = convertConfigFileToObject(sourceFile, new() { rootOptions = tsconfigRootOptionsMap, onPropertySet = onPropertySet });
         if ((rootCompilerOptions?.Count ?? 0) != 0 && raw is OrderedMap<string, object?> map && !map.Has("compilerOptions"))
-            (allErrors ??= new()).Add(CreateDiagnosticForNodeInSourceFile(sourceFile, rootCompilerOptions![0], Diagnostics.X_0_should_be_set_inside_the_compilerOptions_object_of_the_config_json_file, Ast.GetTextOfPropertyName(rootCompilerOptions[0])));
+            allErrors = allErrors.Append(CreateDiagnosticForNodeInSourceFile(sourceFile, rootCompilerOptions![0], Diagnostics.X_0_should_be_set_inside_the_compilerOptions_object_of_the_config_json_file, Ast.GetTextOfPropertyName(rootCompilerOptions[0])));
         return (new() { raw = raw, options = compilerOptions, typeAcquisition = acquisition, extendedConfigPaths = extendedPaths }, allErrors);
     }
 
-    internal static (TsConfigSourceFile Source, List<Diagnostic>? Errors) readJsonConfigFile(RootedFilePath fileName, PathKey path, Func<RootedFilePath, (string Text, bool Ok)> readFile)
+    internal static (TsConfigSourceFile Source, Slice<Diagnostic> Errors) readJsonConfigFile(RootedFilePath fileName, PathKey path, Func<RootedFilePath, (string Text, bool Ok)> readFile)
     {
-        var(text, errors) = tryReadFile(fileName, readFile, new());
+        var(text, errors) = tryReadFile(fileName, readFile, Slice<Diagnostic>.Make(0));
         if (text != "")
             return (NewTsconfigSourceFileFromFilePath(fileName, path, text), errors);
         var factory = new NodeFactory();
@@ -544,11 +544,12 @@ public static partial class TsOptions
         return (source, errors);
     }
 
-    internal static (parsedTsconfig? Config, List<Diagnostic>? Errors) getExtendedConfig(TsConfigSourceFile? sourceFile, RootedFilePath fileName, IFS fs, List<PathKey>? stack, IExtendedConfigCache? cache, extendsResult result)
+    internal static (parsedTsconfig? Config, Slice<Diagnostic> Errors) getExtendedConfig(TsConfigSourceFile? sourceFile, RootedFilePath fileName, IFS fs, List<PathKey>? stack, IExtendedConfigCache? cache, extendsResult result)
     {
         var path = fs.CaseSensitivity().PathKey(fileName.AsPath());
         var entry = cache != null && stack?.Contains(path) != true ? cache.GetExtendedConfig(fileName, path, stack, fs) : ParseExtendedConfig(fileName, path, stack, fs, cache);
-        List<Diagnostic>? errors = entry.errors is { Count: > 0 } ? new(entry.errors) : null;
+        Slice<Diagnostic> errors = default;
+        if (entry.errors.Length > 0) errors = errors.Append(entry.errors);
         if (entry.extendedResult != null && sourceFile != null)
         {
             result.extendedSourceFiles.Add(entry.extendedResult.FileName());
@@ -567,13 +568,13 @@ public static partial class TsOptions
         {
             extendedResult = source
         };
-        if (errors is { Count: > 0 })
+        if (errors is { Length: > 0 })
         {
             entry.errors = errors;
             return entry;
         }
 
-        if (source.SourceFile.Diagnostics()is { Count: > 0 } diagnostics)
+        if (source.SourceFile.Diagnostics()is { Length: > 0 } diagnostics)
         {
             entry.errors = diagnostics;
             return entry;
@@ -583,32 +584,32 @@ public static partial class TsOptions
         return entry;
     }
 
-    internal static (parsedTsconfig Config, List<Diagnostic>? Errors) parseConfig(OrderedMap<string, object?>? json, TsConfigSourceFile? sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, List<PathKey>? stack, IExtendedConfigCache? cache)
+    internal static (parsedTsconfig Config, Slice<Diagnostic> Errors) parseConfig(OrderedMap<string, object?>? json, TsConfigSourceFile? sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, List<PathKey>? stack, IExtendedConfigCache? cache)
     {
         var sensitivity = fs.CaseSensitivity();
         var path = sensitivity.PathKey(fileName.AsString() != "" ? fileName.AsPath() : basePath.AsPath());
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         if (stack?.Contains(path) == true)
         {
-            (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Circularity_detected_while_resolving_configuration_Colon_0));
+            errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Circularity_detected_while_resolving_configuration_Colon_0));
             if ((json?.Size() ?? 0) == 0)
                 return (new() { raw = json }, errors);
             var(raw, conversionErrors) = convertToObject(sourceFile!.SourceFile);
-            if (conversionErrors != null)
-                errors.AddRange(conversionErrors);
+            if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
             return (new() { raw = raw }, errors);
         }
 
         var(ownConfig, ownErrors) = json != null ? parseOwnConfigOfJson(json, fs, basePath, fileName) : parseOwnConfigOfJsonSourceFile(sourceFile!.SourceFile, fs, basePath, fileName);
-        if (ownErrors != null)
-            (errors ??= new()).AddRange(ownErrors);
+        if (!ownErrors.IsNil)
+            errors = errors.Append(ownErrors);
         if (ownConfig.options?.CompilerOptions.Paths != null)
             ownConfig.options.CompilerOptions.PathsBasePath = basePath;
         void applyExtendedConfig(extendsResult result, RootedFilePath extendedPath)
         {
             var(extended, extendedErrors) = getExtendedConfig(sourceFile, extendedPath, fs, stack, cache, result);
-            if (extendedErrors != null)
-                (errors ??= new()).AddRange(extendedErrors);
+            if (!extendedErrors.IsNil)
+                errors = errors.Append(extendedErrors);
             if (extended?.options == null)
                 return;
             var extendedRaw = extended.raw;
@@ -735,9 +736,9 @@ public static partial class TsOptions
         return path == "" ? "." : path;
     }
 
-    internal static (List<object?>? Value, List<Diagnostic>? Errors) convertJsonOptionOfListType(CommandLineOption option, object? value, RootedDirectoryPath basePath, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
+    internal static (List<object?>? Value, Slice<Diagnostic> Errors) convertJsonOptionOfListType(CommandLineOption option, object? value, RootedDirectoryPath basePath, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
     {
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         if (value is not List<object?> values)
             return (null, errors);
         Node? elementExpression = null;
@@ -747,8 +748,8 @@ public static partial class TsOptions
             if (expression != null)
                 elementExpression = expression.Elements()[index];
             var(converted, conversionErrors) = convertJsonOption(option.Elements()!, values[index], basePath, assignment, elementExpression, sourceFile);
-            if (conversionErrors != null)
-                (errors ??= new()).AddRange(conversionErrors);
+            if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
             mapped.Add(converted);
         }
 
@@ -756,12 +757,12 @@ public static partial class TsOptions
         return (filtered, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertJsonOption(CommandLineOption option, object? value, RootedDirectoryPath basePath, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertJsonOption(CommandLineOption option, object? value, RootedDirectoryPath basePath, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
     {
         if (option.IsCommandLineOnly)
-            return (null, new() { CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, assignment?.AsNode().Name(), Diagnostics.Option_0_can_only_be_specified_on_command_line, option.Name) });
+            return (null, Slice<Diagnostic>.FromArray([CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, assignment?.AsNode().Name(), Diagnostics.Option_0_can_only_be_specified_on_command_line, option.Name)]));
         if (!isCompilerOptionsValue(option, value))
-            return (null, new() { CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, Diagnostics.Compiler_option_0_requires_a_value_of_type_1, option.Name, getCompilerOptionValueTypeString(option)) });
+            return (null, Slice<Diagnostic>.FromArray([CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, Diagnostics.Compiler_option_0_requires_a_value_of_type_1, option.Name, getCompilerOptionValueTypeString(option))]));
         switch (option.Kind)
         {
             case CommandLineOptionKind.List:
@@ -772,37 +773,37 @@ public static partial class TsOptions
                     throw new InvalidOperationException("reflect: call of reflect.Value.Kind on zero Value");
                 return value is System.Collections.IList ? convertJsonOptionOfListType(option, value, basePath, assignment, expression, sourceFile) : convertJsonOption(option.Elements()!, value, basePath, assignment, expression, sourceFile);
             case CommandLineOptionKind.Enum:
-                return value == null ? (null, null) : convertJsonOptionOfEnumType(option, (string)value, expression, sourceFile);
+                return value == null ? (null, default) : convertJsonOptionOfEnumType(option, (string)value, expression, sourceFile);
         }
 
         var(validated, errors) = validateJsonOptionValue(option, value, expression, sourceFile);
-        return (errors?.Count ?? 0) > 0 || validated == null ? (validated, errors) : (normalizeNonListOptionValue(option, basePath, validated), errors);
+        return errors.Length > 0 || validated == null ? (validated, errors) : (normalizeNonListOptionValue(option, basePath, validated), errors);
     }
 
-    internal static (T Result, List<Diagnostic>? Errors) convertOptionsFromJson<T>(CommandLineOptionNameMap names, object? jsonOptions, RootedDirectoryPath basePath, T result)
+    internal static (T Result, Slice<Diagnostic> Errors) convertOptionsFromJson<T>(CommandLineOptionNameMap names, object? jsonOptions, RootedDirectoryPath basePath, T result)
         where T : IOptionParser
     {
         if (jsonOptions is not OrderedMap<string, object?> map)
-            return (result, null);
-        List<Diagnostic>? errors = null;
+            return (result, default);
+        Slice<Diagnostic> errors = default;
         foreach (var(key, value)in map.Entries())
         {
             var option = names.Get(key);
             if (option != null && option.Name != key)
             {
-                (errors ??= new()).Add(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(null, null, result.UnknownDidYouMeanDiagnostic(), key, option.Name));
+                errors = errors.Append(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(null, null, result.UnknownDidYouMeanDiagnostic(), key, option.Name));
                 continue;
             }
 
             if (option == null)
             {
-                (errors ??= new()).Add(createUnknownOptionError(key, result.UnknownOptionDiagnostic(), "", null, null, null, result.UnknownDidYouMeanDiagnostic(), names));
+                errors = errors.Append(createUnknownOptionError(key, result.UnknownOptionDiagnostic(), "", null, null, null, result.UnknownDidYouMeanDiagnostic(), names));
                 continue;
             }
 
-            var(converted, conversionErrors) = convertJsonOption(option, value, basePath, null, null, null);
-            if (conversionErrors != null)
-                (errors ??= new()).AddRange(conversionErrors);
+            var(converted, conversionErrors) = convertJsonOption(option, value, basePath, null, null, default);
+            if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
             result.ParseOption(key, converted);
         }
 
@@ -832,8 +833,8 @@ public static partial class TsOptions
         }
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertToObject(SourceFile sourceFile) => convertToJson(sourceFile, sourceFile.Statements?.Nodes is { Count: > 0 } statements ? statements[0].Expression() : null, true, null);
-    internal static (parsedCompilerOptions Options, List<Diagnostic>? Errors) convertCompilerOptionsFromJsonWorker(object? jsonOptions, RootedDirectoryPath basePath, RootedFilePath configFileName)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertToObject(SourceFile sourceFile) => convertToJson(sourceFile, sourceFile.Statements?.Nodes is { Count: > 0 } statements ? statements[0].Expression() : null, true, default);
+    internal static (parsedCompilerOptions Options, Slice<Diagnostic> Errors) convertCompilerOptionsFromJsonWorker(object? jsonOptions, RootedDirectoryPath basePath, RootedFilePath configFileName)
     {
         var options = getDefaultCompilerOptions(configFileName);
         var(_, errors) = convertOptionsFromJson(CommandLineCompilerOptionsMap, jsonOptions, basePath, new compilerOptionsParser { CompilerOptions = options.CompilerOptions, unresolvedPaths = options.unresolvedPaths });
@@ -842,30 +843,30 @@ public static partial class TsOptions
         return (options, errors);
     }
 
-    internal static (TypeAcquisition Options, List<Diagnostic>? Errors) convertTypeAcquisitionFromJsonWorker(object? jsonOptions, RootedDirectoryPath basePath, RootedFilePath configFileName)
+    internal static (TypeAcquisition Options, Slice<Diagnostic> Errors) convertTypeAcquisitionFromJsonWorker(object? jsonOptions, RootedDirectoryPath basePath, RootedFilePath configFileName)
     {
         var options = getDefaultTypeAcquisition(configFileName);
         var(_, errors) = convertOptionsFromJson(typeAcquisitionDeclaration!.ElementOptions!, jsonOptions, basePath, new typeAcquisitionParser { TypeAcquisition = options });
         return (options, errors);
     }
 
-    internal static (parsedTsconfig Config, List<Diagnostic>? Errors) parseOwnConfigOfJson(OrderedMap<string, object?> json, IFS fs, RootedDirectoryPath basePath, RootedFilePath configFileName)
+    internal static (parsedTsconfig Config, Slice<Diagnostic> Errors) parseOwnConfigOfJson(OrderedMap<string, object?> json, IFS fs, RootedDirectoryPath basePath, RootedFilePath configFileName)
     {
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         if (json.Has("excludes"))
-            (errors ??= new()).Add(Ast.NewCompilerDiagnostic(Diagnostics.Unknown_option_excludes_Did_you_mean_exclude));
+            errors = errors.Append(Ast.NewCompilerDiagnostic(Diagnostics.Unknown_option_excludes_Did_you_mean_exclude));
         var(options, optionErrors) = convertCompilerOptionsFromJsonWorker(json.GetOrZero("compilerOptions"), basePath, configFileName);
         var(acquisition, acquisitionErrors) = convertTypeAcquisitionFromJsonWorker(json.GetOrZero("typeAcquisition"), basePath, configFileName);
-        if (optionErrors != null)
-            (errors ??= new()).AddRange(optionErrors);
-        if (acquisitionErrors != null)
-            (errors ??= new()).AddRange(acquisitionErrors);
+        if (!optionErrors.IsNil)
+            errors = errors.Append(optionErrors);
+        if (!acquisitionErrors.IsNil)
+            errors = errors.Append(acquisitionErrors);
         var(compileOnSave, hasCompileOnSave) = json.Get("compileOnSave");
         if (hasCompileOnSave)
         {
-            var(converted, conversionErrors) = convertJsonOption(compileOnSaveCommandLineOption!, compileOnSave, basePath, null, null, null);
-            if (conversionErrors != null)
-                (errors ??= new()).AddRange(conversionErrors);
+            var(converted, conversionErrors) = convertJsonOption(compileOnSaveCommandLineOption!, compileOnSave, basePath, null, null, default);
+            if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
             json.Set("compileOnSave", converted);
         }
 
@@ -873,16 +874,16 @@ public static partial class TsOptions
         var extended = json.GetOrZero("extends");
         if (extended != null && extended is not "")
         {
-            var(paths, pathErrors) = getExtendsConfigPathOrArray(extended, fs, basePath, configFileName, null, null, null);
+            var(paths, pathErrors) = getExtendsConfigPathOrArray(extended, fs, basePath, configFileName, null, null, default);
             extendedPaths = paths;
-            if (pathErrors != null)
-                (errors ??= new()).AddRange(pathErrors);
+            if (!pathErrors.IsNil)
+                errors = errors.Append(pathErrors);
         }
 
         return (new() { raw = json, options = options, typeAcquisition = acquisition, extendedConfigPaths = extendedPaths }, errors);
     }
 
-    internal static (List<RootedFilePath>? Paths, List<Diagnostic>? Errors) getExtendsConfigPathOrArray(object? value, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
+    internal static (List<RootedFilePath>? Paths, Slice<Diagnostic> Errors) getExtendsConfigPathOrArray(object? value, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
     {
         List<RootedFilePath>? paths = null;
         var newBase = fileName.AsString() != "" ? fileName.Directory() : basePath;
@@ -900,13 +901,13 @@ public static partial class TsOptions
             return (paths, errors);
         }
 
-        List<Diagnostic>? allErrors = null;
+        Slice<Diagnostic> allErrors = default;
         if (value is List<object?> values)
         {
             for (int index = 0; index < values.Count; index++)
             {
                 var element = expression?.Elements()[index];
-                List<Diagnostic>? errors;
+                Slice<Diagnostic> errors;
                 if (values[index] is string text)
                 {
                     var(resolved, resolutionErrors) = getExtendsConfigPath(text, fs, newBase, element, sourceFile);
@@ -916,8 +917,8 @@ public static partial class TsOptions
                 }
                 else
                     (_, errors) = convertJsonOption(extendsOptionDeclaration!.Elements()!, value, basePath, assignment, element, sourceFile);
-                if (errors != null)
-                    (allErrors ??= new()).AddRange(errors);
+                if (!errors.IsNil)
+                    allErrors = allErrors.Append(errors);
             }
         }
         else
@@ -925,7 +926,7 @@ public static partial class TsOptions
         return (paths, allErrors);
     }
 
-    internal static (RootedFilePath Path, List<Diagnostic>? Errors) getExtendsConfigPath(string extendedConfig, IFS fs, RootedDirectoryPath basePath, Node? expression, SourceFile? sourceFile)
+    internal static (RootedFilePath Path, Slice<Diagnostic> Errors) getExtendsConfigPath(string extendedConfig, IFS fs, RootedDirectoryPath basePath, Node? expression, SourceFile? sourceFile)
     {
         extendedConfig = TsPath.NormalizeSlashes(extendedConfig);
         if (TsPath.IsRootedDiskPath(extendedConfig) || extendedConfig.StartsWith("./", StringComparison.Ordinal) || extendedConfig.StartsWith("../", StringComparison.Ordinal))
@@ -935,16 +936,16 @@ public static partial class TsOptions
             {
                 path = path.AppendSuffix(TsPath.ExtensionJson);
                 if (!fs.FileExists(path))
-                    return (default, new() { CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, Diagnostics.File_0_not_found, extendedConfig) });
+                    return (default, Slice<Diagnostic>.FromArray([CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, Diagnostics.File_0_not_found, extendedConfig)]));
             }
 
-            return (path, null);
+            return (path, default);
         }
 
         var resolved = TypeScript.Modules.DefaultResolver.ResolveConfig(extendedConfig, basePath.ResolveFile("tsconfig.json"), fs);
         if (resolved.IsResolved())
-            return (resolved.ResolvedFileName, null);
-        return (default, new() { CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, extendedConfig == "" ? Diagnostics.Compiler_option_0_cannot_be_given_an_empty_string : Diagnostics.File_0_not_found, extendedConfig == "" ? "extends" : extendedConfig) });
+            return (resolved.ResolvedFileName, default);
+        return (default, Slice<Diagnostic>.FromArray([CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, expression, extendedConfig == "" ? Diagnostics.Compiler_option_0_cannot_be_given_an_empty_string : Diagnostics.File_0_not_found, extendedConfig == "" ? "extends" : extendedConfig)]));
     }
 
     internal static bool hasFileWithHigherPriorityExtension(RootedFilePath file, List<List<string>> extensions, Func<RootedFilePath, bool> hasFile)
@@ -1000,8 +1001,7 @@ public static partial class TsOptions
         if ((specs.validatedIncludeSpecs?.Count ?? 0) > 0)
         {
             var files = VfsMatch.ReadDirectory(host, basePath, extensionsWithJson.SelectMany(group => group).ToList(), specs.validatedExcludeSpecs, specs.validatedIncludeSpecs, VfsMatch.UnlimitedDepth);
-            if (files != null)
-                foreach (var file in files)
+            foreach (var file in files)
                 {
                     if (file.ExtensionIs(TsPath.ExtensionJson))
                     {
@@ -1067,28 +1067,24 @@ public static partial class TsOptions
     {
         SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), GoString.Bytes(text), ScriptKind.JSON),
     };
-    public static (object? Value, List<Diagnostic>? Errors) ParseConfigFileTextToJson(RootedFilePath fileName, PathKey path, string text)
+    public static (object? Value, Slice<Diagnostic> Errors) ParseConfigFileTextToJson(RootedFilePath fileName, PathKey path, string text)
     {
         var source = NewTsconfigSourceFileFromFilePath(fileName, path, text).SourceFile;
-        var(value, errors) = convertConfigFileToObject(source, null);
-        if (source.Diagnostics()is { Count: > 0 } diagnostics)
-            errors = new()
-            {
-                diagnostics[0]
-            };
+        var(value, errors) = convertConfigFileToObject(source, default);
+        if (source.Diagnostics()is { Length: > 0 } diagnostics)
+            errors = Slice<Diagnostic>.FromArray([diagnostics[0]]);
         return (value, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertConfigFileToObject(SourceFile sourceFile, jsonConversionNotifier? notifier)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertConfigFileToObject(SourceFile sourceFile, jsonConversionNotifier? notifier)
     {
         var root = sourceFile.Statements?.Nodes is { Count: > 0 } statements ? statements[0].Expression() : null;
         if (root != null && root.Kind != Kind.ObjectLiteralExpression)
         {
             string name = TsPath.GetBaseFileName(sourceFile.FileName()) == "jsconfig.json" ? "jsconfig.json" : "tsconfig.json";
-            var errors = new List<Diagnostic>
-            {
+            var errors = Slice<Diagnostic>.FromArray([
                 CreateDiagnosticForNodeInSourceFile(sourceFile, root, Diagnostics.The_root_value_of_a_0_file_must_be_an_object, name)
-            };
+            ]);
             if (Ast.IsArrayLiteralExpression(root))
             {
                 var firstObject = Core.Find(root.Elements(), Ast.IsObjectLiteralExpression);
@@ -1102,33 +1098,33 @@ public static partial class TsOptions
         return convertToJson(sourceFile, root, true, notifier);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertToJson(SourceFile sourceFile, Node? root, bool returnValue, jsonConversionNotifier? notifier)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertToJson(SourceFile sourceFile, Node? root, bool returnValue, jsonConversionNotifier? notifier)
     {
         if (root == null)
-            return (returnValue ? new EmptyConfigurationObject() : null, null);
+            return (returnValue ? new EmptyConfigurationObject() : null, default);
         return convertPropertyValueToJson(sourceFile, root, notifier?.rootOptions, returnValue, notifier);
     }
 
     internal static bool isDoubleQuotedString(Node node) => Ast.IsStringLiteral(node);
-    internal static (object? Value, List<Diagnostic>? Errors) convertPropertyValueToJson(SourceFile sourceFile, Node valueExpression, CommandLineOption? option, bool returnValue, jsonConversionNotifier? notifier)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertPropertyValueToJson(SourceFile sourceFile, Node valueExpression, CommandLineOption? option, bool returnValue, jsonConversionNotifier? notifier)
     {
         switch (valueExpression.Kind)
         {
             case Kind.TrueKeyword:
-                return (true, null);
+                return (true, default);
             case Kind.FalseKeyword:
-                return (false, null);
+                return (false, default);
             case Kind.NullKeyword:
-                return (null, null);
+                return (null, default);
             case Kind.StringLiteral:
-                return isDoubleQuotedString(valueExpression) ? (valueExpression.Text(), null) : (valueExpression.Text(), new() { Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.String_literal_with_double_quotes_expected) });
+                return isDoubleQuotedString(valueExpression) ? (valueExpression.Text(), default) : (valueExpression.Text(), Slice<Diagnostic>.FromArray([Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.String_literal_with_double_quotes_expected)]));
             case Kind.NumericLiteral:
-                return (JsNum.FromString(valueExpression.Text()).Value, null);
+                return (JsNum.FromString(valueExpression.TextValue()).Value, default);
             case Kind.PrefixUnaryExpression:
                 var unary = valueExpression.AsPrefixUnaryExpression();
                 if (unary.Operator != Kind.MinusToken || unary.Operand.Kind != Kind.NumericLiteral)
                     break;
-                return (-JsNum.FromString(unary.Operand.Text()).Value, null);
+                return (-JsNum.FromString(unary.Operand.TextValue()).Value, default);
             case Kind.ObjectLiteralExpression:
                 var(objectValue, objectErrors) = convertObjectLiteralExpressionToJson(sourceFile, returnValue, valueExpression.AsObjectLiteralExpression(), option, notifier);
                 return (objectValue, objectErrors);
@@ -1136,24 +1132,24 @@ public static partial class TsOptions
                 return convertArrayLiteralExpressionToJson(sourceFile, valueExpression.Elements(), option, returnValue);
         }
 
-        return (null, new() { option != null ? Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.Compiler_option_0_requires_a_value_of_type_1, option.Name, getCompilerOptionValueTypeString(option)) : Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.Property_value_can_only_be_string_literal_numeric_literal_true_false_null_object_literal_or_array_literal) });
+        return (null, Slice<Diagnostic>.FromArray([option != null ? Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.Compiler_option_0_requires_a_value_of_type_1, option.Name, getCompilerOptionValueTypeString(option)) : Ast.NewDiagnostic(sourceFile, valueExpression.Loc, Diagnostics.Property_value_can_only_be_string_literal_numeric_literal_true_false_null_object_literal_or_array_literal)]));
     }
 
-    internal static (OrderedMap<string, object?>? Value, List<Diagnostic>? Errors) convertObjectLiteralExpressionToJson(SourceFile sourceFile, bool returnValue, ObjectLiteralExpression node, CommandLineOption? objectOption, jsonConversionNotifier? notifier)
+    internal static (OrderedMap<string, object?>? Value, Slice<Diagnostic> Errors) convertObjectLiteralExpressionToJson(SourceFile sourceFile, bool returnValue, ObjectLiteralExpression node, CommandLineOption? objectOption, jsonConversionNotifier? notifier)
     {
         OrderedMap<string, object?>? result = returnValue ? new() : null;
-        List<Diagnostic>? errors = null;
+        Slice<Diagnostic> errors = default;
         if (node.Properties is not null)
             foreach (var element in node.Properties.Nodes)
             {
                 if (element.Kind != Kind.PropertyAssignment)
                 {
-                    (errors ??= new()).Add(Ast.NewDiagnostic(sourceFile, element.Loc, Diagnostics.Property_assignment_expected));
+                    errors = errors.Append(Ast.NewDiagnostic(sourceFile, element.Loc, Diagnostics.Property_assignment_expected));
                     continue;
                 }
 
                 if (element.QuestionToken()is { } token)
-                    (errors ??= new()).Add(Ast.NewDiagnostic(sourceFile, token.Loc, Diagnostics.The_0_modifier_can_only_be_used_in_TypeScript_files, "?"));
+                    errors = errors.Append(Ast.NewDiagnostic(sourceFile, token.Loc, Diagnostics.The_0_modifier_can_only_be_used_in_TypeScript_files, "?"));
                 string key = "";
                 if (!Ast.IsComputedNonLiteralName(element.Name()))
                     (key, _) = Ast.TryGetTextOfPropertyName(element.Name());
@@ -1167,8 +1163,8 @@ public static partial class TsOptions
 
                 var assignment = element.AsPropertyAssignment();
                 var(value, conversionErrors) = convertPropertyValueToJson(sourceFile, assignment.Initializer, option, returnValue, notifier);
-                if (conversionErrors != null)
-                    (errors ??= new()).AddRange(conversionErrors);
+                if (!conversionErrors.IsNil)
+                    errors = errors.Append(conversionErrors);
                 if (key != "")
                 {
                     if (returnValue)
@@ -1176,8 +1172,8 @@ public static partial class TsOptions
                     if (notifier != null)
                     {
                         var(_, notifiedErrors) = notifier.onPropertySet(key, value, assignment, objectOption, option);
-                        if (notifiedErrors != null)
-                            (errors ??= new()).AddRange(notifiedErrors);
+                        if (!notifiedErrors.IsNil)
+                            errors = errors.Append(notifiedErrors);
                     }
                 }
             }
@@ -1185,25 +1181,25 @@ public static partial class TsOptions
         return (result, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertArrayLiteralExpressionToJson(SourceFile sourceFile, Slice<Node> elements, CommandLineOption? elementOption, bool returnValue)
+    internal static (object? Value, Slice<Diagnostic> Errors) convertArrayLiteralExpressionToJson(SourceFile sourceFile, Slice<Node> elements, CommandLineOption? elementOption, bool returnValue)
     {
         if (!returnValue)
         {
             if (!elements.IsNil)
                 foreach (var element in elements)
-                    convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, null);
-            return (null, null);
+                    convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, default);
+            return (null, default);
         }
 
         if (elements.Length == 0)
-            return (new List<object?>(), null);
-        List<Diagnostic>? errors = null;
+            return (new List<object?>(), default);
+        Slice<Diagnostic> errors = default;
         List<object?>? values = null;
         foreach (var element in elements)
         {
-            var(value, conversionErrors) = convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, null);
-            if (conversionErrors != null)
-                (errors ??= new()).AddRange(conversionErrors);
+            var(value, conversionErrors) = convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, default);
+            if (!conversionErrors.IsNil)
+                errors = errors.Append(conversionErrors);
             if (value != null)
                 (values ??= new()).Add(value);
         }
@@ -1211,14 +1207,14 @@ public static partial class TsOptions
         return (values, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) validateJsonOptionValue(CommandLineOption option, object? value, Node? valueExpression, SourceFile? sourceFile)
+    internal static (object? Value, Slice<Diagnostic> Errors) validateJsonOptionValue(CommandLineOption option, object? value, Node? valueExpression, SourceFile? sourceFile)
     {
         if (value == null)
-            return (null, null);
-        List<Diagnostic>? errors = null;
+            return (null, default);
+        Slice<Diagnostic> errors = default;
         if (option.extraValidation == ExtraValidation.Locale && !TypeScript.Locale.Locales.Parse((string)value).Ok)
-            (errors ??= new()).Add(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, valueExpression, Diagnostics.Locale_must_be_an_IETF_BCP_47_language_tag_Examples_Colon_0_1, "en", "ja-jp"));
-        return errors is { Count: > 0 } ? (null, errors) : (value, errors);
+            errors = errors.Append(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, valueExpression, Diagnostics.Locale_must_be_an_IETF_BCP_47_language_tag_Examples_Colon_0_1, "en", "ja-jp"));
+        return errors is { Length: > 0 } ? (null, errors) : (value, errors);
     }
 
     internal static T convertMapToOptions<T>(OrderedMap<string, object?>? options, T result)
@@ -1308,7 +1304,7 @@ public sealed class ExtendedConfigCacheEntry
 {
     internal TsConfigSourceFile? extendedResult;
     internal parsedTsconfig? extendedConfig;
-    internal List<Diagnostic>? errors;
+    internal Slice<Diagnostic> errors;
     public List<RootedFilePath>? ExtendedFileNames() => extendedResult?.ExtendedSourceFiles;
 }
 
@@ -1324,7 +1320,7 @@ public sealed class TsConfigSourceFile
 internal sealed class jsonConversionNotifier
 {
     internal CommandLineOption? rootOptions;
-    internal Func<string, object?, PropertyAssignment, CommandLineOption?, CommandLineOption?, (object? Value, List<Diagnostic>? Errors)> onPropertySet = null!;
+    internal Func<string, object?, PropertyAssignment, CommandLineOption?, CommandLineOption?, (object? Value, Slice<Diagnostic> Errors)> onPropertySet = null!;
 }
 
 internal sealed class configFileSpecs

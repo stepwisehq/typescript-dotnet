@@ -58,8 +58,8 @@ try
         {
             ExitCode = failure is not null ? 2 : inspection.Diagnostics.Count != 0 ? 1 : 0,
             Error = failure?.Message,
-            Files = program.SourceFiles().Select(file => DisplayBytes(file.FileNameGoBytes())).ToArray(),
-            FileNamesBase64 = program.SourceFiles().Select(file => Base64(file.FileNameGoBytes())).ToArray(),
+            Files = MapOutput(program.SourceFiles(), file => DisplayBytes(file.FileNameGoBytes())),
+            FileNamesBase64 = MapOutput(program.SourceFiles(), file => Base64(file.FileNameGoBytes())),
             Program = DescribeProgram(inspection),
             Diagnostics = inspection.Diagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray()
         };
@@ -77,8 +77,8 @@ try
         var output = new CliResult
         {
             ExitCode = failures ? 1 : 0,
-            Files = graph.SourceFiles.Select(file => DisplayBytes(file.FileNameGoBytes())).ToArray(),
-            FileNamesBase64 = graph.SourceFiles.Select(file => Base64(file.FileNameGoBytes())).ToArray(),
+            Files = MapOutput(graph.SourceFiles, file => DisplayBytes(file.FileNameGoBytes())),
+            FileNamesBase64 = MapOutput(graph.SourceFiles, file => Base64(file.FileNameGoBytes())),
             Graph = DescribeGraph(graph),
             Diagnostics = graphDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray()
         };
@@ -171,8 +171,8 @@ static CliDiagnostic Describe(Diagnostic diagnostic, bool rawConfigFiles)
         ByteEnd = diagnostic.End(),
         Line = line,
         Column = column,
-        Chain = diagnostic.MessageChain()?.Select(item => Describe(item, rawConfigFiles)).ToArray(),
-        Related = diagnostic.RelatedInformation()?.Select(item => Describe(item, rawConfigFiles)).ToArray()
+        Chain = MapOutput(diagnostic.MessageChain(), item => Describe(item, rawConfigFiles)),
+        Related = MapOutput(diagnostic.RelatedInformation(), item => Describe(item, rawConfigFiles))
     };
 }
 
@@ -186,12 +186,22 @@ static CliResolvedModule DescribeResolution(TypeScript.Modules.ResolvedModule va
     ExternalLibraryImport = value.IsExternalLibraryImport, CustomResolution = value.IsCustomResolution,
     Package = new() { NameBase64 = Base64(value.PackageId.Name), SubModuleNameBase64 = Base64(value.PackageId.SubModuleName),
         VersionBase64 = Base64(value.PackageId.Version), PeerDependenciesBase64 = Base64(value.PackageId.PeerDependencies) },
-    Diagnostics = value.ResolutionDiagnostics?.Select(diagnostic => Describe(diagnostic, true)).ToArray()
+    Diagnostics = MapOutput(value.ResolutionDiagnostics, diagnostic => Describe(diagnostic, true))
 };
-static CliTrace[]? DescribeTraces(IReadOnlyList<TypeScript.Modules.DiagAndArgs>? traces) => traces?.Select(trace => new CliTrace
+// Cold JSON boundary: retain nil versus allocated-empty while creating the
+// schema-owned output array; internal Program storage remains shared headers.
+static U[]? MapOutput<T, U>(Slice<T> values, Func<T, U> map)
+{
+    if (values.IsNil) return null;
+    var output = new U[values.Length];
+    for (int i = 0; i < values.Length; i++) output[i] = map(values[i]);
+    return output;
+}
+
+static CliTrace[]? DescribeTraces(Slice<TypeScript.Modules.DiagAndArgs> traces) => MapOutput(traces, trace => new CliTrace
 {
     Code = trace.Message.Code(),
-    Arguments = trace.Args?.Select(value => value switch
+    Arguments = MapOutput(trace.Args, value => value switch
     {
         string bytes => new CliTraceArgument { Kind = "string", BytesBase64 = Base64(bytes), Text = DisplayBytes(bytes) },
         RootedFilePath path => new CliTraceArgument { Kind = "rooted-file", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
@@ -203,15 +213,15 @@ static CliTrace[]? DescribeTraces(IReadOnlyList<TypeScript.Modules.DiagAndArgs>?
         bool boolean => new CliTraceArgument { Kind = "bool", Text = boolean ? "true" : "false" },
         int or long or uint or ulong => new CliTraceArgument { Kind = "number", Text = Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) },
         _ => throw new InvalidOperationException("Unknown resolution trace argument type: " + value.GetType().Name)
-    }).ToArray()
-}).ToArray();
+    })
+});
 static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
 {
     // Explicit user-visible boundary: no hidden Program/global-library construction.
     Boundary = "Source dependency graph; default libraries, automatic global types, project-reference/content-mapper execution and semantic checking are external.",
     RootsBase64 = graph.RootFileNames.Select(path => Base64(path.AsString())).ToArray(),
     MissingFilesBase64 = graph.MissingFiles.Select(path => Base64(path.AsString())).ToArray(),
-    Sources = graph.SourceFiles.Select(file =>
+    Sources = MapOutput(graph.SourceFiles, file =>
     {
         var metadata = graph.GetSourceFileMetaData(file);
         return new CliGraphSource { FileBase64 = Base64(file.FileNameGoBytes()), PathBase64 = Base64(file.PathKey()),
@@ -219,8 +229,8 @@ static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
             PackageType = metadata.PackageJsonType, PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()),
             ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
             ExternalModule = Ast.IsExternalModule(file),
-            LibraryReferencesBase64 = file.LibReferenceDirectives?.Select(reference => Base64(reference.FileName)).ToArray() };
-    }).ToArray(),
+            LibraryReferencesBase64 = MapOutput(file.LibReferenceDirectives, reference => Base64(reference.FileName)) };
+    })!,
     Edges = graph.ResolutionEdges.Select(edge => new CliGraphEdge
     {
         ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.ModuleReference),
@@ -257,7 +267,7 @@ static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
                 VersionBase64 = Base64(edge.Resolution.PackageId.Version),
                 PeerDependenciesBase64 = Base64(edge.Resolution.PackageId.PeerDependencies)
             },
-            Diagnostics = edge.Resolution.ResolutionDiagnostics?.Select(value => Describe(value, true)).ToArray()
+            Diagnostics = MapOutput(edge.Resolution.ResolutionDiagnostics, value => Describe(value, true))
         }
     }).ToArray()
 };
@@ -281,7 +291,7 @@ static CliProgram DescribeProgram(ProgramInspection inspection)
             OriginalPathBase64 = Base64(result.OriginalPath.AsString()), Primary = result.Primary,
             ExternalLibraryImport = result.IsExternalLibraryImport,
             Package = new() { NameBase64 = Base64(result.PackageId.Name), SubModuleNameBase64 = Base64(result.PackageId.SubModuleName), VersionBase64 = Base64(result.PackageId.Version), PeerDependenciesBase64 = Base64(result.PackageId.PeerDependencies) },
-            Diagnostics = result.ResolutionDiagnostics?.Select(diagnostic => Describe(diagnostic, true)).ToArray()
+            Diagnostics = MapOutput(result.ResolutionDiagnostics, diagnostic => Describe(diagnostic, true))
         }
     }));
     var references = new List<CliProgramReference>();
@@ -295,7 +305,7 @@ static CliProgram DescribeProgram(ProgramInspection inspection)
         Boundary = "Program source/library/type/reference construction, syntax/bind and construction diagnostics; semantic checking, emit, build/watch and content-mapper subprocess execution are not requested.",
         SemanticCheckingRequested = false,
         RootsBase64 = (inspection.Configuration.Parsed!.FileNames() ?? []).Select(path => Base64(path.AsString())).ToArray(),
-        Sources = program.SourceFiles().Select(file =>
+        Sources = MapOutput(program.SourceFiles(), file =>
         {
             var key = PathKey.FromGoString(file.PathKey());
             var metadata = program.GetSourceFileMetaData(key);
@@ -305,9 +315,9 @@ static CliProgram DescribeProgram(ProgramInspection inspection)
                 DefaultLibrary = program.IsSourceFileDefaultLibrary(key), ExternalLibrary = program.IsSourceFileFromExternalLibrary(file),
                 ExternalModule = Ast.IsExternalModule(file), PackageType = metadata.PackageJsonType,
                 PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()), ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
-                LibraryReferencesBase64 = file.LibReferenceDirectives?.Select(reference => Base64(reference.FileName)).ToArray()
+                LibraryReferencesBase64 = MapOutput(file.LibReferenceDirectives, reference => Base64(reference.FileName))
             };
-        }).ToArray(),
+        })!,
         // Resolution tables have map ownership; deterministic presentation does
         // not reorder the actual Program sources or per-request trace streams.
         Modules = modules.OrderBy(row => row.ImporterPathBase64, StringComparer.Ordinal).ThenBy(row => row.NameBase64, StringComparer.Ordinal).ThenBy(row => row.Mode, StringComparer.Ordinal).ToArray(),

@@ -606,22 +606,22 @@ public partial class Parser
         var tagName = this.parseJSDocIdentifierName(Diagnostics.Identifier_expected);
         var indentText = this.skipWhitespaceOrAsterisk();
         Node tag = default;
-        switch (tagName.Text())
+        switch (true)
         {
-            case "implements":
+            case true when tagName.TextEquals("implements"u8):
             {
                 tag = this.parseImplementsTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "augments":
-            case "extends":
+            case true when tagName.TextEquals("augments"u8):
+            case true when tagName.TextEquals("extends"u8):
             {
                 tag = this.parseAugmentsTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "public":
+            case true when tagName.TextEquals("public"u8):
             {
                 tag = this.parseSimpleTag(start, (tagName2, comments) =>
                 {
@@ -630,7 +630,7 @@ public partial class Parser
                 break;
             }
 
-            case "private":
+            case true when tagName.TextEquals("private"u8):
             {
                 tag = this.parseSimpleTag(start, (tagName3, comments2) =>
                 {
@@ -639,7 +639,7 @@ public partial class Parser
                 break;
             }
 
-            case "protected":
+            case true when tagName.TextEquals("protected"u8):
             {
                 tag = this.parseSimpleTag(start, (tagName4, comments3) =>
                 {
@@ -648,7 +648,7 @@ public partial class Parser
                 break;
             }
 
-            case "readonly":
+            case true when tagName.TextEquals("readonly"u8):
             {
                 tag = this.parseSimpleTag(start, (tagName5, comments4) =>
                 {
@@ -657,7 +657,7 @@ public partial class Parser
                 break;
             }
 
-            case "override":
+            case true when tagName.TextEquals("override"u8):
             {
                 tag = this.parseSimpleTag(start, (tagName6, comments5) =>
                 {
@@ -666,7 +666,7 @@ public partial class Parser
                 break;
             }
 
-            case "deprecated":
+            case true when tagName.TextEquals("deprecated"u8):
             {
                 this.hasDeprecatedTag = true;
                 tag = this.parseSimpleTag(start, (tagName7, comments6) =>
@@ -676,77 +676,77 @@ public partial class Parser
                 break;
             }
 
-            case "this":
+            case true when tagName.TextEquals("this"u8):
             {
                 tag = this.parseThisTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "arg":
-            case "argument":
-            case "param":
+            case true when tagName.TextEquals("arg"u8):
+            case true when tagName.TextEquals("argument"u8):
+            case true when tagName.TextEquals("param"u8):
             {
                 tag = this.parseParameterOrPropertyTag(start, tagName, propertyLikeParse.Parameter, margin);
                 break;
             }
 
-            case "return":
-            case "returns":
+            case true when tagName.TextEquals("return"u8):
+            case true when tagName.TextEquals("returns"u8):
             {
                 tag = this.parseReturnTag(tags, start, tagName, margin, indentText);
                 break;
             }
 
-            case "template":
+            case true when tagName.TextEquals("template"u8):
             {
                 tag = this.parseTemplateTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "type":
+            case true when tagName.TextEquals("type"u8):
             {
                 tag = this.parseTypeTag(tags, start, tagName, margin, indentText);
                 break;
             }
 
-            case "typedef":
+            case true when tagName.TextEquals("typedef"u8):
             {
                 tag = this.parseTypedefTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "callback":
+            case true when tagName.TextEquals("callback"u8):
             {
                 tag = this.parseCallbackTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "overload":
+            case true when tagName.TextEquals("overload"u8):
             {
                 tag = this.parseOverloadTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "satisfies":
+            case true when tagName.TextEquals("satisfies"u8):
             {
                 tag = this.parseSatisfiesTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "see":
+            case true when tagName.TextEquals("see"u8):
             {
                 tag = this.parseSeeTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "exception":
-            case "throws":
+            case true when tagName.TextEquals("exception"u8):
+            case true when tagName.TextEquals("throws"u8):
             {
                 tag = this.parseThrowsTag(start, tagName, margin, indentText);
                 break;
             }
 
-            case "import":
+            case true when tagName.TextEquals("import"u8):
             {
                 tag = this.parseImportTag(start, tagName, margin, indentText);
                 break;
@@ -1217,7 +1217,7 @@ public partial class Parser
                 if (Ast.IsTypeReferenceNode(node))
                 {
                     var @ref = node.AsTypeReferenceNode();
-                    return ((Ast.IsIdentifier(@ref.TypeName) && (@ref.TypeName.Text() == "Object")) && (@ref.TypeArguments == null));
+                    return ((Ast.IsIdentifier(@ref.TypeName) && (@ref.TypeName.TextEquals("Object"u8))) && (@ref.TypeArguments == null));
                 }
 
                 return false;
@@ -1720,7 +1720,7 @@ public partial class Parser
     {
         while ((!Ast.IsIdentifier(a) || !Ast.IsIdentifier(b)))
         {
-            if (((!Ast.IsIdentifier(a) && !Ast.IsIdentifier(b)) && (a.AsQualifiedName().Right.Text() == b.AsQualifiedName().Right.Text())))
+            if (((!Ast.IsIdentifier(a) && !Ast.IsIdentifier(b)) && (a.AsQualifiedName().Right.TextValue().EqualsValue(b.AsQualifiedName().Right.TextValue()))))
             {
                 a = a.AsQualifiedName().Left;
                 b = b.AsQualifiedName().Left;
@@ -1731,7 +1731,7 @@ public partial class Parser
             }
         }
 
-        return (a.Text() == b.Text());
+        return (a.TextValue().EqualsValue(b.TextValue()));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:1186:1.
@@ -1811,9 +1811,9 @@ public partial class Parser
         var tagName = this.parseJSDocIdentifierName(Diagnostics.Identifier_expected);
         var indentText = this.skipWhitespaceOrAsterisk();
         propertyLikeParse t = default;
-        switch (tagName.Text())
+        switch (true)
         {
-            case "type":
+            case true when tagName.TextEquals("type"u8):
             {
                 if ((target == propertyLikeParse.Property))
                 {
@@ -1823,27 +1823,27 @@ public partial class Parser
                 break;
             }
 
-            case "prop":
-            case "property":
+            case true when tagName.TextEquals("prop"u8):
+            case true when tagName.TextEquals("property"u8):
             {
                 t = propertyLikeParse.Property;
                 break;
             }
 
-            case "arg":
-            case "argument":
-            case "param":
+            case true when tagName.TextEquals("arg"u8):
+            case true when tagName.TextEquals("argument"u8):
+            case true when tagName.TextEquals("param"u8):
             {
                 t = (propertyLikeParse.Parameter | propertyLikeParse.CallbackParameter);
                 break;
             }
 
-            case "template":
+            case true when tagName.TextEquals("template"u8):
             {
                 return this.parseTemplateTag(start, tagName, indent, indentText);
             }
 
-            case "this":
+            case true when tagName.TextEquals("this"u8):
             {
                 return this.parseThisTag(start, tagName, indent, indentText);
             }

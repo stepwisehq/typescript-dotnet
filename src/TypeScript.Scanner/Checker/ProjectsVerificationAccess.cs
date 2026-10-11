@@ -11,20 +11,29 @@ public sealed partial class Checker
 {
     internal (bool Present, Symbol? ImmediateTarget, Symbol? AliasTarget, bool Referenced, Node? TypeOnlyDeclaration) VerificationProjectAlias(Symbol symbol)
     {
-        var links = aliasSymbolLinks.TryGet(symbol);
-        return links is null ? (false, null, null, false, null) : (true, links.immediateTarget, links.aliasTarget, links.referenced, links.typeOnlyDeclaration);
+        var location = aliasSymbolLinks.TryGet(symbol);
+        if (location.IsEmpty)
+            return (false, null, null, false, null);
+        ref var links = ref location.Span[0];
+        return (true, links.immediateTarget, links.aliasTarget, links.referenced, links.typeOnlyDeclaration);
     }
 
-    internal (bool Present, SymbolTable? Exports, Dictionary<string, Node>? TypeOnlyStars, bool Checked) VerificationProjectModule(Symbol symbol)
+    internal (bool Present, SymbolTable? Exports, Dictionary<ByteStringKey, Node>? TypeOnlyStars, bool Checked) VerificationProjectModule(Symbol symbol)
     {
-        var links = moduleSymbolLinks.TryGet(symbol);
-        return links is null ? (false, null, null, false) : (true, links.resolvedExports, links.typeOnlyExportStarMap, links.exportsChecked);
+        var location = moduleSymbolLinks.TryGet(symbol);
+        if (location.IsEmpty)
+            return (false, null, null, false);
+        ref var links = ref location.Span[0];
+        return (true, links.resolvedExports, links.typeOnlyExportStarMap, links.exportsChecked);
     }
 
     internal (bool Present, Symbol? Target, Node? OriginatingImport) VerificationProjectExportType(Symbol symbol)
     {
-        var links = exportTypeLinks.TryGet(symbol);
-        return links is null ? (false, null, null) : (true, links.target, links.originatingImport);
+        var location = exportTypeLinks.TryGet(symbol);
+        if (location.IsEmpty)
+            return (false, null, null);
+        ref var links = ref location.Span[0];
+        return (true, links.target, links.originatingImport);
     }
 
     internal List<(string Name, List<Symbol>? Keys)> VerificationProjectStores() =>

@@ -10,7 +10,7 @@ namespace TypeScript.Checking;
 public sealed partial class Checker
 {
     // services.go:131. Exact exported-symbol list projection; reserved keys excluded.
-    public List<Symbol> GetExportsOfModule(Symbol symbol)
+    public Slice<Symbol> GetExportsOfModule(Symbol symbol)
     {
         validateOwnedProjectSymbol(symbol);
         return symbolsToArray(getExportsOfModule(symbol));

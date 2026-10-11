@@ -9,11 +9,12 @@ namespace TypeScript.Scanner;
 // A detached JSDoc node can intentionally retain the whole source, as in Go.
 internal sealed class JSDocTextFragments
 {
-    private sealed record BorrowedFragments(Slice<ByteStringView> Values);
-    private BorrowedFragments? views;
+    // Immutable header: projection may publish a shared mutable public list,
+    // but never rewrites this multiword header during concurrent reads.
+    private readonly Slice<ByteStringView> views;
     private List<string>? strings;
 
-    private JSDocTextFragments(BorrowedFragments? views, List<string>? strings)
+    private JSDocTextFragments(Slice<ByteStringView> views, List<string>? strings)
         => (this.views, this.strings) = (views, strings);
 
     internal static JSDocTextFragments? FromViews(List<ByteStringView>? views)
@@ -21,17 +22,17 @@ internal sealed class JSDocTextFragments
     // The parser passes a detached arena snapshot. Header copying and pooled
     // scratch reset cannot change this persistent fragment set.
     internal static JSDocTextFragments? FromViews(Slice<ByteStringView> views)
-        => views.IsNil ? null : new(new BorrowedFragments(views), null);
+        => views.IsNil ? null : new(views, null);
     internal static JSDocTextFragments? FromStrings(List<string>? strings)
-        => strings is null ? null : new(null, strings);
+        => strings is null ? null : new(default, strings);
 
     internal int Count
     {
         get
         {
-            var borrowed = Volatile.Read(ref views);
+            var borrowed = views;
             var saved = Volatile.Read(ref strings);
-            return saved is not null ? saved.Count : borrowed!.Values.Length;
+            return saved is not null ? saved.Count : borrowed.Length;
         }
     }
 
@@ -39,37 +40,55 @@ internal sealed class JSDocTextFragments
     {
         get
         {
-            var borrowed = Volatile.Read(ref views);
+            var borrowed = views;
             var saved = Volatile.Read(ref strings);
-            return saved is not null ? (ByteStringView)saved[index] : borrowed!.Values[index];
+            return saved is not null ? (ByteStringView)saved[index] : borrowed[index];
         }
     }
 
     internal List<string> AsList()
     {
-        var borrowed = Volatile.Read(ref views);
+        var borrowed = views;
         var saved = Volatile.Read(ref strings);
         if (saved is not null) return saved;
-        var projected = new List<string>(borrowed!.Values.Length);
-        foreach (var view in borrowed!.Values) projected.Add(view.Materialize());
+        var projected = new List<string>(borrowed.Length);
+        foreach (var view in borrowed) projected.Add(view.Materialize());
         // Concurrent first callers must receive one canonical mutable list.
         var canonical = Interlocked.CompareExchange(ref strings, projected, null) ?? projected;
-        // After projection, mutations must read only the canonical public list;
-        // the obsolete view fragments need not keep their source alive.
-        Volatile.Write(ref views, null);
+        // Public mutations read only the canonical list. Retain the immutable
+        // source header as Go does; it must not race with concurrent readers.
         return canonical;
+    }
+
+    internal ByteStringValue JoinValue()
+    {
+        var borrowed = views;
+        var saved = Volatile.Read(ref strings);
+        if (saved is not null)
+        {
+            if (saved.Count == 0) return default;
+            if (saved.Count == 1) return ByteStringValue.FromString(saved[0] ?? "");
+        }
+        else
+        {
+            if (borrowed.Length == 0) return default;
+            if (borrowed.Length == 1) return ByteStringValue.FromView(borrowed[0]);
+        }
+        var builder = new GoBuilder();
+        WriteTo(builder);
+        return builder.Value();
     }
 
     internal string Join()
     {
-        var borrowed = Volatile.Read(ref views);
+        var borrowed = views;
         var saved = Volatile.Read(ref strings);
-        return saved is not null ? string.Concat(saved) : GoStrings.Join(borrowed!.Values, "");
+        return saved is not null ? string.Concat(saved) : GoStrings.Join(borrowed, "");
     }
 
     internal void WriteTo(GoBuilder builder)
     {
-        var borrowed = Volatile.Read(ref views);
+        var borrowed = views;
         var saved = Volatile.Read(ref strings);
         if (saved is not null)
         {
@@ -77,7 +96,7 @@ internal sealed class JSDocTextFragments
         }
         else
         {
-            foreach (var view in borrowed!.Values) builder.WriteString(view.AsSpan());
+            foreach (var view in borrowed) builder.WriteString(view.AsSpan());
         }
     }
 }

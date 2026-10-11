@@ -12,7 +12,7 @@ public sealed partial class Checker
 {
     // checker.go:700. Logical identity keys do not allocate SymbolIds on lookup.
     private readonly LinkStore<Symbol, ContainingSymbolLinks> symbolContainerLinks = new();
-    private Dictionary<ulong, List<Symbol>> symbolTableAliasCache;
+    private Dictionary<ulong, Slice<Symbol>> symbolTableAliasCache;
     internal bool IsValueSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Value, false, true).Accessibility == SymbolAccessibility.Accessible;
     internal bool IsTypeSymbolAccessible(Symbol symbol, Node enclosingDeclaration) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, SymbolFlags.Type, false, true).Accessibility == SymbolAccessibility.Accessible;
     internal bool IsSymbolAccessibleByFlags(Symbol symbol, Node enclosingDeclaration, SymbolFlags flags) => isSymbolAccessibleWorker(symbol, enclosingDeclaration, flags, false, false).Accessibility == SymbolAccessibility.Accessible;
@@ -25,24 +25,24 @@ public sealed partial class Checker
     private static ulong symbolTableIDFromResolvedExports(Symbol symbol) => stKindResolvedExports | Ast.GetSymbolId(symbol);
     private static ulong symbolTableIDFromMembers(Symbol symbol) => stKindMembers | Ast.GetSymbolId(symbol);
     private static ulong symbolTableIDFromGlobals() => stKindGlobals;
-    private sealed record accessibleSymbolChainContext(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, bool useOnlyExternalAliasing, Dictionary<ulong, HashSet<ulong>> visitedSymbolTablesMap);
-    internal List<Symbol> getAccessibleSymbolChain(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, bool useOnlyExternalAliasing) => getAccessibleSymbolChainEx(new(symbol, enclosingDeclaration, meaning, useOnlyExternalAliasing, new()));
-    private List<Symbol> getAccessibleSymbolChainEx(accessibleSymbolChainContext context)
+    private readonly record struct accessibleSymbolChainContext(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, bool useOnlyExternalAliasing, Dictionary<ulong, HashSet<ulong>> visitedSymbolTablesMap);
+    internal Slice<Symbol> getAccessibleSymbolChain(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, bool useOnlyExternalAliasing) => getAccessibleSymbolChainEx(new(symbol, enclosingDeclaration, meaning, useOnlyExternalAliasing, new()));
+    private Slice<Symbol> getAccessibleSymbolChainEx(accessibleSymbolChainContext context)
     {
         if (context.symbol == null || isPropertyOrMethodDeclarationSymbol(context.symbol))
-            return null;
+            return default;
         Node firstRelevantLocation = null;
         someSymbolTableInScope(context.enclosingDeclaration, (_, _, _, _, node) =>
         {
             firstRelevantLocation = node;
             return true;
         });
-        var links = symbolContainerLinks.Get(context.symbol);
+        ref var links = ref symbolContainerLinks.Get(context.symbol);
         var key = new accessibleChainCacheKey(context.useOnlyExternalAliasing, firstRelevantLocation, context.meaning);
         links.accessibleChainCache ??= new();
         if (links.accessibleChainCache.TryGetValue(key, out var existing))
             return existing;
-        List<Symbol> result = null;
+        Slice<Symbol> result = default;
         someSymbolTableInScope(context.enclosingDeclaration, (table, tableId, ignoreQualification, isLocalNameLookup, _) =>
         {
             var chain = getAccessibleSymbolChainFromSymbolTable(context, table, tableId, ignoreQualification, isLocalNameLookup);
@@ -55,60 +55,62 @@ public sealed partial class Checker
         return result;
     }
 
-    private List<Symbol> getAccessibleSymbolChainFromSymbolTable(accessibleSymbolChainContext context, SymbolTable table, ulong tableId, bool ignoreQualification, bool isLocalNameLookup)
+    private Slice<Symbol> getAccessibleSymbolChainFromSymbolTable(accessibleSymbolChainContext context, SymbolTable table, ulong tableId, bool ignoreQualification, bool isLocalNameLookup)
     {
         ulong symbolId = Ast.GetSymbolId(context.symbol);
         if (!context.visitedSymbolTablesMap.TryGetValue(symbolId, out var visited))
             context.visitedSymbolTablesMap[symbolId] = visited = new();
         if (!visited.Add(tableId))
-            return null;
+            return default;
         var result = trySymbolTable(context, table, tableId, ignoreQualification, isLocalNameLookup);
         visited.Remove(tableId);
         return result;
     }
 
-    private List<Symbol> getSymbolTableAliases(SymbolTable table, ulong tableId)
+    private Slice<Symbol> getSymbolTableAliases(SymbolTable table, ulong tableId)
     {
         ulong kind = tableId & stKindMask;
         if (kind == stKindMembers)
-            return null;
+            return default;
         bool cache = kind == stKindGlobals || kind == stKindExports || kind == stKindResolvedExports;
         if (cache && symbolTableAliasCache != null && symbolTableAliasCache.TryGetValue(tableId, out var existing))
             return existing;
-        List<Symbol> result = null;
+        Slice<Symbol> result = default;
         foreach (var symbol in table?.Values ?? Enumerable.Empty<Symbol>())
             if ((symbol.Flags & SymbolFlags.Alias) != 0)
-                (result ??= new()).Add(symbol);
+                result = result.Append(symbol);
         if (cache)
             (symbolTableAliasCache ??= new())[tableId] = result;
         return result;
     }
 
-    private List<Symbol> trySymbolTable(accessibleSymbolChainContext context, SymbolTable table, ulong tableId, bool ignoreQualification, bool isLocalNameLookup)
+    private Slice<Symbol> trySymbolTable(accessibleSymbolChainContext context, SymbolTable table, ulong tableId, bool ignoreQualification, bool isLocalNameLookup)
     {
-        var symbol = table?[context.symbol.Name];
+        var symbol = table?[context.symbol.NameValue];
         if (symbol != null && isAccessible(context, symbol, null, ignoreQualification))
-            return[context.symbol];
-        List<List<Symbol>> candidates = null;
+            return Slice<Symbol>.FromArray([context.symbol]);
+        Slice<Slice<Symbol>> candidates = default;
         if (symbol?.ExportSymbol != null && isAccessible(context, getMergedSymbol(symbol.ExportSymbol), null, ignoreQualification))
-            (candidates ??= new()).Add([context.symbol]);
-        foreach (var alias in getSymbolTableAliases(table, tableId) ?? [])
+            candidates = candidates.Append(Slice<Symbol>.FromArray([context.symbol]));
+        foreach (var alias in getSymbolTableAliases(table, tableId))
         {
-            if (alias.Name != Ast.InternalSymbolNameExportEquals && alias.Name != Ast.InternalSymbolNameDefault && !(isUMDExportSymbol(alias) && context.enclosingDeclaration != null && Ast.IsExternalModule(Ast.GetSourceFileOfNode(context.enclosingDeclaration))) && (!context.useOnlyExternalAliasing || alias.Declarations?.Any(Ast.IsExternalModuleImportEqualsDeclaration) == true) && (!isLocalNameLookup || alias.Declarations?.Any(isNamespaceReexportDeclaration) != true) && (ignoreQualification || Ast.GetDeclarationOfKind(alias, Kind.ExportSpecifier) == null))
+            if (!alias.NameValue.EqualsString(Ast.InternalSymbolNameExportEquals) && !alias.NameValue.EqualsString(Ast.InternalSymbolNameDefault) && !(isUMDExportSymbol(alias) && context.enclosingDeclaration != null && Ast.IsExternalModule(Ast.GetSourceFileOfNode(context.enclosingDeclaration))) && (!context.useOnlyExternalAliasing || Core.Some(alias.Declarations, Ast.IsExternalModuleImportEqualsDeclaration)) && (!isLocalNameLookup || !Core.Some(alias.Declarations, isNamespaceReexportDeclaration)) && (ignoreQualification || Ast.GetDeclarationOfKind(alias, Kind.ExportSpecifier) == null))
             {
                 var candidate = getCandidateListForSymbol(context, alias, resolveAlias(alias), ignoreQualification);
                 if (candidate is { Count: > 0 })
-                    (candidates ??= new()).Add(candidate);
+                    candidates = candidates.Append(candidate);
             }
         }
 
         if (candidates is { Count: > 0 })
-            // Enumerable.OrderBy is stable, preserving the source stable-sort tie arm.
-            return candidates.OrderBy(chain => chain, Comparer<List<Symbol>>.Create(compareSymbolChainsWorker)).First();
-        return tableId == stKindGlobals ? getCandidateListForSymbol(context, globalThisSymbol, globalThisSymbol, ignoreQualification) : null;
+        {
+            GoSlices.SortStableFunc(candidates, compareSymbolChains);
+            return candidates[0];
+        }
+        return tableId == stKindGlobals ? getCandidateListForSymbol(context, globalThisSymbol, globalThisSymbol, ignoreQualification) : default;
     }
 
-    private int compareSymbolChainsWorker(List<Symbol> first, List<Symbol> second)
+    private int compareSymbolChainsWorker(Slice<Symbol> first, Slice<Symbol> second)
     {
         int length = first.Count - second.Count;
         if (length != 0)
@@ -125,18 +127,18 @@ public sealed partial class Checker
 
     private static bool isUMDExportSymbol(Symbol symbol) => symbol != null && symbol.Declarations is { Count: > 0 } && symbol.Declarations[0] != null && Ast.IsNamespaceExportDeclaration(symbol.Declarations[0]);
     private static bool isNamespaceReexportDeclaration(Node node) => Ast.IsNamespaceExport(node) && node.Parent.ModuleSpecifier() != null;
-    private List<Symbol> getCandidateListForSymbol(accessibleSymbolChainContext context, Symbol symbolFromTable, Symbol resolvedImportedSymbol, bool ignoreQualification)
+    private Slice<Symbol> getCandidateListForSymbol(accessibleSymbolChainContext context, Symbol symbolFromTable, Symbol resolvedImportedSymbol, bool ignoreQualification)
     {
         if (isAccessible(context, symbolFromTable, resolvedImportedSymbol, ignoreQualification))
-            return[symbolFromTable];
+            return Slice<Symbol>.FromArray([symbolFromTable]);
         var table = getExportsOfSymbol(resolvedImportedSymbol);
         if (table == null)
-            return null;
+            return default;
         var chain = getAccessibleSymbolChainFromSymbolTable(context, table, symbolTableIDFromResolvedExports(resolvedImportedSymbol), true, false);
         if (chain is not { Count: > 0 } || !canQualifySymbol(context, symbolFromTable, getQualifiedLeftMeaning(context.meaning)))
-            return null;
-        List<Symbol> result = [symbolFromTable];
-        result.AddRange(chain);
+            return default;
+        var result = Slice<Symbol>.FromArray([symbolFromTable]);
+        result = result.Append(chain);
         return result;
     }
 
@@ -162,7 +164,7 @@ public sealed partial class Checker
 
         if (!like)
             return false;
-        return !(fromTable.Declarations?.Any(hasNonGlobalAugmentationExternalModuleSymbol) == true) && (ignoreQualification || canQualifySymbol(context, getMergedSymbol(fromTable), context.meaning));
+        return !(Core.Some(fromTable.Declarations, hasNonGlobalAugmentationExternalModuleSymbol)) && (ignoreQualification || canQualifySymbol(context, getMergedSymbol(fromTable), context.meaning));
     }
 
     private bool canQualifySymbol(accessibleSymbolChainContext context, Symbol symbol, SymbolFlags meaning) => !needsQualification(symbol, context.enclosingDeclaration, meaning) || getAccessibleSymbolChainEx(context with { symbol = symbol.Parent, meaning = getQualifiedLeftMeaning(meaning) })is { Count: > 0 };
@@ -171,7 +173,7 @@ public sealed partial class Checker
         bool qualify = false;
         someSymbolTableInScope(enclosingDeclaration, (table, _, _, _, _) =>
         {
-            var result = table?[symbol.Name];
+            var result = table?[symbol.NameValue];
             if (result == null)
                 return false;
             var candidate = getMergedSymbol(result);
@@ -191,7 +193,7 @@ public sealed partial class Checker
         return qualify;
     }
 
-    private static bool isPropertyOrMethodDeclarationSymbol(Symbol symbol) => symbol.Declarations is { Count: > 0 } && symbol.Declarations.All(d => d.Kind is Kind.PropertyDeclaration or Kind.MethodDeclaration or Kind.GetAccessor or Kind.SetAccessor);
+    private static bool isPropertyOrMethodDeclarationSymbol(Symbol symbol) => symbol.Declarations is { Count: > 0 } && Core.Every(symbol.Declarations, d => d.Kind is Kind.PropertyDeclaration or Kind.MethodDeclaration or Kind.GetAccessor or Kind.SetAccessor);
     private bool someSymbolTableInScope(Node enclosingDeclaration, Func<SymbolTable, ulong, bool, bool, Node, bool> callback)
     {
         for (var location = enclosingDeclaration; location != null; location = location.Parent)
@@ -211,7 +213,7 @@ public sealed partial class Checker
             {
                 var symbol = getSymbolOfDeclaration(location);
                 SymbolTable types = null;
-                foreach (var entry in symbol.Members?.AsEnumerable() ?? Enumerable.Empty<KeyValuePair<string, Symbol>>())
+                foreach (var entry in symbol.Members?.AsEnumerable() ?? Enumerable.Empty<KeyValuePair<ByteStringKey, Symbol>>())
                     if ((entry.Value.Flags & (SymbolFlags.Type & ~SymbolFlags.Assignment)) != 0)
                         (types ??= new())[entry.Key] = entry.Value;
                 if (types != null && callback(types, symbolTableIDFromMembers(symbol), false, false, location))
@@ -230,25 +232,23 @@ public sealed partial class Checker
 
     // symbolaccessibility.go:119. Preserve preference for an in-scope parent,
     // then export-equals aliases, reexports and an object-literal variable.
-    private List<Symbol> getWithAlternativeContainers(Symbol container, Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
+    private Slice<Symbol> getWithAlternativeContainers(Symbol container, Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
     {
-        var additionalContainers = Core.MapNonNil(container.Declarations, d => getFileSymbolIfFileSymbolExportEqualsContainer(d, container));
-        var reexportContainers = enclosingDeclaration != null ? getAlternativeContainingModules(symbol, enclosingDeclaration) : null;
+        var additionalContainers = Core.MapNonNilSlice(container.Declarations, d => getFileSymbolIfFileSymbolExportEqualsContainer(d, container));
+        var reexportContainers = enclosingDeclaration != null ? getAlternativeContainingModules(symbol, enclosingDeclaration) : default;
         var objectLiteralContainer = getVariableDeclarationOfObjectLiteral(container, meaning);
         var leftMeaning = getQualifiedLeftMeaning(meaning);
         if (enclosingDeclaration != null && (container.Flags & leftMeaning) != 0 && getAccessibleSymbolChain(container, enclosingDeclaration, SymbolFlags.Namespace, false)is { Count: > 0 })
         {
-            List<Symbol> result = [container];
-            if (additionalContainers != null)
-                result.AddRange(additionalContainers);
-            if (reexportContainers != null)
-                result.AddRange(reexportContainers);
+            var result = Slice<Symbol>.FromArray([container]);
+            result = result.Append(additionalContainers);
+            result = result.Append(reexportContainers);
             if (objectLiteralContainer != null)
-                result.Add(objectLiteralContainer);
+                result = result.Append(objectLiteralContainer);
             return result;
         }
 
-        List<Symbol> variableMatches = null;
+        Slice<Symbol> variableMatches = default;
         if (meaning == SymbolFlags.Value && (container.Flags & leftMeaning) == 0 && (container.Flags & SymbolFlags.Type) != 0 && (getDeclaredTypeOfSymbol(container).flags & TypeFlags.Object) != 0)
         {
             someSymbolTableInScope(enclosingDeclaration, (table, _, _, _, _) =>
@@ -257,46 +257,45 @@ public sealed partial class Checker
                 foreach (var candidate in table?.Values ?? Enumerable.Empty<Symbol>())
                     if ((candidate.Flags & leftMeaning) != 0 && getTypeOfSymbol(candidate) == getDeclaredTypeOfSymbol(container))
                     {
-                        (variableMatches ??= new()).Add(candidate);
+                        variableMatches = variableMatches.Append(candidate);
                         found = true;
                     }
 
                 return found;
             });
-            if (variableMatches != null)
+            if (!variableMatches.IsNil)
                 sortSymbols(variableMatches);
         }
 
-        List<Symbol> alternatives = variableMatches ?? new();
-        if (additionalContainers != null)
-            alternatives.AddRange(additionalContainers);
-        alternatives.Add(container);
+        Slice<Symbol> alternatives = default;
+        alternatives = alternatives.Append(variableMatches);
+        alternatives = alternatives.Append(additionalContainers);
+        alternatives = alternatives.Append(container);
         if (objectLiteralContainer != null)
-            alternatives.Add(objectLiteralContainer);
-        if (reexportContainers != null)
-            alternatives.AddRange(reexportContainers);
+            alternatives = alternatives.Append(objectLiteralContainer);
+        alternatives = alternatives.Append(reexportContainers);
         return alternatives;
     }
 
-    private List<Symbol> getAlternativeContainingModules(Symbol symbol, Node enclosingDeclaration)
+    private Slice<Symbol> getAlternativeContainingModules(Symbol symbol, Node enclosingDeclaration)
     {
         if (enclosingDeclaration == null)
-            return null;
+            return default;
         var containingFile = Ast.GetSourceFileOfNode(enclosingDeclaration);
         ulong id = Ast.GetNodeId(containingFile.AsNode());
-        var links = symbolContainerLinks.Get(symbol);
+        ref var links = ref symbolContainerLinks.Get(symbol);
         links.extendedContainersByFile ??= new();
-        if (links.extendedContainersByFile.TryGetValue(id, out var existing) && existing != null)
+        if (links.extendedContainersByFile.TryGetValue(id, out var existing) && !existing.IsNil)
             return existing;
-        List<Symbol> results = null;
-        foreach (var importRef in containingFile.Imports() ?? [])
+        Slice<Symbol> results = default;
+        foreach (var importRef in containingFile.Imports())
         {
             if (Ast.NodeIsSynthesized(importRef))
                 continue;
             var resolvedModule = resolveExternalModuleName(enclosingDeclaration, importRef, true, getImportAttributesTypeForModuleSpecifier(importRef));
             if (resolvedModule == null || getAliasForSymbolInContainer(resolvedModule, symbol) == null)
                 continue;
-            (results ??= new()).Add(resolvedModule);
+            results = results.Append(resolvedModule);
         }
 
         if (results is { Count: > 0 })
@@ -308,29 +307,26 @@ public sealed partial class Checker
         if (links.extendedContainers != null)
             return links.extendedContainers.Value;
         results = getExternalModuleContainers(symbol);
-        links.extendedContainers = new LinkCell<List<Symbol>>
-        {
-            Value = results
-        };
+        links.extendedContainers = results;
         return results;
     }
 
     private sealed class externalModuleContainerIndex
     {
         internal bool complete;
-        internal readonly Dictionary<Symbol, List<Symbol>> containersByTarget = new();
-        internal readonly Dictionary<Symbol, int> moduleOrder = new();
+        internal readonly Dictionary<Symbol, Slice<Symbol>> containersByTarget = new();
+        internal readonly Dictionary<Symbol, int> moduleOrder;
+        internal externalModuleContainerIndex(int fileCount) => moduleOrder = new(fileCount);
         internal void add(Symbol target, Symbol container)
         {
-            if (!containersByTarget.TryGetValue(target, out var existing))
-                containersByTarget[target] = existing = new();
-            if (existing.Count == 0 || existing[^1] != container)
-                existing.Add(container);
+            containersByTarget.TryGetValue(target, out var existing);
+            if (existing.Length == 0 || existing[^1] != container)
+                containersByTarget[target] = existing.Append(container);
         }
     }
 
     private externalModuleContainerIndex externalModuleContainers;
-    private List<Symbol> getExternalModuleContainers(Symbol symbol)
+    private Slice<Symbol> getExternalModuleContainers(Symbol symbol)
     {
         if (externalModuleContainers == null)
             buildExternalModuleContainerIndex();
@@ -341,7 +337,7 @@ public sealed partial class Checker
         var parent = getParentOfSymbol(symbol);
         if (parent == null || !index.moduleOrder.TryGetValue(parent, out int parentOrder))
             return containers;
-        int low = 0, high = containers?.Count ?? 0;
+        int low = 0, high = containers.Length;
         while (low < high)
         {
             int middle = low + (high - low) / 2;
@@ -351,16 +347,14 @@ public sealed partial class Checker
                 high = middle;
         }
 
-        if (containers != null && low < containers.Count && index.moduleOrder[containers[low]] == parentOrder)
+        if (low < containers.Length && index.moduleOrder[containers[low]] == parentOrder)
             return containers;
-        var result = containers != null ? new List<Symbol>(containers) : new();
-        result.Insert(low, parent);
-        return result;
+        return GoSlices.Clone(containers).Insert(low, parent);
     }
 
     private void buildExternalModuleContainerIndex()
     {
-        var index = new externalModuleContainerIndex();
+        var index = new externalModuleContainerIndex(files.Length);
         externalModuleContainers = index;
         foreach (var file in files)
         {
@@ -378,16 +372,16 @@ public sealed partial class Checker
         index.complete = true;
     }
 
-    private List<Symbol> scanExternalModuleContainers(Symbol symbol)
+    private Slice<Symbol> scanExternalModuleContainers(Symbol symbol)
     {
-        List<Symbol> containers = null;
+        Slice<Symbol> containers = default;
         foreach (var file in files)
         {
             if (!Ast.IsExternalModule(file))
                 continue;
             var container = getSymbolOfDeclaration(file.AsNode());
             if (getAliasForSymbolInContainer(container, symbol) != null)
-                (containers ??= new()).Add(container);
+                containers = containers.Append(container);
         }
 
         return containers;
@@ -419,19 +413,19 @@ public sealed partial class Checker
         return exported != null && getSymbolIfSameReference(exported, container) != null ? fileSymbol : null;
     }
 
-    internal List<Symbol> getContainersOfSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
+    internal Slice<Symbol> getContainersOfSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning)
     {
         var container = getParentOfSymbol(symbol);
         if (container != null && (symbol.Flags & SymbolFlags.TypeParameter) == 0)
             return getWithAlternativeContainers(container, symbol, enclosingDeclaration, meaning);
-        List<Symbol> candidates = null;
+        Slice<Symbol> candidates = default;
         void add(Symbol candidate)
         {
-            if (candidate != null && !(candidates?.Contains(candidate) ?? false))
-                (candidates ??= new()).Add(candidate);
+            if (candidate != null && !GoSlices.Contains(candidates, candidate))
+                candidates = candidates.Append(candidate);
         }
 
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
         {
             if (!Ast.IsAmbientModule(declaration) && declaration.Parent != null)
             {
@@ -468,8 +462,8 @@ public sealed partial class Checker
         }
 
         if (candidates is not { Count: > 0 })
-            return null;
-        List<Symbol> bestContainers = null, alternativeContainers = null;
+            return default;
+        Slice<Symbol> bestContainers = default, alternativeContainers = default;
         foreach (var candidate in candidates)
         {
             if (getAliasForSymbolInContainer(candidate, symbol) == null)
@@ -477,14 +471,11 @@ public sealed partial class Checker
             var allAlternatives = getWithAlternativeContainers(candidate, symbol, enclosingDeclaration, meaning);
             if (allAlternatives is not { Count: > 0 })
                 continue;
-            (bestContainers ??= new()).Add(allAlternatives[0]);
-            if (allAlternatives.Count > 1)
-                (alternativeContainers ??= new()).AddRange(allAlternatives.GetRange(1, allAlternatives.Count - 1));
+            bestContainers = bestContainers.Append(allAlternatives[0]);
+            alternativeContainers = alternativeContainers.Append(allAlternatives.Slice2(1));
         }
 
-        if (alternativeContainers != null)
-            (bestContainers ??= new()).AddRange(alternativeContainers);
-        return bestContainers;
+        return bestContainers.Append(alternativeContainers);
     }
 
     internal Symbol getAliasForSymbolInContainer(Symbol container, Symbol symbol)
@@ -495,20 +486,20 @@ public sealed partial class Checker
         if (exportEquals != null && getSymbolIfSameReference(exportEquals, symbol) != null)
             return container;
         var exports = getExportsOfSymbol(container);
-        var quick = exports?[symbol.Name];
+        var quick = exports?[symbol.NameValue];
         if (quick != null && getSymbolIfSameReference(quick, symbol) != null)
             return quick;
-        List<Symbol> candidates = null;
+        Slice<Symbol> candidates = default;
         foreach (var exported in exports?.Values ?? Enumerable.Empty<Symbol>())
             if (getSymbolIfSameReference(exported, symbol) != null)
-                (candidates ??= new()).Add(exported);
+                candidates = candidates.Append(exported);
         if (candidates is not { Count: > 0 })
             return null;
         sortSymbols(candidates);
         return candidates[0];
     }
 
-    private SymbolAccessibilityResult IsAnySymbolAccessible(List<Symbol> symbols, Node enclosingDeclaration, Symbol initialSymbol, SymbolFlags meaning, bool computeAliases, bool allowModules)
+    private SymbolAccessibilityResult IsAnySymbolAccessible(Slice<Symbol> symbols, Node enclosingDeclaration, Symbol initialSymbol, SymbolFlags meaning, bool computeAliases, bool allowModules)
     {
         if (symbols is not { Count: > 0 })
             return null;
@@ -525,7 +516,7 @@ public sealed partial class Checker
                     return visible;
             }
 
-            if (allowModules && symbol.Declarations?.Any(hasNonGlobalAugmentationExternalModuleSymbol) == true)
+            if (allowModules && Core.Some(symbol.Declarations, hasNonGlobalAugmentationExternalModuleSymbol))
             {
                 if (computeAliases)
                 {
@@ -565,11 +556,11 @@ public sealed partial class Checker
     {
         if (symbol != null && enclosingDeclaration != null)
         {
-            var result = IsAnySymbolAccessible([symbol], enclosingDeclaration, symbol, meaning, computeAliases, allowModules);
+            var result = IsAnySymbolAccessible(Slice<Symbol>.FromArray([symbol]), enclosingDeclaration, symbol, meaning, computeAliases, allowModules);
             if (result != null)
                 return result;
             Symbol symbolExternalModule = null;
-            foreach (var declaration in symbol.Declarations ?? [])
+            foreach (var declaration in symbol.Declarations)
             {
                 symbolExternalModule = getExternalModuleContainer(declaration);
                 if (symbolExternalModule != null)

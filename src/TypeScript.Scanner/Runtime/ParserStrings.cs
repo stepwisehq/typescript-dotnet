@@ -11,6 +11,19 @@ internal static partial class GoStrings
     public static ByteStringView TrimSuffix(ByteStringView value, ReadOnlySpan<byte> suffix)
         => HasSuffix(value.AsSpan(), suffix)
             ? value.Slice(0, value.Length - suffix.Length) : value;
+    public static ByteStringValue TrimRightFunc(ByteStringValue value, Func<int, bool> predicate)
+    {
+        if (value.IsNull) throw new NullReferenceException();
+        int end = value.Length;
+        while (end > 0)
+        {
+            var (rune, size) = value.IsBytes ? Utf8.DecodeLastRuneInString(value.ByteSpan[..end])
+                : Utf8.DecodeLastRuneInString(value.CharSpan[..end]);
+            if (!predicate(rune)) break;
+            end -= size;
+        }
+        return value.Slice(0, end);
+    }
     public static ByteStringView TrimRightFunc(ByteStringView value, Func<int, bool> predicate)
     {
         int end = value.Length;
@@ -50,7 +63,7 @@ internal static partial class GoStrings
                     pos += state.separator.Length;
                 }
                 var source = state.values[i].AsSpan();
-                for (int j = 0; j < source.Length; j++) destination[pos + j] = (char)source[j];
+                System.Text.Encoding.Latin1.GetChars(source, destination.Slice(pos, source.Length));
                 pos += source.Length;
             }
         });
@@ -72,7 +85,7 @@ internal static partial class GoStrings
                     pos += state.separator.Length;
                 }
                 var source = state.values[i].AsSpan();
-                for (int j = 0; j < source.Length; j++) destination[pos + j] = (char)source[j];
+                System.Text.Encoding.Latin1.GetChars(source, destination.Slice(pos, source.Length));
                 pos += source.Length;
             }
         });
@@ -168,12 +181,12 @@ internal static partial class GoStrings
                     index += Utf8.DecodeRuneInString(s.AsSpan(start)).Size;
             }
             else
-                index += s[start..].IndexOf(oldValue, StringComparison.Ordinal);
-            builder.WriteString(s[start..index]);
+                index += s.AsSpan(start).IndexOf(oldValue.AsSpan(), StringComparison.Ordinal);
+            builder.WriteString(s.AsSpan(start, index - start));
             builder.WriteString(newValue);
             start = index + oldValue.Length;
         }
-        builder.WriteString(s[start..]);
+        builder.WriteString(s.AsSpan(start));
         return builder.String();
     }
 

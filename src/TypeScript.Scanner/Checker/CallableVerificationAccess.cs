@@ -6,8 +6,8 @@ public sealed partial class Checker
 {
     internal int VerificationCallableUniqueSymbolCount() => uniqueESSymbolTypes.Count;
     internal bool VerificationCallableUniqueSymbolMembership(Type value) => value.Symbol()is { } symbol && uniqueESSymbolTypes.TryGetValue(symbol, out var cached) && ReferenceEquals(cached, value);
-    internal SourceFileLinks? VerificationCallableSourceFileLinks() => sourceFileLinks.TryGet(sourceFile.AsNode());
-    internal SignatureLinks? VerificationCallableSignatureLinks(Node node) => signatureLinks.TryGet(node);
+    internal Memory<SourceFileLinks> VerificationCallableSourceFileLinks() => sourceFileLinks.TryGet(sourceFile.AsNode());
+    internal Memory<SignatureLinks> VerificationCallableSignatureLinks(Node node) => signatureLinks.TryGet(node);
     internal TypePredicate VerificationCallableNoTypePredicate() => noTypePredicate;
     internal int VerificationCallableCachedSignatureCount() => cachedSignatures.Count;
     internal bool VerificationCallableCachedSignaturesNil() => cachedSignatures is null;

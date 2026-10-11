@@ -37,7 +37,8 @@ public partial class Scanner
     internal static int SkipTriviaEx(ByteStringView source, int pos, SkipTriviaOptions options) => skipTriviaEx(source, pos, options);
     internal static int SkipTriviaByteString(string source, int pos) => skipTriviaEx(source, pos, null);
     internal static int SkipTriviaByteString(ByteStringView source, int pos) => skipTriviaEx(source, pos, null);
-    internal static bool IsValidIdentifierByteString(string source) => isValidIdentifier(source);
+    internal static bool IsValidIdentifierByteString(ByteStringValue source) => isValidIdentifier(source);
+    internal static bool IsValidIdentifierByteString(string source) => isValidIdentifier(ByteStringValue.FromString(source));
     internal static IEnumerable<CommentRange> GetLeadingCommentRangesByteString(string source, int pos) => iterateCommentRanges(null, source, pos, false);
     internal static IEnumerable<CommentRange> GetLeadingCommentRangesByteString(ByteStringView source, int pos) => iterateCommentRanges(null, source, pos, false);
     internal static IEnumerable<CommentRange> GetTrailingCommentRangesByteString(string source, int pos) => iterateCommentRanges(null, source, pos, true);

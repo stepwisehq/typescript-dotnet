@@ -61,12 +61,36 @@ internal static partial class JsNum
         }
     }
 
-    public static Number FromString(string s)
+    public static Number FromString(string s) => FromString(s.AsSpan(0, s.Length));
+
+    internal static Number FromString(ByteStringValue s) => s.IsNull ? FromString((string)null!) :
+        s.IsBytes ? fromBytes(s.ByteSpan) : FromString(s.CharSpan);
+
+    private static Number fromBytes(ReadOnlySpan<byte> bytes)
+    {
+        char[]? rented = null;
+        Span<char> chars = bytes.Length <= 256 ? stackalloc char[bytes.Length]
+            : (rented = System.Buffers.ArrayPool<char>.Shared.Rent(bytes.Length)).AsSpan(0, bytes.Length);
+        try
+        {
+            // Raw Go bytes correspond to Latin1 byte-characters in the existing
+            // numeric library adapter. The shared decoder below still validates
+            // UTF8 and consumes malformed bytes exactly as before.
+            Encoding.Latin1.GetChars(bytes, chars);
+            return FromString(chars);
+        }
+        finally
+        {
+            if (rented is not null) System.Buffers.ArrayPool<char>.Shared.Return(rented);
+        }
+    }
+
+    private static Number FromString(ReadOnlySpan<char> s)
     {
         int start = 0, end = s.Length;
         while (start < end)
         {
-            var(r, size) = Utf8.DecodeRuneInString(s.AsSpan(start, end - start));
+            var(r, size) = Utf8.DecodeRuneInString(s.Slice(start, end - start));
             if (!isStrWhiteSpace(r))
                 break;
             start += size;
@@ -74,13 +98,13 @@ internal static partial class JsNum
 
         while (start < end)
         {
-            var(r, size) = Utf8.DecodeLastRuneInString(s.AsSpan(start, end - start));
+            var(r, size) = Utf8.DecodeLastRuneInString(s.Slice(start, end - start));
             if (!isStrWhiteSpace(r))
                 break;
             end -= size;
         }
 
-        ReadOnlySpan<char> text = s.AsSpan(start, end - start);
+        ReadOnlySpan<char> text = s.Slice(start, end - start);
         if (text.IsEmpty) return new(0);
         if (text.SequenceEqual("Infinity") || text.SequenceEqual("+Infinity")) return new(double.PositiveInfinity);
         if (text.SequenceEqual("-Infinity")) return new(double.NegativeInfinity);

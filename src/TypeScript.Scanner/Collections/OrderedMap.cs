@@ -30,6 +30,16 @@ public sealed class OrderedMap<K, V>
     }
 
     public (V Value, bool Ok) Get(K key) => mp != null && mp.TryGetValue(key, out var value) ? (value, true) : (Zero<V>(), false);
+    // Existing ordered JSON string keys remain owned strings. The resolver's
+    // alternate lookup borrows its byte/raw-character input and the standard
+    // Dictionary comparer without constructing another string key.
+    internal (V Value, bool Ok) Get(TypeScript.Scanner.ByteStringValue key)
+    {
+        if (mp is null) return (Zero<V>(), false);
+        if (typeof(K) != typeof(string)) throw new InvalidOperationException("Borrowed text lookup requires string keys");
+        var strings = (Dictionary<string, V>)(object)mp;
+        return key.TryGetValue(strings, out var value) ? (value, true) : (Zero<V>(), false);
+    }
     public V GetOrZero(K key) => Get(key).Value;
     public (K Key, V Value, bool Ok) EntryAt(int index)
     {

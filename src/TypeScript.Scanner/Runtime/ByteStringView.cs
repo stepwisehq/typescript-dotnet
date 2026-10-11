@@ -21,8 +21,21 @@ internal readonly struct ByteStringView
     public static implicit operator ByteStringView(string? text) => FromGoBytes(text);
     internal static ByteStringView FromGoBytes(string? text) => text is null
         ? default : FromOwnedBytes(text.Length == 0 ? Array.Empty<byte>() : GoString.Bytes(text));
+    // Builder prefixes are append-only. The mutable builder never overwrites
+    // this region, and Reset detaches; only the immutable header escapes.
+    internal static ByteStringView FromBuilderSlice(Slice<byte> bytes)
+    {
+        if (!System.Runtime.InteropServices.MemoryMarshal.TryGetArray(bytes.AsMemory(), out var memory))
+            throw new InvalidOperationException("Builder text requires an array owner");
+        return new(memory.Array, memory.Offset, memory.Count);
+    }
     internal static ByteStringView FromUnicode(string text) => FromOwnedBytes(System.Text.Encoding.UTF8.GetBytes(text));
     internal static ByteStringView FromOwnedBytes(byte[]? bytes) => new(bytes, 0, bytes?.Length ?? 0);
+    internal static ByteStringView CopyFrom(byte[] bytes)
+    {
+        ArgumentNullException.ThrowIfNull(bytes);
+        return CopyFrom(bytes.AsSpan());
+    }
     internal static ByteStringView CopyFrom(ReadOnlySpan<byte> bytes) => FromOwnedBytes(bytes.ToArray());
 
     public char this[int index]

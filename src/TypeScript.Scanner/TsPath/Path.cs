@@ -28,80 +28,7 @@ public static partial class TsPath
         return -1;
     }
 
-    public static int GetEncodedRootLength(string path)
-    {
-        int ln = path.Length;
-        if (ln == 0)
-            return 0;
-        int ch0 = path[0];
-        if (ch0 == '/' || ch0 == '\\')
-        {
-            if (ln == 1 || path[1] != ch0)
-                return 1;
-            int offset = 2;
-            int p1 = path[offset..].IndexOf((char)ch0);
-            if (p1 < 0)
-                return ln;
-            return p1 + offset + 1;
-        }
-
-        if (IsVolumeCharacter(ch0) && ln > 1 && path[1] == ':')
-        {
-            if (ln == 2)
-                return 2;
-            int ch2 = path[2];
-            if (ch2 == '/' || ch2 == '\\')
-                return 3;
-        }
-
-        if (ch0 == '^' && ln > 1 && path[1] == '/')
-        {
-            if (GoStrings.HasPrefix(path, DynamicURIFileNamePrefix))
-            {
-                int dynamicSchemeEnd = path[DynamicURIFileNamePrefix.Length..].IndexOf('/');
-                if (dynamicSchemeEnd != -1)
-                {
-                    int dynamicAuthorityStart = DynamicURIFileNamePrefix.Length + dynamicSchemeEnd + 1;
-                    int dynamicAuthorityEnd = path[dynamicAuthorityStart..].IndexOf('/');
-                    if (dynamicAuthorityEnd != -1)
-                        return dynamicAuthorityStart + dynamicAuthorityEnd + 1;
-                    return ~ln;
-                }
-            }
-
-            return 2;
-        }
-
-        int schemeEnd = GoStrings.Index(path, urlSchemeSeparator);
-        if (schemeEnd != -1)
-        {
-            int authorityStart = schemeEnd + urlSchemeSeparator.Length;
-            int authorityLength = GoStrings.Index(path[authorityStart..], "/");
-            if (authorityLength != -1)
-            {
-                int authorityEnd = authorityStart + authorityLength;
-                string scheme = path[..schemeEnd];
-                string authority = path[authorityStart..authorityEnd];
-                if (UnicodeCase.EqualFold(scheme, "file") && (authority == "" || UnicodeCase.EqualFold(authority, "localhost")) && path.Length > authorityEnd + 2 && IsVolumeCharacter(path[authorityEnd + 1]))
-                {
-                    int volumeSeparatorEnd = getFileUrlVolumeSeparatorEnd(path, authorityEnd + 2);
-                    if (volumeSeparatorEnd != -1)
-                    {
-                        if (volumeSeparatorEnd == path.Length)
-                            return ~volumeSeparatorEnd;
-                        if (path[volumeSeparatorEnd] == '/')
-                            return ~(volumeSeparatorEnd + 1);
-                    }
-                }
-
-                return ~(authorityEnd + 1);
-            }
-
-            return ~ln;
-        }
-
-        return 0;
-    }
+    public static int GetEncodedRootLength(string path) => GetEncodedRootLength(ByteStringValue.FromString(path));
 
     public static bool IsDynamicFileName(string path) => path.StartsWith("^/", StringComparison.Ordinal);
     public static bool PathIsAbsolute(string path) => GetEncodedRootLength(path) != 0;
@@ -136,6 +63,40 @@ public static partial class TsPath
     }
 
     public static bool IsExternalModuleNameRelative(string moduleName) => PathIsRelative(moduleName) || IsRootedDiskPath(moduleName);
+    internal static bool PathIsRelative(ByteStringValue path)
+    {
+        if (path.IsNull) throw new NullReferenceException();
+        return path.EqualsBytes("."u8) || path.EqualsBytes(".."u8) ||
+            path.Length >= 2 && path[0] == '.' && path[1] is '/' or '\\' ||
+            path.Length >= 3 && path[0] == '.' && path[1] == '.' && path[2] is '/' or '\\';
+    }
+
+    internal static bool IsExternalModuleNameRelative(ByteStringValue moduleName) =>
+        PathIsRelative(moduleName) || IsRootedDiskPath(moduleName);
+
+    // Positive-root branches of path.go:168. URL roots are complemented (negative)
+    // and need no scheme/authority projection when only disk-root membership is read.
+    internal static bool IsRootedDiskPath(ByteStringValue path)
+    {
+        if (path.IsNull) throw new NullReferenceException();
+        int length = path.Length;
+        if (length == 0) return false;
+        int first = path[0];
+        if (first is '/' or '\\') return true;
+        if (IsVolumeCharacter(first) && length > 1 && path[1] == ':' &&
+            (length == 2 || path[2] is '/' or '\\')) return true;
+        if (first == '^' && length > 1 && path[1] == '/')
+        {
+            if ((path.IsBytes ? path.ByteSpan.StartsWith("^/~ts-uri~/"u8) : path.CharSpan.StartsWith(DynamicURIFileNamePrefix, StringComparison.Ordinal)))
+            {
+                var rest = path.Slice(DynamicURIFileNamePrefix.Length);
+                int schemeEnd = (rest.IsBytes ? rest.ByteSpan.IndexOf((byte)'/') : rest.CharSpan.IndexOf('/'));
+                if (schemeEnd >= 0) return rest.IsBytes ? rest.ByteSpan[(schemeEnd + 1)..].IndexOf((byte)'/') >= 0 : rest.CharSpan[(schemeEnd + 1)..].IndexOf('/') >= 0;
+            }
+            return true;
+        }
+        return false;
+    }
     public static bool HasTrailingDirectorySeparator(string path) => path.Length > 0 && path[^1] is '/' or '\\';
     public static string RemoveTrailingDirectorySeparator(string path) => HasTrailingDirectorySeparator(path) ? path[..^1] : path;
     public static string EnsureTrailingDirectorySeparator(string path) => HasTrailingDirectorySeparator(path) ? path : path + "/";

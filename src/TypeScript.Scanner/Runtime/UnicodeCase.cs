@@ -51,11 +51,17 @@ internal static partial class UnicodeCase
     // pinned simple-fold orbit. Invalid bytes decode to RuneError as in Go.
     public static bool EqualFold(string a, string b)
     {
+        // Preserve the original raw-string null failure and argument order.
+        _ = a.Length;
+        return EqualFold(a.AsSpan(), b is null ? throw new NullReferenceException() : b.AsSpan());
+    }
+    public static bool EqualFold(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+    {
         int ai = 0, bi = 0;
         while (ai < a.Length && bi < b.Length)
         {
-            var(ar, aSize) = Utf8.DecodeRuneInString(a.AsSpan(ai));
-            var(br, bSize) = Utf8.DecodeRuneInString(b.AsSpan(bi));
+            var(ar, aSize) = Utf8.DecodeRuneInString(a[ai..]);
+            var(br, bSize) = Utf8.DecodeRuneInString(b[bi..]);
             ai += aSize;
             bi += bSize;
             if (ar == br)

@@ -3,9 +3,26 @@
 // Managed compatibility adapters for the parser's Go slice and pointer semantics.
 #nullable disable
 namespace TypeScript.Scanner;
-internal sealed class GoRef<T>(Func<T> get, Action<T> set)
+internal sealed class GoRef<T>
 {
-    public T Value { get => get(); set => set(value); }
+    private T value;
+    private readonly Func<T> get;
+    private readonly Action<T> set;
+    private readonly bool linked;
+
+    // An upstream local pointer owns its value directly. Callback adapters are
+    // reserved for links to an existing field or other lvalue.
+    public GoRef(T value) => this.value = value;
+    public GoRef(Func<T> get, Action<T> set)
+    {
+        (this.get, this.set) = (get, set);
+        linked = true;
+    }
+    public T Value
+    {
+        get => linked ? get() : value;
+        set { if (linked) set(value); else this.value = value; }
+    }
 }
 
 internal sealed class GoArena<T>
@@ -227,6 +244,7 @@ internal static class GoRuntime
     public static List<T> MakeSlice<T>(int length) => Enumerable.Repeat(default(T), length).ToList();
     public static int Len(string s) => s?.Length ?? 0;
     public static int Len(ByteStringView s) => s.Length;
+    public static int Len(ByteStringValue s) => s.Length;
     public static int Len<T>(List<T> s) => s?.Count ?? 0;
     public static int Len<T>(T[] s) => s?.Length ?? 0;
     public static int Len<T>(HashSet<T> s) => s?.Count ?? 0;
@@ -259,6 +277,8 @@ internal static class GoRuntime
     public static string Slice(string source, int start, int end) => source.Substring(start, end - start);
     public static ByteStringView Slice(ByteStringView source, int start) => source.Slice(start);
     public static ByteStringView Slice(ByteStringView source, int start, int end) => source.Slice(start, end);
+    public static ByteStringValue Slice(ByteStringValue source, int start) => source.Slice(start);
+    public static ByteStringValue Slice(ByteStringValue source, int start, int end) => source.Slice(start, end);
     public static List<T> Slice<T>(List<T> source, int start) => source is null && start == 0 ? null : source.GetRange(start, source.Count - start);
     public static List<T> Slice<T>(List<T> source, int start, int end) => source is null && start == 0 && end == 0 ? null : source.GetRange(start, end - start);
     public static GoListValues<T> RangeValues<T>(List<T> source) => new(source);
@@ -282,6 +302,8 @@ internal static class GoRuntime
     public static IEnumerable<K> RangeKeys<K, V>(Dictionary<K, V> source) => source?.Keys ?? Enumerable.Empty<K>();
     public static GoListRange<T> Range<T>(List<T> source) => new(source);
 
+    public static GoRuneIndexRange Range(ByteStringValue source) => new(source);
+
     public static IEnumerable<KeyValuePair<int, int>> Range(string source)
     {
         for (int i = 0; i < source.Length;)
@@ -292,7 +314,9 @@ internal static class GoRuntime
         }
     }
 
-    public static IEnumerable<KeyValuePair<K, V>> Range<K, V>(Dictionary<K, V> source) => source ?? new();
+    // A Go nil map ranges empty; it does not allocate an empty map owner.
+    public static IEnumerable<KeyValuePair<K, V>> Range<K, V>(Dictionary<K, V> source) =>
+        source is null ? Enumerable.Empty<KeyValuePair<K, V>>() : source;
 }
 
 internal static class GoSlices
@@ -408,6 +432,12 @@ internal static class GoSlices
     }
 
     public static IEnumerable<T> Values<T>(IEnumerable<T> values) => values ?? [];
+    // An explicit iterator boundary for slices.Values consumers; ordinary
+    // internal foreach continues to use the descriptor's value enumerator.
+    public static IEnumerable<T> Values<T>(Slice<T> values)
+    {
+        foreach (var value in values) yield return value;
+    }
     public static List<T> Clone<T>(List<T> values) => values is null ? null : new(values);
     public static void SortFunc<T>(List<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values, compare);
     public static void SortFunc<T>(Slice<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values.AsSpan(), compare);

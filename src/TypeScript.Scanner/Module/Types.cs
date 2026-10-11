@@ -17,10 +17,28 @@ public interface IResolutionHost
 public interface IResolver
 {
     RootedDirectoryPath BaseDirectory();
-    (ResolvedModule? Result, List<DiagAndArgs>? Traces, Exception? Error) ResolveModuleName(string moduleName, RootedFilePath containingFile, ResolutionMode resolutionMode, IResolvedProjectReference? redirectedReference = null);
-    (ResolvedModule? Result, List<DiagAndArgs>? Traces, Exception? Error) ResolveModuleNameFromDirectory(string moduleName, RootedDirectoryPath containingDirectory, ResolutionMode resolutionMode);
-    (ResolvedTypeReferenceDirective? Result, List<DiagAndArgs>? Traces) ResolveTypeReferenceDirective(string typeReferenceDirectiveName, RootedFilePath containingFile, ResolutionMode resolutionMode, IResolvedProjectReference? redirectedReference = null);
+    (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleName(string moduleName, RootedFilePath containingFile, ResolutionMode resolutionMode, IResolvedProjectReference? redirectedReference = null);
+    (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleNameFromDirectory(string moduleName, RootedDirectoryPath containingDirectory, ResolutionMode resolutionMode);
+    (ResolvedTypeReferenceDirective? Result, Slice<DiagAndArgs> Traces) ResolveTypeReferenceDirective(string typeReferenceDirectiveName, RootedFilePath containingFile, ResolutionMode resolutionMode, IResolvedProjectReference? redirectedReference = null);
     ResolutionData GetResolutionData();
+}
+
+// Canonical built-in resolution consumes Go-byte names. Public extension resolvers
+// retain their string API, projected only when that extension is actually invoked.
+internal interface ITextResolver
+{
+    (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleName(ByteStringValue name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null);
+    (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleNameFromDirectory(ByteStringValue name, RootedDirectoryPath directory, ResolutionMode mode);
+    (ResolvedTypeReferenceDirective? Result, Slice<DiagAndArgs> Traces) ResolveTypeReferenceDirective(ByteStringValue name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null);
+}
+internal static class ResolverText
+{
+    internal static (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleName(this IResolver resolver, ByteStringValue name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null) => resolver is ITextResolver text
+        ? text.ResolveModuleName(name, file, mode, reference) : resolver.ResolveModuleName(name.Materialize()!, file, mode, reference);
+    internal static (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleNameFromDirectory(this IResolver resolver, ByteStringValue name, RootedDirectoryPath directory, ResolutionMode mode) => resolver is ITextResolver text
+        ? text.ResolveModuleNameFromDirectory(name, directory, mode) : resolver.ResolveModuleNameFromDirectory(name.Materialize()!, directory, mode);
+    internal static (ResolvedTypeReferenceDirective? Result, Slice<DiagAndArgs> Traces) ResolveTypeReferenceDirective(this IResolver resolver, ByteStringValue name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null) => resolver is ITextResolver text
+        ? text.ResolveTypeReferenceDirective(name, file, mode, reference) : resolver.ResolveTypeReferenceDirective(name.Materialize()!, file, mode, reference);
 }
 
 public interface IResolvedProjectReference
@@ -64,7 +82,7 @@ public struct PackageId : IEquatable<PackageId>
 
 public sealed class ResolvedModule
 {
-    public List<Diagnostic>? ResolutionDiagnostics;
+    public Slice<Diagnostic> ResolutionDiagnostics;
     public RootedFilePath ResolvedFileName;
     public PathKey ResolvedPath;
     public RootedFilePath OriginalPath;
@@ -83,7 +101,7 @@ public static class ResolvedModuleOperations
 
 public sealed class ResolvedTypeReferenceDirective
 {
-    public List<Diagnostic>? ResolutionDiagnostics;
+    public Slice<Diagnostic> ResolutionDiagnostics;
     public bool Primary;
     public RootedFilePath ResolvedFileName;
     public PathKey ResolvedPath;
@@ -93,7 +111,28 @@ public sealed class ResolvedTypeReferenceDirective
     public bool IsResolved() => ResolvedFileName != default;
 }
 
-public readonly record struct ModeAwareCacheKey(string Name, ResolutionMode Mode);
+public readonly record struct ModeAwareCacheKey
+{
+    private readonly ByteStringKey name;
+    private readonly bool nameSupplied;
+    // String projection is the original public presentation boundary. Cache
+    // equality/hashing and internal reads retain one immutable Go-byte header.
+    public string Name
+    {
+        get => nameSupplied ? name.ToString() : null!;
+        init { nameSupplied = value is not null; name = nameSupplied ? ByteStringKey.FromString(value!) : default; }
+    }
+    internal ByteStringValue NameValue => nameSupplied ? name.Value : ByteStringValue.FromString(null);
+    public ResolutionMode Mode { get; init; }
+    public ModeAwareCacheKey(string Name, ResolutionMode Mode) : this(ByteStringValue.FromString(Name), Mode) { }
+    internal ModeAwareCacheKey(ByteStringValue Name, ResolutionMode Mode)
+    {
+        nameSupplied = !Name.IsNull;
+        name = nameSupplied ? ByteStringKey.FromValue(Name) : default;
+        this.Mode = Mode;
+    }
+    public void Deconstruct(out string Name, out ResolutionMode Mode) { Name = this.Name; Mode = this.Mode; }
+}
 public sealed class ModeAwareCache<T> : Dictionary<ModeAwareCacheKey, T>
 {
 }

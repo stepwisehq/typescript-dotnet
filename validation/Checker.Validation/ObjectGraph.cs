@@ -98,9 +98,15 @@ public sealed partial class Graph
             while (linkCursor < propertySymbols.Count)
             {
                 var symbol = propertySymbols[linkCursor++];
-                var links = checker.valueSymbolLinks.TryGet(symbol);
-                AddProperty(links?.target);
-                value.PropertyLinks.Add(new(Symbol(symbol)!.Value, links is not null, Symbol(links?.target), Type(links?.resolvedType), Type(links?.writeType), Type(links?.nameType), Type(links?.containingType), links?.functionOrConstructorChecked ?? false));
+                var location = checker.valueSymbolLinks.TryGet(symbol);
+                if (location.IsEmpty)
+                    value.PropertyLinks.Add(new(Symbol(symbol)!.Value, false, null, null, null, null, null, false));
+                else
+                {
+                    ref var links = ref location.Span[0];
+                    AddProperty(links.target);
+                    value.PropertyLinks.Add(new(Symbol(symbol)!.Value, true, Symbol(links.target), Type(links.resolvedType), Type(links.writeType), Type(links.nameType), Type(links.containingType), links.functionOrConstructorChecked));
+                }
             }
         }
 

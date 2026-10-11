@@ -47,13 +47,13 @@ internal static partial class LinuxReadPaths
         }
     }
 
-    internal static List<Entry> Entries(string path)
+    internal static Slice<Entry> Entries(string path)
     {
         RequirePlatform(path);
         nint directory = OpenDirectory(path);
         if (directory == 0)
             throw new IOException("opendir failed: errno " + Marshal.GetLastPInvokeError());
-        var entries = new List<Entry>();
+        Slice<Entry> entries = default;
         try
         {
             while (true)
@@ -88,7 +88,7 @@ internal static partial class LinuxReadPaths
                 bool link = type == 10;
                 if (type == 0)
                     link = LinuxStat.IsSymlink(System.IO.Path.Combine(path, scalarEncoding.GetString(name)));
-                entries.Add(new Entry(rawName, link));
+                entries = entries.Append(new Entry(rawName, link));
             }
         }
         finally

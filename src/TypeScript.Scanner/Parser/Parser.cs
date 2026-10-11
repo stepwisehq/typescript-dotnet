@@ -275,7 +275,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:281:1.
-    private static Node ParseIsolatedEntityNameRaw(string text)
+    private static Node ParseIsolatedEntityNameRaw(ByteStringView text)
     {
         var p = getParser();
         // Go parser-pool return omitted: this port creates an isolated managed parser.
@@ -482,7 +482,7 @@ public partial class Parser
         }
 
         var pos = this.nodePos();
-        var statements = this.parseListIndex(ParsingContext.SourceElements, (parserCallback, argi) => parserCallback.parseToplevelStatement(argi));
+        var statements = this.parseListIndex(ParsingContext.SourceElements, 0, static (parserCallback, argi, _) => parserCallback.parseToplevelStatement(argi));
         var end = this.nodePos();
         var endJSDoc = this.jsdocScannerInfo();
         var eof = this.parseTokenNode();
@@ -523,7 +523,7 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:465:1.
     private void finishSourceFile(SourceFile result, bool isDeclarationFile)
     {
-        result.CommentDirectives = this.scanner.CommentDirectives()?.ToList();
+        result.CommentDirectives = this.scanner.CommentDirectivesHeader();
         result.Pragmas = getCommentPragmas(this.factory, this.sourceText);
         this.processPragmasIntoFields(result);
         result.SetDiagnostics(attachFileToDiagnostics(this.diagnostics, result));
@@ -596,9 +596,7 @@ public partial class Parser
 
         var statements = Slice<Node>.Make(0);
         var savedParseDiagnostics = this.diagnostics;
-        this.diagnostics = new List<Diagnostic>
-        {
-        };
+        this.diagnostics = Slice<Diagnostic>.Make(0);
         var afterAwaitStatement = 0;
         {
             var i = 0;
@@ -608,16 +606,16 @@ public partial class Parser
                 var prevStatement = sourceFile.Statements.Nodes[afterAwaitStatement];
                 var nextStatement = sourceFile.Statements.Nodes[nextAwaitStatement];
                 statements = GoRuntime.Append(statements, GoRuntime.Slice(sourceFile.Statements.Nodes, afterAwaitStatement, nextAwaitStatement));
-                var diagnosticStart = Core.FindIndex(savedParseDiagnostics, (diagnostic) =>
+                var diagnosticStart = Core.FindIndex(savedParseDiagnostics, prevStatement, static (diagnostic, statement) =>
                 {
-                    return (diagnostic.Pos() >= prevStatement.Pos());
+                    return (diagnostic.Pos() >= statement.Pos());
                 });
                 int diagnosticEnd = default;
                 if ((diagnosticStart >= 0))
                 {
-                    diagnosticEnd = Core.FindIndex(GoRuntime.Slice(savedParseDiagnostics, diagnosticStart), (diagnostic2) =>
+                    diagnosticEnd = Core.FindIndex(GoRuntime.Slice(savedParseDiagnostics, diagnosticStart), nextStatement, static (diagnostic2, statement) =>
                     {
-                        return (diagnostic2.Pos() >= nextStatement.Pos());
+                        return (diagnostic2.Pos() >= statement.Pos());
                     });
                 }
                 else
@@ -627,7 +625,7 @@ public partial class Parser
 
                 if ((diagnosticStart >= 0))
                 {
-                    List<Diagnostic> slice = default;
+                    Slice<Diagnostic> slice = default;
                     if ((diagnosticEnd >= 0))
                     {
                         slice = GoRuntime.Slice(savedParseDiagnostics, diagnosticStart, (diagnosticStart + diagnosticEnd));
@@ -687,9 +685,9 @@ public partial class Parser
         {
             var prevStatement2 = sourceFile.Statements.Nodes[afterAwaitStatement];
             statements = GoRuntime.Append(statements, GoRuntime.Slice(sourceFile.Statements.Nodes, afterAwaitStatement));
-            var diagnosticStart2 = Core.FindIndex(savedParseDiagnostics, (diagnostic3) =>
+            var diagnosticStart2 = Core.FindIndex(savedParseDiagnostics, prevStatement2, static (diagnostic3, statement) =>
             {
-                return (diagnostic3.Pos() >= prevStatement2.Pos());
+                return (diagnostic3.Pos() >= statement.Pos());
             });
             if ((diagnosticStart2 >= 0))
             {
@@ -730,7 +728,9 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:612:1.
-    private Slice<Node> parseListIndex(ParsingContext kind, Func<Parser, int, Node> parseElement)
+    // The source's synchronous callback receives its captured value explicitly,
+    // so parseList forwards without a managed display class or bound delegate.
+    private Slice<Node> parseListIndex<TState>(ParsingContext kind, TState state, Func<Parser, int, TState, Node> parseElement)
     {
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(kind));
@@ -745,7 +745,7 @@ public partial class Parser
             {
                 if (this.isListElement(kind, false))
                 {
-                    var elt = parseElement(this, listLength);
+                    var elt = parseElement(this, listLength, state);
                     if ((GoRuntime.Len(this.reparseList) != 0))
                     {
                         {
@@ -785,16 +785,17 @@ public partial class Parser
     private NodeList parseList(ParsingContext kind, Func<Parser, Node> parseElement)
     {
         var pos = this.nodePos();
-        var nodes = this.parseListIndex(kind, (p2, _) =>
-        {
-            return parseElement(p2);
-        });
+        var nodes = this.parseListIndex(kind, parseElement, static (p2, _, callback) => callback(p2));
         return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), nodes);
     }
 
     // Return a non-nil (but possibly empty) slice if parsing was successful, or nil if parseElement returned nil
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:651:1.
     private NodeList parseDelimitedList(ParsingContext kind, Func<Parser, Node> parseElement)
+        => parseDelimitedList(kind, parseElement, static (parser, callback) => callback(parser));
+
+    // parser.go:651. Explicit synchronous state keeps one original list algorithm.
+    private NodeList parseDelimitedList<TState>(ParsingContext kind, TState state, Func<Parser, TState, Node> parseElement)
     {
         var pos = this.nodePos();
         var saveParsingContexts = this.parsingContexts;
@@ -807,7 +808,7 @@ public partial class Parser
             if (this.isListElement(kind, false))
             {
                 var startPos = this.nodePos();
-                var element = parseElement(this);
+                var element = parseElement(this, state);
                 if ((element == null))
                 {
                     this.parsingContexts = saveParsingContexts;
@@ -2922,64 +2923,64 @@ public partial class Parser
             return;
         }
 
-        string expressionText = "";
+        ByteStringValue expressionText = default;
         if ((node.Kind == Kind.Identifier))
         {
-            expressionText = node.Text();
+            expressionText = node.TextValue();
         }
 
-        if ((expressionText == ""))
+        if ((expressionText.EqualsBytes(""u8)))
         {
             this.parseErrorAtCurrentToken(Diagnostics.X_0_expected, Scanner.TokenToString(Kind.SemicolonToken));
             return;
         }
 
         var pos = Scanner.SkipTriviaByteString(this.sourceText, node.Pos());
-        switch (expressionText)
+        switch (true)
         {
-            case "const":
-            case "let":
-            case "var":
+            case true when expressionText.EqualsBytes("const"u8):
+            case true when expressionText.EqualsBytes("let"u8):
+            case true when expressionText.EqualsBytes("var"u8):
             {
                 this.parseErrorAt(pos, node.End(), Diagnostics.Variable_declaration_not_allowed_at_this_location);
                 return;
             }
 
-            case "declare":
+            case true when expressionText.EqualsBytes("declare"u8):
             {
                 return;
             }
 
-            case "interface":
+            case true when expressionText.EqualsBytes("interface"u8):
             {
                 this.parseErrorForInvalidName(Diagnostics.Interface_name_cannot_be_0, Diagnostics.Interface_must_be_given_a_name, Kind.OpenBraceToken);
                 return;
             }
 
-            case "is":
+            case true when expressionText.EqualsBytes("is"u8):
             {
                 this.parseErrorAt(pos, this.scanner.TokenStart(), Diagnostics.A_type_predicate_is_only_allowed_in_return_type_position_for_functions_and_methods);
                 return;
             }
 
-            case "module":
-            case "namespace":
+            case true when expressionText.EqualsBytes("module"u8):
+            case true when expressionText.EqualsBytes("namespace"u8):
             {
                 this.parseErrorForInvalidName(Diagnostics.Namespace_name_cannot_be_0, Diagnostics.Namespace_must_be_given_a_name, Kind.OpenBraceToken);
                 return;
             }
 
-            case "type":
+            case true when expressionText.EqualsBytes("type"u8):
             {
                 this.parseErrorForInvalidName(Diagnostics.Type_alias_name_cannot_be_0, Diagnostics.Type_alias_must_be_given_a_name, Kind.EqualsToken);
                 return;
             }
         }
 
-        var suggestion = Core.GetSpellingSuggestionForStrings(expressionText, GoSlices.Values(viableKeywordSuggestions));
+        var suggestion = Core.GetSpellingSuggestionForStrings(expressionText.Materialize(), GoSlices.Values(viableKeywordSuggestions));
         if ((suggestion == ""))
         {
-            suggestion = getSpaceSuggestion(expressionText);
+            suggestion = getSpaceSuggestion(expressionText.Materialize());
         }
 
         if ((suggestion != ""))
@@ -4695,10 +4696,10 @@ public partial class Parser
         var saveContextFlags = this.contextFlags;
         this.setContextFlags(NodeFlags.YieldContext, ((flags & ParseFlags.Yield) != 0));
         this.setContextFlags(NodeFlags.AwaitContext, ((flags & ParseFlags.Await) != 0));
-        var parameters = this.parseDelimitedList(ParsingContext.Parameters, (p) =>
+        var parameters = this.parseDelimitedList(ParsingContext.Parameters, (inAwaitContext, allowAmbiguity, flags), static (p, state) =>
         {
-            var parameter = p.parseParameterEx(inAwaitContext, allowAmbiguity);
-            if (((parameter != null) && ((flags & ParseFlags.Type) == 0)))
+            var parameter = p.parseParameterEx(state.inAwaitContext, state.allowAmbiguity);
+            if (((parameter != null) && ((state.flags & ParseFlags.Type) == 0)))
             {
                 p.checkJSSyntax(parameter);
             }
@@ -6116,7 +6117,7 @@ public partial class Parser
     private Node parsePossibleParenthesizedArrowFunctionExpression(bool allowReturnTypeInArrowFunction)
     {
         var tokenPos = this.scanner.TokenStart();
-        if (this.notParenthesizedArrow.Contains(tokenPos))
+        if (this.notParenthesizedArrow?.Contains(tokenPos) == true)
         {
             return null;
         }
@@ -6124,7 +6125,7 @@ public partial class Parser
         var result = this.parseParenthesizedArrowFunctionExpression(false, allowReturnTypeInArrowFunction);
         if ((result == null))
         {
-            this.notParenthesizedArrow.Add(tokenPos);
+            (this.notParenthesizedArrow ??= new()).Add(tokenPos);
         }
 
         return result;
@@ -8707,7 +8708,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6482:1.
-    private static List<Diagnostic> attachFileToDiagnostics(List<Diagnostic> diagnostics, SourceFile file)
+    private static Slice<Diagnostic> attachFileToDiagnostics(Slice<Diagnostic> diagnostics, SourceFile file)
     {
         {
             foreach (var d in GoRuntime.RangeValues(diagnostics))
@@ -8728,9 +8729,9 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6492:1.
-    private static List<Pragma> getCommentPragmas(NodeFactory f, ByteStringView sourceText)
+    private static Slice<Pragma> getCommentPragmas(NodeFactory f, ByteStringView sourceText)
     {
-        List<Pragma> pragmas = default;
+        Slice<Pragma> pragmas = default;
         {
             foreach (var commentRange in GoRuntime.RangeKeys(Scanner.GetLeadingCommentRangesByteString(sourceText, 0)))
             {
@@ -8743,7 +8744,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6500:1.
-    private static List<Pragma> extractPragmas(CommentRange commentRange, ByteStringView text)
+    private static Slice<Pragma> extractPragmas(CommentRange commentRange, ByteStringView text)
     {
         if ((commentRange.Kind == Kind.SingleLineCommentTrivia))
         {
@@ -8758,13 +8759,13 @@ public partial class Parser
             if ((tripleSlash && match(text, pos, "<"u8)))
             {
                 var tagName = extractName(text, (pos + 1));
-                if ((tagName != "reference"))
+                if ((!tagName.EqualsBytes("reference"u8)))
                 {
-                    return null;
+                    return default;
                 }
 
                 pos += 10;
-                var args = new Dictionary<string, PragmaArgument>();
+                var args = new Dictionary<ByteStringKey, PragmaArgument>(ByteStringKey.Comparer);
                 while (true)
                 {
                     pos = skipBlanks(text, pos);
@@ -8774,12 +8775,12 @@ public partial class Parser
                     }
 
                     var argName = extractName(text, pos);
-                    if ((argName == ""))
+                    if ((argName.Length == 0))
                     {
                         break;
                     }
 
-                    pos = skipBlanks(text, (pos + GoRuntime.Len(argName)));
+                    pos = skipBlanks(text, (pos + argName.Length));
                     if (!match(text, pos, "="u8))
                     {
                         break;
@@ -8794,43 +8795,41 @@ public partial class Parser
                         break;
                     }
 
-                    args[argName] = new PragmaArgument
+                    args[ByteStringKey.FromValue(argName)] = new PragmaArgument
                     {
-                        Name = argName,
-                        Value = value,
-                        TextRange = Core.NewTextRange(((commentRange.Pos + pos) + 1), (((commentRange.Pos + pos) + 1) + GoRuntime.Len(value)))
+                        NameValue = argName,
+                        ValueValue = value,
+                        TextRange = Core.NewTextRange(((commentRange.Pos + pos) + 1), (((commentRange.Pos + pos) + 1) + value.Length))
                     };
-                    pos += (GoRuntime.Len(value) + 2);
+                    pos += (value.Length + 2);
                 }
 
-                return new List<Pragma>
-                {
+                return Slice<Pragma>.FromArray([
                     new Pragma
                     {
                         CommentRange = commentRange,
-                        Name = "reference",
+                        NameValue = ByteStringValue.FromString("reference"),
                         Args = args
                     }
-                };
+                ]);
             }
 
             if (match(text, pos, "@"u8))
             {
                 pos++;
                 var pragmaName = extractName(text, pos);
-                if (!(((pragmaName == "ts-check") || (pragmaName == "ts-nocheck"))))
+                if (!(((pragmaName.EqualsBytes("ts-check"u8)) || (pragmaName.EqualsBytes("ts-nocheck"u8)))))
                 {
-                    return null;
+                    return default;
                 }
 
-                return new List<Pragma>
-                {
+                return Slice<Pragma>.FromArray([
                     new Pragma
                     {
                         CommentRange = commentRange,
-                        Name = pragmaName
+                        NameValue = pragmaName
                     }
-                };
+                ]);
             }
         }
 
@@ -8838,7 +8837,7 @@ public partial class Parser
         {
             text = GoStrings.TrimSuffix(text, "*/"u8);
             var pos2 = 2;
-            List<Pragma> pragmas = default;
+            Slice<Pragma> pragmas = default;
             while (true)
             {
                 {
@@ -8858,21 +8857,21 @@ public partial class Parser
                 }
 
                 var lineEnd = lineEndPos(text, pos2);
-                var pragmaName2 = GoStrings.ToLower(GoRuntime.Slice(text, namePos, nameEnd).Materialize());
-                if (((((pragmaName2 == "jsx") || (pragmaName2 == "jsxfrag")) || (pragmaName2 == "jsximportsource")) || (pragmaName2 == "jsxruntime")))
+                var pragmaName2 = GoStrings.ToLower(ByteStringValue.FromView(text.Slice(namePos, nameEnd)));
+                if (((((pragmaName2.EqualsBytes("jsx"u8)) || (pragmaName2.EqualsBytes("jsxfrag"u8))) || (pragmaName2.EqualsBytes("jsximportsource"u8))) || (pragmaName2.EqualsBytes("jsxruntime"u8))))
                 {
                     var start = skipBlanks(text, nameEnd);
                     var argEnd = skipNonBlanks(text, start);
                     if ((argEnd != start))
                     {
-                        var args2 = new Dictionary<string, PragmaArgument>();
-                        args2["factory"] = new PragmaArgument
+                        var args2 = new Dictionary<ByteStringKey, PragmaArgument>(ByteStringKey.Comparer);
+                        args2[ByteStringKey.FromString("factory")] = new PragmaArgument
                         {
-                            Name = "factory",
-                            Value = GoRuntime.Slice(text, start, argEnd).Materialize(),
+                            NameValue = ByteStringValue.FromString("factory"),
+                            ValueValue = ByteStringValue.FromView(text.Slice(start, argEnd)),
                             TextRange = Core.NewTextRange((commentRange.Pos + start), (commentRange.Pos + argEnd))
                         };
-                        pragmas = GoRuntime.Append(pragmas, new Pragma { CommentRange = commentRange, Name = pragmaName2, Args = args2 });
+                        pragmas = GoRuntime.Append(pragmas, new Pragma { CommentRange = commentRange, NameValue = pragmaName2, Args = args2 });
                     }
                 }
 
@@ -8882,7 +8881,7 @@ public partial class Parser
             return pragmas;
         }
 
-        return null;
+        return default;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6604:1.
@@ -8950,7 +8949,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6644:1.
-    private static string extractName(ByteStringView text, int pos)
+    private static ByteStringValue extractName(ByteStringView text, int pos)
     {
         var start = pos;
         while (((pos < GoRuntime.Len(text)) && (((((text[pos] >= 'A') && (text[pos] <= 'Z')) || ((text[pos] >= 'a') && (text[pos] <= 'z'))) || (text[pos] == '-')))))
@@ -8958,21 +8957,21 @@ public partial class Parser
             pos++;
         }
 
-        return GoStrings.ToLower(GoRuntime.Slice(text, start, pos).Materialize());
+        return GoStrings.ToLower(ByteStringValue.FromView(text.Slice(start, pos)));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6652:1.
-    private static (string, bool) extractQuotedString(ByteStringView text, int pos)
+    private static (ByteStringValue, bool) extractQuotedString(ByteStringView text, int pos)
     {
         if ((pos == GoRuntime.Len(text)))
         {
-            return ("", false);
+            return (default, false);
         }
 
         var quote = text[pos];
         if (((quote != '\'') && (quote != '"')))
         {
-            return ("", false);
+            return (default, false);
         }
 
         pos++;
@@ -8984,35 +8983,35 @@ public partial class Parser
 
         if ((pos == GoRuntime.Len(text)))
         {
-            return ("", false);
+            return (default, false);
         }
 
-        return (GoRuntime.Slice(text, start, pos).Materialize(), true);
+        return (ByteStringValue.FromView(text.Slice(start, pos)), true);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6671:1.
     private void processPragmasIntoFields(SourceFile context)
     {
         context.CheckJsDirective = null;
-        context.ReferencedFiles = null;
-        context.TypeReferenceDirectives = null;
-        context.LibReferenceDirectives = null;
+        context.ReferencedFiles = default;
+        context.TypeReferenceDirectives = default;
+        context.LibReferenceDirectives = default;
         {
             foreach (var pragma in GoRuntime.RangeValues(context.Pragmas))
             {
-                switch (pragma.Name)
+                switch (true)
                 {
-                    case "reference":
+                    case true when pragma.NameValue.EqualsBytes("reference"u8):
                     {
-                        var typesOk = pragma.Args.TryGetValue("types", out var types);
-                        var libOk = pragma.Args.TryGetValue("lib", out var lib);
-                        var pathOk = pragma.Args.TryGetValue("path", out var path);
-                        var resolutionModeOk = pragma.Args.TryGetValue("resolution-mode", out var resolutionMode);
-                        var preserveOk = pragma.Args.TryGetValue("preserve", out var preserve);
-                        var noDefaultLibOk = pragma.Args.TryGetValue("no-default-lib", out var noDefaultLib);
+                        var typesOk = ByteStringValue.FromString("types").TryGetValue(pragma.Args, out var types);
+                        var libOk = ByteStringValue.FromString("lib").TryGetValue(pragma.Args, out var lib);
+                        var pathOk = ByteStringValue.FromString("path").TryGetValue(pragma.Args, out var path);
+                        var resolutionModeOk = ByteStringValue.FromString("resolution-mode").TryGetValue(pragma.Args, out var resolutionMode);
+                        var preserveOk = ByteStringValue.FromString("preserve").TryGetValue(pragma.Args, out var preserve);
+                        var noDefaultLibOk = ByteStringValue.FromString("no-default-lib").TryGetValue(pragma.Args, out var noDefaultLib);
                         switch (true)
                         {
-                            case true when (noDefaultLibOk && (noDefaultLib.Value == "true")):
+                            case true when (noDefaultLibOk && (noDefaultLib.ValueValue.EqualsBytes("true"u8))):
                             {
                                 break;
                             }
@@ -9022,22 +9021,22 @@ public partial class Parser
                                 ResolutionMode parsed = default;
                                 if (resolutionModeOk)
                                 {
-                                    parsed = this.parseResolutionMode(resolutionMode.Value, resolutionMode.Pos(), resolutionMode.End());
+                                    parsed = this.parseResolutionMode(resolutionMode.ValueValue, resolutionMode.Pos(), resolutionMode.End());
                                 }
 
-                                context.TypeReferenceDirectives = GoRuntime.Append(context.TypeReferenceDirectives, new FileReference { TextRange = types.TextRange, FileName = types.Value, ResolutionMode = parsed, Preserve = (preserveOk && (preserve.Value == "true")) });
+                                context.TypeReferenceDirectives = GoRuntime.Append(context.TypeReferenceDirectives, new FileReference { TextRange = types.TextRange, FileNameValue = types.ValueValue, ResolutionMode = parsed, Preserve = (preserveOk && (preserve.ValueValue.EqualsBytes("true"u8))) });
                                 break;
                             }
 
                             case true when libOk:
                             {
-                                context.LibReferenceDirectives = GoRuntime.Append(context.LibReferenceDirectives, new FileReference { TextRange = lib.TextRange, FileName = lib.Value, Preserve = (preserveOk && (preserve.Value == "true")) });
+                                context.LibReferenceDirectives = GoRuntime.Append(context.LibReferenceDirectives, new FileReference { TextRange = lib.TextRange, FileNameValue = lib.ValueValue, Preserve = (preserveOk && (preserve.ValueValue.EqualsBytes("true"u8))) });
                                 break;
                             }
 
                             case true when pathOk:
                             {
-                                context.ReferencedFiles = GoRuntime.Append(context.ReferencedFiles, new FileReference { TextRange = path.TextRange, FileName = path.Value, Preserve = (preserveOk && (preserve.Value == "true")) });
+                                context.ReferencedFiles = GoRuntime.Append(context.ReferencedFiles, new FileReference { TextRange = path.TextRange, FileNameValue = path.ValueValue, Preserve = (preserveOk && (preserve.ValueValue.EqualsBytes("true"u8))) });
                                 break;
                             }
 
@@ -9051,14 +9050,14 @@ public partial class Parser
                         break;
                     }
 
-                    case "ts-check":
-                    case "ts-nocheck":
+                    case true when pragma.NameValue.EqualsBytes("ts-check"u8):
+                    case true when pragma.NameValue.EqualsBytes("ts-nocheck"u8):
                     {
                         if (((context.CheckJsDirective == null) || (pragma.TextRange.Pos() > context.CheckJsDirective.Range.Pos)))
                         {
                             context.CheckJsDirective = new CheckJsDirective
                             {
-                                Enabled = (pragma.Name == "ts-check"),
+                                Enabled = (pragma.NameValue.EqualsBytes("ts-check"u8)),
                                 Range = pragma.CommentRange
                             };
                         }
@@ -9066,10 +9065,10 @@ public partial class Parser
                         break;
                     }
 
-                    case "jsx":
-                    case "jsxfrag":
-                    case "jsximportsource":
-                    case "jsxruntime":
+                    case true when pragma.NameValue.EqualsBytes("jsx"u8):
+                    case true when pragma.NameValue.EqualsBytes("jsxfrag"u8):
+                    case true when pragma.NameValue.EqualsBytes("jsximportsource"u8):
+                    case true when pragma.NameValue.EqualsBytes("jsxruntime"u8):
                     {
                         break;
                     }
@@ -9084,16 +9083,16 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:6731:1.
-    private ResolutionMode parseResolutionMode(string mode, int pos, int end)
+    private ResolutionMode parseResolutionMode(ByteStringValue mode, int pos, int end)
     {
         ResolutionMode resolutionKind = default;
-        if ((mode == "import"))
+        if ((mode.EqualsBytes("import"u8)))
         {
             resolutionKind = ResolutionMode.ESNext;
             return resolutionKind;
         }
 
-        if ((mode == "require"))
+        if ((mode.EqualsBytes("require"u8)))
         {
             resolutionKind = ResolutionMode.CommonJS;
             return resolutionKind;
@@ -9489,13 +9488,14 @@ public partial class Parser
     private ByteStringView sourceText = "";
     private ScriptKind scriptKind;
     private LanguageVariant languageVariant;
-    private List<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
+    private Slice<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
     private Kind token;
     private NodeFlags sourceFlags, contextFlags;
     private int parsingContexts;
     private bool statementHasAwaitIdentifier, hasDeprecatedTag, hasParseError;
     private int identifierCount;
-    private HashSet<int> notParenthesizedArrow = new();
+    // collections.Set[int] begins nil and owns storage only on the first Add.
+    private HashSet<int> notParenthesizedArrow;
     private GoArena<Node> nodeSliceArena = new();
     private GoArena<ByteStringView> stringSliceArena = new();
     // parser.go:90: private append/reslice storage; only the final JSDoc cache escapes.
@@ -9516,6 +9516,11 @@ public partial class Parser
     // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.FromUnicode(sourceText), scriptKind);
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.CopyFrom(sourceText), scriptKind);
-    public static Node ParseIsolatedEntityName(string text) => ParseIsolatedEntityNameRaw(GoString.ToUtf8(text));
-    public static Node ParseIsolatedEntityName(byte[] text) => ParseIsolatedEntityNameRaw(GoString.FromBytes(text));
+    public static Node ParseIsolatedEntityName(string text) => ParseIsolatedEntityNameRaw(ByteStringView.FromUnicode(text));
+    public static Node ParseIsolatedEntityName(byte[] text) => ParseIsolatedEntityNameRaw(ByteStringView.CopyFrom(text));
+    internal static Node ParseIsolatedEntityName(ByteStringValue text)
+    {
+        if (text.IsNull) throw new ArgumentNullException(nameof(text));
+        return ParseIsolatedEntityNameRaw(text.IsBytes ? text.ByteView : ByteStringView.FromGoBytes(text.Materialize()));
+    }
 }

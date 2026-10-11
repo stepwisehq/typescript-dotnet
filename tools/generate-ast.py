@@ -106,6 +106,10 @@ blob=re.search(r'const _Kind_name = ("[^"]+")',ks)[1]
 ix=re.search(r'var _Kind_index = .*?\{([^}]+)\}',ks)[1]
 write('KindStringerGenerated.cs','kind_stringer_generated.go','public static class KindNames\n{\n    private const string Names = '+blob+';\n    private static readonly ushort[] Indexes = ['+ix+'];\n    public static string String(this Kind kind)\n    {\n        int index = (int)kind;\n        if (index < 0 || index >= Indexes.Length - 1) return "Kind(" + index.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")";\n        return Names.Substring(Indexes[index], Indexes[index + 1] - Indexes[index]);\n    }\n}\n')
 # Base contracts contain only syntax fields. Flattened properties preserve mutations.
+# CLR payloads inherit the common Node header. Syntax fields that share a
+# Node accessor name deliberately hide that nonvirtual forwarding member.
+node_member_names = ['Arguments', 'Attributes', 'Body', 'Children', 'ClassName', 'Elements', 'Expression', 'ImportClause', 'Initializer', 'IsTypeOnly', 'Label', 'LocalSymbol', 'Locals', 'Members', 'ModuleSpecifier', 'Parameters', 'PostfixToken', 'Properties', 'PropertyName', 'QuestionDotToken', 'QuestionToken', 'RawText', 'Statement', 'Statements', 'Symbol', 'TagName', 'Text', 'TextValue', 'Type', 'TypeArguments', 'TypeExpression', 'TypeParameters']
+def member_hiding(name): return 'new ' if name in node_member_names else ''
 parts=['public interface INodeData\n{\n    Node AsNode();\n    Node Name();\n    ModifierList Modifiers();\n}\n']
 for n in sorted(bases-base_excluded):
     parts.append('public interface '+n+' : INodeData\n{\n'+''.join('    '+typ(t)+' '+cname(f)+' { get; set; }\n' for f,t in fields(n))+'}\n')
@@ -128,9 +132,9 @@ for n in concrete:
         elif n in borrowed_text_models and f in {'Text', 'RawText'}:
             assert ct == 'string', (n, f, ct)
             storage = 'textValue' if f == 'Text' else 'rawTextValue'
-            parts.append('    private ByteStringValue '+storage+';\n    internal ByteStringValue '+f+'Value { get => '+storage+'.Snapshot(); set => '+storage+' = value; }\n    public string '+f+' { get => '+storage+'.Project(); set => '+storage+' = ByteStringValue.FromString(value); }')
+            parts.append('    private ByteStringValue '+storage+';\n    internal '+member_hiding(f+'Value')+'ByteStringValue '+f+'Value { get => '+storage+'.Snapshot(); set => '+storage+' = value; }\n    public '+member_hiding(f)+'string '+f+' { get => '+storage+'.Project(); set => '+storage+' = ByteStringValue.FromString(value); }')
         else:
-            parts.append('    public '+ct+' '+cname(f)+' { get; set; }'+initial)
+            parts.append('    public '+member_hiding(f)+ct+' '+cname(f)+' { get; set; }'+initial)
     if any(f=='name' for f,t in ff):parts.append('    public override Node Name() => name;')
     if any(f=='modifiers' for f,t in ff):parts.append('    public override ModifierList Modifiers() => modifiers;\n    public override void SetModifiers(ModifierList value) => modifiers = value;')
     child=next((b for (recv,rtype,fn,ps,rt),b in fs if rtype==n and fn=='ForEachChild'),None)
@@ -256,7 +260,7 @@ for (recv,rtype,fn,ps,rt),body in fs:
 # projection. Public Update methods above keep source SameSyntaxSlice semantics.
 for model in ['JSDocLink', 'JSDocLinkPlain', 'JSDocLinkCode']:
     parts.append('    internal Node Update'+model+'WithFragments('+model+' node, Node name, JSDocTextFragments text)\n    {\n        if (name != node.name || !ReferenceEquals(text, node.TextFragments))\n            return Ast.UpdateNode(this.New'+model+'WithFragments(name, text), node.AsNode(), hooks);\n        return node.AsNode();\n    }')
-parts.append('}\npublic sealed partial class Node\n{')
+parts.append('}\npublic partial class Node\n{')
 for n in concrete:parts.append('    public '+n+' As'+n+'() => ('+n+')data;')
 parts.append('    public SourceFile AsSourceFile() => (SourceFile)data;')
 parts.append('}\n')

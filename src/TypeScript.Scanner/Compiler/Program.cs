@@ -72,19 +72,19 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     internal CheckerPool? compilerCheckerPool;
     internal CaseSensitivity caseSensitivity;
     internal Tristate usesUriStyleNodeCoreModules;
-    internal List<Diagnostic>? programDiagnostics;
+    internal Slice<Diagnostic> programDiagnostics;
     internal HashSet<PathKey> hasEmitBlockingDiagnostics = [];
-    internal List<Diagnostic>? contentMapperOptionDiagnostics;
+    internal Slice<Diagnostic> contentMapperOptionDiagnostics;
     private readonly object commonSourceDirectoryGate = new(), sourceFilesToEmitGate = new(), packagesMapGate = new(), hasTSFileGate = new();
     private bool commonSourceDirectoryInitialized, sourceFilesToEmitInitialized, packagesMapInitialized, hasTSFileInitialized;
     private RootedDirectoryPath commonSourceDirectory;
-    private List<SourceFile>? sourceFilesToEmit;
+    private Slice<SourceFile> sourceFilesToEmit;
     private Dictionary<string, bool>? packagesMap;
     private bool hasTSFile;
-    private readonly ProgramLazyValue<HashSet<string>> unresolvedImports = new();
+    private readonly ProgramLazyValue<HashSet<ByteStringKey>> unresolvedImports = new();
     private readonly ProgramLazyValue<TypeScript.Symlinks.KnownSymlinks> knownSymlinks = new();
     private readonly ProgramLazyValue<PackageNamesInfo> packageNames = new();
-    internal List<SourceFile> files { get => processedFiles.files; set => processedFiles.files = value; }
+    internal Slice<SourceFile> files { get => processedFiles.files; set => processedFiles.files = value; }
     internal Dictionary<string, SourceFile> filesByPath { get => processedFiles.filesByPath; set => processedFiles.filesByPath = value; }
     internal Dictionary<string, ModeAwareCache<ResolvedModule?>> resolvedModules => processedFiles.resolvedModules;
     internal Dictionary<string, ModeAwareCache<ResolvedTypeReferenceDirective?>> typeResolutionsInFile => processedFiles.typeResolutionsInFile;
@@ -138,14 +138,14 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public bool UseCaseSensitiveFileNames() => caseSensitivity == TypeScript.Scanner.CaseSensitivity.CaseSensitive;
     public bool SingleThreaded() => (opts.SingleThreaded == Tristate.Unknown ? Options().SingleThreaded : opts.SingleThreaded) == Tristate.True;
     public Tristate UsesUriStyleNodeCoreModules() => usesUriStyleNodeCoreModules;
-    public List<SourceFile> SourceFiles() => files;
-    public List<SourceFile> GetSourceFiles() => files;
-    public List<DuplicateSourceFile>? DuplicateSourceFiles() => processedFiles.duplicateSourceFiles;
+    public Slice<SourceFile> SourceFiles() => files;
+    public Slice<SourceFile> GetSourceFiles() => files;
+    public Slice<DuplicateSourceFile> DuplicateSourceFiles() => processedFiles.duplicateSourceFiles;
 
     // program.go:2058. Managed assembly adapter for syntax-phase mapper diagnostics.
-    internal List<Diagnostic>? GetContentMapperDiagnostics() => processedFiles.contentMapperDiagnostics;
+    internal Slice<Diagnostic> GetContentMapperDiagnostics() => processedFiles.contentMapperDiagnostics;
     public List<string>? ContentMapperExtensions() => opts.Config.ContentMapperExtensions();
-    public List<Diagnostic>? GetConfigFileParsingDiagnostics() => opts.Config.GetConfigFileParsingDiagnostics();
+    public Slice<Diagnostic> GetConfigFileParsingDiagnostics() => opts.Config.GetConfigFileParsingDiagnostics();
     public Exception? ModuleResolutionError() => moduleResolutionError;
     public Dictionary<string, SourceFile> FilesByPath() => filesByPath;
     public PathKey PathKeyForFileName(RootedFilePath file) => caseSensitivity.PathKey(file.AsPath());
@@ -179,7 +179,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 pair.Value.FileName() == file.FileName()));
     }
 
-    public Dictionary<string, List<FileIncludeReason>> GetIncludeReasons() => processedFiles.fileIncludeData.fileIncludeReasons;
+    public Dictionary<string, Slice<FileIncludeReason>> GetIncludeReasons() => processedFiles.fileIncludeData.fileIncludeReasons;
     public bool IsMissingPath(PathKey path) => processedFiles.missingFiles.Contains(path.AsString());
     public SourceFileMetaData GetSourceFileMetaData(PathKey path) => processedFiles.sourceFileMetaDatas.GetValueOrDefault(path.AsString());
     public bool IsSourceFileDefaultLibrary(PathKey path) => processedFiles.libFiles.ContainsKey(path.AsString());
@@ -187,7 +187,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public LibFile? GetDefaultLibFile(PathKey path) => processedFiles.libFiles.GetValueOrDefault(path.AsString());
     public bool IsGlobalTypingsFile(RootedFilePath file) => file.IsDeclarationFile() && caseSensitivity.ContainsPath(GetGlobalTypingsCacheLocation(), file.AsPath());
     public bool IsSourceFileFromExternalLibrary(SourceFile file) => processedFiles.sourceFilesFoundSearchingNodeModules.Contains(file.PathKey());
-    public List<RootedFilePath>? GetRedirectTargets(PathKey path) => processedFiles.redirectTargetsMap.GetValueOrDefault(path.AsString())?.Select(RootedFilePath.FromGoString).ToList();
+    public Slice<RootedFilePath> GetRedirectTargets(PathKey path) => processedFiles.redirectTargetsMap.GetValueOrDefault(path.AsString());
     public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => processedFiles.outputFileToProjectReferenceSource.GetValueOrDefault(file.PathKey(), RootedFilePath.FromGoString(file.FileNameGoBytes()));
     public SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => projectReferenceFileMapper.GetProjectReferenceFromSource(path);
     public bool IsSourceFromProjectReference(PathKey path) => projectReferenceFileMapper.IsSourceFromProjectReference(path);
@@ -196,22 +196,24 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public ParsedCommandLine? GetRedirectForResolution(SourceFile file) => projectReferenceFileMapper.GetRedirectForResolution(file).Config;
     public RootedFilePath GetParseFileRedirect(RootedFilePath file) => getParseFileRedirectByFileName(file);
     internal RootedFilePath getParseFileRedirectByFileName(RootedFilePath file) => projectReferenceFileMapper.GetParseFileRedirect(file, PathKeyForFileName(file)).File;
-    public List<ParsedCommandLine?>? GetResolvedProjectReferences() => projectReferenceFileMapper.GetResolvedProjectReferences();
+    public Slice<ParsedCommandLine?> GetResolvedProjectReferences() => projectReferenceFileMapper.GetResolvedProjectReferences();
     public bool RangeResolvedProjectReference(Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback) => projectReferenceFileMapper.RangeResolvedProjectReference(callback);
     public bool RangeResolvedProjectReferenceInChildConfig(ParsedCommandLine child, Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback) => projectReferenceFileMapper.RangeResolvedProjectReferenceInChildConfig(child, callback);
-    public ResolvedModule? GetResolvedModule(SourceFile file, string moduleReference, ResolutionMode mode) => resolvedModules.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(moduleReference, mode));
+    public ResolvedModule? GetResolvedModule(SourceFile file, string moduleReference, ResolutionMode mode) => GetResolvedModule(file, ByteStringValue.FromString(moduleReference), mode);
+    public ResolvedModule? GetResolvedModule(SourceFile file, ByteStringValue moduleReference, ResolutionMode mode) => resolvedModules.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(moduleReference, mode));
     public ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier)
     {
         if (!Ast.IsStringLiteralLike(specifier))
             throw new InvalidOperationException("moduleSpecifier must be a StringLiteralLike");
         if (Ast.IsSourcePhaseImport(specifier.Parent))
             return null;
-        return GetResolvedModule(file, specifier.Text(), GetModeForUsageLocation(file, specifier));
+        return GetResolvedModule(file, specifier.TextValue(), GetModeForUsageLocation(file, specifier));
     }
 
     public Dictionary<string, ModeAwareCache<ResolvedModule?>> GetResolvedModules() => resolvedModules;
-    public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, string name, ResolutionMode mode) => typeResolutionsInFile.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(name, mode));
-    public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirectiveFromTypeReferenceDirective(FileReference reference, SourceFile file) => GetResolvedTypeReferenceDirective(file, reference.FileName, getModeForTypeReferenceDirectiveInFile(reference, file));
+    public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, string name, ResolutionMode mode) => GetResolvedTypeReferenceDirective(file, ByteStringValue.FromString(name), mode);
+    internal ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, ByteStringValue name, ResolutionMode mode) => typeResolutionsInFile.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(name, mode));
+    public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirectiveFromTypeReferenceDirective(FileReference reference, SourceFile file) => GetResolvedTypeReferenceDirective(file, reference.FileNameValue, getModeForTypeReferenceDirectiveInFile(reference, file));
     internal ResolutionMode getModeForTypeReferenceDirectiveInFile(FileReference reference, SourceFile file) => reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(file);
     public Dictionary<string, ModeAwareCache<ResolvedTypeReferenceDirective?>> GetResolvedTypeReferenceDirectives() => typeResolutionsInFile;
     public ModuleKind GetEmitModuleFormatOfFile(SourceFile file) => Ast.GetEmitModuleFormatOfFileWorker(RootedFilePath.FromGoString(file.FileNameGoBytes()), projectReferenceFileMapper.GetCompilerOptionsForFile(file), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())));
@@ -222,10 +224,10 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public ResolutionMode GetModeForResolutionAtIndex(SourceFile file, int index)
     {
         var imports = file.Imports();
-        if (index < (imports?.Count ?? 0))
-            return GetModeForUsageLocation(file, imports![index]);
-        index -= imports?.Count ?? 0;
-        foreach (var augmentation in file.ModuleAugmentations ?? [])
+        if (index < imports.Length)
+            return GetModeForUsageLocation(file, imports[index]);
+        index -= imports.Length;
+        foreach (var augmentation in file.ModuleAugmentations)
             if (augmentation.Kind == Kind.StringLiteral)
             {
                 if (index == 0)
@@ -263,7 +265,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     internal TypeScript.Checking.Checker CreateActualChecker() =>
         TypeScript.Checking.Checker.NewChecker(this).Checker;
 
-    public List<Diagnostic>? GetGlobalDiagnostics(CancellationToken context = default) => files.Count == 0 ? null : compilerCheckerPool?.GetGlobalDiagnostics();
+    public Slice<Diagnostic> GetGlobalDiagnostics(CancellationToken context = default) => files.Count == 0 ? default : compilerCheckerPool?.GetGlobalDiagnostics() ?? default;
     public Dictionary<string, bool> GetPackagesMap()
     {
         lock (packagesMapGate)
@@ -288,7 +290,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         {
             if (!hasTSFileInitialized)
             {
-                hasTSFile = files.Any(file => RootedFilePath.FromGoString(file.FileNameGoBytes()).HasImplementationTSFileExtension());
+                hasTSFile = Core.Some(files, static file => RootedFilePath.FromGoString(file.FileNameGoBytes()).HasImplementationTSFileExtension());
                 hasTSFileInitialized = true;
             }
 
@@ -296,22 +298,22 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         }
     }
 
-    public HashSet<string> GetUnresolvedImports() => unresolvedImports.getValue(extractUnresolvedImports);
-    internal HashSet<string> extractUnresolvedImports()
+    public HashSet<ByteStringKey> GetUnresolvedImports() => unresolvedImports.getValue(extractUnresolvedImports);
+    internal HashSet<ByteStringKey> extractUnresolvedImports()
     {
-        var set = new HashSet<string>(StringComparer.Ordinal);
+        var set = new HashSet<ByteStringKey>(ByteStringKey.Comparer);
         foreach (var file in files)
-            foreach (var name in extractUnresolvedImportsFromSourceFile(file) ?? [])
-                set.Add(name);
+            foreach (var name in extractUnresolvedImportsFromSourceFile(file))
+                set.Add(ByteStringKey.FromValue(name));
         return set;
     }
 
-    internal List<string>? extractUnresolvedImportsFromSourceFile(SourceFile file)
+    internal Slice<ByteStringValue> extractUnresolvedImportsFromSourceFile(SourceFile file)
     {
-        List<string>? result = null;
+        Slice<ByteStringValue> result = default;
         foreach (var(key, resolution)in resolvedModules.GetValueOrDefault(file.PathKey()) ?? [])
-            if ((!resolution.IsResolved() || !TsPath.ExtensionIsOneOf(resolution!.Extension, TsPath.SupportedTSExtensionsWithJsonFlat)) && !TsPath.IsExternalModuleNameRelative(key.Name))
-                (result ??= []).Add(key.Name);
+            if ((!resolution.IsResolved() || !TsPath.ExtensionIsOneOf(resolution!.Extension, TsPath.SupportedTSExtensionsWithJsonFlat)) && !TsPath.IsExternalModuleNameRelative(key.NameValue))
+                result = result.Append(key.NameValue);
         return result;
     }
 
@@ -334,7 +336,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     {
         var oldFile = filesByPath.GetValueOrDefault(changedFilePath.AsString())!;
         SourceFile? newFile;
-        List<SourceFile>? oldSupplemental = null, newSupplemental = null;
+        Slice<SourceFile> oldSupplemental = default, newSupplemental = default;
         if (oldFile.ContentMapper() != "")
         {
             var mapper = opts.Config.GetContentMapperForFileName(RootedFilePath.FromGoString(oldFile.FileNameGoBytes()));
@@ -355,9 +357,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             return (null, newFile, false);
         if (processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(oldFile.PathKey())is not null || jsxRuntimeImportSpecifier(newFile!) != "")
             return (null, newFile, false);
-        if ((oldSupplemental?.Count ?? 0) != (newSupplemental?.Count ?? 0))
+        if (oldSupplemental.Length != newSupplemental.Length)
             return (null, newFile, false);
-        for (int i = 0; i < (oldSupplemental?.Count ?? 0); i++)
+        for (int i = 0; i < oldSupplemental.Length; i++)
         {
             var old = oldSupplemental![i];
             var updated = newSupplemental![i];
@@ -382,22 +384,23 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             usesUriStyleNodeCoreModules = usesUriStyleNodeCoreModules,
             programDiagnostics = programDiagnostics,
             hasEmitBlockingDiagnostics = hasEmitBlockingDiagnostics,
-            contentMapperOptionDiagnostics = contentMapperOptionDiagnostics?.ToList()
+            contentMapperOptionDiagnostics = GoSlices.Clone(contentMapperOptionDiagnostics)
         };
         result.unresolvedImports.tryReuse(unresolvedImports);
         result.knownSymlinks.tryReuse(knownSymlinks);
         result.packageNames.tryReuse(packageNames);
-        int index = result.files.FindIndex(file => file.PathKey() == newFile!.PathKey());
-        result.files = result.files.ToList();
-        result.files[index] = newFile!;
+        int index = Core.FindIndex(result.files, newFile!, static (file, updated) => file.PathKey() == updated.PathKey());
+        var resultFiles = GoSlices.Clone(result.files);
+        result.files = resultFiles;
+        resultFiles[index] = newFile!;
         result.filesByPath = new(result.filesByPath, StringComparer.Ordinal);
         result.filesByPath[newFile!.PathKey()] = newFile;
-        for (int i = 0; i < (oldSupplemental?.Count ?? 0); i++)
+        for (int i = 0; i < oldSupplemental.Length; i++)
         {
             var old = oldSupplemental![i];
             var updated = newSupplemental![i];
-            int supplementalIndex = result.files.FindIndex(file => ReferenceEquals(file, old));
-            result.files[supplementalIndex] = updated;
+            int supplementalIndex = Core.FindIndex(result.files, old, static (file, original) => ReferenceEquals(file, original));
+            resultFiles[supplementalIndex] = updated;
             result.filesByPath[updated.PathKey()] = updated;
         }
 
@@ -423,7 +426,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             GetModeForUsageLocation(first, a) == GetModeForUsageLocation(second, b) &&
             Ast.IsSourcePhaseImport(a.Parent) == Ast.IsSourcePhaseImport(b.Parent)) &&
         equalSlices(first.ModuleAugmentations, second.ModuleAugmentations, equalModuleAugmentationNames) &&
-        equalSlices(first.AmbientModuleNames, second.AmbientModuleNames, (a, b) => a == b) &&
+        equalSlices(first.AmbientModuleNames, second.AmbientModuleNames, static (a, b) => a.EqualsValue(b)) &&
         equalSlices(first.ReferencedFiles, second.ReferencedFiles, equalFileReferences) &&
         equalSlices(first.TypeReferenceDirectives, second.TypeReferenceDirectives, equalFileReferences) &&
         equalSlices(first.LibReferenceDirectives, second.LibReferenceDirectives, equalFileReferences) &&
@@ -439,9 +442,17 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return true;
     }
 
-    internal static bool equalModuleSpecifiers(Node first, Node second) => first.Kind == second.Kind && (!Ast.IsStringLiteral(first) || first.Text() == second.Text());
-    internal static bool equalModuleAugmentationNames(Node first, Node second) => first.Kind == second.Kind && first.Text() == second.Text();
-    internal static bool equalFileReferences(FileReference first, FileReference second) => first.FileName == second.FileName && first.ResolutionMode == second.ResolutionMode && first.Preserve == second.Preserve;
+    private static bool equalSlices<T>(Slice<T> first, Slice<T> second, Func<T, T, bool> equal)
+    {
+        if (first.Length != second.Length) return false;
+        for (int i = 0; i < first.Length; i++)
+            if (!equal(first[i], second[i])) return false;
+        return true;
+    }
+
+    internal static bool equalModuleSpecifiers(Node first, Node second) => first.Kind == second.Kind && (!Ast.IsStringLiteral(first) || first.TextValue().EqualsValue(second.TextValue()));
+    internal static bool equalModuleAugmentationNames(Node first, Node second) => first.Kind == second.Kind && first.TextValue().EqualsValue(second.TextValue());
+    internal static bool equalFileReferences(FileReference first, FileReference second) => first.FileNameValue.EqualsValue(second.FileNameValue) && first.ResolutionMode == second.ResolutionMode && first.Preserve == second.Preserve;
     internal static bool equalCheckJSDirectives(CheckJsDirective? first, CheckJsDirective? second) => first is null && second is null || first is not null && second is not null && first.Enabled == second.Enabled;
     internal bool needsImportHelpersImportSpecifier(SourceFile file)
     {
@@ -494,7 +505,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return null;
     }
 
-    IReadOnlyList<SourceFile> ICheckerProgramHost.SourceFiles => files;
+    Slice<SourceFile> ICheckerProgramHost.SourceFiles => files;
 
     CompilerOptions ICheckerProgramHost.Options => Options();
 
@@ -537,16 +548,16 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     }
 
     public bool SourceFileMayBeEmitted(SourceFile file, bool forceDtsEmit) => sourceFileMayBeEmitted(file, this, forceDtsEmit, false);
-    internal static List<SourceFile>? getSourceFilesToEmit(Program host, List<SourceFile>? target, bool forceDtsEmit, bool forceJsEmit) => Core.Filter(target ?? host.SourceFiles(), file => sourceFileMayBeEmitted(file, host, forceDtsEmit, forceJsEmit));
-    internal List<SourceFile>? getSourceFilesToEmit(List<SourceFile>? target, bool forceDtsEmit, bool forceJsEmit)
+    internal static Slice<SourceFile> getSourceFilesToEmit(Program host, Slice<SourceFile> target, bool forceDtsEmit, bool forceJsEmit) => Core.Filter(target.IsNil ? host.SourceFiles() : target, (Host: host, Dts: forceDtsEmit, Js: forceJsEmit), static (file, state) => sourceFileMayBeEmitted(file, state.Host, state.Dts, state.Js));
+    internal Slice<SourceFile> getSourceFilesToEmit(Slice<SourceFile> target, bool forceDtsEmit, bool forceJsEmit)
     {
-        if (target is null && !forceDtsEmit && !forceJsEmit)
+        if (target.IsNil && !forceDtsEmit && !forceJsEmit)
         {
             lock (sourceFilesToEmitGate)
             {
                 if (!sourceFilesToEmitInitialized)
                 {
-                    sourceFilesToEmit = getSourceFilesToEmit(this, null, false, false);
+                    sourceFilesToEmit = getSourceFilesToEmit(this, default, false, false);
                     sourceFilesToEmitInitialized = true;
                 }
 
@@ -557,13 +568,22 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return getSourceFilesToEmit(this, target, forceDtsEmit, forceJsEmit);
     }
 
+    private List<RootedFilePath> getEmittedFileNames()
+    {
+        var result = new List<RootedFilePath>();
+        foreach (var file in files)
+            if (!file.IsDeclarationFile && sourceFileMayBeEmitted(file, this, false, false))
+                result.Add(RootedFilePath.FromGoString(file.FileNameGoBytes()));
+        return result;
+    }
+
     public RootedDirectoryPath CommonSourceDirectory()
     {
         lock (commonSourceDirectoryGate)
         {
             if (!commonSourceDirectoryInitialized)
             {
-                commonSourceDirectory = TypeScript.OutputPaths.OutputPaths.GetCommonSourceDirectory(Options(), () => files.Where(file => !file.IsDeclarationFile && sourceFileMayBeEmitted(file, this, false, false)).Select(file => RootedFilePath.FromGoString(file.FileNameGoBytes())).ToList(), BaseDirectory(), CaseSensitivity(), checkSourceFilesBelongToPath);
+                commonSourceDirectory = TypeScript.OutputPaths.OutputPaths.GetCommonSourceDirectory(Options(), () => getEmittedFileNames(), BaseDirectory(), CaseSensitivity(), checkSourceFilesBelongToPath);
                 commonSourceDirectoryInitialized = true;
             }
 
@@ -584,12 +604,12 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return all;
     }
 
-    internal void addProcessingDiagnostic(ProcessingDiagnostic diagnostic) => includeProcessor.processingDiagnostics.Add(diagnostic);
+    internal void addProcessingDiagnostic(ProcessingDiagnostic diagnostic) => includeProcessor.processingDiagnostics = includeProcessor.processingDiagnostics.Append(diagnostic);
     public bool IsEmitBlocked(RootedFilePath file) => hasEmitBlockingDiagnostics.Contains(PathKeyForFileName(file));
     internal void blockEmittingOfFile(RootedFilePath file, Diagnostic diagnostic)
     {
         hasEmitBlockingDiagnostics.Add(PathKeyForFileName(file));
-        (programDiagnostics ??= []).Add(diagnostic);
+        programDiagnostics = programDiagnostics.Append(diagnostic);
     }
 
     internal static bool hasZeroOrOneAsteriskCharacter(string text)
@@ -611,7 +631,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     internal void verifyProjectReferences()
     {
         var buildInfoFile = Options().SuppressOutputPathCheck != Tristate.True ? opts.Config.GetBuildInfoFileName() : default;
-        void Add(ParsedCommandLine config, int index, Message message, params object[] args) => (programDiagnostics ??= []).Add(TypeScript.TsOptions.TsOptions.CreateDiagnosticAtReferenceSyntax(config, index, message, args) ?? Ast.NewCompilerDiagnostic(message, args));
+        void Add(ParsedCommandLine config, int index, Message message, params object[] args) => programDiagnostics = programDiagnostics.Append(TypeScript.TsOptions.TsOptions.CreateDiagnosticAtReferenceSyntax(config, index, message, args) ?? Ast.NewCompilerDiagnostic(message, args));
         RangeResolvedProjectReference((path, config, parent, index) =>
         {
             var reference = parent.ProjectReferences()![index];
@@ -651,14 +671,14 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         {
             var diagnostic = TypeScript.TsOptions.TsOptions.ForEachPropertyAssignment(syntax, key, property => TypeScript.TsOptions.TsOptions.CreateDiagnosticForNodeInSourceFile(sourceFile!, onKey ? property.Name() : property.Initializer, message, args), key2);
             if (diagnostic is not null)
-                (programDiagnostics ??= []).Add(diagnostic);
+                programDiagnostics = programDiagnostics.Append(diagnostic);
             return diagnostic;
         }
 
         Diagnostic Compiler(Message message, params object[] args)
         {
             var diagnostic = compilerOptionsProperty is not null ? TypeScript.TsOptions.TsOptions.CreateDiagnosticForNodeInSourceFile(sourceFile!, compilerOptionsProperty.Name(), message, args) : Ast.NewCompilerDiagnostic(message, args);
-            (programDiagnostics ??= []).Add(diagnostic);
+            programDiagnostics = programDiagnostics.Append(diagnostic);
             return diagnostic;
         }
 
@@ -760,7 +780,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             if (Ast.IsArrayLiteralExpression(initializer) && initializer.ElementList()?.Nodes is { } elements && elements.Count > index)
             {
                 var diagnostic = TypeScript.TsOptions.TsOptions.CreateDiagnosticForNodeInSourceFile(sourceFile!, elements[index], message, args);
-                (programDiagnostics ??= []).Add(diagnostic);
+                programDiagnostics = programDiagnostics.Append(diagnostic);
                 return diagnostic;
             }
 
@@ -805,14 +825,14 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         if (options.OutDir != default || options.RootDir != default || options.SourceRoot != default || options.MapRoot != default || options.GetEmitDeclarations() && options.DeclarationDir != default)
         {
             var directory = CommonSourceDirectory();
-            if (options.OutDir != default && directory == default && files.Any(file => RootedFilePath.FromGoString(file.FileNameGoBytes()).RootLength() > 1))
+            if (options.OutDir != default && directory == default && Core.Some(files, static file => RootedFilePath.FromGoString(file.FileNameGoBytes()).RootLength() > 1))
                 Name(Diagnostics.Cannot_find_the_common_subdirectory_path_for_the_input_files, "outDir", "");
         }
 
         if (options.NoEmit != Tristate.True && options.Composite != Tristate.True && options.RootDir == default && options.ConfigFilePath != default && (options.OutDir != default || options.GetEmitDeclarations() && options.DeclarationDir != default || options.OutFile != default))
         {
             var directory = CommonSourceDirectory();
-            var emitted = files.Where(file => !file.IsDeclarationFile && sourceFileMayBeEmitted(file, this, false, false)).Select(file => RootedFilePath.FromGoString(file.FileNameGoBytes())).ToList();
+            var emitted = getEmittedFileNames();
             var directory59 = TypeScript.OutputPaths.OutputPaths.GetComputedCommonSourceDirectory(emitted, BaseDirectory(), CaseSensitivity());
             if (directory59 != default && caseSensitivity.ComparePaths(directory.AsPath(), directory59.AsPath()) != 0)
             {
@@ -904,60 +924,64 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 Verify(paths.DeclarationFilePath());
                 Verify(paths.DeclarationMapPath());
                 return false;
-            }, getSourceFilesToEmit(null, false, false), false);
+            }, getSourceFilesToEmit(default, false, false), false);
             Verify(opts.Config.GetBuildInfoFileName());
         }
     }
 
-    internal List<Diagnostic>? collectDiagnostics(CancellationToken context, SourceFile? source, bool concurrent, Func<CancellationToken, SourceFile, List<Diagnostic>?> collect)
+    internal Slice<Diagnostic> collectDiagnostics(CancellationToken context, SourceFile? source, bool concurrent, Func<CancellationToken, SourceFile, Slice<Diagnostic>> collect)
     {
         if (source is not null)
             return filterAndSortDiagnostics(collect(context, source));
         return filterAndSortDiagnostics(concatDiagnostics(collectDiagnosticsFromFiles(context, files, concurrent, collect)));
     }
 
-    internal List<List<Diagnostic>?> collectDiagnosticsFromFiles(CancellationToken context, List<SourceFile> sourceFiles, bool concurrent, Func<CancellationToken, SourceFile, List<Diagnostic>?> collect)
+    internal Slice<Slice<Diagnostic>> collectDiagnosticsFromFiles(CancellationToken context, Slice<SourceFile> sourceFiles, bool concurrent, Func<CancellationToken, SourceFile, Slice<Diagnostic>> collect)
     {
-        var diagnostics = Enumerable.Repeat<List<Diagnostic>?>(null, sourceFiles.Count).ToList();
+        var diagnostics = Slice<Slice<Diagnostic>>.Make(sourceFiles.Length);
         var work = Core.NewWorkGroup(!concurrent || SingleThreaded());
         for (int i = 0; i < sourceFiles.Count; i++)
         {
             int index = i;
-            work.Queue(() => diagnostics[index] = collect(context, sourceFiles[index]));
+            SourceFile file = sourceFiles[i];
+            work.Queue(() => diagnostics[index] = collect(context, file));
         }
 
         work.RunAndWait();
         return diagnostics;
     }
 
-    private static List<Diagnostic>? concatDiagnostics(IEnumerable<List<Diagnostic>?> diagnostics)
+    private static Slice<Diagnostic> concatDiagnostics(Slice<Slice<Diagnostic>> diagnostics) => concatDiagnostics(diagnostics.AsSpan());
+    private static Slice<Diagnostic> concatDiagnostics(ReadOnlySpan<Slice<Diagnostic>> diagnostics)
     {
-        List<Diagnostic>? result = null;
-        foreach (var list in diagnostics)
-            if ((list?.Count ?? 0) > 0)
-                (result ??= []).AddRange(list!);
+        int length = 0;
+        foreach (var list in diagnostics) length = checked(length + list.Length);
+        if (length == 0) return default;
+        var result = Slice<Diagnostic>.Make(length);
+        int offset = 0;
+        foreach (var list in diagnostics) { list.AsSpan().CopyTo(result.AsSpan().Slice(offset)); offset += list.Length; }
         return result;
     }
 
-    internal static List<Diagnostic>? filterAndSortDiagnostics(List<Diagnostic>? diagnostics) => SortAndDeduplicateDiagnostics(Core.Filter(diagnostics, diagnostic =>
+    internal static Slice<Diagnostic> filterAndSortDiagnostics(Slice<Diagnostic> diagnostics) => SortAndDeduplicateDiagnostics(Core.Filter(diagnostics, diagnostic =>
     {
         var file = diagnostic.File();
         if (!diagnostic.ReportsUnnecessary() || file is null || file.SpanMap()is null || diagnostic.Source() != "")
             return true;
         return file.SpanMap().VirtualToOriginalSpan(diagnostic.Loc()).Fidelity != TypeScript.SpanMap.Fidelity.None;
     }));
-    public List<Diagnostic>? GetSyntacticDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectDiagnostics(context, source, false, (_, file) =>
+    public Slice<Diagnostic> GetSyntacticDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectDiagnostics(context, source, false, (_, file) =>
     {
         var diagnostics = Core.Concatenate(file.Diagnostics(), file.JSDiagnostics());
         if (Ast.IsSourceFileJS(file) && !Ast.IsCheckJSEnabledForFile(file, Options()))
-            diagnostics = Core.Concatenate(diagnostics, getAdditionalJSSyntacticDiagnostics(file, Options()));
+            diagnostics = diagnostics.Append(getAdditionalJSSyntacticDiagnostics(file, Options()));
         return diagnostics;
     });
-    internal static List<Diagnostic>? getAdditionalJSSyntacticDiagnostics(SourceFile file, CompilerOptions options)
+    internal static Slice<Diagnostic> getAdditionalJSSyntacticDiagnostics(SourceFile file, CompilerOptions options)
     {
         if (options.ExperimentalDecorators == Tristate.True)
-            return null;
-        List<Diagnostic>? diagnostics = null;
+            return default;
+        Slice<Diagnostic> diagnostics = default;
         bool Walk(Node node)
         {
             if ((node.SubtreeFacts() & SubtreeFacts.ContainsDecorators) == 0)
@@ -966,7 +990,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             {
                 var decorator = Core.Find(node.ModifierNodes(), Ast.IsDecorator);
                 if (decorator is not null)
-                    (diagnostics ??= []).Add(Ast.NewDiagnostic(file, decorator.Loc, Diagnostics.Decorators_are_not_valid_here));
+                    diagnostics = diagnostics.Append(Ast.NewDiagnostic(file, decorator.Loc, Diagnostics.Decorators_are_not_valid_here));
             }
 
             node.ForEachChild(Walk);
@@ -977,7 +1001,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return diagnostics;
     }
 
-    public List<Diagnostic>? GetBindDiagnostics(CancellationToken context = default, SourceFile? source = null)
+    public Slice<Diagnostic> GetBindDiagnostics(CancellationToken context = default, SourceFile? source = null)
     {
         if (source is not null)
             Binder.BindSourceFile(source);
@@ -986,30 +1010,30 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return collectDiagnostics(context, source, false, (_, file) => file.BindDiagnostics());
     }
 
-    public List<Diagnostic>? GetProgramDiagnostics() => SortAndDeduplicateDiagnostics(concatDiagnostics([programDiagnostics, processedFiles.contentMapperDiagnostics, contentMapperOptionDiagnostics, includeProcessor.GetDiagnostics(this).GetGlobalDiagnostics()]));
+    public Slice<Diagnostic> GetProgramDiagnostics() => SortAndDeduplicateDiagnostics(concatDiagnostics([programDiagnostics, processedFiles.contentMapperDiagnostics, contentMapperOptionDiagnostics, includeProcessor.GetDiagnostics(this).GetGlobalDiagnostics()]));
     internal void collectContentMapperOptionDiagnostics()
     {
         var project = ContentMapperProject();
         if (project is null)
             return;
         var diagnostics = project.Diagnostics();
-        contentMapperOptionDiagnostics = diagnostics?.Select(diagnostic =>
+        contentMapperOptionDiagnostics = Core.MapSlice(diagnostics, diagnostic =>
         {
-            var(file, location) = TypeScript.TsOptions.TsOptions.GetContentMapperOptionDiagnosticLocation(opts.Config, diagnostic.Mapper!, diagnostic.Path);
+            var (file, location) = TypeScript.TsOptions.TsOptions.GetContentMapperOptionDiagnosticLocation(opts.Config, diagnostic.Mapper!, diagnostic.Path);
             return Ast.NewExternalDiagnostic(file, location, diagnostic.Source, DiagnosticCategory.Error, diagnostic.Code, diagnostic.MessageText);
-        }).ToList();
+        });
     }
 
     // Authored inspection accessor for the actual include collection. It intentionally
     // does not apply semantic SkipTypeChecking or acquire a checker.
-    public List<Diagnostic>? GetFileInclusionDiagnostics(SourceFile? file = null) =>
+    public Slice<Diagnostic> GetFileInclusionDiagnostics(SourceFile? file = null) =>
         file is null ? includeProcessor.GetDiagnostics(this).GetGlobalDiagnostics() :
             includeProcessor.GetDiagnostics(this).GetDiagnosticsForFile(file);
 
-    public List<Diagnostic>? GetIncludeProcessorDiagnostics(SourceFile file)
+    public Slice<Diagnostic> GetIncludeProcessorDiagnostics(SourceFile file)
     {
         if (SkipTypeChecking(file, false))
-            return null;
+            return default;
         return getDiagnosticsWithPrecedingDirectives(file, includeProcessor.GetDiagnostics(this).GetDiagnosticsForFile(file)).Diagnostics;
     }
 
@@ -1025,12 +1049,12 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return Ast.IsPlainJSFile(file, Options().CheckJs) || checkedJS;
     }
 
-    internal List<Diagnostic>? collectCheckerDiagnostics(CancellationToken context, SourceFile? source, Func<CancellationToken, TypeScript.Checking.Checker, SourceFile, List<Diagnostic>?> collect)
+    internal Slice<Diagnostic> collectCheckerDiagnostics(CancellationToken context, SourceFile? source, Func<CancellationToken, TypeScript.Checking.Checker, SourceFile, Slice<Diagnostic>> collect)
     {
         if (source is not null)
         {
             if (SkipTypeChecking(source, false))
-                return null;
+                return default;
             var(checker, done) = GetTypeCheckerForFileExclusive(context, source);
             try
             {
@@ -1045,9 +1069,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return filterAndSortDiagnostics(concatDiagnostics(collectCheckerDiagnosticsFromFiles(context, files, collect)));
     }
 
-    internal List<List<Diagnostic>?> collectCheckerDiagnosticsFromFiles(CancellationToken context, List<SourceFile> sourceFiles, Func<CancellationToken, TypeScript.Checking.Checker, SourceFile, List<Diagnostic>?> collect)
+    internal Slice<Slice<Diagnostic>> collectCheckerDiagnosticsFromFiles(CancellationToken context, Slice<SourceFile> sourceFiles, Func<CancellationToken, TypeScript.Checking.Checker, SourceFile, Slice<Diagnostic>> collect)
     {
-        var diagnostics = Enumerable.Repeat<List<Diagnostic>?>(null, sourceFiles.Count).ToList();
+        var diagnostics = Slice<Slice<Diagnostic>>.Make(sourceFiles.Length);
         if (compilerCheckerPool is not null)
             compilerCheckerPool.forEachCheckerGroupDo(context, sourceFiles, SingleThreaded(), (checker, index, file) => diagnostics[index] = collect(context, checker, file));
         else
@@ -1079,54 +1103,54 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return diagnostics;
     }
 
-    public List<Diagnostic>? GetSemanticDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectCheckerDiagnostics(context, source, getSemanticDiagnosticsWithChecker);
+    public Slice<Diagnostic> GetSemanticDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectCheckerDiagnostics(context, source, getSemanticDiagnosticsWithChecker);
     // program.go:828. Newly discovered globals belong to each requested file;
     // noEmit filtering remains the builder's responsibility.
-    public Dictionary<SourceFile, List<Diagnostic>?> GetSemanticDiagnosticsForIncremental(CancellationToken context, List<SourceFile> sourceFiles)
+    public Dictionary<SourceFile, Slice<Diagnostic>> GetSemanticDiagnosticsForIncremental(CancellationToken context, Slice<SourceFile> sourceFiles)
     {
         var diagnostics = collectCheckerDiagnosticsFromFiles(context, sourceFiles,
             (token, checker, file) => getBindAndCheckDiagnosticsWithChecker(token, checker, file, true));
-        var result = new Dictionary<SourceFile, List<Diagnostic>?>(ReferenceEqualityComparer.Instance);
+        var result = new Dictionary<SourceFile, Slice<Diagnostic>>(ReferenceEqualityComparer.Instance);
         for (int i = 0; i < diagnostics.Count; i++)
             result[sourceFiles[i]] = filterAndSortDiagnostics(diagnostics[i]);
         return result;
     }
-    internal List<Diagnostic>? getSemanticDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file) => Core.Concatenate(FilterNoEmitSemanticDiagnostics(getBindAndCheckDiagnosticsWithChecker(context, checker, file, false), Options()), GetIncludeProcessorDiagnostics(file));
-    internal List<Diagnostic>? getBindAndCheckDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file, bool includeDeferredGlobals)
+    internal Slice<Diagnostic> getSemanticDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file) => Core.Concatenate(FilterNoEmitSemanticDiagnostics(getBindAndCheckDiagnosticsWithChecker(context, checker, file, false), Options()), GetIncludeProcessorDiagnostics(file));
+    internal Slice<Diagnostic> getBindAndCheckDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file, bool includeDeferredGlobals)
     {
         if (SkipTypeChecking(file, false))
-            return null;
-        var previous = includeDeferredGlobals ? checker.GetGlobalDiagnostics() : null;
-        var diagnostics = file.BindDiagnostics()?.ToList();
-        diagnostics = Core.Concatenate(diagnostics, checker.GetDiagnostics(context, file));
+            return default;
+        var previous = includeDeferredGlobals ? checker.GetGlobalDiagnostics() : default;
+        var diagnostics = GoSlices.Clip(file.BindDiagnostics());
+        diagnostics = diagnostics.Append(checker.GetDiagnostics(context, file));
         if (includeDeferredGlobals)
         {
             if (checker.WasCanceled())
-                return null;
+                return default;
             var globals = checker.GetGlobalDiagnostics();
-            if ((globals?.Count ?? 0) > (previous?.Count ?? 0))
-                foreach (var diagnostic in globals!)
-                    if (!(previous?.Any(old => Ast.CompareDiagnostics(old, diagnostic) == 0) ?? false))
-                        (diagnostics ??= []).Add(diagnostic);
+            if (globals.Length > previous.Length)
+                foreach (var diagnostic in globals)
+                    if (!GoSlices.BinarySearchFunc(previous, diagnostic, Ast.CompareDiagnostics).Found)
+                        diagnostics = diagnostics.Append(diagnostic);
         }
 
         if (Ast.IsPlainJSFile(file, Options().CheckJs))
             return Core.Filter(diagnostics, diagnostic => plainJSErrors.Contains(diagnostic.Code()));
         if ((file.ScriptKind is ScriptKind.JS or ScriptKind.JSX) && Ast.IsCheckJSEnabledForFile(file, Options()))
-            diagnostics = Core.Concatenate(diagnostics, file.JSDocDiagnostics());
+            diagnostics = diagnostics.Append(file.JSDocDiagnostics());
         var(filtered, directives) = getDiagnosticsWithPrecedingDirectives(file, diagnostics);
         foreach (var directive in directives?.Values.AsEnumerable() ?? [])
             if (directive.Kind == CommentDirectiveKind.ExpectError)
-                (filtered ??= []).Add(Ast.NewDiagnostic(file, directive.Loc, Diagnostics.Unused_ts_expect_error_directive));
+                filtered = filtered.Append(Ast.NewDiagnostic(file, directive.Loc, Diagnostics.Unused_ts_expect_error_directive));
         return applyContentMapperDiagnosticDirectives(file, filtered);
     }
 
-    internal static List<Diagnostic>? applyContentMapperDiagnosticDirectives(SourceFile file, List<Diagnostic>? diagnostics)
+    internal static Slice<Diagnostic> applyContentMapperDiagnosticDirectives(SourceFile file, Slice<Diagnostic> diagnostics)
     {
         var directives = file.DiagnosticDirectives();
-        if ((directives?.Count ?? 0) == 0)
+        if ((directives.Length) == 0)
             return diagnostics;
-        var used = new bool[directives!.Count];
+        var used = new bool[directives.Length];
         bool MarkUsed(Diagnostic diagnostic)
         {
             if (!ReferenceEquals(diagnostic.File(), file) || diagnostic.Source() != "")
@@ -1144,29 +1168,29 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         var filtered = Core.Filter(diagnostics, diagnostic => !MarkUsed(diagnostic));
         for (int i = 0; i < directives.Count; i++)
             if (directives[i].Policy == MappedDiagnosticDirectivePolicy.Expect && !used[i])
-                (filtered ??= []).Add(Ast.NewExternalDiagnostic(file, directives[i].OriginalRange, directives[i].Source, DiagnosticCategory.Error, directives[i].UnusedCode, directives[i].UnusedMessageText));
+                filtered = filtered.Append(Ast.NewExternalDiagnostic(file, directives[i].OriginalRange, directives[i].Source, DiagnosticCategory.Error, directives[i].UnusedCode, directives[i].UnusedMessageText));
         return filtered;
     }
 
-    internal (List<Diagnostic>? Diagnostics, Dictionary<int, CommentDirective>? Directives) getDiagnosticsWithPrecedingDirectives(SourceFile file, List<Diagnostic>? diagnostics)
+    internal (Slice<Diagnostic> Diagnostics, Dictionary<int, CommentDirective>? Directives) getDiagnosticsWithPrecedingDirectives(SourceFile file, Slice<Diagnostic> diagnostics)
     {
-        if ((file.CommentDirectives?.Count ?? 0) == 0)
+        if (file.CommentDirectives.Length == 0)
             return (diagnostics, null);
         var directives = new Dictionary<int, CommentDirective>();
-        foreach (var directive in file.CommentDirectives!)
+        foreach (var directive in file.CommentDirectives)
             directives[TsScanner.GetECMALineOfPosition(file, directive.Loc.Pos())] = directive;
         var lineStarts = TsScanner.GetECMALineStarts(file);
-        var filtered = new List<Diagnostic>();
-        foreach (var diagnostic in diagnostics ?? [])
+        var filtered = Slice<Diagnostic>.Make(0);
+        foreach (var diagnostic in diagnostics)
         {
             bool ignore = false;
             if (!ReferenceEquals(diagnostic.File(), file))
             {
-                filtered.Add(diagnostic);
+                filtered = filtered.Append(diagnostic);
                 continue;
             }
 
-            for (int line = TsScanner.ComputeLineOfPosition(lineStarts.ToArray(), diagnostic.Pos()) - 1; line >= 0; line--)
+            for (int line = TsScanner.ComputeLineOfPosition(lineStarts.AsSpan(), diagnostic.Pos()) - 1; line >= 0; line--)
             {
                 if (directives.TryGetValue(line, out var directive))
                 {
@@ -1183,7 +1207,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             }
 
             if (!ignore)
-                filtered.Add(diagnostic);
+                filtered = filtered.Append(diagnostic);
         }
 
         return (filtered, directives);
@@ -1196,19 +1220,19 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return position == text.Length || position < text.Length && text[position] is '\r' or '\n' || position + 1 < text.Length && text[position] == '/' && text[position + 1] == '/';
     }
 
-    public List<Diagnostic>? GetSuggestionDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectCheckerDiagnostics(context, source, getSuggestionDiagnosticsWithChecker);
-    internal List<Diagnostic>? getSuggestionDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file)
+    public Slice<Diagnostic> GetSuggestionDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectCheckerDiagnostics(context, source, getSuggestionDiagnosticsWithChecker);
+    internal Slice<Diagnostic> getSuggestionDiagnosticsWithChecker(CancellationToken context, TypeScript.Checking.Checker checker, SourceFile file)
     {
         if (SkipTypeChecking(file, false))
-            return null;
+            return default;
         return checker.GetSuggestionDiagnostics(context, file);
     }
 
-    public List<Diagnostic>? GetDeclarationDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectDiagnostics(context, source, true, getDeclarationDiagnosticsForFile);
-    internal List<Diagnostic>? getDeclarationDiagnosticsForFile(CancellationToken context, SourceFile file)
+    public Slice<Diagnostic> GetDeclarationDiagnostics(CancellationToken context = default, SourceFile? source = null) => collectDiagnostics(context, source, true, getDeclarationDiagnosticsForFile);
+    internal Slice<Diagnostic> getDeclarationDiagnosticsForFile(CancellationToken context, SourceFile file)
     {
         if (file.IsDeclarationFile)
-            return[];
+            return Slice<Diagnostic>.Make(0);
         throw new TypeScript.Checking.UnsupportedSemanticFeatureException("declaration transform diagnostics are outside Program construction");
     }
 
@@ -1270,14 +1294,19 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public void PackageJsonCacheEntries(Func<PathKey, TypeScript.PackageJson.InfoCacheEntry, bool> callback) => resolutionData.PackageJsonCacheEntries(callback);
     public (string ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifier(PathKey path)
     {
+        var (name, specifier) = GetJSXRuntimeImportSpecifierValue(path);
+        return (name.Materialize()!, specifier);
+    }
+    public (ByteStringValue ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifierValue(PathKey path)
+    {
         var result = processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(path.AsString());
-        return result is not null ? (result.moduleReference, result.specifier) : ("", null);
+        return result is not null ? (result.moduleReference.Snapshot(), result.specifier) : (default, null);
     }
 
     public Node? GetImportHelpersImportSpecifier(PathKey path) => processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(path.AsString());
-    public HashSet<string> ResolvedPackageNames() => collectPackageNames().resolved;
-    public HashSet<string> UnresolvedPackageNames() => collectPackageNames().unresolved;
-    public HashSet<string> DeepImportPackageNames() => collectPackageNames().deepImportPackages;
+    public HashSet<ByteStringKey> ResolvedPackageNames() => collectPackageNames().resolved;
+    public HashSet<ByteStringKey> UnresolvedPackageNames() => collectPackageNames().unresolved;
+    public HashSet<ByteStringKey> DeepImportPackageNames() => collectPackageNames().deepImportPackages;
     internal PackageNamesInfo collectPackageNames() => packageNames.getValue(() =>
     {
         var resolver = newResolver();
@@ -1287,11 +1316,11 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             var filename = RootedFilePath.FromGoString(file.FileNameGoBytes());
             if (IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey())) || IsSourceFileFromExternalLibrary(file) || filename.ContainsLowercaseDirectorySequence("/node_modules/"))
                 continue;
-            foreach (var import in file.Imports() ?? [])
+            foreach (var import in file.Imports())
             {
-                if (Ast.IsSourcePhaseImport(import.Parent) || TsPath.IsExternalModuleNameRelative(import.Text()))
+                if (Ast.IsSourcePhaseImport(import.Parent) || TsPath.IsExternalModuleNameRelative(import.TextValue()))
                     continue;
-                var key = new ModeAwareCacheKey(import.Text(), GetModeForUsageLocation(file, import));
+                var key = new ModeAwareCacheKey(import.TextValue(), GetModeForUsageLocation(file, import));
                 if (resolvedModules.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(key)is { } module && module.IsResolved())
                 {
                     if (!module.IsExternalLibraryImport)
@@ -1312,20 +1341,20 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                         name = TypeScript.ModuleSpecifiers.ModuleSpecifiers.GetPackageNameFromDirectory(module.ResolvedFileName.AsPath());
                     if (name != "")
                     {
-                        names.resolved.Add(name);
-                        var(_, rest) = ModuleUtilities.ParsePackageName(import.Text());
-                        if (rest != "")
+                        names.resolved.Add(ByteStringKey.FromString(name));
+                        var(_, rest) = ModuleUtilities.ParsePackageName(import.TextValue());
+                        if (rest.Length != 0)
                         {
                             var scope = resolver.GetPackageScopeForPath(module.ResolvedFileName.Directory());
                             if (scope.Exists() && !scope!.Contents!.Exports.IsPresent())
-                                names.deepImportPackages.Add(ModuleUtilities.GetPackageNameFromTypesPackageName(name));
+                                names.deepImportPackages.Add(ByteStringKey.FromString(ModuleUtilities.GetPackageNameFromTypesPackageName(name)));
                         }
                     }
 
                     continue;
                 }
 
-                names.unresolved.Add(import.Text());
+                names.unresolved.Add(ByteStringKey.FromValue(import.TextValue()));
             }
         }
 
@@ -1395,9 +1424,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         void Explain(RootedFilePath filename, PathKey path)
         {
             WriteLine(Relative(filename));
-            foreach (var reason in processedFiles.fileIncludeData.fileIncludeReasons.GetValueOrDefault(path.AsString()) ?? [])
+            foreach (var reason in processedFiles.fileIncludeData.fileIncludeReasons.GetValueOrDefault(path.AsString()))
                 WriteLine("   " + TypeScript.DiagnosticWriter.DiagnosticWriter.WrapASTDiagnostic(reason.ToDiagnostic(this, true, currentDirectory), true).Localize(locale));
-            foreach (var diagnostic in includeProcessor.ExplainRedirectAndImpliedFormat(this, path, Relative) ?? [])
+            foreach (var diagnostic in includeProcessor.ExplainRedirectAndImpliedFormat(this, path, Relative))
                 WriteLine("   " + TypeScript.DiagnosticWriter.DiagnosticWriter.WrapASTDiagnostic(diagnostic, true).Localize(locale));
             explained++;
         }
@@ -1427,37 +1456,34 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     // no project references/content mapper or checking directives are admitted.
     // Project aggregates actual include-processor diagnostics separately; the
     // historical Collections host has none. Module checks use this same checker.
-    internal static List<Diagnostic>? GetSemanticDiagnosticsWithChecker(SourceFile sourceFile, CompilerOptions options, TypeScript.Checking.Checker checker)
+    internal static Slice<Diagnostic> GetSemanticDiagnosticsWithChecker(SourceFile sourceFile, CompilerOptions options, TypeScript.Checking.Checker checker)
     {
         if (SkipTypeChecking(sourceFile, options))
-            return null;
+            return default;
         if (sourceFile.ScriptKind != ScriptKind.TS || sourceFile.CommentDirectives is { Count: > 0 } || sourceFile.CheckJsDirective is not null)
             throw new TypeScript.Checking.UnsupportedSemanticFeatureException("Program.getSemanticDiagnosticsWithChecker: fixed TS host policy");
-        var diags = sourceFile.BindDiagnostics()?.ToList();
+        var diags = GoSlices.Clip(sourceFile.BindDiagnostics());
         var checkedDiags = checker.GetDiagnostics(sourceFile);
         if (checkedDiags is { Count: > 0 })
         {
-            diags ??= [];
-            diags.AddRange(checkedDiags);
+            diags = diags.Append(checkedDiags);
         }
 
         return SortAndDeduplicateDiagnostics(FilterNoEmitSemanticDiagnostics(diags, options));
     }
 
     // program.go:1495. Retain the original marker, rather than filter diagnostic codes.
-    internal static List<Diagnostic>? FilterNoEmitSemanticDiagnostics(List<Diagnostic>? diagnostics, CompilerOptions options) => options.NoEmit == Tristate.True ? Core.Filter(diagnostics, d => !d.SkippedOnNoEmit()) : diagnostics;
-    internal static List<Diagnostic>? SortAndDeduplicateDiagnostics(List<Diagnostic>? diagnostics)
+    internal static Slice<Diagnostic> FilterNoEmitSemanticDiagnostics(Slice<Diagnostic> diagnostics, CompilerOptions options) => options.NoEmit == Tristate.True ? Core.Filter(diagnostics, d => !d.SkippedOnNoEmit()) : diagnostics;
+    internal static Slice<Diagnostic> SortAndDeduplicateDiagnostics(Slice<Diagnostic> diagnostics)
     {
-        if (diagnostics is null)
-            return null;
-        diagnostics = diagnostics.ToList();
+        diagnostics = GoSlices.Clone(diagnostics);
         GoSlices.SortFunc(diagnostics, Ast.CompareDiagnostics);
         return compactAndMergeRelatedInfos(diagnostics);
     }
 
     // program.go:1683. The private clone's unused tail is removed in managed
     // storage, matching clear plus the shorter Go result slice.
-    private static List<Diagnostic> compactAndMergeRelatedInfos(List<Diagnostic> diagnostics)
+    private static Slice<Diagnostic> compactAndMergeRelatedInfos(Slice<Diagnostic> diagnostics)
     {
         if (diagnostics.Count < 2)
             return diagnostics;
@@ -1470,22 +1496,22 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 n++;
             if (n > 1)
             {
-                List<Diagnostic>? related = null;
+                Slice<Diagnostic> related = default;
                 for (int k = 0; k < n; k++)
                     if (diagnostics[i + k].RelatedInformation()is { Count: > 0 } infos)
                     {
-                        related ??= [];
-                        related.AddRange(infos);
+                        related = related.Append(infos);
                     }
 
-                if (related is not null)
+                if (!related.IsNil)
                 {
                     GoSlices.SortFunc(related, Ast.CompareDiagnostics);
                     int write = 0;
-                    foreach (var value in related.ToArray())
+                    foreach (var value in related)
                         if (write == 0 || !Ast.EqualDiagnostics(related[write - 1], value))
                             related[write++] = value;
-                    related.RemoveRange(write, related.Count - write);
+                    related.AsSpan()[write..].Clear();
+                    related = related.Slice2(0, write);
                     diagnostic = diagnostic.Clone().SetRelatedInfo(related);
                 }
             }
@@ -1494,7 +1520,8 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             i += n;
         }
 
-        diagnostics.RemoveRange(j, diagnostics.Count - j);
+        diagnostics.AsSpan()[j..].Clear();
+        diagnostics = diagnostics.Slice2(0, j);
         return diagnostics;
     }
 
@@ -1551,5 +1578,5 @@ internal sealed class ProgramLazyValue<T>
 
 internal sealed class PackageNamesInfo
 {
-    internal HashSet<string> resolved = new(StringComparer.Ordinal), unresolved = new(StringComparer.Ordinal), deepImportPackages = new(StringComparer.Ordinal);
+    internal HashSet<ByteStringKey> resolved = new(ByteStringKey.Comparer), unresolved = new(ByteStringKey.Comparer), deepImportPackages = new(ByteStringKey.Comparer);
 }

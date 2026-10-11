@@ -51,7 +51,7 @@ public partial class Parser
             return null;
         }
 
-        if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.AsIdentifier().Text)))
+        if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.TextValue())))
         {
             var errLoc = name.Loc;
             if ((errLoc.Len() == 0))
@@ -294,13 +294,13 @@ public partial class Parser
                         }
 
                         var name = jsparam.Name();
-                        if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.AsIdentifier().Text)))
+                        if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.TextValue())))
                         {
                             var result = new GoBuilder
                             {
                             };
                             {
-                                foreach (var range4 in GoRuntime.Range(name.AsIdentifier().Text))
+                                foreach (var range4 in GoRuntime.Range(name.TextValue()))
                                 {
                                     var i = range4.Key;
                                     var ch = range4.Value;
@@ -337,7 +337,7 @@ public partial class Parser
                                 result.WriteString(Strconv.Itoa(pi));
                             }
 
-                            name = this.addTransformedReparse(this.factory.NewIdentifier(result.String()), name);
+                            name = this.addTransformedReparse(this.factory.NewIdentifierWithTextValue(result.Value()), name);
                         }
                         else
                         {
@@ -398,7 +398,7 @@ public partial class Parser
                         name = name.AsQualifiedName().Right;
                     }
 
-                    if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.AsIdentifier().Text)))
+                    if ((Ast.IsIdentifier(name) && !Scanner.IsValidIdentifierByteString(name.TextValue())))
                     {
                         name = this.addTransformedReparse(this.factory.NewStringLiteral(name.AsIdentifier().Text, TokenFlags.None), name);
                     }
@@ -1056,7 +1056,7 @@ public partial class Parser
                 var parameter = range14.Value;
                 if ((parameter.Name().Kind == Kind.Identifier))
                 {
-                    if (((parameterTag.Name().Kind == Kind.Identifier) && ((((parameter.Name().Text() == parameterTag.Name().Text())) || (((parameterIndex == tagIndex) && (GoRuntime.Len(parameterTag.Name().Text()) == 0)))))))
+                    if (((parameterTag.Name().Kind == Kind.Identifier) && ((((parameter.Name().TextValue().EqualsValue(parameterTag.Name().TextValue()))) || (((parameterIndex == tagIndex) && (parameterTag.Name().TextValue().Length == 0)))))))
                     {
                         return (parameter.AsParameterDeclaration(), true);
                     }

@@ -44,24 +44,35 @@ public static partial class Ast
     }
 
     // utilities.go:2851–2880. These are loader synthetic-dependency producers.
-    public static string GetJSXImplicitImportBase(CompilerOptions options, SourceFile file)
+    public static string GetJSXImplicitImportBase(CompilerOptions options, SourceFile file) =>
+        GetJSXImplicitImportBaseValue(options, file).Materialize();
+    internal static ByteStringValue GetJSXImplicitImportBaseValue(CompilerOptions options, SourceFile file)
     {
-        Pragma source = GetPragmaFromSourceFile(file, "jsximportsource");
-        Pragma runtime = GetPragmaFromSourceFile(file, "jsxruntime");
-        if (GetPragmaArgument(runtime, "factory") == "classic")
-            return "";
+        Pragma source = GetPragmaFromSourceFile(file, ByteStringValue.FromString("jsximportsource"));
+        Pragma runtime = GetPragmaFromSourceFile(file, ByteStringValue.FromString("jsxruntime"));
+        var factory = GetPragmaArgumentValue(runtime, ByteStringValue.FromString("factory"));
+        if (factory.EqualsBytes("classic"u8)) return default;
         if (options.Jsx is JsxEmit.ReactJSX or JsxEmit.ReactJSXDev || options.JsxImportSource != "" ||
-            source is not null || GetPragmaArgument(runtime, "factory") == "automatic")
+            source is not null || factory.EqualsBytes("automatic"u8))
         {
-            string result = GetPragmaArgument(source, "factory");
-            if (result == "") result = options.JsxImportSource;
-            return result == "" ? "react" : result;
+            var result = GetPragmaArgumentValue(source, ByteStringValue.FromString("factory"));
+            if (result.EqualsBytes(""u8)) result = ByteStringValue.FromString(options.JsxImportSource);
+            return result.EqualsBytes(""u8) ? ByteStringValue.FromString("react") : result;
         }
-        return "";
+        return default;
     }
 
-    public static string GetJSXRuntimeImport(string importBase, CompilerOptions options) => importBase == "" ? importBase :
-        importBase + "/" + (options.Jsx == JsxEmit.ReactJSXDev ? "jsx-dev-runtime" : "jsx-runtime");
+    public static string GetJSXRuntimeImport(string importBase, CompilerOptions options) =>
+        GetJSXRuntimeImportValue(ByteStringValue.FromString(importBase), options).Materialize();
+    internal static ByteStringValue GetJSXRuntimeImportValue(ByteStringValue importBase, CompilerOptions options)
+    {
+        if (importBase.EqualsBytes(""u8)) return importBase;
+        var builder = new GoBuilder();
+        builder.WriteString(importBase);
+        builder.WriteByte('/');
+        builder.WriteString(options.Jsx == JsxEmit.ReactJSXDev ? "jsx-dev-runtime"u8 : "jsx-runtime"u8);
+        return builder.Value();
+    }
 
     // utilities.go:3779. Filename is retained in the source API although unused by this producer.
     public static bool ShouldTransformImportCall(RootedFilePath fileName, CompilerOptions options, ModuleKind impliedNodeFormatForEmit)
@@ -85,10 +96,20 @@ public static partial class Ast
     }
 
     // Upstream function: NodeKindIs
-    public static bool NodeKindIs(Node node, params Kind[] kinds)
+    public static bool NodeKindIs(Node node, Kind[] kinds)
     {
-        return kinds.Contains(node.Kind);
+        // Preserve the explicit-array public boundary's original evaluation
+        // and null-source failure; scalar callers use the borrowed span below.
+        var kind = node.Kind;
+        if (kinds is null) throw new ArgumentNullException("source");
+        return nodeKindIs(kind, kinds);
     }
+
+    // utilities.go:100. Go's nonescaping variadic kinds are a borrowed slice.
+    public static bool NodeKindIs(Node node, params ReadOnlySpan<Kind> kinds) => nodeKindIs(node.Kind, kinds);
+
+    private static bool nodeKindIs(Kind kind, ReadOnlySpan<Kind> kinds) =>
+        System.Runtime.InteropServices.MemoryMarshal.Cast<Kind, short>(kinds).Contains((short)kind);
 
     // Upstream function: IsModifier
     public static bool IsModifier(Node node)
@@ -416,7 +437,7 @@ public static partial class Ast
     }
 
     // Upstream function: SetImportsOfSourceFile
-    public static void SetImportsOfSourceFile(SourceFile node, List<Node> imports)
+    public static void SetImportsOfSourceFile(SourceFile node, Slice<Node> imports)
     {
         node.imports = imports;
     }
@@ -929,7 +950,7 @@ public static partial class Ast
     // Upstream function: isImportMetaProperty
     public static bool isImportMetaProperty(Node node, string name)
     {
-        return ((IsMetaProperty(node) && (node.AsMetaProperty().KeywordToken == Kind.ImportKeyword)) && (node.AsMetaProperty().Name().Text() == name));
+        return ((IsMetaProperty(node) && (node.AsMetaProperty().KeywordToken == Kind.ImportKeyword)) && (node.AsMetaProperty().Name().TextValue().EqualsString(name)));
     }
 
     // Upstream function: IsQuestionToken
@@ -1300,6 +1321,8 @@ public static partial class Ast
         return data.Value;
     }
 
+    internal static SymbolTable GetSymbolTable(ref SymbolTable data) => data ??= new SymbolTable();
+
     public static SymbolTable GetMembers(Symbol symbol) => symbol.Members ??= new SymbolTable();
     public static SymbolTable GetExports(Symbol symbol) => symbol.Exports ??= new SymbolTable();
     public static SymbolTable GetLocals(Node container) => container.LocalsContainerData().Locals ??= new SymbolTable();
@@ -1312,16 +1335,20 @@ public static partial class Ast
     public static bool IsAmbientModuleSymbolName(string s) => TryGetAmbientModuleNameFromSymbolName(s).Item2;
     public static (string, bool) TryGetAmbientModuleNameFromSymbolName(string s)
     {
-        if (s.StartsWith("\"", StringComparison.Ordinal) && s.EndsWith("\"", StringComparison.Ordinal))
-            return (s.Substring(1, s.Length - 2), true);
-        string prefix = InternalSymbolNamePrefix + "\"";
-        if (!s.StartsWith(prefix, StringComparison.Ordinal))
-            return ("", false);
-        string rest = s.Substring(prefix.Length);
-        int markerIndex = rest.LastIndexOf("\"pattern@", StringComparison.Ordinal);
-        if (markerIndex < 1)
-            return ("", false);
-        return (rest.Substring(0, markerIndex), true);
+        var (name, ok) = TryGetAmbientModuleNameValueFromSymbolName(ByteStringValue.FromString(s));
+        return (name.Materialize()!, ok);
+    }
+    internal static (ByteStringValue, bool) TryGetAmbientModuleNameValueFromSymbolName(ByteStringValue s)
+    {
+        if (s.StartsWith("\""u8) && s.EndsWith("\""u8))
+            return (s.Slice(1, s.Length - 1), true);
+        ReadOnlySpan<byte> prefix = [0xFE, (byte)'"'];
+        if (!s.StartsWith(prefix)) return (default, false);
+        var rest = s.Slice(prefix.Length);
+        int markerIndex = rest.IsBytes ? rest.ByteSpan.LastIndexOf("\"pattern@"u8)
+            : rest.CharSpan.LastIndexOf("\"pattern@");
+        if (markerIndex < 1) return (default, false);
+        return (rest.Slice(0, markerIndex), true);
     }
 } // END MANUAL BINDER ATOMIC/TABLE HELPERS
 
@@ -2112,8 +2139,8 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:310:1.
     public static bool IsPushOrUnshiftIdentifier(Node node)
     {
-        var text = node.Text();
-        return ((text == "push") || (text == "unshift"));
+        var text = node.TextValue();
+        return text.EqualsBytes("push"u8) || text.EqualsBytes("unshift"u8);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:315:1.
@@ -2287,10 +2314,14 @@ public static partial class Ast
     // Walks up the parents of a node to find the ancestor that matches the callback
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:911:1.
     public static Node FindAncestor(Node node, Func<Node, bool> callback)
+        => FindAncestor(node, callback, static (ancestor, f) => f(ancestor));
+
+    // Explicit callback state uses the original synchronous ancestor traversal.
+    public static Node FindAncestor<TState>(Node node, TState state, Func<Node, TState, bool> callback)
     {
         while ((node != null))
         {
-            if (callback(node))
+            if (callback(node, state))
             {
                 return node;
             }
@@ -2788,7 +2819,7 @@ public static partial class Ast
 
     // Push a virtual parent pointer onto `ancestors` and return it.
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2379:1.
-    private static List<Node> pushAncestor(List<Node> ancestors, Node parent)
+    private static Slice<Node> pushAncestor(Slice<Node> ancestors, Node parent)
     {
         return GoRuntime.Append(ancestors, parent);
     }
@@ -2796,11 +2827,11 @@ public static partial class Ast
     // If a virtual `Parent` exists on the stack, returns the previous stack entry and the virtual `Parent“.
     // Otherwise, we return `nil` and the value of `node.Parent`.
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2385:1.
-    private static (List<Node>, Node) popAncestor(List<Node> ancestors, Node node)
+    private static (Slice<Node>, Node) popAncestor(Slice<Node> ancestors, Node node)
     {
         if ((GoRuntime.Len(ancestors) == 0))
         {
-            return (null, node.Parent);
+            return (default, node.Parent);
         }
 
         var n = (GoRuntime.Len(ancestors) - 1);
@@ -2810,11 +2841,11 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2402:1.
     public static ModuleInstanceState GetModuleInstanceState(Node node)
     {
-        return getModuleInstanceState(node, null, null);
+        return getModuleInstanceState(node, default, null);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2406:1.
-    private static ModuleInstanceState getModuleInstanceState(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    private static ModuleInstanceState getModuleInstanceState(Node node, Slice<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
     {
         var module = node.AsModuleDeclaration();
         if ((module.Body != null))
@@ -2828,7 +2859,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2415:1.
-    private static ModuleInstanceState getModuleInstanceStateCached(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    private static ModuleInstanceState getModuleInstanceStateCached(Node node, Slice<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
     {
         if ((visited == null))
         {
@@ -2856,7 +2887,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2432:1.
-    private static ModuleInstanceState getModuleInstanceStateWorker(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    private static ModuleInstanceState getModuleInstanceStateWorker(Node node, Slice<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
     {
         switch (node.Kind)
         {
@@ -2961,7 +2992,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2486:1.
-    private static ModuleInstanceState getModuleInstanceStateForAliasTarget(Node node, List<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
+    private static ModuleInstanceState getModuleInstanceStateForAliasTarget(Node node, Slice<Node> ancestors, Dictionary<ulong, ModuleInstanceState> visited)
     {
         var name = node.PropertyNameOrName();
         if ((name.Kind != Kind.Identifier))
@@ -3234,7 +3265,9 @@ public static partial class Ast
     }
 
     // utilities.go:3236
-    public static string GetPropertyNameForPropertyNameNode(Node name)
+    public static string GetPropertyNameForPropertyNameNode(Node name) =>
+        GetPropertyNameValueForPropertyNameNode(name).Materialize()!;
+    internal static ByteStringValue GetPropertyNameValueForPropertyNameNode(Node name)
     {
         switch (name.Kind)
         {
@@ -3245,21 +3278,26 @@ public static partial class Ast
             case Kind.NumericLiteral:
             case Kind.BigIntLiteral:
             case Kind.JsxNamespacedName:
-                return name.Text();
+                return name.TextValue();
             case Kind.ComputedPropertyName:
                 var expression = name.Expression();
                 if (IsStringOrNumericLiteralLike(expression))
-                    return expression.Text();
+                    return expression.TextValue();
                 if (IsSignedNumericLiteral(expression))
                 {
                     var prefix = expression.AsPrefixUnaryExpression();
-                    var text = prefix.Operand.Text();
+                    var text = prefix.Operand.TextValue();
                     if (prefix.Operator == Kind.MinusToken)
-                        text = "-" + text;
+                    {
+                        var builder = new GoBuilder();
+                        builder.WriteByte('-');
+                        builder.WriteString(text);
+                        text = builder.Value();
+                    }
                     return text;
                 }
 
-                return InternalSymbolNameMissing;
+                return ByteStringValue.FromString(InternalSymbolNameMissing);
             default:
                 throw new InvalidOperationException("Unhandled case in getPropertyNameForPropertyNameNode");
         }
@@ -5064,8 +5102,10 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4288:1.
     public static bool IsInfinityOrNaNString(string name)
     {
-        return (((name == "Infinity") || (name == "-Infinity")) || (name == "NaN"));
+        return IsInfinityOrNaNString(ByteStringValue.FromString(name));
     }
+    internal static bool IsInfinityOrNaNString(ByteStringValue name) =>
+        name.EqualsBytes("Infinity"u8) || name.EqualsBytes("-Infinity"u8) || name.EqualsBytes("NaN"u8);
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4319:1.
     public static bool HasAbstractModifier(Node node)
@@ -5235,10 +5275,15 @@ public static partial class Ast
     // Walks up the parents of a node to find the ancestor that matches the callback
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:967:1.
     public static Node FindAncestorOrQuit(Node node, Func<Node, FindAncestorResult> callback)
+        => FindAncestorOrQuit(node, callback, static (ancestor, f) => f(ancestor));
+
+    // Explicit state preserves the synchronous Go callback's environment without
+    // a managed capturing delegate. Both entry points use the original traversal.
+    public static Node FindAncestorOrQuit<TState>(Node node, TState state, Func<Node, TState, FindAncestorResult> callback)
     {
         while ((node != null))
         {
-            switch (callback(node))
+            switch (callback(node, state))
             {
                 case FindAncestorResult.Quit:
                 {
@@ -5300,15 +5345,20 @@ public static partial class Ast
     // in the event that 'visitor' returns true.
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1157:1.
     public static bool ForEachReturnStatement(Node body, Func<Node, bool> visitor)
+        => ForEachReturnStatement(body, visitor, static (statement, callback) => callback(statement));
+
+    // Explicit user callback state shares the original ordered traversal. Its
+    // one recursive Visitor remains at the existing virtual ForEachChild boundary.
+    public static bool ForEachReturnStatement<TState>(Node body, TState state, Func<Node, TState, bool> visitor)
     {
-        Func<Node, bool> traverse = default;
+        Visitor traverse = default;
         traverse = (node) =>
         {
             switch (node.Kind)
             {
                 case Kind.ReturnStatement:
                 {
-                    return visitor(node);
+                    return visitor(node, state);
                 }
 
                 case Kind.CaseBlock:
@@ -5327,7 +5377,7 @@ public static partial class Ast
                 case Kind.TryStatement:
                 case Kind.CatchClause:
                 {
-                    return node.ForEachChild(child => traverse(child));
+                    return node.ForEachChild(traverse);
                 }
             }
 
@@ -5463,6 +5513,13 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2213:1.
     public static (string, bool) TryGetTextOfPropertyName(Node name)
     {
+        var (text, ok) = TryGetTextValueOfPropertyName(name);
+        return (text.Materialize(), ok);
+    }
+
+    // Same Go string header algorithm; public text projection is explicit above.
+    internal static (ByteStringValue, bool) TryGetTextValueOfPropertyName(Node name)
+    {
         switch (name.Kind)
         {
             case Kind.Identifier:
@@ -5471,27 +5528,19 @@ public static partial class Ast
             case Kind.NumericLiteral:
             case Kind.BigIntLiteral:
             case Kind.NoSubstitutionTemplateLiteral:
-            {
-                return (name.Text(), true);
-            }
-
+                return (name.TextValue(), true);
             case Kind.ComputedPropertyName:
-            {
                 if (IsStringOrNumericLiteralLike(name.Expression()))
-                {
-                    return (name.Expression().Text(), true);
-                }
-
+                    return (name.Expression().TextValue(), true);
                 break;
-            }
-
             case Kind.JsxNamespacedName:
-            {
-                return (((name.AsJsxNamespacedName().Namespace.Text() + ":") + name.Name().Text()), true);
-            }
+                var builder = new GoBuilder();
+                builder.WriteString(name.AsJsxNamespacedName().Namespace.TextValue());
+                builder.WriteByte(':');
+                builder.WriteString(name.Name().TextValue());
+                return (builder.Value(), true);
         }
-
-        return ("", false);
+        return (default, false);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2240:1.
@@ -5649,39 +5698,25 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2881:1.
-    public static Pragma GetPragmaFromSourceFile(SourceFile file, string name)
+    public static Pragma GetPragmaFromSourceFile(SourceFile file, string name) =>
+        GetPragmaFromSourceFile(file, ByteStringValue.FromString(name));
+    internal static Pragma GetPragmaFromSourceFile(SourceFile file, ByteStringValue name)
     {
         Pragma result = default;
-        if ((file != null))
-        {
-            {
-                foreach (var i in GoRuntime.RangeKeys(file.Pragmas))
-                {
-                    if ((file.Pragmas[i].Name == name))
-                    {
-                        result = file.Pragmas[i];
-                    }
-                }
-            }
-        }
-
+        if (file != null)
+            foreach (var pragma in file.Pragmas)
+                if (pragma.NameValue.EqualsValue(name)) result = pragma;
         return result;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2893:1.
-    public static string GetPragmaArgument(Pragma pragma, string name)
+    public static string GetPragmaArgument(Pragma pragma, string name) =>
+        GetPragmaArgumentValue(pragma, ByteStringValue.FromString(name)).Materialize();
+    internal static ByteStringValue GetPragmaArgumentValue(Pragma pragma, ByteStringValue name)
     {
-        if ((pragma != null))
-        {
-            {
-                if (pragma.Args != null && pragma.Args.TryGetValue(name, out var arg))
-                {
-                    return arg.Value;
-                }
-            }
-        }
-
-        return "";
+        if (pragma != null && pragma.Args != null && name.TryGetValue(pragma.Args, out var arg))
+            return arg.ValueValue;
+        return default;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:2936:1.
@@ -6449,6 +6484,13 @@ public static partial class Ast
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4436:1.
     public static AllAccessorDeclarations GetAllAccessorDeclarationsForDeclaration(Node accessor, List<Node> declarationsOfSymbol)
+        => GetAllAccessorDeclarationsForDeclaration(accessor, System.Runtime.InteropServices.CollectionsMarshal.AsSpan(declarationsOfSymbol));
+
+    public static AllAccessorDeclarations GetAllAccessorDeclarationsForDeclaration(Node accessor, Slice<Node> declarationsOfSymbol)
+        => GetAllAccessorDeclarationsForDeclaration(accessor, declarationsOfSymbol.AsSpan());
+
+    // Both ingress forms borrow the same ordered Go declaration slice; no publication or mutation.
+    private static AllAccessorDeclarations GetAllAccessorDeclarationsForDeclaration(Node accessor, ReadOnlySpan<Node> declarationsOfSymbol)
     {
         Kind otherKind = default;
         if ((accessor.Kind == Kind.SetAccessor))
@@ -6469,7 +6511,7 @@ public static partial class Ast
 
         Node otherAccessor = default;
         {
-            foreach (var d in GoRuntime.RangeValues(declarationsOfSymbol))
+            foreach (var d in declarationsOfSymbol)
             {
                 if ((d.Kind == otherKind))
                 {
@@ -6525,12 +6567,12 @@ public static partial class Ast
     {
         if (HasDynamicName(accessor))
         {
-            return GetAllAccessorDeclarationsForDeclaration(accessor, new List<Node> { accessor });
+            return GetAllAccessorDeclarationsForDeclaration(accessor, Slice<Node>.FromArray([accessor]));
         }
 
-        var accessorName = GetPropertyNameForPropertyNameNode(accessor.Name());
+        var accessorName = GetPropertyNameValueForPropertyNameNode(accessor.Name());
         var accessorStatic = IsStatic(accessor);
-        List<Node> matches = default;
+        Slice<Node> matches = default;
         {
             foreach (var member in GoRuntime.RangeValues(parentDeclarations))
             {
@@ -6539,8 +6581,8 @@ public static partial class Ast
                     continue;
                 }
 
-                var memberName = GetPropertyNameForPropertyNameNode(member.Name());
-                if ((memberName == accessorName))
+                var memberName = GetPropertyNameValueForPropertyNameNode(member.Name());
+                if ((memberName.EqualsValue(accessorName)))
                 {
                     matches = GoRuntime.Append(matches, member);
                 }
@@ -6649,9 +6691,9 @@ public static partial class Ast
     }
 
     // utilities.go:921. Preserve ordered callbacks and at most one callback match per ancestor.
-    public static List<Node> FindManyAncestors(Node node, params Func<Node, bool>[] callbacks)
+    public static Slice<Node> FindManyAncestors(Node node, params Func<Node, bool>[] callbacks)
     {
-        var ancestors = new List<Node>(new Node[callbacks.Length]);
+        var ancestors = Slice<Node>.Make(callbacks.Length);
         var found = 0;
         while (node != null)
         {

@@ -56,12 +56,12 @@ public partial class Scanner
         public bool namedCaptureGroups;
         private bool mayContainStrings;
         private int numberOfCapturingGroups;
-        public Dictionary<string, bool> groupSpecifiers = new(StringComparer.Ordinal);
-        private readonly List<groupNameReference> groupNameReferences = new();
-        private readonly List<decimalEscapeValue> decimalEscapes = new();
-        private readonly List<Dictionary<string, bool>> namedCapturingGroups = new();
+        public Dictionary<ByteStringKey, bool> groupSpecifiers = new(ByteStringKey.Comparer);
+        private Slice<groupNameReference> groupNameReferences;
+        private Slice<decimalEscapeValue> decimalEscapes;
+        private Slice<Dictionary<ByteStringKey, bool>> namedCapturingGroups;
         private int pendingLowSurrogate;
-        private record struct groupNameReference(int pos, int end, string name);
+        private record struct groupNameReference(int pos, int end, ByteStringValue name);
         private record struct decimalEscapeValue(int pos, int end, long value);
 
         private int pos()
@@ -99,17 +99,17 @@ public partial class Scanner
             return this.scanner.text;
         }
 
-        private static int compareDecimalStrings(string a, string b)
+        private static int compareDecimalStrings(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
         {
-            a = a.TrimStart('0');
-            b = b.TrimStart('0');
-            if ((a == ""))
+            a = a.TrimStart((byte)'0');
+            b = b.TrimStart((byte)'0');
+            if ((a.IsEmpty))
             {
-                a = "0";
+                a = "0"u8;
             }
-            if ((b == ""))
+            if ((b.IsEmpty))
             {
-                b = "0";
+                b = "0"u8;
             }
             if ((a.Length != b.Length))
             {
@@ -119,19 +119,19 @@ public partial class Scanner
                 }
                 return 1;
             }
-            return StringComparer.Ordinal.Compare(a, b);
+            return a.SequenceCompareTo(b);
         }
 
         // Disjunction ::= Alternative ('|' Alternative)*
         private void scanDisjunction(bool isInGroup)
         {
-            HashSet<string> disjunctionNames = new(StringComparer.Ordinal);
+            HashSet<ByteStringKey> disjunctionNames = new(ByteStringKey.Comparer);
             while (true)
             {
-                this.namedCapturingGroups.Add(new Dictionary<string, bool>());
+                this.namedCapturingGroups = this.namedCapturingGroups.Append(new Dictionary<ByteStringKey, bool>(ByteStringKey.Comparer));
                 this.scanAlternative(isInGroup);
                 var alternativeNames = this.namedCapturingGroups[(this.namedCapturingGroups.Count - 1)];
-                this.namedCapturingGroups.RemoveAt(this.namedCapturingGroups.Count - 1);
+                this.namedCapturingGroups = this.namedCapturingGroups.Slice2(0, this.namedCapturingGroups.Length - 1);
                 foreach (var name in alternativeNames.Keys)
                 {
                     disjunctionNames.Add(name);
@@ -307,8 +307,8 @@ public partial class Scanner
                             this.incPos(1);
                             var digitsStart = this.pos();
                             this.scanDigits();
-                            var minStr = this.scanner.tokenValue;
-                            if ((!this.anyUnicodeModeOrNonAnnexB && (minStr == "")))
+                            var minStr = this.scanner.TokenValueTextValue();
+                            if ((!this.anyUnicodeModeOrNonAnnexB && (minStr.Length == 0)))
                             {
                                 isPreviousTermQuantifiable = true;
                                 continue;
@@ -317,10 +317,10 @@ public partial class Scanner
                             {
                                 this.incPos(1);
                                 this.scanDigits();
-                                var maxStr = this.scanner.tokenValue;
-                                if ((minStr == ""))
+                                var maxStr = this.scanner.TokenValueTextValue();
+                                if ((minStr.Length == 0))
                                 {
-                                    if (((maxStr != "") || (this.charCode() == '}')))
+                                    if (((maxStr.Length != 0) || (this.charCode() == '}')))
                                     {
                                         this.error(Diagnostics.Incomplete_quantifier_Digit_expected, digitsStart, 0);
                                     }
@@ -333,9 +333,9 @@ public partial class Scanner
                                 }
                                 else
                                 {
-                                    if ((maxStr != ""))
+                                    if ((maxStr.Length != 0))
                                     {
-                                        if (((compareDecimalStrings(minStr, maxStr) > 0) && ((this.anyUnicodeModeOrNonAnnexB || (this.charCode() == '}')))))
+                                        if (((compareDecimalStrings(minStr.ByteSpan, maxStr.ByteSpan) > 0) && ((this.anyUnicodeModeOrNonAnnexB || (this.charCode() == '}')))))
                                         {
                                             this.error(Diagnostics.Numbers_out_of_order_in_quantifier, digitsStart, (this.pos() - digitsStart));
                                         }
@@ -344,7 +344,7 @@ public partial class Scanner
                             }
                             else
                             {
-                                if ((minStr == ""))
+                                if ((minStr.Length == 0))
                                 {
                                     if (this.anyUnicodeModeOrNonAnnexB)
                                     {
@@ -521,7 +521,7 @@ public partial class Scanner
                     {
                         if ((!this.scanCharacterClassEscape() && !this.scanDecimalEscape()))
                         {
-                            Debug.Assert((this.scanCharacterEscape(true) != ""));
+                            Debug.Assert((this.scanCharacterEscape(true).Length != 0));
                         }
                         break;
                     }
@@ -537,12 +537,12 @@ public partial class Scanner
             {
                 var start = this.pos();
                 this.scanDigits();
-                bool valid = long.TryParse(this.scanner.tokenValue, out var val);
+                bool valid = long.TryParse(this.scanner.TokenValueTextValue().ByteSpan, out var val);
                 if (!valid)
                 {
                     val = long.MaxValue;
                 }
-                this.decimalEscapes.Add(new decimalEscapeValue(start, this.pos(), val));
+                this.decimalEscapes = this.decimalEscapes.Append(new decimalEscapeValue(start, this.pos(), val));
                 return true;
             }
             return false;
@@ -558,7 +558,13 @@ public partial class Scanner
         //
         //	| '^' | '$' | '/' | '\' | '.' | '*' | '+' | '?' | '(' | ')' | '[' | ']' | '{' | '}' | '|'
         //	| [~AnyUnicodeMode] (any other non-identifier characters)
-        private string scanCharacterEscape(bool atomEscape)
+        // regexp.go character operands borrow Go string slices until range/rune
+        // checks consume them; transformed escape outputs retain their own owner.
+        private static (int Rune, int Size) decodeOperandRune(ByteStringValue text) =>
+            text.IsBytes ? StringUtil.DecodeJSStringRune(text.ByteSpan)
+                : StringUtil.DecodeJSStringRune(text.CharSpan);
+
+        private ByteStringValue scanCharacterEscape(bool atomEscape)
         {
             Debug.Assert(((this.pos() > 0) && (this.text()[(this.pos() - 1)] == '\\')));
             var ch = this.charCode();
@@ -567,7 +573,7 @@ public partial class Scanner
                 case -1:
                     {
                         this.error(Diagnostics.Undetermined_character_escape, (this.pos() - 1), 1);
-                        return "\\";
+                        return ByteStringValue.FromString("\\");
                     }
                 case 'c':
                     {
@@ -576,7 +582,7 @@ public partial class Scanner
                         if (StringUtil.IsASCIILetter(ch))
                         {
                             this.incPos(1);
-                            return GoString.FromRune((ch & 0x1f));
+                            return GoString.FromRuneValue((ch & 0x1f));
                         }
                         if (this.anyUnicodeModeOrNonAnnexB)
                         {
@@ -587,10 +593,10 @@ public partial class Scanner
                             if (atomEscape)
                             {
                                 this.incPos(-1);
-                                return "\\";
+                                return ByteStringValue.FromString("\\");
                             }
                         }
-                        return GoString.FromRune(ch);
+                        return GoString.FromRuneValue(ch);
                     }
                 case '^':
                 case '$':
@@ -609,7 +615,7 @@ public partial class Scanner
                 case '|':
                     {
                         this.incPos(1);
-                        return GoString.FromRune(ch);
+                        return GoString.FromRuneValue(ch);
                     }
                 default:
                     {
@@ -644,35 +650,35 @@ public partial class Scanner
             {
                 if (isReference)
                 {
-                    this.groupNameReferences.Add(new groupNameReference(this.scanner.tokenStart, this.pos(), this.scanner.tokenValue));
+                    this.groupNameReferences = this.groupNameReferences.Append(new groupNameReference(this.scanner.tokenStart, this.pos(), this.scanner.TokenValueTextValue()));
                 }
                 else
                 {
-                    if (this.namedCapturingGroupsContains(this.scanner.tokenValue))
+                    if (this.namedCapturingGroupsContains(this.scanner.TokenValueTextValue()))
                     {
                         this.error(Diagnostics.Named_capturing_groups_with_the_same_name_must_be_mutually_exclusive_to_each_other, this.scanner.tokenStart, (this.pos() - this.scanner.tokenStart));
                     }
                     else
                     {
-                        if (((this.groupSpecifiers.GetValueOrDefault(this.scanner.tokenValue) && (this.scanner.languageVersion() >= ScriptTarget.ES2018)) && (this.scanner.languageVersion() < ScriptTarget.ES2025)))
+                        if ((((this.scanner.TokenValueTextValue().TryGetValue(this.groupSpecifiers, out var found) && found) && (this.scanner.languageVersion() >= ScriptTarget.ES2018)) && (this.scanner.languageVersion() < ScriptTarget.ES2025)))
                         {
                             this.error(Diagnostics.Duplicate_named_capturing_groups_are_only_available_when_targeting_0_or_later, this.scanner.tokenStart, (this.pos() - this.scanner.tokenStart), ToLower(ScriptTarget.ES2025.ToString()));
                         }
                         if ((this.namedCapturingGroups.Count > 0))
                         {
-                            this.namedCapturingGroups[(this.namedCapturingGroups.Count - 1)][this.scanner.tokenValue] = true;
+                            this.namedCapturingGroups[(this.namedCapturingGroups.Count - 1)][ByteStringKey.FromValue(this.scanner.TokenValueTextValue())] = true;
                         }
-                        this.groupSpecifiers[this.scanner.tokenValue] = true;
+                        this.groupSpecifiers[ByteStringKey.FromValue(this.scanner.TokenValueTextValue())] = true;
                     }
                 }
             }
         }
 
-        private bool namedCapturingGroupsContains(string name)
+        private bool namedCapturingGroupsContains(ByteStringValue name)
         {
             foreach (var group in this.namedCapturingGroups)
             {
-                if (group.GetValueOrDefault(name))
+                if ((name.TryGetValue(group, out var found) && found))
                 {
                     return true;
                 }
@@ -711,23 +717,23 @@ public partial class Scanner
                     {
                         return;
                     }
-                    if (((minCharacter == "") && this.anyUnicodeModeOrNonAnnexB))
+                    if (((minCharacter.Length == 0) && this.anyUnicodeModeOrNonAnnexB))
                     {
                         this.error(Diagnostics.A_character_class_range_must_not_be_bounded_by_another_character_class, minStart, ((this.pos() - 1) - minStart));
                     }
                     var maxStart = this.pos();
                     var maxCharacter = this.scanClassAtom();
-                    if (((maxCharacter == "") && this.anyUnicodeModeOrNonAnnexB))
+                    if (((maxCharacter.Length == 0) && this.anyUnicodeModeOrNonAnnexB))
                     {
                         this.error(Diagnostics.A_character_class_range_must_not_be_bounded_by_another_character_class, maxStart, (this.pos() - maxStart));
                         continue;
                     }
-                    if ((minCharacter == ""))
+                    if ((minCharacter.Length == 0))
                     {
                         continue;
                     }
-                    var (minCharacterValue, minSize) = StringUtil.DecodeJSStringRune(minCharacter);
-                    var (maxCharacterValue, maxSize) = StringUtil.DecodeJSStringRune(maxCharacter);
+                    var (minCharacterValue, minSize) = decodeOperandRune(minCharacter);
+                    var (maxCharacterValue, maxSize) = decodeOperandRune(maxCharacter);
                     if ((((minCharacter.Length == minSize) && (maxCharacter.Length == maxSize)) && (minCharacterValue > maxCharacterValue)))
                     {
                         this.error(Diagnostics.Range_out_of_order_in_character_class, minStart, (this.pos() - minStart));
@@ -757,7 +763,7 @@ public partial class Scanner
                 return;
             }
             var start = this.pos();
-            string operand = "";
+            ByteStringValue operand = default;
             // Go regexp.go:607–619/698–710: these bounded slices only select ASCII operators.
             ReadOnlySpan<byte> twoChars = default;
             if (((this.pos() + 1) < this.end))
@@ -839,12 +845,12 @@ public partial class Scanner
                                 this.incPos(1);
                                 this.error(Diagnostics.Operators_must_not_be_mixed_within_a_character_class_Wrap_it_in_a_nested_class_instead, (this.pos() - 2), 2);
                                 start = (this.pos() - 2);
-                                operand = this.text().Substring(start, this.pos() - (start));
+                                operand = ByteStringValue.FromView(this.text().Slice(start, this.pos()));
                                 continue;
                             }
                             else
                             {
-                                if ((operand == ""))
+                                if ((operand.Length == 0))
                                 {
                                     this.error(Diagnostics.A_character_class_range_must_not_be_bounded_by_another_character_class, start, ((this.pos() - 1) - start));
                                 }
@@ -855,16 +861,16 @@ public partial class Scanner
                                     this.error(Diagnostics.Anything_that_would_possibly_match_more_than_a_single_character_is_invalid_inside_a_negated_character_class, secondStart, (this.pos() - secondStart));
                                 }
                                 expressionMayContainStrings = (expressionMayContainStrings || this.mayContainStrings);
-                                if ((secondOperand == ""))
+                                if ((secondOperand.Length == 0))
                                 {
                                     this.error(Diagnostics.A_character_class_range_must_not_be_bounded_by_another_character_class, secondStart, (this.pos() - secondStart));
                                 }
                                 else
                                 {
-                                    if ((operand != ""))
+                                    if ((operand.Length != 0))
                                     {
-                                        var (minCharacterValue, minSize) = StringUtil.DecodeJSStringRune(operand);
-                                        var (maxCharacterValue, maxSize) = StringUtil.DecodeJSStringRune(secondOperand);
+                                        var (minCharacterValue, minSize) = decodeOperandRune(operand);
+                                        var (maxCharacterValue, maxSize) = decodeOperandRune(secondOperand);
                                         if ((((operand.Length == minSize) && (secondOperand.Length == maxSize)) && (minCharacterValue > maxCharacterValue)))
                                         {
                                             this.error(Diagnostics.Range_out_of_order_in_character_class, start, (this.pos() - start));
@@ -886,7 +892,7 @@ public partial class Scanner
                                     this.error(Diagnostics.Unexpected_0_Did_you_mean_to_escape_it_with_backslash, this.pos(), 1, GoString.FromRune(ch));
                                     this.incPos(1);
                                 }
-                                operand = this.text().Substring(start, this.pos() - (start));
+                                operand = ByteStringValue.FromView(this.text().Slice(start, this.pos()));
                                 continue;
                             }
                             break;
@@ -908,7 +914,7 @@ public partial class Scanner
                         {
                             this.error(Diagnostics.Operators_must_not_be_mixed_within_a_character_class_Wrap_it_in_a_nested_class_instead, this.pos(), 2);
                             this.incPos(2);
-                            operand = this.text().Substring(start, this.pos() - (start));
+                            operand = ByteStringValue.FromView(this.text().Slice(start, this.pos()));
                             break;
                         }
                     default:
@@ -1016,7 +1022,7 @@ public partial class Scanner
         //	| '\' CharacterClassEscape
         //	| '\q{' ClassStringDisjunctionContents '}'
         //	| ClassSetCharacter
-        private string scanClassSetOperand()
+        private ByteStringValue scanClassSetOperand()
         {
             this.mayContainStrings = false;
             switch (this.charCode())
@@ -1026,14 +1032,14 @@ public partial class Scanner
                         this.incPos(1);
                         this.scanClassSetExpression();
                         this.scanExpectedChar(']');
-                        return "";
+                        return ByteStringValue.FromString("");
                     }
                 case '\\':
                     {
                         this.incPos(1);
                         if (this.scanCharacterClassEscape())
                         {
-                            return "";
+                            return ByteStringValue.FromString("");
                         }
                         else
                         {
@@ -1045,12 +1051,12 @@ public partial class Scanner
                                     this.incPos(1);
                                     this.scanClassStringDisjunctionContents();
                                     this.scanExpectedChar('}');
-                                    return "";
+                                    return ByteStringValue.FromString("");
                                 }
                                 else
                                 {
                                     this.error(Diagnostics.X_q_must_be_followed_by_string_alternatives_enclosed_in_braces, (this.pos() - 2), 2);
-                                    return "q";
+                                    return ByteStringValue.FromString("q");
                                 }
                             }
                         }
@@ -1106,7 +1112,7 @@ public partial class Scanner
         //
         //	| SourceCharacter -- ClassSetSyntaxCharacter -- ClassSetReservedDoublePunctuator
         //	| '\' (CharacterEscape | ClassSetReservedPunctuator | 'b')
-        private string scanClassSetCharacter()
+        private ByteStringValue scanClassSetCharacter()
         {
             var ch = this.charCode();
             if ((ch == '\\'))
@@ -1118,7 +1124,7 @@ public partial class Scanner
                     case 'b':
                         {
                             this.incPos(1);
-                            return "\b";
+                            return ByteStringValue.FromString("\b");
                         }
                     case '&':
                     case '-':
@@ -1136,7 +1142,7 @@ public partial class Scanner
                     case '~':
                         {
                             this.incPos(1);
-                            return GoString.FromRune(innerCh);
+                            return GoString.FromRuneValue(innerCh);
                         }
                     default:
                         {
@@ -1170,7 +1176,7 @@ public partial class Scanner
                             {
                                 this.error(Diagnostics.A_character_class_must_not_contain_a_reserved_double_punctuator_Did_you_mean_to_escape_it_with_backslash, this.pos(), 2);
                                 this.incPos(2);
-                                return this.text().Substring((this.pos() - 2), this.pos() - ((this.pos() - 2)));
+                                return ByteStringValue.FromView(this.text().Slice(this.pos() - 2, this.pos()));
                             }
                     }
                 }
@@ -1189,7 +1195,7 @@ public partial class Scanner
                     {
                         this.error(Diagnostics.Unexpected_0_Did_you_mean_to_escape_it_with_backslash, this.pos(), 1, GoString.FromRune(ch));
                         this.incPos(1);
-                        return GoString.FromRune(ch);
+                        return GoString.FromRuneValue(ch);
                     }
             }
             return this.scanSourceCharacter();
@@ -1206,7 +1212,7 @@ public partial class Scanner
         //	| '-'
         //	| CharacterClassEscape
         //	| CharacterEscape
-        private string scanClassAtom()
+        private ByteStringValue scanClassAtom()
         {
             if ((this.charCode() == '\\'))
             {
@@ -1217,18 +1223,18 @@ public partial class Scanner
                     case 'b':
                         {
                             this.incPos(1);
-                            return "\b";
+                            return ByteStringValue.FromString("\b");
                         }
                     case '-':
                         {
                             this.incPos(1);
-                            return GoString.FromRune(ch);
+                            return GoString.FromRuneValue(ch);
                         }
                     default:
                         {
                             if (this.scanCharacterClassEscape())
                             {
-                                return "";
+                                return ByteStringValue.FromString("");
                             }
                             return this.scanCharacterEscape(false);
                         }
@@ -1277,7 +1283,7 @@ public partial class Scanner
                             var propertyNameOrValue = this.scanWordCharacters();
                             if ((this.charCode() == '='))
                             {
-                                var propertyName = nonBinaryUnicodeProperties.GetValueOrDefault(propertyNameOrValue, "");
+                                var propertyName = (propertyNameOrValue.TryGetValue(nonBinaryUnicodeProperties, out var canonicalName) ? canonicalName : "");
                                 if ((this.pos() == propertyNameOrValueStart))
                                 {
                                     this.error(Diagnostics.Expected_a_Unicode_property_name, this.pos(), 0);
@@ -1287,7 +1293,7 @@ public partial class Scanner
                                     if ((propertyName == ""))
                                     {
                                         this.error(Diagnostics.Unknown_Unicode_property_name, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart));
-                                        var suggestion = this.getSpellingSuggestionForUnicodePropertyName(propertyNameOrValue);
+                                        var suggestion = this.getSpellingSuggestionForUnicodePropertyName(propertyNameOrValue.Materialize()!);
                                         if ((suggestion != ""))
                                         {
                                             this.error(Diagnostics.Did_you_mean_0, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart), suggestion);
@@ -1305,11 +1311,11 @@ public partial class Scanner
                                 {
                                     if ((propertyName != ""))
                                     {
-                                        var values = valuesOfNonBinaryUnicodeProperties.GetValueOrDefault(propertyName);
-                                        if (((values != null) && !values.Contains(propertyValue)))
+                                        var values = valuesOfNonBinaryUnicodeProperties.GetValueOrDefault(ByteStringKey.FromString(propertyName));
+                                        if (((values != null) && !propertyValue.ContainsIn(values)))
                                         {
                                             this.error(Diagnostics.Unknown_Unicode_property_value, propertyValueStart, (this.pos() - propertyValueStart));
-                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyValue(propertyName, propertyValue);
+                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyValue(propertyName, propertyValue.Materialize()!);
                                             if ((suggestion != ""))
                                             {
                                                 this.error(Diagnostics.Did_you_mean_0, propertyValueStart, (this.pos() - propertyValueStart), suggestion);
@@ -1326,7 +1332,7 @@ public partial class Scanner
                                 }
                                 else
                                 {
-                                    if (binaryUnicodePropertiesOfStrings.Contains(propertyNameOrValue))
+                                    if (propertyNameOrValue.ContainsIn(binaryUnicodePropertiesOfStrings))
                                     {
                                         if (!this.unicodeSetsMode)
                                         {
@@ -1346,10 +1352,10 @@ public partial class Scanner
                                     }
                                     else
                                     {
-                                        if ((!valuesOfNonBinaryUnicodeProperties["General_Category"].Contains(propertyNameOrValue) && !binaryUnicodeProperties.Contains(propertyNameOrValue)))
+                                        if ((!propertyNameOrValue.ContainsIn(valuesOfNonBinaryUnicodeProperties[ByteStringKey.FromString("General_Category")]) && !propertyNameOrValue.ContainsIn(binaryUnicodeProperties)))
                                         {
                                             this.error(Diagnostics.Unknown_Unicode_property_name_or_value, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart));
-                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyNameOrValue(propertyNameOrValue);
+                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyNameOrValue(propertyNameOrValue.Materialize()!);
                                             if ((suggestion != ""))
                                             {
                                                 this.error(Diagnostics.Did_you_mean_0, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart), suggestion);
@@ -1384,25 +1390,25 @@ public partial class Scanner
 
         private string getSpellingSuggestionForUnicodePropertyName(string name)
         {
-            return Core.GetSpellingSuggestionForStrings(name, nonBinaryUnicodeProperties.Keys);
+            return Core.GetSpellingSuggestionForStrings(name, nonBinaryUnicodeProperties.Keys.Select(key => key.ToString()));
         }
 
         private string getSpellingSuggestionForUnicodePropertyValue(string propertyName, string value)
         {
-            var values = valuesOfNonBinaryUnicodeProperties.GetValueOrDefault(propertyName);
+            var values = valuesOfNonBinaryUnicodeProperties.GetValueOrDefault(ByteStringKey.FromString(propertyName));
             if ((values == null))
             {
                 return "";
             }
-            return Core.GetSpellingSuggestionForStrings(value, values);
+            return Core.GetSpellingSuggestionForStrings(value, values.Select(key => key.ToString()));
         }
 
         private string getSpellingSuggestionForUnicodePropertyNameOrValue(string name)
         {
-            return Core.GetSpellingSuggestionForStrings(name, valuesOfNonBinaryUnicodeProperties["General_Category"].Concat(binaryUnicodeProperties).Concat(binaryUnicodePropertiesOfStrings));
+            return Core.GetSpellingSuggestionForStrings(name, valuesOfNonBinaryUnicodeProperties[ByteStringKey.FromString("General_Category")].Concat(binaryUnicodeProperties).Concat(binaryUnicodePropertiesOfStrings).Select(key => key.ToString()));
         }
 
-        private string scanWordCharacters()
+        private ByteStringValue scanWordCharacters()
         {
             var start = this.pos();
             while ((this.pos() < this.end))
@@ -1414,14 +1420,14 @@ public partial class Scanner
                 }
                 this.incPos(1);
             }
-            return this.text().Substring(start, this.pos() - (start));
+            return ByteStringValue.FromView(this.text().Slice(start, this.pos()));
         }
 
-        private string scanSourceCharacter()
+        private ByteStringValue scanSourceCharacter()
         {
             if ((this.pos() >= this.end))
             {
-                return "";
+                return ByteStringValue.FromString("");
             }
             if (!this.anyUnicodeMode)
             {
@@ -1431,35 +1437,37 @@ public partial class Scanner
                     this.incPos(lowSize);
                     var low = this.pendingLowSurrogate;
                     this.pendingLowSurrogate = 0;
-                    return StringUtil.EncodeJSStringRune(low);
+                    return StringUtil.EncodeJSStringRuneValue(low);
                 }
                 var (ch, size) = Utf8.DecodeRuneInString(this.text().AsSpan(this.pos()));
                 if (((ch == Utf8.RuneError) || (size == 0)))
                 {
                     this.incPos(1);
-                    return GoString.FromRune(this.text()[(this.pos() - 1)]);
+                    return GoString.FromRuneValue(this.text()[(this.pos() - 1)]);
                 }
                 if ((ch >= 0x10000 && ch <= 0x10FFFF))
                 {
                     var (high, low) = StringUtil.CodePointToSurrogatePair(ch);
                     this.pendingLowSurrogate = low;
-                    return StringUtil.EncodeJSStringRune(high);
+                    return StringUtil.EncodeJSStringRuneValue(high);
                 }
+                var start = this.pos();
                 this.incPos(size);
-                return GoString.FromRune(ch);
+                return ByteStringValue.FromView(this.text().Slice(start, this.pos()));
             }
             var (unicodeCh, unicodeSize) = Utf8.DecodeRuneInString(this.text().AsSpan(this.pos()));
             if ((unicodeSize == 0))
             {
-                return "";
+                return ByteStringValue.FromString("");
             }
             if ((unicodeCh == Utf8.RuneError))
             {
                 this.incPos(unicodeSize);
-                return "";
+                return ByteStringValue.FromString("");
             }
+            var unicodeStart = this.pos();
             this.incPos(unicodeSize);
-            return GoString.FromRune(unicodeCh);
+            return ByteStringValue.FromView(this.text().Slice(unicodeStart, this.pos()));
         }
 
         private void scanExpectedChar(int ch)
@@ -1481,7 +1489,7 @@ public partial class Scanner
             {
                 this.incPos(1);
             }
-            this.scanner.tokenValue = this.text().Substring(start, this.pos() - (start));
+            this.scanner.setTokenValueView(this.text().Slice(start, this.pos()));
         }
 
         public void run()
@@ -1490,12 +1498,12 @@ public partial class Scanner
             this.scanDisjunction(false);
             foreach (var reference in this.groupNameReferences)
             {
-                if (!this.groupSpecifiers.GetValueOrDefault(reference.name))
+                if (!(reference.name.TryGetValue(this.groupSpecifiers, out var found) && found))
                 {
-                    this.error(Diagnostics.There_is_no_capturing_group_named_0_in_this_regular_expression, reference.pos, (reference.end - reference.pos), reference.name);
+                    this.error(Diagnostics.There_is_no_capturing_group_named_0_in_this_regular_expression, reference.pos, (reference.end - reference.pos), reference.name.Materialize()!);
                     if ((this.groupSpecifiers.Count > 0))
                     {
-                        var suggestion = Core.GetSpellingSuggestionForStrings(reference.name, this.groupSpecifiers.Keys);
+                        var suggestion = Core.GetSpellingSuggestionForStrings(reference.name.Materialize()!, this.groupSpecifiers.Keys.Select(key => key.ToString()));
                         if ((suggestion != ""))
                         {
                             this.error(Diagnostics.Did_you_mean_0, reference.pos, (reference.end - reference.pos), suggestion);

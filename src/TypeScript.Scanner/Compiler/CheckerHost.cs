@@ -7,7 +7,7 @@ using TypeScript.TsOptions;
 namespace TypeScript.Compiler;
 internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost
 {
-    IReadOnlyList<SourceFile> SourceFiles { get; }
+    Slice<SourceFile> SourceFiles { get; }
 
     CompilerOptions Options { get; }
     void BindSourceFiles();
@@ -15,6 +15,11 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
     Dictionary<string, bool> GetPackagesMap();
     SourceFileMetaData GetSourceFileMetaData(PathKey path);
     (string ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifier(PathKey path);
+    (ByteStringValue ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifierValue(PathKey path)
+    {
+        var (name, specifier) = GetJSXRuntimeImportSpecifier(path);
+        return (ByteStringValue.FromString(name), specifier);
+    }
     Node? GetImportHelpersImportSpecifier(PathKey path);
     bool SourceFileMayBeEmitted(SourceFile sourceFile, bool forceDtsEmit);
     SourceOutputAndProjectReference? GetProjectReferenceFromOutputDts(PathKey path);
@@ -27,6 +32,8 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
     string GetSourceFileNameGoBytes(SourceFile sourceFile);
 
     ResolvedModule? GetResolvedModule(SourceFile importingFile, string moduleReference, ResolutionMode mode);
+    ResolvedModule? GetResolvedModule(SourceFile importingFile, ByteStringValue moduleReference, ResolutionMode mode) =>
+        GetResolvedModule(importingFile, moduleReference.Materialize()!, mode);
     SourceFile? GetSourceFileForResolvedModule(ResolvedModule module);
     ModuleKind GetEmitModuleFormatOfFile(SourceFile sourceFile);
     ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile sourceFile, Node location);

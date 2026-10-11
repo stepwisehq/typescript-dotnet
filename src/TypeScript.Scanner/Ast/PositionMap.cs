@@ -7,13 +7,13 @@ namespace TypeScript.Scanner;
 public sealed class PositionMap
 {
     internal bool asciiOnly;
-    internal readonly List<(int utf8Pos, int delta)> entries = [];
+    internal Slice<(int utf8Pos, int delta)> entries;
     public bool IsAsciiOnly() => asciiOnly;
     public int UTF8ToUTF16(int utf8Offset)
     {
         if (asciiOnly)
             return utf8Offset;
-        int lo = 0, hi = entries.Count;
+        int lo = 0, hi = entries.Length;
         while (lo < hi)
         {
             int mid = lo + (hi - lo) / 2;
@@ -30,7 +30,7 @@ public sealed class PositionMap
     {
         if (asciiOnly)
             return utf16Offset;
-        int lo = 0, hi = entries.Count;
+        int lo = 0, hi = entries.Length;
         while (lo < hi)
         {
             int mid = lo + (hi - lo) / 2;
@@ -65,11 +65,11 @@ public static partial class Ast
             var(r, size) = StringUtil.DecodeJSStringRune(text.AsSpan(i));
             int utf16Size = r >= 0x10000 ? 2 : 1;
             delta += size - utf16Size;
-            pm.entries.Add((i + size, delta));
+            pm.entries = pm.entries.Append((i + size, delta));
             i += size;
         }
 
-        pm.asciiOnly = pm.entries.Count == 0;
+        pm.asciiOnly = pm.entries.Length == 0;
         return pm;
     }
 }

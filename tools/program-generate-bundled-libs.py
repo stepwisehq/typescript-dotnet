@@ -26,8 +26,8 @@ def outputs():
         files.append({'name': name, 'sizeBytes': len(data), 'sha256': sha(data)})
     manifest = {'upstreamRevision': PIN, 'generatedSource': str(SOURCE.relative_to(ROOT)), 'generatedSourceSha256': sha(SOURCE.read_bytes()), 'files': files}
     result[DEST / 'manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
-    header = '// Copyright (c) Microsoft Corporation. All rights reserved.\n// Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.\n// Generated from tsc/internal/bundled/libs_generated.go at ' + PIN + '.\n// Reproduce/check with tools/program-generate-bundled-libs.py.\nnamespace TypeScript.Bundled;\npublic static partial class Bundled\n{\n    public static readonly List<string> LibNames =\n    [\n'
-    result[DEST / 'LibsGenerated.cs'] = (header + ''.join('        "' + name + '",\n' for name in names) + '    ];\n}\n').encode()
+    header = '// Copyright (c) Microsoft Corporation. All rights reserved.\n// Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.\n// Generated from tsc/internal/bundled/libs_generated.go at ' + PIN + '.\n// Reproduce/check with tools/program-generate-bundled-libs.py.\nnamespace TypeScript.Bundled;\npublic static partial class Bundled\n{\n    public static readonly TypeScript.Scanner.Slice<string> LibNames = TypeScript.Scanner.Slice<string>.FromArray(\n    [\n'
+    result[DEST / 'LibsGenerated.cs'] = (header + ''.join('        "' + name + '",\n' for name in names) + '    ]);\n}\n').encode()
     return result
 
 def main():

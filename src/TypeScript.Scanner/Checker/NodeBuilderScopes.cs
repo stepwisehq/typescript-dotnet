@@ -51,7 +51,7 @@ internal sealed partial class NodeBuilderImpl
 
     // nodebuilderscopes.go:53. The ordinary nonrest expansion preserves the actual
     // signature parameter slice; tuple/rest expansion is outside admission.
-    private (List<Symbol>, Action) enterSignatureScope(Signature signature)
+    private (Slice<Symbol>, Action) enterSignatureScope(Signature signature)
     {
         var expandedParams = ch.getExpandedParameters(signature, true)[0];
         return (expandedParams, enterNewScope(signature.declaration, expandedParams, signature.typeParameters, signature.parameters, signature.mapper));
@@ -59,7 +59,7 @@ internal sealed partial class NodeBuilderImpl
 
     // nodebuilderscopes.go:59. Fake parameter scopes preserve lexical shadowing in
     // diagnostic reuse; they are not inserted into the parsed source tree.
-    private Action enterNewScope(Node declaration, List<Symbol> expandedParams, List<Type> typeParameters, List<Symbol> originalParameters, TypeMapper mapper)
+    private Action enterNewScope(Node declaration, Slice<Symbol> expandedParams, Slice<Type> typeParameters, Slice<Symbol> originalParameters, TypeMapper mapper)
     {
         var cleanupContext = cloneNodeBuilderContext(ctx);
         Action cleanupParams = null;
@@ -114,7 +114,7 @@ internal sealed partial class NodeBuilderImpl
                 };
             }
 
-            if (expandedParams != null && Core.Some(expandedParams, p => p != null))
+            if (!expandedParams.IsNil && Core.Some(expandedParams, p => p != null))
             {
                 cleanupParams = pushFakeScope("params", add =>
                 {
@@ -122,7 +122,7 @@ internal sealed partial class NodeBuilderImpl
                     {
                         var parameter = expandedParams[i];
                         var original = i < GoRuntime.Len(originalParameters) ? originalParameters[i] : null;
-                        if (originalParameters != null && original != parameter)
+                        if (!originalParameters.IsNil && original != parameter)
                         {
                             if (original != null)
                                 add(original.Name, original);
@@ -177,7 +177,7 @@ internal sealed partial class NodeBuilderImpl
                 });
             }
 
-            if ((ctx.flags & TypeScript.NodeBuilding.Flags.GenerateNamesForShadowedTypeParams) != 0 && typeParameters != null && Core.Some(typeParameters, p => p != null))
+            if ((ctx.flags & TypeScript.NodeBuilding.Flags.GenerateNamesForShadowedTypeParams) != 0 && !typeParameters.IsNil && Core.Some(typeParameters, p => p != null))
                 cleanupTypeParams = pushFakeScope("typeParams", add =>
                 {
                     foreach (var typeParameter in typeParameters)

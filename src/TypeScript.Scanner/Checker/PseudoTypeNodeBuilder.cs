@@ -283,8 +283,8 @@ internal sealed partial class NodeBuilderImpl
                 var pt = t.AsPseudoTypeObjectLiteral();
                 var props = ch.getPropertiesOfType(undefinedStripped);
                 int declCount = 0;
-                foreach (var prop in props ?? [])
-                    declCount += prop.Declarations?.Count ?? 0;
+                foreach (var prop in props)
+                    declCount += prop.Declarations.Count;
                 if ((pt.Elements?.Count ?? 0) != declCount)
                     return false;
                 foreach (var e in pt.Elements ?? [])
@@ -292,10 +292,10 @@ internal sealed partial class NodeBuilderImpl
                     Symbol targetProp = null;
                     var elemSymbol = e.Name.Parent.Symbol();
                     if (elemSymbol != null)
-                        targetProp = ch.getPropertyOfType(undefinedStripped, elemSymbol.Name);
+                        targetProp = ch.getPropertyOfType(undefinedStripped, elemSymbol.NameValue);
                     if (targetProp == null)
                     {
-                        foreach (var prop in props ?? [])
+                        foreach (var prop in props)
                             if (prop.ValueDeclaration != null && prop.ValueDeclaration.Name() == e.Name)
                             {
                                 targetProp = prop;
@@ -441,7 +441,7 @@ internal sealed partial class NodeBuilderImpl
                 var d = t.AsPseudoTypeMaybeConstLocation();
                 return pseudoTypeToType(ch.isConstContext(d.Node) ? d.ConstType : d.RegularType);
             case PseudoTypeKind.Union:
-                List<Type> res = new();
+                Slice<Type> res = default;
                 bool hasElided = false;
                 foreach (var m in t.AsPseudoTypeUnion().Types)
                 {
@@ -454,7 +454,7 @@ internal sealed partial class NodeBuilderImpl
                     var type = pseudoTypeToType(m);
                     if (type == null)
                         return null;
-                    res.Add(type);
+                    res = res.Append(type);
                 }
 
                 if (res.Count == 1)
@@ -653,7 +653,7 @@ internal sealed partial class NodeBuilderImpl
 
         if (!isThis)
         {
-            if ((tp.ParameterName.Text() != predicate.parameterName))
+            if ((!tp.ParameterName.TextValue().EqualsString(predicate.parameterName)))
             {
                 return false;
             }

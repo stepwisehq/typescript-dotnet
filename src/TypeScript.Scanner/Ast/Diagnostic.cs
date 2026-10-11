@@ -26,7 +26,7 @@ public sealed class Diagnostic
     internal string source = "", messageText = "", messageKey = "";
     internal bool reportsUnnecessary, reportsDeprecated, skippedOnNoEmit;
     internal List<string> messageArgs;
-    internal List<Diagnostic> relatedInformation, messageChain;
+    internal Slice<Diagnostic> relatedInformation, messageChain;
     public SourceFile File() => file;
     public int Pos() => loc.Pos();
     public int End() => loc.End();
@@ -37,8 +37,8 @@ public sealed class Diagnostic
     public string MessageKey() => messageKey;
     public string MessageText() => messageText;
     public List<string> MessageArgs() => messageArgs;
-    public List<Diagnostic> RelatedInformation() => relatedInformation;
-    public List<Diagnostic> MessageChain() => messageChain;
+    public Slice<Diagnostic> RelatedInformation() => relatedInformation;
+    public Slice<Diagnostic> MessageChain() => messageChain;
     public bool ReportsUnnecessary() => reportsUnnecessary;
     public bool ReportsDeprecated() => reportsDeprecated;
     public string Source() => source;
@@ -60,25 +60,29 @@ public sealed class Diagnostic
         {
             // diagnostic.go:105. Appending updates this diagnostic's slice
             // header; clones and wrappers retain their previous visible length.
-            relatedInformation = relatedInformation is null ? [value] : [.. relatedInformation, value];
+            relatedInformation = relatedInformation.Append(value);
         }
         return this;
     }
 
-    public Diagnostic SetRelatedInfo(List<Diagnostic> value)
+    public Diagnostic SetRelatedInfo(Slice<Diagnostic> value)
     {
         relatedInformation = value;
         return this;
     }
 
+    // Explicit legacy input adapters own a snapshot of external List storage.
+    public Diagnostic SetRelatedInfo(List<Diagnostic> value) => SetRelatedInfo(value is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(value.ToArray()));
+    public Diagnostic SetMessageChain(List<Diagnostic> value) => SetMessageChain(value is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(value.ToArray()));
+
     public Diagnostic AddMessageChain(Diagnostic value)
     {
         if (value is not null)
-            (messageChain ??= new()).Add(value);
+            messageChain = messageChain.Append(value);
         return this;
     }
 
-    public Diagnostic SetMessageChain(List<Diagnostic> value)
+    public Diagnostic SetMessageChain(Slice<Diagnostic> value)
     {
         messageChain = value;
         return this;
@@ -103,15 +107,15 @@ public sealed class Diagnostic
         if (segment.VirtualStart < 0 || segment.VirtualEnd > virtualText.Length ||
             segment.OriginalStart < 0 || segment.OriginalEnd > originalText.Length)
             return messageArgs;
-        string virtualName = virtualText.Slice(segment.VirtualStart, segment.VirtualEnd).Materialize();
-        string originalName = originalText[segment.OriginalStart..segment.OriginalEnd];
+        var virtualName = ByteStringValue.FromView(virtualText.Slice(segment.VirtualStart, segment.VirtualEnd));
+        string originalName = null;
         List<string> result = null;
         for (int index = 0; index < (messageArgs?.Count ?? 0); index++)
         {
-            if (messageArgs[index] != virtualName)
+            if (!virtualName.EqualsString(messageArgs[index]))
                 continue;
             result ??= [.. messageArgs];
-            result[index] = originalName;
+            result[index] = originalName ??= originalText[segment.OriginalStart..segment.OriginalEnd];
         }
         return result ?? messageArgs;
     }
@@ -119,7 +123,8 @@ public sealed class Diagnostic
 
 public static partial class Ast
 {
-    public static Diagnostic NewDiagnosticFromSerialized(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string messageKey, List<string> messageArgs, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated, bool skippedOnNoEmit) => new()
+    public static Diagnostic NewDiagnosticFromSerialized(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string messageKey, List<string> messageArgs, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated, bool skippedOnNoEmit) => NewDiagnosticFromSerialized(file, loc, code, category, messageKey, messageArgs, messageChain is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(messageChain.ToArray()), relatedInformation is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(relatedInformation.ToArray()), reportsUnnecessary, reportsDeprecated, skippedOnNoEmit);
+    public static Diagnostic NewDiagnosticFromSerialized(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string messageKey, List<string> messageArgs, Slice<Diagnostic> messageChain, Slice<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated, bool skippedOnNoEmit) => new()
     {
         file = file,
         loc = loc,
@@ -134,7 +139,8 @@ public static partial class Ast
         skippedOnNoEmit = skippedOnNoEmit
     };
     // Text is ordinary .NET Unicode display text; serialized message arguments retain raw byte strings.
-    public static Diagnostic NewDiagnosticFromText(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string text, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated) => new()
+    public static Diagnostic NewDiagnosticFromText(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string text, List<Diagnostic> messageChain, List<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated) => NewDiagnosticFromText(file, loc, code, category, text, messageChain is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(messageChain.ToArray()), relatedInformation is null ? default(Slice<Diagnostic>) : Slice<Diagnostic>.FromArray(relatedInformation.ToArray()), reportsUnnecessary, reportsDeprecated);
+    public static Diagnostic NewDiagnosticFromText(SourceFile file, TextRange loc, int code, DiagnosticCategory category, string text, Slice<Diagnostic> messageChain, Slice<Diagnostic> relatedInformation, bool reportsUnnecessary, bool reportsDeprecated) => new()
     {
         file = file,
         loc = loc,
@@ -170,6 +176,8 @@ public static partial class Ast
     private static string StringifyArgument(object value) => value switch
     {
         string s => s,
+        ByteStringValue text => text.Materialize() ?? "<nil>",
+        ByteStringKey key => key.Value.Materialize() ?? "<nil>",
         bool b => b ? "true" : "false",
         null => "<nil>",
         _ => Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "",
@@ -181,12 +189,12 @@ public sealed class DiagnosticsCollection
 {
     private readonly object mu = new();
     private int count;
-    private readonly Dictionary<string, List<Diagnostic>> fileDiagnostics = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, Slice<Diagnostic>> fileDiagnostics = new(StringComparer.Ordinal);
     private readonly HashSet<string> fileDiagnosticsSorted = new(StringComparer.Ordinal);
-    private List<Diagnostic> nonFileDiagnostics;
+    private Slice<Diagnostic> nonFileDiagnostics;
     private bool nonFileDiagnosticsSorted;
     private readonly Dictionary<diagnosticLocationKey, Diagnostic> diagnosticIndex = new();
-    private readonly Dictionary<diagnosticLocationKey, List<Diagnostic>> diagnosticCollisions = new();
+    private readonly Dictionary<diagnosticLocationKey, Slice<Diagnostic>> diagnosticCollisions = new();
     private readonly record struct diagnosticLocationKey(string path, TextRange loc, int code);
     private static diagnosticLocationKey getDiagnosticLocationKey(Diagnostic diagnostic) => new(diagnostic.File()?.PathKey() ?? "", diagnostic.Loc(), diagnostic.Code());
     public Diagnostic Add(Diagnostic diagnostic)
@@ -208,23 +216,21 @@ public sealed class DiagnosticsCollection
                 diagnosticIndex[key] = diagnostic;
             else
             {
-                if (!diagnosticCollisions.TryGetValue(key, out var collisions))
-                    diagnosticCollisions[key] = collisions = [];
-                collisions.Add(diagnostic);
+                diagnosticCollisions.TryGetValue(key, out var collisions);
+                diagnosticCollisions[key] = collisions.Append(diagnostic);
             }
 
             count++;
             if (diagnostic.File()is not null)
             {
                 var path = diagnostic.File().PathKey() ?? "";
-                if (!fileDiagnostics.TryGetValue(path, out var diagnostics))
-                    fileDiagnostics[path] = diagnostics = [];
-                diagnostics.Add(diagnostic);
+                fileDiagnostics.TryGetValue(path, out var diagnostics);
+                fileDiagnostics[path] = diagnostics.Append(diagnostic);
                 fileDiagnosticsSorted.Remove(path);
             }
             else
             {
-                (nonFileDiagnostics ??= []).Add(diagnostic);
+                nonFileDiagnostics = nonFileDiagnostics.Append(diagnostic);
                 nonFileDiagnosticsSorted = false;
             }
 
@@ -242,13 +248,13 @@ public sealed class DiagnosticsCollection
         }
     }
 
-    public List<Diagnostic> GetGlobalDiagnostics()
+    public Slice<Diagnostic> GetGlobalDiagnostics()
     {
         lock (mu)
             return getGlobalDiagnosticsLocked();
     }
 
-    private List<Diagnostic> getGlobalDiagnosticsLocked()
+    private Slice<Diagnostic> getGlobalDiagnosticsLocked()
     {
         if (!nonFileDiagnosticsSorted)
         {
@@ -259,13 +265,13 @@ public sealed class DiagnosticsCollection
         return GoSlices.Clone(nonFileDiagnostics);
     }
 
-    public List<Diagnostic> GetDiagnosticsForFile(SourceFile file)
+    public Slice<Diagnostic> GetDiagnosticsForFile(SourceFile file)
     {
         lock (mu)
             return getDiagnosticsForFileLocked(file);
     }
 
-    private List<Diagnostic> getDiagnosticsForFileLocked(SourceFile file)
+    private Slice<Diagnostic> getDiagnosticsForFileLocked(SourceFile file)
     {
         var path = file.PathKey() ?? "";
         fileDiagnostics.TryGetValue(path, out var diagnostics);
@@ -278,28 +284,22 @@ public sealed class DiagnosticsCollection
         return GoSlices.Clone(diagnostics);
     }
 
-    public List<Diagnostic> GetDiagnostics()
+    public Slice<Diagnostic> GetDiagnostics()
     {
         lock (mu)
         {
-            var diagnostics = new List<Diagnostic>(count);
-            if (nonFileDiagnostics is not null)
-                diagnostics.AddRange(nonFileDiagnostics);
+            var diagnostics = Slice<Diagnostic>.Make(0, count);
+            diagnostics = diagnostics.Append(nonFileDiagnostics);
             foreach (var diags in fileDiagnostics.Values)
-                diagnostics.AddRange(diags);
-            diagnostics.Sort(Ast.CompareDiagnostics);
+                diagnostics = diagnostics.Append(diags);
+            GoSlices.SortFunc(diagnostics, Ast.CompareDiagnostics);
             return diagnostics;
         }
     }
 
-    private static void SortStable(List<Diagnostic> diagnostics)
-    {
-        if (diagnostics is null)
-            return;
-        var sorted = diagnostics.OrderBy(d => d, Comparer<Diagnostic>.Create(Ast.CompareDiagnostics)).ToList();
-        for (int i = 0; i < sorted.Count; i++)
-            diagnostics[i] = sorted[i];
-    }
+    private static void SortStable(Slice<Diagnostic> diagnostics) =>
+        GoSlices.SortStableFunc(diagnostics, Ast.CompareDiagnostics);
+
 }
 
 public static partial class Ast
@@ -313,7 +313,7 @@ public static partial class Ast
         return getDiagnosticPath(d1) == getDiagnosticPath(d2) && d1.Loc() == d2.Loc() && d1.Code() == d2.Code() && d1.Category() == d2.Category() && d1.Source() == d2.Source() && getDiagnosticMessageIdentity(d1) == getDiagnosticMessageIdentity(d2) && compareDiagnosticArgs(d1.MessageArgs(), d2.MessageArgs()) == 0 && equalDiagnosticSlices(d1.MessageChain(), d2.MessageChain(), equalMessageChain);
     }
 
-    private static bool equalDiagnosticSlices(List<Diagnostic> x, List<Diagnostic> y, Func<Diagnostic, Diagnostic, bool> equal)
+    private static bool equalDiagnosticSlices(Slice<Diagnostic> x, Slice<Diagnostic> y, Func<Diagnostic, Diagnostic, bool> equal)
     {
         if (GoRuntime.Len(x) != GoRuntime.Len(y))
             return false;
@@ -345,7 +345,7 @@ public static partial class Ast
         return GoRuntime.Len(x) - GoRuntime.Len(y);
     }
 
-    private static int compareMessageChainSize(List<Diagnostic> c1, List<Diagnostic> c2)
+    private static int compareMessageChainSize(Slice<Diagnostic> c1, Slice<Diagnostic> c2)
     {
         int c = GoRuntime.Len(c2) - GoRuntime.Len(c1);
         if (c != 0)
@@ -360,14 +360,14 @@ public static partial class Ast
         return 0;
     }
 
-    private static int compareMessageChainContent(List<Diagnostic> c1, List<Diagnostic> c2)
+    private static int compareMessageChainContent(Slice<Diagnostic> c1, Slice<Diagnostic> c2)
     {
         for (int i = 0; i < GoRuntime.Len(c1); i++)
         {
             int c = compareDiagnosticArgs(c1[i].MessageArgs(), c2[i].MessageArgs());
             if (c != 0)
                 return c;
-            if (c1[i].MessageChain()is not null)
+            if (!c1[i].MessageChain().IsNil)
             {
                 c = compareMessageChainContent(c1[i].MessageChain(), c2[i].MessageChain());
                 if (c != 0)
@@ -378,7 +378,7 @@ public static partial class Ast
         return 0;
     }
 
-    private static int compareRelatedInfo(List<Diagnostic> r1, List<Diagnostic> r2)
+    private static int compareRelatedInfo(Slice<Diagnostic> r1, Slice<Diagnostic> r2)
     {
         int c = GoRuntime.Len(r2) - GoRuntime.Len(r1);
         if (c != 0)

@@ -17,7 +17,7 @@ public static partial class Bundled
     private static readonly Lazy<Dictionary<string, ByteStringView>> embeddedContents = new(() =>
     {
         var files = new Dictionary<string, ByteStringView>(StringComparer.Ordinal);
-        foreach (string name in LibNames!)
+        foreach (string name in LibNames)
         {
             using Stream input = typeof(Bundled).Assembly.GetManifestResourceStream("TypeScript.Bundled.Libs." + name)
                 ?? throw new InvalidDataException("Bundled library resource is missing: " + name);
@@ -58,7 +58,7 @@ public static partial class Bundled
             var (rest, ok) = SplitPath(path.AsString());
             if (!ok) return fs.GetAccessibleEntries(path);
             var result = new Entries();
-            if (rest == "") result.Directories = ["libs"];
+            if (rest == "") result.Directories = Slice<string>.FromArray(["libs"]);
             else if (rest == "libs") result.Files = LibNames;
             return result;
         }

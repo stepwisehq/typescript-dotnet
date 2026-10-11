@@ -318,7 +318,7 @@ internal sealed partial class PseudoChecker
         }
 
         var init = declaration.Initializer;
-        if ((((init != null) && (declaration.Symbol != null)) && (((GoRuntime.Len(declaration.Symbol.Declarations) == 1) || (declaration.Symbol.Declarations.Count(Ast.IsVariableDeclaration) == 1)))))
+        if ((((init != null) && (declaration.Symbol != null)) && (((GoRuntime.Len(declaration.Symbol.Declarations) == 1) || (Core.CountWhere(declaration.Symbol.Declarations, Ast.IsVariableDeclaration) == 1)))))
         {
             if (!isContextuallyTyped(declaration.AsNode()))
             {

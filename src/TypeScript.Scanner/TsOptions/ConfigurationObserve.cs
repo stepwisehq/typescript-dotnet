@@ -46,7 +46,7 @@ public static partial class ConfigurationObserve
         ArgumentNullException.ThrowIfNull(entry);
         var result = new ConfigurationExtendedEntry
         {
-            Errors = entry.errors
+            Errors = GoSlices.ToListOrNull(entry.errors)
         };
         if (entry.extendedResult is { } source)
         {

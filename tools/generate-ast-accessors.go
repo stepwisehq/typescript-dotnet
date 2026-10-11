@@ -425,7 +425,7 @@ func main() {
 		selected[n] = true
 	}
 	emit("// BEGIN GENERATED AST ACCESSORS (tools/generate-ast-accessors.go)")
-	emit("public sealed partial class Node")
+	emit("public partial class Node")
 	emit("{")
 	level++
 	for _, d := range f.Decls {

@@ -259,14 +259,14 @@ public sealed partial class Checker
             var tuple = value?.AsTupleType();
             if (tuple == null || value.checker != null && !ReferenceEquals(value.checker, this) || !ReferenceEquals(tuple.target, value))
                 throw new InvalidOperationException("Absent, foreign or nontarget tuple cache value");
-            foreach (var element in tuple.elementInfos ?? [])
+            foreach (var element in tuple.elementInfos)
                 if (element.labeledDeclaration != null && element.labeledDeclaration.id == 0)
                     throw new InvalidOperationException("Tuple cache label has no already allocated node ID");
             // getTupleKey can only read existing label IDs after this guard.
             var rebuilt = getTupleKey(tuple.elementInfos, tuple.@readonly);
             if (rebuilt != key || !keys.Add(rebuilt) || !tupleTypes.TryGetValue(rebuilt, out var found) || !ReferenceEquals(found, value))
                 throw new InvalidOperationException("Tuple target key association mismatch");
-            entries.Add((value, tuple.elementInfos, tuple.@readonly));
+            entries.Add((value, GoSlices.ToListOrNull(tuple.elementInfos), tuple.@readonly));
         }
 
         if (tupleTypes.Count != count || keys.Count != count || entries.Count != count)
@@ -374,7 +374,7 @@ public sealed partial class Checker
             if (value.checker != null && !ReferenceEquals(value.checker, this))
                 throw new InvalidOperationException("Foreign reference cache value");
             var arguments = reference.resolvedTypeArguments;
-            foreach (var argument in arguments ?? [])
+            foreach (var argument in arguments)
             {
                 if (argument == null || argument.id == 0 || argument.checker != null && !ReferenceEquals(argument.checker, this))
                     throw new InvalidOperationException("Reference cache argument is absent, unallocated or foreign");
@@ -387,7 +387,7 @@ public sealed partial class Checker
                 throw new InvalidOperationException("Reference cache key does not uniquely match its stored arguments");
             if (!cache.TryGetValue(reconstructedKey, out var found) || !ReferenceEquals(found, value))
                 throw new InvalidOperationException("Reference cache lookup does not return its stored value");
-            entries.Add((key, value, arguments, reference.target, ReferenceEquals(value, owner)));
+            entries.Add((key, value, GoSlices.ToListOrNull(arguments), reference.target, ReferenceEquals(value, owner)));
         }
 
         if (entries.Count != cache.Count || reconstructedKeys.Count != cache.Count)
@@ -416,14 +416,14 @@ public sealed partial class Checker
     private (bool IsNull, int Count, List<(CacheHashKey Key, Type Value, List<Type> Arguments, Symbol AliasSymbol, List<Type> AliasArguments, string Family, bool ExtraFlag)> Entries) verificationCollectionsKeySequences(object owner, IReadOnlyDictionary<uint, Type> knownTypes, IReadOnlyDictionary<ulong, Symbol> knownSymbols)
     {
         Dictionary<CacheHashKey, Type> cache;
-        TypeAliasLinks aliasLinks = null;
+        Memory<TypeAliasLinks> aliasLocation = default;
         bool conditional;
         string objectFamily = null;
         switch (owner)
         {
-            case TypeAliasLinks links:
-                cache = links.instantiations;
-                aliasLinks = links;
+            case Memory<TypeAliasLinks> location:
+                cache = location.Span[0].instantiations;
+                aliasLocation = location;
                 conditional = false;
                 break;
             case ConditionalRoot root:
@@ -493,10 +493,10 @@ public sealed partial class Checker
             bool seed = offset == bytes.Length;
             if (seed)
             {
-                if (aliasLinks == null || GoRuntime.Len(aliasLinks.typeParameters) != arguments.Count)
+                if (aliasLocation.IsEmpty || GoRuntime.Len(aliasLocation.Span[0].typeParameters) != arguments.Count)
                     throw new InvalidOperationException("Unknown seed instantiation key");
                 for (int i = 0; i < arguments.Count; i++)
-                    if (!ReferenceEquals(arguments[i], aliasLinks.typeParameters[i]))
+                    if (!ReferenceEquals(arguments[i], aliasLocation.Span[0].typeParameters[i]))
                         throw new InvalidOperationException("Alias seed does not contain its actual declared parameters");
             }
             else
@@ -570,17 +570,18 @@ public sealed partial class Checker
 
         if ((owner.objectFlags & ObjectFlags.Anonymous) == 0)
             throw new InvalidOperationException("Unknown nonempty instantiated-object key family");
-        var declarations = owner.symbol?.Declarations;
-        if (declarations == null || declarations.Count == 0)
+        var declarations = owner.symbol?.Declarations ?? default;
+        if (declarations.Length == 0)
             throw new InvalidOperationException("Anonymous cache owner has no actual declaration");
-        var parameters = typeNodeLinks.TryGet(declarations[0])?.outerTypeParameters;
-        if (parameters == null || parameters.Count == 0)
+        var parameterLocation = typeNodeLinks.TryGet(declarations[0]);
+        var parameters = parameterLocation.IsEmpty ? default : parameterLocation.Span[0].outerTypeParameters;
+        if (parameters.Length == 0)
             throw new InvalidOperationException("Anonymous cache has no stored outer type parameters");
         int count = cache.Count;
         var used = new HashSet<CacheHashKey>();
-        void ValidateTypes(List<Type> types)
+        void ValidateTypes(Slice<Type> types)
         {
-            foreach (var type in types ?? [])
+            foreach (var type in types)
                 if (type == null || type.id == 0 || type.checker != null && !ReferenceEquals(type.checker, this))
                     throw new InvalidOperationException("Anonymous key type is absent, unallocated or foreign");
         }
@@ -592,7 +593,7 @@ public sealed partial class Checker
                 throw new InvalidOperationException("Absent or foreign anonymous cache value");
             bool isSelf = ReferenceEquals(owner, value);
             bool single;
-            List<Type> arguments;
+            Slice<Type> arguments;
             TypeAlias alias;
             if (isSelf)
             {
@@ -610,8 +611,8 @@ public sealed partial class Checker
                     mapper = composite.m1;
                 arguments = mapper?.data switch
                 {
-                    SimpleTypeMapper simple when parameters.Count == 1 && ReferenceEquals(simple.source, parameters[0]) => [simple.target],
-                    ArrayTypeMapper array when array.sources != null && array.sources.SequenceEqual(parameters) && array.targets?.Count == parameters.Count => array.targets,
+                    SimpleTypeMapper simple when parameters.Count == 1 && ReferenceEquals(simple.source, parameters[0]) => Slice<Type>.FromArray([simple.target]),
+                    ArrayTypeMapper array when !array.sources.IsNil && GoSlices.Equal(array.sources, parameters) && array.targets.Length == parameters.Length => array.targets,
                     _ => throw new InvalidOperationException("Unknown stored anonymous key mapping")};
                 alias = value.alias;
             }
@@ -627,7 +628,7 @@ public sealed partial class Checker
             var reconstructed = getTypeInstantiationKey(arguments, alias, single);
             if (reconstructed != key || !used.Add(key) || !cache.TryGetValue(reconstructed, out var found) || !ReferenceEquals(found, value))
                 throw new InvalidOperationException("Anonymous cache key association mismatch");
-            entries.Add((key, value, arguments, alias, single, "anonymous", owner, isSelf));
+            entries.Add((key, value, GoSlices.ToListOrNull(arguments), alias, single, "anonymous", owner, isSelf));
         }
 
         if (cache.Count != count || used.Count != count || entries.Count != count)
