@@ -1,6 +1,7 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `b84b436` commits qualified type constituent/parser scratch slices;
+**Resume here:** procedure checkpoint `7a3537e` persists the current SOP;
+implementation baseline `b84b436` commits qualified type constituent/parser scratch slices;
 `72565f3` records semantic regression provenance;
 `d39e05c` commits qualified AST slices/arenas; `faad6ec` commits checker text receivers;
 `5e960cd` commits AST/binder borrowed text, private stacks,
@@ -18,6 +19,10 @@ Verification requirements remain; their frequency changes. Preserve source algor
 control flow, function boundaries and actual Clip/Clone/detach semantics. No custom
 compiler redesign, interning, hashtables or pooling. Prefer standard .NET facilities
 where semantics fit. No new process framework.
+Latest emphasis: comprehensive UTF8-buffer byte comparisons without intermediate
+string resolution, and efficient token/rune advancement when scanning buffers.
+Preserve exact Go byte offsets, malformed UTF8/WTF8 and EOF advancement; standard
+span facilities must match those semantics. This is active scope, not a future idea.
 
 Three implementation lanes, existing GPT-6.1 Sol agents:
 - scanner: Ast/Parser/Scanner/Runtime/generators, complete text/syntax storage paths.
@@ -27,6 +32,83 @@ Three implementation lanes, existing GPT-6.1 Sol agents:
   also later integrated build scheduling and independent peer review.
 Coordinate cross-lane API changes through owners; avoid overlapping edits. Agent
 completion messages are handoffs, not permission to stop. Existing evidence is reusable.
+
+**Current cross-lane implementation:** support is converting complete generic
+parameter/argument ownership (interfaces, references, retained mappers, signatures,
+aliases and inference consumers) to Go-like headers. Scanner owns a coordinated
+symbol-name/key transition from raw managed strings to retained byte-content keys
+in standard .NET dictionaries; verifier owns Binder/NameResolver/Compiler consumers
+and support owns Checker consumers. Agree the API before editing joins. Preserve
+stable content hashing/equality across borrowed bytes and owned raw strings, actual
+stored-key semantics, null/empty behavior and mutable Symbol.Name behavior. No
+custom hash table/interner; public string projections remain explicit and internal
+hot paths must not repeatedly project. This cross-lane family is authorized, not
+an optional future idea. Scanner has implemented Runtime/ByteStringKey.cs and
+Ast/Symbol.cs using standard Dictionary<ByteStringKey, Symbol>, immutable key
+snapshots, alternate descriptor lookup and explicit external string adapters; its
+consumers remain actively migrating. Support/verifier have the concrete API.
+Program SourceFiles/GetSourceFiles and ICheckerProgramHost now use Slice headers;
+verifier also owns bounded Projects/OutputPaths receivers, with no emit expansion.
+Other lane-local storage/callback work continues in source. The first combined
+production integration now compiles; behavioral/AOT acceptance has not run on this
+combined rollout. See the latest build boundary below.
+Source decision: pinned checker/types.go:895 has one LiteralType.value any;
+StringLiteralType at1495 is only an alias to Type. Do not introduce a string-literal
+subclass claiming upstream has separate payloads. Support should retain the any/object
+channel with a borrowed string descriptor boxed where the upstream string escapes
+into any, adapt string readers, and project only actual string/output boundaries.
+Preserve fresh/regular sharing and computed-enum nulls; assess any concrete obstacle
+before changing the source-shaped representation.
+Current handoffs: generic owner/consumer snapshot in
+artifacts/vscode-generic-type-slices/build/; scanner text/key snapshot in
+artifacts/vscode-scanner-borrowed-values/build/. These are source-only, not accepted
+or compiled integrated snapshots. Symbol.Declarations header migration is coordinated
+across all three owners. Scanner also owns pragma name/argument headers and builder
+byte backing; choose existing Slice<byte> plus actual Go write/growth and standard
+span copying where direct, avoiding an extra ArrayBufferWriter wrapper if unnecessary.
+Published builder prefixes must survive appends/resets; reset detaches, never clears
+already published memory. Verifier is carrying Program traces/include/diagnostic,
+VFS entries/glob and related Core headers through complete retained paths.
+Latest integrated compiler boundary: integration3 PASS (11.499s, zero warnings/errors,
+source drift NONE), production CLI/library only. Frozen237 source files and library/
+CLI output copies are in artifacts/vscode-allocation-rollout/integration-3/.
+Library d0198aec...21021f; managed CLI2ef941fb...e571b. Previous integration1 (46
+compiler bindings) and integration2 (3 residual support bindings) remain recorded.
+Grouped repairs were independently reviewed, including the substantive pinned
+checker.go:14611 cloneSymbol requirement to Clip declaration storage, not Clone;
+actual cloneTypeAsModuleType Clone remains. No behavioral/AOT/performance acceptance
+is implied by compiler closure. No tests, native publish, workload or profiles ran.
+Current scanner advancement decision: use fixed standard SearchValues<byte> sets
+and span.IndexOfAnyExcept for six existing ASCII scan predicates. Every byte >=0x80
+must stop the ASCII run; existing Go-compatible consume-one rune handling, EOF and
+byte positions remain. This is source-only until broader integrated acceptance.
+Current resolver continuation includes descriptor ModeAware/cache keys, canonical
+workers and borrowed TsPath components; public/custom IResolver extension calls are
+actual explicit string boundaries. Already-owned package JSON keys use narrow
+standard-dictionary alternate lookup, not a custom map or interner.
+Source-based layout boundary: independent scanner review of pinned ast/flow.go:27
+confirms FlowNode/FlowList are separate graph records, not embedded AST wrappers.
+Keep those objects separate; merging them would alter upstream graph ownership.
+Synthetic flow AST payloads already benefit from NodeData:Node flattening.
+All source lanes are now released and continue the comprehensive rollout:
+- scanner: remaining actual internal byte-text comparisons/consumers and scanning
+  buffers, retaining malformed UTF8/WTF8 and byte-position semantics; then source-file/
+  parser/binder diagnostic Slice ownership and complete downstream receiver joins.
+- support: Signature parameter and expanded tuple headers, StructuredType property/
+  index-info declared/resolved caches, complete producer/storage/consumer family.
+  Member12 source family is saved; TypeData:Type single-object implementation is
+  also saved in artifacts/vscode-type-single-object/build/ and under scanner review.
+  Pinned TypeBase embedding maps directly; factory IDs, data dispatch and AsType
+  identity retained. Next diagnostic/resolver receiver joins and actual inference
+  state/lifetime families. No custom arenas or handle redesign.
+- verification: canonical Resolver/ModeAwareCacheKey retained module-name descriptor
+  ownership and connected VFS byte-builder comparison path.
+Actual external .NET serialization option/diagnostic containers need not gain a
+converter framework merely to replace Lists; they must not hide repeated internal
+projection/copying. Coordinate shared APIs, then a broad integration build after
+coherent source closure. Do not reuse old auto-publish/validation orchestrators or
+resume per-packet targeted tests/benchmarks. Source-map active phase now reflects
+this work and labels new representation adaptations as pending combined acceptance.
 User preference: do not generate further SVG flamegraphs. Keep raw profiles and
 analysis usable in a performance viewer; existing SVG files may remain.
 
@@ -95,8 +177,9 @@ Six-file snapshot62389c81 built clean10.816s/native publish11.312s. Native b557c
 matches exact10/available pinned chains:27.53wall/105.85CPU/9,645,988KiB peak.
 Single observation, no speed claim. No allocation capture/pairs launched. Saved under
 artifacts/vscode-ast-single-object/. TypeSystem77 passed before latest user steering;
-verifier stopped queued checks and permits only already-running atomic Collections44
-to finish. Keep partial evidence explicit; no final acceptance/commit yet. Latest
+verifier stopped queued checks and cancelled the remaining Collections44 process
+and its suspended launcher. That run is user-interrupted/incomplete, not passed.
+Keep partial evidence explicit; no final acceptance/commit yet. Latest
 whole-path strategy above applies to remaining work, not more micro-packet validation.
 User emphasized .NET copy facilities: Slice growth/append/arena use span CopyTo;
 one identity-only Reparser loop changed to CopyTo, transformations remain loops.

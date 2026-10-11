@@ -127,7 +127,8 @@
         "adaptation": "Parser reparse/await/JSDoc range scratch and source-file reparse publication use Go-like Slice headers with source mark/rewind, deletion/tail-clear and detached sorted publication behavior.",
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
-      }
+      },
+      "allocationRolloutAdaptation": "In-progress: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined acceptance pending; see docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -372,7 +373,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "allocationRolloutAdaptation": "In-progress: GoBuilder retains reference API with direct Slice<byte> backing, standard span copying, Go growth/write rules and borrowed Value output. Published prefixes survive append/reset; reset detaches. Legacy nonbyte UTF16 fallback and explicit String output remain. Combined acceptance pending."
     },
     {
       "upstream": null,
@@ -555,7 +557,8 @@
       "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
       "astCandidateStackCheckpoint": "Eleven text payload families/factories/clones retain borrowed raw headers with explicit public string getters/setters. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
-      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
+      "allocationRolloutAdaptation": "In-progress: AST payload inherits Node to combine the existing wrapper and payload into one object; dispatch/factory/clone algorithms and generated sources follow pinned upstream. Source-file names, pragmas, module references and retained declarations use borrowed content/header paths. Combined acceptance pending; see docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -988,7 +991,8 @@
         "allocationEvidence": "artifacts/vscode-symbol-ownership-token/allocation-comparison.json",
         "allocationQualification": "One matched ServerGC CoreCLR trace per variant: total sampled interval19.321389→18.701305GiB (−3.2093%); zero events lost/truncation, one candidate missing stack. Net ownership+reporter batch, not per-change attribution or exact allocations/native speed."
       },
-      "astCandidateStackCheckpoint": "Internal raw-text ordinal lookup borrows keys; persistent/public dictionary keys remain strings. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Internal raw-text ordinal lookup borrows keys; persistent/public dictionary keys remain strings. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "allocationRolloutAdaptation": "In-progress: symbol names retain ByteStringValue, SymbolTable uses standard Dictionary<ByteStringKey, Symbol>, and declarations use Slice<Node>. Explicit Name/output projection remains. Required source Clip/Clone distinctions preserved; combined acceptance pending."
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -1329,7 +1333,8 @@
         "adaptation": "Union/intersection constituents and template placeholder types use Go-like Slice headers through relations, inference, reduction, printer and node-builder consumers. Source-required Clip/Clone, shared-header reuse and detached mutation buffers retained; new inline headers are larger than former List references. Other type-argument/tuple metadata storage remains outside this packet.",
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
-      }
+      },
+      "allocationRolloutAdaptation": "In-progress: generic parameters/arguments, signature parameters and declared/resolved property/index storage use Slice headers across consumers. TypeData inherits Type to preserve pinned TypeBase embedding in one object; AsType identity, data dispatch and factory IDs remain. String literal payload retains the upstream single any/object field, boxing a borrowed descriptor where the Go string escapes; no invented string-literal subtype. Combined acceptance pending."
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -5868,7 +5873,8 @@
       "destination": "src/TypeScript.Scanner/Runtime/ByteStringValue.cs",
       "status": "new",
       "scope": "Authored compact immutable raw-text snapshot over existing string or source byte owner; public AST projection is canonical/atomic, raw-byte ordinal lookup uses bounded stack/pool widening with explicit persistent string-key insertion. c896 qualification: artifacts/vscode-ast-text-values/qualification.json. Later standard Latin1 widening is a separate source adaptation.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "allocationRolloutAdaptation": "In-progress: descriptor slicing, direct byte comparisons and immutable key snapshots continue through scanner, AST, binder and checker storage; public string projection is explicit. Earlier string-key insertion limitation is removed in the migrated key paths. Combined acceptance pending."
     },
     {
       "upstream": null,
@@ -5893,24 +5899,23 @@
       "destination": "validation/tuple-spread-corpus/program-pairs.jsonl.gz",
       "status": "new",
       "scope": "Authored two-file semantic input and complete pinned-Go expected record. Genuine ES2022 library environment; one intentional2345 diagnostic. Provenance and red/green evidence: artifacts/vscode-node-list-slices/spread-reference/."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/ByteStringKey.cs",
+      "status": "new",
+      "scope": "Authored immutable content-key snapshot for standard .NET Dictionary storage and alternate ByteStringValue lookup. Preserves borrowed Go string content without intermediate managed string projection; no custom hash table or interner. Byte-backed and raw-string-backed equivalent contents share hashing/equality; public byte input copies mutable caller storage. Current rollout is not yet behaviorally accepted."
     }
   ],
   "activePhase": {
-    "name": "whole-checker-no-emit-completion",
-    "baselineCommit": "bb035b3",
-    "status": "accepted whole-checker no-emit contract; implementation stopped at authorized gate; separate authorization required for large-project evaluation",
-    "mandate": "docs/CHECKER-COMPLETION-PROMPT.md",
-    "state": "docs/CHECKER-COMPLETION-STATUS.md",
-    "checkerRoadmap": "docs/CHECKER-COMPLETION-ROADMAP.md",
-    "contract": "docs/LANGUAGE-CONTRACT.md",
-    "currentCampaignBaselineCommit": "c5e96e1",
-    "sourceReconciliation": [
-      "docs/progress/language-core.md",
-      "docs/progress/language-support.md"
-    ],
-    "assessment": "docs/CHECKER-NOEMIT-ASSESSMENT.md",
-    "evidence": "validation/results/checker-noemit-verified.json",
-    "reproduction": "docs/CHECKER-NOEMIT-REPRODUCTION.md"
+    "name": "comprehensive-go-faithful-allocation-rollout",
+    "baselineCommit": "b84b436",
+    "procedureCommit": "7a3537e",
+    "status": "in progress; first combined source-reviewed production build passed, continuing remaining ownership paths; behavioral and Native AOT acceptance pending",
+    "state": "docs/STATE.md",
+    "procedure": "START-HERE.md",
+    "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
+    "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change."
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",

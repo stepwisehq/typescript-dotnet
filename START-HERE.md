@@ -27,6 +27,11 @@ cycle of one or two local changes followed by targeted tests and benchmarks.
   references, consumers and cache boundaries together. Apply the established slice,
   borrowed UTF8 text, stateful callback and embedded-object techniques consistently
   where they match Go. An intermediate conversion bridge is not a finished rollout.
+- Carry UTF8 byte buffers through internal comparisons and text consumers wherever
+  Go does. Avoid intermediate string resolution, encoding and decoding. Use efficient
+  token/rune advancement when scanning buffers, with matching .NET span operations
+  where appropriate. Preserve Go byte offsets and malformed-UTF8/WTF8 advancement;
+  materialize strings only at real consumer or external boundaries.
 - Preserve pinned Go algorithms, control flow, function boundaries, organization,
   and actual allocation/ownership rules. Required copies, Clip/Clone operations and
   detachments stay. Use standard .NET operations where their semantics fit. Do not

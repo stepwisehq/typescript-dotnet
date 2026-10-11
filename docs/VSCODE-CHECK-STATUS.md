@@ -11,6 +11,50 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Optimization reference index
+
+This index separates identified techniques, implementation coverage and evidence.
+Historical sections below preserve the measurements at their exact snapshots;
+[STATE.md](./STATE.md) records the live rollout and
+[the operating procedure](../START-HERE.md#current-operating-procedure-comprehensive-allocation-rollout)
+controls how it continues after a restart. “Qualified” below means the recorded
+finite verification passed, not exhaustive correctness or completion of the current
+broader rollout. Combined changes cannot establish isolated per-technique gains.
+
+| Identified allocation or runtime issue | Source-faithful technique and current coverage | Evidence / reference |
+| --- | --- | --- |
+| Workstation GC is unsuitable for this measured workload | Server GC enabled in the executable and verified under Native AOT. No new heap-count or GC-policy experiment is underway. | [Measured Server GC comparison](#server-gc-enabled-and-verified-under-native-aot) |
+| Go substrings retain backing storage; ordinary C# substrings copy | Borrow immutable source through byte views, JSDoc fragments, tokens and AST text; project only actual string consumers. Earlier paths qualified; current descriptor consumers and transformed-token byte builders await integrated acceptance. | [JSDoc sharing](#comprehensive-jsdoc-commentlink-text-sharing-verified-implementation), [owned UTF8 pipeline](#owned-utf8-source-pipeline-active-completion-contract) |
+| Repeated byte/string conversions during comparisons and scans | Span comparison/search, direct UTF8/WTF8 decoding, preserved byte offsets and invalid-byte advancement. Current fixed ASCII SearchValues runs and rune/escape output closure are source-only. | [Borrowed token work](#borrowed-tokens-flow-slices-and-conditional-targets), [live state](./STATE.md) |
+| Names are forced into managed strings just to enter internal maps | Borrowed immutable ByteStringKey with standard Dictionary and alternate lookup; symbol/literal/property keys compile in the combined snapshot. Resolver/cache/path continuation is underway. No custom table or interner. | [Source mapping](../source-map.json), [key support](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs), [live state](./STATE.md) |
+| Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families continue in the combined rollout. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
+| Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. Earlier families qualified; apply throughout remaining connected consumers. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
+| Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST merge is in the compiled combined source; checker Type merge is underway. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
+| Link/reference ownership adds per-record wrapper objects | Direct reference slots and opaque ownership tokens with preserved source lifetime/identity. Earlier qualified changes; no unrelated private-observer redesign. | [Link storage](#fixed-link-store-reference-slots), [ownership/reporters](#opaque-ownership-tokens-and-unbound-reporters) |
+| Scratch copies, general path work and singleton growth add avoidable work | Retain source scratch/header reuse, ASCII/path fast paths and source initial capacities. Required persistent snapshots remain detached. Broader canonical resolver/path receivers are underway. | [Path/capacity work](#path-fast-paths-and-singleton-capacity), [parser scratch](#type-constituent-slices-and-parser-scratch) |
+
+Important retained findings:
+
+- A missing upstream `Clip` during tuple-spread expansion caused extra diagnostics;
+  the exact source ownership operation fixed it. Do not remove a required copy or
+  capacity restriction merely because it allocates. The
+  [AST slice record](#ast-child-slices-and-arena-publication) preserves the failed
+  snapshot and the regression evidence. Current source review also corrected
+  declaration cloning to the upstream `Clip` where sharing is required.
+- Go escape analysis motivates inspecting actual lifetime and ownership. It does
+  not prove that all Go temporary objects are stack allocated or that a C# struct
+  conversion preserves identity. No blanket stack-allocation claim is made.
+- Sampled CoreCLR allocation weights are not exact Native AOT totals; the saved Go
+  heap sample is not an exact whole-run allocation census. RSS is not allocation
+  volume. Later source changes have no measured savings until integrated execution.
+
+Latest qualified implementation baseline is `b84b436`. The later combined production
+build passed with zero warnings/errors (integration3); additional source families
+are now being implemented. Its behavioral, Native AOT and performance acceptance
+remain pending. Raw profiles and immutable source snapshots are retained under
+[artifacts/](../artifacts/); no new SVG flamegraphs or per-local-change benchmark
+cycle should be started from the historical reproduction commands below.
+
 ## Workload and compiler identity
 
 Target: `/home/greg/projects/vscode`, commit
