@@ -11,6 +11,44 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Symbol-arena experiment: not adopted (2026-10-11)
+
+A complete isolated experiment on `perf/symbol-arena` (preserved as `953de084`) replaced individually allocated
+Symbol objects with immutable managed locations in source-shaped arena chunks. It
+carried the change through binder/checker allocation, all consumers and the existing
+validation adapters. Independent review found and closed an object-boxing identity
+error in type-resolution cycle detection before Native publication; typed identities
+also avoid introducing symbol boxes in recursion checks. The provisional public C#
+class/null API changes and wider retained handles were explicit experimental costs.
+
+The final production build had zero warnings/errors. Actual Linux x64 Native AOT
+VSCode execution preserved all ten complete diagnostic DTOs in the initial run,
+four paired timing runs and the cumulative allocation run. Paired baseline walls were
+15.41/18.21s; candidate17.87/18.99s. Baseline/candidate medians were16.81/18.43s,
+68.425/70.285CPU seconds and8,701,422/9,908,206KiB peakRSS. Only two observations
+per variant: these are exploratory measurements, not a statistical claim.
+
+Candidate cumulative heap allocation was11,545,083,560B versus10,674,941,784B
+for the accepted baseline: +870,141,776B (+8.15%). It collected less frequently
+(31/15/7 versus36/17/9), but that did not establish a useful overall tradeoff.
+The wider locations propagate through owners, maps and arrays; these measurements
+cover their combined cost, not isolated causality or exact object counts.
+
+**Decision: preserve the experiment, do not adopt it.** Accepted production source
+remains5951030. Broad xUnit/full-native regressions were deliberately not run for
+this rejected performance candidate; it is not a correctness-accepted implementation.
+The isolated worktree is `/home/greg/projects/typescript-dotnet-symbol-arena`, with
+source reviews under `artifacts/symbol-arena/`, actual results under
+`artifacts/symbol-arena/integration/build-4/`, cumulative counters under
+`artifacts/symbol-arena/integration/cumulative-allocation/`, and the concise decision
+in `artifacts/symbol-arena/assessment.json`. No original expectations changed.
+
+The useful process result is that comprehensive source closure and independent
+review preceded measurement, and the real workload/resource decision preceded the
+expensive regression gate. This specific managed representation lost its expected
+advantage; fewer objects must not be presumed to outweigh wider references.
+The authorized allocation campaign continues from the preserved accepted source.
+
 ## Record ownership and source fast paths (integration19, accepted)
 
 From accepted `827f131`, the combined source changes close several related costs:

@@ -1,75 +1,49 @@
-# Active: complete symbol-arena ownership experiment after5951030
+# Active: remaining Go-faithful allocation opportunities; Symbol experiment rejected
 
-The user explicitly directed continuing allocation/performance work autonomously.
-Go parity remains unmet. This is NOT a request to stop after the following accepted
-checkpoint. Follow START-HERE.md's comprehensive ownership-path SOP and Astra/GPT-6.1
-Sol arrangement. Root coordinates architecture/integration/acceptance and commits.
+Continue autonomously under START-HERE.md's comprehensive owner/storage/consumer SOP.
+The user repeatedly directed not stopping at internal milestones/commits/compaction.
+Astra root coordinates; GPT-6.1 Sol implementation and independent review remain required.
 
-Accepted source checkpoint5951030 closes integration19 record/cache ownership,
-missing-list sentinel, orderedSet threshold/capacities, reporter reuse and authored
-library classification. Compilerbd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f.
-VSCode FIRST17.22wall/71.48CPU,10completeDTO/chains exact. Sampled10.075800GiB,
-−3.2024%vs18 and−71.3493%originalServerGC. Managed1712, NativeFoundation3153+87shared,
-utilities20, full15304original Native records passed with independent review.
-Failed staleRID Parser.Validation/controller aggregate attempts preserved; exact
-fresh dependency reused and only affected validators republished. No compiler repair.
-Details and proof: docs/VSCODE-CHECK-STATUS.md and validation/results/allocation-rollout-verified.json.
+ACTIVE SOURCE ROOT is again /home/greg/projects/typescript-dotnet (main).
+Accepted production remains5951030, documentation checkpoint97529c9. No accepted
+source changes occurred during the isolated experiment. Do not accidentally execute
+or adopt experimental source from the symbol-arena worktree.
 
-New public cumulative counters materially corrected the resource picture:
-Native10,674,941,784B versus pinnedGo8,992,138,304B, ratio1.1871416 (+18.714%), not
-several-times. Exact unchanged diagnostics/source/config/binary/ILC guards and
-independent review passed. Artifact-only wrappers, no forcedGC/profiler, report
-formatting excluded. Distinct allocator/frontend boundaries remain; no speed claim.
+Preserved experiment: /home/greg/projects/typescript-dotnet-symbol-arena,
+branch perf/symbol-arena, commit953de084, baseline97529c9. Complete Symbol owner/consumer23/cold26
+migration independently reviewed; reviewer found and closed TypeResolution boxed
+identity omission before publication. Four coordinated builds, final build-4 clean
+compiler025739c727d64d624b33f8a7adec8c306dd510b62bb6ede3527afb5a67bed3eb.
+Actual Linuxx64 Native first VSCode18.49s; all10fullDTO exact. Reverse paired tests:
+baseline15.41/18.21s, candidate17.87/18.99s. Medians16.81vs18.43wall,
+68.425vs70.285CPU,8,701,422vs9,908,206KiBRSS. Small sample, no statistical claim.
+Cumulativecandidate11,545,083,560B vsbaseline10,674,941,784B (+8.15%,870MB).
+Fewer collections31/15/7 vs36/17/9 is not a performance gain by itself. Source-shaped
+arenas do not offset wider managed owner/consumer locations in this experiment.
+Decision REJECT ADOPTION, preserve branch/evidence. No broad xUnit/fullNative gate
+for rejected code; no completeness/correctness acceptance claim. Original expected
+behavior unchanged. See docs/VSCODE-CHECK-STATUS.md and experiment's
+artifacts/symbol-arena/assessment.json, integration/build-4 and cumulative-allocation.
 
-The completed six-run unchanged-Native GC screen gives paired walls:
-- DefaultDATAS17.44/17.21s, medianCPU67.04s, peakRSS8.338GiB.
-- Fixed4 17.56/17.28s, CPU57.94s, RSS9.022GiB.
-- Fixed16 15.91/16.34s, CPU61.295s, RSS9.747GiB.
-All10diagnostics/allguards exact; source/probe/results independently reviewed.
-Root retains production adaptive default: fixed16's6.93% lower medianwall costs
-16.90% more RSS; only2observations/policy, combinedDATAS/conserve/affinity differences.
-No more policy sweep. Finite artifact preflight key/spelling failures preserved;
-successful probe reused, no duplicate timedworkloads. Future small measurement
-scripts should derive schema/flags from actual output, avoiding per-spellinghandoffs.
+Latest accepted resource correction still applies: Native10,674,941,784B vs pinnedGo
+8,992,138,304B =1.18714x (+18.714%), NOT several-times. Previous sample-vs-Goheap
+comparison cannot establish exact CLI allocation ratio. Runtime/heap accounting differs.
+Default adaptive ServerGC remains unchanged after prior fixed4/fixed16 screen;
+fixed16's6.93% medianwall benefit cost16.90%RSS in2runs, no policy default change.
 
-NEXT COORDINATOR DECISION / COMPLETE EXPERIMENT CONTRACT:
-Public Symbol value locations backed by standard managed Memory<SymbolData> will
-be evaluated in an isolated worktree, preserving accepted main source. New evidence
-makes GC object count/graph cost worth evaluating separately from byte volume; this
-reopens the prior unfavorable byte-width-only choice, without predicting a gain.
-Read artifacts/vscode-allocation-rollout/public-symbol-gc-tradeoff-addendum.json and
-the prior assessment; do not recreate their inventories.
-
-- Port actual core.Arena.New lifetime/growth (2→256), Binder and Checker record
-  ownership, resets, and ALL Symbol producers/storage/consumers as one family.
-  No class facade/globalhandle registry/unsafe GC pointer/custom map. Standard
-  Memory keeps escaped array slots alive. Required copies/aliases remain source-faithful.
-- Preserve pointer meaning using immutable owner+slot identity: default=nil, distinct
-  allocated-zero, stable equality/hash/live mutation/CAS IDs and checker-token guards.
-  Arena reset drops current owner without clearing or recycling escaped slots.
-- Explicit provisional .NET API adaptation: Symbol becomes a value location; null,
-  nullable patterns, class ReferenceEquals and field/ref consumers must use the
-  logical location semantics. SymbolTable still uses ordinary Dictionary<ByteStringKey,
-  Symbol>, with changed value representation. No promise of binary/source API
-  compatibility for external C# class/reflection consumers. Ordinary compiler CLI,
-  upstream symbol relationships, supported semantic results and diagnostics stay.
-- Carry through generated AST/storage, binder/name resolution, checker/inference/
-  relation/link stores, helpers and named validation consumers. Update observers
-  only to preserve actual Go identity; never change original expected diagnostics
-  or corpus observations. No permissive null/identity bridge, no halfway hot-path facade.
-- No local tests/microbenchmarks while family is incomplete. Root coordinates build
-  feedback after disjoint source owners integrate. Independent review by whole source
-  family; then actual Linuxx64 NativeAOT VSCode FIRST under the unchanged defaultGC.
-  Measure complete allocation/runtime impact at the integrated boundary. Retain
-  xUnit/original Go comparisons/Native AOT before accepting; preserve rejected
-  experiments rather than silently replacing accepted baseline.
-- Wider references, payload/indexing cost, API adaptation and neighbor retention
-  are real risks. Do not declare a win from fewer logical objects. If integration
-  disproves usefulness, retain measured evidence and accepted5951030 behavior.
-
-Root will assign exact disjoint worktree paths/files before implementation. Existing
-Sol lanes are scanner, support and verification. No active benchmark/test process
-remains. No repeated prior foundation audit or broad private-state framework.
+Current Sol lanes (READ ONLY assessment; no new source implementation assigned yet):
+- support: existing accepted checker/type/relation collection/callback owner paths,
+  reuse integration19 allocation +17CPU and prior inventories for concrete missing
+  upstream policy/algorithm. Avoid generic wishlist/restarting accepted work.
+- scanner: existing accepted owner/layout/parallel-resource paths, same evidence;
+  exclude exhausted scanner/text localcleanup and repeating public-handle variants.
+- verification: independent actual experiment timing/counter/output/ILC result review,
+  source whole-family ACK already29199fd1. Prepared broad regression recipe unexecuted,
+  review held deliberately because experiment rejected.
+Root records/commits rejected experiment separately, keeps main accepted source intact,
+then selects next substantial evidence-backed ownership path from the Sol findings.
+No benchmark/profile/build/test process remains. Do not launch redundant profiles or
+per-local-change test loops; no new process framework. No SVG flamegraphs.
 
 # Allocation layout and current CPU follow-through accepted (2026-10-11)
 

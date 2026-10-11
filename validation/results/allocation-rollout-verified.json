@@ -488,5 +488,49 @@
         }
       }
     }
+  },
+  "unadoptedSymbolArenaExperiment": {
+    "decision": "reject adoption; preserve complete isolated experiment",
+    "baselineSourceCommit": "5951030",
+    "worktreeBaseline": "97529c9",
+    "compilerSha256": "025739c727d64d624b33f8a7adec8c306dd510b62bb6ede3527afb5a67bed3eb",
+    "implementation": "Go-shaped Symbol arena with complete producer/storage/consumer/cold identity migration; default nil, location equality, live fields, reset lifetime, typed cycle/recursion identities. Public C# class API intentionally experimental.",
+    "verification": "4 coordinated production builds (2 compile correction batches and1 review-found identity repair), final zero warnings/errors; independent source reviews, Native AOT Linux x64 publication, first+4paired+1counter VSCode complete ten diagnostic outputs exact. No broad xUnit/fullNative regression: not accepted, rejected before spending that gate.",
+    "pairedMedians": {
+      "baseline": {
+        "wallSeconds": 16.810000000000002,
+        "cpuSeconds": 68.42500000000001,
+        "peakResidentKiB": 8701422.0
+      },
+      "candidate": {
+        "wallSeconds": 18.43,
+        "cpuSeconds": 70.285,
+        "peakResidentKiB": 9908206.0
+      }
+    },
+    "allocation": {
+      "baselineBytes": 10674941784,
+      "candidateBytes": 11545083560,
+      "extraBytes": 870141776,
+      "increasePercent": 8.15125546917923,
+      "savedGoBytes": 8992138304
+    },
+    "reason": "No demonstrated useful runtime/resource tradeoff. Wider Symbol locations propagate through all owners/tables/arrays; new backing chunks and neighbor retention add costs. Fewer collections alone is not benefit. Measured total impact, no isolated causal attribution.",
+    "limits": [
+      "Two uninstrumented observations each with reverse order; scheduling/OS/cache variation remains, no universal/statistical claim.",
+      "Counter bytes are heap-accounted totals, not object counts or RSS.",
+      "All source reviews clear after concrete cycle identity correction; VSCode agreement is not whole regression acceptance.",
+      "Public Memory-backed 16-byte location experiment is rejected; this does not prove all arena approaches or other allocation work unhelpful."
+    ],
+    "next": "Return to accepted main source; bounded reuse of existing profiles/upstream ownership assessments for remaining concrete omissions. No more packing variations without an evidenced mechanism; no acceptance of this branch.",
+    "independentResultReview": {
+      "path": "/home/greg/projects/typescript-dotnet-symbol-arena/artifacts/symbol-arena/integration/cumulative-allocation/result-peer-review.json",
+      "sha256": "169e288880d470bd0b761932bca41f3d525dcb21c2aab0fdfbf5ed94c767ab01"
+    },
+    "independentSourceReview": {
+      "path": "/home/greg/projects/typescript-dotnet-symbol-arena/artifacts/symbol-arena/checker-consumers/typed-identity-repair/verification-peer-review.json",
+      "sha256": "29199fd1a7707dd0cbc3e64bf034b122ed9e00c9d5b41652a1cc01b4b5d96b38"
+    },
+    "preservedCommit": "953de084"
   }
 }
