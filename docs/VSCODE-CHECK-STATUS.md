@@ -11,6 +11,110 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
+## Current CPU and storage follow-through (2026-10-11, accepted)
+
+The [current CPU comparison](../artifacts/vscode-allocation-rollout/integration-17/cpu-comparison.json)
+profiles the frozen integration17 Native AOT executable and pinned Go against the
+same VS Code configuration. Both retain the ten reference diagnostics. Native
+Server GC/runtime methods account for **37.57% of sampled user CPU**, mainly marking
+and compaction, but also including allocation helpers; dedicated GC threads account
+for **24.14 scheduled CPU seconds**.
+Go's built-in profile records **5.55 CPU seconds on GC-bearing stacks**. These
+classifications and sampling domains differ: they support prioritizing allocation
+and GC scanning, not subtracting percentages or predicting wall-time savings.
+
+Four native workers carry 87.87% of worker samples, matching upstream's checker
+grouping. Current samples do not establish cache locks as a major bottleneck:
+Monitor.Enter appears in five samples, and off-CPU intervals do not identify why
+threads waited. Native worker DWARF unwinding failed despite resolved leaf symbols
+and zero sample loss; Go's built-in callchains remain usable. Raw profiles are
+retained, with no new SVG. Profiled runs are not new uninstrumented benchmarks.
+
+The implemented and independently reviewed storage change replaces retained 16-byte Memory
+locations with store-local 8-byte ordinals across all 26 map-backed link stores and
+symbol-arena pages. Stable arrays retain upstream's 2-to-256 growth; consumers still
+receive actual live refs or Memory when required. The chunk directory and lookup
+are explicit extra costs. The integrated Native build checks VS Code with all ten
+complete diagnostics unchanged at **17.72s wall /70.46s CPU /9,126,904KiB peak RSS**;
+this single observation does not establish a repeatable speedup over the preceding
+19.83s observation. The retained regression gate passed. This is local
+storage adaptation, not a new global handle system or
+changed checker algorithm.
+
+The [combined allocation capture](../artifacts/vscode-allocation-rollout/integration-18/managed-profile/comparison.json)
+reports **11,176,731,432 sampled bytes /10.409142GiB**, down **3.9768%** from
+integration16's 10.840235GiB. It includes the intervening integration17 text guard,
+so it is not an isolated per-change experiment. All96,056 allocation ticks have
+types and stacks with at least one resolved frame; no loss/truncation/aggregation
+overflow was recorded. These are sampled CoreCLR intervals, not exact Native AOT
+or Go allocations, retained memory, or object counts.
+
+After including the common integer location arrays/map entries and new chunk
+directories, the changed symbol-link and map-link families account for about
+442.61MB of the 462.88MB total sampled reduction. Named payload types alone would
+have exaggerated savings by overlooking the new common storage. Source-based
+classification is explicit: bounded caller observations cover294.34MB of298.40MB
+of the common UInt64 array bucket; the remaining4.05MB is not an exhaustive
+event-owner proof. New typed directory allocations contribute1.857MB and are
+included once. Some dependency compilation overlapped capture preparation due to
+a crossed scheduling handoff; the target allocation events and all guards remain
+valid, but no profiled elapsed-time comparison or full serialization is claimed.
+
+The [public Symbol assessment](../artifacts/vscode-allocation-rollout/public-symbol-storage-assessment.json)
+found that a naive Memory-backed value handle would widen every symbol reference
+from 8 to 16 bytes, including symbol tables, arrays, AST/type fields and the parent
+and export links. A class facade would retain the per-symbol objects. Neither is
+adopted as an allocation improvement; this does not establish that every future
+packing design is unhelpful. The authored ownership token enforces cross-checker
+API ownership and cannot simply be removed as observation overhead.
+
+A standard ConcurrentDictionary adaptation of Go SyncMap was also assessed.
+It would add per-entry node allocations, with no current proof of substantial
+lock contention. It is deferred; immutable Program metadata dictionaries and the
+upstream-matching checker worker budget remain unchanged.
+
+Acceptance passed **16,321 managed cases** (Checker832, TypeSystem84, NoEmit15,405),
+with zero failures or skips. All **15,304 original Native AOT records** match the
+unchanged pinned-Go references, including complete diagnostics, semantic observations,
+union ordering and parent-pointer assertions. The native utility consumer also
+passes all20 original observations and the added shared growth/lifetime assertions.
+Actual ILC reference inputs consume the frozen production compiler;587 source/harness
+inputs and242 production/generator inputs remained unchanged. Earlier foundation
+coverage remains explicit in the16/17 evidence; it was not all rerun here. See the
+[durable proof](../validation/results/allocation-rollout-verified.json) and
+[execution results](../artifacts/vscode-allocation-rollout/integration-18/regressions/selected-result.json).
+
+Three existing Sol agents handled implementation, profile work, controls and
+independent review. One production build, one CLI publication, one selected
+validation dependency refresh and two validator publications were used, with no
+production repair/rebuild. The current Native/Go CPU captures preceded implementation;
+one combined allocation capture followed it. A crossed handoff caused some overlap
+and a test pause, and the full managed no-emit run had started before a proposed
+reduction of duplicate corpus execution arrived. Both runs were preserved instead
+of aborted/repeated. Fixing the execution sequence before launch will avoid that
+coordination overhead. No token or monetary usage measurements are available.
+
+Reproduce the storage controls with the existing checker xUnit suite; its utility
+case retains the original Go observations and now also asserts live-location
+behavior across arena growth. For actual Native execution, publish the same
+utility consumer:
+
+```bash
+dotnet test tests/Checker.Tests/Checker.Tests.csproj -c Release
+dotnet test tests/TypeSystem.Tests/TypeSystem.Tests.csproj -c Release
+dotnet publish validation/Checker.Validation/Checker.Validation.csproj \
+  -c Release -r linux-x64 -p:PublishAot=true \
+  -p:CppCompilerAndLinker="$PWD/tools/.cache/native/bin/cc" \
+  -o artifacts/compact-links/native
+artifacts/compact-links/native/Checker.Validation --utilities
+```
+
+The complete original no-emit corpus uses the existing
+[reproduction instructions](./CHECKER-NOEMIT-REPRODUCTION.md). The ordinary Native
+VS Code invocation is in [Reproduction and records](#reproduction-and-records).
+Raw profiler commands and exact binary/source hashes are retained in the linked
+comparison artifacts. No generated graph or new profiling infrastructure is needed.
+
 ## Optimization reference index
 
 This index separates identified techniques, implementation coverage and evidence.

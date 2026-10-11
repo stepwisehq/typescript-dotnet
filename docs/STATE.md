@@ -1,3 +1,70 @@
+# Allocation layout and current CPU follow-through accepted (2026-10-11)
+
+**Resume here:** the user authorized current Native AOT/pinned-Go CPU investigation
+and executing on identified storage/parallel-efficiency items from `82873ea`.
+Integration18 completes the reviewed compact internal-location family and its
+acceptance. The standing comprehensive Go-faithful optimization mandate and SOP in
+[START-HERE.md](../START-HERE.md) remain; do not restart accepted families or revert
+to per-local-change tests/profiles. **Go performance parity is not achieved.**
+This checkpoint closes these identified changes, not every possible runtime cost.
+
+All 26 map-backed internal link stores and ValueSymbolLinks sparse pages now retain
+8-byte private ordinals into stable chunks rather than 16-byte Memory locations.
+Caller live refs/escaping Memory, zero/presence/identity and source 2-to-256 growth
+remain. The new standard List chunk directory adds indirection/storage; no global
+handle registry, unsafe pointers, new checker algorithm or public identity change.
+Independent Sol source, control and allocation reviews closed without findings.
+Source-ready and review artifacts: artifacts/vscode-link-local-ordinals/.
+
+Accepted integration18 evidence:
+
+- Compiler ec1fd52aa36dd43847ba74cc503ffa7ad6cabfa9e695560a1da2101a57d52245.
+  Production build 9.43s, zero warnings/errors. CLI Native publication 9.83s consumed
+  exact frozen compiler. Actual VSCode FIRST: **17.72s wall /70.46s CPU /9,126,904KiB**,
+  expected exit 1, all 10 complete diagnostics/available pinned chains exact, no drift.
+  Previous single observation 19.83s; saved Go 9.61s. No repeatable speedup claim.
+- **16,321 managed passes**: Checker 832, TypeSystem 84, NoEmit 15,405; zero failures/
+  skips. Full 15,304 original records exact in managed and actual Linux x64 Native.
+  Native utilities 20 original observations plus added shared growth/live-alias
+  assertions pass. Actual ILC inputs match compiler; 587 source/harness and 242
+  production/generator inputs unchanged. Earlier 16/17 broad foundations retained.
+- ONE allocation capture: **11,176,731,432B/10.409142GiB sampled**, −3.9768% versus 16,
+  −70.4014% versus original matched Server GC. Includes the 17 guard, not isolated ordinal result.
+  All 96,056 ticks have type/stack with at least one resolved frame; no loss/truncation/
+  overflow. Complete value/map families including common integer locations and
+  directories fell 442,612,432 sampled bytes. Source-classified UInt64 arrays have
+  98.64% bounded caller coverage, not exhaustive physical event-owner proof.
+- Some dependency preparation/initial test work overlapped capture due crossed
+  scheduling messages; pause/resume evidence retained. No profiled time comparison.
+  Full managed NoEmit had started before duplicate-corpus reduction arrived, so it
+  finished once without abort/repeat. Fix sequencing before launching heavy work.
+
+Current CPU baseline 17: SVR runtime methods: 37.57% of sampled user CPU, mainly marking/compaction
+but including allocation helpers; dedicated GC threads: 24.14 scheduled CPU seconds. Go builtin
+GC-bearing stacks: 5.55 CPU seconds use a different classification/domain; no exact
+subtraction. Native worker DWARF unwinding failed, leaves resolve, zero sample loss.
+Four workers carry 87.87% of worker samples and match pinned checker grouping; no worker-budget fix.
+No current proof cache locks dominate; Monitor.Enter only 5 samples. Raw profiles retained,
+no SVG. Report: artifacts/vscode-allocation-rollout/integration-17/cpu-comparison.json.
+
+Design decisions: naive Memory-backed public Symbol widens every reference from 8 to 16 bytes
+through tables/arrays/AST/types and parent/export fields; a facade retains N objects.
+Retain public class identity, without claiming no future packing design can help.
+Authored token guards actual cross-checker API ownership, not just observation. Standard
+ConcurrentDictionary cache conversion deferred: extra per-entry nodes, no demonstrated
+contention bottleneck. Immutable Program metadata dictionaries and source four-checker
+budget stay. No additional concrete missing dominant Go ownership family was found;
+remaining public record/standard collection/runtime costs require source-grounded design
+and measured evidence, not arbitrary copy removal or a custom global handle system.
+
+[Durable proof](../validation/results/allocation-rollout-verified.json),
+[assessment and reproduction](./VSCODE-CHECK-STATUS.md#current-cpu-and-storage-follow-through-2026-10-11-accepted)
+and [source mapping](../source-map.json) record exact snapshot boundaries. Three existing
+Sol agents reused; no token or cost measurements available. All implementation/profile/
+validation tasks and final independent evidence consistency review finished without
+findings. This record is delivered with the implementation commit. Do not rebuild
+after commit merely to change SourceLink metadata in evidence.
+
 # Comprehensive allocation rollout accepted (2026-10-11)
 
 **Resume here:** the comprehensive Go-faithful allocation rollout and its final

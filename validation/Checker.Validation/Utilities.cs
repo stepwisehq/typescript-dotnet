@@ -29,8 +29,134 @@ public static class Utilities
         public int Value;
     }
 
+    private struct ArenaProbe
+    {
+        public int Value;
+        public object? Owner;
+    }
+
+    private delegate ref ArenaProbe ProbeGetter(int index);
+
+    // Authored lifetime controls share the existing xUnit/Native utility seam;
+    // they do not add fields/rows to its unchanged genuine-Go observation DTO.
+    private static void PackedGrowthControls()
+    {
+        const int count = 1600;
+        var keys = new object[count + 32];
+        var symbols = new Symbol[count + 32];
+        for (int i = 0; i < keys.Length; i++)
+        {
+            keys[i] = new object();
+            symbols[i] = new Symbol();
+        }
+        var map = new LinkStore<object, ArenaProbe>();
+        var symbolStore = new symbolArenaLinkStore<ArenaProbe>();
+        CheckPackedGrowth((int i) => ref map.Get(keys[i]),
+            i => map.TryGet(keys[i]), i => map.Has(keys[i]));
+        CheckPackedGrowth((int i) => ref symbolStore.Get(symbols[i]),
+            i => symbolStore.TryGet(symbols[i]), i => symbolStore.Has(symbols[i]));
+
+        // A lookup on a second store must not alias a slot from the first store,
+        // even when both stores receive exactly the same key/symbol objects.
+        var otherMap = new LinkStore<object, ArenaProbe>();
+        var otherSymbols = new symbolArenaLinkStore<ArenaProbe>();
+        Require(!otherMap.Has(keys[0]) && otherMap.TryGet(keys[0]).IsEmpty &&
+            !otherSymbols.Has(symbols[0]) && otherSymbols.TryGet(symbols[0]).IsEmpty,
+            "new stores start missing independently of an existing store");
+        Require(otherMap.Get(keys[0]).Value == 0 && otherSymbols.Get(symbols[0]).Value == 0,
+            "new store records start zero");
+        Require(!otherMap.TryGet(keys[0]).Equals(map.TryGet(keys[0])) &&
+            !otherSymbols.TryGet(symbols[0]).Equals(symbolStore.TryGet(symbols[0])),
+            "locations are distinct across stores sharing a key");
+    }
+
+    private static void CheckPackedGrowth(ProbeGetter get,
+        Func<int, Memory<ArenaProbe>> tryGet, Func<int, bool> has)
+    {
+        const int count = 1600;
+        Require(!has(0) && tryGet(0).IsEmpty && !has(count - 1) && tryGet(count - 1).IsEmpty,
+            "lookups do not initialize missing links");
+        ref var first = ref get(0);
+        var firstLocation = tryGet(0);
+        Require(has(0) && firstLocation.Length == 1 && first.Value == 0 && first.Owner is null,
+            "an initialized zero record is present");
+        Require(!has(1) && tryGet(1).IsEmpty,
+            "publishing a zero record does not initialize another link");
+        var marker = new object();
+        first.Value = 41;
+        first.Owner = marker;
+        var locations = new Memory<ArenaProbe>[count];
+        int chunkStart = 0, chunkLength = 2;
+        ArraySegment<ArenaProbe> previous = default;
+        for (int i = 0; i < count; i++)
+        {
+            if (i == chunkStart + chunkLength)
+            {
+                chunkStart += chunkLength;
+                chunkLength = Math.Min(chunkLength * 2, 256);
+            }
+            ref var slot = ref get(i);
+            if (i != 0)
+                Require(slot.Value == 0 && slot.Owner is null, "each newly published record is zero");
+            var location = tryGet(i);
+            Require(has(i) && location.Length == 1 &&
+                System.Runtime.CompilerServices.Unsafe.AreSame(ref slot, ref location.Span[0]),
+                "Get and escaped Memory alias the same live record");
+            Require(System.Runtime.InteropServices.MemoryMarshal.TryGetArray(
+                (ReadOnlyMemory<ArenaProbe>)location, out var array) && array.Array is not null &&
+                array.Array.Length == chunkLength && array.Offset == i - chunkStart && array.Count == 1,
+                "source arena growth retains zeroed 2..256 then fixed-256 chunks");
+            if (i != 0)
+                Require((i == chunkStart) != ReferenceEquals(previous.Array, array.Array),
+                    "only crossing a source chunk boundary changes the backing array");
+            previous = array;
+            slot.Value = i + 100;
+            slot.Owner = marker;
+            locations[i] = location;
+            Require(System.Runtime.CompilerServices.Unsafe.AreSame(ref first, ref get(0)) &&
+                tryGet(0).Equals(firstLocation) && ReferenceEquals(first.Owner, marker),
+                "retained first ref and Memory survive chunk and lookup-table growth");
+        }
+        // Verify every old location, not only transition endpoints: a directory
+        // decoding error or relocated slot must fail even if Get and TryGet agree.
+        for (int i = 0; i < count; i++)
+        {
+            Require(locations[i].Equals(tryGet(i)) && locations[i].Span[0].Value == i + 100 &&
+                ReferenceEquals(locations[i].Span[0].Owner, marker),
+                "all escaped locations retain their original record and owner");
+            locations[i].Span[0].Value = -i - 1;
+            Require(get(i).Value == -i - 1, "escaped Memory mutations write through to Get");
+        }
+        first.Value = 901;
+        Require(firstLocation.Span[0].Value == 901, "an old ref writes through after all growth");
+
+        void Reenter(int key, int depth)
+        {
+            ref var live = ref get(key);
+            int before = live.Value;
+            ref var newlyPublished = ref get(count + key);
+            Require(newlyPublished.Value == 0 && newlyPublished.Owner is null,
+                "recursive publication of another key starts zero");
+            newlyPublished.Value = key + 1;
+            if (depth != 0)
+                Reenter(key + 1, depth - 1);
+            live.Value = before + 7;
+            Require(tryGet(key).Span[0].Value == before + 7 &&
+                System.Runtime.CompilerServices.Unsafe.AreSame(ref live, ref get(key)),
+                "recursive other-key lookups preserve outer live mutation aliases");
+        }
+        Reenter(0, 24);
+    }
+
+    private static void Require(bool condition, string message)
+    {
+        if (!condition)
+            throw new InvalidOperationException("Packed link lifetime control: " + message);
+    }
+
     public static List<UtilityObservation> Run()
     {
+        PackedGrowthControls();
         var observations = new List<UtilityObservation>();
         void Flag(string name, bool value) => observations.Add(new() { Name = name, BoolValue = value });
         void Count(string name, int value) => observations.Add(new() { Name = name, IntValue = value });

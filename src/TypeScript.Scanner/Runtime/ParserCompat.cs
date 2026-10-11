@@ -29,6 +29,11 @@ internal sealed class GoArena<T>
 {
     private Slice<T> data;
 
+    // core/arena.go:nextArenaSize. Shared by clipped slice allocation and the
+    // internal link-store adaptation of Arena.New's stable record chunks.
+    internal static int NextSize(int size) =>
+        (int)Math.Min(Math.Max((long)size, 1) * 2, 256);
+
     // An upstream owner reset drops its arena header. Published clipped regions
     // keep their array owners; resetting must never clear or reuse those slots.
     internal void Reset() => data = default;
@@ -43,7 +48,7 @@ internal sealed class GoArena<T>
         if (size == 0) return default;
         if (size > data.Capacity - data.Length)
         {
-            int nextSize = (int)Math.Min(Math.Max((long)data.Length, 1) * 2, 256);
+            int nextSize = NextSize(data.Length);
             if (size > nextSize) return Slice<T>.Make(size);
             data = Slice<T>.Make(0, nextSize);
         }

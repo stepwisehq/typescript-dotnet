@@ -75,6 +75,13 @@ Go-compatible allocation techniques, followed by integrated verification and
 measurement. Identical allocation counts between runtimes are not assumed, and
 performance gains must be measured rather than declared from source changes.
 
+The latest continuation from `82873ea` authorizes current Native AOT/pinned-Go CPU
+profiles and implementation addressing record layout, retained locations/collections
+and parallel-efficiency costs. Earlier public-symbol-packing exclusions were scope
+choices for the previous rollout; assess faithful standard.NET storage alternatives
+under this new mandate. Do not treat the necessity of logical records as proof that
+separate CLR allocation is necessary. Follow the active lanes and decisions in STATE.
+
 ## User mandate
 
 Read [the original prompt, preserved verbatim](./docs/INITIAL-PROMPT.md).

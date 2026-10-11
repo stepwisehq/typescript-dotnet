@@ -648,6 +648,7 @@
     {
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+      "compactLinkLocationAdaptation": "Internal link-location continuation from 82873ea: all26 map-backed payload owners and ValueSymbolLinks sparse pages retain store-local8-byte ulong ordinals into stable arrays. Caller ref/Memory contracts, zero/presence, original2-to-256 arena growth and required copies remain. Shared NextSize matches core/arena.go. Directory indirection/retention is explicit; public Symbol identity unchanged. Independent review closed; accepted integration18: exact10 NativeVSCode17.72s,16,321managed and full15,304original Native records pass. Sampled allocation10.409142GiB, including preceding17guard; no isolated speed claim.",
       "status": "new",
       "scope": "Authored Go slice/list/null/range and parser runtime compatibility, including selected earlier binder support. Required SortFunc now forwards to separately mapped pinned-Go comparator sorting; no general Go runtime.",
       "parserCheckpointScope": "Authored parser Go slice/list/null/range runtime compatibility; not a full Go runtime.",
@@ -1354,8 +1355,9 @@
     {
       "upstream": "tsc/internal/checker/links.go",
       "destination": "src/TypeScript.Scanner/Checker/Links.cs",
+      "compactLinkLocationAdaptation": "Internal link-location continuation from 82873ea: all26 map-backed payload owners and ValueSymbolLinks sparse pages retain store-local8-byte ulong ordinals into stable arrays. Caller ref/Memory contracts, zero/presence, original2-to-256 arena growth and required copies remain. Shared NextSize matches core/arena.go. Directory indirection/retention is explicit; public Symbol identity unchanged. Independent review closed; accepted integration18: exact10 NativeVSCode17.72s,16,321managed and full15,304original Native records pass. Sampled allocation10.409142GiB, including preceding17guard; no isolated speed claim.",
       "status": "ported",
-      "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Managed V classes retain Go payload identity; fixed ref-return page slots replace wrapper cells. Node TryGet materializes zero V only on an existing page; symbol TryGet retains nil indirect slots. No general Go arena runtime.",
+      "scope": "All six nodeLinkStore/symbolArenaLinkStore methods and both wrappers. Struct payloads retain stable live ref/Memory addresses: inline node pages preserve page-present zero slots, and symbol arena pages retain private pointer-sized ordinals with zero for nil indirect slots. Chunks follow pinned arena growth; no public symbol identity change or general handle runtime.",
       "upstreamSha256": "afa761a66e450720a7193ab885047e0cc0c480c4abe59deaa9ad0e5223254841",
       "dataTypesUse": "Original paged node/symbol stores remain ported. Checker nodeLinks/typeNodeLinks fields are now correctly core.LinkStore identity dictionaries; symbol stores retain original arena/page addressing. No change to foundation paged utility acceptance.",
       "declarationsCampaignContract": "docs/DECLARATIONS-CONTRACT.md",
@@ -1676,8 +1678,9 @@
     {
       "upstream": "tsc/internal/core/linkstore.go",
       "destination": "src/TypeScript.Scanner/Core/Linkstore.cs",
+      "compactLinkLocationAdaptation": "Internal link-location continuation from 82873ea: all26 map-backed payload owners and ValueSymbolLinks sparse pages retain store-local8-byte ulong ordinals into stable arrays. Caller ref/Memory contracts, zero/presence, original2-to-256 arena growth and required copies remain. Shared NextSize matches core/arena.go. Directory indirection/retention is explicit; public Symbol identity unchanged. Independent review closed; accepted integration18: exact10 NativeVSCode17.72s,16,321managed and full15,304original Native records pass. Sampled allocation10.409142GiB, including preceding17guard; no isolated speed claim.",
       "status": "ported",
-      "scope": "All LinkStore/PagedLinkStore methods and constants. Managed V class objects replace Go struct/arena payloads; fixed V?[] page slots retain stable managed references, 256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Generic payloads are selected class representations, not a full arbitrary Go-value runtime.",
+      "scope": "All LinkStore/PagedLinkStore methods and constants. Map-backed struct payloads occupy stable zeroed chunks with private ulong location entries; public Get/TryGet retain actual ref/Memory. Fixed value page slots preserve256-entry pages, TryGet/Has page presence and low-list/high-map boundary. Go arena growth shared with the local chunk directory; general Go allocator equivalence is not claimed.",
       "upstreamSha256": "e63a7687c7145979ad689546f3f4b07f22e2a85791222fc190814fb64016ae33",
       "collectionsCampaignScope": "Existing logical-store semantics retained. Authored read-only VerificationKeys snapshot exposes actual logical owner keys and nil/empty state without allocating entity IDs; full backing allocator topology is not claimed.",
       "collectionsCampaignEvidence": "validation/results/collections-verified.json",
@@ -5953,7 +5956,8 @@
     "procedure": "START-HERE.md",
     "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
     "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change.",
-    "lastIntegratedCheckpoint": "4d058ea",
+    "lastIntegratedCheckpoint": "82873ea",
+    "continuation": "Current CPU/layout continuation accepted in integration18: compact internal locations reviewed, actualNativeVSCode exact10/17.72s;16,321managed and full15,304original Native records pass. Sampled managed10.409142GiB. Public Symbol Memory-handle and concurrent-cache alternatives assessed/deferred due to storage tradeoffs; source four-checker grouping retained. See docs/STATE.md.",
     "evidence": "validation/results/allocation-rollout-verified.json"
   },
   "acceptedScannerCheckpoint": {

@@ -16,28 +16,33 @@ internal sealed class nodeLinkStore<V>
 }
 
 // checker/links.go:26–49. Large value payloads live in arena chunks; sparse
-// pages retain standard managed Memory locations rather than the payload itself.
+// pages retain private pointer-sized ordinals rather than the payload itself.
+// Managed Memory is created only at the retained-location escape boundary.
 internal sealed class symbolArenaLinkStore<V>
     where V : struct
 {
-    private readonly PagedLinkStore<Memory<V>> store = new();
-    private readonly GoArena<V> arena = new();
+    private readonly PagedLinkStore<ulong> store = new();
+    private readonly LinkStoreArena<V> arena = new();
 
     public ref V Get(Symbol symbol)
     {
         ref var location = ref store.Get(Ast.GetSymbolId(symbol));
-        if (location.IsEmpty)
-            location = arena.NewSliceHeader(1).AsWritableMemory();
-        return ref location.Span[0];
+        if (location == 0)
+            location = arena.New();
+        return ref arena.Get(location);
     }
 
-    public bool Has(Symbol symbol) => !TryGet(symbol).IsEmpty;
+    public bool Has(Symbol symbol)
+    {
+        store.TryGet(Ast.GetSymbolId(symbol), out var location);
+        return location != 0;
+    }
 
     // A present sparse page may still contain an uninitialized location. The
-    // default Memory is the nil pointer; nonempty locations keep old chunks alive.
+    // zero ordinal is the nil pointer; escaped Memory keeps old chunks alive.
     public Memory<V> TryGet(Symbol symbol)
     {
         store.TryGet(Ast.GetSymbolId(symbol), out var location);
-        return location;
+        return arena.TryGet(location);
     }
 }

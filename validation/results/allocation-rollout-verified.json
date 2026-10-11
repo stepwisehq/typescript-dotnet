@@ -1,10 +1,10 @@
 {
-  "status": "passed-comprehensive-rollout-and-reviewed-latin1-follow-through",
+  "status": "passed-comprehensive-rollout-and-reviewed-text-location-follow-through",
   "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
   "implementationCheckpoint": "c1efeb9",
   "platform": "Linux x64 Native AOT; .NET SDK10.0.401/runtime10.0.12; ServerGC",
   "compilerSha256": "c20f7f9e175528acdd99194acc8d896c47faeb1b3340266efc70b378eab4fa0c",
-  "scope": "Comprehensive established Go-faithful allocation rollout through accepted integration16, followed by independently reviewed shared Latin1 guard closure qualified by integration17. Per-snapshot evidence remains distinct; no Go performance parity or exhaustive correctness claim.",
+  "scope": "Comprehensive established Go-faithful allocation rollout through accepted integration16, followed by independently reviewed shared Latin1 guard closure qualified by integration17. Per-snapshot evidence remains distinct; no Go performance parity or exhaustive correctness claim. Integration18 additionally qualifies the complete internal compact-location family with independent source/control/profile review, actual VSCode first,16,321 managed cases and full15,304 Native originals.",
   "managed": {
     "uniquePassingTests": 40451,
     "fullRunPassed": 40434,
@@ -158,5 +158,175 @@
         "sha256": "731947a98f50b7d095a93910d59c6ab2db0ce745f9fdca7ba7a4357c0eda7572"
       }
     }
+  },
+  "compactLocationFollowThrough": {
+    "status": "passed-reviewed-compact-location-follow-through",
+    "baselineCommit": "82873ea",
+    "compilerSha256": "ec1fd52aa36dd43847ba74cc503ffa7ad6cabfa9e695560a1da2101a57d52245",
+    "scope": "All26 map-backed internal link stores and symbol-arena location pages: private8-byte ordinal storage, source arena growth, live ref/Memory consumer APIs; no public Symbol identity or checker algorithm change.",
+    "nativeVSCode": {
+      "wallSeconds": 17.72,
+      "cpuSeconds": 70.46,
+      "peakResidentKiB": 9126904,
+      "completeTenDiagnosticJsonExact": true,
+      "pinnedAvailableDiagnosticChainsExact": true,
+      "status": "passed"
+    },
+    "managed": {
+      "Checker.Tests": 832,
+      "TypeSystem.Tests": 84,
+      "Checker.NoEmit.Tests": 15405,
+      "failed": 0,
+      "skipped": 0
+    },
+    "nativeUtilities": {
+      "observations": 20,
+      "completeJsonExact": true,
+      "expectedSha256": "df028a35ad8b50727b8c5c80a8bffc97b7836124443d8c35e10f4dd889225d02",
+      "growthLifetimeControls": "Existing shared Utilities.Run executed PackedGrowthControls; control source28efd298 independently reviewed by scanner."
+    },
+    "sampledAllocation": {
+      "baselineSampledBytes": 11639613928,
+      "candidateSampledBytes": 11176731432,
+      "baselineGiB": 10.840235210955143,
+      "candidateGiB": 10.409142293035984,
+      "deltaBytes": -462882496,
+      "deltaPercent": -3.9767856465281914
+    },
+    "allocationCoverage": {
+      "eventsLost": 0,
+      "truncated": false,
+      "aggregationOverflowEvents": 0,
+      "events": 96056,
+      "missingTypeNameEvents": 0,
+      "eventsWithStacks": 96056,
+      "eventsWithAtLeastOneResolvedFrame": 96056
+    },
+    "completeLinkFamilies": {
+      "symbolArenaValueLinks": {
+        "baselineSampledBytes": 1293750224,
+        "candidateSampledBytes": 985820544,
+        "baselineGiB": 1.204898789525032,
+        "candidateGiB": 0.9181169271469116,
+        "deltaBytes": -307929680,
+        "deltaPercent": -23.801323801741813
+      },
+      "inlinePagedNodeLinks": {
+        "baselineSampledBytes": 142038896,
+        "candidateSampledBytes": 150963848,
+        "baselineGiB": 0.1322840303182602,
+        "candidateGiB": 0.14059603959321976,
+        "deltaBytes": 8924952,
+        "deltaPercent": 6.283456328750958
+      },
+      "mapBacked26Links": {
+        "baselineSampledBytes": 655636344,
+        "candidateSampledBytes": 520953592,
+        "baselineGiB": 0.6106089279055595,
+        "candidateGiB": 0.48517584055662155,
+        "deltaBytes": -134682752,
+        "deltaPercent": -20.542295013468625
+      },
+      "otherTypes": {
+        "baselineSampledBytes": 9548188464,
+        "candidateSampledBytes": 9518993448,
+        "baselineGiB": 8.892443463206291,
+        "candidateGiB": 8.865253485739231,
+        "deltaBytes": -29195016,
+        "deltaPercent": -0.30576497426789695
+      }
+    },
+    "decisions": [
+      "Retain public Symbol8-byte class identities: naive16-byte Memory handles widen tables, arrays and containing records; facade objects do not eliminate per-symbol allocations. This is a design tradeoff, not proof packing can never help.",
+      "Defer ConcurrentDictionary cache conversion: current CPU does not establish material contention, and per-entry nodes add allocation.",
+      "Preserve upstream four-checker grouping; current worker distribution matches source."
+    ],
+    "limits": [
+      "One uninstrumented Native observation, not repeatable throughput proof; Go speed parity remains unmet.",
+      "Allocation sample is CoreCLR, not exact Native/Go bytes or objects; candidate includes preceding17 text guards.",
+      "Some dependency preparation overlapped capture; no profiled elapsed-time inference.",
+      "Common UInt64 array family allocation is source-classified with98.64% bounded caller coverage, not exhaustive physical event-owner identity.",
+      "Broader accepted16/17 foundation evidence retained separately; not all prior gates rerun."
+    ],
+    "evidence": {
+      "artifacts/vscode-allocation-rollout/integration-18/build-result.json": {
+        "sha256": "a5f0733c459d7e1d1ec5b3a8d3f60feaf63340a678fa88183783c029ff1bd492"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/native/publish-result.json": {
+        "sha256": "176841e7156f22395870e084d181d1ecb0553f7b847bba99ce2941dc45d5e4c3"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/first-vscode/result.json": {
+        "sha256": "03cf9bc95ad8d5f1d6748692d09e545aaaf7fa3de68182f3beab3e0391a669ff"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/managed-profile/comparison.json": {
+        "sha256": "a46def0900c774583c30e6385a7109906d95802b16c82457e66a6f5db23ec58a"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/managed-profile/verification-peer-review.json": {
+        "sha256": "fb74a7f9b63aff8c5816f80b9faf3ae8c058199744b5c16927c01cb8efb92e90"
+      },
+      "artifacts/vscode-allocation-rollout/integration-17/cpu-comparison.json": {
+        "sha256": "e386813bab216ee328fe453ec5b14db69b99fdfce77dde5fb9a5dc0da700b80f"
+      },
+      "artifacts/vscode-allocation-rollout/public-symbol-storage-assessment.json": {
+        "sha256": "3d6e19a67024f9025e288bd20c2bcfe192e88bb4d435e191995e49cdd0e62618"
+      },
+      "artifacts/vscode-link-local-ordinals/build/support-peer-review.json": {
+        "sha256": "f8718f6d17a58b90a0d0d6b7452d903a05c2da286b76bed8952f3a5f0f08a191"
+      },
+      "artifacts/vscode-link-local-ordinals/controls/scanner-peer-review.json": {
+        "sha256": "3ed0990f72dae7fdfdfabfb2558ac972854039afa93267183b0b24866acf2d93"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/regressions/selected-result.json": {
+        "sha256": "9a5953680ae7bd20823a2c229d82ba3a3f8582ed86c6c4120ff25a245b4ab5ec"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/regressions/native-noemit/result.json": {
+        "sha256": "7c896efc40105a7ecfd4e1fd7ee0fec5dae959f0df180d0984d6e17706654341"
+      },
+      "artifacts/vscode-allocation-rollout/integration-18/regressions/verification-final-ack.json": {
+        "sha256": "acc22fba9f4fcb91ad06b94b248de8e5aea67934773498049b796c2bd7b6c826"
+      }
+    },
+    "nativeOriginal": {
+      "status": "passed",
+      "completeRecords": 15304,
+      "originalUnionOrdering": true,
+      "originalParentPointers": true,
+      "nativeSha256": "470ac1d7fc6bc0ef870f9a7b8dc9dba79ba61a415a5cb1cf352c717dca85f8aa",
+      "nativeDrift": false,
+      "sourceDrift": [],
+      "consumedCompilerSha256": "ec1fd52aa36dd43847ba74cc503ffa7ad6cabfa9e695560a1da2101a57d52245",
+      "actualSha256": "be3e28a209128c217eceec5fe2dd5cb690c6b77096766fcb523402f6f3b061f4",
+      "requestsSha256": "f67e31335a943bb0d6274fe0dc5f82e49280f85d9d5d317c6d30b6783291dc9a",
+      "referenceSha256": "f44aed5c331118d4fe412a40536316a5150887f3d3ed2ef11fab0697470a6582",
+      "chunks": 120
+    },
+    "managedOriginal": {
+      "completeRecords": 15304,
+      "completeJsonExact": true,
+      "actualSha256": "fe803ab868731c8f66bb35da59ba8ef3129e913a15c60fb7160133989fe316e8",
+      "referenceSha256": "f44aed5c331118d4fe412a40536316a5150887f3d3ed2ef11fab0697470a6582"
+    },
+    "actualNativeCompilerInputs": [
+      {
+        "project": "Checker.Validation",
+        "responsePath": "/home/greg/projects/typescript-dotnet/validation/Checker.Validation/obj/Release/net10.0/linux-x64/native/Checker.Validation.ilc.rsp",
+        "responseSha256": "d00939ea304072a4bcee671eaaffa98b79afff2bee78fb5bddf3f5a35e624b2f",
+        "actualCompilerInput": "/home/greg/projects/typescript-dotnet/src/TypeScript.Scanner/bin/Release/net10.0/TypeScript.Scanner.dll",
+        "compilerSha256": "ec1fd52aa36dd43847ba74cc503ffa7ad6cabfa9e695560a1da2101a57d52245",
+        "exactFrozenCompiler": true
+      },
+      {
+        "project": "Checker.NoEmit.Validation",
+        "responsePath": "/home/greg/projects/typescript-dotnet/validation/Checker.NoEmit.Validation/obj/Release/net10.0/linux-x64/native/Program.Checks.ilc.rsp",
+        "responseSha256": "a93b302e2819432280dbb043c18e94ed2a520d55aebf7f34f6f9363e73e1e70b",
+        "actualCompilerInput": "/home/greg/projects/typescript-dotnet/src/TypeScript.Scanner/bin/Release/net10.0/TypeScript.Scanner.dll",
+        "compilerSha256": "ec1fd52aa36dd43847ba74cc503ffa7ad6cabfa9e695560a1da2101a57d52245",
+        "exactFrozenCompiler": true
+      }
+    ],
+    "sourceCount": 587,
+    "productionSourceCount": 242,
+    "sourceDrift": [],
+    "finalIndependentEvidenceReview": "ACK: exact frozen sources, actual ILC inputs, TRX counts and complete original records independently reconciled; no unresolved finding."
   }
 }
