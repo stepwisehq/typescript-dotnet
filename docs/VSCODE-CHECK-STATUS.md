@@ -1,5 +1,8 @@
 # VS Code checking: diagnostic repairs and performance evidence
 
+For the human-readable timeline, findings and final result, see the
+[performance epic summary](./PERFORMANCE-EPIC-SUMMARY.md).
+
 The post-acceptance investigation fixed two demonstrated port defects: a null
 iteration crash and the ordinary CLI's publication of raw binding diagnostics.
 The corrected Linux x64 Native AOT executable completes the main VS Code project
@@ -14,7 +17,7 @@ or imply that finite acceptance established exhaustive large-project correctness
 ## Current delivery checkpoint: integration31
 
 Correctness gates and the final delivered CLI cohort passed independent final
-acceptance review. Only the root commit/clean checkpoint remains. The measured target is scoped
+acceptance review and were committed at `e3131a5b`. The measured target is scoped
 to Linux x64 AVX2, matched eight-checker settings and explicit `--no-gc-region`, with
 14 GiB total/2 GiB LOH and 20 GiB MemAvailable preflight. Portable production defaults
 remain unchanged; the single portable FIRST observation is not a target claim.
@@ -2950,7 +2953,7 @@ round-three best pair was not the opening pair.
 are separate from artifact30 and earlier default-four or failed-eight results.
 
 [Final independent acceptance ACK](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json)
-is clear. Root commit/clean checkpoint remains; source/metadata freeze is released for
-that commit, with no additional builds. [README reproduction](../README.md) documents actual
+is clear. The accepted implementation and evidence were committed at `e3131a5b`,
+with a clean working tree. [README reproduction](../README.md) documents actual
 portable/AVX2 publication, matched settings, explicit opt-in and outcome readback.
 No further configuration trial, capture or per-change gate is needed before final review.
