@@ -29,7 +29,8 @@ public sealed class NodeFactoryHooks
 public class NodeList
 {
     public TextRange Loc;
-    public List<Node> Nodes;
+    // ast.go:123. Header clones share slots but have independent len/cap.
+    public Slice<Node> Nodes;
     public bool IsMissing;
     public int Pos() => Loc.Pos();
     public int End() => Loc.End();
@@ -79,25 +80,25 @@ public sealed partial class Node
     public LiteralLikeNodeBase LiteralLikeData() => data as LiteralLikeNodeBase;
     public TemplateLiteralLikeNodeBase TemplateLiteralLikeData() => data as TemplateLiteralLikeNodeBase;
     public NodeList ParameterList() => FunctionLikeData().Parameters;
-    public List<Node> Parameters() => ParameterList().Nodes;
+    public Slice<Node> Parameters() => ParameterList().Nodes;
     public Node Body() => BodyData()?.Body;
     public ModifierFlags ModifierFlags() => Modifiers()?.ModifierFlags ?? TypeScript.Scanner.ModifierFlags.None;
-    public List<Node> ModifierNodes() => Modifiers()?.Nodes;
-    public List<Node> Decorators()
+    public Slice<Node> ModifierNodes() => Modifiers()?.Nodes ?? default;
+    public Slice<Node> Decorators()
     {
         if (Modifiers()is null)
-            return null;
+            return default;
         return Core.Filter(Modifiers().Nodes, Ast.IsDecorator);
     }
 
-    public List<Node> Arguments() => ArgumentList()?.Nodes;
-    public List<Node> TypeArguments() => TypeArgumentList()?.Nodes;
-    public List<Node> TypeParameters() => TypeParameterList()?.Nodes;
-    public List<Node> Members() => MemberList()?.Nodes;
-    public List<Node> Statements() => StatementList()?.Nodes;
-    public List<Node> Comments() => CommentList()?.Nodes;
-    public List<Node> Properties() => PropertyList()?.Nodes;
-    public List<Node> Elements() => ElementList()?.Nodes;
+    public Slice<Node> Arguments() => ArgumentList()?.Nodes ?? default;
+    public Slice<Node> TypeArguments() => TypeArgumentList()?.Nodes ?? default;
+    public Slice<Node> TypeParameters() => TypeParameterList()?.Nodes ?? default;
+    public Slice<Node> Members() => MemberList()?.Nodes ?? default;
+    public Slice<Node> Statements() => StatementList()?.Nodes ?? default;
+    public Slice<Node> Comments() => CommentList()?.Nodes ?? default;
+    public Slice<Node> Properties() => PropertyList()?.Nodes ?? default;
+    public Slice<Node> Elements() => ElementList()?.Nodes ?? default;
     public bool ForEachChild(Visitor visitor) => data.ForEachChild(visitor);
     public string DataType() => data.DataType();
     public IEnumerable<SyntaxField> SyntaxFields() => data.SyntaxFields();
@@ -157,8 +158,8 @@ public sealed partial class Node
     public byte[] TextBytes() => GoString.Bytes(Text());
     public string DecodedText() => ScannerString.ToJsString(Text());
     public bool IsJSDoc() => Kind == Kind.JSDoc;
-    public List<Node> JSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? null : (file ?? Ast.GetSourceFileOfNode(this))?.JSDoc(this);
-    public List<Node> EagerJSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? null : (file ?? Ast.GetSourceFileOfNode(this))?.EagerJSDoc(this);
+    public Slice<Node> JSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? default : (file ?? Ast.GetSourceFileOfNode(this))?.JSDoc(this) ?? default;
+    public Slice<Node> EagerJSDoc(SourceFile file) => (Flags & NodeFlags.HasJSDoc) == 0 ? default : (file ?? Ast.GetSourceFileOfNode(this))?.EagerJSDoc(this) ?? default;
     public Node Clone(NodeFactoryCoercible factory) => data.Clone(factory);
     public Node VisitEachChild(NodeVisitor visitor) => data.VisitEachChild(visitor);
 }
@@ -262,17 +263,20 @@ public sealed partial class NodeFactory : NodeFactoryCoercible
         return n;
     }
 
-    public NodeList NewNodeList(List<Node> nodes) => new()
+    public NodeList NewNodeList(Slice<Node> nodes) => new()
     {
         Loc = new(-1, -1),
         Nodes = nodes
     };
-    public ModifierList NewModifierList(List<Node> nodes) => new()
+    public ModifierList NewModifierList(Slice<Node> nodes) => new()
     {
         Loc = new(-1, -1),
         Nodes = nodes,
         ModifierFlags = Ast.ModifiersToFlags(nodes)
     };
+    // Explicit managed input bridges; public headers retain Go storage semantics.
+    public NodeList NewNodeList(List<Node> nodes) => NewNodeList(nodes is null ? default(Slice<Node>) : Slice<Node>.FromArray(nodes.ToArray()));
+    public ModifierList NewModifierList(List<Node> nodes) => NewModifierList(nodes is null ? default(Slice<Node>) : Slice<Node>.FromArray(nodes.ToArray()));
     public Node NewModifier(Kind kind) => NewToken(kind);
     public Node NewSourceFile(SourceFileParseOptions opts, string text, NodeList statements, Node endOfFileToken) => newNode(Kind.SourceFile, new SourceFile { parseOptions = opts, text = text, Statements = statements, EndOfFileToken = endOfFileToken });
     // ast.go source construction shares immutable source bytes before hooks run.
@@ -293,8 +297,13 @@ public static partial class Ast
     }
 
     internal static bool SameSyntaxSlice<T>(List<T> left, List<T> right) => (left?.Count ?? 0) == (right?.Count ?? 0) && ((left?.Count ?? 0) == 0 || ReferenceEquals(left, right));
+    internal static bool SameSyntaxSlice<T>(Slice<T> left, Slice<T> right) => left.SameStorageRange(right);
+    // The header itself is the Go range source; direct foreach needs no yield wrapper.
+    internal static Slice<Node> IterateSyntaxNodes(Slice<Node> nodes) => nodes;
     internal static bool ForEachChildJSDocParameterOrPropertyTag(JSDocParameterOrPropertyTag node, Visitor v) => Visit(v, node.TagName) || (node.IsNameFirst && (Visit(v, node.name) || Visit(v, node.TypeExpression))) || (!node.IsNameFirst && (Visit(v, node.TypeExpression) || Visit(v, node.name))) || VisitNodeList(v, node.Comment);
     internal static Node VisitEachChildJSDocParameterOrPropertyTag(JSDocParameterOrPropertyTag node, NodeVisitor v) => v.Factory.UpdateJSDocParameterOrPropertyTag(node, v.visitNode(node.TagName), v.visitNode(node.name), node.IsBracketed, v.visitNode(node.TypeExpression), node.IsNameFirst, v.visitNodes(node.Comment));
+    internal static Slice<Node> SameMapNodes(Slice<Node> nodes, Func<Node, Node> map)
+        => Core.SameMap(nodes, map);
     internal static List<Node> SameMapNodes(List<Node> nodes, Func<Node, Node> map)
     {
         if (nodes is null)
@@ -314,8 +323,8 @@ public static partial class Ast
         return result ?? (nodes.Count == count ? nodes : nodes.GetRange(0, count));
     }
 
-    internal static Func<SourceFile, Node, List<Node>> ParseJSDocForNode;
-    public static void SetParseJSDocForNode(Func<SourceFile, Node, List<Node>> parser) => ParseJSDocForNode = parser;
+    internal static Func<SourceFile, Node, Slice<Node>> ParseJSDocForNode;
+    public static void SetParseJSDocForNode(Func<SourceFile, Node, Slice<Node>> parser) => ParseJSDocForNode = parser;
     internal static Node UpdateNode(Node updated, Node original, NodeFactoryHooks hooks)
     {
         if (updated != original)
@@ -351,8 +360,13 @@ public static partial class Ast
         return false;
     }
 
-    internal static bool VisitNodeList(Visitor v, NodeList nodes) => VisitNodes(v, nodes?.Nodes);
-    internal static bool VisitModifiers(Visitor v, ModifierList nodes) => VisitNodes(v, nodes?.Nodes);
+    internal static bool VisitNodes(Visitor v, Slice<Node> nodes)
+    {
+        foreach (var node in nodes) if (v(node)) return true;
+        return false;
+    }
+    internal static bool VisitNodeList(Visitor v, NodeList nodes) => VisitNodes(v, nodes?.Nodes ?? default);
+    internal static bool VisitModifiers(Visitor v, ModifierList nodes) => VisitNodes(v, nodes?.Nodes ?? default);
 }
 
 public sealed class CheckJsDirective
@@ -486,7 +500,7 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     public Node CommonJSModuleIndicator, ExternalModuleIndicator;
     private List<Diagnostic> diagnostics, jsDiagnostics, jsdocDiagnostics;
     internal List<Node> imports;
-    private Dictionary<Node, List<Node>> jsdocCache;
+    private Dictionary<Node, Slice<Node>> jsdocCache;
     private bool hasLazyJSDoc;
     private readonly object positionMapLock = new();
     private Lazy<PositionMap> positionMap;
@@ -561,14 +575,14 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     public void SetDiagnostics(List<Diagnostic> value) => diagnostics = value;
     public void SetJSDiagnostics(List<Diagnostic> value) => jsDiagnostics = value;
     public void SetJSDocDiagnostics(List<Diagnostic> value) => jsdocDiagnostics = value;
-    public void SetJSDocCache(Dictionary<Node, List<Node>> value) => jsdocCache = value;
+    public void SetJSDocCache(Dictionary<Node, Slice<Node>> value) => jsdocCache = value;
     public void SetHasLazyJSDoc(bool value) => hasLazyJSDoc = value;
-    internal List<Node> JSDoc(Node n)
+    internal Slice<Node> JSDoc(Node n)
     {
         if ((n.Flags & NodeFlags.HasJSDoc) == 0)
-            return null;
+            return default;
         if (!hasLazyJSDoc)
-            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var eager) ? eager : null;
+            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var eager) ? eager : default;
         lock (this)
         {
             jsdocCache ??= new();
@@ -581,14 +595,14 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
         }
     }
 
-    internal List<Node> EagerJSDoc(Node n)
+    internal Slice<Node> EagerJSDoc(Node n)
     {
         if ((n.Flags & NodeFlags.HasJSDoc) == 0)
-            return null;
+            return default;
         if (!hasLazyJSDoc)
-            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var eager) ? eager : null;
+            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var eager) ? eager : default;
         lock (this)
-            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var value) ? value : null;
+            return jsdocCache is not null && jsdocCache.TryGetValue(n, out var value) ? value : default;
     }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodeList(v, Statements) || Ast.Visit(v, EndOfFileToken);
@@ -4724,7 +4738,7 @@ public sealed partial class SourceFile
                         }
 
                         n.ForEachChild(Walk);
-                        foreach (var doc in n.JSDoc(this) ?? [])
+                        foreach (var doc in n.JSDoc(this))
                             doc.ForEachChild(Walk);
                         return false;
                     }
@@ -4945,7 +4959,7 @@ public sealed partial class SourceFile
                     if (exportClause is not null)
                     {
                         if (Ast.IsNamedExports(exportClause))
-                            foreach (var element in exportClause.Elements() ?? [])
+                            foreach (var element in exportClause.Elements())
                                 Visit(element);
                         else
                             Visit(exportClause.AsNamespaceExport().Name());
@@ -4964,7 +4978,7 @@ public sealed partial class SourceFile
                             if (namedBindings.Kind == Kind.NamespaceImport)
                                 AddDeclaration(namedBindings);
                             else
-                                foreach (var element in namedBindings.Elements() ?? [])
+                                foreach (var element in namedBindings.Elements())
                                     Visit(element);
                         }
                     }
@@ -5003,7 +5017,7 @@ public static partial class Ast
             return (ResolutionMode.None, false);
         var attributes = node.AsImportAttributes().Attributes;
         Node attribute = null;
-        foreach (var candidate in attributes.Nodes ?? [])
+        foreach (var candidate in attributes.Nodes)
             if (candidate.Name().Text() == "resolution-mode")
             {
                 attribute = candidate;
@@ -5033,7 +5047,7 @@ public partial class SourceFile
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
         if (this.EndOfFileToken is not null)
             yield return this.EndOfFileToken;

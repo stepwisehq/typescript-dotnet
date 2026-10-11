@@ -95,7 +95,7 @@ internal sealed partial class NodeBuilderImpl
                 }
                 return pseudoTypeToNode(isConst ? d.ConstType : d.RegularType);
             case PseudoTypeKind.Union:
-                List<Node> res = new();
+                Slice<Node> res = default;
                 bool hasElidedType = false, hasUndefined = false;
                 void appendTypeNode(Node n)
                 {
@@ -113,7 +113,7 @@ internal sealed partial class NodeBuilderImpl
                         hasUndefined = true;
                     }
 
-                    res.Add(n);
+                    res = res.Append(n);
                 }
 
                 foreach (var m in t.AsPseudoTypeUnion().Types)
@@ -157,13 +157,13 @@ internal sealed partial class NodeBuilderImpl
                 var cleanupSingle = enterNewScope(single.Signature, expanded, singleSignature.typeParameters, singleSignature.parameters, singleSignature.mapper);
                 NodeList singleTypeParameters = null;
                 if (GoRuntime.Len(single.TypeParameters) != 0)
-                    singleTypeParameters = f.NewNodeList(Core.Map(single.TypeParameters, parameter => reuseNode(parameter.AsNode())));
+                    singleTypeParameters = f.NewNodeList(Core.MapSlice(single.TypeParameters, parameter => reuseNode(parameter.AsNode())));
                 var singleParameters = pseudoParametersToNodeList(single.Parameters);
                 var singleReturn = pseudoTypeToNode(single.ReturnType);
                 cleanupSingle();
                 return f.NewFunctionTypeNode(singleTypeParameters, singleParameters, singleReturn);
             case PseudoTypeKind.Tuple:
-                var tupleElements = Core.Map(t.AsPseudoTypeTuple().Elements, pseudoTypeToNode);
+                var tupleElements = Core.MapSlice(t.AsPseudoTypeTuple().Elements, pseudoTypeToNode);
                 var tupleNode = f.NewTupleTypeNode(f.NewNodeList(tupleElements));
                 e.AddEmitFlags(tupleNode, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
                 return f.NewTypeOperatorNode(Kind.ReadonlyKeyword, tupleNode);
@@ -171,17 +171,17 @@ internal sealed partial class NodeBuilderImpl
                 var elements = t.AsPseudoTypeObjectLiteral().Elements;
                 if (elements is not { Count: > 0 })
                 {
-                    var emptyObject = f.NewTypeLiteralNode(f.NewNodeList(null));
+                    var emptyObject = f.NewTypeLiteralNode(f.NewNodeList(default(Slice<Node>)));
                     e.AddEmitFlags(emptyObject, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
                     return emptyObject;
                 }
                 var isConstObject = ch.isConstContext(elements[0].Name.Parent.Parent);
-                List<Node> newElements = new(elements.Count);
+                var newElements = Slice<Node>.Make(0,elements.Count);
                 var restoreObjectFlags = saveRestoreFlags();
                 ctx.flags |= NodeBuilderFlags.InObjectTypeLiteral;
                 foreach (var e in elements)
                 {
-                    ModifierList modifiers = isConstObject || e.Kind == PseudoObjectElementKind.PropertyAssignment && e.AsPseudoPropertyAssignment().Readonly ? f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]) : null;
+                    ModifierList modifiers = isConstObject || e.Kind == PseudoObjectElementKind.PropertyAssignment && e.AsPseudoPropertyAssignment().Readonly ? f.NewModifierList(Slice<Node>.FromArray([f.NewModifier(Kind.ReadonlyKeyword)])) : null;
                     Action cleanup = null;
                     if (e.Kind != PseudoObjectElementKind.PropertyAssignment)
                     {
@@ -197,7 +197,7 @@ internal sealed partial class NodeBuilderImpl
                             var method = e.AsPseudoObjectMethod();
                             NodeList methodTypeParameters = null;
                             if (GoRuntime.Len(method.TypeParameters) != 0)
-                                methodTypeParameters = f.NewNodeList(Core.Map(method.TypeParameters, parameter => reuseNode(parameter.AsNode())));
+                                methodTypeParameters = f.NewNodeList(Core.MapSlice(method.TypeParameters, parameter => reuseNode(parameter.AsNode())));
                             newProperty = isConstObject ? f.NewPropertySignatureDeclaration(modifiers, reuseName(e.Name, false), null, f.NewFunctionTypeNode(methodTypeParameters, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType)), null) : f.NewMethodSignatureDeclaration(modifiers, reuseName(e.Name, true), null, methodTypeParameters, pseudoParametersToNodeList(method.Parameters), pseudoTypeToNode(method.ReturnType));
                             break;
                         case PseudoObjectElementKind.PropertyAssignment:
@@ -207,7 +207,7 @@ internal sealed partial class NodeBuilderImpl
                         case PseudoObjectElementKind.SetAccessor:
                             var setter = e.AsPseudoSetAccessor();
                             newProperty = f.NewSetAccessorDeclaration(null, reuseName(e.Name, false), null,
-                                f.NewNodeList([pseudoParameterToNode(setter.Parameter)]), null, null, null);
+                                f.NewNodeList(Slice<Node>.FromArray([pseudoParameterToNode(setter.Parameter)])), null, null, null);
                             break;
                         case PseudoObjectElementKind.GetAccessor:
                             var getter = e.AsPseudoGetAccessor();
@@ -220,7 +220,7 @@ internal sealed partial class NodeBuilderImpl
 
                     if (ctx.enclosingFile == Ast.GetSourceFileOfNode(e.Name))
                         this.e.SetCommentRange(newProperty, e.Name.Parent.Loc);
-                    newElements.Add(newProperty);
+                    newElements = newElements.Append(newProperty);
                     cleanup?.Invoke();
                 }
 
@@ -496,7 +496,7 @@ internal sealed partial class NodeBuilderImpl
     // Upstream upstream/TypeScript/tsc/internal/checker/pseudotypenodebuilder.go:327:1.
     private NodeList pseudoParametersToNodeList(List<PseudoParameter> @params)
     {
-        var res = GoRuntime.MakeSlice<Node>(0);
+        var res = Slice<Node>.Make(0, GoRuntime.Len(@params));
         {
             foreach (var p in GoRuntime.RangeValues(@params))
             {

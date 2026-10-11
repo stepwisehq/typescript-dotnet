@@ -341,24 +341,24 @@ internal sealed partial class NodeBuilderImpl
             if (node.Kind == Kind.JSDocAllType)
                 return f.NewKeywordTypeNode(Kind.AnyKeyword);
             if (node.Kind == Kind.JSDocNullableType)
-                return f.NewUnionTypeNode(f.NewNodeList(new List<Node> { visitor.VisitNode(node.AsJSDocNullableType().Type), f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.NullKeyword)) }));
+                return f.NewUnionTypeNode(f.NewNodeList(Slice<Node>.FromArray([visitor.VisitNode(node.AsJSDocNullableType().Type), f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.NullKeyword))])));
             if (node.Kind == Kind.JSDocOptionalType)
-                return f.NewUnionTypeNode(f.NewNodeList(new List<Node> { visitor.VisitNode(node.AsJSDocOptionalType().Type), f.NewKeywordTypeNode(Kind.UndefinedKeyword) }));
+                return f.NewUnionTypeNode(f.NewNodeList(Slice<Node>.FromArray([visitor.VisitNode(node.AsJSDocOptionalType().Type), f.NewKeywordTypeNode(Kind.UndefinedKeyword)])));
             if (node.Kind == Kind.JSDocNonNullableType)
                 return visitor.VisitNode(node.AsJSDocNonNullableType().Type);
             if (node.Kind == Kind.JSDocVariadicType)
                 return f.NewArrayTypeNode(visitor.VisitNode(node.AsJSDocVariadicType().Type));
             if (node.Kind == Kind.JSDocTypeLiteral)
             {
-                var members = new List<Node>();
-                foreach (var tag in node.AsJSDocTypeLiteral().JSDocPropertyTags ?? [])
+                Slice<Node> members = default;
+                foreach (var tag in node.AsJSDocTypeLiteral().JSDocPropertyTags)
                 {
                     if (tag.Kind is not (Kind.JSDocPropertyTag or Kind.JSDocParameterTag))
                         continue;
                     var name = tag.Name();
                     var targetName = Ast.IsIdentifier(name) ? name : name.AsQualifiedName().Right;
                     var optional = tag.AsJSDocParameterOrPropertyTag().IsBracketed || tag.TypeExpression() != null && tag.TypeExpression().Kind == Kind.JSDocOptionalType;
-                    members.Add(f.NewPropertySignatureDeclaration(null, visitor.VisitNode(targetName), optional ? f.NewToken(Kind.QuestionToken) : null, visitor.VisitNode(tag.TypeExpression()), null));
+                    members = members.Append(f.NewPropertySignatureDeclaration(null, visitor.VisitNode(targetName), optional ? f.NewToken(Kind.QuestionToken) : null, visitor.VisitNode(tag.TypeExpression()), null));
                 }
 
                 return f.NewTypeLiteralNode(f.NewNodeList(members));

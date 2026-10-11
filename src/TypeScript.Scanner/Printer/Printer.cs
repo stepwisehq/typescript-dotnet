@@ -750,7 +750,7 @@ internal sealed partial class Printer
     {
         emitModifierList(node.Modifiers());
         writePunctuation("[");
-        var parameters = node.Parameters?.Nodes;
+        var parameters = node.Parameters?.Nodes ?? default;
         if (parameters is not { Count: 1 })
             throw TypeScript.Checking.Checker.unsupported("Printer.emitIndexSignature: parameter shape");
         var parameter = parameters[0].AsParameterDeclaration();
@@ -791,7 +791,7 @@ internal sealed partial class Printer
     private void emitListRange(Action<Node> emit, Node parentNode, NodeList children, ListFormat format, int start, int count)
     {
         bool isNil = children == null;
-        int length = isNil ? 0 : children.Nodes?.Count ?? 0;
+        int length = isNil ? 0 : children.Nodes.Count;
         if (start < 0)
             start = 0;
         if (count < 0)
@@ -805,7 +805,7 @@ internal sealed partial class Printer
         else
         {
             int end = Math.Min(start + count, length);
-            emitListItems(emit, parentNode, children.Nodes.GetRange(start, end - start), format,
+            emitListItems(emit, parentNode, children.Nodes.Slice2(start, end), format,
                 (format & ListFormat.AllowTrailingComma) != 0 && hasTrailingComma(parentNode, children));
         }
     }
@@ -846,7 +846,7 @@ internal sealed partial class Printer
         return originalList != null && originalList.HasTrailingComma();
     }
 
-    private void emitListItems(Action<Node> emit, Node parentNode, List<Node> children, ListFormat format, bool hasTrailingComma)
+    private void emitListItems(Action<Node> emit, Node parentNode, Slice<Node> children, ListFormat format, bool hasTrailingComma)
     {
         if ((format & ListFormat.SpaceBetweenBraces) != 0)
             writeSpace();
@@ -1079,7 +1079,7 @@ internal sealed partial class Printer
     private void emitTypeParameters(Node parent, NodeList nodes)
     {
         // printer.go:1517/4755. LFTypeParameters includes LFOptionalIfEmpty.
-        if (nodes == null || (nodes.Nodes?.Count ?? 0) == 0)
+        if (nodes == null || (nodes.Nodes.Count) == 0)
             return;
         writePunctuation("<");
         emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);
@@ -1092,7 +1092,7 @@ internal sealed partial class Printer
     private void emitTypeArguments(Node parent, NodeList nodes)
     {
         // printer.go:1908/4755. LFTypeArguments includes LFOptionalIfEmpty.
-        if (nodes == null || (nodes.Nodes?.Count ?? 0) == 0)
+        if (nodes == null || (nodes.Nodes.Count) == 0)
             return;
         writePunctuation("<");
         emitList(emitTypeParameterDeclarationNode, parent, nodes, ListFormat.Parameters);

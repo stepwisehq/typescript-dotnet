@@ -3841,7 +3841,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getFlowTypeInStaticBlocks(Symbol symbol, List<Node> staticBlocks)
+    private Type getFlowTypeInStaticBlocks(Symbol symbol, Slice<Node> staticBlocks)
     {
         Node accessName = default;
         if (GoStrings.HasPrefix(symbol.Name, (Ast.InternalSymbolNamePrefix + "#")))

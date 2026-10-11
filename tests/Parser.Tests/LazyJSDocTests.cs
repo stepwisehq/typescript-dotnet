@@ -13,9 +13,9 @@ public class LazyJSDocTests
         identifier.Loc = new TextRange(0, 0);
         identifier.Parent = file.AsNode();
         identifier.Flags |= NodeFlags.HasJSDoc;
-        Assert.Null(identifier.JSDoc(file));
-        Assert.Null(identifier.EagerJSDoc(file));
-        Assert.Null(identifier.JSDoc(file));
-        Assert.Null(identifier.EagerJSDoc(file));
+        Assert.True(identifier.JSDoc(file).IsNil);
+        Assert.True(identifier.EagerJSDoc(file).IsNil);
+        Assert.True(identifier.JSDoc(file).IsNil);
+        Assert.True(identifier.EagerJSDoc(file).IsNil);
     }
 }

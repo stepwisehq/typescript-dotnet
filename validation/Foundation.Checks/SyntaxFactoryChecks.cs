@@ -31,7 +31,7 @@ public static partial class SyntaxServiceChecks
             var list = factory.NewNodeList(nodes!);
             list.Loc = new(4, 8);
             var copy = list.Clone(factory);
-            lists.Add(new object? [] { !ReferenceEquals(list, copy), list.Nodes is null, copy.Nodes is null, ReferenceEquals(list.Nodes, copy.Nodes), copy.Pos(), copy.End(), Nodes(copy.Nodes) });
+            lists.Add(new object? [] { !ReferenceEquals(list, copy), list.Nodes.IsNil, copy.Nodes.IsNil, Core.Same(list.Nodes, copy.Nodes), copy.Pos(), copy.End(), Nodes(copy.Nodes) });
         }
 
         return Map(("unchangedIdentity", ReferenceEquals(unchanged, original)), ("changedIdentity", !ReferenceEquals(changed, original)), ("changedParentNil", changed.Parent is null), ("changedInitializer", ReferenceEquals(changed.Initializer(), replacement)), ("cloneParentNil", clone.Parent is null), ("cloneSharedName", ReferenceEquals(clone.Name(), name)), ("events", events.ToArray()), ("lists", lists.ToArray()), ("nodeCount", factory.NodeCount()), ("textCount", factory.TextCount()));
@@ -53,7 +53,7 @@ public static partial class SyntaxServiceChecks
         var one = Ast.NewNodeVisitor(_ => factory.NewSyntaxList([d]), factory, new()).VisitNode(a);
         var multiple = Ast.NewNodeVisitor(_ => factory.NewSyntaxList([a, b]), factory, new());
         var block = multiple.VisitEmbeddedStatement(a);
-        return Map(("sameList", ReferenceEquals(same, list)), ("changedList", !ReferenceEquals(changed, list)), ("changedLoc", new object[] { changed.Pos(), changed.End() }), ("changedOrder", Nodes(changed.Nodes)), ("deletedNodesNil", empty.Nodes is null), ("oneLiftIdentity", ReferenceEquals(one, d)), ("multiNodeThrows", Caught(() => multiple.VisitNode(a))), ("embeddedBlock", Snap(block)), ("embeddedChildren", Nodes(block.AsBlock().Statements.Nodes)), ("nilInput", visitor.VisitNode(null)is null), ("nilList", visitor.VisitNodes(null)is null));
+        return Map(("sameList", ReferenceEquals(same, list)), ("changedList", !ReferenceEquals(changed, list)), ("changedLoc", new object[] { changed.Pos(), changed.End() }), ("changedOrder", Nodes(changed.Nodes)), ("deletedNodesNil", empty.Nodes.IsNil), ("oneLiftIdentity", ReferenceEquals(one, d)), ("multiNodeThrows", Caught(() => multiple.VisitNode(a))), ("embeddedBlock", Snap(block)), ("embeddedChildren", Nodes(block.AsBlock().Statements.Nodes)), ("nilInput", visitor.VisitNode(null)is null), ("nilList", visitor.VisitNodes(null)is null));
     }
 
     private static object Accessors()

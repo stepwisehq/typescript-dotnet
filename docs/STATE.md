@@ -1,6 +1,7 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `5e960cd` commits AST/binder borrowed text, private stacks,
+**Resume here:** HEAD `faad6ec` commits checker borrowed-text receivers;
+`5e960cd` commits AST/binder borrowed text, private stacks,
 inference candidates and numeric span parsing; `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
 borrowed scanner tokens, flow slices and conditional targets;
 `08d2294` preserves the preceding path/ASCII/singleton reductions.
@@ -18,13 +19,40 @@ and controls passed, including authored AST5 both modes. Sampled CoreCLR allocat
 tick explicit. String allocation increased78.09MB; no speedup or isolated causality
 claim. See qualification.json. Comprehensive final regressions remain deferred.
 
-**Qualified next checkpoint:** combined eight-file checker descriptor/runtime snapshot
-`e79300ff` frozen and STAGED from saved source, build9.29s/publish10.94s. Actual
-Native AOT VS Code exact10:23.74wall/103.97CPU/9,956,328KiB. Focused287managed
-(42 original records+Binder163+TypeSystem77+AST5) and actual nativeAST5 all256-key
-extension passed. Index plus saved qualified AST5 source ready to commit. No new
-profile or speedup claim for this small followthrough. Scanner/support now implement breaking NodeList/getter
-migration in UNSTAGED source; do not accidentally include it in e793 commit.
+**Qualified receiver checkpoint committed `faad6ec`:** e79300ff library/8e9e134c
+native. Build9.29s/publish10.94s. Native VS Code exact10:23.74wall/103.97CPU/
+9,956,328KiB. Focused287managed (42 original records+Binder163+TypeSystem77+AST5)
+and actual nativeAST5 all256-key extension passed. No new profile or speedup claim.
+Evidence: artifacts/vscode-checker-text-values/qualification.json.
+
+**Qualified checkpoint being committed:** NodeList arena/header snapshot2
+`061cb294` is staged from exact saved sources (30 production files +two generators
++18 successful harness/test/resource files). All focused qualification passed:
+906 managed; native162 parser DTOs +29 shared cases +one authored semantic spread
+record. Sampled allocation15.300418 ->14.869364GiB (-2.8173%), zero event loss/
+truncation, all141334 events have resolved frames. Receiver+NodeList cumulative,
+not isolated savings. Flamegraph saved under candidate-allocation/. Native VS Code exact10:
+25.13wall/101.88CPU/9,753,968KiB. No speedup established. First build had35 finite
+representation bindings, grouped retry compiled clean. Failed snapshot1 `b80e63ee`
+then produced16 diagnostics: confirmed migration defect, not input drift (old e793
+same-input still exact10). getEffectiveCallArguments omitted upstream slices.Clip
+before tuple-spread expansion, overwriting shared suffix. Exact source Clip restored;
+neighboring new append boundaries reviewed. Failed evidence retained. Do not use its
+24.03s as accepted performance evidence. Focused spread-suffix regression demonstrates oldb80 failure and corrected061c
+full pinned-Go semantic agreement, including intentional2345/repeats/queries.
+Full regressions and repeated native timing stay deferred to later milestones.
+
+**Next source work:** Scanner's seven parser scratch files are UNSTAGED, saved under
+artifacts/vscode-parser-scratch-slices/build (private rewind/await/comment buffers,
+SourceFile.ReparsedClones, same Go sort algorithm via span worker, in-place DeleteFunc).
+They were parked hash-exact for the isolated Clip repair, then restored after freeze.
+Support six-file union/intersection/template constituent Slice family is source-ready
+for independent review and combined integration build with parser scratch; tuple metadata/type argument/Symbol storage remain separate for now.
+Check source clone/clip ownership at every newly borrowed append boundary up front.
+Verifier owns harness adapters, independent review and the sole heavy build window.
+User emphasized .NET copy facilities: Slice growth/append/arena use span CopyTo;
+one identity-only Reparser loop changed to CopyTo, transformations remain loops.
+Old List adapters still copy and are being removed from hot paths.
 Root approved public Slice<Node> child-list headers, clipped arena allocation and
 Go Clone header/slot sharing; provisional C# List APIs may change, but actual Go
 behavior/expected outputs remain. User informed. Scanner owns AST/runtime/parser/

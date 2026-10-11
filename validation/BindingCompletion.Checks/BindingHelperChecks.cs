@@ -63,7 +63,7 @@ public static class BindingHelperChecks
         bool functionBody = row.GetProperty("functionBody").GetBoolean();
         var statements = functionBody ? file.Statements.Nodes[0].Body().Statements() : file.Statements.Nodes;
         var found = Binder.FindUseStrictPrologue(file, statements);
-        int index = found is null ? -1 : statements.FindIndex(node => ReferenceEquals(node, found));
+        int index = found is null ? -1 : Core.FindIndex(statements, node => ReferenceEquals(node, found));
         return (object)Map(("textBase64", row.GetProperty("textBase64").GetString()), ("functionBody", functionBody), ("index", index), ("pos", found?.Pos()), ("end", found?.End()));
     }).ToArray();
     private static object ValueDeclarations(JsonElement input)

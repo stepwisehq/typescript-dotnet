@@ -97,7 +97,7 @@ internal sealed partial class NodeBuilderImpl
                 });
                 if (existingFakeScope == null)
                 {
-                    var fakeScope = f.NewBlock(f.NewNodeList([]), false);
+                    var fakeScope = f.NewBlock(f.NewNodeList(Slice<Node>.Make(0)), false);
                     getLinks(fakeScope).fakeScopeForSignatureDeclaration = kind;
                     fakeScope.LocalsContainerData().Locals = locals;
                     fakeScope.Parent = ctx.enclosingDeclaration;
@@ -133,7 +133,7 @@ internal sealed partial class NodeBuilderImpl
                             {
                                 void BindPattern(Node pattern)
                                 {
-                                    foreach (var element in pattern.AsBindingPattern().Elements.Nodes ?? [])
+                                    foreach (var element in pattern.AsBindingPattern().Elements.Nodes)
                                     {
                                         switch (element.Kind)
                                         {

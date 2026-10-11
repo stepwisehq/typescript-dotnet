@@ -26,8 +26,8 @@ public sealed class Encoder
         foreach (var field in node.SyntaxFields())
         {
             string role = char.ToUpperInvariant(field.Role[0]) + field.Role[1..];
-            var value = new CanonicalField { Name = role, Type = field.Type, IsNull = field.Value is null };
-            if (field.Value is not null)
+            var value = new CanonicalField { Name = role, Type = field.Type, IsNull = field.Value is null || field.Type == "nodes" && field.Value is Slice<Node> header && header.IsNil };
+            if (!value.IsNull)
             {
                 switch (field.Type)
                 {
@@ -36,7 +36,7 @@ public sealed class Encoder
                     case "bytes": value.BytesBase64 = Bytes((string)field.Value); break;
                     case "number": value.Number = Convert.ToInt64(field.Value, CultureInfo.InvariantCulture); break;
                     case "bool": value.Boolean = (bool)field.Value; break;
-                    case "nodes": value.NodeIds = ((IEnumerable<Node>)field.Value).Select(Add).ToList(); break;
+                    case "nodes": value.NodeIds = field.Value is Slice<Node> nodes ? AddNodes(nodes) : ((IEnumerable<Node>)field.Value).Select(Add).ToList(); break;
                     case "strings": value.StringsBase64 = ((IEnumerable<string>)field.Value).Select(Bytes).ToList(); break;
                     default: throw new InvalidOperationException($"Unclassified syntax field {output.DataType}.{role}: {field.Type}");
                 }
@@ -47,18 +47,18 @@ public sealed class Encoder
         if (resolveJsDoc)
         {
             var docs = node.JSDoc(file);
-            resolvedDocs[node] = docs?.ToList();
-            foreach (var doc in docs ?? []) output.JsDoc.Add(Add(doc));
+            resolvedDocs[node] = GoSlices.ToListOrNull(docs);
+            foreach (var doc in docs) output.JsDoc.Add(Add(doc));
         }
         return id;
     }
     private CanonicalList AddList(NodeList list) => new()
     {
         Identity = ListIdentity(list),
-        Pos = list.Pos(), End = list.End(), NodesNull = list.Nodes is null,
+        Pos = list.Pos(), End = list.End(), NodesNull = list.Nodes.IsNil,
         Missing = list.IsMissing, TrailingComma = list.HasTrailingComma(),
         ModifierFlags = list is ModifierList modifiers ? (uint)modifiers.ModifierFlags : null,
-        Items = list.Nodes?.Select(Add).ToList() ?? [],
+        Items = AddNodes(list.Nodes),
     };
     private int? ListIdentity(NodeList list)
     {
@@ -74,8 +74,8 @@ public sealed class Encoder
         {
             if (resolveJsDoc)
             {
-                var first = raw[i].JSDoc(file);
-                var second = raw[i].JSDoc(file);
+                var first = GoSlices.ToListOrNull(raw[i].JSDoc(file));
+                var second = GoSlices.ToListOrNull(raw[i].JSDoc(file));
                 var cold = resolvedDocs[raw[i]];
                 if ((cold is null) != (first is null) || (cold is not null && !cold.SequenceEqual(first!)) || (first is null) != (second is null) || (first is not null && !first.SequenceEqual(second!)))
                     throw new InvalidOperationException($"Unstable warm JSDoc at canonical node {i}");
@@ -89,6 +89,12 @@ public sealed class Encoder
     }
     public int? Indicator(Node? node) => node is null ? null : Add(node);
     public List<int> AddNodes(IEnumerable<Node>? nodes) => nodes?.Select(Add).ToList() ?? [];
+    public List<int> AddNodes(Slice<Node> nodes)
+    {
+        var result = new List<int>(nodes.Length);
+        foreach (var node in nodes) result.Add(Add(node));
+        return result;
+    }
     public CanonicalTextProbe TextProbe(int id, bool includeJSDoc)
     {
         if ((uint)id >= (uint)raw.Count) throw new ArgumentException("Invalid text probe canonical node ID");

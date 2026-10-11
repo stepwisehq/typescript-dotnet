@@ -199,8 +199,14 @@ public sealed partial class Graph
                     field.Refs.Add(Symbol(item)!.Value);
                 break;
             case "nodes":
-                foreach (var item in (List<Node>? )value ?? [])
-                    field.Refs.Add(Node(item)!.Value);
+                if (value is Slice<Node> nodes)
+                {
+                    field.Null = nodes.IsNil;
+                    foreach (var item in nodes) field.Refs.Add(Node(item)!.Value);
+                }
+                else
+                    foreach (var item in (List<Node>? )value ?? [])
+                        field.Refs.Add(Node(item)!.Value);
                 break;
             case "indexes":
                 foreach (var item in (List<IndexInfo>? )value ?? [])

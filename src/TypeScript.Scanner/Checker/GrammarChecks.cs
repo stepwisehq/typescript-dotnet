@@ -1042,7 +1042,7 @@ public sealed partial class Checker
         var declarations = node.AsVariableDeclarationList().Declarations;
         if (checkGrammarForDisallowedTrailingComma(declarations, Diagnostics.Trailing_comma_not_allowed))
             return true;
-        if ((declarations.Nodes?.Count ?? 0) == 0)
+        if ((declarations.Nodes.Count) == 0)
             return grammarErrorAtPos(node, declarations.Pos(), declarations.End() - declarations.Pos(), Diagnostics.Variable_declaration_list_cannot_be_empty);
         var flags = node.Flags & NodeFlags.BlockScoped;
         if (flags is NodeFlags.Using or NodeFlags.AwaitUsing)
@@ -1129,7 +1129,7 @@ public sealed partial class Checker
         }
         else
         {
-            foreach (var element in name.Elements() ?? [])
+            foreach (var element in name.Elements())
                 if (element.Name() != null)
                     return checkGrammarForEsModuleMarkerInBindingName(element.Name());
         }
@@ -1144,7 +1144,7 @@ public sealed partial class Checker
                 return grammarErrorOnNode(name, Diagnostics.X_let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations);
         }
         else
-            foreach (var element in name.Elements() ?? [])
+            foreach (var element in name.Elements())
                 if (element.AsBindingElement().Name() != null)
                     checkGrammarNameInLetOrConstDeclarations(element.Name());
         return false;
@@ -1202,7 +1202,7 @@ public sealed partial class Checker
     private bool checkGrammarObjectLiteralExpression(Node node, bool inDestructuring = false)
     {
         var seen = new Dictionary<string, DeclarationMeaning>();
-        List<Node> properties = default;
+        Slice<Node> properties = default;
         if ((node.PropertyList() != null))
         {
             properties = node.PropertyList().Nodes;
@@ -1507,7 +1507,7 @@ public sealed partial class Checker
     private bool checkGrammarInterfaceDeclaration(InterfaceDeclaration node)
     {
         bool seenExtends = false;
-        foreach (var clauseNode in node.HeritageClauses?.Nodes ?? [])
+        foreach (var clauseNode in node.HeritageClauses?.Nodes ?? default)
         {
             var clause = clauseNode.AsHeritageClause();
             if (clause.Token == Kind.ExtendsKeyword)
@@ -1531,9 +1531,9 @@ public sealed partial class Checker
         var types = node.Types;
         if (checkGrammarForDisallowedTrailingComma(types, Diagnostics.Trailing_comma_not_allowed))
             return true;
-        if (types != null && (types.Nodes?.Count ?? 0) == 0)
+        if (types != null && (types.Nodes.Count) == 0)
             return grammarErrorAtPos(node.AsNode(), types.Pos(), 0, Diagnostics.X_0_list_cannot_be_empty, TypeScript.Scanner.Scanner.TokenToString(node.Token));
-        foreach (var element in types?.Nodes ?? [])
+        foreach (var element in types?.Nodes ?? default)
             if (checkGrammarExpressionWithTypeArguments(element))
                 return true;
         return false;
@@ -1549,7 +1549,7 @@ public sealed partial class Checker
     // grammarchecks.go:845. Highlight the actual empty <...> delimiters.
     private bool checkGrammarForAtLeastOneTypeArgument(Node node, NodeList arguments)
     {
-        if (arguments != null && (arguments.Nodes?.Count ?? 0) == 0)
+        if (arguments != null && (arguments.Nodes.Count) == 0)
         {
             var sourceFile = Ast.GetSourceFileOfNode(node);
             int start = arguments.Pos() - 1;
@@ -2432,7 +2432,7 @@ public sealed partial class Checker
     // grammarchecks.go:120.
     private bool checkGrammarMappedType(MappedTypeNode node)
     {
-        if (GoRuntime.Len(node.Members?.Nodes) > 0)
+        if (GoRuntime.Len(node.Members?.Nodes ?? default) > 0)
             return grammarErrorOnNode(node.Members.Nodes[0], Diagnostics.A_mapped_type_may_not_declare_properties_or_methods);
         return false;
     }
@@ -2839,7 +2839,7 @@ public sealed partial class Checker
         checkGrammarJsxName(node.TagName());
         checkGrammarTypeArguments(node, node.TypeArgumentList());
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var attrNode in node.Attributes().Properties() ?? [])
+        foreach (var attrNode in node.Attributes().Properties())
         {
             if (attrNode.Kind == Kind.JsxSpreadAttribute)
                 continue;

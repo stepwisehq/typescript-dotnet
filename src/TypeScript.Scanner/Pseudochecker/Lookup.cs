@@ -210,7 +210,7 @@ internal sealed partial class PseudoChecker
         var errors = canGetTypeFromObjectLiteral(node);
         if (errors != null)
             return NewPseudoTypeInferredWithErrors(node.AsNode(), false, errors);
-        if (node.Properties == null || (node.Properties.Nodes?.Count ?? 0) == 0)
+        if (node.Properties == null || (node.Properties.Nodes.Count) == 0)
             return NewPseudoTypeObjectLiteral(null);
         var elements = new List<PseudoObjectElement>(node.Properties.Nodes.Count);
         foreach (var element in node.Properties.Nodes)
@@ -241,7 +241,7 @@ internal sealed partial class PseudoChecker
 
     private List<Node> canGetTypeFromObjectLiteral(ObjectLiteralExpression node)
     {
-        if (node.Properties == null || (node.Properties.Nodes?.Count ?? 0) == 0)
+        if (node.Properties == null || (node.Properties.Nodes.Count) == 0)
             return null;
         List<Node> errors = null;
         foreach (var e in node.Properties.Nodes)
@@ -582,7 +582,7 @@ internal sealed partial class PseudoChecker
     // determine "has required parameter after index i" with `i+1 < lastRequired`
     // (equivalently, `i < lastRequired-1`) in O(1).
     // Upstream upstream/TypeScript/tsc/internal/pseudochecker/lookup.go:610:1.
-    private static int lastRequiredParamIndex(List<Node> parameters)
+    private static int lastRequiredParamIndex(Slice<Node> parameters)
     {
         for (int i = GoRuntime.Len(parameters) - 1; i >= 0; i--)
             if (!isOptionalInitializedOrRestParameter(parameters[i]))
@@ -621,7 +621,7 @@ internal sealed partial class PseudoChecker
         }
 
         var p = parent.Parameters();
-        var selfIdx = p.IndexOf(node.AsNode());
+        var selfIdx = GoSlices.Index(p, node.AsNode());
         var lastRequired = lastRequiredParamIndex(p);
         return this.typeFromParameterWorker(node, selfIdx, lastRequired);
     }
@@ -749,8 +749,8 @@ internal sealed partial class PseudoChecker
             return NewPseudoTypeInferredWithErrors(node.AsNode(), false, errors);
         if (IsInConstContext(node.AsNode()) && isContextuallyTyped(node.AsNode()))
             return NewPseudoTypeInferred(node.AsNode(), false);
-        var results = new List<PseudoType>(node.Elements?.Nodes?.Count ?? 0);
-        foreach (var element in node.Elements?.Nodes ?? [])
+        var results = new List<PseudoType>(node.Elements?.Nodes.Count ?? 0);
+        foreach (var element in node.Elements?.Nodes ?? default)
             results.Add(typeFromExpression(element));
         return NewPseudoTypeTuple(results);
     }
@@ -759,7 +759,7 @@ internal sealed partial class PseudoChecker
     {
         if (!IsInConstContext(node.AsNode()))
             return[node.AsNode()];
-        foreach (var element in node.Elements?.Nodes ?? [])
+        foreach (var element in node.Elements?.Nodes ?? default)
             if (element.Kind == Kind.SpreadElement)
                 return[element];
         return null;

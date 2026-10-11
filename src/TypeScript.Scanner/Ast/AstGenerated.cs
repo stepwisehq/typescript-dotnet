@@ -3901,7 +3901,7 @@ public sealed partial class JsxText : NodeData, ExpressionBase, LiteralLikeNodeB
 
 public sealed partial class SyntaxList : NodeData
 {
-    public List<Node> Children { get; set; }
+    public Slice<Node> Children { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodes(v, this.Children);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSyntaxList(this.Children), this.AsNode(), f.AsNodeFactory().hooks);
@@ -4921,7 +4921,7 @@ public sealed partial class SyntheticReferenceExpression : NodeData, ExpressionB
 public sealed partial class JSDocTypeLiteral : NodeData, JSDocTypeBase, TypeNodeBase, TypeSyntaxBase, DeclarationBase
 {
     public Symbol Symbol { get; set; }
-    public List<Node> JSDocPropertyTags { get; set; }
+    public Slice<Node> JSDocPropertyTags { get; set; }
     public bool IsArrayType { get; set; }
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodes(v, this.JSDocPropertyTags);
@@ -6351,7 +6351,11 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.JsxText, data);
     }
 
-    public Node NewSyntaxList(List<Node> children)
+    public Node NewSyntaxList(List<Node> children) => NewSyntaxList(children is null ? default(Slice<Node>) : Slice<Node>.FromArray(children.ToArray()));
+    public Node UpdateSyntaxList(SyntaxList node, List<Node> children) => UpdateSyntaxList(node, children is null ? default(Slice<Node>) : Slice<Node>.FromArray(children.ToArray()));
+    public Node NewJSDocTypeLiteral(List<Node> jsdocPropertyTags, bool isArrayType) => NewJSDocTypeLiteral(jsdocPropertyTags is null ? default(Slice<Node>) : Slice<Node>.FromArray(jsdocPropertyTags.ToArray()), isArrayType);
+    public Node UpdateJSDocTypeLiteral(JSDocTypeLiteral node, List<Node> jsdocPropertyTags, bool isArrayType) => UpdateJSDocTypeLiteral(node, jsdocPropertyTags is null ? default(Slice<Node>) : Slice<Node>.FromArray(jsdocPropertyTags.ToArray()), isArrayType);
+    public Node NewSyntaxList(Slice<Node> children)
     {
         var data = new SyntaxList();
         data.Children = children;
@@ -6752,7 +6756,7 @@ public sealed partial class NodeFactory
         return this.newNode(Kind.SyntheticReferenceExpression, data);
     }
 
-    public Node NewJSDocTypeLiteral(List<Node> jsdocPropertyTags, bool isArrayType)
+    public Node NewJSDocTypeLiteral(Slice<Node> jsdocPropertyTags, bool isArrayType)
     {
         var data = new JSDocTypeLiteral();
         data.JSDocPropertyTags = jsdocPropertyTags;
@@ -8018,7 +8022,7 @@ public sealed partial class NodeFactory
         return node.AsNode();
     }
 
-    public Node UpdateSyntaxList(SyntaxList node, List<Node> children)
+    public Node UpdateSyntaxList(SyntaxList node, Slice<Node> children)
     {
         if (!Ast.SameSyntaxSlice(children, node.Children))
         {
@@ -8440,7 +8444,7 @@ public sealed partial class NodeFactory
         return node.AsNode();
     }
 
-    public Node UpdateJSDocTypeLiteral(JSDocTypeLiteral node, List<Node> jsdocPropertyTags, bool isArrayType)
+    public Node UpdateJSDocTypeLiteral(JSDocTypeLiteral node, Slice<Node> jsdocPropertyTags, bool isArrayType)
     {
         if (!Ast.SameSyntaxSlice(jsdocPropertyTags, node.JSDocPropertyTags) || isArrayType != node.IsArrayType)
         {
@@ -10919,7 +10923,7 @@ public partial class CaseBlock
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Clauses?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Clauses?.Nodes ?? default))
             yield return child;
     }
 }
@@ -10930,7 +10934,7 @@ public partial class CaseOrDefaultClause
     {
         if (this.Expression is not null)
             yield return this.Expression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -10992,7 +10996,7 @@ public partial class Block
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11001,7 +11005,7 @@ public partial class VariableStatement
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.DeclarationList is not null)
             yield return this.DeclarationList;
@@ -11027,7 +11031,7 @@ public partial class VariableDeclarationList
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Declarations?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Declarations?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11036,7 +11040,7 @@ public partial class BindingPattern
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11045,7 +11049,7 @@ public partial class ParameterDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.DotDotDotToken is not null)
             yield return this.DotDotDotToken;
@@ -11079,7 +11083,7 @@ public partial class MissingDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11088,15 +11092,15 @@ public partial class FunctionDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.AsteriskToken is not null)
             yield return this.AsteriskToken;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11111,15 +11115,15 @@ public partial class ClassDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11128,15 +11132,15 @@ public partial class ClassExpression
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11145,7 +11149,7 @@ public partial class HeritageClause
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11154,15 +11158,15 @@ public partial class InterfaceDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.HeritageClauses?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11171,11 +11175,11 @@ public partial class TypeAliasDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11197,11 +11201,11 @@ public partial class EnumDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11210,7 +11214,7 @@ public partial class ModuleBlock
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Statements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11219,7 +11223,7 @@ public partial class ImportDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.ImportClause is not null)
             yield return this.ImportClause;
@@ -11252,7 +11256,7 @@ public partial class NamedImports
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11261,7 +11265,7 @@ public partial class ExportAssignment
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11274,7 +11278,7 @@ public partial class NamespaceExportDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -11294,7 +11298,7 @@ public partial class NamedExports
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11314,9 +11318,9 @@ public partial class CallSignatureDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11327,9 +11331,9 @@ public partial class ConstructSignatureDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11340,11 +11344,11 @@ public partial class ConstructorDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11359,13 +11363,13 @@ public partial class GetAccessorDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11380,13 +11384,13 @@ public partial class SetAccessorDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11401,9 +11405,9 @@ public partial class IndexSignatureDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11414,15 +11418,15 @@ public partial class MethodSignatureDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
         if (this.PostfixToken is not null)
             yield return this.PostfixToken;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11433,7 +11437,7 @@ public partial class MethodDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.AsteriskToken is not null)
             yield return this.AsteriskToken;
@@ -11441,9 +11445,9 @@ public partial class MethodDeclaration
             yield return this.name;
         if (this.PostfixToken is not null)
             yield return this.PostfixToken;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11458,7 +11462,7 @@ public partial class PropertySignatureDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -11475,7 +11479,7 @@ public partial class PropertyDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -11492,7 +11496,7 @@ public partial class ClassStaticBlockDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.Body is not null)
             yield return this.Body;
@@ -11503,7 +11507,7 @@ public partial class BinaryExpression
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.Left is not null)
             yield return this.Left;
@@ -11549,11 +11553,11 @@ public partial class ArrowFunction
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11570,15 +11574,15 @@ public partial class FunctionExpression
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.AsteriskToken is not null)
             yield return this.AsteriskToken;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -11662,9 +11666,9 @@ public partial class CallExpression
             yield return this.Expression;
         if (this.QuestionDotToken is not null)
             yield return this.QuestionDotToken;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Arguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Arguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11675,9 +11679,9 @@ public partial class NewExpression
     {
         if (this.Expression is not null)
             yield return this.Expression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Arguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Arguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11715,7 +11719,7 @@ public partial class TemplateExpression
     {
         if (this.Head is not null)
             yield return this.Head;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TemplateSpans?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TemplateSpans?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11739,7 +11743,7 @@ public partial class TaggedTemplateExpression
             yield return this.Tag;
         if (this.QuestionDotToken is not null)
             yield return this.QuestionDotToken;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
         if (this.Template is not null)
             yield return this.Template;
@@ -11759,7 +11763,7 @@ public partial class ArrayLiteralExpression
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11768,7 +11772,7 @@ public partial class ObjectLiteralExpression
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11786,7 +11790,7 @@ public partial class PropertyAssignment
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -11803,7 +11807,7 @@ public partial class ShorthandPropertyAssignment
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -11869,7 +11873,7 @@ public partial class UnionTypeNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11878,7 +11882,7 @@ public partial class IntersectionTypeNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Types?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11942,7 +11946,7 @@ public partial class TypeReferenceNode
     {
         if (this.TypeName is not null)
             yield return this.TypeName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11953,7 +11957,7 @@ public partial class ExpressionWithTypeArguments
     {
         if (this.Expression is not null)
             yield return this.Expression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -11995,7 +11999,7 @@ public partial class ImportAttributes
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Attributes?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Attributes?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12006,7 +12010,7 @@ public partial class TypeQueryNode
     {
         if (this.ExprName is not null)
             yield return this.ExprName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12025,7 +12029,7 @@ public partial class MappedTypeNode
             yield return this.QuestionToken;
         if (this.Type is not null)
             yield return this.Type;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12034,7 +12038,7 @@ public partial class TypeLiteralNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Members?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12043,7 +12047,7 @@ public partial class TupleTypeNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Elements?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12094,9 +12098,9 @@ public partial class FunctionTypeNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -12107,11 +12111,11 @@ public partial class ConstructorTypeNode
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -12124,7 +12128,7 @@ public partial class TemplateLiteralTypeNode
     {
         if (this.Head is not null)
             yield return this.Head;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TemplateSpans?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TemplateSpans?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12155,7 +12159,7 @@ public partial class JsxElement
     {
         if (this.OpeningElement is not null)
             yield return this.OpeningElement;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Children?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Children?.Nodes ?? default))
             yield return child;
         if (this.ClosingElement is not null)
             yield return this.ClosingElement;
@@ -12166,7 +12170,7 @@ public partial class JsxAttributes
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Properties?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12188,7 +12192,7 @@ public partial class JsxOpeningElement
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
         if (this.Attributes is not null)
             yield return this.Attributes;
@@ -12201,7 +12205,7 @@ public partial class JsxSelfClosingElement
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
         if (this.Attributes is not null)
             yield return this.Attributes;
@@ -12214,7 +12218,7 @@ public partial class JsxFragment
     {
         if (this.OpeningFragment is not null)
             yield return this.OpeningFragment;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Children?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Children?.Nodes ?? default))
             yield return child;
         if (this.ClosingFragment is not null)
             yield return this.ClosingFragment;
@@ -12274,9 +12278,9 @@ public partial class JSDoc
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Tags?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Tags?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12334,7 +12338,7 @@ public partial class JSDocTypeTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12345,7 +12349,7 @@ public partial class JSDocUnknownTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12358,9 +12362,9 @@ public partial class JSDocTemplateTag
             yield return this.TagName;
         if (this.Constraint is not null)
             yield return this.Constraint;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12373,7 +12377,7 @@ public partial class JSDocReturnTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12384,7 +12388,7 @@ public partial class JSDocPublicTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12395,7 +12399,7 @@ public partial class JSDocPrivateTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12406,7 +12410,7 @@ public partial class JSDocProtectedTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12417,7 +12421,7 @@ public partial class JSDocReadonlyTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12428,7 +12432,7 @@ public partial class JSDocOverrideTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12439,7 +12443,7 @@ public partial class JSDocDeprecatedTag
     {
         if (this.TagName is not null)
             yield return this.TagName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12452,7 +12456,7 @@ public partial class JSDocSeeTag
             yield return this.TagName;
         if (this.NameExpression is not null)
             yield return this.NameExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12465,7 +12469,7 @@ public partial class JSDocImplementsTag
             yield return this.TagName;
         if (this.ClassName is not null)
             yield return this.ClassName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12478,7 +12482,7 @@ public partial class JSDocAugmentsTag
             yield return this.TagName;
         if (this.ClassName is not null)
             yield return this.ClassName;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12491,7 +12495,7 @@ public partial class JSDocSatisfiesTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12504,7 +12508,7 @@ public partial class JSDocThrowsTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12517,7 +12521,7 @@ public partial class JSDocThisTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12534,7 +12538,7 @@ public partial class JSDocImportTag
             yield return this.ModuleSpecifier;
         if (this.Attributes is not null)
             yield return this.Attributes;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12549,7 +12553,7 @@ public partial class JSDocCallbackTag
             yield return this.TypeExpression;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12562,7 +12566,7 @@ public partial class JSDocOverloadTag
             yield return this.TagName;
         if (this.TypeExpression is not null)
             yield return this.TypeExpression;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12577,7 +12581,7 @@ public partial class JSDocTypedefTag
             yield return this.TypeExpression;
         if (this.name is not null)
             yield return this.name;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Comment?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12586,9 +12590,9 @@ public partial class JSDocSignature
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeParameters?.Nodes ?? default))
             yield return child;
-        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.Parameters?.Nodes ?? default))
             yield return child;
         if (this.Type is not null)
             yield return this.Type;
@@ -12608,7 +12612,7 @@ public partial class ModuleDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -12623,7 +12627,7 @@ public partial class ImportEqualsDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -12636,7 +12640,7 @@ public partial class ExportDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.ExportClause is not null)
             yield return this.ExportClause;
@@ -12657,7 +12661,7 @@ public partial class ImportTypeNode
             yield return this.Attributes;
         if (this.Qualifier is not null)
             yield return this.Qualifier;
-        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.TypeArguments?.Nodes ?? default))
             yield return child;
     }
 }
@@ -12715,7 +12719,7 @@ public partial class TypeParameterDeclaration
 {
     internal override IEnumerable<Node> IterChildren()
     {
-        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(this.modifiers?.Nodes ?? default))
             yield return child;
         if (this.name is not null)
             yield return this.name;
@@ -12769,7 +12773,7 @@ public partial class JSDocParameterOrPropertyTag
                 yield return name;
         }
 
-        foreach (var child in Ast.IterateSyntaxNodes(Comment?.Nodes))
+        foreach (var child in Ast.IterateSyntaxNodes(Comment?.Nodes ?? default))
             yield return child;
     }
 }// END GENERATED SYNTAX ITERATORS

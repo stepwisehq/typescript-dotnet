@@ -836,11 +836,11 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // utilities.go:1140. Retained syntax-only declaration member dispatch.
-    private static List<Node> getMembersOfDeclaration(Node node) => node.Kind switch
+    private static Slice<Node> getMembersOfDeclaration(Node node) => node.Kind switch
     {
         Kind.InterfaceDeclaration or Kind.ClassDeclaration or Kind.ClassExpression or Kind.TypeLiteral => node.Members(),
         Kind.ObjectLiteralExpression => node.Properties(),
-        _ => null
+        _ => default
     };
 }
 
@@ -1301,7 +1301,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static List<Node> getAllJSDocTags(Node node)
+    private static Slice<Node> getAllJSDocTags(Node node)
     {
         if (((node.Flags & NodeFlags.JSDoc) == 0))
         {
@@ -1324,7 +1324,7 @@ public sealed partial class Checker
             }
         }
 
-        return null;
+        return default;
     }
 }
 
@@ -1539,7 +1539,7 @@ public sealed partial class Checker
     }
 
     // upstream checker.go:25054. Concrete unary tuple wrapper used by implied constraints.
-    private static bool isUnaryTupleTypeNode(Node node) => Ast.IsTupleTypeNode(node) && (node.Elements()?.Count ?? 0) == 1;
+    private static bool isUnaryTupleTypeNode(Node node) => Ast.IsTupleTypeNode(node) && (node.Elements().Count) == 1;
 }
 
 public sealed partial class Checker
@@ -1850,7 +1850,7 @@ public sealed partial class Checker
     private static Node GetSetAccessorValueParameter(Node accessor)
     {
         var parameters = accessor.Parameters();
-        if ((parameters?.Count ?? 0) > 0)
+        if ((parameters.Count) > 0)
             return parameters[parameters.Count == 2 && Ast.IsThisParameter(parameters[0]) ? 1 : 0];
         return null;
     }

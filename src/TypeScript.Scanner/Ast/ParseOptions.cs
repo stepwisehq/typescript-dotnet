@@ -47,7 +47,7 @@ public static partial class Ast
 
     private static Node isFileProbablyExternalModule(SourceFile file)
     {
-        if (file.Statements?.Nodes is not null)
+        if (file.Statements is not null)
             foreach (var statement in file.Statements.Nodes)
                 if (isAnExternalModuleIndicatorNode(statement))
                     return statement;

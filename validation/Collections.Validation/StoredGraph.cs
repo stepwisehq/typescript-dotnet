@@ -569,6 +569,12 @@ public sealed partial class StoredGraph
                 if (cache.Count != 0)
                     throw new InvalidDataException("Unobserved stored cache key family (" + cache.Count + " entries)");
                 break;
+            case Slice<Node> header:
+                result.Kind = header.IsNil ? nullKind ?? "null" : "list";
+                result.Null = header.IsNil;
+                foreach (var item in header)
+                    result.Values.Add(Value(item, "node"));
+                break;
             case List<Node> nodes:
                 result.Kind = "list";
                 foreach (var item in nodes)

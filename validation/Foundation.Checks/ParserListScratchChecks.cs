@@ -26,27 +26,35 @@ public static class ParserListScratchChecks
     private static void Detached()
     {
         var arena = new GoArena<Node>();
-        Require(arena.CloneAsList(default(Slice<Node>)) is null, "Nil scratch publishes nil node storage");
-        Require(arena.CloneAsList(Slice<Node>.Make(0, 16)) is null, "Allocated empty scratch also publishes nil node storage");
-        Require(arena.CloneAsList(ReadOnlySpan<Node>.Empty) is null, "Empty borrowed span publishes nil node storage");
+        Require(arena.CloneHeader(default(Slice<Node>)).IsNil, "Nil scratch publishes nil node storage");
+        Require(arena.CloneHeader(Slice<Node>.Make(0, 16)).IsNil, "Allocated empty scratch also publishes nil node storage");
+        Require(arena.CloneHeader(ReadOnlySpan<Node>.Empty).IsNil, "Empty borrowed span publishes nil node storage");
         var factory = new NodeFactory();
         Node first = factory.NewIdentifier("first"), second = factory.NewIdentifier("second"), replacement = factory.NewIdentifier("replacement");
         Node[] borrowed = [replacement, first, second, replacement];
-        var spanPublished = arena.CloneAsList(borrowed.AsSpan(1, 2));
+        var spanPublished = arena.CloneHeader(borrowed.AsSpan(1, 2));
         borrowed[1] = replacement;
         spanPublished[1] = replacement;
-        Require(spanPublished.Count == 2 && ReferenceEquals(first, spanPublished[0]) && ReferenceEquals(second, borrowed[2]), "Borrowed offset span and published list have detached storage with shallow node identity");
+        Require(spanPublished.Count == 2 && spanPublished.Capacity == 2 && ReferenceEquals(first, spanPublished[0]) && ReferenceEquals(second, borrowed[2]), "Borrowed offset span and published list have clipped detached storage with shallow node identity");
         var scratch = Slice<Node>.Make(0, 16).Append(first).Append(second);
-        var published = arena.CloneAsList(scratch);
-        Require(published.Count == 2 && ReferenceEquals(first, published[0]) && ReferenceEquals(second, published[1]), "Clone is shallow, ordered and preserves node identity");
+        var published = arena.CloneHeader(scratch);
+        Require(published.Count == 2 && published.Capacity == 2 && ReferenceEquals(first, published[0]) && ReferenceEquals(second, published[1]), "Clone is clipped, shallow, ordered and preserves node identity");
         scratch[0] = replacement;
         Require(ReferenceEquals(first, published[0]), "Later scratch writes cannot change published list storage");
         published[1] = replacement;
         Require(ReferenceEquals(second, scratch[1]), "Public list writes cannot change scratch storage");
-        var offset = arena.CloneAsList(scratch.Slice2(1));
+        var offset = arena.CloneHeader(scratch.Slice2(1));
         Require(offset.Count == 1 && ReferenceEquals(second, offset[0]), "Clone honors logical offset and length");
         for (int i = 0; i < 32; i++) scratch = scratch.Append(replacement);
         Require(published.Count == 2 && ReferenceEquals(first, published[0]), "Scratch growth cannot alter earlier published length or values");
+        var list = factory.NewNodeList(published);
+        var clone = list.Clone(factory);
+        clone.Nodes[0] = replacement;
+        Require(ReferenceEquals(list.Nodes[0], replacement), "NodeList clone shares existing element slots");
+        clone.Nodes = clone.Nodes.Append(second);
+        Require(list.Nodes.Length == 2 && clone.Nodes.Length == 3, "Clone append retains independent header lengths");
+        clone.Nodes[0] = first;
+        Require(ReferenceEquals(list.Nodes[0], replacement), "Append past clipped capacity detaches the cloned header");
     }
 
     private static void Nested()
@@ -65,7 +73,7 @@ public static class ParserListScratchChecks
         Require((file.Diagnostics()?.Count ?? 0) == 0, "Nested list parsing has no syntax diagnostics");
         var functions = file.Statements.Nodes;
         Require(functions.Count == count, "Outer source-element list remains complete");
-        var allStatementLists = new List<List<Node>>();
+        var allStatementLists = new List<Slice<Node>>();
         foreach (int f in Enumerable.Range(0, count))
         {
             var function = functions[f];
@@ -73,11 +81,13 @@ public static class ParserListScratchChecks
             Require(function.Parameters().Count == count, "Delimited parameter list grows independently");
             for (int p = 0; p < count; p++) Require(function.Parameters()[p].Name().Text() == "p" + p, "Parameter order survives nested parsing");
             var statements = function.Body().AsBlock().Statements.Nodes;
-            Require(statements.Count == count && allStatementLists.All(other => !ReferenceEquals(other, statements)), "Each returned block list has independent storage");
+            Require(statements.Count == count && allStatementLists.All(other => !Core.Same(other, statements)), "Each returned block list has independent storage");
             allStatementLists.Add(statements);
             for (int v = 0; v < count; v++)
             {
-                var declaration = statements[v].AsVariableStatement().DeclarationList.AsVariableDeclarationList().Declarations.Nodes.Single();
+                var declarationNodes = statements[v].AsVariableStatement().DeclarationList.AsVariableDeclarationList().Declarations.Nodes;
+                Require(declarationNodes.Length == 1, "Each statement retains exactly one declaration");
+                var declaration = declarationNodes[0];
                 Require(declaration.Name().Text() == "v" + v, "Outer statement order survives inner delimited lists");
                 var values = declaration.Initializer().AsArrayLiteralExpression().Elements.Nodes;
                 Require(values.Count == count, "Inner array list is complete");

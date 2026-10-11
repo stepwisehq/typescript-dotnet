@@ -70,6 +70,7 @@ def composite(n):
     return n=='CompositeBase' or any(composite(e) for e in structs.get(n,([],[]))[0])
 def typ(t):
     t=t.strip()
+    if t == '[]*Node': return 'Slice<Node>'
     if t.startswith('[]'):return 'List<'+typ(t[2:])+'>'
     t=t.lstrip('*')
     if t in aliases:return aliases[t]
@@ -173,7 +174,7 @@ for n in concrete:
         for f,t in ff:
             if f in bound_fields:continue
             ct=typ(t)
-            ft={'Node':'node','NodeList':'list','ModifierList':'list','List<Node>':'nodes','List<string>':'strings','string':'bytes','bool':'bool'}.get(ct,'number')
+            ft={'Node':'node','NodeList':'list','ModifierList':'list','List<Node>':'nodes','Slice<Node>':'nodes','List<string>':'strings','string':'bytes','bool':'bool'}.get(ct,'number')
             parts.append('        yield return new SyntaxField("'+f+'", "'+ft+'", '+cname(f)+');')
     if not any(f not in bound_fields for f,t in ff):parts.append('        yield break;')
     parts.append('    }')
@@ -211,6 +212,13 @@ for (recv,rtype,fn,ps,rt),body in fs:
         elif line.startswith('node.Flags'):lines.append(expr(line).replace('this.Flags','node.Flags')+';')
         elif line=='return node':lines.append('return node;')
         else:raise ValueError((fn,line))
+    if fn in {'NewSyntaxList', 'NewJSDocTypeLiteral'}:
+        compat_args = [arg.replace('Slice<Node>', 'List<Node>') for arg in args]
+        call_args = [arg.split(' ')[-1] for arg in args]
+        position = next(i for i,arg in enumerate(args) if arg.startswith('Slice<Node>'))
+        value = call_args[position]
+        call_args[position] = value+' is null ? default(Slice<Node>) : Slice<Node>.FromArray('+value+'.ToArray())'
+        parts.append('    public Node '+fn+'('+', '.join(compat_args)+') => '+fn+'('+', '.join(call_args)+');')
     parts.append('    public Node '+fn+'('+', '.join(args)+')\n    {\n'+''.join('        '+l+'\n' for l in lines)+'    }')
     count+=1
     if fn[3:] in borrowed_text_models:
@@ -236,6 +244,13 @@ for (recv,rtype,fn,ps,rt),body in fs:
     b=re.sub(r'case ([^:]+):',lambda m:''.join('case '+v.strip()+':\n' for v in m[1].split(',')),b)
     b=re.sub(r'panic\(([^\n]+)\)',r'throw new InvalidOperationException(\1)',b)
     b=re.sub(r'(?m)^(\s*(?:return |throw )[^\n]+)$',r'\1;',b)
+    if fn in {'UpdateSyntaxList', 'UpdateJSDocTypeLiteral'}:
+        compat_args = [arg.replace('Slice<Node>', 'List<Node>') for arg in args]
+        call_args = [arg.split(' ')[-1] for arg in args]
+        position = next(i for i,arg in enumerate(args) if arg.startswith('Slice<Node>'))
+        value = call_args[position]
+        call_args[position] = value+' is null ? default(Slice<Node>) : Slice<Node>.FromArray('+value+'.ToArray())'
+        parts.append('    public Node '+fn+'('+', '.join(compat_args)+') => '+fn+'('+', '.join(call_args)+');')
     parts.append('    public Node '+fn+'('+', '.join(args)+')\n    {\n'+''.join('        '+l+'\n' for l in b.splitlines())+'    }')
 # Borrowed visitor updates retain the same source storage before any public
 # projection. Public Update methods above keep source SameSyntaxSlice semantics.

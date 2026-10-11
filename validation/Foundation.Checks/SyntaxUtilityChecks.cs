@@ -144,7 +144,7 @@ public static partial class ScannerChecks
                 Equal(row.GetProperty("ModifierSame").GetBoolean(), ReferenceEquals(node, Ast.ReplaceModifiers(factory, node, node.Modifiers())), context + " unchanged modifiers identity");
                 var modifiers = factory.NewModifierList([factory.NewToken(Kind.ExportKeyword), factory.NewToken(Kind.AsyncKeyword)]);
                 var modified = Ast.ReplaceModifiers(factory, node, modifiers);
-                CompareIds(row.GetProperty("ModifiedKinds"), modified.Modifiers().Nodes.Select(value => (int)value.Kind), context + " modifier order");
+                CompareIds(row.GetProperty("ModifiedKinds"), GoSlices.ToListOrNull(modified.Modifiers().Nodes)!.Select(value => (int)value.Kind), context + " modifier order");
             }
 
             if (Ast.IsAccessor(node))

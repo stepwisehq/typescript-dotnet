@@ -8,7 +8,7 @@ public partial class Parser
     // parseJSDocForNode lazily parses JSDoc for a node in a TS file.
     // Called on first access to Node.JSDoc() for non-JS source files.
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:19:1.
-    private static List<Node> parseJSDocForNode(SourceFile sourceFile, Node node)
+    private static Slice<Node> parseJSDocForNode(SourceFile sourceFile, Node node)
     {
         var p = getParser();
         // Go parser-pool return omitted: this port creates an isolated managed parser.
@@ -16,10 +16,10 @@ public partial class Parser
         var ranges = GetJSDocCommentRanges(p.factory, null, node, sourceFile.TextView());
         if ((GoRuntime.Len(ranges) == 0))
         {
-            return null;
+            return default;
         }
 
-        var jsdoc = GoRuntime.MakeSlice<Node>(0);
+        var jsdoc = Slice<Node>.Make(0);
         var pos = node.Pos();
         {
             foreach (var comment in GoRuntime.RangeValues(ranges))
@@ -40,11 +40,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:56:1.
-    private List<Node> withJSDoc(Node node, jsdocScannerInfo info)
+    private Slice<Node> withJSDoc(Node node, jsdocScannerInfo info)
     {
         if (((info & global::TypeScript.Scanner.jsdocScannerInfo.HasJSDoc) == 0))
         {
-            return null;
+            return default;
         }
 
         if (!this.isJavaScript())
@@ -57,14 +57,14 @@ public partial class Parser
 
             if (((info & global::TypeScript.Scanner.jsdocScannerInfo.HasSeeOrLink) == 0))
             {
-                return null;
+                return default;
             }
         }
 
         var ranges = GetJSDocCommentRanges(this.factory, this.jsdocCommentRangesSpace, node, this.sourceText);
         this.jsdocCommentRangesSpace = GoRuntime.Slice(ranges, 0, 0);
         this.hasDeprecatedTag = false;
-        var jsdoc = GoRuntime.Slice(this.nodeSliceArena.NewSlice(GoRuntime.Len(ranges)), 0, 0);
+        var jsdoc = GoRuntime.Slice(this.nodeSliceArena.NewSliceHeader(GoRuntime.Len(ranges)), 0, 0);
         var pos = node.Pos();
         {
             foreach (var comment in GoRuntime.RangeValues(ranges))
@@ -104,7 +104,7 @@ public partial class Parser
             return jsdoc;
         }
 
-        return null;
+        return default;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:107:1.
@@ -204,13 +204,13 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:193:1.
     private Node parseJSDocCommentWorker(int start, int end, int fullStart, int indent)
     {
-        var tags = GoRuntime.Slice(this.nodeSliceArena.NewSlice(1), 0, 0);
+        var tags = GoRuntime.Slice(this.nodeSliceArena.NewSliceHeader(1), 0, 0);
         var tagsPos = -1;
         var tagsEnd = -1;
         var state = jsdocState.SawAsterisk;
         var backtickCount = 0;
         var inFencedCodeBlock = false;
-        var commentParts = GoRuntime.Slice(this.nodeSliceArena.NewSlice(1), 0, 0);
+        var commentParts = GoRuntime.Slice(this.nodeSliceArena.NewSliceHeader(1), 0, 0);
         var comments = this.jsdocCommentsSpace;
         var commentsPos = -1;
         var linkEnd = start;
@@ -403,8 +403,8 @@ public partial class Parser
                             comments = removeLeadingNewlines(comments);
                         }
 
-                        var jsdocText = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), linkEnd, commentEnd);
-                        commentParts = GoRuntime.Append(commentParts, jsdocText, link);
+                        var jsdocText = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.CloneHeader(comments))), linkEnd, commentEnd);
+                        commentParts = commentParts.Append((ReadOnlySpan<Node>)[jsdocText, link]);
                         comments = GoRuntime.Slice(comments, 0, 0);
                         linkEnd = this.scanner.TokenEnd();
                         break;
@@ -453,7 +453,7 @@ public partial class Parser
         if ((GoRuntime.Len(comments) > 0))
         {
             comments[(GoRuntime.Len(comments) - 1)] = GoStrings.TrimRightFunc(comments[(GoRuntime.Len(comments) - 1)], GoUnicode.IsSpace);
-            var jsdocText2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), linkEnd, commentsPos);
+            var jsdocText2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.CloneHeader(comments))), linkEnd, commentsPos);
             commentParts = GoRuntime.Append(commentParts, jsdocText2);
         }
 
@@ -594,7 +594,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:460:1.
-    private Node parseTag(List<Node> tags, int margin)
+    private Node parseTag(Slice<Node> tags, int margin)
     {
         if ((this.token != Kind.AtToken))
         {
@@ -791,7 +791,7 @@ public partial class Parser
         var comments = this.jsdocTagCommentsSpace;
         this.jsdocTagCommentsSpace = default;
         var parts = this.jsdocTagCommentsPartsSpace;
-        this.jsdocTagCommentsPartsSpace = null;
+        this.jsdocTagCommentsPartsSpace = default;
         var linkEnd = -1;
         var state = jsdocState.BeginningOfLine;
         var backtickCount = 0;
@@ -921,7 +921,7 @@ public partial class Parser
                             commentStart = commentsPos;
                         }
 
-                        var text2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), commentStart, commentEnd);
+                        var text2 = this.finishNodeWithEnd(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.CloneHeader(comments))), commentStart, commentEnd);
                         parts = GoRuntime.Append(parts, text2);
                         parts = GoRuntime.Append(parts, link);
                         comments = GoRuntime.Slice(comments, 0, 0);
@@ -1027,14 +1027,14 @@ public partial class Parser
                 commentStart2 = commentsPos;
             }
 
-            var text3 = this.finishNode(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.Clone(comments))), commentStart2);
+            var text3 = this.finishNode(this.factory.NewJSDocTextWithFragments(JSDocTextFragments.FromViews(this.stringSliceArena.CloneHeader(comments))), commentStart2);
             parts = GoRuntime.Append(parts, text3);
         }
 
         this.jsdocTagCommentsPartsSpace = GoRuntime.Slice(parts, 0, 0);
         if ((GoRuntime.Len(parts) > 0))
         {
-            return this.newNodeList(Core.NewTextRange(commentsPos, this.scanner.TokenEnd()), this.nodeSliceArena.Clone(parts));
+            return this.newNodeList(Core.NewTextRange(commentsPos, this.scanner.TokenEnd()), this.nodeSliceArena.CloneHeader(parts));
         }
 
         return null;
@@ -1265,7 +1265,7 @@ public partial class Parser
         if (((typeExpression != null) && isObjectOrObjectArrayTypeReference(typeExpression.Type())))
         {
             var pos = this.nodePos();
-            List<Node> children = default;
+            Slice<Node> children = default;
             while (true)
             {
                 var state = this.mark();
@@ -1293,7 +1293,7 @@ public partial class Parser
                 }
             }
 
-            if ((children != null))
+            if ((!children.IsNil))
             {
                 var literal = this.finishNode(this.factory.NewJSDocTypeLiteral(children, (typeExpression.Type().Kind == Kind.ArrayType)), pos);
                 return this.finishNode(this.factory.NewJSDocTypeExpression(literal), pos);
@@ -1304,7 +1304,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:884:1.
-    private Node parseReturnTag(List<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
+    private Node parseReturnTag(Slice<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
     {
         if (Core.Some(previousTags, Ast.IsJSDocReturnTag))
         {
@@ -1317,7 +1317,7 @@ public partial class Parser
 
     // pass indent=-1 to skip parsing trailing comments (as when a type tag is nested in a typedef)
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:894:1.
-    private Node parseTypeTag(List<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
+    private Node parseTypeTag(Slice<Node> previousTags, int start, Node tagName, int indent, ByteStringView indentText)
     {
         if (Core.Some(previousTags, Ast.IsJSDocTypeTag))
         {
@@ -1492,7 +1492,7 @@ public partial class Parser
         {
             Node child = default;
             JSDocTypeTag childTypeTag = default;
-            List<Node> jsdocPropertyTags = default;
+            Slice<Node> jsdocPropertyTags = default;
             while (true)
             {
                 var state = this.mark();
@@ -1613,7 +1613,7 @@ public partial class Parser
     private NodeList parseCallbackTagParameters(int indent)
     {
         Node child = default;
-        List<Node> parameters = default;
+        Slice<Node> parameters = default;
         var pos = this.nodePos();
         while (true)
         {
@@ -1646,7 +1646,7 @@ public partial class Parser
         var state = this.mark();
         if (this.parseOptionalJsdoc(Kind.AtToken))
         {
-            var tag = this.parseTag(null, indent);
+            var tag = this.parseTag(default, indent);
             if ((tag.Kind == Kind.JSDocReturnTag))
             {
                 returnTag = tag;
@@ -1817,7 +1817,7 @@ public partial class Parser
             {
                 if ((target == propertyLikeParse.Property))
                 {
-                    return this.parseTypeTag(null, start, tagName, -1, "");
+                    return this.parseTypeTag(default, start, tagName, -1, "");
                 }
 
                 break;

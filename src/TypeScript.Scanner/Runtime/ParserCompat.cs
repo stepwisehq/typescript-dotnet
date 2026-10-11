@@ -354,6 +354,29 @@ internal static class GoSlices
         return values.GetRange(0, length - count);
     }
 
+    // Go slices.Concat always detaches nonempty output; zero total length is nil.
+    public static Slice<T> Concat<T>(Slice<T> left, Slice<T> right)
+    {
+        int length = checked(left.Length + right.Length);
+        if (length == 0) return default;
+        var result = TypeScript.Scanner.Slice<T>.Make(length);
+        left.AsSpan().CopyTo(result.AsSpan());
+        right.AsSpan().CopyTo(result.AsSpan().Slice(left.Length));
+        return result;
+    }
+
+    public static (int Index, bool Found) BinarySearchFunc<T>(Slice<T> values, T target, Comparison<T> compare)
+    {
+        int low = 0, high = values.Length;
+        while (low < high)
+        {
+            int mid = low + (high - low) / 2;
+            if (compare(values[mid], target) < 0) low = mid + 1;
+            else high = mid;
+        }
+        return (low, low < values.Length && compare(values[low], target) == 0);
+    }
+
     public static (int Index, bool Found) BinarySearchFunc<T>(List<T> values, T target, Comparison<T> compare)
     {
         int low = 0, high = values?.Count ?? 0;

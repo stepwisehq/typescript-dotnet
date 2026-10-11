@@ -186,7 +186,7 @@ internal sealed class ProjectConfiguration
         if (node.Kind == Kind.ObjectLiteralExpression)
         {
             var seen = new HashSet<string>(StringComparer.Ordinal);
-            foreach (Node property in node.AsObjectLiteralExpression().Properties?.Nodes ?? [])
+            foreach (Node property in node.AsObjectLiteralExpression().Properties?.Nodes ?? default)
                 if (property.Kind == Kind.PropertyAssignment && !seen.Add(property.AsPropertyAssignment().Name().Text()))
                     throw Error("Duplicate configuration property: " + Decode(property.AsPropertyAssignment().Name().Text()));
         }

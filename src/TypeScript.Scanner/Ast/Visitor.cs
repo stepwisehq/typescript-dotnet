@@ -32,7 +32,7 @@ public sealed class NodeVisitor
         if (visited is not null && visited.Kind == Kind.SyntaxList)
         {
             var nodes = visited.AsSyntaxList().Children;
-            if (nodes?.Count != 1)
+            if (nodes.Length != 1)
                 throw new InvalidOperationException("Expected only a single node to be written to output");
             visited = nodes[0];
             if (visited is not null && visited.Kind == Kind.SyntaxList)
@@ -74,9 +74,9 @@ public sealed class NodeVisitor
         return list;
     }
 
-    public (List<Node> Result, bool Changed) VisitSlice(List<Node> nodes)
+    public (Slice<Node> Result, bool Changed) VisitSlice(Slice<Node> nodes)
     {
-        if (nodes is null || Visit is null)
+        if (nodes.IsNil || Visit is null)
             return (nodes, false);
         var count = nodes.Count;
         for (var i = 0; i < count; i++)
@@ -87,15 +87,15 @@ public sealed class NodeVisitor
             var visited = Visit(node);
             if (visited is null || visited != node)
             {
-                var updated = nodes.GetRange(0, i);
+                var updated = GoSlices.Clone(nodes.Slice2(0, i));
                 while (true)
                 {
                     if (visited is not null)
                     {
                         if (visited.Kind == Kind.SyntaxList)
-                            updated.AddRange(visited.AsSyntaxList().Children ?? []);
+                            updated = updated.Append(visited.AsSyntaxList().Children);
                         else
-                            updated.Add(visited);
+                            updated = updated.Append(visited);
                     }
 
                     i++;
@@ -108,7 +108,7 @@ public sealed class NodeVisitor
                     }
                     else
                     {
-                        updated.AddRange(nodes.GetRange(i, count - i));
+                        updated = updated.Append(nodes.Slice2(i, count));
                         break;
                     }
                 }
@@ -117,7 +117,7 @@ public sealed class NodeVisitor
             }
         }
 
-        return (nodes.Count == count ? nodes : nodes.GetRange(0, count), false);
+        return (nodes, false);
     }
 
     public Node VisitEachChild(Node node) => node is null || Visit is null ? node : node.VisitEachChild(this);
@@ -132,10 +132,10 @@ public sealed class NodeVisitor
     internal NodeList visitTopLevelStatements(NodeList nodes) => Hooks.VisitTopLevelStatements is not null ? Hooks.VisitTopLevelStatements(nodes, this) : visitNodes(nodes);
     private Node liftToBlock(Node node)
     {
-        List<Node> nodes = null;
+        Slice<Node> nodes = default;
         if (node is not null)
-            nodes = node.Kind == Kind.SyntaxList ? node.AsSyntaxList().Children : [node];
-        node = nodes?.Count == 1 ? nodes[0] : Factory.NewBlock(Factory.NewNodeList(nodes), true);
+            nodes = node.Kind == Kind.SyntaxList ? node.AsSyntaxList().Children : Slice<Node>.Make(0, 1).Append(node);
+        node = nodes.Length == 1 ? nodes[0] : Factory.NewBlock(Factory.NewNodeList(nodes), true);
         if (node.Kind == Kind.SyntaxList)
             throw new InvalidOperationException("The result of visiting and lifting a Node may not be SyntaxList");
         return node;

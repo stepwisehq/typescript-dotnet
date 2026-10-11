@@ -27,6 +27,13 @@ public static partial class SyntaxServiceChecks
     private static string Raw(string s) => Encoding.Latin1.GetString(Encoding.UTF8.GetBytes(s));
     private static object[] Snap(Node n) => [(int)n.Kind, n.Pos(), n.End(), (uint)n.Flags];
     private static object? Nodes(List<Node>? list) => list?.Select(n => (object)Snap(n)).ToArray();
+    private static object? Nodes(Slice<Node> nodes)
+    {
+        if (nodes.IsNil) return null;
+        var result = new object[nodes.Length];
+        for (int i = 0; i < nodes.Length; i++) result[i] = Snap(nodes[i]);
+        return result;
+    }
     private static Dictionary<string, object?> Map(params (string Key, object? Value)[] pairs) => pairs.ToDictionary(p => p.Key, p => p.Value);
     private static JsonNode? Json(object? value) => value switch
     {
@@ -122,7 +129,7 @@ public static partial class SyntaxServiceChecks
         {
             s,
             Nodes(decorators),
-            decorators is { Count: > 0 } && ReferenceEquals(decorators, node.Modifiers()?.Nodes)
+            decorators is { Count: > 0 } && Core.Same(decorators, node.Modifiers()?.Nodes ?? default)
         };
     }).ToArray();
     private static object Data()
@@ -186,7 +193,7 @@ public static partial class SyntaxServiceChecks
         {
             seen.Add(child.Text());
             if (seen.Count == 1)
-                list.Nodes.Add(d);
+                list.Nodes = list.Nodes.Append(d);
         }
 
         int early = 0;

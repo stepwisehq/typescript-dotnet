@@ -1126,7 +1126,7 @@ public sealed partial class Checker
                 return false;
             }
 
-            List<Node> children = default;
+            Slice<Node> children = default;
             switch (true)
             {
                 case true when Ast.IsJsxElement(parent):

@@ -54,7 +54,7 @@ public partial class Parser
         Node eof = default;
         if ((this.token == Kind.EndOfFile))
         {
-            statements = this.newNodeList(Core.NewTextRange(pos, this.nodePos()), null);
+            statements = this.newNodeList(Core.NewTextRange(pos, this.nodePos()), default);
             eof = this.parseTokenNode();
         }
         else
@@ -121,19 +121,15 @@ public partial class Parser
                 if ((expressions != null))
                 {
                     {
-                        var es = expressions as List<Node>;
-                        var ok = es != null;
+                        var ok = expressions is Slice<Node>;
+                        var es = ok ? (Slice<Node>)expressions : default;
                         if (ok)
                         {
                             expressions = GoRuntime.Append(es, expression);
                         }
                         else
                         {
-                            expressions = new List<Node>
-                            {
-                                ((Node)expressions),
-                                expression
-                            };
+                            expressions = Slice<Node>.Make(0, 2).Append(((Node)expressions)).Append(expression);
                         }
                     }
                 }
@@ -149,8 +145,8 @@ public partial class Parser
 
             Node expression2 = default;
             {
-                var es2 = expressions as List<Node>;
-                var ok2 = es2 != null;
+                var ok2 = expressions is Slice<Node>;
+                var es2 = ok2 ? (Slice<Node>)expressions : default;
                 if (ok2)
                 {
                     expression2 = this.finishNode(this.factory.NewArrayLiteralExpression(this.newNodeList(Core.NewTextRange(pos, this.nodePos()), es2), false), pos);
@@ -162,7 +158,7 @@ public partial class Parser
             }
 
             var statement = this.finishNode(this.factory.NewExpressionStatement(expression2), pos);
-            statements = this.newNodeList(Core.NewTextRange(pos, this.nodePos()), new List<Node> { statement });
+            statements = this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.NewSlice1Header(statement));
             eof = this.parseExpectedToken(Kind.EndOfFile);
         }
 
@@ -499,7 +495,7 @@ public partial class Parser
         if ((GoRuntime.Len(this.reparseList) != 0))
         {
             statements = GoRuntime.Append(statements, this.reparseList);
-            this.reparseList = null;
+            this.reparseList = default;
         }
 
         var node = this.finishNode(this.factory.NewSourceFileWithTextView(this.opts, this.sourceText, this.newNodeList(Core.NewTextRange(pos, end), statements), eof), pos);
@@ -551,14 +547,14 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:488:1.
-    private Dictionary<Node, List<Node>> createJSDocCache()
+    private Dictionary<Node, Slice<Node>> createJSDocCache()
     {
         if ((GoRuntime.Len(this.jsdocInfos) == 0))
         {
             return null;
         }
 
-        var result = new Dictionary<Node, List<Node>>();
+        var result = new Dictionary<Node, Slice<Node>>();
         {
             foreach (var info in GoRuntime.RangeValues(this.jsdocInfos))
             {
@@ -598,9 +594,7 @@ public partial class Parser
             throw new InvalidOperationException("possibleAwaitSpans malformed: odd number of indices, not paired into spans.");
         }
 
-        var statements = new List<Node>
-        {
-        };
+        var statements = Slice<Node>.Make(0);
         var savedParseDiagnostics = this.diagnostics;
         this.diagnostics = new List<Diagnostic>
         {
@@ -736,12 +730,12 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:612:1.
-    private List<Node> parseListIndex(ParsingContext kind, Func<Parser, int, Node> parseElement)
+    private Slice<Node> parseListIndex(ParsingContext kind, Func<Parser, int, Node> parseElement)
     {
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(kind));
         var outerReparseList = this.reparseList;
-        this.reparseList = null;
+        this.reparseList = default;
         ParseNodeBuffer inlineNodes = default;
         Slice<Node> spilledNodes = default;
         int listLength = 0;
@@ -768,7 +762,7 @@ public partial class Parser
                             }
                         }
 
-                        this.reparseList = null;
+                        this.reparseList = default;
                     }
 
                     appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, elt);
@@ -784,7 +778,7 @@ public partial class Parser
 
         this.reparseList = outerReparseList;
         this.parsingContexts = saveParsingContexts;
-        return this.nodeSliceArena.CloneAsList(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan());
+        return this.nodeSliceArena.CloneHeader(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:644:1.
@@ -865,7 +859,7 @@ public partial class Parser
         }
 
         this.parsingContexts = saveParsingContexts;
-        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneAsList(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan()));
+        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneHeader(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan()));
     }
 
     // Return a non-nil (but possibly empty) NodeList if parsing was successful, a missing NodeList if the opening
@@ -886,7 +880,7 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:719:1.
     private NodeList parseEmptyNodeList()
     {
-        return this.newNodeList(Core.NewTextRange(this.nodePos(), this.nodePos()), null);
+        return this.newNodeList(Core.NewTextRange(this.nodePos(), this.nodePos()), default);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:723:1.
@@ -3226,7 +3220,7 @@ public partial class Parser
             var implicitExport = this.factory.NewModifier(Kind.ExportKeyword);
             implicitExport.Loc = Core.NewTextRange(this.nodePos(), this.nodePos());
             implicitExport.Flags = NodeFlags.Reparsed;
-            var implicitModifiers = this.newModifierList(implicitExport.Loc, this.nodeSliceArena.NewSlice1(implicitExport));
+            var implicitModifiers = this.newModifierList(implicitExport.Loc, this.nodeSliceArena.NewSlice1Header(implicitExport));
             body = this.parseModuleOrNamespaceDeclaration(this.nodePos(), 0, implicitModifiers, true, keyword);
         }
         else
@@ -3793,14 +3787,14 @@ public partial class Parser
 
         if (((this.token == @operator) || hasLeadingOperator))
         {
-            var types = GoRuntime.MakeSlice<Node>(1);
+            var types = Slice<Node>.Make(1);
             types[0] = typeNode;
             while (this.parseOptional(@operator))
             {
                 types = GoRuntime.Append(types, this.parseFunctionOrConstructorTypeToError(isUnionType, parseConstituentType));
             }
 
-            typeNode = this.createUnionOrIntersectionTypeNode(@operator, this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.Clone(types)));
+            typeNode = this.createUnionOrIntersectionTypeNode(@operator, this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneHeader(types)));
             this.finishNode(typeNode, pos);
         }
 
@@ -5192,7 +5186,7 @@ public partial class Parser
     private NodeList parseTemplateTypeSpans()
     {
         var pos = this.nodePos();
-        List<Node> list = default;
+        Slice<Node> list = default;
         while (true)
         {
             var span = this.parseTemplateTypeSpan();
@@ -5308,7 +5302,7 @@ public partial class Parser
             var modifier = this.factory.NewModifier(this.token);
             this.nextToken();
             this.finishNode(modifier, pos);
-            return this.newModifierList(modifier.Loc, this.nodeSliceArena.NewSlice1(modifier));
+            return this.newModifierList(modifier.Loc, this.nodeSliceArena.NewSlice1Header(modifier));
         }
 
         return null;
@@ -5384,7 +5378,7 @@ public partial class Parser
         bool hasTrailingModifier = default;
         bool hasStaticModifier = default;
         var pos = this.nodePos();
-        var list = GoRuntime.MakeSlice<Node>(0);
+        var list = Slice<Node>.Make(0);
         while (true)
         {
             if (((allowDecorators && (this.token == Kind.AtToken)) && !hasTrailingModifier))
@@ -5423,7 +5417,7 @@ public partial class Parser
 
         if ((GoRuntime.Len(list) != 0))
         {
-            return this.newModifierList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.Clone(list));
+            return this.newModifierList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneHeader(list));
         }
 
         return null;
@@ -6059,7 +6053,7 @@ public partial class Parser
             var pos = this.nodePos();
             this.nextToken();
             var modifier = this.finishNode(this.factory.NewModifier(Kind.AsyncKeyword), pos);
-            return this.newModifierList(modifier.Loc, this.nodeSliceArena.NewSlice1(modifier));
+            return this.newModifierList(modifier.Loc, this.nodeSliceArena.NewSlice1Header(modifier));
         }
 
         return null;
@@ -6179,7 +6173,7 @@ public partial class Parser
     {
         Debug.Assert((this.token == Kind.EqualsGreaterThanToken), "parseSimpleArrowFunctionExpression should only have been called if we had a =>");
         var parameter = this.finishNode(this.factory.NewParameterDeclaration(null, null, identifier, null, null, null), identifier.Pos());
-        var parameters = this.newNodeList(parameter.Loc, new List<Node> { parameter });
+        var parameters = this.newNodeList(parameter.Loc, this.nodeSliceArena.NewSlice1Header(parameter));
         var equalsGreaterThanToken = this.parseExpectedToken(Kind.EqualsGreaterThanToken);
         var body = this.parseArrowFunctionExpressionBody((asyncModifier != null), allowReturnTypeInArrowFunction);
         var result = this.finishNode(this.factory.NewArrowFunction(asyncModifier, null, parameters, null, null, equalsGreaterThanToken, body), pos);
@@ -6504,7 +6498,7 @@ public partial class Parser
         var pos = this.nodePos();
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(ParsingContext.JsxChildren));
-        List<Node> list = default;
+        Slice<Node> list = default;
         while (true)
         {
             var currentToken = this.scanner.ReScanJsxToken(true);
@@ -7403,7 +7397,7 @@ public partial class Parser
     private NodeList parseTemplateSpans(bool isTaggedTemplate)
     {
         var pos = this.nodePos();
-        List<Node> list = default;
+        Slice<Node> list = default;
         while (true)
         {
             var span = this.parseTemplateSpan(isTaggedTemplate);
@@ -7954,7 +7948,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:5978:1.
-    private NodeList newNodeList(TextRange loc, List<Node> nodes)
+    private NodeList newNodeList(TextRange loc, Slice<Node> nodes)
     {
         var list = this.factory.NewNodeList(nodes);
         list.Loc = loc;
@@ -7962,7 +7956,7 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:5984:1.
-    private ModifierList newModifierList(TextRange loc, List<Node> nodes)
+    private ModifierList newModifierList(TextRange loc, Slice<Node> nodes)
     {
         var list = this.factory.NewModifierList(nodes);
         list.Loc = loc;
@@ -9476,7 +9470,7 @@ internal enum jsdocScannerInfo
 internal sealed class JSDocInfo
 {
     public Node parent;
-    public List<Node> jsDocs;
+    public Slice<Node> jsDocs;
 }
 
 internal struct ParserState
@@ -9509,14 +9503,16 @@ public partial class Parser
     private List<int> possibleAwaitSpans;
     private Slice<ByteStringView> jsdocCommentsSpace, jsdocTagCommentsSpace;
     private List<CommentRange> jsdocCommentRangesSpace;
-    private List<Node> jsdocTagCommentsPartsSpace, reparseList, reparsedClones;
+    private Slice<Node> jsdocTagCommentsPartsSpace, reparseList;
+    private List<Node> reparsedClones;
     private Node currentParent;
     private Visitor setParentFromContext;
     private static readonly string[] viableKeywordSuggestions = Scanner.GetViableKeywordSuggestions();
-    private static readonly List<Node> missingListNodes = new();
+    // parser.go:111/6490: missing lists have a distinct zero-length cap-one backing slot.
+    private static readonly Slice<Node> missingListNodes = Slice<Node>.Make(0, 1);
     // Go parser-pool adapter: each request obtains an isolated managed parser.
     private static Parser getParser() => newParser();
-    private static bool isMissingNodeList(NodeList list) => list != null && ReferenceEquals(list.Nodes, missingListNodes);
+    private static bool isMissingNodeList(NodeList list) => list != null && list.Nodes.Capacity == 1 && list.Nodes.Slice2(0, 1).SameStorageRange(missingListNodes.Slice2(0, 1));
     // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.FromUnicode(sourceText), scriptKind);
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, byte[] sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.CopyFrom(sourceText), scriptKind);

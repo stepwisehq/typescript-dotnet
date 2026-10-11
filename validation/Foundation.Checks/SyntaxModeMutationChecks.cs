@@ -79,13 +79,9 @@ public static partial class SyntaxServiceChecks
 
         )
         {
-            var caller = new List<Node>
-            {
-                a,
-                b
-            };
+            var caller = Slice<Node>.FromArray([a, b]);
             var seen = new List<string>();
-            List<Node> result;
+            Slice<Node> result;
             switch (mode)
             {
                 case "ForEachChild":
@@ -95,7 +91,7 @@ public static partial class SyntaxServiceChecks
                     {
                         seen.Add(n.Text());
                         if (seen.Count == 1)
-                            list.Nodes.Add(c);
+                            list.Nodes = list.Nodes.Append(c);
                         return false;
                     });
                     caller = list.Nodes;
@@ -107,7 +103,7 @@ public static partial class SyntaxServiceChecks
                     {
                         seen.Add(n.Text());
                         if (seen.Count == 1)
-                            caller.Add(c);
+                            caller = caller.Append(c);
                         return mode == "VisitSliceChanged" && ReferenceEquals(n, a) ? null : n;
                     }, factory, new());
                     (result, _) = visitor.VisitSlice(caller);
@@ -118,7 +114,7 @@ public static partial class SyntaxServiceChecks
                     {
                         seen.Add(n.Text());
                         if (seen.Count == 1)
-                            syntaxList.AsSyntaxList().Children.Add(c);
+                            syntaxList.AsSyntaxList().Children = syntaxList.AsSyntaxList().Children.Append(c);
                         return n;
                     }, factory, new());
                     var updated = syntaxList.VisitEachChild(v);
@@ -127,7 +123,7 @@ public static partial class SyntaxServiceChecks
                     break;
             }
 
-            rows.Add(new object? [] { mode, seen.Cast<object>().ToArray(), Nodes(result), Nodes(caller), result is null });
+            rows.Add(new object? [] { mode, seen.Cast<object>().ToArray(), Nodes(result), Nodes(caller), result.IsNil });
         }
 
         return rows.ToArray();

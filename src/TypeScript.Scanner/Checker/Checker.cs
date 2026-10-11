@@ -655,9 +655,9 @@ public sealed partial class Checker
     // checker.go:7516. Renamed binding elements are independent of noUnused options.
 
 
-    private void checkSourceElements(List<Node> nodes)
+    private void checkSourceElements(Slice<Node> nodes)
     {
-        if (nodes != null)
+        if (!nodes.IsNil)
             foreach (var node in nodes)
             {
                 if (isCanceled())
@@ -6569,7 +6569,7 @@ public sealed partial class Checker
     private void checkContextualDeprecations(Node node)
     {
         var contextualType = getApparentTypeOfContextualType(node);
-        foreach (var property in node.Properties() ?? [])
+        foreach (var property in node.Properties())
         {
             if (isCanceled())
                 return;
@@ -9151,7 +9151,7 @@ public sealed partial class Checker
 
     private readonly record struct DiscriminatedContextualTypeKey(ulong nodeId, uint typeId);
     private readonly Dictionary<DiscriminatedContextualTypeKey, Type> discriminatedContextualTypes = new();
-    private sealed class ObjectLiteralDiscriminator(Checker c, List<Node> props, List<Symbol> members) : Discriminator
+    private sealed class ObjectLiteralDiscriminator(Checker c, Slice<Node> props, List<Symbol> members) : Discriminator
     {
         public int len() => GoRuntime.Len(props) + GoRuntime.Len(members);
         public string name(int index) => index < GoRuntime.Len(props) ? props[index].Symbol().Name : members[index - GoRuntime.Len(props)].Name;
@@ -9183,7 +9183,7 @@ public sealed partial class Checker
         var discriminated = getMatchingUnionConstituentForObjectLiteral(contextualType, node);
         if (discriminated == null)
         {
-            var properties = (node.Properties() ?? []).Where(p => p.Symbol() != null && (p.Kind == Kind.PropertyAssignment ? isPossiblyDiscriminantValue(p.Initializer()) && isDiscriminantProperty(contextualType, p.Symbol().Name) : p.Kind == Kind.ShorthandPropertyAssignment && isDiscriminantProperty(contextualType, p.Symbol().Name))).ToList();
+            var properties = Core.Filter(node.Properties(), p => p.Symbol() != null && (p.Kind == Kind.PropertyAssignment ? isPossiblyDiscriminantValue(p.Initializer()) && isDiscriminantProperty(contextualType, p.Symbol().Name) : p.Kind == Kind.ShorthandPropertyAssignment && isDiscriminantProperty(contextualType, p.Symbol().Name)));
             var members = (getPropertiesOfType(contextualType) ?? []).Where(s => (s.Flags & SymbolFlags.Optional) != 0 && node.Symbol().Members?[s.Name] == null && isDiscriminantProperty(contextualType, s.Name)).ToList();
             discriminated = discriminateTypeByDiscriminableItems(contextualType, new ObjectLiteralDiscriminator(this, properties, members));
         }
@@ -9197,7 +9197,7 @@ public sealed partial class Checker
         var keyPropertyName = getKeyPropertyName(unionType);
         if (keyPropertyName != "")
         {
-            var property = (node.Properties() ?? []).Find(p => p.Symbol() != null && p.Kind == Kind.PropertyAssignment && p.Symbol().Name == keyPropertyName && isPossiblyDiscriminantValue(p.Initializer()));
+            var property = Core.Find(node.Properties(), p => p.Symbol() != null && p.Kind == Kind.PropertyAssignment && p.Symbol().Name == keyPropertyName && isPossiblyDiscriminantValue(p.Initializer()));
             if (property != null)
                 return getConstituentTypeForKeyType(unionType, getContextFreeTypeOfExpression(property.Initializer()));
         }
@@ -10447,9 +10447,9 @@ public sealed partial class Checker
         return types;
     }
 
-    private List<Type> appendTypeParameters(List<Type> types, List<Node> declarations)
+    private List<Type> appendTypeParameters(List<Type> types, Slice<Node> declarations)
     {
-        foreach (var declaration in declarations ?? [])
+        foreach (var declaration in declarations)
         {
             var type = getDeclaredTypeOfTypeParameter(getSymbolOfDeclaration(declaration));
             if (!(types?.Contains(type) ?? false))
@@ -10693,7 +10693,7 @@ public sealed partial class Checker
 
     private bool checkNoTypeArguments(Node node, Symbol symbol)
     {
-        if ((node.TypeArguments()?.Count ?? 0) != 0)
+        if ((node.TypeArguments().Count) != 0)
         {
             error(node, Diagnostics.Type_0_is_not_generic, symbol != null ? symbolToString(symbol) : TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(node.AsTypeReferenceNode().TypeName));
             return false;
@@ -10712,7 +10712,7 @@ public sealed partial class Checker
         checkTypeParameters(node.TypeParameters());
         if (node.Type()?.Kind == Kind.IntrinsicKeyword)
         {
-            var parameterCount = node.TypeParameters()?.Count ?? 0;
+            var parameterCount = node.TypeParameters().Count;
             if (!(parameterCount == 0 && node.Name().TextEquals("BuiltinIteratorReturn"u8) ||
                 parameterCount == 1 && node.Name().TextValue().TryGetValue(intrinsicTypeKinds, out var intrinsicKind) && intrinsicKind != IntrinsicTypeKind.Unknown))
                 error(node.Type(), Diagnostics.The_intrinsic_keyword_can_only_be_used_to_declare_compiler_provided_intrinsic_types);
@@ -10760,7 +10760,7 @@ public sealed partial class Checker
         var t = getTypeFromTypeNode(node);
         if (!isErrorType(t))
         {
-            if ((node.TypeArguments()?.Count ?? 0) != 0)
+            if ((node.TypeArguments().Count) != 0)
             {
                 var parameters = getTypeParametersForTypeReferenceOrImport(node);
                 if ((parameters?.Count ?? 0) != 0)
@@ -10813,7 +10813,7 @@ public sealed partial class Checker
             {
                 if ((declaration.Flags & NodeFlags.ContainsThis) != 0)
                     return false;
-                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration) ?? [])
+                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration))
                 {
                     var name = Ast.GetHeritageClauseElementName(node);
                     if (Ast.IsEntityName(name) || Ast.IsEntityNameExpression(name))
@@ -11066,7 +11066,7 @@ public sealed partial class Checker
         var d = t.AsInterfaceType();
         foreach (var declaration in t.symbol.Declarations ?? [])
             if (Ast.IsInterfaceDeclaration(declaration))
-                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration) ?? [])
+                foreach (var node in Ast.GetExtendsHeritageClauseElements(declaration))
                 {
                     var @base = getReducedType(getTypeFromTypeNode(node));
                     if (!isErrorType(@base))
@@ -11241,7 +11241,7 @@ public sealed partial class Checker
         }
 
         checkObjectTypeForDuplicateDeclarations(node, false);
-        foreach (var element in Ast.GetExtendsHeritageClauseElements(node) ?? [])
+        foreach (var element in Ast.GetExtendsHeritageClauseElements(node))
         {
             if (element.Kind == Kind.ExpressionWithTypeArguments)
             {
@@ -11289,7 +11289,7 @@ public sealed partial class Checker
         }
     }
 
-    private bool areTypeParametersIdentical(List<Node> declarations, List<Type> targetParameters, Func<Node, List<Node>> getTypeParameterDeclarations)
+    private bool areTypeParametersIdentical(List<Node> declarations, List<Type> targetParameters, Func<Node, Slice<Node>> getTypeParameterDeclarations)
     {
         var maxTypeArgumentCount = GoRuntime.Len(targetParameters);
         var minTypeArgumentCount = this.getMinTypeArgumentCount(targetParameters);
@@ -11387,7 +11387,7 @@ public sealed partial class Checker
     private Type getTypeFromUnionTypeNode(Node node)
     {
         var links = typeNodeLinks.Get(node);
-        return links.resolvedType ??= getUnionTypeEx(node.AsUnionTypeNode().Types.Nodes.Select(getTypeFromTypeNode).ToList(), UnionReduction.Literal, getAliasForTypeNode(node), null);
+        return links.resolvedType ??= getUnionTypeEx(Core.Map(node.AsUnionTypeNode().Types.Nodes, getTypeFromTypeNode), UnionReduction.Literal, getAliasForTypeNode(node), null);
     }
 
     private Type getTypeFromIntersectionTypeNode(Node node)
@@ -11396,7 +11396,7 @@ public sealed partial class Checker
         if (links.resolvedType == null)
         {
             var alias = getAliasForTypeNode(node);
-            var types = node.AsIntersectionTypeNode().Types.Nodes.Select(getTypeFromTypeNode).ToList();
+            var types = Core.Map(node.AsIntersectionTypeNode().Types.Nodes, getTypeFromTypeNode);
             var noSupertypeReduction = false;
             if (types.Count == 2)
             {
@@ -13088,7 +13088,7 @@ public sealed partial class Checker
             node = node.Parent;
         }
         while (Ast.IsComputedPropertyName(node) || Ast.IsPropertySignatureDeclaration(node));
-        if (Ast.IsTypeLiteralNode(node) && node.Members()?.Count == 1)
+        if (Ast.IsTypeLiteralNode(node) && node.Members().Count == 1)
         {
             var t = getDeclaredTypeOfSymbol(symbol);
             return (t.flags & TypeFlags.Union) != 0 && allTypesAssignableToKindEx(t, TypeFlags.StringOrNumberLiteral, true);
@@ -15606,7 +15606,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void checkTypeParameters(List<Node> typeParameterDeclarations)
+    private void checkTypeParameters(Slice<Node> typeParameterDeclarations)
     {
         var seenDefault = false;
         {
@@ -16142,7 +16142,7 @@ public sealed partial class Checker
         var numConstructSignatures = GoRuntime.Len(this.getSignaturesOfType(apparentType, SignatureKind.Construct));
         if (this.isUntypedFunctionCall(funcType, apparentType, GoRuntime.Len(callSignatures), numConstructSignatures))
         {
-            if ((!this.isErrorType(funcType) && (node.TypeArguments() != null)))
+            if ((!this.isErrorType(funcType) && (!node.TypeArguments().IsNil)))
             {
                 this.error(node, Diagnostics.Untyped_function_calls_may_not_accept_type_arguments);
             }
@@ -16443,7 +16443,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool hasCorrectArity(Node node, List<Node> args, Signature signature, bool signatureHelpTrailingComma)
+    private bool hasCorrectArity(Node node, Slice<Node> args, Signature signature, bool signatureHelpTrailingComma)
     {
         if (Ast.IsJsxOpeningFragment(node))
         {
@@ -16540,7 +16540,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool isSignatureApplicable(Node node, List<Node> args, Signature signature, Relation relation, CheckMode checkMode, bool reportErrors, List<Diagnostic> diagnosticOutput)
+    private bool isSignatureApplicable(Node node, Slice<Node> args, Signature signature, Relation relation, CheckMode checkMode, bool reportErrors, List<Diagnostic> diagnosticOutput)
     {
         using var collectionsApplicabilityScope = verificationCollectionsApplicabilityScope(node, signature, relation, checkMode, reportErrors);
         if (Ast.IsJsxCallLike(node))
@@ -16643,7 +16643,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature getCandidateForOverloadFailure(Node node, Slice<Signature> candidates, List<Node> args, bool hasCandidatesOutArray, CheckMode checkMode)
+    private Signature getCandidateForOverloadFailure(Node node, Slice<Signature> candidates, Slice<Node> args, bool hasCandidatesOutArray, CheckMode checkMode)
     {
         this.checkNodeDeferred(node);
         if (((hasCandidatesOutArray || (GoRuntime.Len(candidates) == 1)) || Core.Some(candidates, (s) =>
@@ -16660,7 +16660,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature pickLongestCandidateSignature(Node node, Slice<Signature> candidates, List<Node> args, CheckMode checkMode)
+    private Signature pickLongestCandidateSignature(Node node, Slice<Signature> candidates, Slice<Node> args, CheckMode checkMode)
     {
         var argCount = GoRuntime.Len(args);
         if ((this.apparentArgumentCount != null))
@@ -16676,7 +16676,7 @@ public sealed partial class Checker
             return candidate;
         }
 
-        List<Node> typeArgumentNodes = default;
+        Slice<Node> typeArgumentNodes = default;
         if (this.callLikeExpressionMayHaveTypeArguments(node))
         {
             typeArgumentNodes = node.TypeArguments();
@@ -16833,13 +16833,13 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Node> getEffectiveCallArguments(Node node)
+    private Slice<Node> getEffectiveCallArguments(Node node)
     {
         switch (true)
         {
             case true when Ast.IsJsxOpeningFragment(node):
             {
-                return new List<Node> { this.createSyntheticExpression(node, this.emptyFreshJsxObjectType, false, null) };
+                return Slice<Node>.FromArray([ this.createSyntheticExpression(node, this.emptyFreshJsxObjectType, false, null) ]);
             }
             case true when Ast.IsTaggedTemplateExpression(node):
             {
@@ -16847,10 +16847,10 @@ public sealed partial class Checker
                 var firstArg = this.createSyntheticExpression(template, this.getGlobalTemplateStringsArrayType(), false, null);
                 if (!Ast.IsTemplateExpression(template))
                 {
-                    return new List<Node> { firstArg };
+                    return Slice<Node>.FromArray([ firstArg ]);
                 }
                 var spans = template.AsTemplateExpression().TemplateSpans.Nodes;
-                var args = GoRuntime.MakeSlice<Node>((GoRuntime.Len(spans) + 1));
+                var args = Slice<Node>.Make((GoRuntime.Len(spans) + 1));
                 args[0] = firstArg;
                 {
                     foreach (var range1 in GoRuntime.Range(spans))
@@ -16868,15 +16868,15 @@ public sealed partial class Checker
             }
             case true when Ast.IsBinaryExpression(node):
             {
-                return new List<Node> { node.AsBinaryExpression().Left };
+                return Slice<Node>.FromArray([ node.AsBinaryExpression().Left ]);
             }
             case true when Ast.IsJsxOpeningLikeElement(node):
             {
                 if (((GoRuntime.Len(node.Attributes().Properties()) != 0) || ((Ast.IsJsxOpeningElement(node) && (GoRuntime.Len(node.Parent.Children().Nodes) != 0)))))
                 {
-                    return new List<Node> { node.Attributes() };
+                    return Slice<Node>.FromArray([ node.Attributes() ]);
                 }
-                return null;
+                return default;
             }
             default:
             {
@@ -16884,7 +16884,7 @@ public sealed partial class Checker
                 var spreadIndex = this.getSpreadArgumentIndex(args2);
                 if ((spreadIndex >= 0))
                 {
-                    var effectiveArgs = GoRuntime.Slice(args2, 0, spreadIndex);
+                    var effectiveArgs = GoSlices.Clip(GoRuntime.Slice(args2, 0, spreadIndex));
                     {
                         var i2 = spreadIndex;
                         for (; (i2 < GoRuntime.Len(args2)); i2++)
@@ -17102,7 +17102,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool hasCorrectTypeArgumentArity(Signature signature, List<Node> typeArguments)
+    private bool hasCorrectTypeArgumentArity(Signature signature, Slice<Node> typeArguments)
     {
         var numTypeParameters = GoRuntime.Len(signature.typeParameters);
         var minTypeArgumentCount = getMinTypeArgumentCount(signature.typeParameters);
@@ -17312,7 +17312,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Diagnostic getArgumentArityError(Node node, Slice<Signature> signatures, List<Node> args, Message headMessage)
+    private Diagnostic getArgumentArityError(Node node, Slice<Signature> signatures, Slice<Node> args, Message headMessage)
     {
         var spreadIndex = this.getSpreadArgumentIndex(args);
         if ((spreadIndex > -1))
@@ -17642,7 +17642,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private int getSpreadArgumentIndex(List<Node> args)
+    private int getSpreadArgumentIndex(Slice<Node> args)
     {
         return Core.FindIndex(args, isSpreadArgument);
     }
@@ -17652,7 +17652,7 @@ public sealed partial class Checker
 {
     private bool hasContextSensitiveReturnExpression(Node node)
     {
-        if (((node.TypeParameters() != null) || (node.Type() != null)))
+        if (((!node.TypeParameters().IsNil) || (node.Type() != null)))
         {
             return false;
         }
@@ -17681,7 +17681,7 @@ public sealed partial class Checker
     private sealed class CallState
     {
         internal Node node;
-        internal List<Node> typeArguments, args;
+        internal Slice<Node> typeArguments, args;
         internal Slice<Signature> candidates, candidatesForArgumentError;
         internal CheckMode argCheckMode;
         internal bool isSingleNonGenericCandidate, signatureHelpTrailingComma, recursiveResolution;
@@ -17839,7 +17839,7 @@ public sealed partial class Checker
                 }
                 else
                 {
-                    if ((((contextualSignature != null) && (node.TypeParameters() == null)) && (GoRuntime.Len(contextualSignature.parameters) > GoRuntime.Len(node.Parameters()))))
+                    if ((((contextualSignature != null) && (node.TypeParameters().IsNil)) && (GoRuntime.Len(contextualSignature.parameters) > GoRuntime.Len(node.Parameters()))))
                     {
                         var inferenceContext2 = this.getInferenceContext(node);
                         if (((checkMode & CheckMode.Inferential) != 0))
@@ -18824,7 +18824,7 @@ public sealed partial class Checker
     // jsdoc.go:9; only ordinary documentation without semantic tags is admitted.
     private void checkUnmatchedJSDocParameters(Node node)
     {
-        List<Node> jsdocParameters = default;
+        Slice<Node> jsdocParameters = default;
         {
             foreach (var tag in GoRuntime.RangeValues(getAllJSDocTags(node)))
             {
@@ -21987,7 +21987,7 @@ public sealed partial class Checker
         {
             var statements = parent.Statements();
             {
-                var offset = statements?.IndexOf(node) ?? -1;
+                var offset = GoSlices.Index(statements, node);
                 if ((offset >= 0))
                 {
                     var first = offset;
@@ -23317,7 +23317,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void checkTypeParametersNotReferenced(Node root, List<Node> typeParameters, int index)
+    private void checkTypeParametersNotReferenced(Node root, Slice<Node> typeParameters, int index)
     {
         Func<Node, bool> visit = default;
         visit = (node) =>
@@ -27984,7 +27984,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Type> checkTypeArguments(Signature signature, List<Node> typeArgumentNodes, bool reportErrors, Message headMessage)
+    private List<Type> checkTypeArguments(Signature signature, Slice<Node> typeArgumentNodes, bool reportErrors, Message headMessage)
     {
         var isJavaScript = Ast.IsInJSFile(signature.declaration);
         var typeParameters = signature.typeParameters;
@@ -28036,7 +28036,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Type> inferTypeArguments(Node node, Signature signature, List<Node> args, CheckMode checkMode, InferenceContext context)
+    private List<Type> inferTypeArguments(Node node, Signature signature, Slice<Node> args, CheckMode checkMode, InferenceContext context)
     {
         if (Ast.IsJsxOpeningLikeElement(node))
         {
@@ -28163,7 +28163,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getSpreadArgumentType(List<Node> args, int index, int argCount, Type restType, InferenceContext context, CheckMode checkMode)
+    private Type getSpreadArgumentType(Slice<Node> args, int index, int argCount, Type restType, InferenceContext context, CheckMode checkMode)
     {
         var inConstContext = this.isConstTypeVariable(restType, 0);
         if (((argCount > 0) && (index >= (argCount - 1))))
@@ -28332,7 +28332,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Type> getTypeArgumentsFromNodes(List<Node> typeArgumentNodes, List<Type> typeParameters)
+    private List<Type> getTypeArgumentsFromNodes(Slice<Node> typeArgumentNodes, List<Type> typeParameters)
     {
         if ((GoRuntime.Len(typeArgumentNodes) > GoRuntime.Len(typeParameters)))
         {
@@ -28361,7 +28361,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Signature inferSignatureInstantiationForOverloadFailure(Node node, List<Type> typeParameters, Signature candidate, List<Node> args, CheckMode checkMode)
+    private Signature inferSignatureInstantiationForOverloadFailure(Node node, List<Type> typeParameters, Signature candidate, Slice<Node> args, CheckMode checkMode)
     {
         var inferenceContext = this.newInferenceContext(typeParameters, candidate, Core.IfElse(Ast.IsInJSFile(node), InferenceFlags.AnyDefault, InferenceFlags.None), null);
         var typeArgumentTypes = this.inferTypeArguments(node, candidate, args, ((checkMode | CheckMode.SkipContextSensitive) | CheckMode.SkipGenericFunctions), inferenceContext);
@@ -29080,7 +29080,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Diagnostic getTypeArgumentArityError(Node node, Slice<Signature> signatures, List<Node> typeArguments, Message headMessage)
+    private Diagnostic getTypeArgumentArityError(Node node, Slice<Signature> signatures, Slice<Node> typeArguments, Message headMessage)
     {
         Diagnostic diagnostic = default;
         var argCount = GoRuntime.Len(typeArguments);
@@ -29261,10 +29261,7 @@ public sealed partial class Checker
                 var declarations = getDeclarationsOfKind(symbol, Kind.TypeParameter);
                 if (!this.areTypeParametersIdentical(declarations, new List<Type> { typeParameter }, (decl) =>
                 {
-                    return new List<Node>
-                    {
-                        decl
-                    };
+                    return Slice<Node>.FromArray([decl]);
                 }))
                 {
                     var name = this.symbolToString(symbol);
@@ -33703,7 +33700,7 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:7410:1.
-    private void reportUnusedVariableDeclarations(List<Node> declarations)
+    private void reportUnusedVariableDeclarations(Slice<Node> declarations)
     {
         {
             foreach (var declaration in GoRuntime.RangeValues(declarations))
@@ -34132,7 +34129,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Slice<Signature> getInstantiatedConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
+    private Slice<Signature> getInstantiatedConstructorsForTypeArguments(Type t, Slice<Node> typeArgumentNodes, Node location)
     {
         var signatures = this.getConstructorsForTypeArguments(t, typeArgumentNodes, location);
         var typeArguments = Core.Map(typeArgumentNodes, this.getTypeFromTypeNode);
@@ -34149,7 +34146,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Slice<Signature> getConstructorsForTypeArguments(Type t, List<Node> typeArgumentNodes, Node location)
+    private Slice<Signature> getConstructorsForTypeArguments(Type t, Slice<Node> typeArgumentNodes, Node location)
     {
         var typeArgCount = GoRuntime.Len(typeArgumentNodes);
         return Core.Filter(this.getSignaturesOfType(t, SignatureKind.Construct), (sig) =>
@@ -36384,7 +36381,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool isPropertyInitializedInStaticBlocks(Node propName, Type propType, List<Node> staticBlocks, int startPos, int endPos)
+    private bool isPropertyInitializedInStaticBlocks(Node propName, Type propType, Slice<Node> staticBlocks, int startPos, int endPos)
     {
         {
             foreach (var staticBlock in GoRuntime.RangeValues(staticBlocks))
@@ -38602,7 +38599,7 @@ public sealed partial class Checker
                         return this.errorType;
                     }
                     var elements = pattern.Elements();
-                    var literalMembers = GoRuntime.MakeSlice<Node>(0);
+                    var literalMembers = Slice<Node>.Make(0, elements.Length);
                     {
                         foreach (var element in GoRuntime.RangeValues(elements))
                         {
@@ -39363,7 +39360,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getRestType(Type source, List<Node> properties, Symbol symbol)
+    private Type getRestType(Type source, Slice<Node> properties, Symbol symbol)
     {
         source = this.filterType(source, (t) =>
 {
@@ -39818,7 +39815,7 @@ public sealed partial class Checker
             {
                 this.checkExternalEmitHelpers(property, ExternalEmitHelpers.Rest);
             }
-            List<Node> nonRestNames = default;
+            Slice<Node> nonRestNames = default;
             if ((allProperties != null))
             {
                 {
@@ -42277,13 +42274,13 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Node> getEffectiveDecoratorArguments(Node node)
+    private Slice<Node> getEffectiveDecoratorArguments(Node node)
     {
         var expr = node.Expression();
         var signature = this.getDecoratorCallSignature(node);
         if ((signature != null))
         {
-            var args = GoRuntime.MakeSlice<Node>(GoRuntime.Len(signature.parameters));
+            var args = Slice<Node>.Make(GoRuntime.Len(signature.parameters));
             {
                 foreach (var range2 in GoRuntime.Range(signature.parameters))
                 {
@@ -42918,7 +42915,7 @@ public sealed partial class Checker
             }
             case Kind.ConditionalType:
             {
-                return this.getEntityNameForDecoratorMetadataFromTypeList(new List<Node> { node.AsConditionalTypeNode().TrueType, node.AsConditionalTypeNode().FalseType });
+                return this.getEntityNameForDecoratorMetadataFromTypeList(Slice<Node>.FromArray([node.AsConditionalTypeNode().TrueType, node.AsConditionalTypeNode().FalseType]));
             }
             case Kind.ParenthesizedType:
             {
@@ -42939,7 +42936,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Node getEntityNameForDecoratorMetadataFromTypeList(List<Node> typeNodes)
+    private Node getEntityNameForDecoratorMetadataFromTypeList(Slice<Node> typeNodes)
     {
         Node commonEntityName = default;
         {

@@ -148,7 +148,7 @@ public static partial class Ast
     internal static uint PropagateNodeListSubtreeFacts(NodeList children, Func<Node, uint> propagate)
     {
         uint facts = 0;
-        if (children?.Nodes is not null)
+        if (children is not null)
             foreach (var child in children.Nodes)
                 facts |= propagate(child);
         return facts;

@@ -290,12 +290,12 @@ public static class JSDocTextViewChecks
         var file = Parse(source, ScriptKind.TS);
         var function = file.Statements.Nodes[0];
         Require((function.Flags & NodeFlags.HasJSDoc) != 0, "Lazy flag");
-        Require(function.EagerJSDoc(file) is null, "TS comment is not eagerly parsed");
+        Require(function.EagerJSDoc(file).IsNil, "TS comment is not eagerly parsed");
         var docs = function.JSDoc(file);
         Equal(1, docs.Count, "Lazy JSDoc count");
         Require(ReferenceEquals(function, docs[0].Parent), "Lazy JSDoc parent");
         Equal(Kind.JSDocDeprecatedTag, docs[0].AsJSDoc().Tags.Nodes[0].Kind, "Lazy tag kind");
-        Require(ReferenceEquals(docs, function.JSDoc(file)) && ReferenceEquals(docs, function.EagerJSDoc(file)), "Lazy parse cached");
+        Require(Core.Same(docs, function.JSDoc(file)) && Core.Same(docs, function.EagerJSDoc(file)), "Lazy parse cached");
         TrailingStatement(file, source);
     }
 
@@ -305,10 +305,10 @@ public static class JSDocTextViewChecks
         var file = Parse(source, kind);
         var function = file.Statements.Nodes[0];
         var eager = function.EagerJSDoc(file);
-        Require(eager is not null, "JS and TS link comments parse eagerly");
-        Equal(1, eager!.Count, "Eager JSDoc count");
+        Require(!eager.IsNil, "JS and TS link comments parse eagerly");
+        Equal(1, eager.Count, "Eager JSDoc count");
         Require(ReferenceEquals(function, eager[0].Parent), "Eager parent");
-        Require(ReferenceEquals(eager, function.JSDoc(file)), "Eager cache reused");
+        Require(Core.Same(eager, function.JSDoc(file)), "Eager cache reused");
         TrailingStatement(file, source);
     }
 
@@ -323,7 +323,7 @@ public static class JSDocTextViewChecks
         Equal(2, docs.Count, "Multiple comments parsed independently");
         Equal(first.Length, docs[0].End(), "First comment bound");
         Equal(first.Length + 1 + second.Length, docs[1].End(), "Second comment bound");
-        Require(docs.All(d => ReferenceEquals(d.Parent, function)), "Each comment parent restored");
+        Require(Core.Every(docs, d => ReferenceEquals(d.Parent, function)), "Each comment parent restored");
         TrailingStatement(file, source);
     }
 
@@ -332,11 +332,11 @@ public static class JSDocTextViewChecks
         string source = GoString.ToUtf8("/** café 🦀") + GoString.FromBytes([0xff]) + " @deprecated */\nfunction f() {}\nconst after = 2;";
         var file = Parse(GoString.Bytes(source), ScriptKind.TS);
         var function = file.Statements.Nodes[0];
-        Require(function.EagerJSDoc(file) is null, "Malformed-byte TS prose still lazy");
+        Require(function.EagerJSDoc(file).IsNil, "Malformed-byte TS prose still lazy");
         var docs = function.JSDoc(file);
         Equal(1, docs.Count, "Malformed-byte comment count");
         Equal(source.IndexOf("*/", StringComparison.Ordinal) + 2, docs[0].End(), "UTF-8/malformed-byte JSDoc end");
-        Require(ReferenceEquals(docs, function.JSDoc(file)), "Malformed-byte cache stable");
+        Require(Core.Same(docs, function.JSDoc(file)), "Malformed-byte cache stable");
         TrailingStatement(file, source);
     }
 }

@@ -4508,7 +4508,7 @@ public sealed partial class Checker
 
         bool reportedError = false;
         var elements = node.Elements();
-        int count = elements?.Count ?? 0;
+        int count = elements.Count;
         for (int i = 0; i < count; i++)
         {
             var element = elements[i];
@@ -4585,7 +4585,7 @@ public sealed partial class Checker
         if ((target.flags & (TypeFlags.Primitive | TypeFlags.Never)) != 0)
             return false;
         bool reportedError = false;
-        foreach (var prop in node.Properties() ?? [])
+        foreach (var prop in node.Properties())
         {
             if (prop.Kind == Kind.SpreadAssignment)
                 continue;

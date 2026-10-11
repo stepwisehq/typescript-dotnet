@@ -84,7 +84,7 @@ public partial class Scanner
         if (comment == null)
             return "";
         var builder = new GoBuilder();
-        foreach (Node node in comment.Nodes ?? [])
+        foreach (Node node in comment.Nodes)
         {
             switch (node.Kind)
             {

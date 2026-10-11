@@ -118,7 +118,7 @@ public static class SourceFileNameChecks
                 var factory = new NodeFactory();
                 var cloned = parent.AsNode().Clone(factory).AsSourceFile();
                 Cached(cloned, NamesByRole[1].Raw);
-                var updated = factory.UpdateSourceFile(parent, factory.NewNodeList(new(parent.Statements.Nodes)), parent.EndOfFileToken).AsSourceFile();
+                var updated = factory.UpdateSourceFile(parent, factory.NewNodeList(GoSlices.Clone(parent.Statements.Nodes)), parent.EndOfFileToken).AsSourceFile();
                 Require(!ReferenceEquals(updated, parent), "Update did not create a source file.");
                 Cached(updated, NamesByRole[1].Raw);
                 cloned.parseOptions = cloned.ParseOptions() with { FileName = NamesByRole[2].Scalar };

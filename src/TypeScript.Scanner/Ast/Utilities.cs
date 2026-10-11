@@ -511,10 +511,10 @@ public static partial class Ast
     }
 
     // Upstream function: ModifiersToFlags
-    public static ModifierFlags ModifiersToFlags(List<Node> modifiers)
+    public static ModifierFlags ModifiersToFlags(Slice<Node> modifiers)
     {
         ModifierFlags flags = default;
-        foreach (var modifier in modifiers ?? [])
+        foreach (var modifier in modifiers)
         {
             flags |= ModifierToFlag(modifier.Kind);
         }
@@ -947,7 +947,7 @@ public static partial class Ast
             Node child = default;
             if (includeJSDoc)
             {
-                foreach (var jsdoc in current.JSDoc(file) ?? [])
+                foreach (var jsdoc in current.JSDoc(file))
                 {
                     if (nodeContainsPosition(jsdoc, position))
                     {
@@ -1841,7 +1841,7 @@ public static partial class Ast
             case Kind.NewExpression:
             case Kind.TaggedTemplateExpression:
             {
-                return (parent.TypeArguments()?.Contains(node) == true);
+                return (GoSlices.Contains(parent.TypeArguments(), node));
             }
         }
 
@@ -3190,9 +3190,9 @@ public static partial class Ast
 {
     public static Node GetJSDocDeprecatedTag(Node node)
     {
-        foreach (var jsdoc in node.JSDoc(null) ?? [])
+        foreach (var jsdoc in node.JSDoc(null))
             if (jsdoc.AsJSDoc().Tags is { } tags)
-                foreach (var tag in tags.Nodes ?? [])
+                foreach (var tag in tags.Nodes)
                     if (IsJSDocDeprecatedTag(tag))
                         return tag;
         return null;
@@ -3333,7 +3333,7 @@ public static partial class Ast
     // utilities.go:1726/1742/1750/1759/3671; data-interface syntax closure.
     public static Node GetHeritageClause(Node node, Kind kind)
     {
-        foreach (var clause in getHeritageClauses(node)?.Nodes ?? [])
+        foreach (var clause in getHeritageClauses(node)?.Nodes ?? default)
             if (clause.AsHeritageClause().Token == kind)
                 return clause;
         return null;
@@ -3346,8 +3346,8 @@ public static partial class Ast
         Kind.InterfaceDeclaration => node.AsInterfaceDeclaration().HeritageClauses,
         _ => null
     };
-    public static List<Node> GetHeritageElements(Node node, Kind kind) => GetHeritageClause(node, kind)?.AsHeritageClause().Types.Nodes;
-    public static List<Node> GetExtendsHeritageClauseElements(Node node) => GetHeritageElements(node, Kind.ExtendsKeyword);
+    public static Slice<Node> GetHeritageElements(Node node, Kind kind) => GetHeritageClause(node, kind)?.AsHeritageClause().Types.Nodes ?? default;
+    public static Slice<Node> GetExtendsHeritageClauseElements(Node node) => GetHeritageElements(node, Kind.ExtendsKeyword);
     public static Node GetHeritageClauseElementName(Node node) => IsTypeReferenceNode(node) ? node.AsTypeReferenceNode().TypeName : node.AsExpressionWithTypeArguments().Expression;
     public static bool IsTypeDeclarationName(Node name) => name.Kind == Kind.Identifier && IsTypeDeclaration(name.Parent) && GetNameOfDeclaration(name.Parent) == name;
     // ast/utilities.go:2670.
@@ -3396,7 +3396,7 @@ public static partial class Ast
 public static partial class Ast
 {
     public static bool IsAssignmentPattern(Node node) => node.Kind is Kind.ArrayLiteralExpression or Kind.ObjectLiteralExpression;
-    public static List<Node> GetElementsOfBindingOrAssignmentPattern(Node name)
+    public static Slice<Node> GetElementsOfBindingOrAssignmentPattern(Node name)
     {
         switch (name.Kind)
         {
@@ -3408,7 +3408,7 @@ public static partial class Ast
                 return name.Properties();
         }
 
-        return null;
+        return default;
     }
 
     public static bool IsDeclarationBindingElement(Node bindingElement) => bindingElement.Kind is Kind.VariableDeclaration or Kind.Parameter or Kind.BindingElement;
@@ -3444,7 +3444,7 @@ public static partial class Ast
             return true;
         if ((node.SubtreeFacts() & SubtreeFacts.ContainsESObjectRestOrSpread) != 0)
         {
-            foreach (var element in GetElementsOfBindingOrAssignmentPattern(node) ?? [])
+            foreach (var element in GetElementsOfBindingOrAssignmentPattern(node))
             {
                 var target = GetTargetOfBindingOrAssignmentElement(element);
                 if (target is not null && IsAssignmentPattern(target))
@@ -5038,7 +5038,7 @@ public static partial class Ast
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4269:1.
     public static bool HasContextSensitiveParameters(Node node)
     {
-        if ((node.TypeParameters() == null))
+        if ((node.TypeParameters().IsNil))
         {
             if (Core.Some(node.Parameters(), (p) =>
             {
@@ -5182,7 +5182,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:89:1.
-    public static Node FindLastVisibleNode(List<Node> nodes)
+    public static Node FindLastVisibleNode(Slice<Node> nodes)
     {
         var fromEnd = 1;
         while (((fromEnd <= GoRuntime.Len(nodes)) && ((nodes[(GoRuntime.Len(nodes) - fromEnd)].Flags & NodeFlags.Reparsed) != 0)))
@@ -5360,7 +5360,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:1746:1.
-    public static List<Node> GetImplementsHeritageClauseElements(Node node)
+    public static Slice<Node> GetImplementsHeritageClauseElements(Node node)
     {
         return GetHeritageElements(node, Kind.ImplementsKeyword);
     }
@@ -5780,9 +5780,9 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:3322:1.
-    public static List<Node> CreateModifiersFromModifierFlags(ModifierFlags flags, Func<Kind, Node> createModifier)
+    public static Slice<Node> CreateModifiersFromModifierFlags(ModifierFlags flags, Func<Kind, Node> createModifier)
     {
-        List<Node> result = default;
+        Slice<Node> result = default;
         if (((flags & ModifierFlags.Export) != 0))
         {
             result = GoRuntime.Append(result, createModifier(Kind.ExportKeyword));
@@ -6044,7 +6044,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:3814:1.
-    public static int IndexOfNode(List<Node> nodes, Node node)
+    public static int IndexOfNode(Slice<Node> nodes, Node node)
     {
         var tuple3 = GoSlices.BinarySearchFunc(nodes, node, CompareNodePositions);
         var index = tuple3.Item1;
@@ -6058,7 +6058,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:3865:1.
-    public static List<Node> GetSemanticJsxChildren(List<Node> children)
+    public static Slice<Node> GetSemanticJsxChildren(Slice<Node> children)
     {
         return Core.Filter(children, (i) =>
         {
@@ -6521,7 +6521,7 @@ public static partial class Ast
     }
 
     // Upstream upstream/TypeScript/tsc/internal/ast/utilities.go:4486:1.
-    public static AllAccessorDeclarations GetAllAccessorDeclarations(List<Node> parentDeclarations, Node accessor)
+    public static AllAccessorDeclarations GetAllAccessorDeclarations(Slice<Node> parentDeclarations, Node accessor)
     {
         if (HasDynamicName(accessor))
         {

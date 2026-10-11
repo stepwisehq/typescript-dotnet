@@ -74,7 +74,8 @@
       "foundationManifestState": "accepted-foundation",
       "foundationEvidence": "validation/results/foundation-verified.json",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/ast/kind_generated.go",
@@ -120,7 +121,8 @@
       "filenameSharingAdaptation": "Authored .NET filename-role compatibility seam retains a coherent per-SourceFile Unicode/raw-byte filename pair; raw-role reads still return source value. Current source string identity governs reuse; direct filename replacement recomputes. Upstream ast.SourceFile and compiler/program.go reuse the original filename. See docs/VSCODE-CHECK-STATUS.md.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
-      "astCandidateStackCheckpoint": "AST raw-text snapshots retain byte/string headers; public text projection remains canonical. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "AST raw-text snapshots retain byte/string headers; public text projection remains canonical. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -232,7 +234,8 @@
         "qualification": "Native ten complete diagnostics exact23.33wall/97.59CPU; managed19original fullrecords+TypeSystem77+Scanner3842+lifetime17/token5; native539scanner+17shared. Expanded lifetime assertions authored; no expected changes, allocation capture or speedup claim. Later stack/candidate/AST source changes not included.",
         "evidence": "artifacts/vscode-instantiation-state/focused/report.json",
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
-      }
+      },
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -458,7 +461,8 @@
         "evidence": "artifacts/vscode-parser-inline-scratch/",
         "qualification": "Frozen075799: native VSCode exact10; two shared scratch controls and nine complete parser comparison records pass in managed/native runs. Sampled4089 17.572668 to075799 17.107677GiB (-2.6461%), zero lost/truncated events, one missing candidate stack. Recursion/frame cost remains a tradeoff; no causal speedup claim."
       },
-      "astCandidateStackCheckpoint": "Parser factories publish borrowed token headers without changing byte positions or clone/hooks. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Parser factories publish borrowed token headers without changing byte positions or clone/hooks. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -477,14 +481,16 @@
         "focusedEvidence": "artifacts/vscode-cached-assignable-comparer/focused/report.json",
         "state": "Independent source review clear; native ten records exact, original inference4/TypeSystem77/JSDoc21 managed checks pass. Selected copies removed structurally; no new measured savings/speedup claim."
       },
-      "astCandidateStackCheckpoint": "Identifier/literal construction uses borrowed text factory boundaries; original JSDoc algorithms retained. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Identifier/literal construction uses borrowed text factory boundaries; original JSDoc algorithms retained. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/parser/reparser.go",
       "destination": "src/TypeScript.Scanner/Parser/Reparser.cs",
       "status": "ported",
       "scope": "All21syntax reparser functions used by JSDoc transformations; no general emit pipeline.",
-      "upstreamSha256": "59f3d5e33405ec35406480413e901787d0f204e7255a172f8e563a7bfefc468a"
+      "upstreamSha256": "59f3d5e33405ec35406480413e901787d0f204e7255a172f8e563a7bfefc468a",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/parser/types.go",
@@ -523,7 +529,8 @@
       "bindingCompletionEvidence": "validation/results/binding-completion-verified.json",
       "bindingCompletionScope": "All required source-file binding behavior under B1–B6; broader file exclusions and historical checkpoint scopes remain explicit.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
-      "astCandidateStackCheckpoint": "Eleven text payload families/factories/clones retain borrowed raw headers with explicit public string getters/setters. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Eleven text payload families/factories/clones retain borrowed raw headers with explicit public string getters/setters. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -588,7 +595,8 @@
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Original GetExternalModuleIndicatorOptions and format-forced module condition. Authored FileNameIsGoBytes option defaults false for legacy callers.",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/ast/visitor.go",
@@ -598,7 +606,8 @@
       "upstreamSha256": "6754fe0df4e97fd31fe665408b14cb1a30c542f71ecec5b3f29288da4f2a3795",
       "dataTypesCheckpointScope": "Syntax traversal/list visitors required by parser and JSDoc reparsing; no transformation pipeline.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -662,7 +671,8 @@
         "workloadEvidence": "artifacts/vscode-scanner-token-views/first-vscode/result.json",
         "profileEvidence": "artifacts/vscode-scanner-token-views/allocation-comparison.json",
         "profileQualification": "One matched CoreCLR trace per role: sampled interval weight b81a16.404452→9315 15.453668GiB (−5.7959%), zero event loss/truncation, all147193 allocations typed/stack-resolved. Combined packet estimate, not per-site/native exact allocation or throughput claim."
-      }
+      },
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -772,7 +782,8 @@
       "declarationsCampaignScope": "Class-like symbol declaration lookup and effective-external-module predicate.",
       "declarationsCampaignEvidence": "validation/results/declarations-verified.json",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
-      "astCandidateStackCheckpoint": "Selected AST raw-text helper reads retain descriptors and original guards. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Selected AST raw-text helper reads retain descriptors and original guards. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/core/nodemodules.go",
@@ -888,7 +899,8 @@
       "upstreamSha256": "76dabb52846aea3686afc3d70b5f8daacf4de625f977187f2bb1c1adddaef911",
       "dataTypesCheckpointScope": "Private JSX-only projection of fact constants/helpers for external-module detection. All non-JSX bits project to zero; full public transform facts API excluded. Projection methods stay in their original Ast.cs/AstGenerated.cs counterparts.",
       "foundationManifestState": "accepted-foundation",
-      "foundationEvidence": "validation/results/foundation-verified.json"
+      "foundationEvidence": "validation/results/foundation-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/binder/nameresolver.go",
@@ -923,7 +935,8 @@
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
       "resolutionCampaignExtension": "Narrow external-module symbol filename producer uses explicit source filename byte role; binder algorithms otherwise unchanged.",
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
-      "astCandidateStackCheckpoint": "Declaration lookup borrows AST raw-text headers and reuses actual stored keys; insertion remains a string boundary. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate."
+      "astCandidateStackCheckpoint": "Declaration lookup borrows AST raw-text headers and reuses actual stored keys; insertion remains a string boundary. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -1205,7 +1218,8 @@
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
       "astCandidateStackCheckpoint": "Private call/await/contextual/reverse-map stacks and inference candidate headers use Go slices; recursive intersection inputs borrow spans with independent normalized output ownership. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -1385,7 +1399,8 @@
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
       "astCandidateStackCheckpoint": "Variance stack uses saved/restored Go slice headers with unchanged recursive comparison order. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1457,7 +1472,8 @@
         "nativeEvidence": "artifacts/vscode-instantiation-state/focused/native-report.json"
       },
       "astCandidateStackCheckpoint": "Flow reduce-label push/pop and pooled resets preserve Go header capacity/sharing rather than cloning Lists. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/utilities.go",
@@ -1520,7 +1536,8 @@
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       },
       "cachedSymbolSortAdaptation": "utilities.go:361 sortSymbols binds the cached .NET Comparison to unchanged symbol Worker; paired Func callback supports existing spelling APIs. Original symbol ordering/mutation unchanged. Snapshot artifacts/vscode-cached-assignable-comparer/build/snapshot-1/snapshot.json.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -1568,7 +1585,8 @@
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
       "textViewAdaptation": "Regular-expression checking shares existing raw-byte source through the internal scanner setter, preserving upstream scan/reset/clear sequence. Internal byte-string callback preserves Unicode diagnostic arguments; genuine pinned-Go TS1532 witness demonstrates and guards the prior public-callback double-decoding defect.",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/ast/checkflags.go",
@@ -1630,7 +1648,8 @@
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "collectionsCampaignState": "accepted-collections-contract",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -1727,7 +1746,8 @@
         "evidence": "docs/VSCODE-CHECK-STATUS.md",
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
-      }
+      },
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -1805,7 +1825,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
@@ -1997,7 +2018,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/nodecopy.go",
@@ -2031,7 +2053,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderscopes.go",
@@ -2057,7 +2080,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/symboltracker.go",
@@ -2246,7 +2270,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -2931,7 +2956,8 @@
       "resolutionCampaignExtension": "Propagates explicit authored project resolution capability through validation; other semantic syntax boundaries remain unchanged.",
       "resolutionCampaignState": "accepted selected dependency or authored adapter; broader scope remains as documented",
       "resolutionCampaignContract": "docs/RESOLUTION-CONTRACT.md",
-      "resolutionCampaignEvidence": "validation/results/resolution-verified.json"
+      "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -3008,7 +3034,8 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -3430,7 +3457,8 @@
       "programCampaignBaselineScope": "Retains the prior accepted scope recorded in resolutionCampaignBaselineScope. Resolution completion extension: Existing legacy configuration plus original parsed graph options/roots/reasons, preserving explicit raw graph versus Unicode disk roles.",
       "programCampaignScope": "Authored admission retained for accepted checking/graph commands. Full Program construction consumes genuine parsed configuration independently; no checker-driven omission or option rewriting.",
       "programCampaignFunctionInventory": "docs/program-functions.json",
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -4150,7 +4178,8 @@
       "programCampaignContract": "docs/PROGRAM-CONTRACT.md",
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programCampaignEvidence": "validation/results/program-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/tsoptions/wildcarddirectories.go",
@@ -5054,7 +5083,8 @@
       "languageCampaignState": "accepted prior no-emit selection reused; no new output-emitter completion claim",
       "languageCampaignScope": "Prior sourceFileMayBeEmitted/getSourceFilesToEmit support reused where diagnostic naming requires them; output Emit remains external.",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": null,
@@ -5347,7 +5377,8 @@
         "focusedEvidence": "artifacts/vscode-signature-slices/focused/report.json",
         "profileEvidence": "artifacts/vscode-signature-slices/allocation-comparison.json"
       },
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/stringutil/compare.go",
@@ -5382,7 +5413,8 @@
       ],
       "mappingAdaptation": "Two-function upstream helper unit folded into existing Checker/Utilities counterparts; no new standalone fragment.",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
-      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim."
+      "checkerTextReceiverAdaptation": "Borrowed AST text headers reach property/literal/fixed-name lookups; cache hits reuse stored keys, misses retain owned strings. Standard Latin1 span widening supports ordinal Dictionary lookup. Qualified e793: artifacts/vscode-checker-text-values/qualification.json; stored string keys remain explicit. No allocation or throughput improvement claim.",
+      "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilder_hover.go",
@@ -5769,6 +5801,18 @@
       "destination": "tests/Parser.Tests/AstTextValueTests.cs",
       "status": "new",
       "scope": "Authored thin xUnit registration for the five shared AST public ownership/lifetime controls; expected original compiler records remain unchanged. Native shared mode is --ast-text-values in existing Foundation.Validation."
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Checker.NoEmit.Tests/TupleSpreadTests.cs",
+      "status": "new",
+      "scope": "Authored regression asserts genuine pinned-Go full semantic records for tuple spreads with valid/invalid suffixes, repeated checks and type observations; old defective binary fails, corrected binary passes. Not a ported original upstream test."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/tuple-spread-corpus/program-pairs.jsonl.gz",
+      "status": "new",
+      "scope": "Authored two-file semantic input and complete pinned-Go expected record. Genuine ES2022 library environment; one intentional2345 diagnostic. Provenance and red/green evidence: artifacts/vscode-node-list-slices/spread-reference/."
     }
   ],
   "activePhase": {

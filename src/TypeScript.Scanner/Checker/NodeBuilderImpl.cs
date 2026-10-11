@@ -431,7 +431,7 @@ internal sealed partial class NodeBuilderImpl
             var types = t.AsTemplateLiteralType().types;
             var head = f.NewTemplateHead(texts[0], "", TokenFlags.None);
             e.AddEmitFlags(head, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
-            var spans = f.NewNodeList(Core.MapIndex(types, (type, i) =>
+            var spans = f.NewNodeList(Core.MapIndexSlice(types, (type, i) =>
             {
                 var literal = i < types.Count - 1 ? f.NewTemplateMiddle(texts[i + 1], "", TokenFlags.None) : f.NewTemplateTail(texts[i + 1], "", TokenFlags.None);
                 e.AddEmitFlags(literal, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
@@ -444,7 +444,7 @@ internal sealed partial class NodeBuilderImpl
         if ((t.flags & TypeFlags.StringMapping) != 0)
         {
             var typeNode = typeToTypeNode(t.Target());
-            return symbolToTypeNode(t.symbol, SymbolFlags.Type, f.NewNodeList(new List<Node> { typeNode }));
+            return symbolToTypeNode(t.symbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode])));
         }
 
         if ((t.flags & TypeFlags.IndexedAccess) != 0)
@@ -463,7 +463,7 @@ internal sealed partial class NodeBuilderImpl
             if (!ch.isNoInferType(t))
                 return typeNode;
             var noInferSymbol = ch.getGlobalTypeAliasSymbol("NoInfer", 1, false);
-            return noInferSymbol != null ? symbolToTypeNode(noInferSymbol, SymbolFlags.Type, f.NewNodeList([typeNode])) : typeNode;
+            return noInferSymbol != null ? symbolToTypeNode(noInferSymbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode]))) : typeNode;
         }
 
         throw Checker.unsupported("typeToTypeNode: type payload");
@@ -607,7 +607,7 @@ internal sealed partial class NodeBuilderImpl
         if (index > stopper)
         {
             var lhs = createAccessFromSymbolChain(chain, index - 1, stopper, overrideTypeArguments);
-            if ((ctx.flags & NodeBuilderFlags.UseInstantiationExpressions) == 0 || Ast.IsEntityName(lhs) && GoRuntime.Len(typeParameterNodes?.Nodes) == 0)
+            if ((ctx.flags & NodeBuilderFlags.UseInstantiationExpressions) == 0 || Ast.IsEntityName(lhs) && GoRuntime.Len(typeParameterNodes?.Nodes ?? default) == 0)
                 return f.NewQualifiedName(lhs, identifier);
             return createExpressionWithTypeArguments(f.NewPropertyAccessExpression(createAccessExpression(lhs), null, identifier, NodeFlags.None), typeParameterNodes);
         }
@@ -673,7 +673,7 @@ internal sealed partial class NodeBuilderImpl
                     typeParameterCount = Math.Min(GoRuntime.Len(typeParams), GoRuntime.Len(typeArguments));
                     if ((((this.ch.isReferenceToType(t, this.ch.getGlobalIterableType()) || this.ch.isReferenceToType(t, this.ch.getGlobalIterableIteratorType())) || this.ch.isReferenceToType(t, this.ch.getGlobalAsyncIterableType())) || this.ch.isReferenceToType(t, this.ch.getGlobalAsyncIterableIteratorType())))
                     {
-                        if (((((t.AsTypeReference().node == null) || !Ast.IsTypeReferenceNode(t.AsTypeReference().node)) || (t.AsTypeReference().node.TypeArguments() == null)) || (GoRuntime.Len(t.AsTypeReference().node.TypeArguments()) < typeParameterCount)))
+                        if (((((t.AsTypeReference().node == null) || !Ast.IsTypeReferenceNode(t.AsTypeReference().node)) || (t.AsTypeReference().node.TypeArguments().IsNil)) || (GoRuntime.Len(t.AsTypeReference().node.TypeArguments()) < typeParameterCount)))
                         {
                             while ((typeParameterCount > 0))
                             {
@@ -1032,11 +1032,11 @@ internal sealed partial class NodeBuilderImpl
                     e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
                         Kind.MultiLineCommentTrivia, "elided", false) :
                     f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
-                return f.NewNodeList([node]);
+                return f.NewNodeList(Slice<Node>.FromArray([node]));
             }
             if (list.Count > 2)
             {
-                List<Node> nodes = [typeToTypeNode(list[0]), null, typeToTypeNode(list[^1])];
+                var nodes = Slice<Node>.FromArray([typeToTypeNode(list[0]), null, typeToTypeNode(list[^1])]);
                 nodes[1] = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
                     e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
                         Kind.MultiLineCommentTrivia, $"... {list.Count - 2} more elided ...", false) :
@@ -1046,19 +1046,19 @@ internal sealed partial class NodeBuilderImpl
         }
 
         var seenNames = useFullyQualifiedType ? null : new Dictionary<string, List<(Type type, int index)>>(StringComparer.Ordinal);
-        var result = new List<Node>(list.Count);
+        var result = Slice<Node>.Make(0, list.Count);
         for (int i = 0; i < list.Count; i++)
         {
             int displayIndex = i + 1;
             if (checkTruncationLength() && displayIndex + 2 < list.Count - 1)
             {
-                result.Add((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
+                result = result.Append((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
                     e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
                         Kind.MultiLineCommentTrivia, $"... {list.Count - displayIndex} more elided ...", false) :
                     f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - displayIndex} more ..."), null));
                 var last = typeToTypeNode(list[^1]);
                 if (last != null)
-                    result.Add(last);
+                    result = result.Append(last);
                 break;
             }
 
@@ -1066,7 +1066,7 @@ internal sealed partial class NodeBuilderImpl
             var node = typeToTypeNode(list[i]);
             if (node == null)
                 continue;
-            result.Add(node);
+            result = result.Append(node);
             if (seenNames != null && node.Kind == Kind.TypeReference && node.AsTypeReferenceNode().TypeName.Kind == Kind.Identifier)
             {
                 string name = node.AsTypeReferenceNode().TypeName.Text();
@@ -1305,7 +1305,7 @@ internal sealed partial class NodeBuilderImpl
     private static bool hasTypeAnnotation(Node declaration) => declaration != null && declaration.Type() != null && !Ast.IsTypeAliasDeclaration(declaration) && !Ast.IsJSTypeAliasDeclaration(declaration);
     // nodebuilderimpl.go:2581. Finite data-property branch. All excluded cases
     // are guarded before assuming their declaration/context caches are absent.
-    private List<Node> addPropertyToElementList(Symbol propertySymbol, List<Node> typeElements)
+    private Slice<Node> addPropertyToElementList(Symbol propertySymbol, Slice<Node> typeElements)
     {
 
         bool propertyIsReverseMapped = (propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0;
@@ -1362,18 +1362,18 @@ internal sealed partial class NodeBuilderImpl
                         var signature = ch.getSignatureFromDeclaration(declaration);
                         if (mapper != null)
                             signature = ch.instantiateSignature(signature, mapper);
-                        (typeElements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, kind, new() { name = propertyName }));
+                        typeElements = typeElements.Append(signatureToSignatureDeclarationHelper(signature, kind, new() { name = propertyName }));
                     }
                     return typeElements;
                 }
                 if (classMember && propertyDeclaration != null && Core.Some(propertyDeclaration.ModifierNodes(), m => m.Kind == Kind.AccessorKeyword))
                 {
                     var getter = ch.newSignature(SignatureFlags.None, null, null, null, null, propertyType, null, 0);
-                    (typeElements ??= new()).Add(signatureToSignatureDeclarationHelper(getter, Kind.GetAccessor, new() { name = propertyName }));
+                    typeElements = typeElements.Append(signatureToSignatureDeclarationHelper(getter, Kind.GetAccessor, new() { name = propertyName }));
                     var parameter = ch.newSymbol(SymbolFlags.FunctionScopedVariable, "arg");
                     ch.valueSymbolLinks.Get(parameter).resolvedType = writeType;
                     var setter = ch.newSignature(SignatureFlags.None, null, null, null, new List<Symbol> { parameter }, ch.voidType, null, 0);
-                    typeElements.Add(signatureToSignatureDeclarationHelper(setter, Kind.SetAccessor, new() { name = propertyName }));
+                    typeElements = typeElements.Append(signatureToSignatureDeclarationHelper(setter, Kind.SetAccessor, new() { name = propertyName }));
                     return typeElements;
                 }
             }
@@ -1384,7 +1384,7 @@ internal sealed partial class NodeBuilderImpl
         {
             var signatures = ch.getSignaturesOfType(ch.filterType(propertyType, t => (t.flags & TypeFlags.Undefined) == 0), SignatureKind.Call);
             foreach (var signature in signatures)
-                (typeElements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken }));
+                typeElements = typeElements.Append(signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken }));
             if (GoRuntime.Len(signatures) != 0 || optionalToken == null)
                 return typeElements;
         }
@@ -1404,13 +1404,12 @@ internal sealed partial class NodeBuilderImpl
         ModifierList modifiers = null;
         if (ch.isReadonlySymbol(propertySymbol))
         {
-            modifiers = f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]);
+            modifiers = f.NewModifierList(Slice<Node>.FromArray([f.NewModifier(Kind.ReadonlyKeyword)]));
             approximateLength += 9;
         }
 
-        typeElements ??= new();
         var propertySignature = f.NewPropertySignatureDeclaration(modifiers, propertyName, optionalToken, typeNode, null);
-        typeElements.Add(propertySignature);
+        typeElements = typeElements.Append(propertySignature);
         setCommentRange(propertySignature, propertySymbol.ValueDeclaration);
         return typeElements;
     }
@@ -1424,7 +1423,7 @@ internal sealed partial class NodeBuilderImpl
         return ch.isEntityNameVisible(element.Name().Expression(), ctx.enclosingDeclaration, false).Accessibility == TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible;
     }
 
-    private List<Node> indexInfoToObjectComputedNamesOrSignatureDeclaration(IndexInfo info, Node typeNode)
+    private Slice<Node> indexInfoToObjectComputedNamesOrSignatureDeclaration(IndexInfo info, Node typeNode)
     {
         if (info.components is { Count: > 0 })
         {
@@ -1433,7 +1432,7 @@ internal sealed partial class NodeBuilderImpl
             {
                 var components = Core.Filter(info.components, component => !ch.hasLateBindableName(component));
                 bool bailed = false;
-                var results = Core.Map(components, element =>
+                var results = Core.MapSlice(components, element =>
                 {
                     var name = reuseNode(element.Name());
                     if (name == null)
@@ -1442,7 +1441,7 @@ internal sealed partial class NodeBuilderImpl
                         return null;
                     }
                     trackComputedName(element.Name().Expression(), ctx.enclosingDeclaration);
-                    ModifierList modifiers = info.isReadonly ? f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]) : null;
+                    ModifierList modifiers = info.isReadonly ? f.NewModifierList(Slice<Node>.FromArray([f.NewModifier(Kind.ReadonlyKeyword)])) : null;
                     var postfixToken = element.PostfixToken()?.Clone(f);
                     var currentTypeNode = typeNode != null ? f.DeepCloneNode(typeNode) : typeToTypeNode(ch.getTypeOfSymbol(element.Symbol()));
                     var signature = f.NewPropertySignatureDeclaration(modifiers, name, postfixToken, currentTypeNode, null);
@@ -1453,7 +1452,7 @@ internal sealed partial class NodeBuilderImpl
                     return results;
             }
         }
-        return[indexInfoToIndexSignatureDeclarationHelper(info, typeNode)];
+        return Slice<Node>.FromArray([indexInfoToIndexSignatureDeclarationHelper(info, typeNode)]);
     }
 
     private Node indexInfoToIndexSignatureDeclarationHelper(IndexInfo info, Node typeNode)
@@ -1469,10 +1468,10 @@ internal sealed partial class NodeBuilderImpl
         if (info.isReadonly)
         {
             approximateLength += 9;
-            modifiers = f.NewModifierList([f.NewModifier(Kind.ReadonlyKeyword)]);
+            modifiers = f.NewModifierList(Slice<Node>.FromArray([f.NewModifier(Kind.ReadonlyKeyword)]));
         }
 
-        return f.NewIndexSignatureDeclaration(modifiers, f.NewNodeList([parameter]), typeNode);
+        return f.NewIndexSignatureDeclaration(modifiers, f.NewNodeList(Slice<Node>.FromArray([parameter])), typeNode);
     }
 
     // nodebuilderimpl.go:2722. Original truncation/order loop retains ordinary
@@ -1484,21 +1483,21 @@ internal sealed partial class NodeBuilderImpl
             if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
             {
                 var element = f.NewNotEmittedTypeElement();
-                return f.NewNodeList([e.AddSyntheticTrailingComment(element,
-                    Kind.MultiLineCommentTrivia, "elided", false)]);
+                return f.NewNodeList(Slice<Node>.FromArray([e.AddSyntheticTrailingComment(element,
+                    Kind.MultiLineCommentTrivia, "elided", false)]));
             }
-            return f.NewNodeList([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]);
+            return f.NewNodeList(Slice<Node>.FromArray([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]));
         }
-        List<Node> elements = null;
+        Slice<Node> elements = default;
         foreach (var signature in resolved.CallSignaturesSlice())
-            (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
+            elements = elements.Append(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
         foreach (var signature in resolved.ConstructSignaturesSlice())
             if ((signature.flags & SignatureFlags.Abstract) == 0)
-                (elements ??= new()).Add(signatureToSignatureDeclarationHelper(signature, Kind.ConstructSignature, null));
+                elements = elements.Append(signatureToSignatureDeclarationHelper(signature, Kind.ConstructSignature, null));
         foreach (var info in resolved.indexInfos ?? [])
         {
             var typeNode = (resolved.AsType().objectFlags & ObjectFlags.ReverseMapped) != 0 && (ctx.flags & NodeBuilderFlags.AllowAnonymousIdentifier) != 0 ? createElidedInformationPlaceholder() : null;
-            (elements ??= new()).AddRange(indexInfoToObjectComputedNamesOrSignatureDeclaration(info, typeNode));
+            elements = GoSlices.Concat(elements, indexInfoToObjectComputedNamesOrSignatureDeclaration(info, typeNode));
         }
 
         var properties = resolved.properties;
@@ -1510,12 +1509,11 @@ internal sealed partial class NodeBuilderImpl
             i++;
             if (checkTruncationLength() && i + 2 < properties.Count - 1)
             {
-                elements ??= new();
                 if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
                     elements[^1] = e.AddSyntheticTrailingComment(elements[^1],
                         Kind.MultiLineCommentTrivia, $"... {properties.Count - i} more elided ...", false);
                 else
-                    elements.Add(f.NewPropertySignatureDeclaration(null, f.NewIdentifier($"... {properties.Count - i} more ..."), null, null, null));
+                    elements = elements.Append(f.NewPropertySignatureDeclaration(null, f.NewIdentifier($"... {properties.Count - i} more ..."), null, null, null));
                 elements = addPropertyToElementList(properties[^1], elements);
                 break;
             }
@@ -1539,7 +1537,7 @@ internal sealed partial class NodeBuilderImpl
             if (GoRuntime.Len(callSigs) == 0 && GoRuntime.Len(ctorSigs) == 0)
             {
                 approximateLength += 2;
-                var result = f.NewTypeLiteralNode(f.NewNodeList([]));
+                var result = f.NewTypeLiteralNode(f.NewNodeList(Slice<Node>.Make(0)));
                 e.SetEmitFlags(result, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
                 return result;
             }
@@ -1823,7 +1821,7 @@ internal sealed partial class NodeBuilderImpl
         if (target == null || target != t.AsTypeReference().target)
             return true;
         var parameters = t.AsTypeReference().target.AsInterfaceType().TypeParameters();
-        return (existing.TypeArguments()?.Count ?? 0) >= ch.getMinTypeArgumentCount(parameters);
+        return (existing.TypeArguments().Count) >= ch.getMinTypeArgumentCount(parameters);
     }
 
     // nodebuilderimpl.go:486. Original syntax comments are reusable only within the enclosing file.
@@ -1916,7 +1914,7 @@ internal sealed partial class NodeBuilderImpl
         if ((((((this.ctx.flags & NodeBuilderFlags.OmitParameterModifiers) == 0) && preserveModifierFlags) && (parameterDeclaration != null)) && Ast.CanHaveModifiers(parameterDeclaration)))
         {
             var originals = Core.Filter(parameterDeclaration.ModifierNodes(), Ast.IsModifier);
-            var clones = Core.Map(originals, (node) =>
+            var clones = Core.MapSlice(originals, (node) =>
             {
                 return node.Clone(this.f);
             });
@@ -2063,7 +2061,7 @@ internal sealed partial class NodeBuilderImpl
     // Upstream upstream/TypeScript/tsc/internal/checker/nodebuilderimpl.go:1865:1.
     internal Node signatureToSignatureDeclarationHelper(Signature signature, Kind kind, SignatureToSignatureDeclarationOptions options)
     {
-        List<Node> typeParameters = default;
+        Slice<Node> typeParameters = default;
         var tuple1 = this.enterSignatureScope(signature);
         var expandedParams = tuple1.Item1;
         var cleanup = tuple1.Item2;
@@ -2076,7 +2074,7 @@ internal sealed partial class NodeBuilderImpl
                 typeParameters = GoRuntime.Append(typeParameters, typeParameterToDeclaration(parameter));
         var restoreFlags = this.saveRestoreFlags();
         this.ctx.flags &= ~(NodeBuilderFlags.SuppressAnyReturnType);
-        var parameters = Core.Map(Core.IfElse(Core.Some(expandedParams, (p) =>
+        var parameters = Core.MapSlice(Core.IfElse(Core.Some(expandedParams, (p) =>
         {
             return ((p != expandedParams[(GoRuntime.Len(expandedParams) - 1)]) && ((p.CheckFlags & CheckFlags.RestParameter) != 0));
         }), signature.parameters, expandedParams), (parameter3) =>
@@ -2095,12 +2093,12 @@ internal sealed partial class NodeBuilderImpl
 
         if ((thisParameter != null))
         {
-            parameters = GoRuntime.Append(new List<Node> { thisParameter }, parameters);
+            parameters = GoRuntime.Append(Slice<Node>.FromArray([thisParameter]), parameters);
         }
 
         restoreFlags();
         var returnTypeNode = this.serializeReturnTypeForSignature(signature, true);
-        List<Node> modifiers = default;
+        Slice<Node> modifiers = default;
         if ((options != null))
         {
             modifiers = options.modifiers;
@@ -2219,13 +2217,13 @@ internal sealed partial class NodeBuilderImpl
 
             case true when (kind == Kind.FunctionExpression):
             {
-                node = this.f.NewFunctionExpression(modifierList, null, name, typeParamList, paramList, returnTypeNode, null, this.f.NewBlock(this.f.NewNodeList(new List<Node> { }), false));
+                node = this.f.NewFunctionExpression(modifierList, null, name, typeParamList, paramList, returnTypeNode, null, this.f.NewBlock(this.f.NewNodeList(Slice<Node>.Make(0)), false));
                 break;
             }
 
             case true when (kind == Kind.ArrowFunction):
             {
-                node = this.f.NewArrowFunction(modifierList, typeParamList, paramList, returnTypeNode, null, null, this.f.NewBlock(this.f.NewNodeList(new List<Node> { }), false));
+                node = this.f.NewArrowFunction(modifierList, typeParamList, paramList, returnTypeNode, null, null, this.f.NewBlock(this.f.NewNodeList(Slice<Node>.Make(0)), false));
                 break;
             }
 
@@ -2328,7 +2326,7 @@ internal sealed partial class NodeBuilderImpl
     // nodebuilderimpl.go:1859.
     internal sealed class SignatureToSignatureDeclarationOptions
     {
-        internal List<Node> modifiers = null;
+        internal Slice<Node> modifiers = default;
         internal Node name = null, questionToken = null;
     }
 
@@ -2736,7 +2734,7 @@ internal sealed partial class NodeBuilderImpl
             if (((this.ctx.flags & NodeBuilderFlags.WriteArrayAsGenericType) != 0))
             {
                 var typeArgumentNode = this.typeToTypeNode(typeArguments[0]);
-                return this.f.NewTypeReferenceNode(this.newIdentifier(Core.IfElse((t.Target() == this.ch.globalArrayType), "Array", "ReadonlyArray"), t.Target().symbol), this.f.NewNodeList(new List<Node> { typeArgumentNode }));
+                return this.f.NewTypeReferenceNode(this.newIdentifier(Core.IfElse((t.Target() == this.ch.globalArrayType), "Array", "ReadonlyArray"), t.Target().symbol), this.f.NewNodeList(Slice<Node>.FromArray([typeArgumentNode])));
             }
 
             var elementType = this.typeToTypeNode(typeArguments[0]);
@@ -2814,7 +2812,7 @@ internal sealed partial class NodeBuilderImpl
 
             if ((this.ctx.encounteredError || (((this.ctx.flags & NodeBuilderFlags.AllowEmptyTuple) != 0))))
             {
-                var tupleTypeNode2 = this.f.NewTupleTypeNode(this.f.NewNodeList(new List<Node> { }));
+                var tupleTypeNode2 = this.f.NewTupleTypeNode(this.f.NewNodeList(Slice<Node>.Make(0)));
                 this.e.SetEmitFlags(tupleTypeNode2, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine);
                 if (t.Target().AsTupleType().@readonly)
                 {
@@ -3022,20 +3020,18 @@ internal sealed partial class NodeBuilderImpl
 
 internal sealed partial class NodeBuilderImpl
 {
-    private static List<Node> getAccessStack(Node @ref)
+    private static Slice<Node> getAccessStack(Node @ref)
     {
         Node state = @ref.AsTypeReferenceNode().TypeName;
-        var ids = new List<Node>
-        {
-        };
+        var ids = Slice<Node>.Make(0);
         while (!Ast.IsIdentifier(state))
         {
             var entity = state.AsQualifiedName();
-            ids = GoRuntime.Append(new List<Node> { entity.Right }, ids);
+            ids = GoRuntime.Append(Slice<Node>.FromArray([entity.Right]), ids);
             state = entity.Left;
         }
 
-        ids = GoRuntime.Append(new List<Node> { state }, ids);
+        ids = GoRuntime.Append(Slice<Node>.FromArray([state]), ids);
         return ids;
     }
 }
@@ -3213,10 +3209,10 @@ internal sealed partial class NodeBuilderImpl
         return mapToTypeNodes(parameters, false);
     }
 
-    private List<Node> typeParametersToTypeParameterDeclarations(Symbol symbol)
+    private Slice<Node> typeParametersToTypeParameterDeclarations(Symbol symbol)
     {
         var target = ch.getTargetSymbol(symbol);
-        List<Node> results = null;
+        Slice<Node> results = default;
         if ((target.Flags & (SymbolFlags.Class | SymbolFlags.Interface | SymbolFlags.Alias)) != 0)
         {
             foreach (var parameter in ch.getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol) ?? [])
@@ -3369,11 +3365,11 @@ internal sealed partial class NodeBuilderImpl
             return null;
         var properties = empty ? null : GoSlices.Clone(ch.getPropertiesOfType(result.importAttributesType));
         properties?.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-        var attributes = new List<Node>();
+        var attributes = Slice<Node>.Make(0, GoRuntime.Len(properties) + 1);
         if (mode != ResolutionMode.None)
         {
             var text = mode == ResolutionMode.ESNext ? "import" : "require";
-            attributes.Add(f.NewImportAttribute(newStringLiteral("resolution-mode"), newStringLiteral(text)));
+            attributes = attributes.Append(f.NewImportAttribute(newStringLiteral("resolution-mode"), newStringLiteral(text)));
             approximateLength += "resolution-mode".Length + text.Length + 6;
         }
 
@@ -3392,7 +3388,7 @@ internal sealed partial class NodeBuilderImpl
                 approximateLength += 2;
             }
 
-            attributes.Add(f.NewImportAttribute(name, newStringLiteral(value)));
+            attributes = attributes.Append(f.NewImportAttribute(name, newStringLiteral(value)));
             approximateLength += property.Name.Length + value.Length + 4;
         }
 

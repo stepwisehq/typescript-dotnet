@@ -1447,6 +1447,42 @@ Reviewed public slice/arena header helpers compile in this checkpoint; their
 end-to-end use and behavioral qualification belong to the next AST list migration.
 Full final regressions remain deferred while allocation work continues.
 
+## AST child slices and arena publication
+
+The [061c checkpoint](../artifacts/vscode-node-list-slices/qualification.json)
+carries Slice<Node> through child lists, typed getters, JSDoc caches, parser/visitor,
+binder, checker and node-builder consumers. Parser node and string-fragment arenas
+publish clipped shared regions using Span.CopyTo. Cloned headers share elements but
+keep independent lengths; external List-taking factory adapters explicitly copy
+into stable storage. Generated iterator helpers now return value headers directly.
+This changes provisional public C# list APIs to preserve Go storage behavior.
+
+Native AOT VS Code kept ten exact complete diagnostics at **25.13s wall**, 101.88s CPU,
+9,753,968 KiB peak. Focused checks passed **906 managed** cases, plus **162 native
+parser records, 29 shared native controls and one complete native spread record**.
+The new spread test is authored differential evidence, not an original upstream
+unit test. Existing assertions/expected records remain unchanged; observer adapters
+use Go header/slot semantics instead of incidental managed List identity.
+
+The first compiled migration overwrote call-argument suffixes: the previous List
+copy had hidden a missing source `slices.Clip` before tuple-spread expansion. Restoring
+that exact operation resolved six extra VS Code diagnostics. A genuine pinned-Go
+semantic regression with valid/invalid suffixes, repeated checks and type queries
+fails against the defective binary and passes against the repaired one. Failed
+builds/runs and the initial environment-only test capture remain preserved. Selected
+consumer dependencies were rebuilt to resolve stale harness DLL bindings.
+
+[Sampled CoreCLR allocation](../artifacts/vscode-node-list-slices/allocation-comparison.json)
+fell **15.300418→14.869364GiB (−2.8173%)**, cumulatively including the preceding text
+receiver checkpoint. Node lists, node arrays and strings fell; larger inline headers
+increased NodeList/ModifierList object sizes. Zero lost/truncated events; all141334
+candidate allocation events have resolved frames. These sampled weights are not
+exact Native AOT allocations or isolated per-change savings. The
+[allocation flamegraph](../artifacts/vscode-node-list-slices/candidate-allocation/allocation-flamegraph.svg)
+is distinct from native CPU profiling. No speedup or final regression acceptance is
+claimed; parser scratch and checker constituent storage work continues. Repeated
+timing is deferred to the next combined implementation milestone.
+
 ## Reproduction and records
 
 ```bash

@@ -1309,7 +1309,7 @@ public partial class Binder
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:897:1.
     private bool hasExportDeclarations(Node node)
     {
-        List<Node> statements = default;
+        Slice<Node> statements = default;
         switch (node.Kind)
         {
             case Kind.SourceFile:
@@ -2037,7 +2037,7 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1359:1.
-    public static Node FindUseStrictPrologue(SourceFile sourceFile, List<Node> statements)
+    public static Node FindUseStrictPrologue(SourceFile sourceFile, Slice<Node> statements)
     {
         {
             foreach (var statement in GoRuntime.RangeValues(statements))
@@ -2630,7 +2630,7 @@ public partial class Binder
     }
 
     // Upstream upstream/TypeScript/tsc/internal/binder/binder.go:1748:1.
-    private void bindEach(List<Node> nodes)
+    private void bindEach(Slice<Node> nodes)
     {
         {
             foreach (var node in GoRuntime.RangeValues(nodes))

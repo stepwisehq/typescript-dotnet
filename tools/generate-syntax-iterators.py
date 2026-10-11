@@ -5,9 +5,11 @@ The methods are the IEnumerable adaptation of Node.IterChildren's Go iter.Seq
 visitor bridge. This only updates its own marked sections in mapped counterparts.
 Unknown source bodies fail rather than silently reorder or omit children.
 """
-import pathlib,re
+import pathlib,re,sys
 root=pathlib.Path(__file__).resolve().parents[1]
 upstream=root/'upstream/TypeScript/tsc/internal/ast'
+output=pathlib.Path(sys.argv[1]) if len(sys.argv)==2 else root/'src/TypeScript.Scanner/Ast'
+if len(sys.argv)>2: raise ValueError('usage: generate-syntax-iterators.py [output-directory]')
 marker='// BEGIN GENERATED SYNTAX ITERATORS'
 endmarker='// END GENERATED SYNTAX ITERATORS'
 count=0
@@ -21,7 +23,7 @@ for source,destination in [('ast.go','Ast.cs'),('ast_generated.go','AstGenerated
   if cls=='SyntheticExpression': continue # checker-created payload excluded by foundation contract.
   chunks.extend(['public partial class '+cls,'{','    internal override IEnumerable<Node> IterChildren()','    {'])
   if cls=='JSDocParameterOrPropertyTag':
-   chunks.extend(['        if (TagName is not null) yield return TagName;','        if (IsNameFirst)','        {','            if (name is not null) yield return name;','            if (TypeExpression is not null) yield return TypeExpression;','        }','        else','        {','            if (TypeExpression is not null) yield return TypeExpression;','            if (name is not null) yield return name;','        }','        foreach (var child in Ast.IterateSyntaxNodes(Comment?.Nodes)) yield return child;'])
+   chunks.extend(['        if (TagName is not null) yield return TagName;','        if (IsNameFirst)','        {','            if (name is not null) yield return name;','            if (TypeExpression is not null) yield return TypeExpression;','        }','        else','        {','            if (TypeExpression is not null) yield return TypeExpression;','            if (name is not null) yield return name;','        }','        foreach (var child in Ast.IterateSyntaxNodes(Comment?.Nodes ?? default)) yield return child;'])
    if body!='return forEachChild_JSDocParameterOrPropertyTag(node, v)':raise ValueError(body)
   else:
    if not body.startswith('return '):raise ValueError(body)
@@ -33,13 +35,13 @@ for source,destination in [('ast.go','Ast.cs'),('ast_generated.go','AstGenerated
     kind,field=match.groups()
     if kind=='visit': chunks.append('        if (this.'+field+' is not null) yield return this.'+field+';')
     else:
-     values='this.'+field+('?.Nodes' if kind in ('visitNodeList','visitModifiers') else '')
+     values='this.'+field+('?.Nodes ?? default' if kind in ('visitNodeList','visitModifiers') else '')
      chunks.append('        foreach (var child in Ast.IterateSyntaxNodes('+values+')) yield return child;')
    if expression=='false':chunks.append('        yield break;')
   chunks.extend(['    }','}'])
   count+=1
  chunks.append(endmarker)
- path=root/'src/TypeScript.Scanner/Ast'/destination
+ path=output/destination
  text=path.read_text()
  if marker in text:
   begin=text.index(marker);end=text.index(endmarker,begin)+len(endmarker)

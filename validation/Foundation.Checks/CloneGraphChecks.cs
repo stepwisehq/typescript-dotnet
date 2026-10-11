@@ -39,7 +39,7 @@ public static class CloneGraphChecks
         if (row.GetProperty("name").GetString() == "LazyJSDoc")
             file.ForEachChild(n =>
             {
-                roots.AddRange(n.JSDoc(file) ?? []);
+                foreach (var doc in n.JSDoc(file)) roots.Add(doc);
                 return false;
             });
         var root = roots[row.GetProperty("rootIndex").GetInt32()];

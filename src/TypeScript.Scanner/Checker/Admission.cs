@@ -89,14 +89,14 @@ internal static class SemanticAdmission
             Reject(file, root, "externalReference");
         if (file.ExternalModuleIndicator is not null || file.CommonJSModuleIndicator is not null)
             Reject(file, root, "module");
-        foreach (Node statement in file.Statements.Nodes ?? [])
+        foreach (Node statement in file.Statements.Nodes)
             Statement(file, statement, callable);
     }
 
     private static void Documentation(SourceFile file, Node node)
     {
-        foreach (Node doc in node.JSDoc(file) ?? [])
-            foreach (Node tag in doc.AsJSDoc().Tags?.Nodes ?? [])
+        foreach (Node doc in node.JSDoc(file))
+            foreach (Node tag in doc.AsJSDoc().Tags?.Nodes ?? default)
                 Reject(file, tag, "jsDocTag");
     }
 
@@ -106,7 +106,7 @@ internal static class SemanticAdmission
         if (!callable && node.ModifierNodes()is { Count: > 0 })
             Reject(file, node, "modifiers");
         if (callable && node.Kind != Kind.FunctionDeclaration)
-            foreach (Node modifier in node.ModifierNodes() ?? [])
+            foreach (Node modifier in node.ModifierNodes())
                 if (!(modifier.Kind == Kind.DeclareKeyword && node.Kind is Kind.FunctionDeclaration or Kind.VariableStatement))
                     Reject(file, modifier, "modifiers");
         switch (node.Kind)
@@ -141,11 +141,11 @@ internal static class SemanticAdmission
                 var shape = node.AsInterfaceDeclaration();
                 if (shape.TypeParameters is not null)
                     Reject(file, node, "typeParameters");
-                foreach (Node clause in shape.HeritageClauses?.Nodes ?? [])
+                foreach (Node clause in shape.HeritageClauses?.Nodes ?? default)
                 {
                     if (clause.AsHeritageClause().Token != Kind.ExtendsKeyword)
                         Reject(file, clause, "heritageKind");
-                    foreach (Node basis in clause.AsHeritageClause().Types?.Nodes ?? [])
+                    foreach (Node basis in clause.AsHeritageClause().Types?.Nodes ?? default)
                     {
                         if (basis.Kind == Kind.TypeReference)
                         {
@@ -166,17 +166,17 @@ internal static class SemanticAdmission
                     }
                 }
 
-                DataMembers(file, shape.Members?.Nodes, callable);
+                DataMembers(file, shape.Members?.Nodes ?? default, callable);
                 return;
             case Kind.Block:
-                foreach (Node child in node.AsBlock().Statements?.Nodes ?? [])
+                foreach (Node child in node.AsBlock().Statements?.Nodes ?? default)
                     Statement(file, child, callable);
                 return;
             case Kind.VariableStatement:
                 var list = node.AsVariableStatement().DeclarationList;
                 if ((list.Flags & NodeFlags.Using) != 0)
                     Reject(file, list, "using");
-                foreach (Node declaration in list.AsVariableDeclarationList().Declarations?.Nodes ?? [])
+                foreach (Node declaration in list.AsVariableDeclarationList().Declarations?.Nodes ?? default)
                 {
                     Documentation(file, declaration);
                     var variable = declaration.AsVariableDeclaration();
@@ -223,18 +223,18 @@ internal static class SemanticAdmission
                 EntityName(file, reference.TypeName);
                 return;
             case Kind.UnionType:
-                foreach (Node member in node.AsUnionTypeNode().Types?.Nodes ?? [])
+                foreach (Node member in node.AsUnionTypeNode().Types?.Nodes ?? default)
                     Annotation(file, member, callable);
                 return;
             case Kind.IntersectionType:
-                foreach (Node member in node.AsIntersectionTypeNode().Types?.Nodes ?? [])
+                foreach (Node member in node.AsIntersectionTypeNode().Types?.Nodes ?? default)
                     Annotation(file, member, callable);
                 return;
             case Kind.ParenthesizedType:
                 Annotation(file, node.AsParenthesizedTypeNode().Type, callable);
                 return;
             case Kind.TypeLiteral:
-                DataMembers(file, node.AsTypeLiteralNode().Members?.Nodes, callable);
+                DataMembers(file, node.AsTypeLiteralNode().Members?.Nodes ?? default, callable);
                 return;
             case Kind.LiteralType:
                 var literal = node.AsLiteralTypeNode().Literal;
@@ -271,9 +271,9 @@ internal static class SemanticAdmission
         Reject(file, node, "typeName");
     }
 
-    private static void DataMembers(SourceFile file, List<Node>? members, bool callable)
+    private static void DataMembers(SourceFile file, Slice<Node> members, bool callable)
     {
-        foreach (Node member in members ?? [])
+        foreach (Node member in members)
         {
             Documentation(file, member);
             if (callable && member.Kind is Kind.CallSignature or Kind.MethodSignature)
@@ -287,7 +287,7 @@ internal static class SemanticAdmission
             if (member.Kind != Kind.PropertySignature)
                 Reject(file, member, "typeMember");
             StaticPropertyName(file, member.Name());
-            foreach (Node modifier in member.ModifierNodes() ?? [])
+            foreach (Node modifier in member.ModifierNodes())
                 if (modifier.Kind != Kind.ReadonlyKeyword)
                     Reject(file, modifier, "propertyModifier");
             var property = member.AsPropertySignatureDeclaration();
@@ -317,7 +317,7 @@ internal static class SemanticAdmission
                 if (call.TypeArguments is not null)
                     Reject(file, node, "typeArguments");
                 Expression(file, call.Expression, true);
-                foreach (Node arg in call.Arguments?.Nodes ?? [])
+                foreach (Node arg in call.Arguments?.Nodes ?? default)
                     Expression(file, arg, true);
                 return;
             case Kind.ConditionalExpression when callable:
@@ -362,7 +362,7 @@ internal static class SemanticAdmission
                 Expression(file, node.AsParenthesizedExpression().Expression, callable);
                 return;
             case Kind.ObjectLiteralExpression:
-                foreach (Node member in node.Properties() ?? [])
+                foreach (Node member in node.Properties())
                 {
                     Documentation(file, member);
                     if (callable && member.Kind == Kind.MethodDeclaration)
@@ -412,18 +412,18 @@ internal static class SemanticAdmission
     private static void Function(SourceFile file, Node node)
     {
         Documentation(file, node);
-        foreach (Node modifier in node.ModifierNodes() ?? [])
+        foreach (Node modifier in node.ModifierNodes())
             if (!(modifier.Kind == Kind.DeclareKeyword && node.Kind == Kind.FunctionDeclaration) && !(node.Kind is (Kind.MethodSignature or Kind.MethodDeclaration) && modifier.Kind is (Kind.ReadonlyKeyword or Kind.PublicKeyword or Kind.PrivateKeyword or Kind.ProtectedKeyword)))
                 Reject(file, modifier, "functionModifier");
         if (node.TypeParameterList()is not null)
             Reject(file, node, "typeParameters");
         if ((Ast.GetFunctionFlags(node) & (FunctionFlags.Async | FunctionFlags.Generator)) != 0)
             Reject(file, node, "asyncGenerator");
-        foreach (Node parameter in node.Parameters() ?? [])
+        foreach (Node parameter in node.Parameters())
         {
             Documentation(file, parameter);
             var p = parameter.AsParameterDeclaration();
-            foreach (var modifier in parameter.ModifierNodes() ?? [])
+            foreach (var modifier in parameter.ModifierNodes())
                 if (modifier.Kind is not (Kind.ReadonlyKeyword or Kind.PublicKeyword or Kind.PrivateKeyword or Kind.ProtectedKeyword))
                     Reject(file, parameter, "parameterModifier");
             if (p.DotDotDotToken is not null)

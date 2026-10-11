@@ -964,7 +964,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 return false;
             if (node.Kind == Kind.Parameter && Ast.HasDecorators(node))
             {
-                var decorator = node.ModifierNodes()?.Find(Ast.IsDecorator);
+                var decorator = Core.Find(node.ModifierNodes(), Ast.IsDecorator);
                 if (decorator is not null)
                     (diagnostics ??= []).Add(Ast.NewDiagnostic(file, decorator.Loc, Diagnostics.Decorators_are_not_valid_here));
             }

@@ -27,12 +27,12 @@ internal static class CollectionAdmission
     }
 
     private static Node? Field(Node node, string role) => node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as Node;
-    private static List<Node>? List(Node node, string role) => (node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as NodeList)?.Nodes;
+    private static Slice<Node> List(Node node, string role) => (node.SyntaxFields().FirstOrDefault(f => f.Role == role).Value as NodeList)?.Nodes ?? default;
     private static void Visit(SourceFile file, Node node, bool project, bool allowNonRelativeModuleSpecifiers)
     {
         // Preserve ordinary documentation; semantic source JSDoc remains excluded.
-        foreach (Node doc in node.JSDoc(file) ?? [])
-            foreach (Node tag in doc.AsJSDoc().Tags?.Nodes ?? [])
+        foreach (Node doc in node.JSDoc(file))
+            foreach (Node tag in doc.AsJSDoc().Tags?.Nodes ?? default)
                 Reject(file, tag, "jsDocTag");
         if (Field(node, "AsteriskToken")is not null)
             Reject(file, node, "generator");

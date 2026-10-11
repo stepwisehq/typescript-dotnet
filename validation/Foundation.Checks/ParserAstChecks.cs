@@ -145,7 +145,7 @@ public static partial class ParserAstChecks
     }
     private static void JSDocSource()
     {
-        var file = Parse("/**\n * @typedef {(\n *   \"a\" |\n *   \"b\"\n * )[]} T\n */\nconst value = 0;", ScriptKind.JS); var alias = file.Statements.Nodes.FirstOrDefault(Ast.IsJSTypeAliasDeclaration); Assert(alias != null, "JS type alias");
+        var file = Parse("/**\n * @typedef {(\n *   \"a\" |\n *   \"b\"\n * )[]} T\n */\nconst value = 0;", ScriptKind.JS); var alias = Core.Find(file.Statements.Nodes, Ast.IsJSTypeAliasDeclaration); Assert(alias != null, "JS type alias");
         var docs = alias!.JSDoc(file); Equal(docs.Count, 1, "JSDoc count"); var tags = docs[0].AsJSDoc().Tags; Assert(tags != null, "tags"); Equal(tags!.Nodes.Count, 1, "tag count"); var expression = tags.Nodes[0].TypeExpression(); Assert(expression != null, "type expression");
         foreach (var node in new[] { expression!.Type(), alias.Type() }) Equal(ScannerApi.GetTextOfNode(node), "(\n\"a\" |\n\"b\"\n)[]", "JSDoc type source");
     }

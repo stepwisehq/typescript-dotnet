@@ -162,7 +162,7 @@ public static class ByteSourceChecks
         Equal(7, source.Offset, "Source offset retained");
         var factory = new NodeFactory();
         var clone = file.AsNode().Clone(factory).AsSourceFile();
-        var update = factory.UpdateSourceFile(file, factory.NewNodeList(new(file.Statements.Nodes)), file.EndOfFileToken).AsSourceFile();
+        var update = factory.UpdateSourceFile(file, factory.NewNodeList(GoSlices.Clone(file.Statements.Nodes)), file.EndOfFileToken).AsSourceFile();
         foreach (var other in new[] { clone, update })
         {
             Require(MemoryMarshal.TryGetArray(other.TextView().Memory, out var memory) && ReferenceEquals(owner, memory.Array) && memory.Offset == source.Offset && memory.Count == source.Count, "Clone/update retain exact immutable view header");

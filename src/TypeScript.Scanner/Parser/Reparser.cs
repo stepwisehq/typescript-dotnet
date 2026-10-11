@@ -68,7 +68,7 @@ public partial class Parser
     // Hosted tags find a host and add their children to the correct location under the host.
     // Unhosted tags add synthetic nodes to the reparse list.
     // Upstream upstream/TypeScript/tsc/internal/parser/reparser.go:58:1.
-    private void reparseTags(Node parent, List<Node> jsDoc)
+    private void reparseTags(Node parent, Slice<Node> jsDoc)
     {
         {
             foreach (var j in GoRuntime.RangeValues(jsDoc))
@@ -142,7 +142,7 @@ public partial class Parser
 
                 typeAlias.AsTypeAliasDeclaration().Type = t;
                 this.finishReparsedNode(typeAlias, tag);
-                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = typeAlias, jsDocs = new List<Node> { jsDoc } });
+                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = typeAlias, jsDocs = this.nodeSliceArena.NewSlice1Header(jsDoc) });
                 typeAlias.Flags |= NodeFlags.HasJSDoc;
                 var result = this.wrapInJSDocNamespace(fullName, typeAlias, false);
                 this.reparseList = GoRuntime.Append(this.reparseList, result);
@@ -169,7 +169,7 @@ public partial class Parser
                 var typeAlias2 = this.factory.NewJSTypeAliasDeclaration(modifiers2, this.addDeepCloneReparse(this.getInnermostNameOfJSDocNamespace(fullName2)), null, functionType);
                 typeAlias2.AsTypeAliasDeclaration().TypeParameters = this.gatherTypeParameters(jsDoc, true);
                 this.finishReparsedNode(typeAlias2, tag);
-                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = typeAlias2, jsDocs = new List<Node> { jsDoc } });
+                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = typeAlias2, jsDocs = this.nodeSliceArena.NewSlice1Header(jsDoc) });
                 typeAlias2.Flags |= NodeFlags.HasJSDoc;
                 var result2 = this.wrapInJSDocNamespace(fullName2, typeAlias2, false);
                 this.reparseList = GoRuntime.Append(this.reparseList, result2);
@@ -246,7 +246,7 @@ public partial class Parser
             signature.FunctionLikeData().TypeParameters = this.gatherTypeParameters(jsDoc, false);
         }
 
-        var parameters = this.nodeSliceArena.NewSlice(0);
+        var parameters = this.nodeSliceArena.NewSliceHeader(0);
         {
             foreach (var range3 in GoRuntime.Range(jsSignature.Parameters()))
             {
@@ -382,7 +382,7 @@ public partial class Parser
         {
             var jstypeliteral = t.AsJSDocTypeLiteral();
             var isArrayType = jstypeliteral.IsArrayType;
-            var properties = this.nodeSliceArena.NewSlice(0);
+            var properties = this.nodeSliceArena.NewSliceHeader(0);
             {
                 foreach (var prop in GoRuntime.RangeValues(jstypeliteral.JSDocPropertyTags))
                 {
@@ -440,12 +440,12 @@ public partial class Parser
             var comment = tag.CommentList();
             if ((comment != null))
             {
-                var newComment = this.factory.NewNodeList(Core.Map(comment.Nodes, this.factory.DeepCloneReparse));
+                var newComment = this.factory.NewNodeList(Core.MapSlice(comment.Nodes, this.factory.DeepCloneReparse));
                 newComment.Loc = comment.Loc;
                 var propJSDoc = this.factory.NewJSDoc(newComment, null);
                 this.finishReparsedNode(propJSDoc, tag);
                 propJSDoc.Parent = node;
-                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = node, jsDocs = new List<Node> { propJSDoc } });
+                this.jsdocInfos = GoRuntime.Append(this.jsdocInfos, new JSDocInfo { parent = node, jsDocs = this.nodeSliceArena.NewSlice1Header(propJSDoc) });
                 node.Flags |= NodeFlags.HasJSDoc;
             }
         }
@@ -454,7 +454,7 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/reparser.go:297:1.
     private NodeList gatherTypeParameters(Node j, bool typedefOrCallback)
     {
-        List<Node> typeParameters = default;
+        Slice<Node> typeParameters = default;
         var pos = -1;
         var endPos = -1;
         var firstTemplate = true;
@@ -496,9 +496,9 @@ public partial class Parser
                             reparse = this.addDeepCloneReparse(tp);
                         }
 
-                        if ((typeParameters == null))
+                        if ((typeParameters.IsNil))
                         {
-                            typeParameters = this.nodeSliceArena.NewSlice(0);
+                            typeParameters = this.nodeSliceArena.NewSliceHeader(0);
                         }
 
                         typeParameters = GoRuntime.Append(typeParameters, reparse);
@@ -720,7 +720,7 @@ public partial class Parser
                     var fun2 = getFunctionLikeHost(parent);
                     if ((fun2 != null))
                     {
-                        if (((fun2.TypeParameters() == null) && (fun2.FunctionLikeData().FullSignature == null)))
+                        if (((fun2.TypeParameters().IsNil) && (fun2.FunctionLikeData().FullSignature == null)))
                         {
                             fun2.FunctionLikeData().TypeParameters = this.gatherTypeParameters(jsDoc, false);
                             this.finishMutatedNode(fun2);
@@ -809,16 +809,10 @@ public partial class Parser
                             }
 
                             this.finishReparsedNode(thisParam, tag.TagName());
-                            var newParams = this.nodeSliceArena.NewSlice((GoRuntime.Len(@params) + 1));
+                            var newParams = this.nodeSliceArena.NewSliceHeader((GoRuntime.Len(@params) + 1));
                             newParams[0] = thisParam;
-                            {
-                                foreach (var range11 in GoRuntime.Range(@params))
-                                {
-                                    var i = range11.Key;
-                                    var param3 = range11.Value;
-                                    newParams[(i + 1)] = param3;
-                                }
-                            }
+                            // reparser.go:510 identity-only copy into the fresh arena region.
+                            @params.AsSpan().CopyTo(newParams.AsSpan().Slice(1));
 
                             fun4.FunctionLikeData().Parameters = this.newNodeList(fun4.ParameterList().Loc, newParams);
                             this.finishMutatedNode(fun4);
@@ -912,11 +906,11 @@ public partial class Parser
                         var modifier = this.factory.NewModifier(keyword);
                         modifier.Loc = tag.Loc;
                         modifier.Flags = (this.contextFlags | NodeFlags.Reparsed);
-                        List<Node> nodes = default;
+                        Slice<Node> nodes = default;
                         TextRange loc = default;
                         if ((parent.Modifiers() == null))
                         {
-                            nodes = this.nodeSliceArena.NewSlice(1);
+                            nodes = this.nodeSliceArena.NewSliceHeader(1);
                             nodes[0] = modifier;
                             loc = tag.Loc;
                         }
@@ -958,12 +952,12 @@ public partial class Parser
                             }
                         }
 
-                        var typesList = this.newNodeList(implementsTag.ClassName.Loc, this.nodeSliceArena.NewSlice1(this.addDeepCloneReparse(implementsTag.ClassName)));
+                        var typesList = this.newNodeList(implementsTag.ClassName.Loc, this.nodeSliceArena.NewSlice1Header(this.addDeepCloneReparse(implementsTag.ClassName)));
                         var heritageClause = this.factory.NewHeritageClause(Kind.ImplementsKeyword, typesList);
                         this.finishReparsedNode(heritageClause, implementsTag.ClassName);
                         if ((class3.HeritageClauses == null))
                         {
-                            var heritageClauses = this.newNodeList(implementsTag.ClassName.Loc, this.nodeSliceArena.NewSlice1(heritageClause));
+                            var heritageClauses = this.newNodeList(implementsTag.ClassName.Loc, this.nodeSliceArena.NewSlice1Header(heritageClause));
                             class3.HeritageClauses = heritageClauses;
                         }
                         else
@@ -997,7 +991,7 @@ public partial class Parser
                                 {
                                     if (((target.TypeArguments == null) && (source.TypeArguments != null)))
                                     {
-                                        var newArguments = this.nodeSliceArena.NewSlice(GoRuntime.Len(source.TypeArguments.Nodes));
+                                        var newArguments = this.nodeSliceArena.NewSliceHeader(GoRuntime.Len(source.TypeArguments.Nodes));
                                         {
                                             foreach (var range12 in GoRuntime.Range(source.TypeArguments.Nodes))
                                             {
@@ -1185,7 +1179,7 @@ public partial class Parser
         var exportModifier = this.factory.NewModifier(Kind.ExportKeyword);
         exportModifier.Loc = locationNode.Loc;
         exportModifier.Flags = (this.contextFlags | NodeFlags.Reparsed);
-        var nodes = this.nodeSliceArena.NewSlice1(exportModifier);
+        var nodes = this.nodeSliceArena.NewSlice1Header(exportModifier);
         return this.newModifierList(locationNode.Loc, nodes);
     }
 
@@ -1231,7 +1225,7 @@ public partial class Parser
         }
 
         var wrapped = this.wrapInJSDocNamespace(fullName.Body(), statement, true);
-        var block = this.factory.NewModuleBlock(this.newNodeList(fullName.Loc, this.nodeSliceArena.NewSlice1(wrapped)));
+        var block = this.factory.NewModuleBlock(this.newNodeList(fullName.Loc, this.nodeSliceArena.NewSlice1Header(wrapped)));
         this.finishReparsedNode(block, fullName);
         ModifierList modifiers = default;
         if (nested)

@@ -146,6 +146,11 @@ internal static partial class Core
         for (int i = 0; i < values.Length; i++) if (predicate(values[i])) return i;
         return -1;
     }
+    public static int FindLastIndex<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        for (int i = values.Length - 1; i >= 0; i--) if (predicate(values[i])) return i;
+        return -1;
+    }
     public static int CountWhere<T>(Slice<T> values, Func<T, bool> predicate)
     {
         int count = 0;
@@ -212,8 +217,33 @@ internal static partial class Core
     public static Slice<U> MapSlice<T, U, TState>(Slice<T> values, TState state, Func<T, TState, U> map)
     {
         if (values.IsNil) return default;
+        return MapSlice<T, U, TState>(values.AsSpan(), state, map);
+    }
+
+    // List inputs retain their established storage; mapped Node outputs are
+    // published directly as descriptors instead of an intermediate List.
+    public static Slice<U> MapSlice<T, U>(List<T>? values, Func<T, U> map) =>
+        MapSlice(values, map, static (value, callback) => callback(value));
+
+    public static Slice<U> MapSlice<T, U, TState>(List<T>? values, TState state, Func<T, TState, U> map)
+    {
+        if (values is null) return default;
+        return MapSlice<T, U, TState>(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(values), state, map);
+    }
+
+    private static Slice<U> MapSlice<T, U, TState>(ReadOnlySpan<T> values, TState state, Func<T, TState, U> map)
+    {
         var result = Slice<U>.Make(values.Length);
         for (int i = 0; i < values.Length; i++) result[i] = map(values[i], state);
+        return result;
+    }
+    // core.go:106. Borrow the captured input header; only mapped output escapes.
+    public static Slice<U> MapIndexSlice<T, U>(List<T>? values, Func<T, int, U> map)
+    {
+        if (values is null) return default;
+        ReadOnlySpan<T> input = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(values);
+        var result = Slice<U>.Make(input.Length);
+        for (int i = 0; i < input.Length; i++) result[i] = map(input[i], i);
         return result;
     }
     public static List<U>? Map<T, U>(Slice<T> values, Func<T, U> map)
@@ -624,6 +654,11 @@ internal static partial class Core
     }
 
     // core.go:269. A negative index retains the upstream invalid-index behavior.
+    internal static T? ElementOrNil<T>(Slice<T> source, int index)
+    {
+        if (index < source.Length) return source[index];
+        return typeof(T) == typeof(string) ? (T)(object)string.Empty : default;
+    }
     internal static T? ElementOrNil<T>(List<T>? source, int index)
     {
         if (index < (source?.Count ?? 0))

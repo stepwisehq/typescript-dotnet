@@ -538,7 +538,7 @@ public static partial class TsOptions
         var factory = new NodeFactory();
         var source = new TsConfigSourceFile
         {
-            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), "", factory.NewNodeList(new()), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
+            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), "", factory.NewNodeList(Slice<Node>.Make(0)), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
         };
         source.SourceFile.SetDiagnostics(errors!);
         return (source, errors);
@@ -1091,7 +1091,7 @@ public static partial class TsOptions
             };
             if (Ast.IsArrayLiteralExpression(root))
             {
-                var firstObject = root.Elements()?.FirstOrDefault(Ast.IsObjectLiteralExpression);
+                var firstObject = Core.Find(root.Elements(), Ast.IsObjectLiteralExpression);
                 if (firstObject != null)
                     return convertToJson(sourceFile, firstObject, true, notifier);
             }
@@ -1143,7 +1143,7 @@ public static partial class TsOptions
     {
         OrderedMap<string, object?>? result = returnValue ? new() : null;
         List<Diagnostic>? errors = null;
-        if (node.Properties?.Nodes != null)
+        if (node.Properties is not null)
             foreach (var element in node.Properties.Nodes)
             {
                 if (element.Kind != Kind.PropertyAssignment)
@@ -1185,21 +1185,21 @@ public static partial class TsOptions
         return (result, errors);
     }
 
-    internal static (object? Value, List<Diagnostic>? Errors) convertArrayLiteralExpressionToJson(SourceFile sourceFile, List<Node>? elements, CommandLineOption? elementOption, bool returnValue)
+    internal static (object? Value, List<Diagnostic>? Errors) convertArrayLiteralExpressionToJson(SourceFile sourceFile, Slice<Node> elements, CommandLineOption? elementOption, bool returnValue)
     {
         if (!returnValue)
         {
-            if (elements != null)
+            if (!elements.IsNil)
                 foreach (var element in elements)
                     convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, null);
             return (null, null);
         }
 
-        if ((elements?.Count ?? 0) == 0)
+        if (elements.Length == 0)
             return (new List<object?>(), null);
         List<Diagnostic>? errors = null;
         List<object?>? values = null;
-        foreach (var element in elements!)
+        foreach (var element in elements)
         {
             var(value, conversionErrors) = convertPropertyValueToJson(sourceFile, element, elementOption, returnValue, null);
             if (conversionErrors != null)
